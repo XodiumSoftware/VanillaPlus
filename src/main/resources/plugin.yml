@@ -5,4 +5,23 @@ version: ${project.version}
 api-version: ${project.api.version}
 authors:
   - XodiumSoftware
+database: false
 load: ${project.load}
+commands:
+  doorsplus:
+    description: Reloads the configuration
+    permission: doorsplus.reload
+    usage: /<command>
+permissions:
+  doorsplus.doubledoors:
+    description: Allows to open double doors with one click
+    default: true
+  doorsplus.reload:
+    description: Allows to reload the config using /doorsplus
+    default: op
+  doorsplus.knock:
+    description: Allows to knock on doors using left-click
+    default: true
+  doorsplus.irondoors:
+    description: Allows to open iron doors using right-click
+    default: op

@@ -1,7 +1,76 @@
-# Only accepts valid Minecraft entities paired with hmcwraps permissions.
-# This is a sample configuration, you can add/remove more entities and permissions.
-wraps:
-  elder_guardian: "hmcwraps.guardianic_set"
-  wither: "hmcwraps.witheric_set"
-  warden: "hmcwraps.wardenic_set"
-  ender_dragon: "hmcwraps.dragonic_set"
+###########################
+#       DoorsPlus         #
+###########################
+
+# written by XodiumSoftware
+
+###########################
+#       Double doors      #
+###########################
+
+# When true, players can open-close double doors with right-click.
+# They need the permission "doorsreloaded.doubledoors" which is given to all players by default
+allow-doubledoors: true
+
+# Also open/close both doors when one door gets powered by redstone.
+# Note: if both doors are powered and only signal gets cut, only one door will close (like in vanilla)
+check-for-redstone: true
+
+###########################
+#        Iron Doors       #
+###########################
+
+# When true, players can open-close iron doors and iron trapdoors with right-click.
+# They need the permission "doorsreloaded.irondoors".
+allow-opening-irondoors-with-hands: false
+
+# Time to autoclose iron doors/trapdoors in seconds
+autoclose: 5
+
+###########################
+#         Knocking        #
+###########################
+
+# When true, players can knock on doors using left-click.
+# This only works for players in survival and adventure mode.
+# They need the permission "doorsreloaded.knock" which is given to all players by default
+allow-knocking: true
+
+# When true, players can knock to trapdoors like normal doors.
+# Players still need the permission "doorsreloaded.knock" which is given to all players by default
+# If allow-knocking is false, this feature won't work
+allow-knocking-trapdoors: true
+
+# When true, players can only knock when their hand is empty.
+knocking-requires-empty-hand: false
+
+# When true, players can only knock while sneaking
+knocking-requires-shift: false
+
+# Settings for the knocking sound
+# See here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html
+sound-knock-iron: ENTITY_ZOMBIE_ATTACK_IRON_DOOR
+sound-knock-wood: ITEM_SHIELD_BLOCK
+# A volume of 1.0 means 16 blocks, 2.0 means 32 blocks, etc.
+sound-knock-volume: 1.0
+sound-knock-pitch: 1.0
+# See here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/SoundCategory.html
+sound-knock-category: BLOCKS
+
+###########################
+#           Misc          #
+###########################
+
+# Should we check for updates?
+# When enabled, a message is printed in the console if a new version has
+# been found, and OPs will be notified when they join the server.
+# When set to true, we will check for updates on startup and every X hours
+# When set to on-startup, we will only check on startup
+# When set to false, don't check for updates
+check-for-updates: true
+
+# When check-for-updates is true, Doors Reloaded will check every X hours
+check-interval: 4
+
+# Debug mode
+debug: false
