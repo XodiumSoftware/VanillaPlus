@@ -1,4 +1,4 @@
-package org.xodium.illyriacore;
+package org.xodium.doorsplus;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -8,9 +8,9 @@ import java.util.regex.Pattern;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.xodium.illyriacore.interfaces.CONST;
-import org.xodium.illyriacore.interfaces.DEP;
-import org.xodium.illyriacore.interfaces.MSG;
+import org.xodium.doorsplus.interfaces.CONST;
+import org.xodium.doorsplus.interfaces.DEP;
+import org.xodium.doorsplus.interfaces.MSG;
 
 public class IllyriaUtils {
 

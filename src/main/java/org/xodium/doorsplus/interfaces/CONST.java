@@ -1,4 +1,4 @@
-package org.xodium.illyriacore.interfaces;
+package org.xodium.doorsplus.interfaces;
 
 public interface CONST {
     String CONFIG_FILE = "config.yml";

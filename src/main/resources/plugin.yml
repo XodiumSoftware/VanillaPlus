@@ -4,6 +4,5 @@ main: ${project.main}
 version: ${project.version}
 api-version: ${project.api.version}
 authors:
-  - gaia-03
-  - IllyrionSoftware
+  - XodiumSoftware
 load: ${project.load}

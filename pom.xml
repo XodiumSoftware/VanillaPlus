@@ -5,10 +5,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.xodium.illyriacore</groupId>
-	<artifactId>illyriacore</artifactId>
-	<name>IllyriaCore</name>
-	<description>Core plugin for the IllyriaRPG private server.</description>
+	<groupId>org.xodium.doorsplus</groupId>
+	<artifactId>DoorsPlus</artifactId>
+	<name>DoorsPlus</name>
+	<description>Minecraft plugin that enhances the functionality of doors.</description>
 	<version>1.0.0</version>
 
 	<properties>
@@ -33,12 +33,6 @@
 			<groupId>io.papermc.paper</groupId>
 			<artifactId>paper-api</artifactId>
 			<version>1.20.6-R0.1-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>net.luckperms</groupId>
-			<artifactId>api</artifactId>
-			<version>5.4</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

@@ -1,4 +1,4 @@
-package org.xodium.illyriacore.interfaces;
+package org.xodium.doorsplus.interfaces;
 
 public interface ASCII {
     String BLACK = "\u001B[30m";

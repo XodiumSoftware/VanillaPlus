@@ -1,4 +1,4 @@
-package org.xodium.illyriacore.interfaces;
+package org.xodium.doorsplus.interfaces;
 
 public interface MSG {
     String ILLYRIA_CORE_DISABLED = ASCII.RED + "IllyriaCore disabled!";
