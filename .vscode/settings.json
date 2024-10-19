@@ -1,0 +1,25 @@
+{
+  "code-runner.runInTerminal": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "java.compile.nullAnalysis.mode": "automatic",
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.debug.settings.onBuildFailureProceed": true,
+  "[java]": {
+    "editor.defaultFormatter": "redhat.java"
+  },
+  "json.schemas": [
+    {
+      "fileMatch": [
+        "*.json",
+        "*.jsonc"
+      ],
+      "url": "https://json.schemastore.org/package"
+    }
+  ],
+  "[jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  "[xml]": {
+    "editor.defaultFormatter": "redhat.vscode-xml"
+  },
+}
