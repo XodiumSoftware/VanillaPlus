@@ -5,9 +5,9 @@ import java.util.Iterator;
 import java.util.Map;
 import org.bukkit.event.Event;
 import org.bukkit.Bukkit;
-import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Openable;
@@ -54,7 +54,7 @@ public class DoorListener implements Listener {
                         }
                         openable.setOpen(false);
                         block.setBlockData(openable);
-                        block.getWorld().playEffect(block.getLocation(), Effect.IRON_DOOR_CLOSE, 0);
+                        block.getWorld().playSound(block.getLocation(), Sound.BLOCK_IRON_DOOR_CLOSE, 1.0f, 1.0f);
                     }
                 }
                 it.remove();
@@ -103,7 +103,7 @@ public class DoorListener implements Listener {
             return;
         if (!event.getPlayer().hasPermission(Perms.IRONDOORS))
             return;
-        block.getWorld().playEffect(block.getLocation(), Effect.IRON_DOOR_TOGGLE, 0);
+        block.getWorld().playSound(block.getLocation(), Sound.BLOCK_IRON_DOOR_CLOSE, 1.0f, 1.0f);
         Openable door = (Openable) block.getBlockData();
         door.setOpen(!door.isOpen());
         onRightClickDoor(event);
