@@ -8,6 +8,7 @@ import org.bukkit.block.data.Openable;
 import org.bukkit.block.data.type.Door;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.xodium.doorsplus.commands.ReloadCommand;
 import org.xodium.doorsplus.config.Config;
 import org.xodium.doorsplus.data.PossibleNeighbour;
 import org.xodium.doorsplus.interfaces.MSG;
@@ -97,6 +98,7 @@ public class Main extends JavaPlugin {
       getServer().getPluginManager().disablePlugin(this);
       return;
     }
+    ReloadCommand.init(this.getLifecycleManager());
     instance = this;
     Config.init();
     reload();
