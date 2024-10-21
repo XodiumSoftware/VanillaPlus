@@ -25,3 +25,6 @@ permissions:
   doorsplus.irondoors:
     description: Allows to open iron doors using right-click
     default: op
+  doorsplus.autoclose:
+    description: Allows players to have their doors close automatically
+    default: true

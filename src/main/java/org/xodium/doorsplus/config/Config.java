@@ -39,7 +39,7 @@ public class Config {
         conf.addDefault(ALLOW_KNOCKING, true);
         conf.addDefault(ALLOW_KNOCKING_TRAPDOORS, false);
         conf.addDefault(KNOCKING_REQUIRES_EMPTY_HAND, false);
-        conf.addDefault(ALLOW_AUTOCLOSE, false);
+        conf.addDefault(ALLOW_AUTOCLOSE, true);
         conf.addDefault(KNOCKING_REQUIRES_SHIFT, false);
         conf.addDefault(AUTOCLOSE_DELAY, 5.0);
         conf.addDefault(DEBUG, false);

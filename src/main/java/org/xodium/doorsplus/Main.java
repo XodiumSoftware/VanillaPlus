@@ -11,6 +11,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.xodium.doorsplus.commands.ReloadCommand;
 import org.xodium.doorsplus.config.Config;
 import org.xodium.doorsplus.data.PossibleNeighbour;
+import org.xodium.doorsplus.interfaces.CONST;
 import org.xodium.doorsplus.interfaces.MSG;
 import org.xodium.doorsplus.listeners.DoorListener;
 
@@ -38,7 +39,7 @@ public class Main extends JavaPlugin {
 
   public void debug(String text) {
     if (getConfig().getBoolean(Config.DEBUG)) {
-      getLogger().warning("[DEBUG] " + text);
+      getLogger().warning(CONST.DEBUG_PREFIX + text);
     }
   }
 

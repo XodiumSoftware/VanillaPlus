@@ -108,7 +108,7 @@ public class DoorListener implements Listener {
         door.setOpen(!door.isOpen());
         onRightClickDoor(event);
         block.setBlockData(door);
-        autoClose.put(block, System.currentTimeMillis() + (main.getConfig().getLong("autoclose") * 1000));
+        autoClose.put(block, System.currentTimeMillis() + (main.getConfig().getLong(Config.AUTOCLOSE_DELAY) * 1000));
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -145,14 +145,19 @@ public class DoorListener implements Listener {
 
         Block otherDoorBlock = main.getOtherPart(door, clickedBlock);
 
-        if (otherDoorBlock == null) {
-            // System.out.println("other door is null");
-            return;
+        if (otherDoorBlock != null) {
+            Door otherDoor = (Door) otherDoorBlock.getBlockData();
+            main.toggleOtherDoor(clickedBlock, otherDoorBlock, !otherDoor.isOpen(), false);
+
+            // Set auto-close for the double door
+            autoClose.put(otherDoorBlock,
+                    System.currentTimeMillis() + (main.getConfig().getLong(Config.AUTOCLOSE_DELAY) * 1000));
         }
 
-        Door otherDoor = (Door) otherDoorBlock.getBlockData();
+        // Set auto-close for the clicked door
+        autoClose.put(clickedBlock,
+                System.currentTimeMillis() + (main.getConfig().getLong(Config.AUTOCLOSE_DELAY) * 1000));
 
-        main.toggleOtherDoor(clickedBlock, otherDoorBlock, !otherDoor.isOpen(), false);
     }
 
     @EventHandler

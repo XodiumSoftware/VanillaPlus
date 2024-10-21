@@ -24,8 +24,16 @@ check-for-redstone: true
 # They need the permission "doorsreloaded.irondoors".
 allow-opening-irondoors-with-hands: false
 
-# Time to autoclose iron doors/trapdoors in seconds
-autoclose: 5
+###########################
+#        Auto Close       #
+###########################
+
+# When enabled, players can have their doors close automatically after opening.
+# They need the permission "doorsreloaded.autoclose" which is given to all players by default
+allow-autoclose: true
+
+# The number of seconds before a door is automatically closed again
+autoclose-delay: 5
 
 ###########################
 #         Knocking        #
