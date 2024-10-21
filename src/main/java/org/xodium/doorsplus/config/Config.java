@@ -25,8 +25,7 @@ public class Config {
     public static final String ALLOW_IRONDOORS = "allow-opening-irondoors-with-hands";
 
     public static void init() {
-        DoorsPlus main = DoorsPlus.getInstance();
-        FileConfiguration conf = main.getConfig();
+        FileConfiguration conf = DoorsPlus.getInstance().getConfig();
         conf.addDefault(CHECK_FOR_UPDATES, "true");
         conf.addDefault(CHECK_FOR_UPDATES_INTERVAL, 4);
         conf.addDefault(CHECK_FOR_REDSTONE, true);
