@@ -22,7 +22,7 @@ import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.xodium.doorsplus.Main;
+import org.xodium.doorsplus.DoorsPlus;
 import org.xodium.doorsplus.Utils;
 import org.xodium.doorsplus.config.Config;
 import org.xodium.doorsplus.config.Perms;
@@ -30,7 +30,7 @@ import org.xodium.doorsplus.config.Perms;
 public class DoorListener implements Listener {
     private final HashMap<Block, Long> autoClose = new HashMap<>();
 
-    private final Main main = Main.getInstance();
+    private final DoorsPlus main = DoorsPlus.getInstance();
 
     {
         Bukkit.getScheduler().runTaskTimer(main, () -> {

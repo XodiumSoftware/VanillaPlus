@@ -1,7 +1,7 @@
 package org.xodium.doorsplus.config;
 
 import org.bukkit.configuration.file.FileConfiguration;
-import org.xodium.doorsplus.Main;
+import org.xodium.doorsplus.DoorsPlus;
 
 public class Config {
     public static final String CHECK_FOR_REDSTONE = "check-for-redstone";
@@ -25,7 +25,7 @@ public class Config {
     public static final String ALLOW_IRONDOORS = "allow-opening-irondoors-with-hands";
 
     public static void init() {
-        Main main = Main.getInstance();
+        DoorsPlus main = DoorsPlus.getInstance();
         FileConfiguration conf = main.getConfig();
         conf.addDefault(CHECK_FOR_UPDATES, "true");
         conf.addDefault(CHECK_FOR_UPDATES_INTERVAL, 4);

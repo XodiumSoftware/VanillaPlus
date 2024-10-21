@@ -15,9 +15,9 @@ import org.xodium.doorsplus.interfaces.CONST;
 import org.xodium.doorsplus.interfaces.MSG;
 import org.xodium.doorsplus.listeners.DoorListener;
 
-public class Main extends JavaPlugin {
+public class DoorsPlus extends JavaPlugin {
 
-  private static Main instance;
+  private static DoorsPlus instance;
   private static final PossibleNeighbour[] possibleNeighbours = new PossibleNeighbour[] {
       new PossibleNeighbour(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
       new PossibleNeighbour(0, 1, Door.Hinge.LEFT, BlockFace.EAST),
@@ -33,7 +33,7 @@ public class Main extends JavaPlugin {
   };
   private boolean redstoneEnabled = false;
 
-  public static Main getInstance() {
+  public static DoorsPlus getInstance() {
     return instance;
   }
 

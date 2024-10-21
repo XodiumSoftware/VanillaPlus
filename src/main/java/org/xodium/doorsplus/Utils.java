@@ -50,8 +50,8 @@ public class Utils {
     }
 
     public static void playKnockSound(Block block) {
-        Main.getInstance().debug("Finally playing sound");
-        Main main = Main.getInstance();
+        DoorsPlus.getInstance().debug("Finally playing sound");
+        DoorsPlus main = DoorsPlus.getInstance();
         Location location = block.getLocation();
         World world = block.getWorld();
         Sound sound = block.getType() == Material.IRON_DOOR
@@ -65,11 +65,11 @@ public class Utils {
         float volume = (float) main.getConfig().getDouble(Config.SOUND_KNOCK_VOLUME);
         float pitch = (float) main.getConfig().getDouble(Config.SOUND_KNOCK_PITCH);
         world.playSound(location, sound, category, volume, pitch);
-        Main.getInstance().debug("World: " + world);
-        Main.getInstance().debug("Location: " + location);
-        Main.getInstance().debug("Sound: " + sound.name());
-        Main.getInstance().debug("Category: " + category.name());
-        Main.getInstance().debug("Volume: " + volume);
-        Main.getInstance().debug("Pitch: " + pitch);
+        DoorsPlus.getInstance().debug("World: " + world);
+        DoorsPlus.getInstance().debug("Location: " + location);
+        DoorsPlus.getInstance().debug("Sound: " + sound.name());
+        DoorsPlus.getInstance().debug("Category: " + category.name());
+        DoorsPlus.getInstance().debug("Volume: " + volume);
+        DoorsPlus.getInstance().debug("Pitch: " + pitch);
     }
 }

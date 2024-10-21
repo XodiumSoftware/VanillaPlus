@@ -1,6 +1,6 @@
 package org.xodium.doorsplus.commands;
 
-import org.xodium.doorsplus.Main;
+import org.xodium.doorsplus.DoorsPlus;
 import org.xodium.doorsplus.interfaces.MSG;
 
 import com.mojang.brigadier.Command;
@@ -10,7 +10,7 @@ import io.papermc.paper.plugin.lifecycle.event.LifecycleEventManager;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 
 public class ReloadCommand {
-    private final static Main main = Main.getInstance();
+    private final static DoorsPlus main = DoorsPlus.getInstance();
 
     public static void init(LifecycleEventManager<org.bukkit.plugin.Plugin> manager) {
         manager.registerEventHandler(LifecycleEvents.COMMANDS, e -> {
