@@ -12,7 +12,6 @@ import org.xodium.doorsplus.commands.ReloadCommand;
 import org.xodium.doorsplus.config.Config;
 import org.xodium.doorsplus.data.PossibleNeighbour;
 import org.xodium.doorsplus.interfaces.CONST;
-import org.xodium.doorsplus.interfaces.MSG;
 import org.xodium.doorsplus.listeners.DoorListener;
 
 public class DoorsPlus extends JavaPlugin {
@@ -82,7 +81,8 @@ public class DoorsPlus extends JavaPlugin {
 
   @Override
   public void onEnable() {
-    if (!Utils.isCompatibleEnv(this)) {
+    if (!getServer().getVersion().contains(CONST.V)) {
+      getLogger().severe("This plugin requires paper version: " + CONST.V);
       getServer().getPluginManager().disablePlugin(this);
       return;
     }
@@ -91,8 +91,6 @@ public class DoorsPlus extends JavaPlugin {
     Config.init();
     reload();
     Bukkit.getPluginManager().registerEvents(new DoorListener(), this);
-
-    getLogger().info(MSG.PLUGIN_ENABLED);
   }
 
   public void reload() {
@@ -140,10 +138,4 @@ public class DoorsPlus extends JavaPlugin {
     }.runTaskLater(this, 1L);
 
   }
-
-  @Override
-  public void onDisable() {
-    getLogger().info(MSG.PLUGIN_DISABLED);
-  }
-
 }

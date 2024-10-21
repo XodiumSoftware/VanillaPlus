@@ -6,9 +6,8 @@ import org.xodium.doorsplus.data.PossibleNeighbour;
 
 public interface CONST {
     String CONFIG_FILE = "config.yml";
-    String WRAPS = "wraps";
-    String V_PATTERN = "\\d+\\.\\d+\\.\\d+";
     String DEBUG_PREFIX = "[DEBUG] ";
+    String V = "1.21.1";
     PossibleNeighbour[] POSSIBLE_NEIGHBOURS = new PossibleNeighbour[] {
             new PossibleNeighbour(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
             new PossibleNeighbour(0, 1, Door.Hinge.LEFT, BlockFace.EAST),
