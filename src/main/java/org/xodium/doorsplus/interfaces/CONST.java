@@ -5,8 +5,6 @@ import org.bukkit.block.data.type.Door;
 import org.xodium.doorsplus.data.PossibleNeighbour;
 
 public interface CONST {
-    String CONFIG_FILE = "config.yml";
-    String DEBUG_PREFIX = "[DEBUG] ";
     String V = "1.21.1";
     PossibleNeighbour[] POSSIBLE_NEIGHBOURS = new PossibleNeighbour[] {
             new PossibleNeighbour(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),

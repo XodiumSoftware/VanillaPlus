@@ -64,10 +64,3 @@ sound-knock-volume: 1.0
 sound-knock-pitch: 1.0
 # See here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/SoundCategory.html
 sound-knock-category: BLOCKS
-
-###########################
-#           Misc          #
-###########################
-
-# Debug mode
-debug: false
