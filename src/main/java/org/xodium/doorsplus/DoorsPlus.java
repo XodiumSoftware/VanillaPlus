@@ -18,19 +18,6 @@ import org.xodium.doorsplus.listeners.DoorListener;
 public class DoorsPlus extends JavaPlugin {
 
   private static DoorsPlus instance;
-  private static final PossibleNeighbour[] possibleNeighbours = new PossibleNeighbour[] {
-      new PossibleNeighbour(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
-      new PossibleNeighbour(0, 1, Door.Hinge.LEFT, BlockFace.EAST),
-
-      new PossibleNeighbour(1, 0, Door.Hinge.RIGHT, BlockFace.SOUTH),
-      new PossibleNeighbour(-1, 0, Door.Hinge.LEFT, BlockFace.SOUTH),
-
-      new PossibleNeighbour(0, 1, Door.Hinge.RIGHT, BlockFace.WEST),
-      new PossibleNeighbour(0, -1, Door.Hinge.LEFT, BlockFace.WEST),
-
-      new PossibleNeighbour(-1, 0, Door.Hinge.RIGHT, BlockFace.NORTH),
-      new PossibleNeighbour(1, 0, Door.Hinge.LEFT, BlockFace.NORTH)
-  };
   private boolean redstoneEnabled = false;
 
   public static DoorsPlus getInstance() {
@@ -63,7 +50,7 @@ public class DoorsPlus extends JavaPlugin {
   public Block getOtherPart(Door door, Block block) {
     if (door == null)
       return null;
-    for (PossibleNeighbour neighbour : possibleNeighbours) {
+    for (PossibleNeighbour neighbour : CONST.POSSIBLE_NEIGHBOURS) {
       if (neighbour.getFacing() != door.getFacing())
         continue;
       if (neighbour.getHinge() != door.getHinge())

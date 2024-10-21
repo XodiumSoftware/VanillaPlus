@@ -11,7 +11,8 @@ commands:
   doorsplus:
     description: Reloads the configuration
     permission: doorsplus.reload
-    usage: /<command>
+    usage: /doorsplus reload
+    aliases: [dp]
 permissions:
   doorsplus.doubledoors:
     description: Allows to open double doors with one click
