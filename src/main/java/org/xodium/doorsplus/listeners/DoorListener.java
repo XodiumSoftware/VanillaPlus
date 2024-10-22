@@ -24,8 +24,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.xodium.doorsplus.DoorsPlus;
 import org.xodium.doorsplus.config.Config;
-import org.xodium.doorsplus.config.Perms;
 import org.xodium.doorsplus.handlers.DoorHandler;
+import org.xodium.doorsplus.interfaces.PERMS;
 
 public class DoorListener implements Listener {
     private final HashMap<Block, Long> autoClose = new HashMap<>();
@@ -86,7 +86,7 @@ public class DoorListener implements Listener {
                 || !(e.getClickedBlock().getType() == Material.IRON_DOOR
                         || e.getClickedBlock().getType() == Material.IRON_TRAPDOOR)
                 || !plugin.getConfig().getBoolean(Config.ALLOW_IRONDOORS)
-                || !e.getPlayer().hasPermission(Perms.IRONDOORS))
+                || !e.getPlayer().hasPermission(PERMS.IRONDOORS))
             return;
 
         Block block = e.getClickedBlock();
@@ -103,15 +103,16 @@ public class DoorListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onRightClick(PlayerInteractEvent e) {
         Block clickedBlock = e.getClickedBlock();
+        if (clickedBlock == null)
+            return;
         BlockData blockData = clickedBlock.getBlockData();
 
         if (e.getHand() != EquipmentSlot.HAND
                 || e.getAction() != Action.RIGHT_CLICK_BLOCK
                 || e.useInteractedBlock() == Event.Result.DENY
                 || e.useItemInHand() == Event.Result.DENY
-                || !e.getPlayer().hasPermission(Perms.USE)
+                || !e.getPlayer().hasPermission(PERMS.USE)
                 || !plugin.getConfig().getBoolean(Config.ALLOW_DOUBLEDOORS)
-                || clickedBlock == null
                 || !(blockData instanceof Door
                         || blockData instanceof Gate))
             return;
@@ -136,7 +137,7 @@ public class DoorListener implements Listener {
         GameMode gameMode = p.getGameMode();
 
         if (gameMode == GameMode.CREATIVE || gameMode == GameMode.SPECTATOR
-                || !p.hasPermission(Perms.KNOCK)
+                || !p.hasPermission(PERMS.KNOCK)
                 || e.getAction() != Action.LEFT_CLICK_BLOCK
                 || e.getHand() != EquipmentSlot.HAND
                 || (plugin.getConfig().getBoolean(Config.KNOCKING_REQUIRES_SHIFT) && !p.isSneaking())
@@ -154,5 +155,4 @@ public class DoorListener implements Listener {
             DoorHandler.playKnockSound(block);
         }
     }
-
 }
