@@ -28,7 +28,6 @@ import org.xodium.vanillaplus.interfaces.CONFIG;
 import org.xodium.vanillaplus.interfaces.PERMS;
 
 public class DoorListener implements Listener {
-    // TODO: move hashmap to database
     private final HashMap<Block, Long> autoClose = new HashMap<>();
     private final VanillaPlus plugin = VanillaPlus.getInstance();
     private final Database db = new Database();

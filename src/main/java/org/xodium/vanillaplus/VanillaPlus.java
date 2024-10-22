@@ -1,10 +1,11 @@
 package org.xodium.vanillaplus;
 
-import org.bukkit.Bukkit;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.xodium.vanillaplus.commands.GUICommand;
 import org.xodium.vanillaplus.interfaces.CONFIG;
 import org.xodium.vanillaplus.listeners.DoorListener;
+import org.xodium.vanillaplus.listeners.ToolListener;
 
 public class VanillaPlus extends JavaPlugin {
 
@@ -24,8 +25,18 @@ public class VanillaPlus extends JavaPlugin {
     }
     instance = this;
     initDB();
+    initCmds();
+    initEvents();
+  }
+
+  public void initEvents() {
+    PluginManager pluginManager = getServer().getPluginManager();
+    pluginManager.registerEvents(new DoorListener(), this);
+    pluginManager.registerEvents(new ToolListener(), this);
+  }
+
+  public void initCmds() {
     GUICommand.init(this.getLifecycleManager());
-    Bukkit.getPluginManager().registerEvents(new DoorListener(), this);
   }
 
   public void initDB() {
