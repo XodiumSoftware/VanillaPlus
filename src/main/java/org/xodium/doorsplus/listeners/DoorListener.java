@@ -131,7 +131,7 @@ public class DoorListener implements Listener {
     }
 
     @EventHandler
-    public void onDoorKnock(PlayerInteractEvent e) {
+    public void onKnock(PlayerInteractEvent e) {
         Player p = e.getPlayer();
         GameMode gameMode = p.getGameMode();
 
