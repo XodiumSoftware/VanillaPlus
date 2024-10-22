@@ -32,8 +32,8 @@ public class VanillaPlus extends JavaPlugin {
     Database db = new Database();
     db.setData(CONFIG.SOUND_KNOCK_WOOD, "ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR");
     db.setData(CONFIG.SOUND_KNOCK_IRON, "ENTITY_ZOMBIE_ATTACK_IRON_DOOR");
-    db.setData(CONFIG.SOUND_KNOCK_VOLUME, 1.0);
-    db.setData(CONFIG.SOUND_KNOCK_PITCH, 1.0);
+    db.setData(CONFIG.SOUND_KNOCK_VOLUME, 1);
+    db.setData(CONFIG.SOUND_KNOCK_PITCH, 1);
     db.setData(CONFIG.SOUND_KNOCK_CATEGORY, "BLOCKS");
     db.setData(CONFIG.ALLOW_KNOCKING, true);
     db.setData(CONFIG.ALLOW_KNOCKING_TRAPDOORS, true);
