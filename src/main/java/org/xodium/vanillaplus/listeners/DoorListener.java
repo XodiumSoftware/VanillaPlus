@@ -124,25 +124,51 @@ public class DoorListener implements Listener {
         Player p = e.getPlayer();
         GameMode gameMode = p.getGameMode();
 
-        if (gameMode == GameMode.CREATIVE || gameMode == GameMode.SPECTATOR
-                || !p.hasPermission(PERMS.KNOCK)
-                || e.getAction() != Action.LEFT_CLICK_BLOCK
-                || e.getHand() != EquipmentSlot.HAND
-                || (Boolean.parseBoolean((String) db.getData(CONFIG.KNOCKING_REQUIRES_SHIFT)) && !p.isSneaking())
-                || (Boolean.parseBoolean((String) db.getData(CONFIG.KNOCKING_REQUIRES_EMPTY_HAND))
-                        && p.getInventory().getItemInMainHand().getType() != Material.AIR)
-                || e.getClickedBlock() == null)
+        // Log player's game mode
+        Bukkit.getServer().getLogger().info("Player " + p.getName() + " is in game mode: " + gameMode);
+
+        if (gameMode == GameMode.CREATIVE || gameMode == GameMode.SPECTATOR) {
+            Bukkit.getServer().getLogger()
+                    .info("Player " + p.getName() + " cannot knock in creative or spectator mode.");
             return;
+        }
+
+        if (!p.hasPermission(PERMS.KNOCK) || e.getAction() != Action.LEFT_CLICK_BLOCK
+                || e.getHand() != EquipmentSlot.HAND) {
+            Bukkit.getServer().getLogger()
+                    .info("Player " + p.getName() + " does not have permission to knock or the action is invalid.");
+            return;
+        }
+
+        if (db.getBoolean(CONFIG.KNOCKING_REQUIRES_SHIFT) && !p.isSneaking()) {
+            Bukkit.getServer().getLogger().info("Player " + p.getName() + " must be sneaking to knock.");
+            return;
+        }
+
+        if (db.getBoolean(CONFIG.KNOCKING_REQUIRES_EMPTY_HAND)
+                && p.getInventory().getItemInMainHand().getType() != Material.AIR) {
+            Bukkit.getServer().getLogger().info("Player " + p.getName() + " must have an empty hand to knock.");
+            return;
+        }
+
+        if (e.getClickedBlock() == null) {
+            Bukkit.getServer().getLogger().info("Player " + p.getName() + " clicked on a null block.");
+            return;
+        }
 
         Block block = e.getClickedBlock();
         BlockData blockData = block.getBlockData();
 
-        if ((blockData instanceof Door && Boolean.parseBoolean((String) db.getData(CONFIG.ALLOW_KNOCKING)))
-                || (blockData instanceof TrapDoor
-                        && Boolean.parseBoolean((String) db.getData(CONFIG.ALLOW_KNOCKING_TRAPDOORS)))
-                || (blockData instanceof Gate
-                        && Boolean.parseBoolean((String) db.getData(CONFIG.ALLOW_KNOCKING_GATES)))) {
+        // Log the block type
+        Bukkit.getServer().getLogger()
+                .info("Player " + p.getName() + " clicked on block of type: " + blockData.getMaterial());
+
+        if ((blockData instanceof Door && db.getBoolean(CONFIG.ALLOW_KNOCKING))
+                || (blockData instanceof TrapDoor && db.getBoolean(CONFIG.ALLOW_KNOCKING_TRAPDOORS))
+                || (blockData instanceof Gate && db.getBoolean(CONFIG.ALLOW_KNOCKING_GATES))) {
             DoorHandler.playKnockSound(block);
+            Bukkit.getServer().getLogger().info("Knock sound played for block: " + blockData.getMaterial());
         }
     }
+
 }

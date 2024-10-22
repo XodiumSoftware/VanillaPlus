@@ -48,8 +48,8 @@ public class DoorHandler {
                         (String) db.getData(CONFIG.SOUND_KNOCK_CATEGORY))
                 .or(SoundCategory.BLOCKS);
 
-        float volume = (Float) db.getData(CONFIG.SOUND_KNOCK_VOLUME);
-        float pitch = (Float) db.getData(CONFIG.SOUND_KNOCK_PITCH);
+        float volume = Float.parseFloat((String) db.getData(CONFIG.SOUND_KNOCK_VOLUME));
+        float pitch = Float.parseFloat((String) db.getData(CONFIG.SOUND_KNOCK_PITCH));
 
         world.playSound(location, sound, category, volume, pitch);
     }
