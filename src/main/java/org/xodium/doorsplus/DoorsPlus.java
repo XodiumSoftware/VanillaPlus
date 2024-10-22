@@ -29,6 +29,7 @@ public class DoorsPlus extends JavaPlugin {
     }
     ReloadCommand.init(this.getLifecycleManager());
     instance = this;
+    new Database();
     Config.init();
     reload();
     Bukkit.getPluginManager().registerEvents(new DoorListener(), this);
