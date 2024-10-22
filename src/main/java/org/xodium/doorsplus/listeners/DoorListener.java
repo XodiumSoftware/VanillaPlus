@@ -62,7 +62,7 @@ public class DoorListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onRedstoneDoor(BlockRedstoneEvent e) {
+    public void onRedstone(BlockRedstoneEvent e) {
         Block block = e.getBlock();
         Door door = (block.getBlockData() instanceof Door) ? (Door) block.getBlockData() : null;
         Block otherDoorBlock = (door != null) ? DoorHandler.getOtherPart(door, block) : null;
@@ -71,9 +71,8 @@ public class DoorListener implements Listener {
                 || door == null
                 || (e.getNewCurrent() > 0 && e.getOldCurrent() > 0)
                 || otherDoorBlock == null
-                || otherDoorBlock.getBlockPower() > 0) {
+                || otherDoorBlock.getBlockPower() > 0)
             return;
-        }
 
         DoorHandler.toggleOtherDoor(block, otherDoorBlock, e.getNewCurrent() > 0, true);
     }
@@ -87,23 +86,22 @@ public class DoorListener implements Listener {
                 || !(e.getClickedBlock().getType() == Material.IRON_DOOR
                         || e.getClickedBlock().getType() == Material.IRON_TRAPDOOR)
                 || !main.getConfig().getBoolean(Config.ALLOW_IRONDOORS)
-                || !e.getPlayer().hasPermission(Perms.IRONDOORS)) {
+                || !e.getPlayer().hasPermission(Perms.IRONDOORS))
             return;
-        }
 
         Block block = e.getClickedBlock();
         block.getWorld().playSound(block.getLocation(), Sound.BLOCK_IRON_DOOR_CLOSE, 1.0f, 1.0f);
 
         Openable door = (Openable) block.getBlockData();
         door.setOpen(!door.isOpen());
-        onRightClickDoor(e);
+        onRightClick(e);
         block.setBlockData(door);
 
         autoClose.put(block, System.currentTimeMillis() + (main.getConfig().getLong(Config.AUTOCLOSE_DELAY) * 1000));
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onRightClickDoor(PlayerInteractEvent e) {
+    public void onRightClick(PlayerInteractEvent e) {
         Block clickedBlock = e.getClickedBlock();
         BlockData blockData = clickedBlock.getBlockData();
 
@@ -115,9 +113,8 @@ public class DoorListener implements Listener {
                 || !main.getConfig().getBoolean(Config.ALLOW_DOUBLEDOORS)
                 || clickedBlock == null
                 || !(blockData instanceof Door
-                        || blockData instanceof Gate)) {
+                        || blockData instanceof Gate))
             return;
-        }
 
         if (blockData instanceof Door) {
             Door door = DoorHandler.getBottomDoor((Door) blockData, clickedBlock);
@@ -146,9 +143,8 @@ public class DoorListener implements Listener {
                 || (main.getConfig().getBoolean(Config.KNOCKING_REQUIRES_SHIFT) && !p.isSneaking())
                 || (main.getConfig().getBoolean(Config.KNOCKING_REQUIRES_EMPTY_HAND)
                         && p.getInventory().getItemInMainHand().getType() != Material.AIR)
-                || e.getClickedBlock() == null) {
+                || e.getClickedBlock() == null)
             return;
-        }
 
         Block block = e.getClickedBlock();
         BlockData blockData = block.getBlockData();
