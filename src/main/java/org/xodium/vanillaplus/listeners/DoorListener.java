@@ -71,7 +71,7 @@ public class DoorListener implements Listener {
                 || e.useItemInHand() == Event.Result.DENY
                 || !(e.getClickedBlock().getType() == Material.IRON_DOOR
                         || e.getClickedBlock().getType() == Material.IRON_TRAPDOOR)
-                || !Boolean.parseBoolean((String) db.getData(CONFIG.ALLOW_IRONDOORS))
+                || !db.getBoolean(CONFIG.ALLOW_IRONDOORS)
                 || !e.getPlayer().hasPermission(PERMS.IRONDOORS))
             return;
 
@@ -84,7 +84,7 @@ public class DoorListener implements Listener {
         block.setBlockData(door);
 
         autoClose.put(block,
-                System.currentTimeMillis() + ((Long) db.getData(CONFIG.AUTOCLOSE_DELAY)) * 1000);
+                System.currentTimeMillis() + Long.valueOf((String) db.getData(CONFIG.AUTOCLOSE_DELAY)) * 1000);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -99,7 +99,7 @@ public class DoorListener implements Listener {
                 || e.useInteractedBlock() == Event.Result.DENY
                 || e.useItemInHand() == Event.Result.DENY
                 || !e.getPlayer().hasPermission(PERMS.USE)
-                || !Boolean.parseBoolean((String) db.getData(CONFIG.ALLOW_DOUBLEDOORS))
+                || !db.getBoolean(CONFIG.ALLOW_DOUBLEDOORS)
                 || !(blockData instanceof Door
                         || blockData instanceof Gate))
             return;
@@ -112,11 +112,11 @@ public class DoorListener implements Listener {
                 DoorHandler.toggleOtherDoor(clickedBlock, otherDoorBlock, !otherDoor.isOpen(), false);
                 autoClose.put(otherDoorBlock,
                         System.currentTimeMillis()
-                                + (Long) db.getData(CONFIG.AUTOCLOSE_DELAY) * 1000);
+                                + Long.valueOf((String) db.getData(CONFIG.AUTOCLOSE_DELAY)) * 1000);
             }
         }
         autoClose.put(clickedBlock,
-                System.currentTimeMillis() + (Long) db.getData(CONFIG.AUTOCLOSE_DELAY) * 1000);
+                System.currentTimeMillis() + Long.valueOf((String) db.getData(CONFIG.AUTOCLOSE_DELAY)) * 1000);
     }
 
     @EventHandler
@@ -124,50 +124,30 @@ public class DoorListener implements Listener {
         Player p = e.getPlayer();
         GameMode gameMode = p.getGameMode();
 
-        // Log player's game mode
-        Bukkit.getServer().getLogger().info("Player " + p.getName() + " is in game mode: " + gameMode);
-
-        if (gameMode == GameMode.CREATIVE || gameMode == GameMode.SPECTATOR) {
-            Bukkit.getServer().getLogger()
-                    .info("Player " + p.getName() + " cannot knock in creative or spectator mode.");
+        if (gameMode == GameMode.CREATIVE || gameMode == GameMode.SPECTATOR)
             return;
-        }
 
         if (!p.hasPermission(PERMS.KNOCK) || e.getAction() != Action.LEFT_CLICK_BLOCK
-                || e.getHand() != EquipmentSlot.HAND) {
-            Bukkit.getServer().getLogger()
-                    .info("Player " + p.getName() + " does not have permission to knock or the action is invalid.");
+                || e.getHand() != EquipmentSlot.HAND)
             return;
-        }
 
-        if (db.getBoolean(CONFIG.KNOCKING_REQUIRES_SHIFT) && !p.isSneaking()) {
-            Bukkit.getServer().getLogger().info("Player " + p.getName() + " must be sneaking to knock.");
+        if (db.getBoolean(CONFIG.KNOCKING_REQUIRES_SHIFT) && !p.isSneaking())
             return;
-        }
 
         if (db.getBoolean(CONFIG.KNOCKING_REQUIRES_EMPTY_HAND)
-                && p.getInventory().getItemInMainHand().getType() != Material.AIR) {
-            Bukkit.getServer().getLogger().info("Player " + p.getName() + " must have an empty hand to knock.");
+                && p.getInventory().getItemInMainHand().getType() != Material.AIR)
             return;
-        }
 
-        if (e.getClickedBlock() == null) {
-            Bukkit.getServer().getLogger().info("Player " + p.getName() + " clicked on a null block.");
+        if (e.getClickedBlock() == null)
             return;
-        }
 
         Block block = e.getClickedBlock();
         BlockData blockData = block.getBlockData();
-
-        // Log the block type
-        Bukkit.getServer().getLogger()
-                .info("Player " + p.getName() + " clicked on block of type: " + blockData.getMaterial());
 
         if ((blockData instanceof Door && db.getBoolean(CONFIG.ALLOW_KNOCKING))
                 || (blockData instanceof TrapDoor && db.getBoolean(CONFIG.ALLOW_KNOCKING_TRAPDOORS))
                 || (blockData instanceof Gate && db.getBoolean(CONFIG.ALLOW_KNOCKING_GATES))) {
             DoorHandler.playKnockSound(block);
-            Bukkit.getServer().getLogger().info("Knock sound played for block: " + blockData.getMaterial());
         }
     }
 

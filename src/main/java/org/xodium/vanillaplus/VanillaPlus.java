@@ -43,6 +43,6 @@ public class VanillaPlus extends JavaPlugin {
     db.setData(CONFIG.KNOCKING_REQUIRES_EMPTY_HAND, false);
     db.setData(CONFIG.ALLOW_DOUBLEDOORS, true);
     db.setData(CONFIG.ALLOW_IRONDOORS, true);
-    db.setData(CONFIG.AUTOCLOSE_DELAY, 6.0);
+    db.setData(CONFIG.AUTOCLOSE_DELAY, 6);
   }
 }

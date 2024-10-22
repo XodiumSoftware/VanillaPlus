@@ -7,8 +7,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.bukkit.Bukkit;
-
 public class Database {
     private Connection conn;
     private final VanillaPlus plugin = VanillaPlus.getInstance();
@@ -65,27 +63,16 @@ public class Database {
     }
 
     public Object getData(String key) {
-        Bukkit.getServer().getLogger().info("Getting data for key: " + key); // Log the key being accessed
         try (PreparedStatement stmt = conn.prepareStatement(GET_DATA)) {
-            Bukkit.getServer().getLogger().info("Prepared statement created for key: " + key); // Log statement
-                                                                                               // preparation
             stmt.setString(1, key);
-            Bukkit.getServer().getLogger().info("Executing query for key: " + key); // Log before execution
             ResultSet rs = stmt.executeQuery();
-
             if (rs.next()) {
                 String value = rs.getString(GET_DATA_COLUMN_VALUE);
-                Bukkit.getServer().getLogger().info("Data found for key: " + key + ", value: " + value); // Log found
-                                                                                                         // value
                 return value;
             } else {
-                Bukkit.getServer().getLogger().warning("No data found for key: " + key); // Log if no data found
                 throw new IllegalArgumentException("No data found for key: " + key);
             }
         } catch (SQLException e) {
-            Bukkit.getServer().getLogger().severe("SQLException occurred while getting data for key: " + key); // Log
-                                                                                                               // SQL
-                                                                                                               // exception
             e.printStackTrace();
         }
         return null;
