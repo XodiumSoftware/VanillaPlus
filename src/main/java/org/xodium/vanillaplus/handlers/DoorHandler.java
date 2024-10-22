@@ -15,13 +15,24 @@ import org.xodium.vanillaplus.Database;
 import org.xodium.vanillaplus.VanillaPlus;
 import org.xodium.vanillaplus.data.PossibleNeighbour;
 import org.xodium.vanillaplus.interfaces.CONFIG;
-import org.xodium.vanillaplus.interfaces.CONST;
-
 import com.google.common.base.Enums;
 
 public class DoorHandler {
     private final static VanillaPlus plugin = VanillaPlus.getInstance();
     private final static Database db = new Database();
+    private final static PossibleNeighbour[] POSSIBLE_NEIGHBOURS = new PossibleNeighbour[] {
+            new PossibleNeighbour(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
+            new PossibleNeighbour(0, 1, Door.Hinge.LEFT, BlockFace.EAST),
+
+            new PossibleNeighbour(1, 0, Door.Hinge.RIGHT, BlockFace.SOUTH),
+            new PossibleNeighbour(-1, 0, Door.Hinge.LEFT, BlockFace.SOUTH),
+
+            new PossibleNeighbour(0, 1, Door.Hinge.RIGHT, BlockFace.WEST),
+            new PossibleNeighbour(0, -1, Door.Hinge.LEFT, BlockFace.WEST),
+
+            new PossibleNeighbour(-1, 0, Door.Hinge.RIGHT, BlockFace.NORTH),
+            new PossibleNeighbour(1, 0, Door.Hinge.LEFT, BlockFace.NORTH)
+    };
 
     public static void playKnockSound(Block block) {
         VanillaPlus plugin = VanillaPlus.getInstance();
@@ -61,7 +72,7 @@ public class DoorHandler {
         if (door == null) {
             return null;
         }
-        for (PossibleNeighbour neighbour : CONST.POSSIBLE_NEIGHBOURS) {
+        for (PossibleNeighbour neighbour : POSSIBLE_NEIGHBOURS) {
             Block relative = block.getRelative(neighbour.getOffsetX(), 0, neighbour.getOffsetZ());
             Door otherDoor = (relative.getBlockData() instanceof Door) ? (Door) relative.getBlockData() : null;
             if (neighbour.getFacing() == door.getFacing()

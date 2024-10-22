@@ -4,12 +4,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.xodium.vanillaplus.commands.GUICommand;
 import org.xodium.vanillaplus.interfaces.CONFIG;
-import org.xodium.vanillaplus.interfaces.CONST;
 import org.xodium.vanillaplus.listeners.DoorListener;
 
 public class VanillaPlus extends JavaPlugin {
 
   private static VanillaPlus instance;
+  private static final String V = "1.21.1";
 
   public static VanillaPlus getInstance() {
     return instance;
@@ -17,8 +17,8 @@ public class VanillaPlus extends JavaPlugin {
 
   @Override
   public void onEnable() {
-    if (!getServer().getVersion().contains(CONST.V)) {
-      getLogger().severe("This plugin requires paper version: " + CONST.V);
+    if (!getServer().getVersion().contains(V)) {
+      getLogger().severe("This plugin requires paper version: " + V);
       getServer().getPluginManager().disablePlugin(this);
       return;
     }
