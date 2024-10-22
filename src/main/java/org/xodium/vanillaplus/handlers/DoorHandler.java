@@ -35,22 +35,21 @@ public class DoorHandler {
     };
 
     public static void playKnockSound(Block block) {
-        VanillaPlus plugin = VanillaPlus.getInstance();
         Location location = block.getLocation();
         World world = block.getWorld();
         Sound sound = block.getType() == Material.IRON_DOOR
-                ? Enums.getIfPresent(Sound.class, plugin.getConfig().getString(db.getData(CONFIG.SOUND_KNOCK_IRON)))
+                ? Enums.getIfPresent(Sound.class, String.valueOf((String) db.getData(CONFIG.SOUND_KNOCK_IRON)))
                         .or(Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR)
-                : Enums.getIfPresent(Sound.class, plugin.getConfig().getString(db.getData(CONFIG.SOUND_KNOCK_WOOD)))
+                : Enums.getIfPresent(Sound.class, String.valueOf((String) db.getData(CONFIG.SOUND_KNOCK_WOOD)))
                         .or(Sound.ITEM_SHIELD_BLOCK);
 
         SoundCategory category = Enums
                 .getIfPresent(SoundCategory.class,
-                        plugin.getConfig().getString(db.getData(CONFIG.SOUND_KNOCK_CATEGORY)))
+                        String.valueOf(db.getData(CONFIG.SOUND_KNOCK_CATEGORY)))
                 .or(SoundCategory.BLOCKS);
 
-        float volume = (float) plugin.getConfig().getDouble(db.getData(CONFIG.SOUND_KNOCK_VOLUME), 1.0);
-        float pitch = (float) plugin.getConfig().getDouble(db.getData(CONFIG.SOUND_KNOCK_PITCH), 1.0);
+        float volume = Float.parseFloat(String.valueOf(db.getData(CONFIG.SOUND_KNOCK_VOLUME)));
+        float pitch = Float.parseFloat(String.valueOf(db.getData(CONFIG.SOUND_KNOCK_PITCH)));
 
         world.playSound(location, sound, category, volume, pitch);
     }
