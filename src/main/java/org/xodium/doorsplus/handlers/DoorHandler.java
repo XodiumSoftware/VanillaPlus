@@ -11,32 +11,35 @@ import org.bukkit.block.data.Bisected;
 import org.bukkit.block.data.Openable;
 import org.bukkit.block.data.type.Door;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.xodium.doorsplus.Database;
 import org.xodium.doorsplus.DoorsPlus;
-import org.xodium.doorsplus.config.Config;
 import org.xodium.doorsplus.data.PossibleNeighbour;
+import org.xodium.doorsplus.interfaces.CONFIG;
 import org.xodium.doorsplus.interfaces.CONST;
 
 import com.google.common.base.Enums;
 
 public class DoorHandler {
     private final static DoorsPlus plugin = DoorsPlus.getInstance();
+    private final static Database db = new Database();
 
     public static void playKnockSound(Block block) {
         DoorsPlus plugin = DoorsPlus.getInstance();
         Location location = block.getLocation();
         World world = block.getWorld();
         Sound sound = block.getType() == Material.IRON_DOOR
-                ? Enums.getIfPresent(Sound.class, plugin.getConfig().getString(Config.SOUND_KNOCK_IRON))
+                ? Enums.getIfPresent(Sound.class, plugin.getConfig().getString(db.getData(CONFIG.SOUND_KNOCK_IRON)))
                         .or(Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR)
-                : Enums.getIfPresent(Sound.class, plugin.getConfig().getString(Config.SOUND_KNOCK_WOOD))
+                : Enums.getIfPresent(Sound.class, plugin.getConfig().getString(db.getData(CONFIG.SOUND_KNOCK_WOOD)))
                         .or(Sound.ITEM_SHIELD_BLOCK);
 
         SoundCategory category = Enums
-                .getIfPresent(SoundCategory.class, plugin.getConfig().getString(Config.SOUND_KNOCK_CATEGORY))
+                .getIfPresent(SoundCategory.class,
+                        plugin.getConfig().getString(db.getData(CONFIG.SOUND_KNOCK_CATEGORY)))
                 .or(SoundCategory.BLOCKS);
 
-        float volume = (float) plugin.getConfig().getDouble(Config.SOUND_KNOCK_VOLUME, 1.0);
-        float pitch = (float) plugin.getConfig().getDouble(Config.SOUND_KNOCK_PITCH, 1.0);
+        float volume = (float) plugin.getConfig().getDouble(db.getData(CONFIG.SOUND_KNOCK_VOLUME), 1.0);
+        float pitch = (float) plugin.getConfig().getDouble(db.getData(CONFIG.SOUND_KNOCK_PITCH), 1.0);
 
         world.playSound(location, sound, category, volume, pitch);
     }

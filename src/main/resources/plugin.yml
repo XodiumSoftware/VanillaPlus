@@ -9,9 +9,9 @@ database: false
 load: ${project.load}
 commands:
   doorsplus:
-    description: Reloads the configuration
-    permission: doorsplus.reload
-    usage: /doorsplus reload
+    description: Main command for DoorsPlus
+    permission: doorsplus.gui
+    usage: /doorsplus
     aliases: [dp]
 permissions:
   doorsplus.doubledoors:

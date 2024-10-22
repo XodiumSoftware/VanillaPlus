@@ -19,17 +19,19 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.xodium.doorsplus.Database;
 import org.xodium.doorsplus.DoorsPlus;
-import org.xodium.doorsplus.config.Config;
 import org.xodium.doorsplus.handlers.DoorHandler;
+import org.xodium.doorsplus.interfaces.CONFIG;
 import org.xodium.doorsplus.interfaces.PERMS;
 
 public class DoorListener implements Listener {
+    // TODO: move hashmap to database
     private final HashMap<Block, Long> autoClose = new HashMap<>();
     private final DoorsPlus plugin = DoorsPlus.getInstance();
+    private final Database db = new Database();
 
     {
         Bukkit.getScheduler().runTaskTimer(plugin, () -> {
@@ -61,22 +63,6 @@ public class DoorListener implements Listener {
         }, 1, 1);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onRedstone(BlockRedstoneEvent e) {
-        Block block = e.getBlock();
-        Door door = (block.getBlockData() instanceof Door) ? (Door) block.getBlockData() : null;
-        Block otherDoorBlock = (door != null) ? DoorHandler.getOtherPart(door, block) : null;
-
-        if (!plugin.isRedstoneEnabled()
-                || door == null
-                || (e.getNewCurrent() > 0 && e.getOldCurrent() > 0)
-                || otherDoorBlock == null
-                || otherDoorBlock.getBlockPower() > 0)
-            return;
-
-        DoorHandler.toggleOtherDoor(block, otherDoorBlock, e.getNewCurrent() > 0, true);
-    }
-
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onIronDoor(PlayerInteractEvent e) {
         if (e.getHand() != EquipmentSlot.HAND
@@ -85,7 +71,7 @@ public class DoorListener implements Listener {
                 || e.useItemInHand() == Event.Result.DENY
                 || !(e.getClickedBlock().getType() == Material.IRON_DOOR
                         || e.getClickedBlock().getType() == Material.IRON_TRAPDOOR)
-                || !plugin.getConfig().getBoolean(Config.ALLOW_IRONDOORS)
+                || !plugin.getConfig().getBoolean(db.getData(CONFIG.ALLOW_IRONDOORS))
                 || !e.getPlayer().hasPermission(PERMS.IRONDOORS))
             return;
 
@@ -97,7 +83,8 @@ public class DoorListener implements Listener {
         onRightClick(e);
         block.setBlockData(door);
 
-        autoClose.put(block, System.currentTimeMillis() + (plugin.getConfig().getLong(Config.AUTOCLOSE_DELAY) * 1000));
+        autoClose.put(block,
+                System.currentTimeMillis() + (plugin.getConfig().getLong(db.getData(CONFIG.AUTOCLOSE_DELAY)) * 1000));
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -112,7 +99,7 @@ public class DoorListener implements Listener {
                 || e.useInteractedBlock() == Event.Result.DENY
                 || e.useItemInHand() == Event.Result.DENY
                 || !e.getPlayer().hasPermission(PERMS.USE)
-                || !plugin.getConfig().getBoolean(Config.ALLOW_DOUBLEDOORS)
+                || !plugin.getConfig().getBoolean(db.getData(CONFIG.ALLOW_DOUBLEDOORS))
                 || !(blockData instanceof Door
                         || blockData instanceof Gate))
             return;
@@ -124,11 +111,12 @@ public class DoorListener implements Listener {
                 Door otherDoor = (Door) otherDoorBlock.getBlockData();
                 DoorHandler.toggleOtherDoor(clickedBlock, otherDoorBlock, !otherDoor.isOpen(), false);
                 autoClose.put(otherDoorBlock,
-                        System.currentTimeMillis() + (plugin.getConfig().getLong(Config.AUTOCLOSE_DELAY) * 1000));
+                        System.currentTimeMillis()
+                                + (plugin.getConfig().getLong(db.getData(CONFIG.AUTOCLOSE_DELAY)) * 1000));
             }
         }
         autoClose.put(clickedBlock,
-                System.currentTimeMillis() + (plugin.getConfig().getLong(Config.AUTOCLOSE_DELAY) * 1000));
+                System.currentTimeMillis() + (plugin.getConfig().getLong(db.getData(CONFIG.AUTOCLOSE_DELAY)) * 1000));
     }
 
     @EventHandler
@@ -140,8 +128,8 @@ public class DoorListener implements Listener {
                 || !p.hasPermission(PERMS.KNOCK)
                 || e.getAction() != Action.LEFT_CLICK_BLOCK
                 || e.getHand() != EquipmentSlot.HAND
-                || (plugin.getConfig().getBoolean(Config.KNOCKING_REQUIRES_SHIFT) && !p.isSneaking())
-                || (plugin.getConfig().getBoolean(Config.KNOCKING_REQUIRES_EMPTY_HAND)
+                || (plugin.getConfig().getBoolean(db.getData(CONFIG.KNOCKING_REQUIRES_SHIFT)) && !p.isSneaking())
+                || (plugin.getConfig().getBoolean(db.getData(CONFIG.KNOCKING_REQUIRES_EMPTY_HAND))
                         && p.getInventory().getItemInMainHand().getType() != Material.AIR)
                 || e.getClickedBlock() == null)
             return;
@@ -149,9 +137,11 @@ public class DoorListener implements Listener {
         Block block = e.getClickedBlock();
         BlockData blockData = block.getBlockData();
 
-        if (blockData instanceof Door && plugin.getConfig().getBoolean(Config.ALLOW_KNOCKING)
-                || (blockData instanceof TrapDoor && plugin.getConfig().getBoolean(Config.ALLOW_KNOCKING_TRAPDOORS))
-                || (blockData instanceof Gate && plugin.getConfig().getBoolean(Config.ALLOW_KNOCKING_GATES))) {
+        if (blockData instanceof Door && plugin.getConfig().getBoolean(db.getData(CONFIG.ALLOW_KNOCKING))
+                || (blockData instanceof TrapDoor
+                        && plugin.getConfig().getBoolean(db.getData(CONFIG.ALLOW_KNOCKING_TRAPDOORS)))
+                || (blockData instanceof Gate
+                        && plugin.getConfig().getBoolean(db.getData(CONFIG.ALLOW_KNOCKING_GATES)))) {
             DoorHandler.playKnockSound(block);
         }
     }

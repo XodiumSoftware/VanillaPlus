@@ -40,11 +40,11 @@ public class Database {
         }
     }
 
-    public void setData(String key, String value) {
+    public void setData(String key, Object value) {
         try (PreparedStatement stmt = conn.prepareStatement(
                 SET_DATA)) {
             stmt.setString(1, key);
-            stmt.setString(2, value);
+            stmt.setObject(2, value);
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
