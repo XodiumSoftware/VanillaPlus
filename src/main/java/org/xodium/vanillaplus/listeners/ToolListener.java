@@ -38,10 +38,9 @@ public class ToolListener implements Listener {
             PersistentDataContainer data = item.getItemMeta().getPersistentDataContainer();
             data.set(key, PersistentDataType.STRING, "chisel_modifier");
             meta.setCustomModelData(1);
-            meta.displayName(Component.text("Chisel")
-                    .color(TextColor.fromHexString("#00FF00")));
+            meta.displayName(Component.text("Chisel"));
             meta.lore(List.of(
-                    Component.text("Right click to modify stairs")
+                    Component.text("R+click to modify stairs")
                             .color(TextColor.fromHexString("#FFFFFF"))));
             item.setItemMeta(meta);
             createChiselRecipe(key, item);
