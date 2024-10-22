@@ -1,17 +1,11 @@
 package org.xodium.vanillaplus;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Base64;
 
 public class Database {
     private Connection conn;
@@ -50,10 +44,10 @@ public class Database {
     public void setData(String key, Object value) {
         try (PreparedStatement stmt = conn.prepareStatement(SET_DATA)) {
             stmt.setString(1, key);
-            stmt.setString(2, serialize(value));
+            stmt.setObject(2, value);
             stmt.setString(3, key);
             stmt.executeUpdate();
-        } catch (SQLException | IOException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
@@ -61,9 +55,9 @@ public class Database {
     public void updateData(String key, Object value) {
         try (PreparedStatement stmt = conn.prepareStatement(UPDATE_DATA)) {
             stmt.setString(1, key);
-            stmt.setString(2, serialize(value));
+            stmt.setObject(2, value);
             stmt.executeUpdate();
-        } catch (SQLException | IOException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
@@ -73,27 +67,11 @@ public class Database {
             stmt.setString(1, key);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return deserialize(rs.getString(GET_DATA_COLUMN_VALUE));
+                return rs.getString(GET_DATA_COLUMN_VALUE);
             }
-        } catch (SQLException | IOException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
-    }
-
-    private String serialize(Object obj) throws IOException {
-        try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-                ObjectOutputStream objStream = new ObjectOutputStream(byteStream)) {
-            objStream.writeObject(obj);
-            return Base64.getEncoder().encodeToString(byteStream.toByteArray());
-        }
-    }
-
-    private Object deserialize(String str) throws IOException, ClassNotFoundException {
-        byte[] data = Base64.getDecoder().decode(str);
-        try (ByteArrayInputStream byteStream = new ByteArrayInputStream(data);
-                ObjectInputStream objStream = new ObjectInputStream(byteStream)) {
-            return objStream.readObject();
-        }
     }
 }
