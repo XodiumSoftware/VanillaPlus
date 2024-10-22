@@ -15,7 +15,8 @@ public class Database {
     private static final String DB_FILE = "vanilla.db";
 
     private static final String INIT_TABLES = "CREATE TABLE IF NOT EXISTS config (key TEXT PRIMARY KEY, value TEXT)";
-    private static final String SET_DATA = "INSERT OR REPLACE INTO config (key, value) VALUES (?, ?)";
+    private static final String SET_DATA = "INSERT INTO config (key, value) SELECT ?, ? WHERE NOT EXISTS (SELECT 1 FROM config WHERE key = ?)";
+    private static final String UPDATE_DATA = "INSERT OR REPLACE INTO config (key, value) VALUES (?, ?)";
     private static final String GET_DATA = "SELECT value FROM config WHERE key = ?";
     private static final String GET_DATA_COLUMN_VALUE = "value";
 
@@ -41,8 +42,18 @@ public class Database {
     }
 
     public void setData(String key, Object value) {
-        try (PreparedStatement stmt = conn.prepareStatement(
-                SET_DATA)) {
+        try (PreparedStatement stmt = conn.prepareStatement(SET_DATA)) {
+            stmt.setString(1, key);
+            stmt.setObject(2, value);
+            stmt.setString(3, key);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateData(String key, Object value) {
+        try (PreparedStatement stmt = conn.prepareStatement(UPDATE_DATA)) {
             stmt.setString(1, key);
             stmt.setObject(2, value);
             stmt.executeUpdate();
