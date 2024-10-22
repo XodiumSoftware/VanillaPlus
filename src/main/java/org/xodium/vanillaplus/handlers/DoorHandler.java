@@ -1,4 +1,4 @@
-package org.xodium.doorsplus.handlers;
+package org.xodium.vanillaplus.handlers;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -11,20 +11,20 @@ import org.bukkit.block.data.Bisected;
 import org.bukkit.block.data.Openable;
 import org.bukkit.block.data.type.Door;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.xodium.doorsplus.Database;
-import org.xodium.doorsplus.DoorsPlus;
-import org.xodium.doorsplus.data.PossibleNeighbour;
-import org.xodium.doorsplus.interfaces.CONFIG;
-import org.xodium.doorsplus.interfaces.CONST;
+import org.xodium.vanillaplus.Database;
+import org.xodium.vanillaplus.VanillaPlus;
+import org.xodium.vanillaplus.data.PossibleNeighbour;
+import org.xodium.vanillaplus.interfaces.CONFIG;
+import org.xodium.vanillaplus.interfaces.CONST;
 
 import com.google.common.base.Enums;
 
 public class DoorHandler {
-    private final static DoorsPlus plugin = DoorsPlus.getInstance();
+    private final static VanillaPlus plugin = VanillaPlus.getInstance();
     private final static Database db = new Database();
 
     public static void playKnockSound(Block block) {
-        DoorsPlus plugin = DoorsPlus.getInstance();
+        VanillaPlus plugin = VanillaPlus.getInstance();
         Location location = block.getLocation();
         World world = block.getWorld();
         Sound sound = block.getType() == Material.IRON_DOOR

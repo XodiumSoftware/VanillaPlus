@@ -1,8 +1,8 @@
-package org.xodium.doorsplus.interfaces;
+package org.xodium.vanillaplus.interfaces;
 
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.type.Door;
-import org.xodium.doorsplus.data.PossibleNeighbour;
+import org.xodium.vanillaplus.data.PossibleNeighbour;
 
 public interface CONST {
     String V = "1.21.1";

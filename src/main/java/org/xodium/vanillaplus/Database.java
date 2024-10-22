@@ -1,4 +1,4 @@
-package org.xodium.doorsplus;
+package org.xodium.vanillaplus;
 
 import java.io.File;
 import java.sql.Connection;
@@ -9,10 +9,10 @@ import java.sql.SQLException;
 
 public class Database {
     private Connection conn;
-    private final DoorsPlus plugin = DoorsPlus.getInstance();
+    private final VanillaPlus plugin = VanillaPlus.getInstance();
 
     private static final String DB_URL_PREFIX = "jdbc:sqlite:";
-    private static final String DB_FILE = "doorsplus.db";
+    private static final String DB_FILE = "vanilla.db";
 
     private static final String INIT_TABLES = "CREATE TABLE IF NOT EXISTS config (key TEXT PRIMARY KEY, value TEXT)";
     private static final String SET_DATA = "INSERT OR REPLACE INTO config (key, value) VALUES (?, ?)";

@@ -1,4 +1,4 @@
-package org.xodium.doorsplus.listeners;
+package org.xodium.vanillaplus.listeners;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,16 +21,16 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
-import org.xodium.doorsplus.Database;
-import org.xodium.doorsplus.DoorsPlus;
-import org.xodium.doorsplus.handlers.DoorHandler;
-import org.xodium.doorsplus.interfaces.CONFIG;
-import org.xodium.doorsplus.interfaces.PERMS;
+import org.xodium.vanillaplus.Database;
+import org.xodium.vanillaplus.VanillaPlus;
+import org.xodium.vanillaplus.handlers.DoorHandler;
+import org.xodium.vanillaplus.interfaces.CONFIG;
+import org.xodium.vanillaplus.interfaces.PERMS;
 
 public class DoorListener implements Listener {
     // TODO: move hashmap to database
     private final HashMap<Block, Long> autoClose = new HashMap<>();
-    private final DoorsPlus plugin = DoorsPlus.getInstance();
+    private final VanillaPlus plugin = VanillaPlus.getInstance();
     private final Database db = new Database();
 
     {

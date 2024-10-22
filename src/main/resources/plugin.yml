@@ -8,24 +8,24 @@ authors:
 database: false
 load: ${project.load}
 commands:
-  doorsplus:
-    description: Main command for DoorsPlus
-    permission: doorsplus.gui
-    usage: /doorsplus
+  vanillaplus:
+    description: Main command for VanillaPlus
+    permission: vanillaplus.gui
+    usage: /vanillaplus
     aliases: [dp]
 permissions:
-  doorsplus.doubledoors:
-    description: Allows to open double doors with one click
+  vanillaplus.doublevanilla:
+    description: Allows to open double vanilla with one click
     default: true
-  doorsplus.reload:
-    description: Allows to reload the config using /doorsplus
+  vanillaplus.reload:
+    description: Allows to reload the config using /vanillaplus
     default: op
-  doorsplus.knock:
-    description: Allows to knock on doors using left-click
+  vanillaplus.knock:
+    description: Allows to knock on vanilla using left-click
     default: true
-  doorsplus.irondoors:
-    description: Allows to open iron doors using right-click
+  vanillaplus.ironvanilla:
+    description: Allows to open iron vanilla using right-click
     default: op
-  doorsplus.autoclose:
-    description: Allows players to have their doors close automatically
+  vanillaplus.autoclose:
+    description: Allows players to have their vanilla close automatically
     default: true

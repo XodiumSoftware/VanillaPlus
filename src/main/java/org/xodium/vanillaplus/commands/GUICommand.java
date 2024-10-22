@@ -1,4 +1,4 @@
-package org.xodium.doorsplus.commands;
+package org.xodium.vanillaplus.commands;
 
 import com.mojang.brigadier.Command;
 

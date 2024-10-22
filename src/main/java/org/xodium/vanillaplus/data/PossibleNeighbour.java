@@ -1,4 +1,4 @@
-package org.xodium.doorsplus.data;
+package org.xodium.vanillaplus.data;
 
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.type.Door;

@@ -1,17 +1,17 @@
-package org.xodium.doorsplus;
+package org.xodium.vanillaplus;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.xodium.doorsplus.commands.GUICommand;
-import org.xodium.doorsplus.interfaces.CONFIG;
-import org.xodium.doorsplus.interfaces.CONST;
-import org.xodium.doorsplus.listeners.DoorListener;
+import org.xodium.vanillaplus.commands.GUICommand;
+import org.xodium.vanillaplus.interfaces.CONFIG;
+import org.xodium.vanillaplus.interfaces.CONST;
+import org.xodium.vanillaplus.listeners.DoorListener;
 
-public class DoorsPlus extends JavaPlugin {
+public class VanillaPlus extends JavaPlugin {
 
-  private static DoorsPlus instance;
+  private static VanillaPlus instance;
 
-  public static DoorsPlus getInstance() {
+  public static VanillaPlus getInstance() {
     return instance;
   }
 
@@ -43,6 +43,6 @@ public class DoorsPlus extends JavaPlugin {
     db.setData(CONFIG.KNOCKING_REQUIRES_EMPTY_HAND, false);
     db.setData(CONFIG.ALLOW_DOUBLEDOORS, true);
     db.setData(CONFIG.ALLOW_IRONDOORS, true);
-    db.setData(CONFIG.AUTOCLOSE_DELAY, 5.0);
+    db.setData(CONFIG.AUTOCLOSE_DELAY, 6.0);
   }
 }
