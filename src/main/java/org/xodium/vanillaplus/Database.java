@@ -18,7 +18,7 @@ public class Database {
     private final VanillaPlus plugin = VanillaPlus.getInstance();
 
     private static final String DB_URL_PREFIX = "jdbc:sqlite:";
-    private static final String DB_FILE = "vanilla.db";
+    private static final String DB_FILE = "vanillaplus.db";
 
     private static final String INIT_TABLES = "CREATE TABLE IF NOT EXISTS config (key TEXT PRIMARY KEY, value TEXT)";
     private static final String SET_DATA = "INSERT INTO config (key, value) SELECT ?, ? WHERE NOT EXISTS (SELECT 1 FROM config WHERE key = ?)";

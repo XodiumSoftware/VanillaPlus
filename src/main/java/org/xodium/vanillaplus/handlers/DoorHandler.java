@@ -38,18 +38,18 @@ public class DoorHandler {
         Location location = block.getLocation();
         World world = block.getWorld();
         Sound sound = block.getType() == Material.IRON_DOOR
-                ? Enums.getIfPresent(Sound.class, String.valueOf((String) db.getData(CONFIG.SOUND_KNOCK_IRON)))
+                ? Enums.getIfPresent(Sound.class, (String) db.getData(CONFIG.SOUND_KNOCK_IRON))
                         .or(Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR)
-                : Enums.getIfPresent(Sound.class, String.valueOf((String) db.getData(CONFIG.SOUND_KNOCK_WOOD)))
+                : Enums.getIfPresent(Sound.class, (String) db.getData(CONFIG.SOUND_KNOCK_WOOD))
                         .or(Sound.ITEM_SHIELD_BLOCK);
 
         SoundCategory category = Enums
                 .getIfPresent(SoundCategory.class,
-                        String.valueOf(db.getData(CONFIG.SOUND_KNOCK_CATEGORY)))
+                        (String) db.getData(CONFIG.SOUND_KNOCK_CATEGORY))
                 .or(SoundCategory.BLOCKS);
 
-        float volume = Float.parseFloat(String.valueOf(db.getData(CONFIG.SOUND_KNOCK_VOLUME)));
-        float pitch = Float.parseFloat(String.valueOf(db.getData(CONFIG.SOUND_KNOCK_PITCH)));
+        float volume = (Float) db.getData(CONFIG.SOUND_KNOCK_VOLUME);
+        float pitch = (Float) db.getData(CONFIG.SOUND_KNOCK_PITCH);
 
         world.playSound(location, sound, category, volume, pitch);
     }

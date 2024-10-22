@@ -71,7 +71,7 @@ public class DoorListener implements Listener {
                 || e.useItemInHand() == Event.Result.DENY
                 || !(e.getClickedBlock().getType() == Material.IRON_DOOR
                         || e.getClickedBlock().getType() == Material.IRON_TRAPDOOR)
-                || !Boolean.parseBoolean((String) db.getData(CONFIG.ALLOW_IRONDOORS))
+                || !(Boolean) db.getData(CONFIG.ALLOW_IRONDOORS)
                 || !e.getPlayer().hasPermission(PERMS.IRONDOORS))
             return;
 
@@ -84,7 +84,7 @@ public class DoorListener implements Listener {
         block.setBlockData(door);
 
         autoClose.put(block,
-                System.currentTimeMillis() + Long.parseLong((String) db.getData(CONFIG.AUTOCLOSE_DELAY)) * 1000);
+                System.currentTimeMillis() + ((Long) db.getData(CONFIG.AUTOCLOSE_DELAY)) * 1000);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -99,7 +99,7 @@ public class DoorListener implements Listener {
                 || e.useInteractedBlock() == Event.Result.DENY
                 || e.useItemInHand() == Event.Result.DENY
                 || !e.getPlayer().hasPermission(PERMS.USE)
-                || !Boolean.parseBoolean((String) db.getData(CONFIG.ALLOW_DOUBLEDOORS))
+                || !(Boolean) db.getData(CONFIG.ALLOW_DOUBLEDOORS)
                 || !(blockData instanceof Door
                         || blockData instanceof Gate))
             return;
@@ -112,11 +112,11 @@ public class DoorListener implements Listener {
                 DoorHandler.toggleOtherDoor(clickedBlock, otherDoorBlock, !otherDoor.isOpen(), false);
                 autoClose.put(otherDoorBlock,
                         System.currentTimeMillis()
-                                + (Long.parseLong((String) db.getData(CONFIG.AUTOCLOSE_DELAY))) * 1000);
+                                + (Long) db.getData(CONFIG.AUTOCLOSE_DELAY) * 1000);
             }
         }
         autoClose.put(clickedBlock,
-                System.currentTimeMillis() + (Long.parseLong((String) db.getData(CONFIG.AUTOCLOSE_DELAY)) * 1000));
+                System.currentTimeMillis() + (Long) db.getData(CONFIG.AUTOCLOSE_DELAY) * 1000);
     }
 
     @EventHandler
@@ -128,8 +128,8 @@ public class DoorListener implements Listener {
                 || !p.hasPermission(PERMS.KNOCK)
                 || e.getAction() != Action.LEFT_CLICK_BLOCK
                 || e.getHand() != EquipmentSlot.HAND
-                || (Boolean.parseBoolean((String) db.getData(CONFIG.KNOCKING_REQUIRES_SHIFT)) && !p.isSneaking())
-                || (Boolean.parseBoolean((String) db.getData(CONFIG.KNOCKING_REQUIRES_EMPTY_HAND))
+                || ((Boolean) db.getData(CONFIG.KNOCKING_REQUIRES_SHIFT) && !p.isSneaking())
+                || ((Boolean) db.getData(CONFIG.KNOCKING_REQUIRES_EMPTY_HAND)
                         && p.getInventory().getItemInMainHand().getType() != Material.AIR)
                 || e.getClickedBlock() == null)
             return;
@@ -137,11 +137,9 @@ public class DoorListener implements Listener {
         Block block = e.getClickedBlock();
         BlockData blockData = block.getBlockData();
 
-        if (blockData instanceof Door && Boolean.parseBoolean((String) db.getData(CONFIG.ALLOW_KNOCKING))
-                || (blockData instanceof TrapDoor
-                        && Boolean.parseBoolean((String) db.getData(CONFIG.ALLOW_KNOCKING_TRAPDOORS)))
-                || (blockData instanceof Gate
-                        && Boolean.parseBoolean((String) db.getData(CONFIG.ALLOW_KNOCKING_GATES)))) {
+        if ((blockData instanceof Door && (Boolean) db.getData(CONFIG.ALLOW_KNOCKING))
+                || (blockData instanceof TrapDoor && (Boolean) db.getData(CONFIG.ALLOW_KNOCKING_TRAPDOORS))
+                || (blockData instanceof Gate && (Boolean) db.getData(CONFIG.ALLOW_KNOCKING_GATES))) {
             DoorHandler.playKnockSound(block);
         }
     }
