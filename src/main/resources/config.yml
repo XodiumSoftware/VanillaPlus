@@ -49,6 +49,11 @@ allow-knocking: true
 # If allow-knocking is false, this feature won't work
 allow-knocking-trapdoors: true
 
+# When true, players can knock on gates like normal doors.
+# Players still need the permission "doorsreloaded.knock" which is given to all players by default
+# If allow-knocking is false, this feature won't work
+allow-knocking-gates: true
+
 # When true, players can only knock when their hand is empty.
 knocking-requires-empty-hand: false
 

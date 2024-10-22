@@ -15,6 +15,7 @@ public class Config {
     public static final String CHECK_FOR_REDSTONE = "check-for-redstone";
     public static final String ALLOW_KNOCKING = "allow-knocking";
     public static final String ALLOW_KNOCKING_TRAPDOORS = "allow-knocking-trapdoors";
+    public static final String ALLOW_KNOCKING_GATES = "allow-knocking-gates";
     public static final String ALLOW_AUTOCLOSE = "allow-autoclose";
     public static final String KNOCKING_REQUIRES_SHIFT = "knocking-requires-shift";
     public static final String KNOCKING_REQUIRES_EMPTY_HAND = "knocking-requires-empty-hand";
@@ -34,7 +35,8 @@ public class Config {
         conf.addDefault(SOUND_KNOCK_VOLUME, 1.0);
         conf.addDefault(SOUND_KNOCK_PITCH, 1.0);
         conf.addDefault(ALLOW_KNOCKING, true);
-        conf.addDefault(ALLOW_KNOCKING_TRAPDOORS, false);
+        conf.addDefault(ALLOW_KNOCKING_TRAPDOORS, true);
+        conf.addDefault(ALLOW_KNOCKING_GATES, true);
         conf.addDefault(KNOCKING_REQUIRES_EMPTY_HAND, false);
         conf.addDefault(ALLOW_AUTOCLOSE, true);
         conf.addDefault(KNOCKING_REQUIRES_SHIFT, false);

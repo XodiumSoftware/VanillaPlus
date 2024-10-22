@@ -47,42 +47,29 @@ public class DoorHandler {
     }
 
     public static Door getBottomDoor(Door door, Block block) {
-
-        if (door.getHalf() == Bisected.Half.BOTTOM) {
-            return door;
-        }
-
-        Block below = block.getRelative(BlockFace.DOWN);
-        if (below.getType() != block.getType())
-            return null;
-
-        if (below.getBlockData() instanceof Door) {
+        Block below = (door.getHalf() == Bisected.Half.BOTTOM) ? block : block.getRelative(BlockFace.DOWN);
+        if (below.getType() == block.getType() && below.getBlockData() instanceof Door) {
             return (Door) below.getBlockData();
         }
         return null;
     }
 
     public static Block getOtherPart(Door door, Block block) {
-        if (door == null)
+        if (door == null) {
             return null;
+        }
         for (PossibleNeighbour neighbour : CONST.POSSIBLE_NEIGHBOURS) {
-            if (neighbour.getFacing() != door.getFacing())
-                continue;
-            if (neighbour.getHinge() != door.getHinge())
-                continue;
             Block relative = block.getRelative(neighbour.getOffsetX(), 0, neighbour.getOffsetZ());
-            if (relative.getType() != block.getType())
-                continue;
-            if (!(relative.getBlockData() instanceof Door))
-                continue;
-            Door otherDoor = ((Door) relative.getBlockData());
-            if (otherDoor.getHinge() == neighbour.getHinge())
-                continue;
-            if (door.isOpen() != otherDoor.isOpen())
-                continue;
-            if (otherDoor.getFacing() != neighbour.getFacing())
-                continue;
-            return relative;
+            Door otherDoor = (relative.getBlockData() instanceof Door) ? (Door) relative.getBlockData() : null;
+            if (neighbour.getFacing() == door.getFacing()
+                    && neighbour.getHinge() == door.getHinge()
+                    && relative.getType() == block.getType()
+                    && otherDoor != null
+                    && otherDoor.getHinge() != neighbour.getHinge()
+                    && door.isOpen() == otherDoor.isOpen()
+                    && otherDoor.getFacing() == neighbour.getFacing()) {
+                return relative;
+            }
         }
         return null;
     }
@@ -94,10 +81,9 @@ public class DoorHandler {
     public static void toggleOtherDoor(Block block, Block otherBlock, boolean open, boolean causedByRedstone,
             boolean force) {
 
-        if (!(block.getBlockData() instanceof Door))
+        if (!(block.getBlockData() instanceof Door) || !(otherBlock.getBlockData() instanceof Door)) {
             return;
-        if (!(otherBlock.getBlockData() instanceof Door))
-            return;
+        }
 
         Door door = (Door) block.getBlockData();
         Door otherDoor = (Door) otherBlock.getBlockData();
@@ -120,6 +106,5 @@ public class DoorHandler {
                 DoorHandler.toggleDoor(otherBlock, otherDoor, open);
             }
         }.runTaskLater(main, 1L);
-
     }
 }
