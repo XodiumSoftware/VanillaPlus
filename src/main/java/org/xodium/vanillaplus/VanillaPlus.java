@@ -5,6 +5,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.xodium.vanillaplus.commands.GUICommand;
 import org.xodium.vanillaplus.interfaces.CONFIG;
 import org.xodium.vanillaplus.listeners.DoorListener;
+import org.xodium.vanillaplus.listeners.GUIListener;
 import org.xodium.vanillaplus.listeners.ToolListener;
 
 public class VanillaPlus extends JavaPlugin {
@@ -33,6 +34,7 @@ public class VanillaPlus extends JavaPlugin {
     PluginManager pluginManager = getServer().getPluginManager();
     pluginManager.registerEvents(new DoorListener(), this);
     pluginManager.registerEvents(new ToolListener(), this);
+    pluginManager.registerEvents(new GUIListener(), this);
   }
 
   public void initCmds() {
@@ -51,7 +53,7 @@ public class VanillaPlus extends JavaPlugin {
     db.setData(CONFIG.ALLOW_KNOCKING_GATES, true);
     db.setData(CONFIG.ALLOW_AUTOCLOSE, true);
     db.setData(CONFIG.KNOCKING_REQUIRES_SHIFT, false);
-    db.setData(CONFIG.KNOCKING_REQUIRES_EMPTY_HAND, false);
+    db.setData(CONFIG.KNOCKING_REQUIRES_EMPTY_HAND, true);
     db.setData(CONFIG.ALLOW_DOUBLEDOORS, true);
     db.setData(CONFIG.ALLOW_IRONDOORS, true);
     db.setData(CONFIG.AUTOCLOSE_DELAY, 6);

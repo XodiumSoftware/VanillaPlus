@@ -1,5 +1,8 @@
 package org.xodium.vanillaplus.commands;
 
+import org.bukkit.entity.Player;
+import org.xodium.vanillaplus.listeners.GUIListener;
+
 import com.mojang.brigadier.Command;
 
 import io.papermc.paper.command.brigadier.Commands;
@@ -12,9 +15,10 @@ public class GUICommand {
             e.registrar().register(
                     Commands.literal("vanillaplus")
                             .executes(ctx -> {
-                                ctx.getSource().getSender().sendMessage("Opening VanillaPlus GUI...");
-                                // TODO: make this open the GUI
-                                ctx.getSource().getSender().sendMessage("VanillaPlus GUI opened!");
+                                Player p = (Player) ctx.getSource().getSender();
+                                p.sendMessage("Opening VanillaPlus GUI...");
+                                GUIListener.openGUI(p);
+                                p.sendMessage("VanillaPlus GUI opened!");
                                 return Command.SINGLE_SUCCESS;
                             })
                             .build(),
