@@ -12,7 +12,7 @@ commands:
     description: Main command for VanillaPlus
     permission: vanillaplus.gui
     usage: /vanillaplus
-    aliases: [dp]
+    aliases: [vp]
 permissions:
   vanillaplus.doublevanilla:
     description: Allows to open double vanilla with one click

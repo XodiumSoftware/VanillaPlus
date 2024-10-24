@@ -17,6 +17,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.xodium.vanillaplus.Database;
 import org.xodium.vanillaplus.data.GUISettings;
+import org.xodium.vanillaplus.interfaces.CONFIG;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -29,44 +30,47 @@ public class GUIListener implements Listener {
     private static final List<GUISettings> settings = new ArrayList<>();
     static {
         settings.add(
-                new GUISettings(Material.OAK_DOOR, "Knock on Wooden Door", List.of("knock_on_wooden_door"), (p) -> {
+                new GUISettings(Material.OAK_DOOR, "Knock on Wooden Door", List.of(CONFIG.SOUND_KNOCK_WOOD), (p) -> {
                     // This is where the action should be performed
                 }));
-        settings.add(new GUISettings(Material.BELL, "Set Knock Volume", List.of("set_knock_volume"), (p) -> {
+        settings.add(new GUISettings(Material.BELL, "Set Knock Volume", List.of(CONFIG.SOUND_KNOCK_VOLUME), (p) -> {
             // This is where the action should be performed
         }));
-        settings.add(new GUISettings(Material.NOTE_BLOCK, "Set Knock Pitch", List.of("sound-knock-pitch"), (p) -> {
+        settings.add(new GUISettings(Material.NOTE_BLOCK, "Set Knock Pitch", List.of(CONFIG.SOUND_KNOCK_PITCH), (p) -> {
             // This is where the action should be performed
         }));
-        settings.add(new GUISettings(Material.JUKEBOX, "Set Knock Category", List.of("sound-knock-category"), (p) -> {
-            // This is where the action should be performed
-        }));
-        settings.add(new GUISettings(Material.LEVER, "Allow Knocking", List.of("allow-knocking"), (p) -> {
+        settings.add(
+                new GUISettings(Material.JUKEBOX, "Set Knock Category", List.of(CONFIG.SOUND_KNOCK_CATEGORY), (p) -> {
+                    // This is where the action should be performed
+                }));
+        settings.add(new GUISettings(Material.LEVER, "Allow Knocking", List.of(CONFIG.ALLOW_KNOCKING), (p) -> {
             // This is where the action should be performed
         }));
         settings.add(new GUISettings(Material.SPRUCE_TRAPDOOR, "Allow Knocking on Trapdoors",
-                List.of("allow-knocking-trapdoors"), (p) -> {
+                List.of(CONFIG.ALLOW_KNOCKING_TRAPDOORS), (p) -> {
                     // This is where the action should be performed
                 }));
         settings.add(new GUISettings(Material.OAK_FENCE_GATE, "Allow Knocking on Gates",
-                List.of("allow-knocking-gates"), (p) -> {
+                List.of(CONFIG.ALLOW_KNOCKING_GATES), (p) -> {
                     // This is where the action should be performed
                 }));
-        settings.add(new GUISettings(Material.CLOCK, "Allow Auto-Close", List.of("allow-autoclose"), (p) -> {
+        settings.add(new GUISettings(Material.CLOCK, "Allow Auto-Close", List.of(CONFIG.ALLOW_AUTOCLOSE), (p) -> {
             // This is where the action should be performed
         }));
-        settings.add(new GUISettings(Material.RED_CARPET, "Require Shift to Knock", List.of("knocking-requires-shift"),
-                (p) -> {
-                    // This is where the action should be performed
-                }));
+        settings.add(
+                new GUISettings(Material.RED_CARPET, "Require Shift to Knock", List.of(CONFIG.KNOCKING_REQUIRES_SHIFT),
+                        (p) -> {
+                            // This is where the action should be performed
+                        }));
         settings.add(new GUISettings(Material.BARRIER, "Require Empty Hand to Knock",
-                List.of("knocking-requires-empty-hand"), (p) -> {
+                List.of(CONFIG.KNOCKING_REQUIRES_EMPTY_HAND), (p) -> {
                     // This is where the action should be performed
                 }));
-        settings.add(new GUISettings(Material.SPRUCE_DOOR, "Allow Double Doors", List.of("allow-doubledoors"), (p) -> {
-            // This is where the action should be performed
-        }));
-        settings.add(new GUISettings(Material.CLOCK, "Set Auto-Close Delay", List.of("autoclose-delay"), (p) -> {
+        settings.add(
+                new GUISettings(Material.SPRUCE_DOOR, "Allow Double Doors", List.of(CONFIG.ALLOW_DOUBLEDOORS), (p) -> {
+                    // This is where the action should be performed
+                }));
+        settings.add(new GUISettings(Material.CLOCK, "Set Auto-Close Delay", List.of(CONFIG.AUTOCLOSE_DELAY), (p) -> {
             // This is where the action should be performed
         }));
     }
@@ -82,6 +86,7 @@ public class GUIListener implements Listener {
 
         for (int invIndex = 0; invIndex < inventoryCount; invIndex++) {
             int inventorySize = Math.min(maxSlotsPerInventory, settingsCount - (invIndex * maxSlotsPerInventory));
+            inventorySize = (int) Math.ceil(inventorySize / 9.0) * 9;
 
             Inventory gui = Bukkit.createInventory(null, inventorySize, MiniMessage.miniMessage()
                     .deserialize("<b><gradient:#CB2D3E:#EF473A>VanillaPlus Settings</gradient></b>"));
