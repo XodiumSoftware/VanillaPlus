@@ -41,7 +41,7 @@ public class GUIListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
-        if (e.getView().getTitle().equals("Plugin Settings")) {
+        if (e.getView().title().equals(Component.text("Plugin Settings"))) {
             e.setCancelled(true);
             Player p = (Player) e.getWhoClicked();
             ItemStack clickedItem = e.getCurrentItem();
@@ -65,7 +65,7 @@ public class GUIListener implements Listener {
 
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent e) {
-        if (e.getView().getTitle().equals("Plugin Settings")) {
+        if (e.getView().title().equals(Component.text("Plugin Settings"))) {
             // Handle GUI close events if needed
         }
     }
