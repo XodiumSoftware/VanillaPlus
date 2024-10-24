@@ -21,6 +21,7 @@ import org.xodium.vanillaplus.data.GUISettings;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
+// TODO: add action to each setting (based on value) and save the value to the database.
 public class GUIListener implements Listener {
     private final static Database db = new Database();
     private static final Map<Player, Inventory> playerInventories = new HashMap<>();
