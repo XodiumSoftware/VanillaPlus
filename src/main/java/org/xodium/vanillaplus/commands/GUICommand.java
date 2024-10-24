@@ -16,9 +16,7 @@ public class GUICommand {
                     Commands.literal("vanillaplus")
                             .executes(ctx -> {
                                 Player p = (Player) ctx.getSource().getSender();
-                                p.sendMessage("Opening VanillaPlus GUI...");
                                 GUIListener.openGUI(p);
-                                p.sendMessage("VanillaPlus GUI opened!");
                                 return Command.SINGLE_SUCCESS;
                             })
                             .build(),

@@ -62,30 +62,6 @@ public class DoorListener implements Listener {
         }, 1, 1);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onIronDoor(PlayerInteractEvent e) {
-        if (e.getHand() != EquipmentSlot.HAND
-                || e.getAction() != Action.RIGHT_CLICK_BLOCK
-                || e.useInteractedBlock() == Event.Result.DENY
-                || e.useItemInHand() == Event.Result.DENY
-                || !(e.getClickedBlock().getType() == Material.IRON_DOOR
-                        || e.getClickedBlock().getType() == Material.IRON_TRAPDOOR)
-                || !db.getBoolean(CONFIG.ALLOW_IRONDOORS)
-                || !e.getPlayer().hasPermission(PERMS.IRONDOORS))
-            return;
-
-        Block block = e.getClickedBlock();
-        block.getWorld().playSound(block.getLocation(), Sound.BLOCK_IRON_DOOR_CLOSE, 1.0f, 1.0f);
-
-        Openable door = (Openable) block.getBlockData();
-        door.setOpen(!door.isOpen());
-        onRightClick(e);
-        block.setBlockData(door);
-
-        autoClose.put(block,
-                System.currentTimeMillis() + Long.valueOf((String) db.getData(CONFIG.AUTOCLOSE_DELAY)) * 1000);
-    }
-
     @EventHandler(priority = EventPriority.MONITOR)
     public void onRightClick(PlayerInteractEvent e) {
         Block clickedBlock = e.getClickedBlock();

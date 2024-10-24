@@ -1,7 +1,6 @@
 package org.xodium.vanillaplus.handlers;
 
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.World;
@@ -37,11 +36,8 @@ public class DoorHandler {
     public static void playKnockSound(Block block) {
         Location location = block.getLocation();
         World world = block.getWorld();
-        Sound sound = block.getType() == Material.IRON_DOOR
-                ? Enums.getIfPresent(Sound.class, (String) db.getData(CONFIG.SOUND_KNOCK_IRON))
-                        .or(Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR)
-                : Enums.getIfPresent(Sound.class, (String) db.getData(CONFIG.SOUND_KNOCK_WOOD))
-                        .or(Sound.ITEM_SHIELD_BLOCK);
+        Sound sound = Enums.getIfPresent(Sound.class, (String) db.getData(CONFIG.SOUND_KNOCK_WOOD))
+                .or(Sound.ITEM_SHIELD_BLOCK);
 
         SoundCategory category = Enums
                 .getIfPresent(SoundCategory.class,
