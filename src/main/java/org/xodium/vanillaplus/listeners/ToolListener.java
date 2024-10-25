@@ -40,7 +40,7 @@ public class ToolListener implements Listener {
         } else {
             toggleBlockState(block, e.getAction() == Action.LEFT_CLICK_BLOCK);
         }
-        ItemManager.applyDamage(item, DAMAGE_AMOUNT);
+        ItemManager.applyDamage(e.getPlayer(), item, DAMAGE_AMOUNT);
     }
 
     private void toggleHalfState(Block block) {
