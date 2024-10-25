@@ -85,55 +85,54 @@ public class GUIListener implements Listener {
             player.closeInventory();
         }
 
-        for (int invIndex = 0; invIndex < inventoryCount; invIndex++) {
-            int inventorySize = Math.min(maxSlotsPerInventory, settingsCount - (invIndex * maxSlotsPerInventory));
-            inventorySize = (int) Math.ceil(inventorySize / 9.0) * 9;
-            MiniMessage mm = MiniMessage.miniMessage();
-            Inventory gui = Bukkit.createInventory(null, inventorySize,
-                    mm.deserialize("<b><gradient:#CB2D3E:#EF473A>VanillaPlus Settings</gradient></b>"));
+        int currentPageIndex = playerPageIndices.getOrDefault(player, 0);
+        int inventorySize = Math.min(maxSlotsPerInventory, settingsCount - (currentPageIndex * maxSlotsPerInventory));
+        inventorySize = (int) Math.ceil(inventorySize / 9.0) * 9;
+        MiniMessage mm = MiniMessage.miniMessage();
+        Inventory gui = Bukkit.createInventory(null, inventorySize,
+                mm.deserialize("<b><gradient:#CB2D3E:#EF473A>VanillaPlus Settings</gradient></b>"));
 
-            for (int i = 0; i < inventorySize - 9; i++) {
-                int settingIndex = (invIndex * maxSlotsPerInventory) + i;
-                if (settingIndex >= settingsCount)
-                    break;
+        for (int i = 0; i < inventorySize - 9; i++) {
+            int settingIndex = (currentPageIndex * maxSlotsPerInventory) + i;
+            if (settingIndex >= settingsCount)
+                break;
 
-                GUISettings setting = settings.get(settingIndex);
-                ItemStack item = new ItemStack(setting.getMaterial());
-                ItemMeta meta = item.getItemMeta();
-                meta.displayName(mm.deserialize(setting.getDisplayName()));
+            GUISettings setting = settings.get(settingIndex);
+            ItemStack item = new ItemStack(setting.getMaterial());
+            ItemMeta meta = item.getItemMeta();
+            meta.displayName(mm.deserialize(setting.getDisplayName()));
 
-                List<Component> loreComponents = new ArrayList<>();
-                for (String key : setting.getLore()) {
-                    Object value = db.getData(key);
-                    loreComponents.add(Component.text(value != null ? value.toString() : "N/A"));
-                }
-
-                meta.lore(loreComponents);
-                item.setItemMeta(meta);
-                gui.setItem(i, item);
+            List<Component> loreComponents = new ArrayList<>();
+            for (String key : setting.getLore()) {
+                Object value = db.getData(key);
+                loreComponents.add(Component.text(value != null ? value.toString() : "N/A"));
             }
 
-            if (inventoryCount > 1) {
-                if (invIndex > 0) {
-                    ItemStack previousButton = new ItemStack(Material.ARROW);
-                    ItemMeta previousMeta = previousButton.getItemMeta();
-                    previousMeta.displayName(mm.deserialize("Previous Page"));
-                    previousButton.setItemMeta(previousMeta);
-                    gui.setItem(gui.getSize() - 9, previousButton);
-                }
-
-                if (invIndex < inventoryCount - 1) {
-                    ItemStack nextButton = new ItemStack(Material.ARROW);
-                    ItemMeta nextMeta = nextButton.getItemMeta();
-                    nextMeta.displayName(mm.deserialize("Next Page"));
-                    nextButton.setItemMeta(nextMeta);
-                    gui.setItem(gui.getSize() - 1, nextButton);
-                }
-            }
-
-            playerInventories.put(player, gui);
-            player.openInventory(gui);
+            meta.lore(loreComponents);
+            item.setItemMeta(meta);
+            gui.setItem(i, item);
         }
+
+        if (inventoryCount > 1) {
+            if (currentPageIndex > 0) {
+                ItemStack previousButton = new ItemStack(Material.ARROW);
+                ItemMeta previousMeta = previousButton.getItemMeta();
+                previousMeta.displayName(mm.deserialize("Previous Page"));
+                previousButton.setItemMeta(previousMeta);
+                gui.setItem(gui.getSize() - 9, previousButton);
+            }
+
+            if (currentPageIndex < inventoryCount - 1) {
+                ItemStack nextButton = new ItemStack(Material.ARROW);
+                ItemMeta nextMeta = nextButton.getItemMeta();
+                nextMeta.displayName(mm.deserialize("Next Page"));
+                nextButton.setItemMeta(nextMeta);
+                gui.setItem(gui.getSize() - 1, nextButton);
+            }
+        }
+
+        playerInventories.put(player, gui);
+        player.openInventory(gui);
     }
 
     @EventHandler
