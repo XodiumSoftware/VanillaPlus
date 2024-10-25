@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Sound;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.Damageable;
@@ -47,13 +49,14 @@ public class ItemManager {
         plugin.getServer().addRecipe(recipe);
     }
 
-    public static void applyDamage(ItemStack item, int damage) {
+    public static void applyDamage(Player p, ItemStack item, int damage) {
         ItemMeta meta = item.getItemMeta();
         Damageable damageable = (Damageable) meta;
         int currentDamage = damageable.getDamage();
         damageable.setDamage(currentDamage + damage);
         if (currentDamage >= item.getType().getMaxDurability()) {
             item.setAmount(0);
+            p.playSound(p.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0f, 1.0f);
         } else {
             damageable.setDamage(currentDamage);
             item.setItemMeta(meta);
