@@ -15,6 +15,7 @@ import org.xodium.vanillaplus.interfaces.ITEMS;
 
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
+// TODO: see if we can make this be a stick instead of a brush.
 public class ItemManager {
     private static final VanillaPlus plugin = VanillaPlus.getInstance();
     private static final NamespacedKey CHISEL_KEY = new NamespacedKey(plugin, "chisel");
@@ -24,18 +25,15 @@ public class ItemManager {
         ItemStack item = new ItemStack(Material.BRUSH);
         ItemMeta meta = item.getItemMeta();
         PersistentDataContainer data = item.getItemMeta().getPersistentDataContainer();
+        MiniMessage mm = MiniMessage.miniMessage();
         data.set(CHISEL_KEY, PersistentDataType.STRING, CHISEL_MODIFIER);
         meta.setCustomModelData(1);
-        meta.displayName(MiniMessage.miniMessage().deserialize(ITEMS.CHISEL_NAME));
+        meta.displayName(mm.deserialize(ITEMS.CHISEL_NAME));
         meta.lore(List.of(
-                MiniMessage.miniMessage()
-                        .deserialize("<dark_gray>▶ <gray>L_click to loop through the X axis block states <dark_gray>◀"),
-                MiniMessage.miniMessage()
-                        .deserialize(
-                                "<dark_gray>▶ <gray>R_click to counter-loop through the X axis block states <dark_gray>◀"),
-                MiniMessage.miniMessage()
-                        .deserialize(
-                                "<dark_gray>▶ <gray>Shift+click to toggle the block Y axis state <dark_gray>◀")));
+                mm.deserialize("<dark_gray>▶ <gray>Used to modify Stairs & Slabs block state <dark_gray>◀"),
+                mm.deserialize("<dark_gray>✖ <gray>Usage:"),
+                mm.deserialize("   <gray>(L-click) < Loop block state > (R-click)"),
+                mm.deserialize("   <gray>(Shift + Click) Toggle block state between top/bottom")));
         item.setItemMeta(meta);
         createChiselRecipe(CHISEL_KEY, item);
         return item;
@@ -54,6 +52,11 @@ public class ItemManager {
         Damageable damageable = (Damageable) meta;
         int currentDamage = damageable.getDamage();
         damageable.setDamage(currentDamage + damage);
-        item.setItemMeta(meta);
+        if (currentDamage >= item.getType().getMaxDurability()) {
+            item.setAmount(0);
+        } else {
+            damageable.setDamage(currentDamage);
+            item.setItemMeta(meta);
+        }
     }
 }

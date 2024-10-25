@@ -12,13 +12,13 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.xodium.vanillaplus.interfaces.ITEMS;
+import org.xodium.vanillaplus.managers.ItemManager;
 
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
 public class ToolListener implements Listener {
+    private static final int DAMAGE_AMOUNT = 1;
 
-    // TODO: make use of applyDamage method to reduce durability of the chisel on
-    // use.
     @EventHandler
     public void onPlayerUseTool(PlayerInteractEvent e) {
         ItemStack item = e.getItem();
@@ -31,7 +31,6 @@ public class ToolListener implements Listener {
         if (block == null) {
             return;
         }
-
         BlockData blockData = block.getBlockData();
         if (!(blockData instanceof Stairs || blockData instanceof Slab)) {
             return;
@@ -41,6 +40,7 @@ public class ToolListener implements Listener {
         } else {
             toggleBlockState(block, e.getAction() == Action.LEFT_CLICK_BLOCK);
         }
+        ItemManager.applyDamage(item, DAMAGE_AMOUNT);
     }
 
     private void toggleHalfState(Block block) {
@@ -59,9 +59,7 @@ public class ToolListener implements Listener {
         BlockData blockData = block.getBlockData();
         if (blockData instanceof Stairs stairs) {
             stairs.setFacing(getNextFace(stairs.getFacing(), clockwise));
-            if (stairs.getShape() != Stairs.Shape.STRAIGHT) {
-                stairs.setShape(getNextShape(stairs.getShape(), clockwise));
-            }
+            stairs.setShape(getNextShape(stairs.getShape(), clockwise));
             block.setBlockData(stairs);
         }
     }
