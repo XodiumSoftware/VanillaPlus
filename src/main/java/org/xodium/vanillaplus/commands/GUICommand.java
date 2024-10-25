@@ -15,8 +15,7 @@ public class GUICommand {
             e.registrar().register(
                     Commands.literal("vanillaplus")
                             .executes(ctx -> {
-                                Player p = (Player) ctx.getSource().getSender();
-                                GUIListener.openGUI(p);
+                                GUIListener.openGUI((Player) ctx.getSource().getSender());
                                 return Command.SINGLE_SUCCESS;
                             })
                             .build(),

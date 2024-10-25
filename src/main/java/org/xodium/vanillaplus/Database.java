@@ -27,8 +27,8 @@ public class Database {
             conn = DriverManager
                     .getConnection(DB_URL_PREFIX + new File(plugin.getDataFolder(), DB_FILE).getAbsolutePath());
             initTables();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException err) {
+            err.printStackTrace();
         }
     }
 
@@ -36,8 +36,8 @@ public class Database {
         try (PreparedStatement stmt = conn.prepareStatement(
                 INIT_TABLES)) {
             stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException err) {
+            err.printStackTrace();
         }
     }
 
@@ -47,8 +47,8 @@ public class Database {
             stmt.setObject(2, value);
             stmt.setString(3, key);
             stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException err) {
+            err.printStackTrace();
         }
     }
 
@@ -57,8 +57,8 @@ public class Database {
             stmt.setString(1, key);
             stmt.setObject(2, value);
             stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException err) {
+            err.printStackTrace();
         }
     }
 
@@ -72,8 +72,8 @@ public class Database {
             } else {
                 throw new IllegalArgumentException("No data found for key: " + key);
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException err) {
+            err.printStackTrace();
         }
         return null;
     }

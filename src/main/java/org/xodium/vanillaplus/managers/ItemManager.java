@@ -24,15 +24,11 @@ public class ItemManager {
         ItemStack item = new ItemStack(Material.BRUSH);
         ItemMeta meta = item.getItemMeta();
         PersistentDataContainer container = meta.getPersistentDataContainer();
-        if (meta != null) {
-            container.set(ITEMS.CHISEL_KEY, PersistentDataType.STRING, CHISEL_MODIFIER);
-            meta.setCustomModelData(1);
-            meta.displayName(MiniMessage.miniMessage().deserialize(CHISEL_NAME));
-            item.setItemMeta(meta);
-            createChiselRecipe(ITEMS.CHISEL_KEY, item);
-        }
-        plugin.getLogger().info("Keys after setting CHISEL_KEY: " + container.getKeys());
-        plugin.getLogger().info("Chisel item created with CHISEL_KEY.");
+        container.set(ITEMS.CHISEL_KEY, PersistentDataType.STRING, CHISEL_MODIFIER);
+        meta.setCustomModelData(1);
+        meta.displayName(MiniMessage.miniMessage().deserialize(CHISEL_NAME));
+        item.setItemMeta(meta);
+        createChiselRecipe(ITEMS.CHISEL_KEY, item);
         return item;
     }
 
@@ -44,14 +40,14 @@ public class ItemManager {
         plugin.getServer().addRecipe(recipe);
     }
 
-    public static void applyDamage(Player p, ItemStack item, int damage) {
+    public static void applyDamage(Player player, ItemStack item, int damage) {
         ItemMeta meta = item.getItemMeta();
         if (meta instanceof Damageable damageable) {
             int currentDamage = damageable.getDamage();
             damageable.setDamage(currentDamage + damage);
             if (currentDamage >= item.getType().getMaxDurability()) {
                 item.setAmount(0);
-                p.playSound(p.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0f, 1.0f);
+                player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0f, 1.0f);
             } else {
                 item.setItemMeta(meta);
             }

@@ -76,21 +76,21 @@ public class GUIListener implements Listener {
         }));
     }
 
-    public static void openGUI(Player p) {
+    public static void openGUI(Player player) {
         int settingsCount = settings.size();
         int maxSlotsPerInventory = 54;
         int inventoryCount = (int) Math.ceil(settingsCount / (double) maxSlotsPerInventory);
 
-        if (playerInventories.containsKey(p)) {
-            p.closeInventory();
+        if (playerInventories.containsKey(player)) {
+            player.closeInventory();
         }
 
         for (int invIndex = 0; invIndex < inventoryCount; invIndex++) {
             int inventorySize = Math.min(maxSlotsPerInventory, settingsCount - (invIndex * maxSlotsPerInventory));
             inventorySize = (int) Math.ceil(inventorySize / 9.0) * 9;
-
-            Inventory gui = Bukkit.createInventory(null, inventorySize, MiniMessage.miniMessage()
-                    .deserialize("<b><gradient:#CB2D3E:#EF473A>VanillaPlus Settings</gradient></b>"));
+            MiniMessage mm = MiniMessage.miniMessage();
+            Inventory gui = Bukkit.createInventory(null, inventorySize,
+                    mm.deserialize("<b><gradient:#CB2D3E:#EF473A>VanillaPlus Settings</gradient></b>"));
 
             for (int i = 0; i < inventorySize - 9; i++) {
                 int settingIndex = (invIndex * maxSlotsPerInventory) + i;
@@ -100,7 +100,7 @@ public class GUIListener implements Listener {
                 GUISettings setting = settings.get(settingIndex);
                 ItemStack item = new ItemStack(setting.getMaterial());
                 ItemMeta meta = item.getItemMeta();
-                meta.displayName(MiniMessage.miniMessage().deserialize(setting.getDisplayName()));
+                meta.displayName(mm.deserialize(setting.getDisplayName()));
 
                 List<Component> loreComponents = new ArrayList<>();
                 for (String key : setting.getLore()) {
@@ -116,8 +116,7 @@ public class GUIListener implements Listener {
             if (invIndex > 0) {
                 ItemStack previousButton = new ItemStack(Material.ARROW);
                 ItemMeta previousMeta = previousButton.getItemMeta();
-                previousMeta.displayName(MiniMessage.miniMessage()
-                        .deserialize("Previous Page"));
+                previousMeta.displayName(mm.deserialize("Previous Page"));
                 previousButton.setItemMeta(previousMeta);
                 gui.setItem(gui.getSize() - 9, previousButton);
             }
@@ -125,43 +124,43 @@ public class GUIListener implements Listener {
             if (invIndex < inventoryCount - 1) {
                 ItemStack nextButton = new ItemStack(Material.ARROW);
                 ItemMeta nextMeta = nextButton.getItemMeta();
-                nextMeta.displayName(MiniMessage.miniMessage()
-                        .deserialize("Next Page"));
+                nextMeta.displayName(mm.deserialize("Next Page"));
                 nextButton.setItemMeta(nextMeta);
                 gui.setItem(gui.getSize() - 1, nextButton);
             }
 
-            playerInventories.put(p, gui);
-            p.openInventory(gui);
+            playerInventories.put(player, gui);
+            player.openInventory(gui);
         }
     }
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
-        if (MiniMessage.miniMessage().serialize(e.getView().title()).contains("VanillaPlus Settings")) {
+        MiniMessage mm = MiniMessage.miniMessage();
+        if (mm.serialize(e.getView().title()).contains("VanillaPlus Settings")) {
             e.setCancelled(true);
-            Player p = (Player) e.getWhoClicked();
+            Player player = (Player) e.getWhoClicked();
             ItemStack clickedItem = e.getCurrentItem();
 
             if (clickedItem == null || clickedItem.getType() == Material.AIR)
                 return;
 
             if (clickedItem.getType() == Material.ARROW) {
-                String clickedItemName = MiniMessage.miniMessage().serialize(clickedItem.getItemMeta().displayName());
+                String clickedItemName = mm.serialize(clickedItem.getItemMeta().displayName());
 
                 if (clickedItemName.contains("Previous Page")) {
-                    if (playerPageIndices.getOrDefault(p, 0) > 0) {
-                        playerPageIndices.put(p, playerPageIndices.get(p) - 1);
-                        openGUI(p);
+                    if (playerPageIndices.getOrDefault(player, 0) > 0) {
+                        playerPageIndices.put(player, playerPageIndices.get(player) - 1);
+                        openGUI(player);
                     }
                     return;
                 } else if (clickedItemName.contains("Next Page")) {
                     int settingsCount = settings.size();
                     int maxSlotsPerInventory = 54;
-                    if (playerPageIndices.getOrDefault(p,
+                    if (playerPageIndices.getOrDefault(player,
                             0) < (int) Math.ceil(settingsCount / (double) maxSlotsPerInventory) - 1) {
-                        playerPageIndices.put(p, playerPageIndices.get(p) + 1);
-                        openGUI(p);
+                        playerPageIndices.put(player, playerPageIndices.get(player) + 1);
+                        openGUI(player);
                     }
                     return;
                 }
@@ -170,7 +169,7 @@ public class GUIListener implements Listener {
             settings.stream()
                     .filter(setting -> setting.getMaterial() == clickedItem.getType())
                     .findFirst()
-                    .ifPresent(setting -> setting.getAction().accept(p));
+                    .ifPresent(setting -> setting.getAction().accept(player));
         }
     }
 

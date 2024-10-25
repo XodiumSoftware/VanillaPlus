@@ -5,74 +5,106 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Slab;
 import org.bukkit.block.data.type.Stairs;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import org.xodium.vanillaplus.VanillaPlus;
 import org.xodium.vanillaplus.interfaces.ITEMS;
 import org.xodium.vanillaplus.managers.ItemManager;
+import java.util.HashMap;
+import java.util.Map;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 
 public class ToolListener implements Listener {
-    private static final VanillaPlus plugin = VanillaPlus.getInstance();
     private static final int DAMAGE_AMOUNT = 1;
+    private static final long COOLDOWN_TIME_MS = 500;
+
+    private enum Mode {
+        FACE, SHAPE, HALF
+    }
+
+    private Mode currentMode = Mode.FACE;
+    private Map<Player, Long> lastBlockChangeTimes = new HashMap<>();
 
     @EventHandler
     public void onPlayerUseTool(PlayerInteractEvent e) {
         ItemStack item = e.getItem();
-        if (item == null) {
+        Player player = e.getPlayer();
+        Action action = e.getAction();
+
+        if (item == null)
             return;
-        }
         ItemMeta meta = item.getItemMeta();
-        PersistentDataContainer container = meta.getPersistentDataContainer();
-        if (meta == null || !container.has(ITEMS.CHISEL_KEY, PersistentDataType.STRING)) {
-            if (container.isEmpty()) {
-                plugin.getLogger().info("No keys in PersistentDataContainer.");
-            } else {
-                container.getKeys().forEach(key -> plugin.getLogger()
-                        .info("Key: " + key + ", Type: " + container.get(key, PersistentDataType.STRING)));
-            }
+        if (meta == null || !meta.getPersistentDataContainer().has(ITEMS.CHISEL_KEY, PersistentDataType.STRING))
             return;
-        }
         Block block = e.getClickedBlock();
-        if (block == null) {
+        if (block == null)
             return;
-        }
         BlockData blockData = block.getBlockData();
-        if (!(blockData instanceof Stairs || blockData instanceof Slab)) {
+
+        if (!(blockData instanceof Stairs || blockData instanceof Slab))
             return;
+        if (player.isSneaking() && action == Action.RIGHT_CLICK_BLOCK)
+            return;
+        if (player.isSneaking() && action == Action.LEFT_CLICK_BLOCK) {
+            switchMode(player, blockData instanceof Slab);
+        } else if (action == Action.LEFT_CLICK_BLOCK || action == Action.RIGHT_CLICK_BLOCK) {
+            long currentTime = System.currentTimeMillis();
+            long lastChangeTime = lastBlockChangeTimes.getOrDefault(player, 0L);
+            if (currentTime - lastChangeTime >= COOLDOWN_TIME_MS) {
+                handleModeAction(block, action == Action.LEFT_CLICK_BLOCK, player);
+                ItemManager.applyDamage(player, item, DAMAGE_AMOUNT);
+                lastBlockChangeTimes.put(player, currentTime);
+            }
         }
-        if (e.getPlayer().isSneaking()) {
-            toggleHalfState(block);
-        } else {
-            toggleBlockState(block, e.getAction() == Action.LEFT_CLICK_BLOCK);
-        }
-        ItemManager.applyDamage(e.getPlayer(), item, DAMAGE_AMOUNT);
     }
 
-    private void toggleHalfState(Block block) {
+    private void switchMode(Player player, boolean isSlab) {
+        if (isSlab) {
+            currentMode = Mode.HALF;
+        } else {
+            currentMode = switch (currentMode) {
+                case FACE -> Mode.SHAPE;
+                case SHAPE -> Mode.HALF;
+                case HALF -> Mode.FACE;
+            };
+        }
+        player.sendActionBar(MiniMessage.miniMessage()
+                .deserialize("<b><gradient:#CB2D3E:#EF473A>Mode:</gradient> " + currentMode + "</b>"));
+    }
+
+    private void handleModeAction(Block block, boolean clockwise, Player player) {
         BlockData blockData = block.getBlockData();
         if (blockData instanceof Stairs stairs) {
-            stairs.setHalf(stairs.getHalf() == Stairs.Half.BOTTOM ? Stairs.Half.TOP : Stairs.Half.BOTTOM);
+            switch (currentMode) {
+                case FACE -> {
+                    stairs.setFacing(getNextFace(stairs.getFacing(), clockwise));
+                    sendModeChangeMessage(player, "Facing", stairs.getFacing().name());
+                }
+                case SHAPE -> {
+                    stairs.setShape(getNextShape(stairs.getShape(), clockwise));
+                    sendModeChangeMessage(player, "Shape", stairs.getShape().name());
+                }
+                case HALF -> {
+                    stairs.setHalf(stairs.getHalf() == Stairs.Half.BOTTOM ? Stairs.Half.TOP : Stairs.Half.BOTTOM);
+                    sendModeChangeMessage(player, "Half", stairs.getHalf().name());
+                }
+            }
             block.setBlockData(stairs);
-        } else if (blockData instanceof Slab slab) {
+        } else if (blockData instanceof Slab slab && currentMode == Mode.HALF) {
             slab.setType(slab.getType() == Slab.Type.BOTTOM ? Slab.Type.TOP : Slab.Type.BOTTOM);
             block.setBlockData(slab);
         }
     }
 
-    // TODO: its doesnt loop logically.
-    private void toggleBlockState(Block block, boolean clockwise) {
-        BlockData blockData = block.getBlockData();
-        if (blockData instanceof Stairs stairs) {
-            stairs.setFacing(getNextFace(stairs.getFacing(), clockwise));
-            stairs.setShape(getNextShape(stairs.getShape(), clockwise));
-            block.setBlockData(stairs);
-        }
+    private void sendModeChangeMessage(Player player, String property, String newValue) {
+        player.sendActionBar(MiniMessage.miniMessage()
+                .deserialize("<b><gradient:#CB2D3E:#EF473A>" + property + " changed to:</gradient> " + newValue
+                        + "</b>"));
     }
 
     private BlockFace getNextFace(BlockFace face, boolean clockwise) {
