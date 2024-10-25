@@ -23,6 +23,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
 // TODO: add action to each setting (based on value) and save the value to the database.
+// TODO: dont show navigation when just 1 page.
 public class GUIListener implements Listener {
     private final static Database db = new Database();
     private static final Map<Player, Inventory> playerInventories = new HashMap<>();
