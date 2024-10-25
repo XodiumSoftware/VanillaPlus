@@ -13,12 +13,10 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
-import org.xodium.vanillaplus.VanillaPlus;
 import org.xodium.vanillaplus.interfaces.ITEMS;
 import org.xodium.vanillaplus.managers.ItemManager;
 
 public class ToolListener implements Listener {
-    private static final VanillaPlus plugin = VanillaPlus.getInstance();
     private static final int DAMAGE_AMOUNT = 1;
 
     // TODO: change the way we identify the item.
@@ -32,7 +30,6 @@ public class ToolListener implements Listener {
         }
         ItemMeta meta = item.getItemMeta();
         if (meta == null || !meta.getPersistentDataContainer().has(ITEMS.CHISEL_KEY, PersistentDataType.STRING)) {
-            plugin.getLogger().warning("Item not recognized or is not a chisel.");
             return;
         }
         Block block = e.getClickedBlock();
