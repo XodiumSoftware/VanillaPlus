@@ -23,7 +23,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
 // TODO: add action to each setting (based on value) and save the value to the database.
-// TODO: dont show navigation when just 1 page.
+// TODO: fix 12 items but only 9 are shown in the GUI, second row is empty while it should contain those 3 other items.
 public class GUIListener implements Listener {
     private final static Database db = new Database();
     private static final Map<Player, Inventory> playerInventories = new HashMap<>();
@@ -113,20 +113,22 @@ public class GUIListener implements Listener {
                 gui.setItem(i, item);
             }
 
-            if (invIndex > 0) {
-                ItemStack previousButton = new ItemStack(Material.ARROW);
-                ItemMeta previousMeta = previousButton.getItemMeta();
-                previousMeta.displayName(mm.deserialize("Previous Page"));
-                previousButton.setItemMeta(previousMeta);
-                gui.setItem(gui.getSize() - 9, previousButton);
-            }
+            if (inventoryCount > 1) {
+                if (invIndex > 0) {
+                    ItemStack previousButton = new ItemStack(Material.ARROW);
+                    ItemMeta previousMeta = previousButton.getItemMeta();
+                    previousMeta.displayName(mm.deserialize("Previous Page"));
+                    previousButton.setItemMeta(previousMeta);
+                    gui.setItem(gui.getSize() - 9, previousButton);
+                }
 
-            if (invIndex < inventoryCount - 1) {
-                ItemStack nextButton = new ItemStack(Material.ARROW);
-                ItemMeta nextMeta = nextButton.getItemMeta();
-                nextMeta.displayName(mm.deserialize("Next Page"));
-                nextButton.setItemMeta(nextMeta);
-                gui.setItem(gui.getSize() - 1, nextButton);
+                if (invIndex < inventoryCount - 1) {
+                    ItemStack nextButton = new ItemStack(Material.ARROW);
+                    ItemMeta nextMeta = nextButton.getItemMeta();
+                    nextMeta.displayName(mm.deserialize("Next Page"));
+                    nextButton.setItemMeta(nextMeta);
+                    gui.setItem(gui.getSize() - 1, nextButton);
+                }
             }
 
             playerInventories.put(player, gui);
