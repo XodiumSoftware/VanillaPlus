@@ -11,20 +11,28 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
+import org.xodium.vanillaplus.VanillaPlus;
 import org.xodium.vanillaplus.interfaces.ITEMS;
 import org.xodium.vanillaplus.managers.ItemManager;
 
-import net.kyori.adventure.text.minimessage.MiniMessage;
-
 public class ToolListener implements Listener {
+    private static final VanillaPlus plugin = VanillaPlus.getInstance();
     private static final int DAMAGE_AMOUNT = 1;
 
+    // TODO: change the way we identify the item.
+    // TODO: damage is not being applied anymore.
+    // TODO: blockstate doesnt loop logically.
     @EventHandler
     public void onPlayerUseTool(PlayerInteractEvent e) {
         ItemStack item = e.getItem();
-        if (item == null || !(item.getType() == Material.BRUSH
-                && MiniMessage.miniMessage().serialize(item.getItemMeta().displayName())
-                        .contains(ITEMS.CHISEL_NAME))) {
+        if (item == null || !(item.getType() == Material.BRUSH)) {
+            return;
+        }
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null || !meta.getPersistentDataContainer().has(ITEMS.CHISEL_KEY, PersistentDataType.STRING)) {
+            plugin.getLogger().warning("Item not recognized or is not a chisel.");
             return;
         }
         Block block = e.getClickedBlock();
@@ -54,7 +62,6 @@ public class ToolListener implements Listener {
         }
     }
 
-    // TODO: its doesnt loop logically.
     private void toggleBlockState(Block block, boolean clockwise) {
         BlockData blockData = block.getBlockData();
         if (blockData instanceof Stairs stairs) {

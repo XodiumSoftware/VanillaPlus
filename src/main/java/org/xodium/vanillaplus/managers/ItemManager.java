@@ -1,7 +1,5 @@
 package org.xodium.vanillaplus.managers;
 
-import java.util.List;
-
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
@@ -20,24 +18,19 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 // TODO: see if we can make this be a stick instead of a brush.
 public class ItemManager {
     private static final VanillaPlus plugin = VanillaPlus.getInstance();
-    private static final NamespacedKey CHISEL_KEY = new NamespacedKey(plugin, "chisel");
+    private static final String CHISEL_NAME = "Chisel";
     private static final String CHISEL_MODIFIER = "chisel_modifier";
 
     public ItemStack createChisel() {
         ItemStack item = new ItemStack(Material.BRUSH);
         ItemMeta meta = item.getItemMeta();
         PersistentDataContainer data = item.getItemMeta().getPersistentDataContainer();
-        MiniMessage mm = MiniMessage.miniMessage();
-        data.set(CHISEL_KEY, PersistentDataType.STRING, CHISEL_MODIFIER);
+        data.set(ITEMS.CHISEL_KEY, PersistentDataType.STRING, CHISEL_MODIFIER);
+        plugin.getLogger().info("Chisel created with key: " + ITEMS.CHISEL_KEY);
         meta.setCustomModelData(1);
-        meta.displayName(mm.deserialize(ITEMS.CHISEL_NAME));
-        meta.lore(List.of(
-                mm.deserialize("<dark_gray>▶ <gray>Used to modify Stairs & Slabs block state <dark_gray>◀"),
-                mm.deserialize("<dark_gray>✖ <gray>Usage:"),
-                mm.deserialize("   <gray>(L-click) < Loop block state > (R-click)"),
-                mm.deserialize("   <gray>(Shift + Click) Toggle block state between top/bottom")));
+        meta.displayName(MiniMessage.miniMessage().deserialize(CHISEL_NAME));
         item.setItemMeta(meta);
-        createChiselRecipe(CHISEL_KEY, item);
+        createChiselRecipe(ITEMS.CHISEL_KEY, item);
         return item;
     }
 
