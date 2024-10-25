@@ -28,8 +28,12 @@ public class ToolListener implements Listener {
             return;
         }
         Block block = e.getClickedBlock();
+        if (block == null) {
+            return;
+        }
+
         BlockData blockData = block.getBlockData();
-        if (block == null || !(blockData instanceof Stairs || blockData instanceof Slab)) {
+        if (!(blockData instanceof Stairs || blockData instanceof Slab)) {
             return;
         }
         if (e.getPlayer().isSneaking()) {
@@ -54,8 +58,10 @@ public class ToolListener implements Listener {
     private void toggleBlockState(Block block, boolean clockwise) {
         BlockData blockData = block.getBlockData();
         if (blockData instanceof Stairs stairs) {
-            stairs.setShape(getNextShape(stairs.getShape(), clockwise));
             stairs.setFacing(getNextFace(stairs.getFacing(), clockwise));
+            if (stairs.getShape() != Stairs.Shape.STRAIGHT) {
+                stairs.setShape(getNextShape(stairs.getShape(), clockwise));
+            }
             block.setBlockData(stairs);
         }
     }

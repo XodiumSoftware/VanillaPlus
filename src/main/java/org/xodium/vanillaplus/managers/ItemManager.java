@@ -35,7 +35,7 @@ public class ItemManager {
                                 "<dark_gray>▶ <gray>R_click to counter-loop through the X axis block states <dark_gray>◀"),
                 MiniMessage.miniMessage()
                         .deserialize(
-                                "<dark_gray>▶ <gray>Shift+R_click to toggle the block Y axis state <dark_gray>◀")));
+                                "<dark_gray>▶ <gray>Shift+click to toggle the block Y axis state <dark_gray>◀")));
         item.setItemMeta(meta);
         createChiselRecipe(CHISEL_KEY, item);
         return item;
