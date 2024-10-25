@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
+// TODO: fix chisel not in right mode when using it on stairs and switching to slabs.
 public class ToolListener implements Listener {
     private static final int DAMAGE_AMOUNT = 1;
     private static final long COOLDOWN_TIME_MS = 500;
@@ -27,7 +28,7 @@ public class ToolListener implements Listener {
         FACE, SHAPE, HALF
     }
 
-    private Mode currentMode = Mode.FACE;
+    private Mode currentMode = Mode.FACE; // TODO: should we even have a default mode?
     private Map<Player, Long> lastBlockChangeTimes = new HashMap<>();
 
     @EventHandler
@@ -97,6 +98,7 @@ public class ToolListener implements Listener {
             block.setBlockData(stairs);
         } else if (blockData instanceof Slab slab && currentMode == Mode.HALF) {
             slab.setType(slab.getType() == Slab.Type.BOTTOM ? Slab.Type.TOP : Slab.Type.BOTTOM);
+            sendModeChangeMessage(player, "Half", slab.getType().name());
             block.setBlockData(slab);
         }
     }
