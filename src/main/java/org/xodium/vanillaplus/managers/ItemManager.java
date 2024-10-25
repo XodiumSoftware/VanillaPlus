@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.xodium.vanillaplus.VanillaPlus;
 import org.xodium.vanillaplus.interfaces.ITEMS;
@@ -20,15 +21,18 @@ public class ItemManager {
     private static final String CHISEL_MODIFIER = "chisel_modifier";
 
     public ItemStack createChisel() {
-        ItemStack item = new ItemStack(Material.DEBUG_STICK);
+        ItemStack item = new ItemStack(Material.BRUSH);
         ItemMeta meta = item.getItemMeta();
+        PersistentDataContainer container = meta.getPersistentDataContainer();
         if (meta != null) {
-            meta.getPersistentDataContainer().set(ITEMS.CHISEL_KEY, PersistentDataType.STRING, CHISEL_MODIFIER);
+            container.set(ITEMS.CHISEL_KEY, PersistentDataType.STRING, CHISEL_MODIFIER);
             meta.setCustomModelData(1);
             meta.displayName(MiniMessage.miniMessage().deserialize(CHISEL_NAME));
             item.setItemMeta(meta);
             createChiselRecipe(ITEMS.CHISEL_KEY, item);
         }
+        plugin.getLogger().info("Keys after setting CHISEL_KEY: " + container.getKeys());
+        plugin.getLogger().info("Chisel item created with CHISEL_KEY.");
         return item;
     }
 
