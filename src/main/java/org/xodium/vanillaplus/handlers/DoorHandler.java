@@ -16,6 +16,7 @@ import org.xodium.vanillaplus.data.PossibleNeighbour;
 import org.xodium.vanillaplus.interfaces.CONFIG;
 import com.google.common.base.Enums;
 
+// TODO: refactor this to a manager.
 public class DoorHandler {
     private final static VanillaPlus plugin = VanillaPlus.getInstance();
     private final static Database db = new Database();

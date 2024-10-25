@@ -7,6 +7,7 @@ import org.xodium.vanillaplus.interfaces.CONFIG;
 import org.xodium.vanillaplus.listeners.DoorListener;
 import org.xodium.vanillaplus.listeners.GUIListener;
 import org.xodium.vanillaplus.listeners.ToolListener;
+import org.xodium.vanillaplus.managers.ItemManager;
 
 public class VanillaPlus extends JavaPlugin {
 
@@ -26,22 +27,28 @@ public class VanillaPlus extends JavaPlugin {
     }
     instance = this;
     initDB();
+    initManagers();
     initCmds();
     initEvents();
   }
 
-  public void initEvents() {
-    PluginManager pluginManager = getServer().getPluginManager();
-    pluginManager.registerEvents(new DoorListener(), this);
-    pluginManager.registerEvents(new ToolListener(), this);
-    pluginManager.registerEvents(new GUIListener(), this);
+  private void initEvents() {
+    PluginManager pm = getServer().getPluginManager();
+    pm.registerEvents(new DoorListener(), this);
+    pm.registerEvents(new ToolListener(), this);
+    pm.registerEvents(new GUIListener(), this);
   }
 
-  public void initCmds() {
+  private void initCmds() {
     GUICommand.init(this.getLifecycleManager());
   }
 
-  public void initDB() {
+  private void initManagers() {
+    ItemManager im = new ItemManager();
+    im.createChisel();
+  }
+
+  private void initDB() {
     Database db = new Database();
     db.setData(CONFIG.SOUND_KNOCK_WOOD, "ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR");
     db.setData(CONFIG.SOUND_KNOCK_VOLUME, 1.0);
