@@ -14,20 +14,21 @@ import org.xodium.vanillaplus.interfaces.ITEMS;
 
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
-// TODO: see if we can make this be a stick instead of a brush.
 public class ItemManager {
     private static final VanillaPlus plugin = VanillaPlus.getInstance();
     private static final String CHISEL_NAME = "Chisel";
     private static final String CHISEL_MODIFIER = "chisel_modifier";
 
     public ItemStack createChisel() {
-        ItemStack item = new ItemStack(Material.BRUSH);
+        ItemStack item = new ItemStack(Material.DEBUG_STICK);
         ItemMeta meta = item.getItemMeta();
-        meta.getPersistentDataContainer().set(ITEMS.CHISEL_KEY, PersistentDataType.STRING, CHISEL_MODIFIER);
-        meta.setCustomModelData(1);
-        meta.displayName(MiniMessage.miniMessage().deserialize(CHISEL_NAME));
-        item.setItemMeta(meta);
-        createChiselRecipe(ITEMS.CHISEL_KEY, item);
+        if (meta != null) {
+            meta.getPersistentDataContainer().set(ITEMS.CHISEL_KEY, PersistentDataType.STRING, CHISEL_MODIFIER);
+            meta.setCustomModelData(1);
+            meta.displayName(MiniMessage.miniMessage().deserialize(CHISEL_NAME));
+            item.setItemMeta(meta);
+            createChiselRecipe(ITEMS.CHISEL_KEY, item);
+        }
         return item;
     }
 
@@ -41,15 +42,15 @@ public class ItemManager {
 
     public static void applyDamage(Player p, ItemStack item, int damage) {
         ItemMeta meta = item.getItemMeta();
-        Damageable damageable = (Damageable) meta;
-        int currentDamage = damageable.getDamage();
-        damageable.setDamage(currentDamage + damage);
-        if (currentDamage >= item.getType().getMaxDurability()) {
-            item.setAmount(0);
-            p.playSound(p.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0f, 1.0f);
-        } else {
-            damageable.setDamage(currentDamage);
-            item.setItemMeta(meta);
+        if (meta instanceof Damageable damageable) {
+            int currentDamage = damageable.getDamage();
+            damageable.setDamage(currentDamage + damage);
+            if (currentDamage >= item.getType().getMaxDurability()) {
+                item.setAmount(0);
+                p.playSound(p.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0f, 1.0f);
+            } else {
+                item.setItemMeta(meta);
+            }
         }
     }
 }
