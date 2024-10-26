@@ -19,7 +19,8 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
 // TODO: add action to each setting (based on value) and save the value to the database.
-// TODO: fix 12 items but only 9 are shown in the GUI, second row is empty while it should contain those 3 other items.
+// TODO: fix size gui not working correctly.
+// TODO: make booleans show as True/False instead of 1/0.
 public class GUIManager {
     private final static Database db = new Database();
     public final Map<Player, Inventory> playerInventories = new HashMap<>();
@@ -74,26 +75,25 @@ public class GUIManager {
 
     public void openGUI(Player player) {
         int settingsCount = settings.size();
-        int maxSlotsPerInventory = 54;
-        int inventoryCount = (int) Math.ceil(settingsCount / (double) maxSlotsPerInventory);
+        int maxSlotsPerPage = 54;
 
         if (playerInventories.containsKey(player)) {
             player.closeInventory();
         }
 
         int currentPageIndex = playerPageIndices.getOrDefault(player, 0);
-        int inventorySize = Math.min(maxSlotsPerInventory, settingsCount - (currentPageIndex * maxSlotsPerInventory));
-        inventorySize = (int) Math.ceil(inventorySize / 9.0) * 9;
+        int startIdx = currentPageIndex * maxSlotsPerPage;
+        int inventorySize = maxSlotsPerPage;
         MiniMessage mm = MiniMessage.miniMessage();
         Inventory gui = Bukkit.createInventory(null, inventorySize,
                 mm.deserialize("<b><gradient:#CB2D3E:#EF473A>VanillaPlus Settings</gradient></b>"));
 
-        int startIdx = currentPageIndex * maxSlotsPerInventory;
-        for (int i = 0; i < inventorySize - 9 && startIdx + i < settingsCount; i++) {
+        for (int i = 0; i < maxSlotsPerPage && (startIdx + i) < settingsCount; i++) {
             GUISettings setting = settings.get(startIdx + i);
             ItemStack item = new ItemStack(setting.getMaterial());
             ItemMeta meta = item.getItemMeta();
-            meta.displayName(mm.deserialize(setting.getDisplayName()));
+            meta.displayName(
+                    mm.deserialize("<b><gradient:#CB2D3E:#EF473A>" + setting.getDisplayName() + "</gradient></b>"));
 
             List<Component> loreComponents = new ArrayList<>();
             for (String key : setting.getLore()) {
@@ -106,21 +106,21 @@ public class GUIManager {
             gui.setItem(i, item);
         }
 
-        if (inventoryCount > 1) {
+        if (settingsCount > maxSlotsPerPage) {
             if (currentPageIndex > 0) {
                 ItemStack previousButton = new ItemStack(Material.ARROW);
                 ItemMeta previousMeta = previousButton.getItemMeta();
                 previousMeta.displayName(mm.deserialize("Previous Page"));
                 previousButton.setItemMeta(previousMeta);
-                gui.setItem(gui.getSize() - 9, previousButton);
+                gui.setItem(maxSlotsPerPage - 9, previousButton);
             }
 
-            if (currentPageIndex < inventoryCount - 1) {
+            if (currentPageIndex < (int) Math.ceil(settingsCount / (double) maxSlotsPerPage) - 1) {
                 ItemStack nextButton = new ItemStack(Material.ARROW);
                 ItemMeta nextMeta = nextButton.getItemMeta();
                 nextMeta.displayName(mm.deserialize("Next Page"));
                 nextButton.setItemMeta(nextMeta);
-                gui.setItem(gui.getSize() - 1, nextButton);
+                gui.setItem(maxSlotsPerPage - 1, nextButton);
             }
         }
 
