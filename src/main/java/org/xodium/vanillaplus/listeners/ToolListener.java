@@ -28,7 +28,8 @@ public class ToolListener implements Listener {
         FACE, SHAPE, HALF
     }
 
-    private Mode currentMode = Mode.FACE; // TODO: should we even have a default mode?
+    private Mode currentMode = Mode.FACE; // TODO: should we even have a default mode, since it depends per block type
+                                          // what they accept?
     private Map<Player, Long> lastBlockChangeTimes = new HashMap<>();
 
     @EventHandler
