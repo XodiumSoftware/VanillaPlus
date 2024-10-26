@@ -44,7 +44,7 @@ public class Database {
     public void setData(String key, Object value) {
         try (PreparedStatement stmt = conn.prepareStatement(SET_DATA)) {
             stmt.setString(1, key);
-            stmt.setObject(2, value);
+            stmt.setObject(2, value instanceof Boolean ? (Boolean) value ? "true" : "false" : value);
             stmt.setString(3, key);
             stmt.executeUpdate();
         } catch (SQLException err) {
@@ -55,7 +55,7 @@ public class Database {
     public void updateData(String key, Object value) {
         try (PreparedStatement stmt = conn.prepareStatement(UPDATE_DATA)) {
             stmt.setString(1, key);
-            stmt.setObject(2, value);
+            stmt.setObject(2, value instanceof Boolean ? (Boolean) value ? "true" : "false" : value);
             stmt.executeUpdate();
         } catch (SQLException err) {
             err.printStackTrace();
@@ -68,6 +68,11 @@ public class Database {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 String value = rs.getString(GET_DATA_COLUMN_VALUE);
+                if ("true".equalsIgnoreCase(value)) {
+                    return true;
+                } else if ("false".equalsIgnoreCase(value)) {
+                    return false;
+                }
                 return value;
             } else {
                 throw new IllegalArgumentException("No data found for key: " + key);
@@ -76,15 +81,5 @@ public class Database {
             err.printStackTrace();
         }
         return null;
-    }
-
-    public boolean getBoolean(String key) {
-        Object data = this.getData(key);
-        if (data instanceof String) {
-            String value = (String) data;
-            return value.equals("1");
-        } else {
-            return false;
-        }
     }
 }

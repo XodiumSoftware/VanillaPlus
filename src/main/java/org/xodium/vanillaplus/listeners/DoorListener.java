@@ -74,7 +74,7 @@ public class DoorListener implements Listener {
                 || e.useInteractedBlock() == Event.Result.DENY
                 || e.useItemInHand() == Event.Result.DENY
                 || !e.getPlayer().hasPermission(PERMS.USE)
-                || !db.getBoolean(CONFIG.ALLOW_DOUBLEDOORS)
+                || !(Boolean) db.getData(CONFIG.ALLOW_DOUBLEDOORS)
                 || !(blockData instanceof Door
                         || blockData instanceof Gate))
             return;
@@ -106,10 +106,10 @@ public class DoorListener implements Listener {
                 || e.getHand() != EquipmentSlot.HAND)
             return;
 
-        if (db.getBoolean(CONFIG.KNOCKING_REQUIRES_SHIFT) && !p.isSneaking())
+        if ((Boolean) db.getData(CONFIG.KNOCKING_REQUIRES_SHIFT) && !p.isSneaking())
             return;
 
-        if (db.getBoolean(CONFIG.KNOCKING_REQUIRES_EMPTY_HAND)
+        if ((Boolean) db.getData(CONFIG.KNOCKING_REQUIRES_EMPTY_HAND)
                 && p.getInventory().getItemInMainHand().getType() != Material.AIR)
             return;
 
@@ -119,9 +119,9 @@ public class DoorListener implements Listener {
         Block block = e.getClickedBlock();
         BlockData blockData = block.getBlockData();
 
-        if ((blockData instanceof Door && db.getBoolean(CONFIG.ALLOW_KNOCKING))
-                || (blockData instanceof TrapDoor && db.getBoolean(CONFIG.ALLOW_KNOCKING_TRAPDOORS))
-                || (blockData instanceof Gate && db.getBoolean(CONFIG.ALLOW_KNOCKING_GATES))) {
+        if ((blockData instanceof Door && (Boolean) db.getData(CONFIG.ALLOW_KNOCKING))
+                || (blockData instanceof TrapDoor && (Boolean) db.getData(CONFIG.ALLOW_KNOCKING_TRAPDOORS))
+                || (blockData instanceof Gate && (Boolean) db.getData(CONFIG.ALLOW_KNOCKING_GATES))) {
             DoorHandler.playKnockSound(block);
         }
     }
