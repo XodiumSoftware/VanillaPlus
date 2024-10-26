@@ -1,4 +1,4 @@
-package org.xodium.vanillaplus.handlers;
+package org.xodium.vanillaplus.managers;
 
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -16,8 +16,7 @@ import org.xodium.vanillaplus.data.PossibleNeighbour;
 import org.xodium.vanillaplus.interfaces.CONFIG;
 import com.google.common.base.Enums;
 
-// TODO: refactor this to a manager.
-public class DoorHandler {
+public class DoorManager {
     private final static VanillaPlus plugin = VanillaPlus.getInstance();
     private final static Database db = new Database();
     private final static PossibleNeighbour[] POSSIBLE_NEIGHBOURS = new PossibleNeighbour[] {
@@ -99,7 +98,7 @@ public class DoorHandler {
         Door otherDoor = (Door) otherBlock.getBlockData();
 
         if (causedByRedstone) {
-            DoorHandler.toggleDoor(otherBlock, otherDoor, open);
+            DoorManager.toggleDoor(otherBlock, otherDoor, open);
             return;
         }
 
@@ -113,7 +112,7 @@ public class DoorHandler {
                 if (!force && newDoor.isOpen() == openNow) {
                     return;
                 }
-                DoorHandler.toggleDoor(otherBlock, otherDoor, open);
+                DoorManager.toggleDoor(otherBlock, otherDoor, open);
             }
         }.runTaskLater(plugin, 1L);
     }

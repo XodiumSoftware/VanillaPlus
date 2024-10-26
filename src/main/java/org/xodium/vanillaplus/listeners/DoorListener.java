@@ -23,9 +23,9 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.xodium.vanillaplus.Database;
 import org.xodium.vanillaplus.VanillaPlus;
-import org.xodium.vanillaplus.handlers.DoorHandler;
 import org.xodium.vanillaplus.interfaces.CONFIG;
 import org.xodium.vanillaplus.interfaces.PERMS;
+import org.xodium.vanillaplus.managers.DoorManager;
 
 public class DoorListener implements Listener {
     private final HashMap<Block, Long> autoClose = new HashMap<>();
@@ -45,9 +45,9 @@ public class DoorListener implements Listener {
                     Openable openable = (Openable) block.getBlockData();
                     if (openable.isOpen()) {
                         if (openable instanceof Door) {
-                            Block otherDoor = DoorHandler.getOtherPart((Door) openable, block);
+                            Block otherDoor = DoorManager.getOtherPart((Door) openable, block);
                             if (otherDoor != null) {
-                                DoorHandler.toggleOtherDoor(block, otherDoor, false, false);
+                                DoorManager.toggleOtherDoor(block, otherDoor, false, false);
                             }
                         } else if (openable instanceof Gate) {
                             block.getWorld().playSound(block.getLocation(), Sound.BLOCK_FENCE_GATE_CLOSE, 1.0f, 1.0f);
@@ -80,11 +80,11 @@ public class DoorListener implements Listener {
             return;
 
         if (blockData instanceof Door) {
-            Door door = DoorHandler.getBottomDoor((Door) blockData, clickedBlock);
-            Block otherDoorBlock = DoorHandler.getOtherPart(door, clickedBlock);
+            Door door = DoorManager.getBottomDoor((Door) blockData, clickedBlock);
+            Block otherDoorBlock = DoorManager.getOtherPart(door, clickedBlock);
             if (otherDoorBlock != null && otherDoorBlock.getBlockData() instanceof Door) {
                 Door otherDoor = (Door) otherDoorBlock.getBlockData();
-                DoorHandler.toggleOtherDoor(clickedBlock, otherDoorBlock, !otherDoor.isOpen(), false);
+                DoorManager.toggleOtherDoor(clickedBlock, otherDoorBlock, !otherDoor.isOpen(), false);
                 autoClose.put(otherDoorBlock,
                         System.currentTimeMillis()
                                 + Long.valueOf((String) db.getData(CONFIG.AUTOCLOSE_DELAY)) * 1000);
@@ -122,7 +122,7 @@ public class DoorListener implements Listener {
         if ((blockData instanceof Door && (Boolean) db.getData(CONFIG.ALLOW_KNOCKING))
                 || (blockData instanceof TrapDoor && (Boolean) db.getData(CONFIG.ALLOW_KNOCKING_TRAPDOORS))
                 || (blockData instanceof Gate && (Boolean) db.getData(CONFIG.ALLOW_KNOCKING_GATES))) {
-            DoorHandler.playKnockSound(block);
+            DoorManager.playKnockSound(block);
         }
     }
 
