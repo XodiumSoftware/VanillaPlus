@@ -26,11 +26,7 @@ public class GUIManager {
     public final List<GUISettings> settings = new ArrayList<>();
     private static final MiniMessage mm = MiniMessage.miniMessage();
 
-    public GUIManager() {
-        initializeSettings();
-    }
-
-    private void initializeSettings() {
+    {
         settings.add(
                 new GUISettings(Material.OAK_DOOR, "Knock on Wooden Door", List.of(CONFIG.SOUND_KNOCK_WOOD), (p) -> {
                     // Action for knocking sound on wooden door
@@ -105,7 +101,7 @@ public class GUIManager {
             List<Component> loreComponents = new ArrayList<>();
             for (String key : setting.getLore()) {
                 Object value = db.getData(key);
-                loreComponents.add(mm.deserialize(convertToDisplayString(value)));
+                loreComponents.add(mm.deserialize("<b>" + convertToDisplayString(value) + "</b>"));
             }
             meta.lore(loreComponents);
             item.setItemMeta(meta);
@@ -141,8 +137,8 @@ public class GUIManager {
 
     private String convertToDisplayString(Object value) {
         if (value instanceof Boolean) {
-            return ((Boolean) value) ? "<b><green>True" : "<b><red>False";
+            return ((Boolean) value) ? "<green>True" : "<red>False";
         }
-        return value != null ? value.toString() : "N/A";
+        return value != null ? "<gold>" + value.toString() : "N/A";
     }
 }

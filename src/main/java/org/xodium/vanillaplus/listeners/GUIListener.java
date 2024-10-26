@@ -11,6 +11,7 @@ import org.xodium.vanillaplus.managers.GUIManager;
 
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
+// TODO: fix user being able to move the item in the GUI.
 public class GUIListener implements Listener {
     private final GUIManager gm = new GUIManager();
 
