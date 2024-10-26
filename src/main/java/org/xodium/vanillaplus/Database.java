@@ -68,10 +68,8 @@ public class Database {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 String value = rs.getString(GET_DATA_COLUMN_VALUE);
-                if ("true".equalsIgnoreCase(value)) {
-                    return true;
-                } else if ("false".equalsIgnoreCase(value)) {
-                    return false;
+                if ("true".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value)) {
+                    return Boolean.parseBoolean(value);
                 }
                 return value;
             } else {
