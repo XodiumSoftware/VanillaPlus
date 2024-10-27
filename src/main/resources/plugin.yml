@@ -12,20 +12,16 @@ commands:
     description: Main command for VanillaPlus
     permission: vanillaplus.gui
     usage: /vanillaplus
-    aliases: [vp]
 permissions:
-  vanillaplus.doublevanilla:
-    description: Allows to open double vanilla with one click
-    default: true
-  vanillaplus.reload:
-    description: Allows to reload the config using /vanillaplus
+  vanillaplus.gui:
+    description: Allows to open the VanillaPlus GUI
     default: op
+  vanillaplus.doubledoors:
+    description: Allows to open double doors with one click
+    default: true
   vanillaplus.knock:
-    description: Allows to knock on vanilla using left-click
+    description: Allows to knock on doors using left-click
     default: true
-  vanillaplus.ironvanilla:
-    description: Allows to open iron vanilla using right-click
-    default: op
   vanillaplus.autoclose:
-    description: Allows players to have their vanilla close automatically
+    description: Allows players to have their doors close automatically
     default: true
