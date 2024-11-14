@@ -1,6 +1,10 @@
 package org.xodium.vanillaplus.managers;
 
+import java.util.Optional;
+
 import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.World;
@@ -14,6 +18,7 @@ import org.xodium.vanillaplus.Database;
 import org.xodium.vanillaplus.VanillaPlus;
 import org.xodium.vanillaplus.data.PossibleNeighbour;
 import org.xodium.vanillaplus.interfaces.CONFIG;
+
 import com.google.common.base.Enums;
 
 public class DoorManager {
@@ -36,8 +41,10 @@ public class DoorManager {
     public static void playKnockSound(Block block) {
         Location location = block.getLocation();
         World world = block.getWorld();
-        Sound sound = Enums.getIfPresent(Sound.class, (String) db.getData(CONFIG.SOUND_KNOCK_WOOD))
-                .or(Sound.ITEM_SHIELD_BLOCK);
+
+        Sound sound = Optional
+                .ofNullable(Registry.SOUNDS.get(NamespacedKey.minecraft((String) db.getData(CONFIG.SOUND_KNOCK_WOOD))))
+                .orElse(Sound.ITEM_SHIELD_BLOCK);
 
         SoundCategory category = Enums
                 .getIfPresent(SoundCategory.class,
