@@ -15,8 +15,12 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.xodium.vanillaplus.interfaces.ITEMS;
 import org.xodium.vanillaplus.managers.ItemManager;
+
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
 // TODO: fix chisel not in right mode when using it on stairs and switching to slabs.
@@ -24,6 +28,23 @@ public class ToolListener implements Listener {
     private static final int DAMAGE_AMOUNT = 1;
     private static final long COOLDOWN_TIME_MS = 500;
     private static final MiniMessage mm = MiniMessage.miniMessage();
+    private static final EnumSet<BlockFace> FACES_BLACKLIST = EnumSet.of(
+            BlockFace.UP,
+            BlockFace.DOWN,
+            BlockFace.NORTH_EAST,
+            BlockFace.NORTH_WEST,
+            BlockFace.SOUTH_EAST,
+            BlockFace.SOUTH_WEST,
+            BlockFace.WEST_NORTH_WEST,
+            BlockFace.NORTH_NORTH_WEST,
+            BlockFace.NORTH_NORTH_EAST,
+            BlockFace.EAST_NORTH_EAST,
+            BlockFace.EAST_SOUTH_EAST,
+            BlockFace.SOUTH_SOUTH_EAST,
+            BlockFace.SOUTH_SOUTH_WEST,
+            BlockFace.WEST_SOUTH_WEST,
+            BlockFace.SELF);
+    private static final EnumSet<Slab.Type> SLAB_BLACKLIST = EnumSet.of(Slab.Type.DOUBLE);
 
     private enum Mode {
         FACE, SHAPE, HALF
@@ -77,21 +98,22 @@ public class ToolListener implements Listener {
         if (blockData instanceof Stairs stairs) {
             switch (currentMode) {
                 case FACE -> {
-                    stairs.setFacing(getNextFace(stairs.getFacing(), clockwise));
+                    stairs.setFacing(iterateFace(stairs.getFacing(), clockwise,
+                            FACES_BLACKLIST));
                     sendModeChangeMessage(player, "Facing", stairs.getFacing().name());
                 }
                 case SHAPE -> {
-                    stairs.setShape(getNextShape(stairs.getShape(), clockwise));
+                    stairs.setShape(iterateShape(stairs.getShape(), clockwise, null));
                     sendModeChangeMessage(player, "Shape", stairs.getShape().name());
                 }
                 case HALF -> {
-                    stairs.setHalf(getNextHalf(stairs.getHalf(), clockwise));
+                    stairs.setHalf(iterateHalf(stairs.getHalf(), clockwise, null));
                     sendModeChangeMessage(player, "Half", stairs.getHalf().name());
                 }
             }
             block.setBlockData(stairs);
         } else if (blockData instanceof Slab slab && currentMode == Mode.HALF) {
-            slab.setType(slab.getType() == Slab.Type.BOTTOM ? Slab.Type.TOP : Slab.Type.BOTTOM);
+            slab.setType(iterateType(slab.getType(), clockwise, SLAB_BLACKLIST));
             sendModeChangeMessage(player, "Half", slab.getType().name());
             block.setBlockData(slab);
         }
@@ -103,23 +125,34 @@ public class ToolListener implements Listener {
                         + "</b>"));
     }
 
-    private BlockFace getNextFace(BlockFace face, boolean clockwise) {
-        return switch (face) {
-            case NORTH -> clockwise ? BlockFace.EAST : BlockFace.WEST;
-            case EAST -> clockwise ? BlockFace.SOUTH : BlockFace.NORTH;
-            case SOUTH -> clockwise ? BlockFace.WEST : BlockFace.EAST;
-            case WEST -> clockwise ? BlockFace.NORTH : BlockFace.SOUTH;
-            default -> face;
-        };
+    private <T extends Enum<T>> T iterateEnum(T current, boolean clockwise, Set<T> blacklist) {
+        T[] values = current.getDeclaringClass().getEnumConstants();
+        int step = clockwise ? 1 : -1;
+        int index = current.ordinal();
+        int size = values.length;
+        for (int i = 0; i < size; i++) {
+            index = (index + step + size) % size;
+            T next = values[index];
+            if (blacklist == null || !blacklist.contains(next)) {
+                return next;
+            }
+        }
+        return current;
     }
 
-    private Stairs.Shape getNextShape(Stairs.Shape shape, boolean clockwise) {
-        return Stairs.Shape.values()[(shape.ordinal() + (clockwise ? 1 : -1) + Stairs.Shape.values().length)
-                % Stairs.Shape.values().length];
+    private BlockFace iterateFace(BlockFace face, boolean clockwise, Set<BlockFace> blacklist) {
+        return iterateEnum(face, clockwise, blacklist);
     }
 
-    private Stairs.Half getNextHalf(Stairs.Half half, boolean clockwise) {
-        return Stairs.Half.values()[(half.ordinal() + (clockwise ? 1 : -1) + Stairs.Half.values().length)
-                % Stairs.Half.values().length];
+    private Stairs.Shape iterateShape(Stairs.Shape shape, boolean clockwise, Set<Stairs.Shape> blacklist) {
+        return iterateEnum(shape, clockwise, blacklist);
+    }
+
+    private Stairs.Half iterateHalf(Stairs.Half half, boolean clockwise, Set<Stairs.Half> blacklist) {
+        return iterateEnum(half, clockwise, blacklist);
+    }
+
+    private Slab.Type iterateType(Slab.Type type, boolean clockwise, Set<Slab.Type> blacklist) {
+        return iterateEnum(type, clockwise, blacklist);
     }
 }
