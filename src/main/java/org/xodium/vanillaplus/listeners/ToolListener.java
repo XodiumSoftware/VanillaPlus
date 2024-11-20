@@ -23,6 +23,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 public class ToolListener implements Listener {
     private static final int DAMAGE_AMOUNT = 1;
     private static final long COOLDOWN_TIME_MS = 500;
+    private static final MiniMessage mm = MiniMessage.miniMessage();
 
     private enum Mode {
         FACE, SHAPE, HALF
@@ -66,16 +67,8 @@ public class ToolListener implements Listener {
     }
 
     private void switchMode(Player player, boolean isSlab) {
-        if (isSlab) {
-            currentMode = Mode.HALF;
-        } else {
-            currentMode = switch (currentMode) {
-                case FACE -> Mode.SHAPE;
-                case SHAPE -> Mode.HALF;
-                case HALF -> Mode.FACE;
-            };
-        }
-        player.sendActionBar(MiniMessage.miniMessage()
+        currentMode = isSlab ? Mode.HALF : Mode.values()[(currentMode.ordinal() + 1) % Mode.values().length];
+        player.sendActionBar(mm
                 .deserialize("<b><gradient:#CB2D3E:#EF473A>Mode:</gradient> " + currentMode + "</b>"));
     }
 
@@ -92,7 +85,7 @@ public class ToolListener implements Listener {
                     sendModeChangeMessage(player, "Shape", stairs.getShape().name());
                 }
                 case HALF -> {
-                    stairs.setHalf(stairs.getHalf() == Stairs.Half.BOTTOM ? Stairs.Half.TOP : Stairs.Half.BOTTOM);
+                    stairs.setHalf(getNextHalf(stairs.getHalf(), clockwise));
                     sendModeChangeMessage(player, "Half", stairs.getHalf().name());
                 }
             }
@@ -105,7 +98,7 @@ public class ToolListener implements Listener {
     }
 
     private void sendModeChangeMessage(Player player, String property, String newValue) {
-        player.sendActionBar(MiniMessage.miniMessage()
+        player.sendActionBar(mm
                 .deserialize("<b><gradient:#CB2D3E:#EF473A>" + property + " changed to:</gradient> " + newValue
                         + "</b>"));
     }
@@ -121,13 +114,12 @@ public class ToolListener implements Listener {
     }
 
     private Stairs.Shape getNextShape(Stairs.Shape shape, boolean clockwise) {
-        return switch (shape) {
-            case STRAIGHT -> clockwise ? Stairs.Shape.INNER_LEFT : Stairs.Shape.INNER_RIGHT;
-            case INNER_LEFT -> clockwise ? Stairs.Shape.OUTER_LEFT : Stairs.Shape.STRAIGHT;
-            case OUTER_LEFT -> clockwise ? Stairs.Shape.OUTER_RIGHT : Stairs.Shape.INNER_LEFT;
-            case OUTER_RIGHT -> clockwise ? Stairs.Shape.INNER_RIGHT : Stairs.Shape.OUTER_LEFT;
-            case INNER_RIGHT -> clockwise ? Stairs.Shape.STRAIGHT : Stairs.Shape.OUTER_RIGHT;
-            default -> shape;
-        };
+        return Stairs.Shape.values()[(shape.ordinal() + (clockwise ? 1 : -1) + Stairs.Shape.values().length)
+                % Stairs.Shape.values().length];
+    }
+
+    private Stairs.Half getNextHalf(Stairs.Half half, boolean clockwise) {
+        return Stairs.Half.values()[(half.ordinal() + (clockwise ? 1 : -1) + Stairs.Half.values().length)
+                % Stairs.Half.values().length];
     }
 }
