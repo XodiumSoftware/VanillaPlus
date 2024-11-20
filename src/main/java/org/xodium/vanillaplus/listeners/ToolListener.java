@@ -46,11 +46,11 @@ public class ToolListener implements Listener {
             BlockFace.SELF);
     private static final EnumSet<Slab.Type> SLAB_BLACKLIST = EnumSet.of(Slab.Type.DOUBLE);
 
-    private enum Mode {
+    private enum BlockMode {
         FACE, SHAPE, HALF
     }
 
-    private Mode currentMode = Mode.FACE;
+    private volatile BlockMode currentBlockMode = BlockMode.FACE;
     private Map<Player, Long> lastBlockChangeTimes = new HashMap<>();
 
     @EventHandler
@@ -89,15 +89,16 @@ public class ToolListener implements Listener {
     }
 
     private void switchMode(Player player, boolean isSlab) {
-        currentMode = isSlab ? Mode.HALF : Mode.values()[(currentMode.ordinal() + 1) % Mode.values().length];
+        currentBlockMode = isSlab ? BlockMode.HALF
+                : BlockMode.values()[(currentBlockMode.ordinal() + 1) % BlockMode.values().length];
         player.sendActionBar(mm
-                .deserialize("<b><gradient:#CB2D3E:#EF473A>Mode:</gradient> " + currentMode + "</b>"));
+                .deserialize("<b><gradient:#CB2D3E:#EF473A>Mode:</gradient> " + currentBlockMode + "</b>"));
     }
 
     private void handleModeAction(Block block, boolean clockwise, Player player) {
         BlockData blockData = block.getBlockData();
         if (blockData instanceof Stairs stairs) {
-            switch (currentMode) {
+            switch (currentBlockMode) {
                 case FACE -> {
                     stairs.setFacing(iterateFace(stairs.getFacing(), clockwise,
                             FACES_BLACKLIST));
@@ -113,7 +114,7 @@ public class ToolListener implements Listener {
                 }
             }
             block.setBlockData(stairs);
-        } else if (blockData instanceof Slab slab && currentMode == Mode.HALF) {
+        } else if (blockData instanceof Slab slab && currentBlockMode == BlockMode.HALF) {
             slab.setType(iterateType(slab.getType(), clockwise, SLAB_BLACKLIST));
             sendModeChangeMessage(player, "Half", slab.getType().name());
             block.setBlockData(slab);
