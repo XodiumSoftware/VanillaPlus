@@ -50,8 +50,7 @@ public class ToolListener implements Listener {
         FACE, SHAPE, HALF
     }
 
-    private Mode currentMode = Mode.FACE; // TODO: should we even have a default mode, since it depends per block type
-                                          // what they accept?
+    private Mode currentMode = Mode.FACE;
     private Map<Player, Long> lastBlockChangeTimes = new HashMap<>();
 
     @EventHandler
@@ -62,14 +61,16 @@ public class ToolListener implements Listener {
 
         if (item == null)
             return;
+
         ItemMeta meta = item.getItemMeta();
         if (meta == null || !meta.getPersistentDataContainer().has(ITEMS.CHISEL_KEY, PersistentDataType.STRING))
             return;
+
         Block block = e.getClickedBlock();
         if (block == null)
             return;
-        BlockData blockData = block.getBlockData();
 
+        BlockData blockData = block.getBlockData();
         if (!(blockData instanceof Stairs || blockData instanceof Slab))
             return;
         if (player.isSneaking() && action == Action.RIGHT_CLICK_BLOCK)
