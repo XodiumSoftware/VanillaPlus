@@ -1,5 +1,7 @@
 package org.xodium.vanillaplus;
 
+import java.util.Arrays;
+
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.xodium.vanillaplus.commands.GUICommand;
@@ -12,7 +14,7 @@ import org.xodium.vanillaplus.managers.ItemManager;
 public class VanillaPlus extends JavaPlugin {
 
   private static VanillaPlus instance;
-  private static final String V = "1.21.3";
+  private static final String[] V = { "1.21.1", "1.21.3" };
 
   public static VanillaPlus getInstance() {
     return instance;
@@ -20,8 +22,8 @@ public class VanillaPlus extends JavaPlugin {
 
   @Override
   public void onEnable() {
-    if (!getServer().getVersion().contains(V)) {
-      getLogger().severe("This plugin requires paper version: " + V);
+    if (Arrays.stream(V).noneMatch(version -> getServer().getVersion().contains(version))) {
+      getLogger().severe("This plugin requires Paper version: " + String.join(", ", V));
       getServer().getPluginManager().disablePlugin(this);
       return;
     }
