@@ -1,5 +1,6 @@
 package org.xodium.vanillaplus.listeners;
 
+import org.bukkit.GameMode;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
@@ -16,18 +17,18 @@ import org.bukkit.persistence.PersistentDataType;
 import org.xodium.vanillaplus.interfaces.ITEMS;
 import org.xodium.vanillaplus.managers.ItemManager;
 
+import java.util.Collections;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
-// TODO: fix chisel not in right mode when using it on stairs and switching to slabs.
 public class ToolListener implements Listener {
     private static final int DAMAGE_AMOUNT = 1;
     private static final long COOLDOWN_TIME_MS = 500;
-    private static final MiniMessage mm = MiniMessage.miniMessage();
+    private static final MiniMessage MM = MiniMessage.miniMessage();
     private static final EnumSet<BlockFace> FACES_BLACKLIST = EnumSet.of(
             BlockFace.UP,
             BlockFace.DOWN,
@@ -51,80 +52,87 @@ public class ToolListener implements Listener {
     }
 
     private volatile BlockMode currentBlockMode = BlockMode.FACE;
-    private Map<Player, Long> lastBlockChangeTimes = new HashMap<>();
+    private Map<Player, Long> lastBlockChangeTimes = new ConcurrentHashMap<>();
 
     @EventHandler
-    public void onPlayerUseTool(PlayerInteractEvent e) {
-        ItemStack item = e.getItem();
-        Player player = e.getPlayer();
-        Action action = e.getAction();
+    public void onPlayerUseTool(PlayerInteractEvent event) {
+        ItemStack item = event.getItem();
+        Player player = event.getPlayer();
+        Action action = event.getAction();
 
-        if (item == null)
+        if (item == null || !isChisel(item) || event.getClickedBlock() == null)
             return;
 
-        ItemMeta meta = item.getItemMeta();
-        if (meta == null || !meta.getPersistentDataContainer().has(ITEMS.CHISEL_KEY, PersistentDataType.STRING))
-            return;
-
-        Block block = e.getClickedBlock();
-        if (block == null)
-            return;
-
+        Block block = event.getClickedBlock();
         BlockData blockData = block.getBlockData();
+
         if (!(blockData instanceof Stairs || blockData instanceof Slab))
             return;
+
+        if (player.getGameMode() == GameMode.CREATIVE && action == Action.LEFT_CLICK_BLOCK) {
+            event.setCancelled(true);
+        }
+
         if (player.isSneaking() && action == Action.RIGHT_CLICK_BLOCK)
             return;
+
         if (player.isSneaking() && action == Action.LEFT_CLICK_BLOCK) {
-            switchMode(player, blockData instanceof Slab);
+            toggleMode(player, blockData instanceof Slab);
         } else if (action == Action.LEFT_CLICK_BLOCK || action == Action.RIGHT_CLICK_BLOCK) {
-            long currentTime = System.currentTimeMillis();
-            long lastChangeTime = lastBlockChangeTimes.getOrDefault(player, 0L);
-            if (currentTime - lastChangeTime >= COOLDOWN_TIME_MS) {
-                handleModeAction(block, action == Action.LEFT_CLICK_BLOCK, player);
-                ItemManager.applyDamage(player, item, DAMAGE_AMOUNT);
-                lastBlockChangeTimes.put(player, currentTime);
-            }
+            processBlockChange(block, action, player, item);
         }
     }
 
-    private void switchMode(Player player, boolean isSlab) {
+    private boolean isChisel(ItemStack item) {
+        ItemMeta meta = item.getItemMeta();
+        return meta != null && meta.getPersistentDataContainer().has(ITEMS.CHISEL_KEY, PersistentDataType.STRING);
+    }
+
+    private void toggleMode(Player player, boolean isSlab) {
         currentBlockMode = isSlab ? BlockMode.HALF
                 : BlockMode.values()[(currentBlockMode.ordinal() + 1) % BlockMode.values().length];
-        player.sendActionBar(mm
-                .deserialize("<b><gradient:#CB2D3E:#EF473A>Mode:</gradient> " + currentBlockMode + "</b>"));
+        sendActionBarMessage(player, "Mode", currentBlockMode.name());
+    }
+
+    private void processBlockChange(Block block, Action action, Player player, ItemStack item) {
+        long currentTime = System.currentTimeMillis();
+        long lastChangeTime = lastBlockChangeTimes.getOrDefault(player, 0L);
+
+        if (currentTime - lastChangeTime >= COOLDOWN_TIME_MS) {
+            handleModeAction(block, action == Action.LEFT_CLICK_BLOCK, player);
+            ItemManager.applyDamage(player, item, DAMAGE_AMOUNT);
+            lastBlockChangeTimes.put(player, currentTime);
+        }
     }
 
     private void handleModeAction(Block block, boolean clockwise, Player player) {
         BlockData blockData = block.getBlockData();
+
         if (blockData instanceof Stairs stairs) {
             switch (currentBlockMode) {
-                case FACE -> {
-                    stairs.setFacing(iterateFace(stairs.getFacing(), clockwise,
-                            FACES_BLACKLIST));
-                    sendModeChangeMessage(player, "Facing", stairs.getFacing().name());
-                }
-                case SHAPE -> {
-                    stairs.setShape(iterateShape(stairs.getShape(), clockwise, null));
-                    sendModeChangeMessage(player, "Shape", stairs.getShape().name());
-                }
-                case HALF -> {
-                    stairs.setHalf(iterateHalf(stairs.getHalf(), clockwise, null));
-                    sendModeChangeMessage(player, "Half", stairs.getHalf().name());
-                }
+                case FACE -> modifyAndNotify(stairs, player, "Facing",
+                        () -> stairs.setFacing(iterateEnum(stairs.getFacing(), clockwise, FACES_BLACKLIST)));
+                case SHAPE -> modifyAndNotify(stairs, player, "Shape",
+                        () -> stairs.setShape(iterateEnum(stairs.getShape(), clockwise, Collections.emptySet())));
+                case HALF -> modifyAndNotify(stairs, player, "Half",
+                        () -> stairs.setHalf(iterateEnum(stairs.getHalf(), clockwise, Collections.emptySet())));
             }
             block.setBlockData(stairs);
         } else if (blockData instanceof Slab slab && currentBlockMode == BlockMode.HALF) {
-            slab.setType(iterateType(slab.getType(), clockwise, SLAB_BLACKLIST));
-            sendModeChangeMessage(player, "Half", slab.getType().name());
+            modifyAndNotify(slab, player, "Half",
+                    () -> slab.setType(iterateEnum(slab.getType(), clockwise, SLAB_BLACKLIST)));
             block.setBlockData(slab);
         }
     }
 
-    private void sendModeChangeMessage(Player player, String property, String newValue) {
-        player.sendActionBar(mm
-                .deserialize("<b><gradient:#CB2D3E:#EF473A>" + property + " changed to:</gradient> " + newValue
-                        + "</b>"));
+    private <T> void modifyAndNotify(T blockData, Player player, String property, Runnable modification) {
+        modification.run();
+        sendActionBarMessage(player, property, blockData.toString());
+    }
+
+    private void sendActionBarMessage(Player player, String property, String newValue) {
+        player.sendActionBar(MM.deserialize(
+                String.format("<b><gradient:#CB2D3E:#EF473A>%s changed to:</gradient> %s</b>", property, newValue)));
     }
 
     private <T extends Enum<T>> T iterateEnum(T current, boolean clockwise, Set<T> blacklist) {
@@ -140,21 +148,5 @@ public class ToolListener implements Listener {
             }
         }
         return current;
-    }
-
-    private BlockFace iterateFace(BlockFace face, boolean clockwise, Set<BlockFace> blacklist) {
-        return iterateEnum(face, clockwise, blacklist);
-    }
-
-    private Stairs.Shape iterateShape(Stairs.Shape shape, boolean clockwise, Set<Stairs.Shape> blacklist) {
-        return iterateEnum(shape, clockwise, blacklist);
-    }
-
-    private Stairs.Half iterateHalf(Stairs.Half half, boolean clockwise, Set<Stairs.Half> blacklist) {
-        return iterateEnum(half, clockwise, blacklist);
-    }
-
-    private Slab.Type iterateType(Slab.Type type, boolean clockwise, Set<Slab.Type> blacklist) {
-        return iterateEnum(type, clockwise, blacklist);
     }
 }
