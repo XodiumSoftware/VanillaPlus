@@ -12,7 +12,7 @@ import org.xodium.vanillaplus.managers.ItemManager;
 public class VanillaPlus extends JavaPlugin {
 
   private static VanillaPlus instance;
-  private static final String V = "1.21.1";
+  private static final String V = "1.21.3";
 
   public static VanillaPlus getInstance() {
     return instance;
