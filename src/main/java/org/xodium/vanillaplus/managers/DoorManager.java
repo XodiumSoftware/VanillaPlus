@@ -24,7 +24,7 @@ import com.google.common.base.Enums;
 public class DoorManager {
     private final static VanillaPlus plugin = VanillaPlus.getInstance();
     private final static Database db = new Database();
-    private final static PossibleNeighbour[] POSSIBLE_NEIGHBOURS = new PossibleNeighbour[] {
+    private final static PossibleNeighbour[] POSSIBLE_NEIGHBOURS = {
             new PossibleNeighbour(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
             new PossibleNeighbour(0, 1, Door.Hinge.LEFT, BlockFace.EAST),
 
@@ -57,9 +57,9 @@ public class DoorManager {
         world.playSound(location, sound, category, volume, pitch);
     }
 
-    public static void toggleDoor(Block otherDoorBlock, Openable otherDoor, boolean open) {
-        otherDoor.setOpen(open);
-        otherDoorBlock.setBlockData(otherDoor);
+    public static void toggleDoor(Block doorBlock, Openable openable, boolean open) {
+        openable.setOpen(open);
+        doorBlock.setBlockData(openable);
     }
 
     public static Door getBottomDoor(Door door, Block block) {
@@ -71,18 +71,17 @@ public class DoorManager {
     }
 
     public static Block getOtherPart(Door door, Block block) {
-        if (door == null) {
+        if (door == null)
             return null;
-        }
         for (PossibleNeighbour neighbour : POSSIBLE_NEIGHBOURS) {
             Block relative = block.getRelative(neighbour.getOffsetX(), 0, neighbour.getOffsetZ());
             Door otherDoor = (relative.getBlockData() instanceof Door) ? (Door) relative.getBlockData() : null;
-            if (neighbour.getFacing() == door.getFacing()
+            if (otherDoor != null
+                    && neighbour.getFacing() == door.getFacing()
                     && neighbour.getHinge() == door.getHinge()
                     && relative.getType() == block.getType()
-                    && otherDoor != null
                     && otherDoor.getHinge() != neighbour.getHinge()
-                    && door.isOpen() == otherDoor.isOpen()
+                    && otherDoor.isOpen() == door.isOpen()
                     && otherDoor.getFacing() == neighbour.getFacing()) {
                 return relative;
             }
@@ -97,9 +96,8 @@ public class DoorManager {
     public static void toggleOtherDoor(Block block, Block otherBlock, boolean open, boolean causedByRedstone,
             boolean force) {
 
-        if (!(block.getBlockData() instanceof Door) || !(otherBlock.getBlockData() instanceof Door)) {
+        if (!(block.getBlockData() instanceof Door) || !(otherBlock.getBlockData() instanceof Door))
             return;
-        }
 
         Door door = (Door) block.getBlockData();
         Door otherDoor = (Door) otherBlock.getBlockData();
