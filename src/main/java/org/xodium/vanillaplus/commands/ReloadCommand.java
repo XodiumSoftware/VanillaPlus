@@ -11,7 +11,7 @@ import io.papermc.paper.plugin.lifecycle.event.LifecycleEventManager;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
-public class SettingsCommand {
+public class ReloadCommand {
     private final static VanillaPlus plugin = VanillaPlus.getInstance();
 
     public static void init(LifecycleEventManager<org.bukkit.plugin.Plugin> manager) {
@@ -24,7 +24,7 @@ public class SettingsCommand {
                                     return 0;
                                 }
                                 MiniMessage mm = MiniMessage.miniMessage();
-                                if (!player.hasPermission(PERMS.GUI)) {
+                                if (!player.hasPermission(PERMS.RELOAD)) {
                                     player.sendMessage(
                                             mm.deserialize("<red>You do not have permission to use this command!"));
                                     return 0;
@@ -32,7 +32,7 @@ public class SettingsCommand {
                                 return Command.SINGLE_SUCCESS;
                             })
                             .build(),
-                    "Opens the VanillaPlus GUI",
+                    "Reloads VanillaPlus",
                     List.of("vp"));
         });
     }

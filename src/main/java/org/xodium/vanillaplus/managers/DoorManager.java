@@ -13,8 +13,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Bisected;
 import org.bukkit.block.data.Openable;
 import org.bukkit.block.data.type.Door;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.xodium.vanillaplus.Database;
 import org.xodium.vanillaplus.VanillaPlus;
 import org.xodium.vanillaplus.data.PossibleNeighbour;
 import org.xodium.vanillaplus.interfaces.CONFIG;
@@ -23,7 +23,7 @@ import com.google.common.base.Enums;
 
 public class DoorManager {
     private final static VanillaPlus plugin = VanillaPlus.getInstance();
-    private final static Database db = new Database();
+    private final static FileConfiguration config = plugin.getConfig();
     private final static PossibleNeighbour[] POSSIBLE_NEIGHBOURS = {
             new PossibleNeighbour(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
             new PossibleNeighbour(0, 1, Door.Hinge.LEFT, BlockFace.EAST),
@@ -43,16 +43,17 @@ public class DoorManager {
         World world = block.getWorld();
 
         Sound sound = Optional
-                .ofNullable(Registry.SOUNDS.get(NamespacedKey.minecraft((String) db.getData(CONFIG.SOUND_KNOCK_WOOD))))
+                .ofNullable(
+                        Registry.SOUNDS.get(NamespacedKey.minecraft(config.getString(CONFIG.SOUND_KNOCK_WOOD))))
                 .orElse(Sound.ITEM_SHIELD_BLOCK);
 
         SoundCategory category = Enums
                 .getIfPresent(SoundCategory.class,
-                        (String) db.getData(CONFIG.SOUND_KNOCK_CATEGORY))
+                        config.getString(CONFIG.SOUND_KNOCK_CATEGORY))
                 .or(SoundCategory.BLOCKS);
 
-        float volume = Float.parseFloat((String) db.getData(CONFIG.SOUND_KNOCK_VOLUME));
-        float pitch = Float.parseFloat((String) db.getData(CONFIG.SOUND_KNOCK_PITCH));
+        float volume = (float) config.getDouble(CONFIG.SOUND_KNOCK_VOLUME);
+        float pitch = (float) config.getDouble(CONFIG.SOUND_KNOCK_PITCH);
 
         world.playSound(location, sound, category, volume, pitch);
     }

@@ -14,6 +14,7 @@ import org.bukkit.block.data.Openable;
 import org.bukkit.block.data.type.Door;
 import org.bukkit.block.data.type.Gate;
 import org.bukkit.block.data.type.TrapDoor;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -21,7 +22,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
-import org.xodium.vanillaplus.Database;
 import org.xodium.vanillaplus.VanillaPlus;
 import org.xodium.vanillaplus.interfaces.CONFIG;
 import org.xodium.vanillaplus.interfaces.PERMS;
@@ -30,7 +30,7 @@ import org.xodium.vanillaplus.managers.DoorManager;
 public class DoorListener implements Listener {
     private final HashMap<Block, Long> autoClose = new HashMap<>();
     private final VanillaPlus plugin = VanillaPlus.getInstance();
-    private final Database db = new Database();
+    private final FileConfiguration config = plugin.getConfig();
 
     {
         Bukkit.getScheduler().runTaskTimer(plugin, () -> {
@@ -74,7 +74,7 @@ public class DoorListener implements Listener {
                 || e.useInteractedBlock() == Event.Result.DENY
                 || e.useItemInHand() == Event.Result.DENY
                 || !e.getPlayer().hasPermission(PERMS.USE)
-                || !(Boolean) db.getData(CONFIG.ALLOW_DOUBLEDOORS)
+                || !config.getBoolean(CONFIG.ALLOW_DOUBLEDOORS)
                 || !(blockData instanceof Door
                         || blockData instanceof Gate))
             return;
@@ -87,11 +87,11 @@ public class DoorListener implements Listener {
                 DoorManager.toggleOtherDoor(clickedBlock, otherDoorBlock, !otherDoor.isOpen(), false);
                 autoClose.put(otherDoorBlock,
                         System.currentTimeMillis()
-                                + Long.valueOf((String) db.getData(CONFIG.AUTOCLOSE_DELAY)) * 1000);
+                                + Long.valueOf(config.getInt(CONFIG.AUTOCLOSE_DELAY)) * 1000);
             }
         }
         autoClose.put(clickedBlock,
-                System.currentTimeMillis() + Long.valueOf((String) db.getData(CONFIG.AUTOCLOSE_DELAY)) * 1000);
+                System.currentTimeMillis() + Long.valueOf(config.getInt(CONFIG.AUTOCLOSE_DELAY)) * 1000);
     }
 
     @EventHandler
@@ -106,10 +106,10 @@ public class DoorListener implements Listener {
                 || e.getHand() != EquipmentSlot.HAND)
             return;
 
-        if ((Boolean) db.getData(CONFIG.KNOCKING_REQUIRES_SHIFT) && !p.isSneaking())
+        if (config.getBoolean(CONFIG.KNOCKING_REQUIRES_SHIFT) && !p.isSneaking())
             return;
 
-        if ((Boolean) db.getData(CONFIG.KNOCKING_REQUIRES_EMPTY_HAND)
+        if (config.getBoolean(CONFIG.KNOCKING_REQUIRES_EMPTY_HAND)
                 && p.getInventory().getItemInMainHand().getType() != Material.AIR)
             return;
 
@@ -119,9 +119,9 @@ public class DoorListener implements Listener {
         Block block = e.getClickedBlock();
         BlockData blockData = block.getBlockData();
 
-        if ((blockData instanceof Door && (Boolean) db.getData(CONFIG.ALLOW_KNOCKING))
-                || (blockData instanceof TrapDoor && (Boolean) db.getData(CONFIG.ALLOW_KNOCKING_TRAPDOORS))
-                || (blockData instanceof Gate && (Boolean) db.getData(CONFIG.ALLOW_KNOCKING_GATES))) {
+        if ((blockData instanceof Door && config.getBoolean(CONFIG.ALLOW_KNOCKING))
+                || (blockData instanceof TrapDoor && config.getBoolean(CONFIG.ALLOW_KNOCKING_TRAPDOORS))
+                || (blockData instanceof Gate && config.getBoolean(CONFIG.ALLOW_KNOCKING_GATES))) {
             DoorManager.playKnockSound(block);
         }
     }

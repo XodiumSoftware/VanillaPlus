@@ -4,8 +4,7 @@ import java.util.Arrays;
 
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.xodium.vanillaplus.commands.SettingsCommand;
-import org.xodium.vanillaplus.interfaces.CONFIG;
+import org.xodium.vanillaplus.commands.ReloadCommand;
 import org.xodium.vanillaplus.listeners.DoorListener;
 
 public class VanillaPlus extends JavaPlugin {
@@ -25,7 +24,7 @@ public class VanillaPlus extends JavaPlugin {
       return;
     }
     instance = this;
-    initDB();
+    saveDefaultConfig();
     initCmds();
     initEvents();
   }
@@ -36,22 +35,6 @@ public class VanillaPlus extends JavaPlugin {
   }
 
   private void initCmds() {
-    SettingsCommand.init(this.getLifecycleManager());
-  }
-
-  private void initDB() {
-    Database db = new Database();
-    db.setData(CONFIG.SOUND_KNOCK_WOOD, "ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR");
-    db.setData(CONFIG.SOUND_KNOCK_VOLUME, 1.0);
-    db.setData(CONFIG.SOUND_KNOCK_PITCH, 1.0);
-    db.setData(CONFIG.SOUND_KNOCK_CATEGORY, "BLOCKS");
-    db.setData(CONFIG.ALLOW_KNOCKING, true);
-    db.setData(CONFIG.ALLOW_KNOCKING_TRAPDOORS, true);
-    db.setData(CONFIG.ALLOW_KNOCKING_GATES, true);
-    db.setData(CONFIG.ALLOW_AUTOCLOSE, true);
-    db.setData(CONFIG.KNOCKING_REQUIRES_SHIFT, false);
-    db.setData(CONFIG.KNOCKING_REQUIRES_EMPTY_HAND, true);
-    db.setData(CONFIG.ALLOW_DOUBLEDOORS, true);
-    db.setData(CONFIG.AUTOCLOSE_DELAY, 6);
+    ReloadCommand.init(this.getLifecycleManager());
   }
 }
