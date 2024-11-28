@@ -10,12 +10,8 @@ load: ${project.load}
 commands:
   vanillaplus:
     description: Main command for VanillaPlus
-    permission: vanillaplus.gui
     usage: /vanillaplus
 permissions:
-  vanillaplus.gui:
-    description: Allows to open the VanillaPlus GUI
-    default: op
   vanillaplus.doubledoors:
     description: Allows to open double doors with one click
     default: true
