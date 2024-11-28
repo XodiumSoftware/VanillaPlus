@@ -29,6 +29,9 @@ public class ReloadCommand {
                                             mm.deserialize("<red>You do not have permission to use this command!"));
                                     return 0;
                                 }
+                                plugin.reloadConfig();
+                                player.sendMessage(mm.deserialize("<green>Configuration reloaded successfully."));
+                                plugin.getLogger().info("Configuration reloaded successfully.");
                                 return Command.SINGLE_SUCCESS;
                             })
                             .build(),
