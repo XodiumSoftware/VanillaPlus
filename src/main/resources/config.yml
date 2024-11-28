@@ -2,7 +2,7 @@
 sound_knock_category: "BLOCKS"
 sound_knock_pitch: 1.0
 sound_knock_volume: 1.0
-sound_knock_wood: "ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR"
+sound_knock_wood: "entity_zombie_attack_wooden_door"
 
 # Behavior settings
 allow_autoclose: true
