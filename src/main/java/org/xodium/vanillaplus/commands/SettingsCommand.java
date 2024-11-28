@@ -5,15 +5,13 @@ import java.util.List;
 import org.bukkit.entity.Player;
 import org.xodium.vanillaplus.VanillaPlus;
 import org.xodium.vanillaplus.interfaces.PERMS;
-import org.xodium.vanillaplus.managers.GUIManager;
-
 import com.mojang.brigadier.Command;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.LifecycleEventManager;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
-public class GUICommand {
+public class SettingsCommand {
     private final static VanillaPlus plugin = VanillaPlus.getInstance();
 
     public static void init(LifecycleEventManager<org.bukkit.plugin.Plugin> manager) {
@@ -31,8 +29,6 @@ public class GUICommand {
                                             mm.deserialize("<red>You do not have permission to use this command!"));
                                     return 0;
                                 }
-                                GUIManager gm = new GUIManager();
-                                gm.openGUI(player);
                                 return Command.SINGLE_SUCCESS;
                             })
                             .build(),

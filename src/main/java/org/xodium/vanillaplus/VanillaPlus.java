@@ -4,10 +4,9 @@ import java.util.Arrays;
 
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.xodium.vanillaplus.commands.GUICommand;
+import org.xodium.vanillaplus.commands.SettingsCommand;
 import org.xodium.vanillaplus.interfaces.CONFIG;
 import org.xodium.vanillaplus.listeners.DoorListener;
-import org.xodium.vanillaplus.listeners.GUIListener;
 import org.xodium.vanillaplus.listeners.ToolListener;
 import org.xodium.vanillaplus.managers.ItemManager;
 
@@ -38,11 +37,10 @@ public class VanillaPlus extends JavaPlugin {
     PluginManager pm = getServer().getPluginManager();
     pm.registerEvents(new DoorListener(), this);
     pm.registerEvents(new ToolListener(), this);
-    pm.registerEvents(new GUIListener(), this);
   }
 
   private void initCmds() {
-    GUICommand.init(this.getLifecycleManager());
+    SettingsCommand.init(this.getLifecycleManager());
   }
 
   private void initManagers() {
