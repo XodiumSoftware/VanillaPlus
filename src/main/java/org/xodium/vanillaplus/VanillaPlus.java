@@ -7,13 +7,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.xodium.vanillaplus.commands.SettingsCommand;
 import org.xodium.vanillaplus.interfaces.CONFIG;
 import org.xodium.vanillaplus.listeners.DoorListener;
-import org.xodium.vanillaplus.listeners.ToolListener;
-import org.xodium.vanillaplus.managers.ItemManager;
 
 public class VanillaPlus extends JavaPlugin {
 
   private static VanillaPlus instance;
-  private static final String[] V = { "1.21.1", "1.21.3" };
+  private static final String[] V = { "1.21.3" };
 
   public static VanillaPlus getInstance() {
     return instance;
@@ -28,7 +26,6 @@ public class VanillaPlus extends JavaPlugin {
     }
     instance = this;
     initDB();
-    initManagers();
     initCmds();
     initEvents();
   }
@@ -36,16 +33,10 @@ public class VanillaPlus extends JavaPlugin {
   private void initEvents() {
     PluginManager pm = getServer().getPluginManager();
     pm.registerEvents(new DoorListener(), this);
-    pm.registerEvents(new ToolListener(), this);
   }
 
   private void initCmds() {
     SettingsCommand.init(this.getLifecycleManager());
-  }
-
-  private void initManagers() {
-    ItemManager im = new ItemManager();
-    im.createChisel();
   }
 
   private void initDB() {
