@@ -33,9 +33,9 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.xodium.vanillaplus.VanillaPlus;
-import org.xodium.vanillaplus.data.AdjacentBlockData;
 import org.xodium.vanillaplus.interfaces.CONFIG;
 import org.xodium.vanillaplus.interfaces.PERMS;
+import org.xodium.vanillaplus.records.AdjacentBlockRecord;
 
 import com.google.common.base.Enums;
 
@@ -43,18 +43,18 @@ public class DoorsPlusModule implements Listener {
     private final HashMap<Block, Long> autoClose = new HashMap<>();
     private final VanillaPlus vp = VanillaPlus.getInstance();
     private final FileConfiguration config = vp.getConfig();
-    private final static AdjacentBlockData[] POSSIBLE_NEIGHBOURS = {
-            new AdjacentBlockData(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
-            new AdjacentBlockData(0, 1, Door.Hinge.LEFT, BlockFace.EAST),
+    private final static AdjacentBlockRecord[] POSSIBLE_NEIGHBOURS = {
+            new AdjacentBlockRecord(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
+            new AdjacentBlockRecord(0, 1, Door.Hinge.LEFT, BlockFace.EAST),
 
-            new AdjacentBlockData(1, 0, Door.Hinge.RIGHT, BlockFace.SOUTH),
-            new AdjacentBlockData(-1, 0, Door.Hinge.LEFT, BlockFace.SOUTH),
+            new AdjacentBlockRecord(1, 0, Door.Hinge.RIGHT, BlockFace.SOUTH),
+            new AdjacentBlockRecord(-1, 0, Door.Hinge.LEFT, BlockFace.SOUTH),
 
-            new AdjacentBlockData(0, 1, Door.Hinge.RIGHT, BlockFace.WEST),
-            new AdjacentBlockData(0, -1, Door.Hinge.LEFT, BlockFace.WEST),
+            new AdjacentBlockRecord(0, 1, Door.Hinge.RIGHT, BlockFace.WEST),
+            new AdjacentBlockRecord(0, -1, Door.Hinge.LEFT, BlockFace.WEST),
 
-            new AdjacentBlockData(-1, 0, Door.Hinge.RIGHT, BlockFace.NORTH),
-            new AdjacentBlockData(1, 0, Door.Hinge.LEFT, BlockFace.NORTH)
+            new AdjacentBlockRecord(-1, 0, Door.Hinge.RIGHT, BlockFace.NORTH),
+            new AdjacentBlockRecord(1, 0, Door.Hinge.LEFT, BlockFace.NORTH)
     };
 
     {
@@ -187,16 +187,16 @@ public class DoorsPlusModule implements Listener {
 
     public Block getOtherPart(Door door, Block block) {
         if (door != null) {
-            for (AdjacentBlockData neighbour : POSSIBLE_NEIGHBOURS) {
-                Block relative = block.getRelative(neighbour.getOffsetX(), 0, neighbour.getOffsetZ());
+            for (AdjacentBlockRecord neighbour : POSSIBLE_NEIGHBOURS) {
+                Block relative = block.getRelative(neighbour.offsetX(), 0, neighbour.offsetZ());
                 Door otherDoor = (relative.getBlockData() instanceof Door) ? (Door) relative.getBlockData() : null;
                 if (otherDoor != null
-                        && neighbour.getFacing() == door.getFacing()
-                        && neighbour.getHinge() == door.getHinge()
+                        && neighbour.facing() == door.getFacing()
+                        && neighbour.hinge() == door.getHinge()
                         && relative.getType() == block.getType()
-                        && otherDoor.getHinge() != neighbour.getHinge()
+                        && otherDoor.getHinge() != neighbour.hinge()
                         && otherDoor.isOpen() == door.isOpen()
-                        && otherDoor.getFacing() == neighbour.getFacing()) {
+                        && otherDoor.getFacing() == neighbour.facing()) {
                     return relative;
                 }
             }
