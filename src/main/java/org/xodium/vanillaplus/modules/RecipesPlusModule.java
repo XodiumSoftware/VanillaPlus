@@ -1,7 +1,5 @@
 package org.xodium.vanillaplus.modules;
 
-import java.util.Iterator;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
@@ -12,16 +10,15 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Recipe;
 
 public class RecipesPlusModule implements Listener {
+    // TODO: doesnt work.
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
-        Player p = e.getPlayer();
-        Iterator<Recipe> iter = Bukkit.recipeIterator();
-        while (iter.hasNext()) {
-            Recipe r = iter.next();
-            if (r instanceof Keyed) {
-                NamespacedKey k = ((Keyed) r).getKey();
-                if (!p.hasDiscoveredRecipe(k)) {
-                    p.discoverRecipe(k);
+        Player player = e.getPlayer();
+        for (Recipe recipe : Bukkit.getRecipesFor(null)) {
+            if (recipe instanceof Keyed) {
+                NamespacedKey key = ((Keyed) recipe).getKey();
+                if (!player.hasDiscoveredRecipe(key)) {
+                    player.discoverRecipe(key);
                 }
             }
         }
