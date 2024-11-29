@@ -5,13 +5,13 @@ import org.bukkit.block.data.type.Door;
 
 import java.util.Objects;
 
-public final class PossibleNeighbourData {
+public final class AdjacentBlockData {
     private final BlockFace facing;
     private final Door.Hinge hinge;
     private final int offsetX;
     private final int offsetZ;
 
-    public PossibleNeighbourData(int offsetX, int offsetZ, Door.Hinge hinge, BlockFace facing) {
+    public AdjacentBlockData(int offsetX, int offsetZ, Door.Hinge hinge, BlockFace facing) {
         this.offsetX = offsetX;
         this.offsetZ = offsetZ;
         this.hinge = Objects.requireNonNull(hinge, "hinge cannot be null");
@@ -36,7 +36,7 @@ public final class PossibleNeighbourData {
 
     @Override
     public String toString() {
-        return "PossibleNeighbour{" +
+        return "AdjacentBlockData{" +
                 "offsetX=" + offsetX +
                 ", offsetZ=" + offsetZ +
                 ", facing=" + facing +
@@ -48,9 +48,9 @@ public final class PossibleNeighbourData {
     public boolean equals(Object o) {
         if (this == o)
             return true;
-        if (!(o instanceof PossibleNeighbourData))
+        if (!(o instanceof AdjacentBlockData))
             return false;
-        PossibleNeighbourData that = (PossibleNeighbourData) o;
+        AdjacentBlockData that = (AdjacentBlockData) o;
         return offsetX == that.offsetX &&
                 offsetZ == that.offsetZ &&
                 facing == that.facing &&
