@@ -9,16 +9,19 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Recipe;
 
+import java.util.Iterator;
+
 public class RecipesPlusModule implements Listener {
-    // TODO: doesnt work.
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
-        Player player = e.getPlayer();
-        for (Recipe recipe : Bukkit.getRecipesFor(null)) {
-            if (recipe instanceof Keyed) {
-                NamespacedKey key = ((Keyed) recipe).getKey();
-                if (!player.hasDiscoveredRecipe(key)) {
-                    player.discoverRecipe(key);
+        Player p = e.getPlayer();
+        Iterator<Recipe> rIter = Bukkit.recipeIterator();
+        while (rIter.hasNext()) {
+            Recipe r = rIter.next();
+            if (r instanceof Keyed) {
+                NamespacedKey k = ((Keyed) r).getKey();
+                if (!p.hasDiscoveredRecipe(k)) {
+                    p.discoverRecipe(k);
                 }
             }
         }
