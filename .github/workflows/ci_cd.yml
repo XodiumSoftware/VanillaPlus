@@ -34,24 +34,24 @@ jobs:
           distribution: temurin
           java-version: "21"
 
-      - id: setup_maven
-        name: Setup Maven
-        run: sudo apt install maven -y
+      - id: setup_gradle
+        name: Setup Gradle
+        run: sudo apt update -y && sudo apt install gradle -y
 
       - id: get_artifact_version
         name: Get Artifact Version
-        run: echo VERSION=v$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout) > $GITHUB_OUTPUT
+        run: echo "VERSION=v$(./gradlew -q printVersion)" >> $GITHUB_ENV
 
       - id: build_artifact
         name: Build Artifact
-        run: mvn package
+        run: ./gradlew build
 
       - id: upload_artifact
         name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: vanillaplus
-          path: target/VanillaPlus-*.jar
+          path: build/libs/VanillaPlus-*.jar
 
   release:
     needs: [build]
