@@ -30,4 +30,9 @@ public interface CONFIG {
         String PREFIX = SETTINGS + "recipesplus.";
         String ENABLE = PREFIX + "enable";
     }
+
+    interface ElevatorPlus {
+        String PREFIX = SETTINGS + "elevatorplus.";
+        String ENABLE = PREFIX + "enable";
+    }
 }

@@ -1,5 +1,5 @@
 settings:
-  # Module settings
+  # Modules
   doorsplus:
     # General settings
     enable: true
@@ -22,7 +22,10 @@ settings:
     # Auto-close settings
     autoclose_delay: 6
 
-  # Module settings
   recipesplus:
+    # General settings
+    enable: true
+
+  elevatorplus:
     # General settings
     enable: true

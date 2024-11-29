@@ -13,15 +13,15 @@ import org.bukkit.inventory.Recipe;
 
 public class RecipesPlusModule implements Listener {
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-        Iterator<Recipe> iterator = Bukkit.recipeIterator();
-        while (iterator.hasNext()) {
-            Recipe recipe = iterator.next();
-            if (recipe instanceof Keyed) {
-                NamespacedKey key = ((Keyed) recipe).getKey();
-                if (!player.hasDiscoveredRecipe(key)) {
-                    player.discoverRecipe(key);
+    public void onPlayerJoin(PlayerJoinEvent e) {
+        Player p = e.getPlayer();
+        Iterator<Recipe> iter = Bukkit.recipeIterator();
+        while (iter.hasNext()) {
+            Recipe r = iter.next();
+            if (r instanceof Keyed) {
+                NamespacedKey k = ((Keyed) r).getKey();
+                if (!p.hasDiscoveredRecipe(k)) {
+                    p.discoverRecipe(k);
                 }
             }
         }

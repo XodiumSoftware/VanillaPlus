@@ -41,8 +41,8 @@ import com.google.common.base.Enums;
 
 public class DoorsPlusModule implements Listener {
     private final HashMap<Block, Long> autoClose = new HashMap<>();
-    private final VanillaPlus plugin = VanillaPlus.getInstance();
-    private final FileConfiguration config = plugin.getConfig();
+    private final VanillaPlus vp = VanillaPlus.getInstance();
+    private final FileConfiguration config = vp.getConfig();
     private final static PossibleNeighbour[] POSSIBLE_NEIGHBOURS = {
             new PossibleNeighbour(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
             new PossibleNeighbour(0, 1, Door.Hinge.LEFT, BlockFace.EAST),
@@ -58,28 +58,28 @@ public class DoorsPlusModule implements Listener {
     };
 
     {
-        Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+        Bukkit.getScheduler().runTaskTimer(vp, () -> {
             Iterator<Map.Entry<Block, Long>> it = autoClose.entrySet().iterator();
             while (it.hasNext()) {
                 Map.Entry<Block, Long> entry = it.next();
-                Block block = entry.getKey();
+                Block b = entry.getKey();
                 Long time = entry.getValue();
                 if (System.currentTimeMillis() < time)
                     continue;
-                if (block.getBlockData() instanceof Openable) {
-                    Openable openable = (Openable) block.getBlockData();
+                if (b.getBlockData() instanceof Openable) {
+                    Openable openable = (Openable) b.getBlockData();
                     if (openable.isOpen()) {
                         if (openable instanceof Door) {
-                            Block otherDoor = this.getOtherPart((Door) openable, block);
+                            Block otherDoor = this.getOtherPart((Door) openable, b);
                             if (otherDoor != null) {
-                                this.toggleOtherDoor(block, otherDoor, false);
+                                this.toggleOtherDoor(b, otherDoor, false);
                             }
                         } else if (openable instanceof Gate) {
-                            block.getWorld().playSound(block.getLocation(), Sound.BLOCK_FENCE_GATE_CLOSE, 1.0f, 1.0f);
+                            b.getWorld().playSound(b.getLocation(), Sound.BLOCK_FENCE_GATE_CLOSE, 1.0f, 1.0f);
                         }
                         openable.setOpen(false);
-                        block.setBlockData(openable);
-                        block.getWorld().playSound(block.getLocation(), Sound.BLOCK_IRON_DOOR_CLOSE, 1.0f, 1.0f);
+                        b.setBlockData(openable);
+                        b.getWorld().playSound(b.getLocation(), Sound.BLOCK_IRON_DOOR_CLOSE, 1.0f, 1.0f);
                     }
                 }
                 it.remove();
@@ -222,7 +222,7 @@ public class DoorsPlusModule implements Listener {
                 }
                 DoorsPlusModule.toggleDoor(otherBlock, otherDoor, open);
             }
-        }.runTaskLater(plugin, 1L);
+        }.runTaskLater(vp, 1L);
     }
 
 }
