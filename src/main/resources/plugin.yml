@@ -1,12 +1,10 @@
-name: ${project.name}
-description: ${project.description}
-main: ${project.main}
-version: ${project.version}
-api-version: ${project.api.version}
+name: VanillaPlus
+description: Minecraft plugin that enhances the base gameplay.
+main: org.xodium.vanillaplus.VanillaPlus
+version: 1.1.1
+api-version: 1.21
 authors:
   - XodiumSoftware
-database: false
-load: ${project.load}
 commands:
   vanillaplus:
     description: Main command for VanillaPlus
