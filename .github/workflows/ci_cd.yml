@@ -40,7 +40,7 @@ jobs:
 
       - id: get_artifact_version
         name: Get Artifact Version
-        run: echo "VERSION=v$(./gradlew -q printVersion)" >> $GITHUB_ENV
+        run: echo VERSION=v$(./gradlew -q printVersion) > $GITHUB_ENV
 
       - id: build_artifact
         name: Build Artifact
@@ -52,9 +52,6 @@ jobs:
         with:
           name: vanillaplus
           path: build/libs/VanillaPlus-*.jar
-
-      - name: Debug Build Outputs
-        run: env
 
   release:
     needs: [build]
