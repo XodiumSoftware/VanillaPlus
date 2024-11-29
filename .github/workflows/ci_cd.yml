@@ -1,0 +1,79 @@
+name: Xodium CI/CD
+run-name: "Xodium CI/CD"
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.ref_name }}
+      url: ${{ steps.upload_artifact.outputs.artifact-url }}
+    outputs:
+      VERSION: ${{ steps.get_artifact_version.outputs.VERSION }}
+    steps:
+      - id: checkout
+        name: Checkout
+        uses: actions/checkout@main
+
+      - id: setup_java
+        name: Setup Java
+        uses: actions/setup-java@main
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - id: setup_maven
+        name: Setup Maven
+        run: sudo apt install maven -y
+
+      - id: get_artifact_version
+        name: Get Artifact Version
+        run: echo VERSION=v$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout) > $GITHUB_OUTPUT
+
+      - id: build_artifact
+        name: Build Artifact
+        run: mvn package
+
+      - id: upload_artifact
+        name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vanillaplus
+          path: target/VanillaPlus-*.jar
+
+  release:
+    needs: [build]
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.ref_name }}
+      url: ${{ steps.release_artifact.outputs.url }}
+    steps:
+      - id: download_artifact
+        name: Download Artifact
+        uses: actions/download-artifact@v4.1.8
+        with:
+          name: vanillaplus
+
+      - id: release_artifact
+        name: Release Artifact
+        uses: softprops/action-gh-release@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          draft: ${{ contains(github.event.head_commit.message, '.draft') }}
+          generate_release_notes: true
+          prerelease: ${{ contains(github.event.head_commit.message, '.pre') }}
+          tag_name: ${{ needs.build.outputs.VERSION }}
+          files: target/VanillaPlus-*.jar

@@ -5,14 +5,8 @@
       "label": "buildJar",
       "type": "shell",
       "command": "mvn package",
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "problemMatcher": []
+      "options": { "cwd": "${workspaceFolder}" },
+      "group": { "kind": "build", "isDefault": true }
     }
   ]
 }
