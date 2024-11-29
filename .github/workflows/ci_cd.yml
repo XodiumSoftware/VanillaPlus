@@ -40,7 +40,7 @@ jobs:
 
       - id: get_artifact_version
         name: Get Artifact Version
-        run: echo VERSION=v$(./gradlew -q printVersion) > $GITHUB_ENV
+        run: echo VERSION=v$(./gradlew -q printVersion) > $GITHUB_OUTPUT
 
       - id: build_artifact
         name: Build Artifact
