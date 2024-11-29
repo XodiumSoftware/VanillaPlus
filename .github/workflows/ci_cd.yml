@@ -76,4 +76,4 @@ jobs:
           generate_release_notes: true
           prerelease: ${{ contains(github.event.head_commit.message, '.pre') }}
           tag_name: ${{ needs.build.outputs.VERSION }}
-          files: target/VanillaPlus-*.jar
+          files: VanillaPlus-*.jar
