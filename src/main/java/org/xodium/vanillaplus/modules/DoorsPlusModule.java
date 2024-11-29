@@ -33,7 +33,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.xodium.vanillaplus.VanillaPlus;
-import org.xodium.vanillaplus.data.PossibleNeighbour;
+import org.xodium.vanillaplus.data.PossibleNeighbourData;
 import org.xodium.vanillaplus.interfaces.CONFIG;
 import org.xodium.vanillaplus.interfaces.PERMS;
 
@@ -43,18 +43,18 @@ public class DoorsPlusModule implements Listener {
     private final HashMap<Block, Long> autoClose = new HashMap<>();
     private final VanillaPlus vp = VanillaPlus.getInstance();
     private final FileConfiguration config = vp.getConfig();
-    private final static PossibleNeighbour[] POSSIBLE_NEIGHBOURS = {
-            new PossibleNeighbour(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
-            new PossibleNeighbour(0, 1, Door.Hinge.LEFT, BlockFace.EAST),
+    private final static PossibleNeighbourData[] POSSIBLE_NEIGHBOURS = {
+            new PossibleNeighbourData(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
+            new PossibleNeighbourData(0, 1, Door.Hinge.LEFT, BlockFace.EAST),
 
-            new PossibleNeighbour(1, 0, Door.Hinge.RIGHT, BlockFace.SOUTH),
-            new PossibleNeighbour(-1, 0, Door.Hinge.LEFT, BlockFace.SOUTH),
+            new PossibleNeighbourData(1, 0, Door.Hinge.RIGHT, BlockFace.SOUTH),
+            new PossibleNeighbourData(-1, 0, Door.Hinge.LEFT, BlockFace.SOUTH),
 
-            new PossibleNeighbour(0, 1, Door.Hinge.RIGHT, BlockFace.WEST),
-            new PossibleNeighbour(0, -1, Door.Hinge.LEFT, BlockFace.WEST),
+            new PossibleNeighbourData(0, 1, Door.Hinge.RIGHT, BlockFace.WEST),
+            new PossibleNeighbourData(0, -1, Door.Hinge.LEFT, BlockFace.WEST),
 
-            new PossibleNeighbour(-1, 0, Door.Hinge.RIGHT, BlockFace.NORTH),
-            new PossibleNeighbour(1, 0, Door.Hinge.LEFT, BlockFace.NORTH)
+            new PossibleNeighbourData(-1, 0, Door.Hinge.RIGHT, BlockFace.NORTH),
+            new PossibleNeighbourData(1, 0, Door.Hinge.LEFT, BlockFace.NORTH)
     };
 
     {
@@ -187,7 +187,7 @@ public class DoorsPlusModule implements Listener {
 
     public Block getOtherPart(Door door, Block block) {
         if (door != null) {
-            for (PossibleNeighbour neighbour : POSSIBLE_NEIGHBOURS) {
+            for (PossibleNeighbourData neighbour : POSSIBLE_NEIGHBOURS) {
                 Block relative = block.getRelative(neighbour.getOffsetX(), 0, neighbour.getOffsetZ());
                 Door otherDoor = (relative.getBlockData() instanceof Door) ? (Door) relative.getBlockData() : null;
                 if (otherDoor != null

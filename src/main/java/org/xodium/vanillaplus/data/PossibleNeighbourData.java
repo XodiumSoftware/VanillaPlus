@@ -5,13 +5,13 @@ import org.bukkit.block.data.type.Door;
 
 import java.util.Objects;
 
-public final class PossibleNeighbour {
+public final class PossibleNeighbourData {
     private final BlockFace facing;
     private final Door.Hinge hinge;
     private final int offsetX;
     private final int offsetZ;
 
-    public PossibleNeighbour(int offsetX, int offsetZ, Door.Hinge hinge, BlockFace facing) {
+    public PossibleNeighbourData(int offsetX, int offsetZ, Door.Hinge hinge, BlockFace facing) {
         this.offsetX = offsetX;
         this.offsetZ = offsetZ;
         this.hinge = Objects.requireNonNull(hinge, "hinge cannot be null");
@@ -48,9 +48,9 @@ public final class PossibleNeighbour {
     public boolean equals(Object o) {
         if (this == o)
             return true;
-        if (!(o instanceof PossibleNeighbour))
+        if (!(o instanceof PossibleNeighbourData))
             return false;
-        PossibleNeighbour that = (PossibleNeighbour) o;
+        PossibleNeighbourData that = (PossibleNeighbourData) o;
         return offsetX == that.offsetX &&
                 offsetZ == that.offsetZ &&
                 facing == that.facing &&
