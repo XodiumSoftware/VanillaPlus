@@ -4,7 +4,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.xodium.vanillaplus.commands.ReloadCommand;
 import org.xodium.vanillaplus.interfaces.CONFIG;
-import org.xodium.vanillaplus.listeners.DoorListener;
+import org.xodium.vanillaplus.modules.DoorsPlusModule;
 import org.xodium.vanillaplus.modules.RecipesPlusModule;
 
 public class ModuleManager {
@@ -15,7 +15,7 @@ public class ModuleManager {
     {
         ReloadCommand.init(vp.getLifecycleManager());
         if (fc.getBoolean(CONFIG.DoorsPlus.ENABLE)) {
-            pm.registerEvents(new DoorListener(), vp);
+            pm.registerEvents(new DoorsPlusModule(), vp);
             vp.getLogger().info("DoorsPlus is enabled");
         }
         if (fc.getBoolean(CONFIG.RecipesPlus.ENABLE)) {
