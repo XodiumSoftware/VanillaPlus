@@ -44,16 +44,17 @@ public class DoorManager {
 
         Sound sound = Optional
                 .ofNullable(
-                        Registry.SOUNDS.get(NamespacedKey.minecraft(config.getString(CONFIG.SOUND_KNOCK_WOOD))))
+                        Registry.SOUNDS
+                                .get(NamespacedKey.minecraft(config.getString(CONFIG.DoorsPlus.SOUND_KNOCK_WOOD))))
                 .orElse(Sound.ITEM_SHIELD_BLOCK);
 
         SoundCategory category = Enums
                 .getIfPresent(SoundCategory.class,
-                        config.getString(CONFIG.SOUND_KNOCK_CATEGORY))
+                        config.getString(CONFIG.DoorsPlus.SOUND_KNOCK_CATEGORY))
                 .or(SoundCategory.BLOCKS);
 
-        float volume = (float) config.getDouble(CONFIG.SOUND_KNOCK_VOLUME);
-        float pitch = (float) config.getDouble(CONFIG.SOUND_KNOCK_PITCH);
+        float volume = (float) config.getDouble(CONFIG.DoorsPlus.SOUND_KNOCK_VOLUME);
+        float pitch = (float) config.getDouble(CONFIG.DoorsPlus.SOUND_KNOCK_PITCH);
 
         world.playSound(location, sound, category, volume, pitch);
     }
@@ -72,50 +73,38 @@ public class DoorManager {
     }
 
     public static Block getOtherPart(Door door, Block block) {
-        if (door == null)
-            return null;
-        for (PossibleNeighbour neighbour : POSSIBLE_NEIGHBOURS) {
-            Block relative = block.getRelative(neighbour.getOffsetX(), 0, neighbour.getOffsetZ());
-            Door otherDoor = (relative.getBlockData() instanceof Door) ? (Door) relative.getBlockData() : null;
-            if (otherDoor != null
-                    && neighbour.getFacing() == door.getFacing()
-                    && neighbour.getHinge() == door.getHinge()
-                    && relative.getType() == block.getType()
-                    && otherDoor.getHinge() != neighbour.getHinge()
-                    && otherDoor.isOpen() == door.isOpen()
-                    && otherDoor.getFacing() == neighbour.getFacing()) {
-                return relative;
+        if (door != null) {
+            for (PossibleNeighbour neighbour : POSSIBLE_NEIGHBOURS) {
+                Block relative = block.getRelative(neighbour.getOffsetX(), 0, neighbour.getOffsetZ());
+                Door otherDoor = (relative.getBlockData() instanceof Door) ? (Door) relative.getBlockData() : null;
+                if (otherDoor != null
+                        && neighbour.getFacing() == door.getFacing()
+                        && neighbour.getHinge() == door.getHinge()
+                        && relative.getType() == block.getType()
+                        && otherDoor.getHinge() != neighbour.getHinge()
+                        && otherDoor.isOpen() == door.isOpen()
+                        && otherDoor.getFacing() == neighbour.getFacing()) {
+                    return relative;
+                }
             }
         }
         return null;
     }
 
-    public static void toggleOtherDoor(Block block, Block otherBlock, boolean open, boolean causedByRedstone) {
-        toggleOtherDoor(block, otherBlock, open, causedByRedstone, false);
-    }
-
-    public static void toggleOtherDoor(Block block, Block otherBlock, boolean open, boolean causedByRedstone,
-            boolean force) {
-
+    public static void toggleOtherDoor(Block block, Block otherBlock, boolean open) {
         if (!(block.getBlockData() instanceof Door) || !(otherBlock.getBlockData() instanceof Door))
             return;
 
         Door door = (Door) block.getBlockData();
         Door otherDoor = (Door) otherBlock.getBlockData();
 
-        if (causedByRedstone) {
-            DoorManager.toggleDoor(otherBlock, otherDoor, open);
-            return;
-        }
-
-        boolean openNow = door.isOpen();
         new BukkitRunnable() {
             @Override
             public void run() {
                 if (!(otherBlock.getBlockData() instanceof Door))
                     return;
                 Door newDoor = (Door) block.getBlockData();
-                if (!force && newDoor.isOpen() == openNow) {
+                if (newDoor.isOpen() == door.isOpen()) {
                     return;
                 }
                 DoorManager.toggleDoor(otherBlock, otherDoor, open);

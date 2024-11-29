@@ -47,7 +47,7 @@ public class DoorListener implements Listener {
                         if (openable instanceof Door) {
                             Block otherDoor = DoorManager.getOtherPart((Door) openable, block);
                             if (otherDoor != null) {
-                                DoorManager.toggleOtherDoor(block, otherDoor, false, false);
+                                DoorManager.toggleOtherDoor(block, otherDoor, false);
                             }
                         } else if (openable instanceof Gate) {
                             block.getWorld().playSound(block.getLocation(), Sound.BLOCK_FENCE_GATE_CLOSE, 1.0f, 1.0f);
@@ -73,8 +73,8 @@ public class DoorListener implements Listener {
                 || e.getAction() != Action.RIGHT_CLICK_BLOCK
                 || e.useInteractedBlock() == Event.Result.DENY
                 || e.useItemInHand() == Event.Result.DENY
-                || !e.getPlayer().hasPermission(PERMS.USE)
-                || !config.getBoolean(CONFIG.ALLOW_DOUBLEDOORS)
+                || !e.getPlayer().hasPermission(PERMS.DoorsPlus.USE)
+                || !config.getBoolean(CONFIG.DoorsPlus.ALLOW_DOUBLEDOORS)
                 || !(blockData instanceof Door
                         || blockData instanceof Gate))
             return;
@@ -84,14 +84,14 @@ public class DoorListener implements Listener {
             Block otherDoorBlock = DoorManager.getOtherPart(door, clickedBlock);
             if (otherDoorBlock != null && otherDoorBlock.getBlockData() instanceof Door) {
                 Door otherDoor = (Door) otherDoorBlock.getBlockData();
-                DoorManager.toggleOtherDoor(clickedBlock, otherDoorBlock, !otherDoor.isOpen(), false);
+                DoorManager.toggleOtherDoor(clickedBlock, otherDoorBlock, !otherDoor.isOpen());
                 autoClose.put(otherDoorBlock,
                         System.currentTimeMillis()
-                                + Long.valueOf(config.getInt(CONFIG.AUTOCLOSE_DELAY)) * 1000);
+                                + Long.valueOf(config.getInt(CONFIG.DoorsPlus.AUTOCLOSE_DELAY)) * 1000);
             }
         }
         autoClose.put(clickedBlock,
-                System.currentTimeMillis() + Long.valueOf(config.getInt(CONFIG.AUTOCLOSE_DELAY)) * 1000);
+                System.currentTimeMillis() + Long.valueOf(config.getInt(CONFIG.DoorsPlus.AUTOCLOSE_DELAY)) * 1000);
     }
 
     @EventHandler
@@ -102,14 +102,14 @@ public class DoorListener implements Listener {
         if (gameMode == GameMode.CREATIVE || gameMode == GameMode.SPECTATOR)
             return;
 
-        if (!p.hasPermission(PERMS.KNOCK) || e.getAction() != Action.LEFT_CLICK_BLOCK
+        if (!p.hasPermission(PERMS.DoorsPlus.KNOCK) || e.getAction() != Action.LEFT_CLICK_BLOCK
                 || e.getHand() != EquipmentSlot.HAND)
             return;
 
-        if (config.getBoolean(CONFIG.KNOCKING_REQUIRES_SHIFT) && !p.isSneaking())
+        if (config.getBoolean(CONFIG.DoorsPlus.KNOCKING_REQUIRES_SHIFT) && !p.isSneaking())
             return;
 
-        if (config.getBoolean(CONFIG.KNOCKING_REQUIRES_EMPTY_HAND)
+        if (config.getBoolean(CONFIG.DoorsPlus.KNOCKING_REQUIRES_EMPTY_HAND)
                 && p.getInventory().getItemInMainHand().getType() != Material.AIR)
             return;
 
@@ -119,9 +119,9 @@ public class DoorListener implements Listener {
         Block block = e.getClickedBlock();
         BlockData blockData = block.getBlockData();
 
-        if ((blockData instanceof Door && config.getBoolean(CONFIG.ALLOW_KNOCKING))
-                || (blockData instanceof TrapDoor && config.getBoolean(CONFIG.ALLOW_KNOCKING_TRAPDOORS))
-                || (blockData instanceof Gate && config.getBoolean(CONFIG.ALLOW_KNOCKING_GATES))) {
+        if ((blockData instanceof Door && config.getBoolean(CONFIG.DoorsPlus.ALLOW_KNOCKING))
+                || (blockData instanceof TrapDoor && config.getBoolean(CONFIG.DoorsPlus.ALLOW_KNOCKING_TRAPDOORS))
+                || (blockData instanceof Gate && config.getBoolean(CONFIG.DoorsPlus.ALLOW_KNOCKING_GATES))) {
             DoorManager.playKnockSound(block);
         }
     }

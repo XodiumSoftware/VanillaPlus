@@ -3,7 +3,9 @@ package org.xodium.vanillaplus.data;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.type.Door;
 
-public class PossibleNeighbour {
+import java.util.Objects;
+
+public final class PossibleNeighbour {
     private final BlockFace facing;
     private final Door.Hinge hinge;
     private final int offsetX;
@@ -12,8 +14,8 @@ public class PossibleNeighbour {
     public PossibleNeighbour(int offsetX, int offsetZ, Door.Hinge hinge, BlockFace facing) {
         this.offsetX = offsetX;
         this.offsetZ = offsetZ;
-        this.hinge = hinge;
-        this.facing = facing;
+        this.hinge = Objects.requireNonNull(hinge, "hinge cannot be null");
+        this.facing = Objects.requireNonNull(facing, "facing cannot be null");
     }
 
     public BlockFace getFacing() {
@@ -40,5 +42,23 @@ public class PossibleNeighbour {
                 ", facing=" + facing +
                 ", hinge=" + hinge +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof PossibleNeighbour))
+            return false;
+        PossibleNeighbour that = (PossibleNeighbour) o;
+        return offsetX == that.offsetX &&
+                offsetZ == that.offsetZ &&
+                facing == that.facing &&
+                hinge == that.hinge;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(facing, hinge, offsetX, offsetZ);
     }
 }

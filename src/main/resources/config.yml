@@ -1,17 +1,28 @@
-# Sound settings
-sound_knock_category: "BLOCKS"
-sound_knock_pitch: 1.0
-sound_knock_volume: 1.0
-sound_knock_wood: "entity_zombie_attack_wooden_door"
+settings:
+  # Module settings
+  doorsplus:
+    # General settings
+    enable: true
 
-# Behavior settings
-allow_autoclose: true
-allow_doubledoors: true
-allow_knocking: true
-allow_knocking_gates: true
-allow_knocking_trapdoors: true
-knocking_requires_empty_hand: true
-knocking_requires_shift: false
+    # Sound settings
+    sound_knock_category: "BLOCKS"
+    sound_knock_pitch: 1.0
+    sound_knock_volume: 1.0
+    sound_knock_wood: "entity_zombie_attack_wooden_door"
 
-# Auto-close settings
-autoclose_delay: 6
+    # Behavior settings
+    allow_autoclose: true
+    allow_doubledoors: true
+    allow_knocking: true
+    allow_knocking_gates: true
+    allow_knocking_trapdoors: true
+    knocking_requires_empty_hand: true
+    knocking_requires_shift: false
+
+    # Auto-close settings
+    autoclose_delay: 6
+
+  # Module settings
+  recipesplus:
+    # General settings
+    enable: true
