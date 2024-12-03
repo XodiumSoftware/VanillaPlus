@@ -18,7 +18,6 @@
         "github.vscode-github-actions",
         "pkief.material-icon-theme",
         "usernamehw.errorlens",
-        "vscjava.vscode-maven",
         "vsls-contrib.gistfs"
       ]
     }

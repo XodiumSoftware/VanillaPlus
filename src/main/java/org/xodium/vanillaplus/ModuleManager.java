@@ -5,7 +5,6 @@ import org.bukkit.plugin.PluginManager;
 import org.xodium.vanillaplus.commands.ReloadCommand;
 import org.xodium.vanillaplus.interfaces.CONFIG;
 import org.xodium.vanillaplus.modules.DoorsPlusModule;
-import org.xodium.vanillaplus.modules.ElevatorPlusModule;
 import org.xodium.vanillaplus.modules.RecipesPlusModule;
 
 public class ModuleManager {
@@ -23,10 +22,6 @@ public class ModuleManager {
         if (fc.getBoolean(CONFIG.RecipesPlus.ENABLE)) {
             pm.registerEvents(new RecipesPlusModule(), vp);
             vp.getLogger().info(String.format(MODULE_LOADED_MSG, "RecipesPlus"));
-        }
-        if (fc.getBoolean(CONFIG.ElevatorPlus.ENABLE)) {
-            pm.registerEvents(new ElevatorPlusModule(), vp);
-            vp.getLogger().info(String.format(MODULE_LOADED_MSG, "ElevatorPlus"));
         }
     }
 }

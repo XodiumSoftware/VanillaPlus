@@ -39,6 +39,7 @@ import org.xodium.vanillaplus.records.AdjacentBlockRecord;
 
 import com.google.common.base.Enums;
 
+// TODO: refactor.
 public class DoorsPlusModule implements Listener {
     private final HashMap<Block, Long> autoClose = new HashMap<>();
     private final VanillaPlus vp = VanillaPlus.getInstance();

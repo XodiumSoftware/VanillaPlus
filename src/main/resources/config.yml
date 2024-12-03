@@ -25,7 +25,3 @@ settings:
   recipesplus:
     # General settings
     enable: true
-
-  elevatorplus:
-    # General settings
-    enable: true
