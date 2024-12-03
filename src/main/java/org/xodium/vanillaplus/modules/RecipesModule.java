@@ -10,6 +10,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Recipe;
 import org.xodium.vanillaplus.interfaces.Modular;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -33,6 +34,10 @@ public class RecipesModule implements Listener, Modular {
 
     @Override
     public Map<String, Object> config() {
-        return Map.of(ENABLE, true);
+        return new HashMap<String, Object>() {
+            {
+                put(ENABLE, true);
+            }
+        };
     }
 }

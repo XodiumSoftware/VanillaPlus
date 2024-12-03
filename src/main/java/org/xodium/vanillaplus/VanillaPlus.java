@@ -2,6 +2,7 @@ package org.xodium.vanillaplus;
 
 import java.util.Arrays;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.xodium.vanillaplus.commands.ReloadCommand;
 
 public class VanillaPlus extends JavaPlugin {
 
@@ -28,7 +29,7 @@ public class VanillaPlus extends JavaPlugin {
       getServer().getPluginManager().disablePlugin(this);
       return;
     }
-    saveDefaultConfig();
+    ReloadCommand.init(getLifecycleManager());
     new ConfigManager();
     new ModuleManager();
   }
