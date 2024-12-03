@@ -4,7 +4,7 @@ public interface PERMS {
     String VANILLAPLUS = "vanillaplus.";
     String RELOAD = VANILLAPLUS + "reload";
 
-    interface DoorsPlus {
+    interface DOORSMODULE {
         String USE = VANILLAPLUS + "doubledoors";
         String KNOCK = VANILLAPLUS + "knock";
         String AUTOCLOSE = VANILLAPLUS + "autoclose";

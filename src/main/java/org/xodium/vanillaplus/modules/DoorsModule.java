@@ -40,7 +40,9 @@ import org.xodium.vanillaplus.records.AdjacentBlockRecord;
 import com.google.common.base.Enums;
 
 // TODO: refactor.
-public class DoorsPlusModule implements Listener {
+public class DoorsModule implements Listener {
+    public static final String ENABLE = "enable";
+
     private final HashMap<Block, Long> autoClose = new HashMap<>();
     private final VanillaPlus vp = VanillaPlus.getInstance();
     private final FileConfiguration config = vp.getConfig();
@@ -99,8 +101,8 @@ public class DoorsPlusModule implements Listener {
                 || e.getAction() != Action.RIGHT_CLICK_BLOCK
                 || e.useInteractedBlock() == Event.Result.DENY
                 || e.useItemInHand() == Event.Result.DENY
-                || !e.getPlayer().hasPermission(PERMS.DoorsPlus.USE)
-                || !config.getBoolean(CONFIG.DoorsPlus.ALLOW_DOUBLEDOORS)
+                || !e.getPlayer().hasPermission(PERMS.DOORSMODULE.USE)
+                || !config.getBoolean(CONFIG.DOORSMODULE.ALLOW_DOUBLEDOORS)
                 || !(blockData instanceof Door
                         || blockData instanceof Gate))
             return;
@@ -113,11 +115,11 @@ public class DoorsPlusModule implements Listener {
                 this.toggleOtherDoor(clickedBlock, otherDoorBlock, !otherDoor.isOpen());
                 autoClose.put(otherDoorBlock,
                         System.currentTimeMillis()
-                                + Long.valueOf(config.getInt(CONFIG.DoorsPlus.AUTOCLOSE_DELAY)) * 1000);
+                                + Long.valueOf(config.getInt(CONFIG.DOORSMODULE.AUTOCLOSE_DELAY)) * 1000);
             }
         }
         autoClose.put(clickedBlock,
-                System.currentTimeMillis() + Long.valueOf(config.getInt(CONFIG.DoorsPlus.AUTOCLOSE_DELAY)) * 1000);
+                System.currentTimeMillis() + Long.valueOf(config.getInt(CONFIG.DOORSMODULE.AUTOCLOSE_DELAY)) * 1000);
     }
 
     @EventHandler
@@ -128,14 +130,14 @@ public class DoorsPlusModule implements Listener {
         if (gameMode == GameMode.CREATIVE || gameMode == GameMode.SPECTATOR)
             return;
 
-        if (!p.hasPermission(PERMS.DoorsPlus.KNOCK) || e.getAction() != Action.LEFT_CLICK_BLOCK
+        if (!p.hasPermission(PERMS.DOORSMODULE.KNOCK) || e.getAction() != Action.LEFT_CLICK_BLOCK
                 || e.getHand() != EquipmentSlot.HAND)
             return;
 
-        if (config.getBoolean(CONFIG.DoorsPlus.KNOCKING_REQUIRES_SHIFT) && !p.isSneaking())
+        if (config.getBoolean(CONFIG.DOORSMODULE.KNOCKING_REQUIRES_SHIFT) && !p.isSneaking())
             return;
 
-        if (config.getBoolean(CONFIG.DoorsPlus.KNOCKING_REQUIRES_EMPTY_HAND)
+        if (config.getBoolean(CONFIG.DOORSMODULE.KNOCKING_REQUIRES_EMPTY_HAND)
                 && p.getInventory().getItemInMainHand().getType() != Material.AIR)
             return;
 
@@ -145,9 +147,9 @@ public class DoorsPlusModule implements Listener {
         Block block = e.getClickedBlock();
         BlockData blockData = block.getBlockData();
 
-        if ((blockData instanceof Door && config.getBoolean(CONFIG.DoorsPlus.ALLOW_KNOCKING))
-                || (blockData instanceof TrapDoor && config.getBoolean(CONFIG.DoorsPlus.ALLOW_KNOCKING_TRAPDOORS))
-                || (blockData instanceof Gate && config.getBoolean(CONFIG.DoorsPlus.ALLOW_KNOCKING_GATES))) {
+        if ((blockData instanceof Door && config.getBoolean(CONFIG.DOORSMODULE.ALLOW_KNOCKING))
+                || (blockData instanceof TrapDoor && config.getBoolean(CONFIG.DOORSMODULE.ALLOW_KNOCKING_TRAPDOORS))
+                || (blockData instanceof Gate && config.getBoolean(CONFIG.DOORSMODULE.ALLOW_KNOCKING_GATES))) {
             this.playKnockSound(block);
         }
     }
@@ -159,16 +161,16 @@ public class DoorsPlusModule implements Listener {
         Sound sound = Optional
                 .ofNullable(
                         Registry.SOUNDS
-                                .get(NamespacedKey.minecraft(config.getString(CONFIG.DoorsPlus.SOUND_KNOCK_WOOD))))
+                                .get(NamespacedKey.minecraft(config.getString(CONFIG.DOORSMODULE.SOUND_KNOCK_WOOD))))
                 .orElse(Sound.ITEM_SHIELD_BLOCK);
 
         SoundCategory category = Enums
                 .getIfPresent(SoundCategory.class,
-                        config.getString(CONFIG.DoorsPlus.SOUND_KNOCK_CATEGORY))
+                        config.getString(CONFIG.DOORSMODULE.SOUND_KNOCK_CATEGORY))
                 .or(SoundCategory.BLOCKS);
 
-        float volume = (float) config.getDouble(CONFIG.DoorsPlus.SOUND_KNOCK_VOLUME);
-        float pitch = (float) config.getDouble(CONFIG.DoorsPlus.SOUND_KNOCK_PITCH);
+        float volume = (float) config.getDouble(CONFIG.DOORSMODULE.SOUND_KNOCK_VOLUME);
+        float pitch = (float) config.getDouble(CONFIG.DOORSMODULE.SOUND_KNOCK_PITCH);
 
         world.playSound(location, sound, category, volume, pitch);
     }
@@ -221,7 +223,7 @@ public class DoorsPlusModule implements Listener {
                 if (newDoor.isOpen() == door.isOpen()) {
                     return;
                 }
-                DoorsPlusModule.toggleDoor(otherBlock, otherDoor, open);
+                DoorsModule.toggleDoor(otherBlock, otherDoor, open);
             }
         }.runTaskLater(vp, 1L);
     }
