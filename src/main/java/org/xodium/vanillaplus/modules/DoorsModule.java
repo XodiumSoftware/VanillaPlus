@@ -63,7 +63,6 @@ public class DoorsModule implements Listener, Modular {
 
     private final HashMap<Block, Long> autoClose = new HashMap<>();
     private final VanillaPlus vp = VanillaPlus.getInstance();
-    private final FileConfiguration config = vp.getConfig();
     private final static AdjacentBlockRecord[] POSSIBLE_NEIGHBOURS = {
             new AdjacentBlockRecord(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
             new AdjacentBlockRecord(0, 1, Door.Hinge.LEFT, BlockFace.EAST),
