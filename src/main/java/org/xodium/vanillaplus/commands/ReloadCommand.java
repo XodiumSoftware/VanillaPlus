@@ -2,6 +2,7 @@ package org.xodium.vanillaplus.commands;
 
 import java.util.List;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.xodium.vanillaplus.VanillaPlus;
 import org.xodium.vanillaplus.interfaces.MSG;
@@ -20,19 +21,20 @@ public class ReloadCommand implements MSG {
             e.registrar().register(
                     Commands.literal("vanillaplus")
                             .executes(ctx -> {
-                                if (!(ctx.getSource().getSender() instanceof Player p)) {
-                                    vp.getLogger().warning("This command can only be executed by a player!");
-                                    return 0;
-                                }
+                                CommandSender cs = ctx.getSource().getSender();
                                 MiniMessage mm = MiniMessage.miniMessage();
-                                if (!p.hasPermission(PERMS.RELOAD)) {
-                                    p.sendMessage(
-                                            mm.deserialize(
-                                                    PREFIX + "<red>You do not have permission to use this command!"));
-                                    return 0;
+                                if (cs instanceof Player) {
+                                    Player p = (Player) cs;
+                                    if (!p.hasPermission(PERMS.RELOAD)) {
+                                        p.sendMessage(
+                                                mm.deserialize(
+                                                        PREFIX + "<red>You do not have permission to use this command!"));
+                                        return 0;
+                                    }
                                 }
                                 vp.reloadConfig();
-                                p.sendMessage(mm.deserialize(PREFIX + "<green>Configuration reloaded successfully."));
+                                cs.sendMessage(
+                                        mm.deserialize(PREFIX + "<green>Configuration reloaded successfully."));
                                 vp.getLogger().info("Configuration reloaded successfully.");
                                 return Command.SINGLE_SUCCESS;
                             })

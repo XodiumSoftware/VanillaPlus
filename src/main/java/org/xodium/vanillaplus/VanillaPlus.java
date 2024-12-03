@@ -13,12 +13,41 @@ public class VanillaPlus extends JavaPlugin {
 
   @Override
   public void onEnable() {
-    if (Arrays.stream(V).noneMatch(V -> getServer().getVersion().contains(V))) {
+    if (!isPaper()) {
+      getLogger().severe("This plugin is not compatible with non-Paper servers.");
+      getServer().getPluginManager().disablePlugin(this);
+      return;
+    }
+    if (isSupportedVersion()) {
       getLogger().severe("This plugin requires Paper version: " + String.join(", ", V));
       getServer().getPluginManager().disablePlugin(this);
       return;
     }
+    if (isFolia()) {
+      getLogger().severe("This plugin is not compatible with Folia.");
+      getServer().getPluginManager().disablePlugin(this);
+      return;
+    }
     saveDefaultConfig();
+    new ConfigManager();
     new ModuleManager();
+  }
+
+  private boolean isSupportedVersion() {
+    return Arrays.stream(V)
+        .anyMatch(v -> getServer().getVersion().contains(v));
+  }
+
+  private boolean isPaper() {
+    return getServer().getVersion().contains("Paper");
+  }
+
+  private static boolean isFolia() {
+    try {
+      Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
+      return true;
+    } catch (ClassNotFoundException e) {
+      return false;
+    }
   }
 }
