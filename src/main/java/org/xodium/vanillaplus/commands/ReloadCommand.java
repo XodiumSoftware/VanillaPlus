@@ -14,7 +14,11 @@ import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
 public class ReloadCommand implements MSG {
+    private static final String RELOAD_SUCC_LOG_MSG = "Configuration reloaded successfully.";
+    private static final String RELOAD_SUCC_MSG = PREFIX + "<green>Configuration reloaded successfully.";
+    private static final String PERM_ERR_MSG = PREFIX + "<red>You do not have permission to use this command!";
     private final static VanillaPlus vp = VanillaPlus.getInstance();
+    private final static MiniMessage mm = MiniMessage.miniMessage();
 
     public static void init(LifecycleEventManager<org.bukkit.plugin.Plugin> man) {
         man.registerEventHandler(LifecycleEvents.COMMANDS, e -> {
@@ -22,20 +26,13 @@ public class ReloadCommand implements MSG {
                     Commands.literal("vanillaplus")
                             .executes(ctx -> {
                                 CommandSender cs = ctx.getSource().getSender();
-                                MiniMessage mm = MiniMessage.miniMessage();
-                                if (cs instanceof Player) {
-                                    Player p = (Player) cs;
-                                    if (!p.hasPermission(PERMS.RELOAD)) {
-                                        p.sendMessage(
-                                                mm.deserialize(
-                                                        PREFIX + "<red>You do not have permission to use this command!"));
-                                        return 0;
-                                    }
+                                if (cs instanceof Player p && !p.hasPermission(PERMS.RELOAD)) {
+                                    p.sendMessage(mm.deserialize(PERM_ERR_MSG));
+                                    return 0;
                                 }
                                 vp.reloadConfig();
-                                cs.sendMessage(
-                                        mm.deserialize(PREFIX + "<green>Configuration reloaded successfully."));
-                                vp.getLogger().info("Configuration reloaded successfully.");
+                                cs.sendMessage(mm.deserialize(RELOAD_SUCC_MSG));
+                                vp.getLogger().info(RELOAD_SUCC_LOG_MSG);
                                 return Command.SINGLE_SUCCESS;
                             })
                             .build(),
