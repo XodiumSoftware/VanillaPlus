@@ -1,7 +1,7 @@
 name: VanillaPlus
-description: ${project.description}
+description: Minecraft plugin that enhances the base gameplay.
 main: org.xodium.vanillaplus.VanillaPlus
-version: ${project.version}
+version: 1.1.2
 api-version: 1.21.3
 authors:
   - XodiumSoftware
