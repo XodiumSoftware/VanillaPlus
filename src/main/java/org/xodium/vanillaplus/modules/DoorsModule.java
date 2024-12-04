@@ -41,25 +41,25 @@ import com.google.common.base.Enums;
 
 // TODO: refactor.
 public class DoorsModule implements Listener, Modular {
-    public static final String ENABLE = "enable";
+    public static final String ENABLE = ".enable";
 
     // Sound settings
-    public static final String SOUND_KNOCK_CATEGORY = "sound_knock_category";
-    public static final String SOUND_KNOCK_PITCH = "sound_knock_pitch";
-    public static final String SOUND_KNOCK_VOLUME = "sound_knock_volume";
-    public static final String SOUND_KNOCK_WOOD = "sound_knock_wood";
+    public static final String SOUND_KNOCK_CATEGORY = ".sound_knock_category";
+    public static final String SOUND_KNOCK_PITCH = ".sound_knock_pitch";
+    public static final String SOUND_KNOCK_VOLUME = ".sound_knock_volume";
+    public static final String SOUND_KNOCK_WOOD = ".sound_knock_wood";
 
     // Behavior settings
-    public static final String ALLOW_AUTOCLOSE = "allow_autoclose";
-    public static final String ALLOW_DOUBLEDOORS = "allow_doubledoors";
-    public static final String ALLOW_KNOCKING = "allow_knocking";
-    public static final String ALLOW_KNOCKING_GATES = "allow_knocking_gates";
-    public static final String ALLOW_KNOCKING_TRAPDOORS = "allow_knocking_trapdoors";
-    public static final String KNOCKING_REQUIRES_EMPTY_HAND = "knocking_requires_empty_hand";
-    public static final String KNOCKING_REQUIRES_SHIFT = "knocking_requires_shift";
+    public static final String ALLOW_AUTOCLOSE = ".allow_autoclose";
+    public static final String ALLOW_DOUBLEDOORS = ".allow_doubledoors";
+    public static final String ALLOW_KNOCKING = ".allow_knocking";
+    public static final String ALLOW_KNOCKING_GATES = ".allow_knocking_gates";
+    public static final String ALLOW_KNOCKING_TRAPDOORS = ".allow_knocking_trapdoors";
+    public static final String KNOCKING_REQUIRES_EMPTY_HAND = ".knocking_requires_empty_hand";
+    public static final String KNOCKING_REQUIRES_SHIFT = ".knocking_requires_shift";
 
     // Auto-close settings
-    public static final String AUTOCLOSE_DELAY = "autoclose_delay";
+    public static final String AUTOCLOSE_DELAY = ".autoclose_delay";
 
     private final HashMap<Block, Long> autoClose = new HashMap<>();
     private final VanillaPlus vp = VanillaPlus.getInstance();
@@ -246,19 +246,20 @@ public class DoorsModule implements Listener, Modular {
     public Map<String, Object> config() {
         return new HashMap<String, Object>() {
             {
-                put(ENABLE, true);
-                put(SOUND_KNOCK_CATEGORY, "BLOCKS");
-                put(SOUND_KNOCK_PITCH, 1.0);
-                put(SOUND_KNOCK_VOLUME, 1.0);
-                put(SOUND_KNOCK_WOOD, "entity_zombie_attack_wooden_door");
-                put(ALLOW_AUTOCLOSE, true);
-                put(ALLOW_DOUBLEDOORS, true);
-                put(ALLOW_KNOCKING, true);
-                put(ALLOW_KNOCKING_GATES, true);
-                put(ALLOW_KNOCKING_TRAPDOORS, true);
-                put(KNOCKING_REQUIRES_EMPTY_HAND, true);
-                put(KNOCKING_REQUIRES_SHIFT, false);
-                put(AUTOCLOSE_DELAY, 6);
+                final String className = DoorsModule.class.getSimpleName();
+                put(className + ENABLE, true);
+                put(className + SOUND_KNOCK_CATEGORY, "BLOCKS");
+                put(className + SOUND_KNOCK_PITCH, 1.0);
+                put(className + SOUND_KNOCK_VOLUME, 1.0);
+                put(className + SOUND_KNOCK_WOOD, "entity_zombie_attack_wooden_door");
+                put(className + ALLOW_AUTOCLOSE, true);
+                put(className + ALLOW_DOUBLEDOORS, true);
+                put(className + ALLOW_KNOCKING, true);
+                put(className + ALLOW_KNOCKING_GATES, true);
+                put(className + ALLOW_KNOCKING_TRAPDOORS, true);
+                put(className + KNOCKING_REQUIRES_EMPTY_HAND, true);
+                put(className + KNOCKING_REQUIRES_SHIFT, false);
+                put(className + AUTOCLOSE_DELAY, 6);
             }
         };
     }
