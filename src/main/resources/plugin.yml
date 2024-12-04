@@ -1,0 +1,21 @@
+name: VanillaPlus
+description: ${project.description}
+main: org.xodium.vanillaplus.VanillaPlus
+version: ${project.version}
+api-version: 1.21.3
+authors:
+  - XodiumSoftware
+commands:
+  vanillaplus:
+    description: Main command for VanillaPlus
+    usage: /vanillaplus
+permissions:
+  vanillaplus.doubledoors:
+    description: Allows to open double doors with one click
+    default: true
+  vanillaplus.knock:
+    description: Allows to knock on doors using left-click
+    default: true
+  vanillaplus.autoclose:
+    description: Allows players to have their doors close automatically
+    default: true
