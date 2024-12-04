@@ -12,11 +12,11 @@
   "customizations": {
     "vscode": {
       "extensions": [
+        "esbenp.prettier-vscode",
         "formulahendry.code-runner",
         "github.copilot",
         "github.vscode-github-actions",
         "pkief.material-icon-theme",
-        "redhat.vscode-yaml",
         "usernamehw.errorlens",
         "vsls-contrib.gistfs"
       ]
