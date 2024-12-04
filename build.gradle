@@ -21,12 +21,15 @@ dependencies {
     implementation 'net.kyori:adventure-api:4.17.0'
 }
 
-shadowJar {
-    relocate 'org.spongepowered.configurate', 'org.xodium.vanillaplus.libs.configurate'
-    manifest {
-        attributes(
-            'Main-Class': 'org.xodium.vanillaplus.VanillaPlus'
-        )
+tasks {
+    shadowJar {
+        relocate 'org.spongepowered.configurate', 'org.xodium.vanillaplus.libs.configurate'
+        manifest {
+            attributes 'paperweight-mappings-namespace': 'mojang'
+        }
+    }
+    jar {
+        enabled = false
     }
 }
 
@@ -34,13 +37,7 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
-tasks.jar {
-  manifest {
-    attributes["paperweight-mappings-namespace"] = "mojang"
-  }
-}
-
-tasks.build.dependsOn shadowJar
+tasks.build.dependsOn tasks.shadowJar
 
 task printVersion {
     doLast {
