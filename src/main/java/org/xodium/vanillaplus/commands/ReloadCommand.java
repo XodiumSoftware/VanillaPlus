@@ -9,7 +9,6 @@ import org.xodium.vanillaplus.interfaces.MSG;
 import org.xodium.vanillaplus.interfaces.PERMS;
 import com.mojang.brigadier.Command;
 import io.papermc.paper.command.brigadier.Commands;
-import io.papermc.paper.plugin.lifecycle.event.LifecycleEventManager;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
@@ -20,8 +19,8 @@ public class ReloadCommand implements MSG {
     private final static VanillaPlus vp = VanillaPlus.getInstance();
     private final static MiniMessage mm = MiniMessage.miniMessage();
 
-    public static void init(LifecycleEventManager<org.bukkit.plugin.Plugin> man) {
-        man.registerEventHandler(LifecycleEvents.COMMANDS, e -> {
+    {
+        vp.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, e -> {
             e.registrar().register(
                     Commands.literal("vanillaplus")
                             .executes(ctx -> {
@@ -30,7 +29,7 @@ public class ReloadCommand implements MSG {
                                     p.sendMessage(mm.deserialize(PERM_ERR_MSG));
                                     return 0;
                                 }
-                                vp.reloadConfig();
+                                // TODO: Reload configuration
                                 cs.sendMessage(mm.deserialize(RELOAD_SUCC_MSG));
                                 vp.getLogger().info(RELOAD_SUCC_LOG_MSG);
                                 return Command.SINGLE_SUCCESS;

@@ -17,7 +17,7 @@ public class ConfigManager {
     private final Path dataFolderPath = vp.getDataFolder().toPath();
     private final Path dataFilePath = dataFolderPath.resolve(CONFIG_FILE);
 
-    public ConfigManager() {
+    {
         try {
             Files.createDirectories(dataFolderPath);
             if (!Files.exists(dataFilePath)) {
