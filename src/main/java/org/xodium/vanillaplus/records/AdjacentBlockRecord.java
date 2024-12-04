@@ -6,7 +6,7 @@ import java.util.Objects;
 
 public record AdjacentBlockRecord(int offsetX, int offsetZ, Door.Hinge hinge, BlockFace facing) {
     public AdjacentBlockRecord {
-        Objects.requireNonNull(hinge, "hinge cannot be null");
-        Objects.requireNonNull(facing, "facing cannot be null");
+        Objects.requireNonNull(hinge);
+        Objects.requireNonNull(facing);
     }
 }

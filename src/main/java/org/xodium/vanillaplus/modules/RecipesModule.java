@@ -8,10 +8,16 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Recipe;
+import org.xodium.vanillaplus.interfaces.Modular;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
-public class RecipesPlusModule implements Listener {
+public class RecipesModule implements Listener, Modular {
+    public static final String ENABLE = ".enable";
+    private final String className = RecipesModule.class.getSimpleName();
+
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
@@ -25,5 +31,14 @@ public class RecipesPlusModule implements Listener {
                 }
             }
         }
+    }
+
+    @Override
+    public Map<String, Object> config() {
+        return new HashMap<String, Object>() {
+            {
+                put(className + ENABLE, true);
+            }
+        };
     }
 }
