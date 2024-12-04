@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -16,6 +17,7 @@ public class ConfigManager {
     private final VanillaPlus vp = VanillaPlus.getInstance();
     private final Path dataFolderPath = vp.getDataFolder().toPath();
     private final Path dataFilePath = dataFolderPath.resolve(CONFIG_FILE);
+    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     {
         try {
@@ -33,7 +35,7 @@ public class ConfigManager {
         try {
             JsonObject currentData = getAllData();
             currentData.add(key, value);
-            Files.write(dataFilePath, new Gson().toJson(currentData).getBytes(StandardCharsets.UTF_8),
+            Files.write(dataFilePath, gson.toJson(currentData).getBytes(StandardCharsets.UTF_8),
                     StandardOpenOption.TRUNCATE_EXISTING);
         } catch (IOException e) {
             e.printStackTrace();
