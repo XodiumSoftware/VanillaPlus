@@ -23,7 +23,6 @@ import org.bukkit.block.data.Openable;
 import org.bukkit.block.data.type.Door;
 import org.bukkit.block.data.type.Gate;
 import org.bukkit.block.data.type.TrapDoor;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -32,6 +31,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.xodium.vanillaplus.ConfigManager;
 import org.xodium.vanillaplus.VanillaPlus;
 import org.xodium.vanillaplus.interfaces.Modular;
 import org.xodium.vanillaplus.interfaces.PERMS;
@@ -63,6 +63,7 @@ public class DoorsModule implements Listener, Modular {
 
     private final HashMap<Block, Long> autoClose = new HashMap<>();
     private final VanillaPlus vp = VanillaPlus.getInstance();
+    private final ConfigManager cm = new ConfigManager();
     private final static AdjacentBlockRecord[] POSSIBLE_NEIGHBOURS = {
             new AdjacentBlockRecord(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
             new AdjacentBlockRecord(0, 1, Door.Hinge.LEFT, BlockFace.EAST),
@@ -119,7 +120,7 @@ public class DoorsModule implements Listener, Modular {
                 || e.useInteractedBlock() == Event.Result.DENY
                 || e.useItemInHand() == Event.Result.DENY
                 || !e.getPlayer().hasPermission(PERMS.DOORSMODULE.USE)
-                || !config.getBoolean(ALLOW_DOUBLEDOORS)
+                || !cm.getConfigValue(ALLOW_DOUBLEDOORS, Boolean.class)
                 || !(blockData instanceof Door
                         || blockData instanceof Gate))
             return;
@@ -132,29 +133,29 @@ public class DoorsModule implements Listener, Modular {
                 this.toggleOtherDoor(clickedBlock, otherDoorBlock, !otherDoor.isOpen());
                 autoClose.put(otherDoorBlock,
                         System.currentTimeMillis()
-                                + Long.valueOf(config.getInt(AUTOCLOSE_DELAY)) * 1000);
+                                + Long.valueOf(cm.getConfigValue(AUTOCLOSE_DELAY, Integer.class)) * 1000);
             }
         }
         autoClose.put(clickedBlock,
-                System.currentTimeMillis() + Long.valueOf(config.getInt(AUTOCLOSE_DELAY)) * 1000);
+                System.currentTimeMillis() + Long.valueOf(cm.getConfigValue(AUTOCLOSE_DELAY, Integer.class)) * 1000);
     }
 
     @EventHandler
     public void onKnock(PlayerInteractEvent e) {
         Player p = e.getPlayer();
-        GameMode gameMode = p.getGameMode();
+        GameMode gm = p.getGameMode();
 
-        if (gameMode == GameMode.CREATIVE || gameMode == GameMode.SPECTATOR)
+        if (gm == GameMode.CREATIVE || gm == GameMode.SPECTATOR)
             return;
 
         if (!p.hasPermission(PERMS.DOORSMODULE.KNOCK) || e.getAction() != Action.LEFT_CLICK_BLOCK
                 || e.getHand() != EquipmentSlot.HAND)
             return;
 
-        if (config.getBoolean(KNOCKING_REQUIRES_SHIFT) && !p.isSneaking())
+        if (cm.getConfigValue(KNOCKING_REQUIRES_SHIFT, Boolean.class) && !p.isSneaking())
             return;
 
-        if (config.getBoolean(KNOCKING_REQUIRES_EMPTY_HAND)
+        if (cm.getConfigValue(KNOCKING_REQUIRES_EMPTY_HAND, Boolean.class)
                 && p.getInventory().getItemInMainHand().getType() != Material.AIR)
             return;
 
@@ -164,32 +165,29 @@ public class DoorsModule implements Listener, Modular {
         Block block = e.getClickedBlock();
         BlockData blockData = block.getBlockData();
 
-        if ((blockData instanceof Door && config.getBoolean(ALLOW_KNOCKING))
-                || (blockData instanceof TrapDoor && config.getBoolean(ALLOW_KNOCKING_TRAPDOORS))
-                || (blockData instanceof Gate && config.getBoolean(ALLOW_KNOCKING_GATES))) {
+        if ((blockData instanceof Door && cm.getConfigValue(ALLOW_KNOCKING, Boolean.class))
+                || (blockData instanceof TrapDoor && cm.getConfigValue(ALLOW_KNOCKING_TRAPDOORS, Boolean.class))
+                || (blockData instanceof Gate && cm.getConfigValue(ALLOW_KNOCKING_GATES, Boolean.class))) {
             this.playKnockSound(block);
         }
     }
 
     public void playKnockSound(Block block) {
-        Location location = block.getLocation();
+        Location loc = block.getLocation();
         World world = block.getWorld();
-
         Sound sound = Optional
                 .ofNullable(
                         Registry.SOUNDS
-                                .get(NamespacedKey.minecraft(config.getString(SOUND_KNOCK_WOOD))))
+                                .get(NamespacedKey.minecraft(cm.getConfigValue(SOUND_KNOCK_WOOD, String.class))))
                 .orElse(Sound.ITEM_SHIELD_BLOCK);
-
         SoundCategory category = Enums
                 .getIfPresent(SoundCategory.class,
-                        config.getString(SOUND_KNOCK_CATEGORY))
+                        cm.getConfigValue(SOUND_KNOCK_CATEGORY, String.class))
                 .or(SoundCategory.BLOCKS);
+        float volume = cm.getConfigValue(SOUND_KNOCK_VOLUME, Double.class).floatValue();
+        float pitch = cm.getConfigValue(SOUND_KNOCK_PITCH, Double.class).floatValue();
 
-        float volume = (float) config.getDouble(SOUND_KNOCK_VOLUME);
-        float pitch = (float) config.getDouble(SOUND_KNOCK_PITCH);
-
-        world.playSound(location, sound, category, volume, pitch);
+        world.playSound(loc, sound, category, volume, pitch);
     }
 
     public static void toggleDoor(Block doorBlock, Openable openable, boolean open) {
