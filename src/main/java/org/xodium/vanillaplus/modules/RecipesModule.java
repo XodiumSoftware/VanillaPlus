@@ -16,6 +16,7 @@ import java.util.Map;
 
 public class RecipesModule implements Listener, Modular {
     public static final String ENABLE = ".enable";
+    private final String className = RecipesModule.class.getSimpleName();
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
@@ -36,7 +37,6 @@ public class RecipesModule implements Listener, Modular {
     public Map<String, Object> config() {
         return new HashMap<String, Object>() {
             {
-                final String className = RecipesModule.class.getSimpleName();
                 put(className + ENABLE, true);
             }
         };

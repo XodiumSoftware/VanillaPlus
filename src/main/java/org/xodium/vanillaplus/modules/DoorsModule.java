@@ -64,6 +64,7 @@ public class DoorsModule implements Listener, Modular {
     private final HashMap<Block, Long> autoClose = new HashMap<>();
     private final VanillaPlus vp = VanillaPlus.getInstance();
     private final ConfigManager cm = new ConfigManager();
+    private final String className = DoorsModule.class.getSimpleName();
     private final static AdjacentBlockRecord[] POSSIBLE_NEIGHBOURS = {
             new AdjacentBlockRecord(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
             new AdjacentBlockRecord(0, 1, Door.Hinge.LEFT, BlockFace.EAST),
@@ -133,11 +134,11 @@ public class DoorsModule implements Listener, Modular {
                 this.toggleOtherDoor(clickedBlock, otherDoorBlock, !otherDoor.isOpen());
                 autoClose.put(otherDoorBlock,
                         System.currentTimeMillis()
-                                + Long.valueOf(cm.getData(AUTOCLOSE_DELAY).getAsLong()) * 1000);
+                                + Long.valueOf(cm.getData(className + AUTOCLOSE_DELAY).getAsLong()) * 1000);
             }
         }
         autoClose.put(clickedBlock,
-                System.currentTimeMillis() + Long.valueOf(cm.getData(AUTOCLOSE_DELAY).getAsLong()) * 1000);
+                System.currentTimeMillis() + Long.valueOf(cm.getData(className + AUTOCLOSE_DELAY).getAsLong()) * 1000);
     }
 
     @EventHandler
@@ -152,10 +153,10 @@ public class DoorsModule implements Listener, Modular {
                 || e.getHand() != EquipmentSlot.HAND)
             return;
 
-        if (cm.getData(KNOCKING_REQUIRES_SHIFT).getAsBoolean() && !p.isSneaking())
+        if (cm.getData(className + KNOCKING_REQUIRES_SHIFT).getAsBoolean() && !p.isSneaking())
             return;
 
-        if (cm.getData(KNOCKING_REQUIRES_EMPTY_HAND).getAsBoolean()
+        if (cm.getData(className + KNOCKING_REQUIRES_EMPTY_HAND).getAsBoolean()
                 && p.getInventory().getItemInMainHand().getType() != Material.AIR)
             return;
 
@@ -165,9 +166,9 @@ public class DoorsModule implements Listener, Modular {
         Block block = e.getClickedBlock();
         BlockData blockData = block.getBlockData();
 
-        if ((blockData instanceof Door && cm.getData(ALLOW_KNOCKING).getAsBoolean())
-                || (blockData instanceof TrapDoor && cm.getData(ALLOW_KNOCKING_TRAPDOORS).getAsBoolean())
-                || (blockData instanceof Gate && cm.getData(ALLOW_KNOCKING_GATES).getAsBoolean())) {
+        if ((blockData instanceof Door && cm.getData(className + ALLOW_KNOCKING).getAsBoolean())
+                || (blockData instanceof TrapDoor && cm.getData(className + ALLOW_KNOCKING_TRAPDOORS).getAsBoolean())
+                || (blockData instanceof Gate && cm.getData(className + ALLOW_KNOCKING_GATES).getAsBoolean())) {
             this.playKnockSound(block);
         }
     }
@@ -178,14 +179,14 @@ public class DoorsModule implements Listener, Modular {
         Sound sound = Optional
                 .ofNullable(
                         Registry.SOUNDS
-                                .get(NamespacedKey.minecraft(cm.getData(SOUND_KNOCK_WOOD).getAsString())))
+                                .get(NamespacedKey.minecraft(cm.getData(className + SOUND_KNOCK_WOOD).getAsString())))
                 .orElse(Sound.ITEM_SHIELD_BLOCK);
         SoundCategory category = Enums
                 .getIfPresent(SoundCategory.class,
-                        cm.getData(SOUND_KNOCK_CATEGORY).getAsString())
+                        cm.getData(className + SOUND_KNOCK_CATEGORY).getAsString())
                 .or(SoundCategory.BLOCKS);
-        float volume = cm.getData(SOUND_KNOCK_VOLUME).getAsFloat();
-        float pitch = cm.getData(SOUND_KNOCK_PITCH).getAsFloat();
+        float volume = cm.getData(className + SOUND_KNOCK_VOLUME).getAsFloat();
+        float pitch = cm.getData(className + SOUND_KNOCK_PITCH).getAsFloat();
 
         world.playSound(loc, sound, category, volume, pitch);
     }
@@ -246,7 +247,6 @@ public class DoorsModule implements Listener, Modular {
     public Map<String, Object> config() {
         return new HashMap<String, Object>() {
             {
-                final String className = DoorsModule.class.getSimpleName();
                 put(className + ENABLE, true);
                 put(className + SOUND_KNOCK_CATEGORY, "BLOCKS");
                 put(className + SOUND_KNOCK_PITCH, 1.0);

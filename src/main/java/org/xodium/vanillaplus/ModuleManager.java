@@ -5,8 +5,11 @@ import java.util.function.Supplier;
 
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
+import org.xodium.vanillaplus.interfaces.Modular;
 import org.xodium.vanillaplus.modules.DoorsModule;
 import org.xodium.vanillaplus.modules.RecipesModule;
+
+import com.google.gson.Gson;
 
 public class ModuleManager {
     private final VanillaPlus vp = VanillaPlus.getInstance();
@@ -18,6 +21,11 @@ public class ModuleManager {
             RecipesModule::new);
 
     {
+        modules.forEach(supplier -> {
+            ((Modular) supplier.get()).config().forEach((key, value) -> {
+                cm.setData(key, new Gson().toJsonTree(value));
+            });
+        });
         modules.forEach(supplier -> {
             if (cm.getData(supplier.get().getClass().getSimpleName() + ".enable").getAsBoolean()) {
                 pm.registerEvents((Listener) supplier.get(), vp);
