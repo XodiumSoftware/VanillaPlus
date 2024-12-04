@@ -6,6 +6,8 @@ import org.xodium.vanillaplus.commands.ReloadCommand;
 
 public class VanillaPlus extends JavaPlugin {
 
+  private static final String FOLIA = "io.papermc.paper.threadedregions.RegionizedServer";
+  private static final String PAPER = "Paper";
   private static final String[] V = { "1.21.3" };
 
   public static VanillaPlus getInstance() {
@@ -19,7 +21,7 @@ public class VanillaPlus extends JavaPlugin {
       getServer().getPluginManager().disablePlugin(this);
       return;
     }
-    if (isSupportedVersion()) {
+    if (!isSupportedVersion()) {
       getLogger().severe("This plugin requires Paper version: " + String.join(", ", V));
       getServer().getPluginManager().disablePlugin(this);
       return;
@@ -40,12 +42,12 @@ public class VanillaPlus extends JavaPlugin {
   }
 
   private boolean isPaper() {
-    return getServer().getVersion().contains("Paper");
+    return getServer().getName().contains(PAPER);
   }
 
   private static boolean isFolia() {
     try {
-      Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
+      Class.forName(FOLIA);
       return true;
     } catch (ClassNotFoundException e) {
       return false;
