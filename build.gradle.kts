@@ -1,6 +1,5 @@
 plugins {
     id("java")
-    id("com.gradleup.shadow") version("9.0.0-beta2")
 }
 
 group = "org.xodium.vanillaplus"
@@ -17,8 +16,6 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.3-R0.1-SNAPSHOT")
-    implementation("org.spongepowered:configurate-core:4.1.2")
-    implementation("org.spongepowered:configurate-gson:4.1.2")
     implementation("net.kyori:adventure-api:4.17.0")
 }
 
@@ -27,14 +24,10 @@ java {
 }
 
 tasks {
-    shadowJar {
-        relocate("org.spongepowered.configurate", "org.xodium.vanillaplus.libs.configurate")
+    jar {
         manifest {
             attributes(mapOf("paperweight-mappings-namespace" to "mojang"))
         }
-    }
-    jar {
-        enabled = false
     }
     withType<JavaCompile> {
         options.encoding = "UTF-8"
@@ -44,11 +37,8 @@ tasks {
             println(project.version)
         }
     }
-    named("build") {
-        dependsOn("shadowJar")
-    }
     register<Jar>("customJar") {
-        dependsOn("shadowJar")
+        dependsOn("jar")
         from(sourceSets.main.get().output)
         doFirst {
             val pluginYmlContent = """

@@ -1,66 +1,58 @@
 package org.xodium.vanillaplus;
 
-import org.spongepowered.configurate.BasicConfigurationNode;
-import org.spongepowered.configurate.ConfigurateException;
-import org.spongepowered.configurate.gson.GsonConfigurationLoader;
-import org.spongepowered.configurate.loader.ConfigurationLoader;
-import org.spongepowered.configurate.serialize.SerializationException;
-
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 
-// TODO: config is not being created on first run.
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 public class ConfigManager {
-    private static final String CONFIG_FILE_PATH = "config.json";
+    private static final String CONFIG_FILE = "config.json";
     private final VanillaPlus vp = VanillaPlus.getInstance();
-    final ConfigurationLoader<BasicConfigurationNode> cl;
-    BasicConfigurationNode bcn;
+    private final Path dataFolderPath = vp.getDataFolder().toPath();
+    private final Path dataFilePath = dataFolderPath.resolve(CONFIG_FILE);
 
     public ConfigManager() {
-        File f = new File(CONFIG_FILE_PATH);
-        if (!f.exists()) {
-            try {
-                f.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-                vp.getServer().getPluginManager().disablePlugin(vp);
+        try {
+            Files.createDirectories(dataFolderPath);
+            if (!Files.exists(dataFilePath)) {
+                Files.createFile(dataFilePath);
+                Files.write(dataFilePath, "{}".getBytes(StandardCharsets.UTF_8));
             }
-        }
-        cl = GsonConfigurationLoader.builder()
-                .path(Paths.get(CONFIG_FILE_PATH)).build();
-        try {
-            bcn = cl.load();
-        } catch (ConfigurateException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            vp.getServer().getPluginManager().disablePlugin(vp);
         }
     }
 
-    public void saveConfig() {
+    public void setData(String key, JsonElement value) {
         try {
-            cl.save(bcn);
-        } catch (ConfigurateException e) {
+            JsonObject currentData = getAllData();
+            currentData.add(key, value);
+            Files.write(dataFilePath, new Gson().toJson(currentData).getBytes(StandardCharsets.UTF_8),
+                    StandardOpenOption.TRUNCATE_EXISTING);
+        } catch (IOException e) {
             e.printStackTrace();
-            vp.getServer().getPluginManager().disablePlugin(vp);
         }
     }
 
-    public void setConfigValue(String key, Object value) {
+    public JsonElement getData(String key) {
         try {
-            bcn.node(key).set(value);
-        } catch (SerializationException e) {
+            JsonObject currentData = getAllData();
+            return currentData.get(key);
+        } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
-        saveConfig();
     }
 
-    public <T> T getConfigValue(String key, Class<T> clazz) {
-        try {
-            return bcn.node(key).get(clazz);
-        } catch (SerializationException e) {
-            e.printStackTrace();
-        }
-        return null;
+    private JsonObject getAllData() throws IOException {
+        return JsonParser.parseString(new String(Files.readAllBytes(dataFilePath), StandardCharsets.UTF_8))
+                .getAsJsonObject();
     }
+
 }

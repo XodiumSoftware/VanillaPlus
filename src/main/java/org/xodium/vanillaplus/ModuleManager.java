@@ -11,11 +11,11 @@ public class ModuleManager {
     private final static String MODULE_LOADED_MSG = "Loaded: %s";
 
     {
-        if (cm.getConfigValue(DoorsModule.ENABLE, Boolean.class)) {
+        if (cm.getData(DoorsModule.ENABLE).getAsBoolean()) {
             pm.registerEvents(new DoorsModule(), vp);
             vp.getLogger().info(String.format(MODULE_LOADED_MSG, DoorsModule.class.getSimpleName()));
         }
-        if (cm.getConfigValue(RecipesModule.ENABLE, Boolean.class)) {
+        if (cm.getData(RecipesModule.ENABLE).getAsBoolean()) {
             pm.registerEvents(new RecipesModule(), vp);
             vp.getLogger().info(String.format(MODULE_LOADED_MSG, RecipesModule.class.getSimpleName()));
         }
