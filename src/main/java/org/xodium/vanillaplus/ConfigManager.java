@@ -6,15 +6,27 @@ import org.spongepowered.configurate.gson.GsonConfigurationLoader;
 import org.spongepowered.configurate.loader.ConfigurationLoader;
 import org.spongepowered.configurate.serialize.SerializationException;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Paths;
 
+// TODO: config is not being created on first run.
 public class ConfigManager {
-    private static final String CONFIG_FILE_PATH = "config.yml";
+    private static final String CONFIG_FILE_PATH = "config.json";
     private final VanillaPlus vp = VanillaPlus.getInstance();
     final ConfigurationLoader<BasicConfigurationNode> cl;
     BasicConfigurationNode bcn;
 
-    {
+    public ConfigManager() {
+        File f = new File(CONFIG_FILE_PATH);
+        if (!f.exists()) {
+            try {
+                f.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+                vp.getServer().getPluginManager().disablePlugin(vp);
+            }
+        }
         cl = GsonConfigurationLoader.builder()
                 .path(Paths.get(CONFIG_FILE_PATH)).build();
         try {
