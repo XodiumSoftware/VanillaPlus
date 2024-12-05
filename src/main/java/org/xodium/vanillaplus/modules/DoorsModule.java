@@ -248,23 +248,21 @@ public class DoorsModule implements Listener, Modular {
     }
 
     @Override
-    public Map<String, Object> config() {
-        Map<String, Object> fcMap = new HashMap<>();
-        fcMap.put(className + ENABLE, true);
-        fcMap.put(className + SOUND_KNOCK_CATEGORY, "BLOCKS");
-        fcMap.put(className + SOUND_KNOCK_PITCH, 1.0);
-        fcMap.put(className + SOUND_KNOCK_VOLUME, 1.0);
-        fcMap.put(className + SOUND_KNOCK_WOOD, "entity_zombie_attack_wooden_door");
-        fcMap.put(className + ALLOW_AUTOCLOSE, true);
-        fcMap.put(className + ALLOW_DOUBLEDOORS, true);
-        fcMap.put(className + ALLOW_KNOCKING, true);
-        fcMap.put(className + ALLOW_KNOCKING_GATES, true);
-        fcMap.put(className + ALLOW_KNOCKING_TRAPDOORS, true);
-        fcMap.put(className + KNOCKING_REQUIRES_EMPTY_HAND, true);
-        fcMap.put(className + KNOCKING_REQUIRES_SHIFT, false);
-        fcMap.put(className + AUTOCLOSE_DELAY, 6);
-        fc.addDefaults(fcMap);
+    public void config() {
+        fc.addDefaults(Map.ofEntries(
+                Map.entry(className + ENABLE, true),
+                Map.entry(className + SOUND_KNOCK_CATEGORY, "BLOCKS"),
+                Map.entry(className + SOUND_KNOCK_PITCH, 1.0),
+                Map.entry(className + SOUND_KNOCK_VOLUME, 1.0),
+                Map.entry(className + SOUND_KNOCK_WOOD, "entity_zombie_attack_wooden_door"),
+                Map.entry(className + ALLOW_AUTOCLOSE, true),
+                Map.entry(className + ALLOW_DOUBLEDOORS, true),
+                Map.entry(className + ALLOW_KNOCKING, true),
+                Map.entry(className + ALLOW_KNOCKING_GATES, true),
+                Map.entry(className + ALLOW_KNOCKING_TRAPDOORS, true),
+                Map.entry(className + KNOCKING_REQUIRES_EMPTY_HAND, true),
+                Map.entry(className + KNOCKING_REQUIRES_SHIFT, false),
+                Map.entry(className + AUTOCLOSE_DELAY, 6)));
         vp.saveConfig();
-        return fcMap;
     }
 }
