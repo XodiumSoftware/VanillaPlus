@@ -29,7 +29,7 @@ public class ReloadCommand implements MSG {
                                     p.sendMessage(mm.deserialize(PERM_ERR_MSG));
                                     return 0;
                                 }
-                                // TODO: Reload configuration
+                                vp.reloadConfig();
                                 cs.sendMessage(mm.deserialize(RELOAD_SUCC_MSG));
                                 vp.getLogger().info(RELOAD_SUCC_LOG_MSG);
                                 return Command.SINGLE_SUCCESS;
