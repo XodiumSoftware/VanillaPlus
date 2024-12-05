@@ -13,6 +13,7 @@ public class ModuleManager {
     {
         List.of(new RecipesModule(), new DoorsModule())
                 .stream()
+                // TODO: make the config actually work.
                 .peek(Modular::config)
                 .filter(Modular::isEnabled)
                 .forEach(module -> {
