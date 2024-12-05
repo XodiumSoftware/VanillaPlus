@@ -62,7 +62,7 @@ public class DoorsModule implements Listener, Modular {
     private final HashMap<Block, Long> autoClose = new HashMap<>();
     private final VanillaPlus vp = VanillaPlus.getInstance();
     private final FileConfiguration fc = vp.getConfig();
-    private final String className = DoorsModule.class.getSimpleName();
+    private final String className = getClass().getSimpleName();
     private final static AdjacentBlockRecord[] POSSIBLE_NEIGHBOURS = {
             new AdjacentBlockRecord(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
             new AdjacentBlockRecord(0, 1, Door.Hinge.LEFT, BlockFace.EAST),
@@ -244,28 +244,27 @@ public class DoorsModule implements Listener, Modular {
 
     @Override
     public boolean isEnabled() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isEnabled'");
+        return fc.getBoolean(className + ENABLE);
     }
 
     @Override
     public Map<String, Object> config() {
-        return new HashMap<String, Object>() {
-            {
-                put(className + ENABLE, true);
-                put(className + SOUND_KNOCK_CATEGORY, "BLOCKS");
-                put(className + SOUND_KNOCK_PITCH, 1.0);
-                put(className + SOUND_KNOCK_VOLUME, 1.0);
-                put(className + SOUND_KNOCK_WOOD, "entity_zombie_attack_wooden_door");
-                put(className + ALLOW_AUTOCLOSE, true);
-                put(className + ALLOW_DOUBLEDOORS, true);
-                put(className + ALLOW_KNOCKING, true);
-                put(className + ALLOW_KNOCKING_GATES, true);
-                put(className + ALLOW_KNOCKING_TRAPDOORS, true);
-                put(className + KNOCKING_REQUIRES_EMPTY_HAND, true);
-                put(className + KNOCKING_REQUIRES_SHIFT, false);
-                put(className + AUTOCLOSE_DELAY, 6);
-            }
-        };
+        Map<String, Object> fcMap = new HashMap<>();
+        fcMap.put(className + ENABLE, true);
+        fcMap.put(className + SOUND_KNOCK_CATEGORY, "BLOCKS");
+        fcMap.put(className + SOUND_KNOCK_PITCH, 1.0);
+        fcMap.put(className + SOUND_KNOCK_VOLUME, 1.0);
+        fcMap.put(className + SOUND_KNOCK_WOOD, "entity_zombie_attack_wooden_door");
+        fcMap.put(className + ALLOW_AUTOCLOSE, true);
+        fcMap.put(className + ALLOW_DOUBLEDOORS, true);
+        fcMap.put(className + ALLOW_KNOCKING, true);
+        fcMap.put(className + ALLOW_KNOCKING_GATES, true);
+        fcMap.put(className + ALLOW_KNOCKING_TRAPDOORS, true);
+        fcMap.put(className + KNOCKING_REQUIRES_EMPTY_HAND, true);
+        fcMap.put(className + KNOCKING_REQUIRES_SHIFT, false);
+        fcMap.put(className + AUTOCLOSE_DELAY, 6);
+        fc.addDefaults(fcMap);
+        vp.saveConfig();
+        return fcMap;
     }
 }

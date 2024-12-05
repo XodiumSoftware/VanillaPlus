@@ -3,6 +3,7 @@ package org.xodium.vanillaplus.modules;
 import org.bukkit.Bukkit;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,7 +18,8 @@ import java.util.Map;
 
 public class RecipesModule implements Listener, Modular {
     private final VanillaPlus vp = VanillaPlus.getInstance();
-    private final String className = RecipesModule.class.getSimpleName();
+    private final FileConfiguration fc = vp.getConfig();
+    private final String className = getClass().getSimpleName();
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
@@ -36,15 +38,15 @@ public class RecipesModule implements Listener, Modular {
 
     @Override
     public boolean isEnabled() {
-        return vp.getConfig().getBoolean(className + ENABLE);
+        return fc.getBoolean(className + ENABLE);
     }
 
     @Override
     public Map<String, Object> config() {
-        return new HashMap<String, Object>() {
-            {
-                put(className + ENABLE, true);
-            }
-        };
+        Map<String, Object> fcMap = new HashMap<>();
+        fcMap.put(className + ENABLE, true);
+        fc.addDefaults(fcMap);
+        vp.saveConfig();
+        return fcMap;
     }
 }
