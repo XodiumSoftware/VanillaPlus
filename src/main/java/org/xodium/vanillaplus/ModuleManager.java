@@ -17,6 +17,7 @@ public class ModuleManager {
                 .filter(Modular::isEnabled)
                 .forEach(module -> {
                     vp.getServer().getPluginManager().registerEvents(module, vp);
+                    // TODO: make it show a shortified version of the module name.
                     vp.getLogger().info(MSG.MODULE_LOADED + module);
                 });
     }
