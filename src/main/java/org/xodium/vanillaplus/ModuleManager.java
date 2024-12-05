@@ -13,6 +13,7 @@ public class ModuleManager {
     {
         List.of(new RecipesModule(), new DoorsModule())
                 .stream()
+                .peek(Modular::config)
                 .filter(Modular::isEnabled)
                 .forEach(module -> {
                     vp.getServer().getPluginManager().registerEvents(module, vp);
