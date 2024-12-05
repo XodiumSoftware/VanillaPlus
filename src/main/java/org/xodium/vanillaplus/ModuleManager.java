@@ -10,6 +10,7 @@ public class ModuleManager {
     private final VanillaPlus vp = VanillaPlus.getInstance();
 
     {
+        // TODO: make it automaticall load all modules in the modules folder.
         List.of(new DoorsModule())
                 .stream()
                 // TODO: make the config actually work.

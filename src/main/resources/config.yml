@@ -1,0 +1,14 @@
+DoorsModule:
+  enable: true
+  sound_knock_category: "BLOCKS"
+  sound_knock_pitch: 1.0
+  sound_knock_volume: 1.0
+  sound_knock_wood: "entity_zombie_attack_wooden_door"
+  allow_autoclose: true
+  allow_doubledoors: true
+  allow_knocking: true
+  allow_knocking_gates: true
+  allow_knocking_trapdoors: true
+  knocking_requires_empty_hand: true
+  knocking_requires_shift: false
+  autoclose_delay: 6

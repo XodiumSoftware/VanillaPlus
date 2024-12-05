@@ -7,7 +7,7 @@ import org.xodium.vanillaplus.commands.ReloadCommand;
 public class VanillaPlus extends JavaPlugin {
 
   private static final String[] V = { "1.21.3" };
-  private static final String PAPER = "Paper";
+  private static final String[] PAPER = { "Paper" };
   private static final String IS_PAPER_MSG = "This plugin is not compatible with non-Paper servers.";
   private static final String IS_SUPPORTED_VERSION_MSG = "This plugin requires Paper version: " + String.join(", ", V);
 
@@ -41,6 +41,7 @@ public class VanillaPlus extends JavaPlugin {
   }
 
   private boolean isPaper() {
-    return getServer().getName().contains(PAPER);
+    return Arrays.stream(PAPER)
+        .anyMatch(v -> getServer().getName().contains(v));
   }
 }
