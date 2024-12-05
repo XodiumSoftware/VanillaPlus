@@ -31,6 +31,7 @@ public class VanillaPlus extends JavaPlugin {
       getServer().getPluginManager().disablePlugin(this);
       return;
     }
+    saveDefaultConfig();
     new ReloadCommand();
     new ModuleManager();
   }

@@ -41,8 +41,6 @@ import com.google.common.base.Enums;
 
 // TODO: refactor.
 public class DoorsModule implements Listener, Modular {
-    public static final String ENABLE = ".enable";
-
     // Sound settings
     public static final String SOUND_KNOCK_CATEGORY = ".sound_knock_category";
     public static final String SOUND_KNOCK_PITCH = ".sound_knock_pitch";
@@ -244,6 +242,13 @@ public class DoorsModule implements Listener, Modular {
         }.runTaskLater(vp, 1L);
     }
 
+    @Override
+    public boolean isEnabled() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'isEnabled'");
+    }
+
+    @Override
     public Map<String, Object> config() {
         return new HashMap<String, Object>() {
             {
@@ -263,5 +268,4 @@ public class DoorsModule implements Listener, Modular {
             }
         };
     }
-
 }

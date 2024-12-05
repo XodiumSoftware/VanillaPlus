@@ -2,9 +2,10 @@ package org.xodium.vanillaplus.interfaces;
 
 import java.util.Map;
 
-/**
- * Interface for modular classes.
- */
 public interface Modular {
+    String ENABLE = ".enable";
+
+    boolean isEnabled();
+
     Map<String, Object> config();
 }

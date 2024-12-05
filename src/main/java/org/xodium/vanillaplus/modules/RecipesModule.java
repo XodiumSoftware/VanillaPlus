@@ -8,6 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Recipe;
+import org.xodium.vanillaplus.VanillaPlus;
 import org.xodium.vanillaplus.interfaces.Modular;
 
 import java.util.HashMap;
@@ -15,7 +16,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class RecipesModule implements Listener, Modular {
-    public static final String ENABLE = ".enable";
+    private final VanillaPlus vp = VanillaPlus.getInstance();
     private final String className = RecipesModule.class.getSimpleName();
 
     @EventHandler
@@ -31,6 +32,11 @@ public class RecipesModule implements Listener, Modular {
                 }
             }
         }
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return vp.getConfig().getBoolean(className + ENABLE);
     }
 
     @Override
