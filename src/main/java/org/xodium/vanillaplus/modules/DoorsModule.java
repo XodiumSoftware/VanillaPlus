@@ -27,7 +27,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
@@ -40,7 +39,7 @@ import org.xodium.vanillaplus.records.AdjacentBlockRecord;
 import com.google.common.base.Enums;
 
 // TODO: refactor.
-public class DoorsModule implements Listener, Modular {
+public class DoorsModule implements Modular {
     // Sound settings
     public static final String SOUND_KNOCK_CATEGORY = ".sound_knock_category";
     public static final String SOUND_KNOCK_PITCH = ".sound_knock_pitch";
