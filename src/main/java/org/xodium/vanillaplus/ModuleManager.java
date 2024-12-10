@@ -1,6 +1,6 @@
 package org.xodium.vanillaplus;
 
-import org.xodium.vanillaplus.interfaces.Modular;
+import org.xodium.vanillaplus.interfaces.ModuleInterface;
 import org.xodium.vanillaplus.modules.DoorsModule;
 
 import java.util.List;
@@ -11,11 +11,11 @@ public class ModuleManager {
     {
         List.of(new DoorsModule())
                 .stream()
-                .peek(Modular::config)
-                .filter(Modular::enabled)
+                .peek(ModuleInterface::config)
+                .filter(ModuleInterface::enabled)
                 .forEach(module -> {
                     vp.getServer().getPluginManager().registerEvents(module, vp);
-                    vp.getLogger().info(VanillaPlus.PREFIX + "Loaded: " + module.getClass().getSimpleName());
+                    vp.getLogger().info("Loaded: " + module.getClass().getSimpleName());
                 });
     }
 }

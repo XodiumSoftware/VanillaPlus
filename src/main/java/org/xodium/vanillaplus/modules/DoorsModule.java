@@ -32,18 +32,18 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.xodium.vanillaplus.Database;
 import org.xodium.vanillaplus.VanillaPlus;
-import org.xodium.vanillaplus.interfaces.Modular;
+import org.xodium.vanillaplus.interfaces.ModuleInterface;
 import org.xodium.vanillaplus.records.AdjacentBlockRecord;
 
 import com.google.common.base.Enums;
 
 // TODO: refactor.
-public class DoorsModule implements Modular {
+public class DoorsModule implements ModuleInterface {
     private final String cn = getClass().getSimpleName();
     private static final VanillaPlus vp = VanillaPlus.getInstance();
     private static final Database db = new Database();
 
-    private interface CONFIG extends Modular.CONFIG {
+    private interface CONFIG extends ModuleInterface.CONFIG {
         // Sound settings
         String SOUND_KNOCK_CATEGORY = ".sound_knock_category";
         String SOUND_KNOCK_PITCH = ".sound_knock_pitch";

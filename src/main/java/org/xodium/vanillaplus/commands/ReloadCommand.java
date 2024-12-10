@@ -4,28 +4,31 @@ import java.util.List;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginManager;
+import org.jetbrains.annotations.NotNull;
 import org.xodium.vanillaplus.VanillaPlus;
+import org.xodium.vanillaplus.gui.SettingsGUI;
+
 import com.mojang.brigadier.Command;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
 public class ReloadCommand {
     private static final VanillaPlus vp = VanillaPlus.getInstance();
-    private static final PluginManager pm = vp.getServer().getPluginManager();
-    private static final String vpcn = vp.getClass().getSimpleName();
     private static final MiniMessage mm = MiniMessage.miniMessage();
 
     private interface MSG {
-        String RELOAD_SUCC_LOG = "Reloaded successfully.";
-        String RELOAD_SUCC = VanillaPlus.PREFIX + "<green>Reloaded successfully.";
-        String PERM_ERR = VanillaPlus.PREFIX
-                + "<red>You do not have permission to use this command!";
+        @NotNull
+        Component PERM_ERR = mm.deserialize(VanillaPlus.PREFIX
+                + "<red>You do not have permission to use this command!");
+        @NotNull
+        Component PLAYER_ONLY_CMD = mm
+                .deserialize("This command can only be run by a player.");
     }
 
     private interface PERMS {
-        String RELOAD = vpcn + ".reload";
+        String RELOAD = vp.getClass().getSimpleName() + ".reload";
     }
 
     {
@@ -34,18 +37,19 @@ public class ReloadCommand {
                     Commands.literal("vanillaplus")
                             .executes(ctx -> {
                                 CommandSender cs = ctx.getSource().getSender();
-                                if (cs instanceof Player p && !p.hasPermission(PERMS.RELOAD)) {
-                                    p.sendMessage(mm.deserialize(MSG.PERM_ERR));
-                                    return 0;
+                                if (cs instanceof Player p) {
+                                    if (!p.hasPermission(PERMS.RELOAD)) {
+                                        p.sendMessage(MSG.PERM_ERR);
+                                        return 0;
+                                    }
+                                    SettingsGUI.openInventory(p);
+                                    return Command.SINGLE_SUCCESS;
                                 }
-                                pm.disablePlugin(vp);
-                                pm.enablePlugin(vp);
-                                cs.sendMessage(mm.deserialize(MSG.RELOAD_SUCC));
-                                vp.getLogger().info(MSG.RELOAD_SUCC_LOG);
-                                return Command.SINGLE_SUCCESS;
+                                cs.sendMessage(MSG.PLAYER_ONLY_CMD);
+                                return 0;
                             })
                             .build(),
-                    "Reloads VanillaPlus",
+                    "Opens the GUI",
                     List.of("vp"));
         });
     }

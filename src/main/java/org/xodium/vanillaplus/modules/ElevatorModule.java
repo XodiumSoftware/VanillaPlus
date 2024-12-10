@@ -1,9 +1,9 @@
 package org.xodium.vanillaplus.modules;
 
 import org.xodium.vanillaplus.Database;
-import org.xodium.vanillaplus.interfaces.Modular;
+import org.xodium.vanillaplus.interfaces.ModuleInterface;
 
-public class ElevatorModule implements Modular {
+public class ElevatorModule implements ModuleInterface {
     private final String cn = getClass().getSimpleName();
     private final Database db = new Database();
 
