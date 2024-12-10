@@ -9,7 +9,7 @@ public class ElevatorModule implements Modular {
 
     @Override
     public boolean isEnabled() {
-        return (boolean) db.getData(className + ENABLE);
+        return db.getData(className + ENABLE, Boolean.class);
     }
 
     @Override

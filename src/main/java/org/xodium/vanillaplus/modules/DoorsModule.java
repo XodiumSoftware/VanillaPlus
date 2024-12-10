@@ -123,10 +123,10 @@ public class DoorsModule implements Modular {
                 || !(blockData instanceof Door || blockData instanceof Gate))
             return;
 
-        if (!(boolean) db.getData(className + ALLOW_DOUBLEDOORS)) {
+        if (!db.getData(className + ALLOW_DOUBLEDOORS, Boolean.class)) {
             vp.getLogger()
                     .warning("Double doors are disabled. ALLOW_DOUBLEDOORS value: "
-                            + (boolean) db.getData(className + ALLOW_DOUBLEDOORS));
+                            + db.getData(className + ALLOW_DOUBLEDOORS, Boolean.class));
             return;
         }
 
@@ -138,11 +138,11 @@ public class DoorsModule implements Modular {
                 this.toggleOtherDoor(clickedBlock, otherDoorBlock, !otherDoor.isOpen());
                 autoClose.put(otherDoorBlock,
                         System.currentTimeMillis()
-                                + Long.valueOf((long) db.getData(className + AUTOCLOSE_DELAY)) * 1000);
+                                + db.getData(className + AUTOCLOSE_DELAY, Long.class) * 1000);
             }
         }
         autoClose.put(clickedBlock,
-                System.currentTimeMillis() + Long.valueOf((long) db.getData(className + AUTOCLOSE_DELAY)) * 1000);
+                System.currentTimeMillis() + db.getData(className + AUTOCLOSE_DELAY, Long.class) * 1000);
     }
 
     @EventHandler
@@ -157,10 +157,10 @@ public class DoorsModule implements Modular {
                 || e.getHand() != EquipmentSlot.HAND)
             return;
 
-        if ((boolean) db.getData(className + KNOCKING_REQUIRES_SHIFT) && !p.isSneaking())
+        if (db.getData(className + KNOCKING_REQUIRES_SHIFT, Boolean.class) && !p.isSneaking())
             return;
 
-        if ((boolean) db.getData(className + KNOCKING_REQUIRES_EMPTY_HAND)
+        if (db.getData(className + KNOCKING_REQUIRES_EMPTY_HAND, Boolean.class)
                 && p.getInventory().getItemInMainHand().getType() != Material.AIR)
             return;
 
@@ -170,9 +170,9 @@ public class DoorsModule implements Modular {
         Block block = e.getClickedBlock();
         BlockData blockData = block.getBlockData();
 
-        if ((blockData instanceof Door && (boolean) db.getData(className + ALLOW_KNOCKING))
-                || (blockData instanceof TrapDoor && (boolean) db.getData(className + ALLOW_KNOCKING_TRAPDOORS))
-                || (blockData instanceof Gate && (boolean) db.getData(className + ALLOW_KNOCKING_GATES))) {
+        if ((blockData instanceof Door && db.getData(className + ALLOW_KNOCKING, Boolean.class))
+                || (blockData instanceof TrapDoor && db.getData(className + ALLOW_KNOCKING_TRAPDOORS, Boolean.class))
+                || (blockData instanceof Gate && db.getData(className + ALLOW_KNOCKING_GATES, Boolean.class))) {
             this.playKnockSound(block);
         }
     }
@@ -183,14 +183,15 @@ public class DoorsModule implements Modular {
         Sound sound = Optional
                 .ofNullable(
                         Registry.SOUNDS
-                                .get(NamespacedKey.minecraft((String) db.getData(className + SOUND_KNOCK_WOOD))))
+                                .get(NamespacedKey.minecraft(
+                                        db.getData(className + SOUND_KNOCK_WOOD, String.class).toLowerCase())))
                 .orElse(Sound.ITEM_SHIELD_BLOCK);
         SoundCategory category = Enums
                 .getIfPresent(SoundCategory.class,
-                        (String) db.getData(className + SOUND_KNOCK_CATEGORY))
+                        db.getData(className + SOUND_KNOCK_CATEGORY, String.class).toUpperCase())
                 .or(SoundCategory.BLOCKS);
-        float volume = (int) db.getData(className + SOUND_KNOCK_VOLUME);
-        float pitch = (int) db.getData(className + SOUND_KNOCK_PITCH);
+        float volume = db.getData(className + SOUND_KNOCK_VOLUME, Float.class);
+        float pitch = db.getData(className + SOUND_KNOCK_PITCH, Float.class);
 
         world.playSound(loc, sound, category, volume, pitch);
     }
@@ -250,7 +251,7 @@ public class DoorsModule implements Modular {
 
     @Override
     public boolean isEnabled() {
-        return (boolean) db.getData(className + ENABLE);
+        return db.getData(className + ENABLE, Boolean.class);
     }
 
     @Override

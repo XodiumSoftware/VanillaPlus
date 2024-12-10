@@ -62,22 +62,41 @@ public class Database {
         }
     }
 
-    public Object getData(String key) {
+    public <T> T getData(String key, Class<T> type) {
         try (PreparedStatement stmt = conn.prepareStatement(GET_DATA)) {
             stmt.setString(1, key);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 String value = rs.getString(GET_DATA_COLUMN_VALUE);
                 if ("true".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value)) {
-                    return Boolean.parseBoolean(value);
+                    if (type == Boolean.class) {
+                        return type.cast(Boolean.parseBoolean(value));
+                    }
                 }
-                return value;
+                if (type == Long.class) {
+                    try {
+                        return type.cast(Long.parseLong(value));
+                    } catch (NumberFormatException e) {
+                        throw new ClassCastException("Value for key '" + key + "' cannot be parsed to Long.");
+                    }
+                }
+                if (type == Integer.class) {
+                    try {
+                        return type.cast(Integer.parseInt(value));
+                    } catch (NumberFormatException e) {
+                        throw new ClassCastException("Value for key '" + key + "' cannot be parsed to Integer.");
+                    }
+                }
+                if (type == String.class) {
+                    return type.cast(value);
+                }
+                throw new ClassCastException("Unsupported type: " + type.getSimpleName());
             } else {
                 throw new IllegalArgumentException("No data found for key: " + key);
             }
         } catch (SQLException err) {
             err.printStackTrace();
+            return null;
         }
-        return null;
     }
 }
