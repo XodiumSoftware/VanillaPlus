@@ -1,31 +1,49 @@
 package org.xodium.vanillaplus;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
 
 public class Database {
     private Connection conn;
-    private final VanillaPlus plugin = VanillaPlus.getInstance();
+    private final VanillaPlus vp = VanillaPlus.getInstance();
 
     private static final String DB_URL_PREFIX = "jdbc:sqlite:";
     private static final String DB_FILE = "vanillaplus.db";
 
     private static final String INIT_TABLES = "CREATE TABLE IF NOT EXISTS config (key TEXT PRIMARY KEY, value TEXT)";
-    private static final String SET_DATA = "INSERT INTO config (key, value) SELECT ?, ? WHERE NOT EXISTS (SELECT 1 FROM config WHERE key = ?)";
-    private static final String UPDATE_DATA = "INSERT OR REPLACE INTO config (key, value) VALUES (?, ?)";
+    private static final String SET_DATA_INITIAL = "INSERT INTO config (key, value) SELECT ?, ? WHERE NOT EXISTS (SELECT 1 FROM config WHERE key = ?)";
+    private static final String SET_DATA_UPSERT = "INSERT INTO config (key, value) VALUES (?, ?) "
+            + "ON CONFLICT(key) DO UPDATE SET value = EXCLUDED.value";
     private static final String GET_DATA = "SELECT value FROM config WHERE key = ?";
     private static final String GET_DATA_COLUMN_VALUE = "value";
 
+    private static final Map<Class<?>, Function<String, ?>> TYPE_PARSERS = new HashMap<>() {
+        {
+            put(Boolean.class, Boolean::parseBoolean);
+            put(Long.class, Long::parseLong);
+            put(Integer.class, Integer::parseInt);
+            put(Double.class, Double::parseDouble);
+            put(Float.class, Float::parseFloat);
+            put(BigDecimal.class, BigDecimal::new);
+            put(String.class, Function.identity());
+            put(Date.class, Date::valueOf);
+        }
+    };
+
     public Database() {
         try {
-            if (!plugin.getDataFolder().exists())
-                plugin.getDataFolder().mkdirs();
+            vp.getDataFolder().mkdirs();
             conn = DriverManager
-                    .getConnection(DB_URL_PREFIX + new File(plugin.getDataFolder(), DB_FILE).getAbsolutePath());
+                    .getConnection(DB_URL_PREFIX + new File(vp.getDataFolder(), DB_FILE).getAbsolutePath());
             initTables();
         } catch (SQLException err) {
             err.printStackTrace();
@@ -33,8 +51,7 @@ public class Database {
     }
 
     private void initTables() {
-        try (PreparedStatement stmt = conn.prepareStatement(
-                INIT_TABLES)) {
+        try (PreparedStatement stmt = conn.prepareStatement(INIT_TABLES)) {
             stmt.executeUpdate();
         } catch (SQLException err) {
             err.printStackTrace();
@@ -42,20 +59,17 @@ public class Database {
     }
 
     public void setData(String key, Object value) {
-        try (PreparedStatement stmt = conn.prepareStatement(SET_DATA)) {
-            stmt.setString(1, key);
-            stmt.setObject(2, value instanceof Boolean ? (Boolean) value ? "true" : "false" : value);
-            stmt.setString(3, key);
-            stmt.executeUpdate();
-        } catch (SQLException err) {
-            err.printStackTrace();
-        }
+        setData(key, value, true);
     }
 
-    public void updateData(String key, Object value) {
-        try (PreparedStatement stmt = conn.prepareStatement(UPDATE_DATA)) {
+    public void setData(String key, Object value, boolean initial) {
+        String sql = initial ? SET_DATA_INITIAL : SET_DATA_UPSERT;
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, key);
-            stmt.setObject(2, value instanceof Boolean ? (Boolean) value ? "true" : "false" : value);
+            stmt.setObject(2, value instanceof Boolean ? ((Boolean) value ? "true" : "false") : value);
+            if (initial) {
+                stmt.setString(3, key);
+            }
             stmt.executeUpdate();
         } catch (SQLException err) {
             err.printStackTrace();
@@ -65,36 +79,19 @@ public class Database {
     public <T> T getData(String key, Class<T> type) {
         try (PreparedStatement stmt = conn.prepareStatement(GET_DATA)) {
             stmt.setString(1, key);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                String value = rs.getString(GET_DATA_COLUMN_VALUE);
-                if ("true".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value)) {
-                    if (type == Boolean.class) {
-                        return type.cast(Boolean.parseBoolean(value));
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String value = rs.getString(GET_DATA_COLUMN_VALUE);
+                    Function<String, ?> parser = TYPE_PARSERS.get(type);
+                    if (parser != null) {
+                        return type.cast(parser.apply(value));
                     }
+                    throw new ClassCastException("Unsupported type: " + type.getSimpleName());
+                } else {
+                    throw new IllegalArgumentException("No data found for key: " + key);
                 }
-                if (type == Long.class) {
-                    try {
-                        return type.cast(Long.parseLong(value));
-                    } catch (NumberFormatException e) {
-                        throw new ClassCastException("Value for key '" + key + "' cannot be parsed to Long.");
-                    }
-                }
-                if (type == Integer.class) {
-                    try {
-                        return type.cast(Integer.parseInt(value));
-                    } catch (NumberFormatException e) {
-                        throw new ClassCastException("Value for key '" + key + "' cannot be parsed to Integer.");
-                    }
-                }
-                if (type == String.class) {
-                    return type.cast(value);
-                }
-                throw new ClassCastException("Unsupported type: " + type.getSimpleName());
-            } else {
-                throw new IllegalArgumentException("No data found for key: " + key);
             }
-        } catch (SQLException err) {
+        } catch (SQLException | IllegalArgumentException err) {
             err.printStackTrace();
             return null;
         }
