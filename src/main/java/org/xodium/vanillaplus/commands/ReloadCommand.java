@@ -6,7 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.xodium.vanillaplus.VanillaPlus;
-import org.xodium.vanillaplus.interfaces.MSG;
+import org.xodium.vanillaplus.VanillaPlus.MSG;
 import org.xodium.vanillaplus.interfaces.PERMS;
 import com.mojang.brigadier.Command;
 import io.papermc.paper.command.brigadier.Commands;
