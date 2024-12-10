@@ -25,7 +25,6 @@ public class VanillaPlus extends JavaPlugin {
       disablePlugin(IS_SUPPORTED_VERSION_MSG);
       return;
     }
-    saveDefaultConfig();
     new ReloadCommand();
     new ModuleManager();
   }

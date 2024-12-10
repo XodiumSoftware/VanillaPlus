@@ -23,7 +23,6 @@ import org.bukkit.block.data.Openable;
 import org.bukkit.block.data.type.Door;
 import org.bukkit.block.data.type.Gate;
 import org.bukkit.block.data.type.TrapDoor;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -31,6 +30,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.xodium.vanillaplus.Database;
 import org.xodium.vanillaplus.VanillaPlus;
 import org.xodium.vanillaplus.interfaces.Modular;
 import org.xodium.vanillaplus.interfaces.PERMS;
@@ -40,6 +40,10 @@ import com.google.common.base.Enums;
 
 // TODO: refactor.
 public class DoorsModule implements Modular {
+    private final String className = getClass().getSimpleName();
+    private final VanillaPlus vp = VanillaPlus.getInstance();
+    private final Database db = new Database();
+
     // Sound settings
     public static final String SOUND_KNOCK_CATEGORY = ".sound_knock_category";
     public static final String SOUND_KNOCK_PITCH = ".sound_knock_pitch";
@@ -58,10 +62,8 @@ public class DoorsModule implements Modular {
     // Auto-close settings
     public static final String AUTOCLOSE_DELAY = ".autoclose_delay";
 
+    // Others
     private final HashMap<Block, Long> autoClose = new HashMap<>();
-    private final VanillaPlus vp = VanillaPlus.getInstance();
-    private final FileConfiguration fc = vp.getConfig();
-    private final String className = getClass().getSimpleName();
     private final static AdjacentBlockRecord[] POSSIBLE_NEIGHBOURS = {
             new AdjacentBlockRecord(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
             new AdjacentBlockRecord(0, 1, Door.Hinge.LEFT, BlockFace.EAST),
@@ -118,10 +120,15 @@ public class DoorsModule implements Modular {
                 || e.useInteractedBlock() == Event.Result.DENY
                 || e.useItemInHand() == Event.Result.DENY
                 || !e.getPlayer().hasPermission(PERMS.DOORSMODULE.USE)
-                || !fc.getBoolean(ALLOW_DOUBLEDOORS)
-                || !(blockData instanceof Door
-                        || blockData instanceof Gate))
+                || !(blockData instanceof Door || blockData instanceof Gate))
             return;
+
+        if (!(boolean) db.getData(className + ALLOW_DOUBLEDOORS)) {
+            vp.getLogger()
+                    .warning("Double doors are disabled. ALLOW_DOUBLEDOORS value: "
+                            + (boolean) db.getData(className + ALLOW_DOUBLEDOORS));
+            return;
+        }
 
         if (blockData instanceof Door) {
             Door door = this.getBottomDoor((Door) blockData, clickedBlock);
@@ -131,11 +138,11 @@ public class DoorsModule implements Modular {
                 this.toggleOtherDoor(clickedBlock, otherDoorBlock, !otherDoor.isOpen());
                 autoClose.put(otherDoorBlock,
                         System.currentTimeMillis()
-                                + Long.valueOf(fc.getLong(className + AUTOCLOSE_DELAY)) * 1000);
+                                + Long.valueOf((long) db.getData(className + AUTOCLOSE_DELAY)) * 1000);
             }
         }
         autoClose.put(clickedBlock,
-                System.currentTimeMillis() + Long.valueOf(fc.getLong(className + AUTOCLOSE_DELAY)) * 1000);
+                System.currentTimeMillis() + Long.valueOf((long) db.getData(className + AUTOCLOSE_DELAY)) * 1000);
     }
 
     @EventHandler
@@ -150,10 +157,10 @@ public class DoorsModule implements Modular {
                 || e.getHand() != EquipmentSlot.HAND)
             return;
 
-        if (fc.getBoolean(className + KNOCKING_REQUIRES_SHIFT) && !p.isSneaking())
+        if ((boolean) db.getData(className + KNOCKING_REQUIRES_SHIFT) && !p.isSneaking())
             return;
 
-        if (fc.getBoolean(className + KNOCKING_REQUIRES_EMPTY_HAND)
+        if ((boolean) db.getData(className + KNOCKING_REQUIRES_EMPTY_HAND)
                 && p.getInventory().getItemInMainHand().getType() != Material.AIR)
             return;
 
@@ -163,9 +170,9 @@ public class DoorsModule implements Modular {
         Block block = e.getClickedBlock();
         BlockData blockData = block.getBlockData();
 
-        if ((blockData instanceof Door && fc.getBoolean(className + ALLOW_KNOCKING))
-                || (blockData instanceof TrapDoor && fc.getBoolean(className + ALLOW_KNOCKING_TRAPDOORS))
-                || (blockData instanceof Gate && fc.getBoolean(className + ALLOW_KNOCKING_GATES))) {
+        if ((blockData instanceof Door && (boolean) db.getData(className + ALLOW_KNOCKING))
+                || (blockData instanceof TrapDoor && (boolean) db.getData(className + ALLOW_KNOCKING_TRAPDOORS))
+                || (blockData instanceof Gate && (boolean) db.getData(className + ALLOW_KNOCKING_GATES))) {
             this.playKnockSound(block);
         }
     }
@@ -176,14 +183,14 @@ public class DoorsModule implements Modular {
         Sound sound = Optional
                 .ofNullable(
                         Registry.SOUNDS
-                                .get(NamespacedKey.minecraft(fc.getString(className + SOUND_KNOCK_WOOD))))
+                                .get(NamespacedKey.minecraft((String) db.getData(className + SOUND_KNOCK_WOOD))))
                 .orElse(Sound.ITEM_SHIELD_BLOCK);
         SoundCategory category = Enums
                 .getIfPresent(SoundCategory.class,
-                        fc.getString(className + SOUND_KNOCK_CATEGORY))
+                        (String) db.getData(className + SOUND_KNOCK_CATEGORY))
                 .or(SoundCategory.BLOCKS);
-        float volume = fc.getInt(className + SOUND_KNOCK_VOLUME);
-        float pitch = fc.getInt(className + SOUND_KNOCK_PITCH);
+        float volume = (int) db.getData(className + SOUND_KNOCK_VOLUME);
+        float pitch = (int) db.getData(className + SOUND_KNOCK_PITCH);
 
         world.playSound(loc, sound, category, volume, pitch);
     }
@@ -243,25 +250,23 @@ public class DoorsModule implements Modular {
 
     @Override
     public boolean isEnabled() {
-        return fc.getBoolean(className + ENABLE);
+        return (boolean) db.getData(className + ENABLE);
     }
 
     @Override
     public void config() {
-        fc.addDefaults(Map.ofEntries(
-                Map.entry(className + ENABLE, true),
-                Map.entry(className + SOUND_KNOCK_CATEGORY, "BLOCKS"),
-                Map.entry(className + SOUND_KNOCK_PITCH, 1.0),
-                Map.entry(className + SOUND_KNOCK_VOLUME, 1.0),
-                Map.entry(className + SOUND_KNOCK_WOOD, "entity_zombie_attack_wooden_door"),
-                Map.entry(className + ALLOW_AUTOCLOSE, true),
-                Map.entry(className + ALLOW_DOUBLEDOORS, true),
-                Map.entry(className + ALLOW_KNOCKING, true),
-                Map.entry(className + ALLOW_KNOCKING_GATES, true),
-                Map.entry(className + ALLOW_KNOCKING_TRAPDOORS, true),
-                Map.entry(className + KNOCKING_REQUIRES_EMPTY_HAND, true),
-                Map.entry(className + KNOCKING_REQUIRES_SHIFT, false),
-                Map.entry(className + AUTOCLOSE_DELAY, 6)));
-        vp.saveConfig();
+        db.setData(className + ENABLE, true);
+        db.setData(className + SOUND_KNOCK_CATEGORY, "BLOCKS");
+        db.setData(className + SOUND_KNOCK_PITCH, 1.0);
+        db.setData(className + SOUND_KNOCK_VOLUME, 1.0);
+        db.setData(className + SOUND_KNOCK_WOOD, "entity_zombie_attack_wooden_door");
+        db.setData(className + ALLOW_AUTOCLOSE, true);
+        db.setData(className + ALLOW_DOUBLEDOORS, true);
+        db.setData(className + ALLOW_KNOCKING, true);
+        db.setData(className + ALLOW_KNOCKING_GATES, true);
+        db.setData(className + ALLOW_KNOCKING_TRAPDOORS, true);
+        db.setData(className + KNOCKING_REQUIRES_EMPTY_HAND, true);
+        db.setData(className + KNOCKING_REQUIRES_SHIFT, false);
+        db.setData(className + AUTOCLOSE_DELAY, 6);
     }
 }
