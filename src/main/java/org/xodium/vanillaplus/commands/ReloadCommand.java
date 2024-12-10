@@ -6,21 +6,27 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.xodium.vanillaplus.VanillaPlus;
-import org.xodium.vanillaplus.VanillaPlus.MSG;
-import org.xodium.vanillaplus.interfaces.PERMS;
 import com.mojang.brigadier.Command;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
-public class ReloadCommand implements MSG {
-    private final static VanillaPlus vp = VanillaPlus.getInstance();
-    private final static PluginManager pm = vp.getServer().getPluginManager();
-    private final static MiniMessage mm = MiniMessage.miniMessage();
+public class ReloadCommand {
+    private static final VanillaPlus vp = VanillaPlus.getInstance();
+    private static final PluginManager pm = vp.getServer().getPluginManager();
+    private static final String vpcn = vp.getClass().getSimpleName();
+    private static final MiniMessage mm = MiniMessage.miniMessage();
 
-    private static final String RELOAD_SUCC_LOG_MSG = "Reloaded successfully.";
-    private static final String RELOAD_SUCC_MSG = PREFIX + "<green>Reloaded successfully.";
-    private static final String PERM_ERR_MSG = PREFIX + "<red>You do not have permission to use this command!";
+    private interface MSG {
+        String RELOAD_SUCC_LOG = "Reloaded successfully.";
+        String RELOAD_SUCC = VanillaPlus.PREFIX + "<green>Reloaded successfully.";
+        String PERM_ERR = VanillaPlus.PREFIX
+                + "<red>You do not have permission to use this command!";
+    }
+
+    private interface PERMS {
+        String RELOAD = vpcn + ".reload";
+    }
 
     {
         vp.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, e -> {
@@ -29,13 +35,13 @@ public class ReloadCommand implements MSG {
                             .executes(ctx -> {
                                 CommandSender cs = ctx.getSource().getSender();
                                 if (cs instanceof Player p && !p.hasPermission(PERMS.RELOAD)) {
-                                    p.sendMessage(mm.deserialize(PERM_ERR_MSG));
+                                    p.sendMessage(mm.deserialize(MSG.PERM_ERR));
                                     return 0;
                                 }
                                 pm.disablePlugin(vp);
                                 pm.enablePlugin(vp);
-                                cs.sendMessage(mm.deserialize(RELOAD_SUCC_MSG));
-                                vp.getLogger().info(RELOAD_SUCC_LOG_MSG);
+                                cs.sendMessage(mm.deserialize(MSG.RELOAD_SUCC));
+                                vp.getLogger().info(MSG.RELOAD_SUCC_LOG);
                                 return Command.SINGLE_SUCCESS;
                             })
                             .build(),

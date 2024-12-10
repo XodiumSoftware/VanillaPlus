@@ -6,12 +6,12 @@ api-version: 1.21.3
 authors:
   - XodiumSoftware
 permissions:
-  vanillaplus.doubledoors:
+  VanillaPlus.doubledoors:
     description: Allows to open double doors with one click
     default: true
-  vanillaplus.knock:
+  VanillaPlus.knock:
     description: Allows to knock on doors using left-click
     default: true
-  vanillaplus.autoclose:
+  VanillaPlus.autoclose:
     description: Allows players to have their doors close automatically
     default: true

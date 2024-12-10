@@ -3,9 +3,11 @@ package org.xodium.vanillaplus.interfaces;
 import org.bukkit.event.Listener;
 
 public interface Modular extends Listener {
-    String ENABLE = ".enable";
+    interface CONFIG {
+        String ENABLE = ".enable";
+    }
 
-    boolean isEnabled();
+    boolean enabled();
 
     void config();
 }
