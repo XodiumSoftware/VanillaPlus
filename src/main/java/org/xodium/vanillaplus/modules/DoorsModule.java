@@ -41,7 +41,6 @@ import com.google.common.base.Enums;
 public class DoorsModule implements Modular {
     private final String cn = getClass().getSimpleName();
     private static final VanillaPlus vp = VanillaPlus.getInstance();
-    private static final String vpcn = vp.getClass().getSimpleName();
     private static final Database db = new Database();
 
     private interface CONFIG extends Modular.CONFIG {
@@ -65,9 +64,9 @@ public class DoorsModule implements Modular {
     }
 
     private interface PERMS {
-        String USE = vpcn + ".doubledoors";
-        String KNOCK = vpcn + ".knock";
-        String AUTOCLOSE = vpcn + ".autoclose";
+        String USE = vp.getClass().getSimpleName() + ".doubledoors";
+        String KNOCK = vp.getClass().getSimpleName() + ".knock";
+        String AUTOCLOSE = vp.getClass().getSimpleName() + ".autoclose";
     }
 
     private final HashMap<Block, Long> autoClose = new HashMap<>();
@@ -127,15 +126,9 @@ public class DoorsModule implements Modular {
                 || e.useInteractedBlock() == Event.Result.DENY
                 || e.useItemInHand() == Event.Result.DENY
                 || !e.getPlayer().hasPermission(PERMS.USE)
-                || !(blockData instanceof Door || blockData instanceof Gate))
+                || !(blockData instanceof Door || blockData instanceof Gate)
+                || !db.getData(cn + CONFIG.ALLOW_DOUBLEDOORS, Boolean.class))
             return;
-
-        if (!db.getData(cn + CONFIG.ALLOW_DOUBLEDOORS, Boolean.class)) {
-            vp.getLogger()
-                    .warning("Double doors are disabled. ALLOW_DOUBLEDOORS value: "
-                            + db.getData(cn + CONFIG.ALLOW_DOUBLEDOORS, Boolean.class));
-            return;
-        }
 
         if (blockData instanceof Door) {
             Door door = this.getBottomDoor((Door) blockData, clickedBlock);
@@ -161,22 +154,17 @@ public class DoorsModule implements Modular {
         Player p = e.getPlayer();
         GameMode gm = p.getGameMode();
 
-        if (gm == GameMode.CREATIVE || gm == GameMode.SPECTATOR)
+        if ((gm == GameMode.CREATIVE
+                || gm == GameMode.SPECTATOR)
+                || (!p.hasPermission(PERMS.KNOCK)
+                        || e.getAction() != Action.LEFT_CLICK_BLOCK
+                        || e.getHand() != EquipmentSlot.HAND)
+                || (db.getData(cn + CONFIG.KNOCKING_REQUIRES_SHIFT, Boolean.class) && !p.isSneaking())
+                || (db.getData(cn + CONFIG.KNOCKING_REQUIRES_EMPTY_HAND, Boolean.class)
+                        && p.getInventory().getItemInMainHand().getType() != Material.AIR)
+                || (e.getClickedBlock() == null)) {
             return;
-
-        if (!p.hasPermission(PERMS.KNOCK) || e.getAction() != Action.LEFT_CLICK_BLOCK
-                || e.getHand() != EquipmentSlot.HAND)
-            return;
-
-        if (db.getData(cn + CONFIG.KNOCKING_REQUIRES_SHIFT, Boolean.class) && !p.isSneaking())
-            return;
-
-        if (db.getData(cn + CONFIG.KNOCKING_REQUIRES_EMPTY_HAND, Boolean.class)
-                && p.getInventory().getItemInMainHand().getType() != Material.AIR)
-            return;
-
-        if (e.getClickedBlock() == null)
-            return;
+        }
 
         Block block = e.getClickedBlock();
         BlockData blockData = block.getBlockData();
