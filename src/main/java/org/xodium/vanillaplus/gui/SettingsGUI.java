@@ -11,47 +11,99 @@ import org.bukkit.Material;
 import org.bukkit.inventory.meta.ItemMeta;
 import net.kyori.adventure.text.Component;
 
+/**
+ * A simple GUI for plugin settings.
+ */
 public class SettingsGUI implements Listener {
+
+    private static final String GUI_TITLE = "Settings";
+    private static final Component OPTION_1_NAME = Component.text("Option 1");
+    private static final Component OPTION_2_NAME = Component.text("Option 2");
 
     private static Inventory inv;
 
-    public SettingsGUI() {
-        inv = Bukkit.createInventory(null, 9, Component.text("Settings"));
-        initializeItems();
+    /**
+     * Opens the settings inventory for a player.
+     *
+     * @param p the player.
+     */
+    public static void openInventory(Player p) {
+        if (inv == null) {
+            initInventory();
+        }
+        p.openInventory(inv);
     }
 
-    private void initializeItems() {
-        inv.setItem(0, createGuiItem(Material.COMPASS, "Option 1"));
-        inv.setItem(1, createGuiItem(Material.REDSTONE, "Option 2"));
-        // Add more items as needed
+    /**
+     * Initializes the inventory if it hasn't been created yet.
+     */
+    private static void initInventory() {
+        inv = Bukkit.createInventory(null, 9, Component.text(GUI_TITLE));
+        initItems();
     }
 
-    private ItemStack createGuiItem(Material m, String name) {
+    /**
+     * Populates the inventory with items.
+     */
+    private static void initItems() {
+        inv.setItem(0, createItem(Material.COMPASS, OPTION_1_NAME));
+        inv.setItem(1, createItem(Material.REDSTONE, OPTION_2_NAME));
+    }
+
+    /**
+     * Creates a GUI item.
+     *
+     * @param m    the material.
+     * @param name the display name.
+     * @return the ItemStack.
+     */
+    private static ItemStack createItem(Material m, Component name) {
         ItemStack is = new ItemStack(m, 1);
         ItemMeta im = is.getItemMeta();
-        im.displayName(Component.text(name));
+        im.displayName(name);
         is.setItemMeta(im);
         return is;
     }
 
-    public static void openInventory(Player p) {
-        p.openInventory(inv);
-    }
-
+    /**
+     * Handles clicks in the settings inventory.
+     *
+     * @param e the click event.
+     */
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
-        if (!e.getInventory().equals(inv))
+        if (!isSettingsInventory(e))
             return;
+
         e.setCancelled(true);
+
         ItemStack is = e.getCurrentItem();
         if (is == null || is.getType() == Material.AIR)
             return;
 
-        Component name = is.getItemMeta().displayName();
-        if (name.equals("Option 1")) {
-            // Handle Option 1
-        } else if (name.equals("Option 2")) {
-            // Handle Option 2
+        handleClick(is.getItemMeta().displayName());
+    }
+
+    /**
+     * Checks if the inventory is the settings inventory.
+     *
+     * @param e the click event.
+     * @return true if it is; false otherwise.
+     */
+    private static boolean isSettingsInventory(InventoryClickEvent e) {
+        return e.getInventory().equals(inv);
+    }
+
+    /**
+     * Handles item click logic.
+     *
+     * @param name the clicked item's display name.
+     */
+    private static void handleClick(Component name) {
+        if (OPTION_1_NAME.equals(name)) {
+            // TODO: Implement Option 1 logic.
+        } else if (OPTION_2_NAME.equals(name)) {
+            // TODO: Implement Option 2 logic.
         }
     }
 }
