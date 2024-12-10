@@ -1,5 +1,6 @@
 package org.xodium.vanillaplus.interfaces;
 
+// TODO: refactor to each module for modularity.
 public interface PERMS {
     String VANILLAPLUS = "vanillaplus.";
     String RELOAD = VANILLAPLUS + "reload";

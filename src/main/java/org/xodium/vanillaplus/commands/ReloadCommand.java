@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginManager;
 import org.xodium.vanillaplus.VanillaPlus;
 import org.xodium.vanillaplus.interfaces.MSG;
 import org.xodium.vanillaplus.interfaces.PERMS;
@@ -13,11 +14,13 @@ import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
 public class ReloadCommand implements MSG {
-    private static final String RELOAD_SUCC_LOG_MSG = "Configuration reloaded successfully.";
-    private static final String RELOAD_SUCC_MSG = PREFIX + "<green>Configuration reloaded successfully.";
-    private static final String PERM_ERR_MSG = PREFIX + "<red>You do not have permission to use this command!";
     private final static VanillaPlus vp = VanillaPlus.getInstance();
+    private final static PluginManager pm = vp.getServer().getPluginManager();
     private final static MiniMessage mm = MiniMessage.miniMessage();
+
+    private static final String RELOAD_SUCC_LOG_MSG = "Reloaded successfully.";
+    private static final String RELOAD_SUCC_MSG = PREFIX + "<green>Reloaded successfully.";
+    private static final String PERM_ERR_MSG = PREFIX + "<red>You do not have permission to use this command!";
 
     {
         vp.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, e -> {
@@ -29,7 +32,8 @@ public class ReloadCommand implements MSG {
                                     p.sendMessage(mm.deserialize(PERM_ERR_MSG));
                                     return 0;
                                 }
-                                vp.reloadConfig();
+                                pm.disablePlugin(vp);
+                                pm.enablePlugin(vp);
                                 cs.sendMessage(mm.deserialize(RELOAD_SUCC_MSG));
                                 vp.getLogger().info(RELOAD_SUCC_LOG_MSG);
                                 return Command.SINGLE_SUCCESS;
