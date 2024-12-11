@@ -1,5 +1,6 @@
 package org.xodium.vanillaplus.gui;
 
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
@@ -70,17 +71,12 @@ public class SettingsGUI implements Listener {
      * Loads settings from the SQLite database and populates the inventory.
      */
     private static void populateInventory() {
-        Map<String, String> settings = DB.getAllSettings();
+        Map<String, String> settings = DB.getAllData();
         int slot = 0;
         for (Map.Entry<String, String> entry : settings.entrySet()) {
             if (slot >= INV.getSize())
                 break;
-            String name = entry.getKey();
-            String material = entry.getValue();
-            Material mat = Material.matchMaterial(material);
-            if (mat != null) {
-                INV.setItem(slot++, createItem(mat, MM.deserialize(name)));
-            }
+            INV.setItem(slot++, createItem(Material.PAPER, entry.getKey(), "<gray>" + entry.getValue()));
         }
     }
 
@@ -90,6 +86,7 @@ public class SettingsGUI implements Listener {
      * @param name     the setting name.
      * @param material the material associated with the setting.
      */
+    @SuppressWarnings("unused")
     private static void updateSettingInDatabase(String name, String material) {
         DB.setData(name, material, false);
     }
@@ -104,16 +101,18 @@ public class SettingsGUI implements Listener {
     }
 
     /**
-     * Creates a GUI item.
+     * Creates an ItemStack with the specified material, name, and value.
      *
-     * @param m    the material.
-     * @param name the display name.
-     * @return the ItemStack.
+     * @param m    the material of the item
+     * @param name the display name of the item
+     * @param lore the lore value of the item
+     * @return the created ItemStack with the specified properties
      */
-    private static ItemStack createItem(Material m, Component name) {
+    private static ItemStack createItem(Material m, String name, String lore) {
         ItemStack is = new ItemStack(m, 1);
         ItemMeta im = is.getItemMeta();
-        im.displayName(name);
+        im.displayName(MM.deserialize(name));
+        im.lore(List.of(MM.deserialize(lore)));
         is.setItemMeta(im);
         return is;
     }
@@ -129,11 +128,8 @@ public class SettingsGUI implements Listener {
             return;
 
         e.setCancelled(true);
-        ItemStack clickedItem = e.getCurrentItem();
-        if (clickedItem == null || clickedItem.getType() == Material.AIR)
+        ItemStack is = e.getCurrentItem();
+        if (is == null || is.getType() == Material.AIR)
             return;
-
-        updateSettingInDatabase(MM.serialize(clickedItem.getItemMeta().displayName()), clickedItem.getType().name());
-        // TODO: Provide feedback to the player, e.g., via chat or title.
     }
 }

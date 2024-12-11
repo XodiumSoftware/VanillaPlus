@@ -69,6 +69,7 @@ public class Database {
     private static final String SET_DATA_UPSERT = "INSERT INTO config (key, value) VALUES (?, ?) "
             + "ON CONFLICT(key) DO UPDATE SET value = EXCLUDED.value";
     private static final String GET_DATA = "SELECT value FROM config WHERE key = ?";
+    private static final String GET_ALL_DATA = "SELECT key, value FROM config";
     private static final String GET_DATA_COLUMN_VALUE = "value";
 
     private static final Map<Class<?>, Function<String, ?>> TYPE_PARSERS = new HashMap<>() {
@@ -172,5 +173,29 @@ public class Database {
             err.printStackTrace();
             return null;
         }
+    }
+
+    /**
+     * Retrieves all data from the database.
+     *
+     * This method executes a SQL query to fetch all key-value pairs from the
+     * database
+     * and stores them in a Map. The keys and values are expected to be strings.
+     *
+     * @return a Map containing all key-value pairs from the database.
+     */
+    public Map<String, String> getAllData() {
+        Map<String, String> data = new HashMap<>();
+        try (PreparedStatement stmt = conn.prepareStatement(GET_ALL_DATA);
+                ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                String key = rs.getString("key");
+                String value = rs.getString("value");
+                data.put(key, value);
+            }
+        } catch (SQLException err) {
+            err.printStackTrace();
+        }
+        return data;
     }
 }
