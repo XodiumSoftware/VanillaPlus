@@ -12,51 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-/**
- * The Database class provides methods to interact with a SQLite database.
- * It supports initializing tables, setting data, and retrieving data with type
- * conversion.
- * 
- * <p>
- * This class uses JDBC to connect to a SQLite database and perform SQL
- * operations.
- * It includes methods to initialize the database tables, set data with optional
- * upsert behavior,
- * and retrieve data with automatic type conversion based on predefined parsers.
- * </p>
- * 
- * <p>
- * Example usage:
- * </p>
- * 
- * <pre>
- * {@code
- * Database db = new Database();
- * db.setData("exampleKey", "exampleValue");
- * String value = db.getData("exampleKey", String.class);
- * }
- * </pre>
- * 
- * <p>
- * Supported types for data retrieval include Boolean, Long, Integer, Double,
- * Float, BigDecimal, String, and Date.
- * </p>
- * 
- * <p>
- * Note: This class assumes that the VanillaPlus instance and its data folder
- * are properly set up.
- * </p>
- * 
- * <p>
- * Exceptions are caught and printed to the standard error stream.
- * </p>
- * 
- * @see java.sql.Connection
- * @see java.sql.DriverManager
- * @see java.sql.PreparedStatement
- * @see java.sql.ResultSet
- * @see java.util.function.Function
- */
 public class Database {
     private Connection conn;
     private static final VanillaPlus VP = VanillaPlus.getInstance();
@@ -96,13 +51,6 @@ public class Database {
         }
     }
 
-    /**
-     * Initializes the database tables by executing the SQL statement defined in
-     * INIT_TABLES.
-     * This method uses a PreparedStatement to execute the update and handles any
-     * SQLExceptions
-     * that may occur during the process.
-     */
     private void initTables() {
         try (PreparedStatement stmt = conn.prepareStatement(INIT_TABLES)) {
             stmt.executeUpdate();
@@ -111,24 +59,10 @@ public class Database {
         }
     }
 
-    /**
-     * Sets the data for the specified key with the given value.
-     * This method will use the default behavior for handling the data.
-     *
-     * @param key   the key for which the data is to be set
-     * @param value the value to be set for the specified key
-     */
     public void setData(String key, Object value) {
         setData(key, value, true);
     }
 
-    /**
-     * Sets the data in the database for the given key.
-     *
-     * @param key     the key for which the data is to be set
-     * @param value   the value to be set for the given key
-     * @param initial if true, the data is set initially; otherwise, it is upserted
-     */
     public void setData(String key, Object value, boolean initial) {
         String sql = initial ? SET_DATA_INITIAL : SET_DATA_UPSERT;
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -143,17 +77,6 @@ public class Database {
         }
     }
 
-    /**
-     * Retrieves data from the database for the given key and converts it to the
-     * specified type.
-     *
-     * @param <T>  the type of the data to be returned
-     * @param key  the key for which data is to be retrieved
-     * @param type the class of the type to which the data should be converted
-     * @return the data converted to the specified type, or null if an error occurs
-     * @throws IllegalArgumentException if no data is found for the given key
-     * @throws ClassCastException       if the specified type is unsupported
-     */
     public <T> T getData(String key, Class<T> type) {
         try (PreparedStatement stmt = conn.prepareStatement(GET_DATA)) {
             stmt.setString(1, key);
@@ -175,15 +98,6 @@ public class Database {
         }
     }
 
-    /**
-     * Retrieves all data from the database.
-     *
-     * This method executes a SQL query to fetch all key-value pairs from the
-     * database
-     * and stores them in a Map. The keys and values are expected to be strings.
-     *
-     * @return a Map containing all key-value pairs from the database.
-     */
     public Map<String, String> getAllData() {
         Map<String, String> data = new HashMap<>();
         try (PreparedStatement stmt = conn.prepareStatement(GET_ALL_DATA);
