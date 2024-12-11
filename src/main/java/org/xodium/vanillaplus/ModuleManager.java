@@ -14,8 +14,12 @@ public class ModuleManager {
                 .peek(ModuleInterface::config)
                 .filter(ModuleInterface::enabled)
                 .forEach(mod -> {
+                    long startTime = System.currentTimeMillis();
                     VP.getServer().getPluginManager().registerEvents(mod, VP);
-                    VP.getLogger().info("Loaded: " + mod.getClass().getSimpleName());
+                    long endTime = System.currentTimeMillis();
+                    VP.getLogger()
+                            .info("Loaded: " + mod.getClass().getSimpleName() + "| Took " + (endTime - startTime)
+                                    + "ms");
                 });
     }
 }
