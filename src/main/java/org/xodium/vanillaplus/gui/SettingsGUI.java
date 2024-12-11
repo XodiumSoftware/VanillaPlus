@@ -17,7 +17,44 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
 /**
- * A simple GUI for plugin settings.
+ * The SettingsGUI class is responsible for creating and managing a settings
+ * graphical user interface (GUI) in a Minecraft plugin. It implements the
+ * Listener interface to handle inventory click events.
+ * 
+ * <p>
+ * This class provides methods to:
+ * <ul>
+ * <li>Load settings from an SQLite database and populate the inventory.</li>
+ * <li>Update a setting in the SQLite database.</li>
+ * <li>Open the settings inventory for a player.</li>
+ * <li>Create a GUI item with a specified material and display name.</li>
+ * <li>Handle clicks in the settings inventory.</li>
+ * </ul>
+ * </p>
+ * 
+ * <p>
+ * The inventory is populated with items representing settings, where each item
+ * has a material and a display name. Clicking an item in the inventory updates
+ * the corresponding setting in the database.
+ * </p>
+ * 
+ * <p>
+ * The class uses the following components:
+ * <ul>
+ * <li>{@code Database} - A custom class for interacting with the SQLite
+ * database.</li>
+ * <li>{@code MiniMessage} - A library for parsing and serializing text
+ * components.</li>
+ * <li>{@code Component} - Represents a text component for display names.</li>
+ * <li>{@code Inventory} - Represents the settings inventory.</li>
+ * </ul>
+ * </p>
+ * 
+ * <p>
+ * The class also includes an event handler method to manage inventory click
+ * events, ensuring that clicks within the settings inventory are processed
+ * appropriately.
+ * </p>
  */
 public class SettingsGUI implements Listener {
     private static final Database DB = new Database();
