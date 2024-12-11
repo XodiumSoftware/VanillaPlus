@@ -152,19 +152,15 @@ public class DoorsModule implements ModuleInterface {
     @EventHandler
     public void onKnock(PlayerInteractEvent e) {
         Player p = e.getPlayer();
-        GameMode gm = p.getGameMode();
 
-        if ((gm == GameMode.CREATIVE
-                || gm == GameMode.SPECTATOR)
-                || (!p.hasPermission(PERMS.KNOCK)
-                        || e.getAction() != Action.LEFT_CLICK_BLOCK
-                        || e.getHand() != EquipmentSlot.HAND)
+        if (p.getGameMode() == GameMode.CREATIVE || p.getGameMode() == GameMode.SPECTATOR
+                || !p.hasPermission(PERMS.KNOCK) || e.getAction() != Action.LEFT_CLICK_BLOCK
+                || e.getHand() != EquipmentSlot.HAND
                 || (db.getData(cn + CONFIG.KNOCKING_REQUIRES_SHIFT, Boolean.class) && !p.isSneaking())
                 || (db.getData(cn + CONFIG.KNOCKING_REQUIRES_EMPTY_HAND, Boolean.class)
                         && p.getInventory().getItemInMainHand().getType() != Material.AIR)
-                || (e.getClickedBlock() == null)) {
+                || e.getClickedBlock() == null)
             return;
-        }
 
         Block block = e.getClickedBlock();
         BlockData blockData = block.getBlockData();
@@ -172,7 +168,7 @@ public class DoorsModule implements ModuleInterface {
         if ((blockData instanceof Door && db.getData(cn + CONFIG.ALLOW_KNOCKING, Boolean.class))
                 || (blockData instanceof TrapDoor && db.getData(cn + CONFIG.ALLOW_KNOCKING_TRAPDOORS, Boolean.class))
                 || (blockData instanceof Gate && db.getData(cn + CONFIG.ALLOW_KNOCKING_GATES, Boolean.class))) {
-            this.playKnockSound(block);
+            playKnockSound(block);
         }
     }
 
