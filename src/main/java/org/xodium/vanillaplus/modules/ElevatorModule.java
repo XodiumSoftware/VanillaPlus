@@ -1,20 +1,19 @@
 package org.xodium.vanillaplus.modules;
 
 import org.xodium.vanillaplus.Database;
-import org.xodium.vanillaplus.interfaces.Modular;
+import org.xodium.vanillaplus.interfaces.ModuleInterface;
 
-public class ElevatorModule implements Modular {
-    private final String className = getClass().getSimpleName();
-    private final Database db = new Database();
+public class ElevatorModule implements ModuleInterface {
+    private final String cn = getClass().getSimpleName();
+    private static final Database DB = new Database();
 
     @Override
-    public boolean isEnabled() {
-        return db.getData(className + ENABLE, Boolean.class);
+    public boolean enabled() {
+        return DB.getData(cn + CONFIG.ENABLE, Boolean.class);
     }
 
     @Override
     public void config() {
-        db.setData(className + ENABLE, true);
+        DB.setData(cn + CONFIG.ENABLE, true);
     }
-
 }

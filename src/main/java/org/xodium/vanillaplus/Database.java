@@ -14,7 +14,7 @@ import java.util.function.Function;
 
 public class Database {
     private Connection conn;
-    private final VanillaPlus vp = VanillaPlus.getInstance();
+    private static final VanillaPlus VP = VanillaPlus.getInstance();
 
     private static final String DB_URL_PREFIX = "jdbc:sqlite:";
     private static final String DB_FILE = "vanillaplus.db";
@@ -24,6 +24,7 @@ public class Database {
     private static final String SET_DATA_UPSERT = "INSERT INTO config (key, value) VALUES (?, ?) "
             + "ON CONFLICT(key) DO UPDATE SET value = EXCLUDED.value";
     private static final String GET_DATA = "SELECT value FROM config WHERE key = ?";
+    private static final String GET_ALL_DATA = "SELECT key, value FROM config";
     private static final String GET_DATA_COLUMN_VALUE = "value";
 
     private static final Map<Class<?>, Function<String, ?>> TYPE_PARSERS = new HashMap<>() {
@@ -39,11 +40,11 @@ public class Database {
         }
     };
 
-    public Database() {
+    {
         try {
-            vp.getDataFolder().mkdirs();
+            VP.getDataFolder().mkdirs();
             conn = DriverManager
-                    .getConnection(DB_URL_PREFIX + new File(vp.getDataFolder(), DB_FILE).getAbsolutePath());
+                    .getConnection(DB_URL_PREFIX + new File(VP.getDataFolder(), DB_FILE).getAbsolutePath());
             initTables();
         } catch (SQLException err) {
             err.printStackTrace();
@@ -95,5 +96,20 @@ public class Database {
             err.printStackTrace();
             return null;
         }
+    }
+
+    public Map<String, String> getAllData() {
+        Map<String, String> data = new HashMap<>();
+        try (PreparedStatement stmt = conn.prepareStatement(GET_ALL_DATA);
+                ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                String key = rs.getString("key");
+                String value = rs.getString("value");
+                data.put(key, value);
+            }
+        } catch (SQLException err) {
+            err.printStackTrace();
+        }
+        return data;
     }
 }
