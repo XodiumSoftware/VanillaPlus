@@ -5,15 +5,15 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface;
 
 public class ElevatorModule implements ModuleInterface {
     private final String cn = getClass().getSimpleName();
-    private final Database db = new Database();
+    private static final Database DB = new Database();
 
     @Override
     public boolean enabled() {
-        return db.getData(cn + CONFIG.ENABLE, Boolean.class);
+        return DB.getData(cn + CONFIG.ENABLE, Boolean.class);
     }
 
     @Override
     public void config() {
-        db.setData(cn + CONFIG.ENABLE, true);
+        DB.setData(cn + CONFIG.ENABLE, true);
     }
 }

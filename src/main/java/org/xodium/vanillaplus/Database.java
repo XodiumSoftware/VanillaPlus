@@ -14,7 +14,7 @@ import java.util.function.Function;
 
 public class Database {
     private Connection conn;
-    private final VanillaPlus vp = VanillaPlus.getInstance();
+    private static final VanillaPlus VP = VanillaPlus.getInstance();
 
     private static final String DB_URL_PREFIX = "jdbc:sqlite:";
     private static final String DB_FILE = "vanillaplus.db";
@@ -39,11 +39,11 @@ public class Database {
         }
     };
 
-    public Database() {
+    {
         try {
-            vp.getDataFolder().mkdirs();
+            VP.getDataFolder().mkdirs();
             conn = DriverManager
-                    .getConnection(DB_URL_PREFIX + new File(vp.getDataFolder(), DB_FILE).getAbsolutePath());
+                    .getConnection(DB_URL_PREFIX + new File(VP.getDataFolder(), DB_FILE).getAbsolutePath());
             initTables();
         } catch (SQLException err) {
             err.printStackTrace();

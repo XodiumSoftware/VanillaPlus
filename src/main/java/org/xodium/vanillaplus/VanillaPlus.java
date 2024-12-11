@@ -12,7 +12,8 @@ public class VanillaPlus extends JavaPlugin {
   private static final String IS_SUPPORTED_VERSION_MSG = "This plugin requires Paper version(s): "
       + String.join(", ", V);
 
-  public final static String PREFIX = "<gold>[<dark_aqua>VanillaPlus<gold>] <reset>";
+  public static final String PREFIX = "<gold>[<dark_aqua>VanillaPlus<gold>] <reset>";
+  public static final String MM_HEX_PREFIX = "<#CB2D3E>";
 
   public static VanillaPlus getInstance() {
     return getPlugin(VanillaPlus.class);

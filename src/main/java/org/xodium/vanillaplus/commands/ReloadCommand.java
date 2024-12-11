@@ -15,24 +15,24 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
 public class ReloadCommand {
-    private static final VanillaPlus vp = VanillaPlus.getInstance();
-    private static final MiniMessage mm = MiniMessage.miniMessage();
+    private static final VanillaPlus VP = VanillaPlus.getInstance();
+    private static final MiniMessage MM = MiniMessage.miniMessage();
 
-    private interface MSG {
+    private static interface MSG {
         @NotNull
-        Component PERM_ERR = mm.deserialize(VanillaPlus.PREFIX
+        Component PERM_ERR = MM.deserialize(VanillaPlus.PREFIX
                 + "<red>You do not have permission to use this command!");
         @NotNull
-        Component PLAYER_ONLY_CMD = mm
+        Component PLAYER_ONLY_CMD = MM
                 .deserialize("This command can only be run by a player.");
     }
 
-    private interface PERMS {
-        String RELOAD = vp.getClass().getSimpleName() + ".reload";
+    private static interface PERMS {
+        String RELOAD = VP.getClass().getSimpleName() + ".reload";
     }
 
-    {
-        vp.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, e -> {
+    static {
+        VP.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, e -> {
             e.registrar().register(
                     Commands.literal("vanillaplus")
                             .executes(ctx -> {

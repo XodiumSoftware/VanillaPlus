@@ -3,7 +3,7 @@ package org.xodium.vanillaplus.interfaces;
 import org.bukkit.event.Listener;
 
 public interface ModuleInterface extends Listener {
-    interface CONFIG {
+    static interface CONFIG {
         String ENABLE = ".enable";
     }
 
