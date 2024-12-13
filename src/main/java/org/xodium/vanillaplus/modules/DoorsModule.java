@@ -97,9 +97,9 @@ public class DoorsModule implements ModuleInterface {
                     Openable openable = (Openable) b.getBlockData();
                     if (openable.isOpen()) {
                         if (openable instanceof Door) {
-                            Block otherDoor = this.getOtherPart((Door) openable, b);
+                            Block otherDoor = getOtherPart((Door) openable, b);
                             if (otherDoor != null) {
-                                this.toggleOtherDoor(b, otherDoor, false);
+                                toggleOtherDoor(b, otherDoor, false);
                             }
                         } else if (openable instanceof Gate) {
                             b.getWorld().playSound(b.getLocation(), Sound.BLOCK_FENCE_GATE_CLOSE, 1.0f, 1.0f);
@@ -131,11 +131,11 @@ public class DoorsModule implements ModuleInterface {
             return;
 
         if (blockData instanceof Door) {
-            Door door = this.getBottomDoor((Door) blockData, clickedBlock);
-            Block otherDoorBlock = this.getOtherPart(door, clickedBlock);
+            Door door = getBottomDoor((Door) blockData, clickedBlock);
+            Block otherDoorBlock = getOtherPart(door, clickedBlock);
             if (otherDoorBlock != null && otherDoorBlock.getBlockData() instanceof Door) {
                 Door otherDoor = (Door) otherDoorBlock.getBlockData();
-                this.toggleOtherDoor(clickedBlock, otherDoorBlock, !otherDoor.isOpen());
+                toggleOtherDoor(clickedBlock, otherDoorBlock, !otherDoor.isOpen());
                 if (e.getPlayer().hasPermission(PERMS.AUTOCLOSE)) {
                     autoClose.put(otherDoorBlock,
                             System.currentTimeMillis()
