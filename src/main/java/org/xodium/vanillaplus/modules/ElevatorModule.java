@@ -54,12 +54,17 @@ public class ElevatorModule implements ModuleInterface {
 
         while (y >= w.getMinHeight() && y <= w.getMaxHeight()) {
             Block b = w.getBlockAt(x, y, z);
-            if (isElevator(b)) {
+            if (isElevator(b) && hasEnoughSpace(b)) {
                 teleportPlayer(p, b.getLocation());
                 return;
             }
             y += increment;
         }
+    }
+
+    private static boolean hasEnoughSpace(Block b) {
+        Block above = b.getRelative(BlockFace.UP);
+        return above.getType() == Material.AIR && above.getRelative(BlockFace.UP).getType() == Material.AIR;
     }
 
     private void teleportPlayer(Player p, Location l) {
