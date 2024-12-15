@@ -69,13 +69,13 @@ public class ElevatorModule implements ModuleInterface {
 
     private void teleportPlayer(Player p, Location l) {
         Location tpl = l.add(TELEPORT_OFFSET, 1, TELEPORT_OFFSET);
-        playTeleportEffects(p, tpl);
+        playTeleportEffects(p);
         p.teleport(tpl);
         p.playSound(tpl, Sound.ENTITY_ENDERMAN_TELEPORT, SOUND_VOLUME, SOUND_PITCH);
-        playTeleportEffects(p, tpl);
+        playTeleportEffects(p);
     }
 
-    private void playTeleportEffects(Player p, Location l) {
+    private void playTeleportEffects(Player p) {
         p.getWorld().spawnParticle(Particle.PORTAL, p.getLocation(), PARTICLE_COUNT);
     }
 
