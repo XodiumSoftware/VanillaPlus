@@ -5,6 +5,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.xodium.vanillaplus.commands.ReloadCommand;
 
 public class VanillaPlus extends JavaPlugin {
+    // TODO: revert back to using the build in config system instead of a database.
 
     private static final String[] V = { "1.21.1", "1.21.3", "1.21.4" };
     private static final String[] PAPER = { "Paper" };

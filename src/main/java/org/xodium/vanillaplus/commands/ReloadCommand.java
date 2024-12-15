@@ -6,7 +6,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.xodium.vanillaplus.VanillaPlus;
-import org.xodium.vanillaplus.gui.SettingsGUI;
 
 import com.mojang.brigadier.Command;
 import io.papermc.paper.command.brigadier.Commands;
@@ -42,7 +41,7 @@ public class ReloadCommand {
                                         p.sendMessage(MSG.PERM_ERR);
                                         return 0;
                                     }
-                                    SettingsGUI.openInventory(p);
+                                    // TODO: add reload config.
                                     return Command.SINGLE_SUCCESS;
                                 }
                                 cs.sendMessage(MSG.PLAYER_ONLY_CMD);
