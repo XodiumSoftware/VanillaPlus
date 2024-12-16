@@ -4,6 +4,8 @@ run-name: "Xodium CI/CD"
 on:
   push:
     branches: [main]
+    paths:
+      - "src/**"
   workflow_dispatch:
 
 permissions:

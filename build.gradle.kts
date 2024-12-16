@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "org.xodium.vanillaplus"
-version = "1.2.1"
+version = "1.0.0"
 description = "Minecraft plugin that enhances the base gameplay."
 
 repositories {
