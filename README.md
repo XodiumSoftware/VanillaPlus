@@ -50,7 +50,7 @@ Feel free to dive into the documentation to kickstart your journey with xCLOUD. 
 
 </details><p align="right"><a href="#readme-top">▲</a></p>
 
-[built_with_shield_url]: https://skillicons.dev/icons?i=vscode,docker,java,gradle,sqlite,github,githubactions
+[built_with_shield_url]: https://skillicons.dev/icons?i=java,gradle,github,githubactions
 [built_with_url]: https://skillicons.dev
 [code_of_conduct_url]: https://github.com/XodiumSoftware/xCLOUD?tab=coc-ov-file
 [contributing_url]: https://github.com/XodiumSoftware/xCLOUD/blob/main/CONTRIBUTING.md
