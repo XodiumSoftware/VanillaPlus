@@ -44,7 +44,7 @@ jobs:
 
       - id: build_artifact
         name: Build Artifact
-        run: ./gradlew build
+        run: ./gradlew shadowJar
 
       - id: upload_artifact
         name: Upload Artifact

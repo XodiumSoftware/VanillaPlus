@@ -1,4 +1,4 @@
-<h1 style="text-align: center;">
+<h1 align="center">
   <br />
     <a href="https://xodium.org/">
       <img src="" alt="VanillaPlus Logo" width="200">
@@ -9,9 +9,9 @@
   <br />
 </h1>
 
-<h4 style="text-align: center;"> Minecraft plugin that enhances the base gameplay. </h4><br />
+<h4 align="center"> Minecraft plugin that enhances the base gameplay. </h4><br />
 
-<div style="text-align: center;">
+<div align="center">
 
 [![Contributors][contributors_shield_url]][contributors_url]
 [![Issues][issues_shield_url]][issues_url]
@@ -24,12 +24,12 @@
 - [Contributing][contributing_url]
 - [License][license_url]
 
-<div style="text-align: center;"><h3>Built With</h3>
+<div align="center"><h3>Built With</h3>
 
 [![Built With][built_with_shield_url]][built_with_url]
 </div>
 
-[built_with_shield_url]: https://skillicons.dev/icons?i=java,gradle,github,githubactions
+[built_with_shield_url]: https://skillicons.dev/icons?i=kotlin,gradle,github,githubactions
 [built_with_url]: https://skillicons.dev
 [code_of_conduct_url]: https://github.com/XodiumSoftware/xCLOUD?tab=coc-ov-file
 [contributing_url]: https://github.com/XodiumSoftware/xCLOUD/blob/main/CONTRIBUTING.md
