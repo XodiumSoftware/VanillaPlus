@@ -1,13 +1,15 @@
-package org.xodium.vanillaplus.interfaces;
+package org.xodium.vanillaplus.interfaces
 
-import org.bukkit.event.Listener;
+import org.bukkit.event.Listener
 
-public interface ModuleInterface extends Listener {
+interface ModuleInterface : Listener {
     interface CONFIG {
-        String ENABLE = ".enable";
+        companion object {
+            const val ENABLE: String = ".enable"
+        }
     }
 
-    boolean enabled();
+    fun enabled(): Boolean
 
-    void config();
+    fun config()
 }

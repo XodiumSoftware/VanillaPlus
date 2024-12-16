@@ -1,23 +1,22 @@
-package org.xodium.vanillaplus.modules;
+package org.xodium.vanillaplus.modules
 
-import org.bukkit.configuration.file.FileConfiguration;
-import org.xodium.vanillaplus.VanillaPlus;
-import org.xodium.vanillaplus.interfaces.ModuleInterface;
+import org.bukkit.configuration.file.FileConfiguration
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.interfaces.ModuleInterface
 
-public class SaplingModule implements ModuleInterface {
-    private final String cn = getClass().getSimpleName();
-    private static final VanillaPlus VP = VanillaPlus.getInstance();
-    private static final FileConfiguration FC = VP.getConfig();
-
-    @Override
-    public boolean enabled() {
-        return FC.getBoolean(cn + CONFIG.ENABLE);
+class SaplingModule : ModuleInterface {
+    private val cn: String = javaClass.getSimpleName()
+    override fun enabled(): Boolean {
+        return FC.getBoolean(cn + ModuleInterface.CONFIG.ENABLE)
     }
 
-    @Override
-    public void config() {
-        FC.addDefault(cn + CONFIG.ENABLE, true);
-        VP.saveConfig();
+    override fun config() {
+        FC.addDefault(cn + ModuleInterface.CONFIG.ENABLE, true)
+        VP.saveConfig()
     }
 
+    companion object {
+        private val VP = instance
+        private val FC: FileConfiguration = VP.config
+    }
 }

@@ -1,12 +1,18 @@
-package org.xodium.vanillaplus.records;
+package org.xodium.vanillaplus.records
 
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.data.type.Door;
-import java.util.Objects;
+import org.bukkit.block.BlockFace
+import org.bukkit.block.data.type.Door.Hinge
+import java.util.*
 
-public record AdjacentBlockRecord(int offsetX, int offsetZ, Door.Hinge hinge, BlockFace facing) {
-    public AdjacentBlockRecord {
-        Objects.requireNonNull(hinge);
-        Objects.requireNonNull(facing);
+@JvmRecord
+data class AdjacentBlockRecord(
+    @JvmField val offsetX: Int,
+    @JvmField val offsetZ: Int,
+    @JvmField val hinge: Hinge?,
+    @JvmField val facing: BlockFace?
+) {
+    init {
+        Objects.requireNonNull<Hinge?>(hinge)
+        Objects.requireNonNull<BlockFace?>(facing)
     }
 }

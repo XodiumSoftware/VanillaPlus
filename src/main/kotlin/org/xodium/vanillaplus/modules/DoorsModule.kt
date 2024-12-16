@@ -1,251 +1,251 @@
-package org.xodium.vanillaplus.modules;
+package org.xodium.vanillaplus.modules
 
-import com.google.common.base.Enums;
-import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.data.Bisected;
-import org.bukkit.block.data.BlockData;
-import org.bukkit.block.data.Openable;
-import org.bukkit.block.data.type.Door;
-import org.bukkit.block.data.type.Gate;
-import org.bukkit.block.data.type.TrapDoor;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.xodium.vanillaplus.VanillaPlus;
-import org.xodium.vanillaplus.interfaces.ModuleInterface;
-import org.xodium.vanillaplus.records.AdjacentBlockRecord;
-
-import java.util.*;
+import com.google.common.base.Enums
+import org.bukkit.*
+import org.bukkit.block.Block
+import org.bukkit.block.BlockFace
+import org.bukkit.block.data.Bisected
+import org.bukkit.block.data.Openable
+import org.bukkit.block.data.type.Door
+import org.bukkit.block.data.type.Gate
+import org.bukkit.block.data.type.TrapDoor
+import org.bukkit.configuration.file.FileConfiguration
+import org.bukkit.event.Event
+import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
+import org.bukkit.event.block.Action
+import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.scheduler.BukkitRunnable
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.records.AdjacentBlockRecord
+import java.util.*
 
 // TODO: refactor.
-public class DoorsModule implements ModuleInterface {
-    private final String cn = getClass().getSimpleName();
-    private static final VanillaPlus VP = VanillaPlus.getInstance();
-    private static final FileConfiguration FC = VP.getConfig();
-    private static final AdjacentBlockRecord[] POSSIBLE_NEIGHBOURS = {
-            new AdjacentBlockRecord(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
-            new AdjacentBlockRecord(0, 1, Door.Hinge.LEFT, BlockFace.EAST),
+class DoorsModule : ModuleInterface {
+    private val cn: String = javaClass.getSimpleName()
+    private val autoClose = HashMap<Block?, Long?>()
 
-            new AdjacentBlockRecord(1, 0, Door.Hinge.RIGHT, BlockFace.SOUTH),
-            new AdjacentBlockRecord(-1, 0, Door.Hinge.LEFT, BlockFace.SOUTH),
-
-            new AdjacentBlockRecord(0, 1, Door.Hinge.RIGHT, BlockFace.WEST),
-            new AdjacentBlockRecord(0, -1, Door.Hinge.LEFT, BlockFace.WEST),
-
-            new AdjacentBlockRecord(-1, 0, Door.Hinge.RIGHT, BlockFace.NORTH),
-            new AdjacentBlockRecord(1, 0, Door.Hinge.LEFT, BlockFace.NORTH)
-    };
-    private final HashMap<Block, Long> autoClose = new HashMap<>();
-
-    {
-        Bukkit.getScheduler().runTaskTimer(VP, () -> {
-            Iterator<Map.Entry<Block, Long>> it = autoClose.entrySet().iterator();
+    init {
+        Bukkit.getScheduler().runTaskTimer(VP, Runnable {
+            val it = autoClose.entries.iterator()
             while (it.hasNext()) {
-                Map.Entry<Block, Long> entry = it.next();
-                Block b = entry.getKey();
-                Long time = entry.getValue();
-                if (System.currentTimeMillis() < time)
-                    continue;
-                if (b.getBlockData() instanceof Openable openable) {
-                    if (openable.isOpen()) {
-                        if (openable instanceof Door) {
-                            Block otherDoor = getOtherPart((Door) openable, b);
+                val entry = it.next()
+                val b = entry.key
+                val time = entry.value ?: continue
+                if (System.currentTimeMillis() < time) continue
+                if (b?.blockData is Openable) {
+                    val openable = b.blockData as Openable
+                    if (openable.isOpen) {
+                        if (openable is Door) {
+                            val otherDoor = getOtherPart(openable, b)
                             if (otherDoor != null) {
-                                toggleOtherDoor(b, otherDoor, false);
+                                toggleOtherDoor(b, otherDoor, false)
                             }
-                        } else if (openable instanceof Gate) {
-                            b.getWorld().playSound(b.getLocation(), Sound.BLOCK_FENCE_GATE_CLOSE, 1.0f, 1.0f);
+                        } else if (openable is Gate) {
+                            b.world.playSound(b.location, Sound.BLOCK_FENCE_GATE_CLOSE, 1.0f, 1.0f)
                         }
-                        openable.setOpen(false);
-                        b.setBlockData(openable);
-                        b.getWorld().playSound(b.getLocation(), Sound.BLOCK_IRON_DOOR_CLOSE, 1.0f, 1.0f);
+                        openable.isOpen = false
+                        b.blockData = openable
+                        b.world.playSound(b.location, Sound.BLOCK_IRON_DOOR_CLOSE, 1.0f, 1.0f)
                     }
                 }
-                it.remove();
+                it.remove()
             }
-        }, 1, 1);
+        }, 1, 1)
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onRightClick(PlayerInteractEvent e) {
-        Block clickedBlock = e.getClickedBlock();
-        if (clickedBlock == null)
-            return;
-        BlockData blockData = clickedBlock.getBlockData();
+    fun onRightClick(e: PlayerInteractEvent) {
+        val clickedBlock = e.clickedBlock
+        if (clickedBlock == null) return
+        val blockData = clickedBlock.blockData
 
-        if (e.getHand() != EquipmentSlot.HAND
-                || e.getAction() != Action.RIGHT_CLICK_BLOCK
-                || e.useInteractedBlock() == Event.Result.DENY
-                || e.useItemInHand() == Event.Result.DENY
-                || !e.getPlayer().hasPermission(PERMS.USE)
-                || !(blockData instanceof Door || blockData instanceof Gate)
-                || !FC.getBoolean(cn + CONFIG.ALLOW_DOUBLEDOORS))
-            return;
+        if (e.hand != EquipmentSlot.HAND || e.getAction() != Action.RIGHT_CLICK_BLOCK || e.useInteractedBlock() == Event.Result.DENY || e.useItemInHand() == Event.Result.DENY || !e.getPlayer()
+                .hasPermission(
+                    PERMS.Companion.USE
+                ) || !(blockData is Door || blockData is Gate) || !FC.getBoolean(cn + CONFIG.Companion.ALLOW_DOUBLEDOORS)
+        ) return
 
-        if (blockData instanceof Door) {
-            Door door = getBottomDoor((Door) blockData, clickedBlock);
-            Block otherDoorBlock = getOtherPart(door, clickedBlock);
-            if (otherDoorBlock != null && otherDoorBlock.getBlockData() instanceof Door otherDoor) {
-                toggleOtherDoor(clickedBlock, otherDoorBlock, !otherDoor.isOpen());
-                if (e.getPlayer().hasPermission(PERMS.AUTOCLOSE)) {
-                    autoClose.put(otherDoorBlock,
-                            System.currentTimeMillis()
-                                    + FC.getLong(cn + CONFIG.AUTOCLOSE_DELAY) * 1000);
+        if (blockData is Door) {
+            val door = getBottomDoor(blockData, clickedBlock)
+            val otherDoorBlock = getOtherPart(door, clickedBlock)
+            if (otherDoorBlock != null && otherDoorBlock.blockData is Door) {
+                val otherDoor = otherDoorBlock.blockData as Door
+                toggleOtherDoor(clickedBlock, otherDoorBlock, !otherDoor.isOpen)
+                if (e.getPlayer().hasPermission(PERMS.Companion.AUTOCLOSE)) {
+                    autoClose[otherDoorBlock] = System.currentTimeMillis() +
+                            FC.getLong(cn + CONFIG.Companion.AUTOCLOSE_DELAY) * 1000
                 }
             }
         }
-        if (e.getPlayer().hasPermission(PERMS.AUTOCLOSE)) {
-            autoClose.put(clickedBlock,
-                    System.currentTimeMillis() + FC.getLong(cn + CONFIG.AUTOCLOSE_DELAY) * 1000);
+        if (e.getPlayer().hasPermission(PERMS.Companion.AUTOCLOSE)) {
+            autoClose.put(
+                clickedBlock,
+                System.currentTimeMillis() + FC.getLong(cn + CONFIG.Companion.AUTOCLOSE_DELAY) * 1000
+            )
         }
     }
 
     @EventHandler
-    public void onKnock(PlayerInteractEvent e) {
-        Player p = e.getPlayer();
+    fun onKnock(e: PlayerInteractEvent) {
+        val p = e.getPlayer()
 
-        if (p.getGameMode() == GameMode.CREATIVE || p.getGameMode() == GameMode.SPECTATOR
-                || !p.hasPermission(PERMS.KNOCK) || e.getAction() != Action.LEFT_CLICK_BLOCK
-                || e.getHand() != EquipmentSlot.HAND
-                || (FC.getBoolean(cn + CONFIG.KNOCKING_REQUIRES_SHIFT) && !p.isSneaking())
-                || (FC.getBoolean(cn + CONFIG.KNOCKING_REQUIRES_EMPTY_HAND)
-                        && p.getInventory().getItemInMainHand().getType() != Material.AIR)
-                || e.getClickedBlock() == null)
-            return;
+        if (p.gameMode == GameMode.CREATIVE || p.gameMode == GameMode.SPECTATOR || !p.hasPermission(PERMS.Companion.KNOCK) || e.getAction() != Action.LEFT_CLICK_BLOCK || e.hand != EquipmentSlot.HAND || (FC.getBoolean(
+                cn + CONFIG.Companion.KNOCKING_REQUIRES_SHIFT
+            ) && !p.isSneaking)
+            || (FC.getBoolean(cn + CONFIG.Companion.KNOCKING_REQUIRES_EMPTY_HAND)
+                    && p.inventory.itemInMainHand.type != Material.AIR)
+            || e.clickedBlock == null
+        ) return
 
-        Block block = e.getClickedBlock();
-        BlockData blockData = block.getBlockData();
+        val block = e.clickedBlock
+        val blockData = block!!.blockData
 
-        if ((blockData instanceof Door && FC.getBoolean(cn + CONFIG.ALLOW_KNOCKING))
-                || (blockData instanceof TrapDoor && FC.getBoolean(cn + CONFIG.ALLOW_KNOCKING_TRAPDOORS))
-                || (blockData instanceof Gate && FC.getBoolean(cn + CONFIG.ALLOW_KNOCKING_GATES))) {
-            playKnockSound(block);
+        if ((blockData is Door && FC.getBoolean(cn + CONFIG.Companion.ALLOW_KNOCKING))
+            || (blockData is TrapDoor && FC.getBoolean(cn + CONFIG.Companion.ALLOW_KNOCKING_TRAPDOORS))
+            || (blockData is Gate && FC.getBoolean(cn + CONFIG.Companion.ALLOW_KNOCKING_GATES))
+        ) {
+            playKnockSound(block)
         }
     }
 
-    public void playKnockSound(Block block) {
-        Location loc = block.getLocation();
-        World world = block.getWorld();
-        Sound sound = Optional
-                .ofNullable(
-                        Registry.SOUNDS
-                                .get(NamespacedKey.minecraft(
-                                        Objects.requireNonNull(FC.getString(cn + CONFIG.SOUND_KNOCK_WOOD)).toLowerCase())))
-                .orElse(Sound.ITEM_SHIELD_BLOCK);
-        SoundCategory category = Enums
-                .getIfPresent(SoundCategory.class,
-                        Objects.requireNonNull(FC.getString(cn + CONFIG.SOUND_KNOCK_CATEGORY)).toUpperCase())
-                .or(SoundCategory.BLOCKS);
-        float volume = (float) FC.getInt(cn + CONFIG.SOUND_KNOCK_VOLUME);
-        float pitch = (float) FC.getInt(cn + CONFIG.SOUND_KNOCK_PITCH);
+    fun playKnockSound(block: Block) {
+        val loc = block.location
+        val world = block.world
+        val sound = Optional
+            .ofNullable<Sound>(
+                Registry.SOUNDS
+                    .get(
+                        NamespacedKey.minecraft(
+                            Objects.requireNonNull<String?>(FC.getString(cn + CONFIG.Companion.SOUND_KNOCK_WOOD))
+                                .lowercase(Locale.getDefault())
+                        )
+                    )
+            )
+            .orElse(Sound.ITEM_SHIELD_BLOCK)
+        val category = Enums
+            .getIfPresent<SoundCategory>(
+                SoundCategory::class.java,
+                Objects.requireNonNull<String?>(FC.getString(cn + CONFIG.Companion.SOUND_KNOCK_CATEGORY))
+                    .uppercase(Locale.getDefault())
+            )
+            .or(SoundCategory.BLOCKS)
+        val volume = FC.getInt(cn + CONFIG.Companion.SOUND_KNOCK_VOLUME).toFloat()
+        val pitch = FC.getInt(cn + CONFIG.Companion.SOUND_KNOCK_PITCH).toFloat()
 
-        world.playSound(loc, sound, category, volume, pitch);
+        world.playSound(loc, sound, category, volume, pitch)
     }
 
-    public void toggleOtherDoor(Block block, Block otherBlock, boolean open) {
-        if (!(block.getBlockData() instanceof Door door) || !(otherBlock.getBlockData() instanceof Door otherDoor))
-            return;
+    fun toggleOtherDoor(block: Block, otherBlock: Block, open: Boolean) {
+        if (block.blockData !is Door || otherBlock.blockData !is Door) return
 
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (!(otherBlock.getBlockData() instanceof Door))
-                    return;
-                Door newDoor = (Door) block.getBlockData();
-                if (newDoor.isOpen() == door.isOpen()) {
-                    return;
+        object : BukkitRunnable() {
+            override fun run() {
+                val currentDoor = block.blockData as Door
+                val otherDoor = otherBlock.blockData as Door
+                if (currentDoor.isOpen == otherDoor.isOpen) {
+                    return
                 }
-                DoorsModule.toggleDoor(otherBlock, otherDoor, open);
+
+                toggleDoor(otherBlock, otherDoor, open)
             }
-        }.runTaskLater(VP, 1L);
+        }.runTaskLater(VP, 1L)
     }
 
-    @Override
-    public boolean enabled() {
-        return FC.getBoolean(cn + CONFIG.ENABLE);
+    override fun enabled(): Boolean {
+        return FC.getBoolean(cn + ModuleInterface.CONFIG.Companion.ENABLE)
     }
 
-    public static void toggleDoor(Block doorBlock, Openable openable, boolean open) {
-        openable.setOpen(open);
-        doorBlock.setBlockData(openable);
-    }
-
-    public Door getBottomDoor(Door door, Block block) {
-        Block below = (door.getHalf() == Bisected.Half.BOTTOM) ? block : block.getRelative(BlockFace.DOWN);
-        if (below.getType() == block.getType() && below.getBlockData() instanceof Door) {
-            return (Door) below.getBlockData();
+    fun getBottomDoor(door: Door, block: Block): Door? {
+        val below = if (door.half == Bisected.Half.BOTTOM) block else block.getRelative(BlockFace.DOWN)
+        if (below.type == block.type && below.blockData is Door) {
+            return below.blockData as Door
         }
-        return null;
+        return null
     }
 
-    public Block getOtherPart(Door door, Block block) {
+    fun getOtherPart(door: Door?, block: Block): Block? {
         if (door != null) {
-            for (AdjacentBlockRecord neighbour : POSSIBLE_NEIGHBOURS) {
-                Block relative = block.getRelative(neighbour.offsetX(), 0, neighbour.offsetZ());
-                Door otherDoor = (relative.getBlockData() instanceof Door) ? (Door) relative.getBlockData() : null;
-                if (otherDoor != null
-                        && neighbour.facing() == door.getFacing()
-                        && neighbour.hinge() == door.getHinge()
-                        && relative.getType() == block.getType()
-                        && otherDoor.getHinge() != neighbour.hinge()
-                        && otherDoor.isOpen() == door.isOpen()
-                        && otherDoor.getFacing() == neighbour.facing()) {
-                    return relative;
+            for (neighbour in POSSIBLE_NEIGHBOURS) {
+                val relative = block.getRelative(neighbour!!.offsetX, 0, neighbour.offsetZ)
+                val otherDoor = if (relative.blockData is Door) relative.blockData as Door else null
+                if (otherDoor != null && neighbour.facing == door.facing && neighbour.hinge == door.hinge && relative.type == block.type && otherDoor.hinge != neighbour.hinge && otherDoor.isOpen == door.isOpen && otherDoor.facing == neighbour.facing) {
+                    return relative
                 }
             }
         }
-        return null;
+        return null
     }
 
-    @Override
-    public void config() {
-        FC.addDefault(cn + CONFIG.ENABLE, true);
-        FC.addDefault(cn + CONFIG.SOUND_KNOCK_CATEGORY, "BLOCKS");
-        FC.addDefault(cn + CONFIG.SOUND_KNOCK_PITCH, 1.0);
-        FC.addDefault(cn + CONFIG.SOUND_KNOCK_VOLUME, 1.0);
-        FC.addDefault(cn + CONFIG.SOUND_KNOCK_WOOD, "entity_zombie_attack_wooden_door");
-        FC.addDefault(cn + CONFIG.ALLOW_AUTOCLOSE, true);
-        FC.addDefault(cn + CONFIG.ALLOW_DOUBLEDOORS, true);
-        FC.addDefault(cn + CONFIG.ALLOW_KNOCKING, true);
-        FC.addDefault(cn + CONFIG.ALLOW_KNOCKING_GATES, true);
-        FC.addDefault(cn + CONFIG.ALLOW_KNOCKING_TRAPDOORS, true);
-        FC.addDefault(cn + CONFIG.KNOCKING_REQUIRES_EMPTY_HAND, true);
-        FC.addDefault(cn + CONFIG.KNOCKING_REQUIRES_SHIFT, false);
-        FC.addDefault(cn + CONFIG.AUTOCLOSE_DELAY, 6);
-        VP.saveConfig();
+    override fun config() {
+        FC.addDefault(cn + ModuleInterface.CONFIG.Companion.ENABLE, true)
+        FC.addDefault(cn + CONFIG.Companion.SOUND_KNOCK_CATEGORY, "BLOCKS")
+        FC.addDefault(cn + CONFIG.Companion.SOUND_KNOCK_PITCH, 1.0)
+        FC.addDefault(cn + CONFIG.Companion.SOUND_KNOCK_VOLUME, 1.0)
+        FC.addDefault(cn + CONFIG.Companion.SOUND_KNOCK_WOOD, "entity_zombie_attack_wooden_door")
+        FC.addDefault(cn + CONFIG.Companion.ALLOW_AUTOCLOSE, true)
+        FC.addDefault(cn + CONFIG.Companion.ALLOW_DOUBLEDOORS, true)
+        FC.addDefault(cn + CONFIG.Companion.ALLOW_KNOCKING, true)
+        FC.addDefault(cn + CONFIG.Companion.ALLOW_KNOCKING_GATES, true)
+        FC.addDefault(cn + CONFIG.Companion.ALLOW_KNOCKING_TRAPDOORS, true)
+        FC.addDefault(cn + CONFIG.Companion.KNOCKING_REQUIRES_EMPTY_HAND, true)
+        FC.addDefault(cn + CONFIG.Companion.KNOCKING_REQUIRES_SHIFT, false)
+        FC.addDefault(cn + CONFIG.Companion.AUTOCLOSE_DELAY, 6)
+        VP.saveConfig()
     }
 
-    private interface CONFIG extends ModuleInterface.CONFIG {
-        // Sound settings
-        String SOUND_KNOCK_CATEGORY = ".sound_knock_category";
-        String SOUND_KNOCK_PITCH = ".sound_knock_pitch";
-        String SOUND_KNOCK_VOLUME = ".sound_knock_volume";
-        String SOUND_KNOCK_WOOD = ".sound_knock_wood";
+    private interface CONFIG : ModuleInterface.CONFIG {
+        companion object {
+            // Sound settings
+            const val SOUND_KNOCK_CATEGORY: String = ".sound_knock_category"
+            const val SOUND_KNOCK_PITCH: String = ".sound_knock_pitch"
+            const val SOUND_KNOCK_VOLUME: String = ".sound_knock_volume"
+            const val SOUND_KNOCK_WOOD: String = ".sound_knock_wood"
 
-        // Behavior settings
-        String ALLOW_AUTOCLOSE = ".allow_autoclose";
-        String ALLOW_DOUBLEDOORS = ".allow_doubledoors";
-        String ALLOW_KNOCKING = ".allow_knocking";
-        String ALLOW_KNOCKING_GATES = ".allow_knocking_gates";
-        String ALLOW_KNOCKING_TRAPDOORS = ".allow_knocking_trapdoors";
-        String KNOCKING_REQUIRES_EMPTY_HAND = ".knocking_requires_empty_hand";
-        String KNOCKING_REQUIRES_SHIFT = ".knocking_requires_shift";
+            // Behavior settings
+            const val ALLOW_AUTOCLOSE: String = ".allow_autoclose"
+            const val ALLOW_DOUBLEDOORS: String = ".allow_doubledoors"
+            const val ALLOW_KNOCKING: String = ".allow_knocking"
+            const val ALLOW_KNOCKING_GATES: String = ".allow_knocking_gates"
+            const val ALLOW_KNOCKING_TRAPDOORS: String = ".allow_knocking_trapdoors"
+            const val KNOCKING_REQUIRES_EMPTY_HAND: String = ".knocking_requires_empty_hand"
+            const val KNOCKING_REQUIRES_SHIFT: String = ".knocking_requires_shift"
 
-        // Auto-close settings
-        String AUTOCLOSE_DELAY = ".autoclose_delay";
+            // Auto-close settings
+            const val AUTOCLOSE_DELAY: String = ".autoclose_delay"
+        }
     }
 
     private interface PERMS {
-        String USE = VP.getClass().getSimpleName() + ".doubledoors";
-        String KNOCK = VP.getClass().getSimpleName() + ".knock";
-        String AUTOCLOSE = VP.getClass().getSimpleName() + ".autoclose";
+        companion object {
+            val USE: String = VP.javaClass.getSimpleName() + ".doubledoors"
+            val KNOCK: String = VP.javaClass.getSimpleName() + ".knock"
+            val AUTOCLOSE: String = VP.javaClass.getSimpleName() + ".autoclose"
+        }
+    }
+
+    companion object {
+        private val VP = instance
+        private val FC: FileConfiguration = VP.config
+        private val POSSIBLE_NEIGHBOURS = arrayOf<AdjacentBlockRecord?>(
+            AdjacentBlockRecord(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
+            AdjacentBlockRecord(0, 1, Door.Hinge.LEFT, BlockFace.EAST),
+
+            AdjacentBlockRecord(1, 0, Door.Hinge.RIGHT, BlockFace.SOUTH),
+            AdjacentBlockRecord(-1, 0, Door.Hinge.LEFT, BlockFace.SOUTH),
+
+            AdjacentBlockRecord(0, 1, Door.Hinge.RIGHT, BlockFace.WEST),
+            AdjacentBlockRecord(0, -1, Door.Hinge.LEFT, BlockFace.WEST),
+
+            AdjacentBlockRecord(-1, 0, Door.Hinge.RIGHT, BlockFace.NORTH),
+            AdjacentBlockRecord(1, 0, Door.Hinge.LEFT, BlockFace.NORTH)
+        )
+
+        fun toggleDoor(doorBlock: Block, openable: Openable, open: Boolean) {
+            openable.isOpen = open
+            doorBlock.blockData = openable
+        }
     }
 }
