@@ -10,9 +10,6 @@ build/
 .idea/
 *.iml
 
-# VS Code specific files
-.vscode/
-
 # OS generated files
 .DS_Store
 Thumbs.db

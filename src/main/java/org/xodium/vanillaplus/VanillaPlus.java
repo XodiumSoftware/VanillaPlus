@@ -1,8 +1,9 @@
 package org.xodium.vanillaplus;
 
-import java.util.Arrays;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.xodium.vanillaplus.commands.ReloadCommand;
+
+import java.util.Arrays;
 
 public class VanillaPlus extends JavaPlugin {
     // TODO: revert back to using the build in config system instead of a database.
@@ -14,7 +15,6 @@ public class VanillaPlus extends JavaPlugin {
             + String.join(", ", V);
 
     public static final String PREFIX = "<gold>[<dark_aqua>VanillaPlus<gold>] <reset>";
-    public static final String MM_HEX_PREFIX = "<#CB2D3E><b>";
 
     public static VanillaPlus getInstance() {
         return getPlugin(VanillaPlus.class);
@@ -30,6 +30,7 @@ public class VanillaPlus extends JavaPlugin {
             disablePlugin(IS_SUPPORTED_VERSION_MSG);
             return;
         }
+        saveDefaultConfig();
         new ReloadCommand();
         new ModuleManager();
     }

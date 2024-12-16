@@ -1,20 +1,7 @@
 package org.xodium.vanillaplus.modules;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Optional;
-
-import org.bukkit.event.Event;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
-import org.bukkit.Sound;
-import org.bukkit.SoundCategory;
-import org.bukkit.World;
+import com.google.common.base.Enums;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Bisected;
@@ -23,7 +10,9 @@ import org.bukkit.block.data.Openable;
 import org.bukkit.block.data.type.Door;
 import org.bukkit.block.data.type.Gate;
 import org.bukkit.block.data.type.TrapDoor;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
@@ -34,40 +23,13 @@ import org.xodium.vanillaplus.VanillaPlus;
 import org.xodium.vanillaplus.interfaces.ModuleInterface;
 import org.xodium.vanillaplus.records.AdjacentBlockRecord;
 
-import com.google.common.base.Enums;
+import java.util.*;
 
 // TODO: refactor.
 public class DoorsModule implements ModuleInterface {
     private final String cn = getClass().getSimpleName();
     private static final VanillaPlus VP = VanillaPlus.getInstance();
-
-    private static interface CONFIG extends ModuleInterface.CONFIG {
-        // Sound settings
-        String SOUND_KNOCK_CATEGORY = ".sound_knock_category";
-        String SOUND_KNOCK_PITCH = ".sound_knock_pitch";
-        String SOUND_KNOCK_VOLUME = ".sound_knock_volume";
-        String SOUND_KNOCK_WOOD = ".sound_knock_wood";
-
-        // Behavior settings
-        String ALLOW_AUTOCLOSE = ".allow_autoclose";
-        String ALLOW_DOUBLEDOORS = ".allow_doubledoors";
-        String ALLOW_KNOCKING = ".allow_knocking";
-        String ALLOW_KNOCKING_GATES = ".allow_knocking_gates";
-        String ALLOW_KNOCKING_TRAPDOORS = ".allow_knocking_trapdoors";
-        String KNOCKING_REQUIRES_EMPTY_HAND = ".knocking_requires_empty_hand";
-        String KNOCKING_REQUIRES_SHIFT = ".knocking_requires_shift";
-
-        // Auto-close settings
-        String AUTOCLOSE_DELAY = ".autoclose_delay";
-    }
-
-    private static interface PERMS {
-        String USE = VP.getClass().getSimpleName() + ".doubledoors";
-        String KNOCK = VP.getClass().getSimpleName() + ".knock";
-        String AUTOCLOSE = VP.getClass().getSimpleName() + ".autoclose";
-    }
-
-    private final HashMap<Block, Long> autoClose = new HashMap<>();
+    private static final FileConfiguration FC = VP.getConfig();
     private static final AdjacentBlockRecord[] POSSIBLE_NEIGHBOURS = {
             new AdjacentBlockRecord(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
             new AdjacentBlockRecord(0, 1, Door.Hinge.LEFT, BlockFace.EAST),
@@ -81,6 +43,7 @@ public class DoorsModule implements ModuleInterface {
             new AdjacentBlockRecord(-1, 0, Door.Hinge.RIGHT, BlockFace.NORTH),
             new AdjacentBlockRecord(1, 0, Door.Hinge.LEFT, BlockFace.NORTH)
     };
+    private final HashMap<Block, Long> autoClose = new HashMap<>();
 
     {
         Bukkit.getScheduler().runTaskTimer(VP, () -> {
@@ -91,8 +54,7 @@ public class DoorsModule implements ModuleInterface {
                 Long time = entry.getValue();
                 if (System.currentTimeMillis() < time)
                     continue;
-                if (b.getBlockData() instanceof Openable) {
-                    Openable openable = (Openable) b.getBlockData();
+                if (b.getBlockData() instanceof Openable openable) {
                     if (openable.isOpen()) {
                         if (openable instanceof Door) {
                             Block otherDoor = getOtherPart((Door) openable, b);
@@ -125,25 +87,24 @@ public class DoorsModule implements ModuleInterface {
                 || e.useItemInHand() == Event.Result.DENY
                 || !e.getPlayer().hasPermission(PERMS.USE)
                 || !(blockData instanceof Door || blockData instanceof Gate)
-                || !DB.getData(cn + CONFIG.ALLOW_DOUBLEDOORS, Boolean.class))
+                || !FC.getBoolean(cn + CONFIG.ALLOW_DOUBLEDOORS))
             return;
 
         if (blockData instanceof Door) {
             Door door = getBottomDoor((Door) blockData, clickedBlock);
             Block otherDoorBlock = getOtherPart(door, clickedBlock);
-            if (otherDoorBlock != null && otherDoorBlock.getBlockData() instanceof Door) {
-                Door otherDoor = (Door) otherDoorBlock.getBlockData();
+            if (otherDoorBlock != null && otherDoorBlock.getBlockData() instanceof Door otherDoor) {
                 toggleOtherDoor(clickedBlock, otherDoorBlock, !otherDoor.isOpen());
                 if (e.getPlayer().hasPermission(PERMS.AUTOCLOSE)) {
                     autoClose.put(otherDoorBlock,
                             System.currentTimeMillis()
-                                    + DB.getData(cn + CONFIG.AUTOCLOSE_DELAY, Long.class) * 1000);
+                                    + FC.getLong(cn + CONFIG.AUTOCLOSE_DELAY) * 1000);
                 }
             }
         }
         if (e.getPlayer().hasPermission(PERMS.AUTOCLOSE)) {
             autoClose.put(clickedBlock,
-                    System.currentTimeMillis() + DB.getData(cn + CONFIG.AUTOCLOSE_DELAY, Long.class) * 1000);
+                    System.currentTimeMillis() + FC.getLong(cn + CONFIG.AUTOCLOSE_DELAY) * 1000);
         }
     }
 
@@ -154,8 +115,8 @@ public class DoorsModule implements ModuleInterface {
         if (p.getGameMode() == GameMode.CREATIVE || p.getGameMode() == GameMode.SPECTATOR
                 || !p.hasPermission(PERMS.KNOCK) || e.getAction() != Action.LEFT_CLICK_BLOCK
                 || e.getHand() != EquipmentSlot.HAND
-                || (DB.getData(cn + CONFIG.KNOCKING_REQUIRES_SHIFT, Boolean.class) && !p.isSneaking())
-                || (DB.getData(cn + CONFIG.KNOCKING_REQUIRES_EMPTY_HAND, Boolean.class)
+                || (FC.getBoolean(cn + CONFIG.KNOCKING_REQUIRES_SHIFT) && !p.isSneaking())
+                || (FC.getBoolean(cn + CONFIG.KNOCKING_REQUIRES_EMPTY_HAND)
                         && p.getInventory().getItemInMainHand().getType() != Material.AIR)
                 || e.getClickedBlock() == null)
             return;
@@ -163,9 +124,9 @@ public class DoorsModule implements ModuleInterface {
         Block block = e.getClickedBlock();
         BlockData blockData = block.getBlockData();
 
-        if ((blockData instanceof Door && DB.getData(cn + CONFIG.ALLOW_KNOCKING, Boolean.class))
-                || (blockData instanceof TrapDoor && DB.getData(cn + CONFIG.ALLOW_KNOCKING_TRAPDOORS, Boolean.class))
-                || (blockData instanceof Gate && DB.getData(cn + CONFIG.ALLOW_KNOCKING_GATES, Boolean.class))) {
+        if ((blockData instanceof Door && FC.getBoolean(cn + CONFIG.ALLOW_KNOCKING))
+                || (blockData instanceof TrapDoor && FC.getBoolean(cn + CONFIG.ALLOW_KNOCKING_TRAPDOORS))
+                || (blockData instanceof Gate && FC.getBoolean(cn + CONFIG.ALLOW_KNOCKING_GATES))) {
             playKnockSound(block);
         }
     }
@@ -177,16 +138,39 @@ public class DoorsModule implements ModuleInterface {
                 .ofNullable(
                         Registry.SOUNDS
                                 .get(NamespacedKey.minecraft(
-                                        DB.getData(cn + CONFIG.SOUND_KNOCK_WOOD, String.class).toLowerCase())))
+                                        Objects.requireNonNull(FC.getString(cn + CONFIG.SOUND_KNOCK_WOOD)).toLowerCase())))
                 .orElse(Sound.ITEM_SHIELD_BLOCK);
         SoundCategory category = Enums
                 .getIfPresent(SoundCategory.class,
-                        DB.getData(cn + CONFIG.SOUND_KNOCK_CATEGORY, String.class).toUpperCase())
+                        Objects.requireNonNull(FC.getString(cn + CONFIG.SOUND_KNOCK_CATEGORY)).toUpperCase())
                 .or(SoundCategory.BLOCKS);
-        float volume = DB.getData(cn + CONFIG.SOUND_KNOCK_VOLUME, Float.class);
-        float pitch = DB.getData(cn + CONFIG.SOUND_KNOCK_PITCH, Float.class);
+        float volume = (float) FC.getInt(cn + CONFIG.SOUND_KNOCK_VOLUME);
+        float pitch = (float) FC.getInt(cn + CONFIG.SOUND_KNOCK_PITCH);
 
         world.playSound(loc, sound, category, volume, pitch);
+    }
+
+    public void toggleOtherDoor(Block block, Block otherBlock, boolean open) {
+        if (!(block.getBlockData() instanceof Door door) || !(otherBlock.getBlockData() instanceof Door otherDoor))
+            return;
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (!(otherBlock.getBlockData() instanceof Door))
+                    return;
+                Door newDoor = (Door) block.getBlockData();
+                if (newDoor.isOpen() == door.isOpen()) {
+                    return;
+                }
+                DoorsModule.toggleDoor(otherBlock, otherDoor, open);
+            }
+        }.runTaskLater(VP, 1L);
+    }
+
+    @Override
+    public boolean enabled() {
+        return FC.getBoolean(cn + CONFIG.ENABLE);
     }
 
     public static void toggleDoor(Block doorBlock, Openable openable, boolean open) {
@@ -221,46 +205,47 @@ public class DoorsModule implements ModuleInterface {
         return null;
     }
 
-    public void toggleOtherDoor(Block block, Block otherBlock, boolean open) {
-        if (!(block.getBlockData() instanceof Door) || !(otherBlock.getBlockData() instanceof Door))
-            return;
-
-        Door door = (Door) block.getBlockData();
-        Door otherDoor = (Door) otherBlock.getBlockData();
-
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (!(otherBlock.getBlockData() instanceof Door))
-                    return;
-                Door newDoor = (Door) block.getBlockData();
-                if (newDoor.isOpen() == door.isOpen()) {
-                    return;
-                }
-                DoorsModule.toggleDoor(otherBlock, otherDoor, open);
-            }
-        }.runTaskLater(VP, 1L);
-    }
-
-    @Override
-    public boolean enabled() {
-        return DB.getData(cn + CONFIG.ENABLE, Boolean.class);
-    }
-
     @Override
     public void config() {
-        DB.setData(cn + CONFIG.ENABLE, true);
-        DB.setData(cn + CONFIG.SOUND_KNOCK_CATEGORY, "BLOCKS");
-        DB.setData(cn + CONFIG.SOUND_KNOCK_PITCH, 1.0);
-        DB.setData(cn + CONFIG.SOUND_KNOCK_VOLUME, 1.0);
-        DB.setData(cn + CONFIG.SOUND_KNOCK_WOOD, "entity_zombie_attack_wooden_door");
-        DB.setData(cn + CONFIG.ALLOW_AUTOCLOSE, true);
-        DB.setData(cn + CONFIG.ALLOW_DOUBLEDOORS, true);
-        DB.setData(cn + CONFIG.ALLOW_KNOCKING, true);
-        DB.setData(cn + CONFIG.ALLOW_KNOCKING_GATES, true);
-        DB.setData(cn + CONFIG.ALLOW_KNOCKING_TRAPDOORS, true);
-        DB.setData(cn + CONFIG.KNOCKING_REQUIRES_EMPTY_HAND, true);
-        DB.setData(cn + CONFIG.KNOCKING_REQUIRES_SHIFT, false);
-        DB.setData(cn + CONFIG.AUTOCLOSE_DELAY, 6);
+        FC.addDefault(cn + CONFIG.ENABLE, true);
+        FC.addDefault(cn + CONFIG.SOUND_KNOCK_CATEGORY, "BLOCKS");
+        FC.addDefault(cn + CONFIG.SOUND_KNOCK_PITCH, 1.0);
+        FC.addDefault(cn + CONFIG.SOUND_KNOCK_VOLUME, 1.0);
+        FC.addDefault(cn + CONFIG.SOUND_KNOCK_WOOD, "entity_zombie_attack_wooden_door");
+        FC.addDefault(cn + CONFIG.ALLOW_AUTOCLOSE, true);
+        FC.addDefault(cn + CONFIG.ALLOW_DOUBLEDOORS, true);
+        FC.addDefault(cn + CONFIG.ALLOW_KNOCKING, true);
+        FC.addDefault(cn + CONFIG.ALLOW_KNOCKING_GATES, true);
+        FC.addDefault(cn + CONFIG.ALLOW_KNOCKING_TRAPDOORS, true);
+        FC.addDefault(cn + CONFIG.KNOCKING_REQUIRES_EMPTY_HAND, true);
+        FC.addDefault(cn + CONFIG.KNOCKING_REQUIRES_SHIFT, false);
+        FC.addDefault(cn + CONFIG.AUTOCLOSE_DELAY, 6);
+        VP.saveConfig();
+    }
+
+    private interface CONFIG extends ModuleInterface.CONFIG {
+        // Sound settings
+        String SOUND_KNOCK_CATEGORY = ".sound_knock_category";
+        String SOUND_KNOCK_PITCH = ".sound_knock_pitch";
+        String SOUND_KNOCK_VOLUME = ".sound_knock_volume";
+        String SOUND_KNOCK_WOOD = ".sound_knock_wood";
+
+        // Behavior settings
+        String ALLOW_AUTOCLOSE = ".allow_autoclose";
+        String ALLOW_DOUBLEDOORS = ".allow_doubledoors";
+        String ALLOW_KNOCKING = ".allow_knocking";
+        String ALLOW_KNOCKING_GATES = ".allow_knocking_gates";
+        String ALLOW_KNOCKING_TRAPDOORS = ".allow_knocking_trapdoors";
+        String KNOCKING_REQUIRES_EMPTY_HAND = ".knocking_requires_empty_hand";
+        String KNOCKING_REQUIRES_SHIFT = ".knocking_requires_shift";
+
+        // Auto-close settings
+        String AUTOCLOSE_DELAY = ".autoclose_delay";
+    }
+
+    private interface PERMS {
+        String USE = VP.getClass().getSimpleName() + ".doubledoors";
+        String KNOCK = VP.getClass().getSimpleName() + ".knock";
+        String AUTOCLOSE = VP.getClass().getSimpleName() + ".autoclose";
     }
 }

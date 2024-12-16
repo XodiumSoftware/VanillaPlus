@@ -2,14 +2,14 @@ package org.xodium.vanillaplus;
 
 import org.xodium.vanillaplus.interfaces.ModuleInterface;
 import org.xodium.vanillaplus.modules.DoorsModule;
-import java.util.List;
+
+import java.util.stream.Stream;
 
 public class ModuleManager {
     private static final VanillaPlus VP = VanillaPlus.getInstance();
 
     static {
-        List.of(new DoorsModule())
-                .stream()
+        Stream.of(new DoorsModule())
                 .peek(ModuleInterface::config)
                 .filter(ModuleInterface::enabled)
                 .forEach(mod -> {
