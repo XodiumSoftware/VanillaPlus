@@ -30,7 +30,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.xodium.vanillaplus.Database;
 import org.xodium.vanillaplus.VanillaPlus;
 import org.xodium.vanillaplus.interfaces.ModuleInterface;
 import org.xodium.vanillaplus.records.AdjacentBlockRecord;
@@ -41,7 +40,6 @@ import com.google.common.base.Enums;
 public class DoorsModule implements ModuleInterface {
     private final String cn = getClass().getSimpleName();
     private static final VanillaPlus VP = VanillaPlus.getInstance();
-    private static final Database DB = new Database();
 
     private static interface CONFIG extends ModuleInterface.CONFIG {
         // Sound settings

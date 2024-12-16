@@ -1,11 +1,9 @@
 package org.xodium.vanillaplus.modules;
 
-import org.xodium.vanillaplus.Database;
 import org.xodium.vanillaplus.interfaces.ModuleInterface;
 
 public class SaplingModule implements ModuleInterface {
     private final String cn = getClass().getSimpleName();
-    private static final Database DB = new Database();
 
     @Override
     public boolean enabled() {
