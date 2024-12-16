@@ -1,6 +1,4 @@
-<a name="readme-top"></a>
-
-<h1 align="center">
+<h1 style="text-align: center;">
   <br />
     <a href="https://xodium.org/">
       <img src="" alt="VanillaPlus Logo" width="200">
@@ -11,46 +9,27 @@
   <br />
 </h1>
 
-<h4 align="center"> Minecraft plugin that enhances the base gameplay. </h4><br />
+<h4 style="text-align: center;"> Minecraft plugin that enhances the base gameplay. </h4><br />
 
-<div align="center">
+<div style="text-align: center;">
 
 [![Contributors][contributors_shield_url]][contributors_url]
 [![Issues][issues_shield_url]][issues_url]
-[![Roadmap][roadmap_shield_url]][roadmap_url]<br />
+[![Roadmap][roadmap_shield_url]][roadmap_url]
+</div>
 
 ## Table of Contents
 
-- [About The Project](#about-the-project)
 - [Code of Conduct][code_of_conduct_url]
 - [Contributing][contributing_url]
 - [License][license_url]
 
-## About The Project
+<div style="text-align: center;"><h3>Built With</h3>
 
-<!-- xCLOUD is not just a cloud, it's the companion of xCAC in processing BIM objects fast and efficiently. Built to simplify the cloud process.
+[![Built With][built_with_shield_url]][built_with_url]
+</div>
 
-**Why xCLOUD?**
-
-> :gear: **DRY-Principle**
-
-> :straight_ruler: **Customizable and Precise design**
-
-> :hourglass_flowing_sand: **Time-saving and Efficient**
-
-> :white_check_mark: **Currently built to:** `Binary`
-
-As the coding landscape evolves, so will xCLOUD. Expect ongoing updates and improvements to cater to diverse project needs. Your feedback, suggestions, and contributions are highly valued, let's make xCLOUD even better together.
-
-Feel free to dive into the documentation to kickstart your journey with xCLOUD. -->
-
-<div align="center"><h3>Built With</h3>
-
-[![Built With][built_with_shield_url]][built_with_url]</div>
-
-</details><p align="right"><a href="#readme-top">▲</a></p>
-
-[built_with_shield_url]: https://skillicons.dev/icons?i=vscode,docker,java,gradle,sqlite,github,githubactions
+[built_with_shield_url]: https://skillicons.dev/icons?i=java,gradle,github,githubactions
 [built_with_url]: https://skillicons.dev
 [code_of_conduct_url]: https://github.com/XodiumSoftware/xCLOUD?tab=coc-ov-file
 [contributing_url]: https://github.com/XodiumSoftware/xCLOUD/blob/main/CONTRIBUTING.md
