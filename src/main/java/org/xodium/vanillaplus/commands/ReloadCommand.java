@@ -17,26 +17,24 @@ public class ReloadCommand {
     private static final MiniMessage MM = MiniMessage.miniMessage();
 
     static {
-        VP.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, e -> {
-            e.registrar().register(
-                    Commands.literal("vanillaplus")
-                            .executes(ctx -> {
-                                CommandSender cs = ctx.getSource().getSender();
-                                if (cs instanceof Player p) {
-                                    if (!p.hasPermission(PERMS.RELOAD)) {
-                                        p.sendMessage(MSG.PERM_ERR);
-                                        return 0;
-                                    }
+        VP.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, e -> e.registrar().register(
+                Commands.literal("vanillaplus")
+                        .executes(ctx -> {
+                            CommandSender cs = ctx.getSource().getSender();
+                            if (cs instanceof Player p) {
+                                if (!p.hasPermission(PERMS.RELOAD)) {
+                                    p.sendMessage(MSG.PERM_ERR);
+                                    return 0;
                                 }
-                                VP.reloadConfig();
-                                cs.sendMessage(MSG.RELOAD_SUCC_MSG);
-                                VP.getLogger().info(MSG.RELOAD_SUCC_LOG_MSG);
-                                return Command.SINGLE_SUCCESS;
-                            })
-                            .build(),
-                    "Opens the GUI",
-                    List.of("vp"));
-        });
+                            }
+                            VP.reloadConfig();
+                            cs.sendMessage(MSG.RELOAD_SUCC_MSG);
+                            VP.getLogger().info(MSG.RELOAD_SUCC_LOG_MSG);
+                            return Command.SINGLE_SUCCESS;
+                        })
+                        .build(),
+                "Opens the GUI",
+                List.of("vp")));
     }
 
     private interface MSG {

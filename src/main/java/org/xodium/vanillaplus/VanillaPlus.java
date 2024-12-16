@@ -6,9 +6,7 @@ import org.xodium.vanillaplus.commands.ReloadCommand;
 import java.util.Arrays;
 
 public class VanillaPlus extends JavaPlugin {
-    // TODO: revert back to using the build in config system instead of a database.
-
-    private static final String[] V = { "1.21.1", "1.21.3", "1.21.4" };
+    private static final String[] V = {"1.21.3"};
     private static final String[] PAPER = { "Paper" };
     private static final String IS_PAPER_MSG = "This plugin is not compatible with non-Paper servers.";
     private static final String IS_SUPPORTED_VERSION_MSG = "This plugin requires Paper version(s): "
