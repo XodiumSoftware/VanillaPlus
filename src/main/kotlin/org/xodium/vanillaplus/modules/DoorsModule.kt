@@ -133,24 +133,21 @@ class DoorsModule : ModuleInterface {
     }
 
     private fun getBottomDoor(door: Door, block: Block): Door? {
-        val below = if (door.half == Bisected.Half.BOTTOM) block else block.getRelative(BlockFace.DOWN)
-        if (below.type == block.type && below.blockData is Door) {
-            return below.blockData as Door
-        }
-        return null
+        val belowBlock = if (door.half == Bisected.Half.BOTTOM) block else block.getRelative(BlockFace.DOWN)
+        return (belowBlock.blockData as? Door)?.takeIf { belowBlock.type == block.type }
     }
 
     private fun getOtherPart(door: Door?, block: Block): Block? {
-        if (door != null) {
-            for (neighbour in POSSIBLE_NEIGHBOURS) {
-                val relative = block.getRelative(neighbour!!.offsetX, 0, neighbour.offsetZ)
-                val otherDoor = if (relative.blockData is Door) relative.blockData as Door else null
-                if (otherDoor != null && neighbour.facing == door.facing && neighbour.hinge == door.hinge && relative.type == block.type && otherDoor.hinge != neighbour.hinge && otherDoor.isOpen == door.isOpen && otherDoor.facing == neighbour.facing) {
-                    return relative
-                }
-            }
-        }
-        return null
+        if (door == null) return null
+        return POSSIBLE_NEIGHBOURS.firstOrNull { neighbour ->
+            val relative = block.getRelative(neighbour!!.offsetX, 0, neighbour.offsetZ)
+            (relative.blockData as? Door)?.takeIf {
+                it.facing == door.facing &&
+                        it.hinge != door.hinge &&
+                        it.isOpen == door.isOpen &&
+                        relative.type == block.type
+            } != null
+        }?.let { block.getRelative(it.offsetX, 0, it.offsetZ) }
     }
 
     override fun enabled(): Boolean {
