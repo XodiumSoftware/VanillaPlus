@@ -10,16 +10,17 @@ description = "Minecraft plugin that enhances the base gameplay."
 
 repositories {
     mavenCentral()
-    maven {
-        name = "papermc"
-        url = uri("https://repo.papermc.io/repository/maven-public/")
-    }
+    maven { url = uri("https://repo.papermc.io/repository/maven-public/") }
+    maven { url = uri("https://maven.enginehub.org/repo/") }
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.3-R0.1-SNAPSHOT")
     implementation("net.kyori:adventure-api:4.17.0")
     implementation(kotlin("stdlib-jdk8"))
+    implementation(platform("com.intellectualsites.bom:bom-newest:1.51"))
+    compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core")
+    compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit") { isTransitive = false }
 }
 
 java {
