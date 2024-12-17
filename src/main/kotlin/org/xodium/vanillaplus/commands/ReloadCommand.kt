@@ -17,6 +17,17 @@ object ReloadCommand {
     private val pcn: String = instance.javaClass.simpleName
     private val MM = MiniMessage.miniMessage()
 
+    private object MSG {
+        const val PREFIX: String = "<gold>[<dark_aqua>VanillaPlus<gold>] <reset>"
+        val PERM_ERR: Component = MM.deserialize(
+            VanillaPlus.PREFIX
+                    + "<red>You do not have permission to use this command!"
+        )
+        val RELOAD_SUCC_MSG: Component = MM
+            .deserialize("$PREFIX<green>Configuration reloaded successfully.")
+        const val RELOAD_SUCC_LOG_MSG: String = "Configuration reloaded successfully."
+    }
+
     init {
         instance.lifecycleManager.registerEventHandler(
             LifecycleEvents.COMMANDS
@@ -24,12 +35,10 @@ object ReloadCommand {
             e.registrar().register(
                 Commands.literal("vanillaplus")
                     .executes(Command { ctx: CommandContext<CommandSourceStack?>? ->
-                        val cs = ctx!!.source!!.sender
-                        if (cs is Player) {
-                            if (!cs.hasPermission("$pcn.reload")) {
-                                cs.sendMessage(MSG.PERM_ERR)
-                                return@Command 0
-                            }
+                        val cs = ctx?.source?.sender ?: return@Command 0
+                        if (cs is Player && !cs.hasPermission("$pcn.reload")) {
+                            cs.sendMessage(MSG.PERM_ERR)
+                            return@Command 0
                         }
                         instance.reloadConfig()
                         cs.sendMessage(MSG.RELOAD_SUCC_MSG)
@@ -41,16 +50,5 @@ object ReloadCommand {
                 mutableListOf("vp")
             )
         }
-    }
-
-    private object MSG {
-        const val PREFIX: String = "<gold>[<dark_aqua>VanillaPlus<gold>] <reset>"
-        val PERM_ERR: Component = MM.deserialize(
-            VanillaPlus.PREFIX
-                    + "<red>You do not have permission to use this command!"
-        )
-        val RELOAD_SUCC_MSG: Component = MM
-            .deserialize("$PREFIX<green>Configuration reloaded successfully.")
-        const val RELOAD_SUCC_LOG_MSG: String = "Configuration reloaded successfully."
     }
 }
