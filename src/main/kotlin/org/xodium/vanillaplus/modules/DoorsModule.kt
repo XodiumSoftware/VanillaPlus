@@ -9,7 +9,6 @@ import org.bukkit.block.data.Openable
 import org.bukkit.block.data.type.Door
 import org.bukkit.block.data.type.Gate
 import org.bukkit.block.data.type.TrapDoor
-import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.event.Event
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -18,8 +17,8 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.scheduler.BukkitRunnable
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.data.AdjacentBlockData
+import org.xodium.vanillaplus.interfaces.ModuleInterface
 import java.util.*
 
 // TODO: refactor.
@@ -60,13 +59,11 @@ class DoorsModule : ModuleInterface {
     fun onRightClick(e: PlayerInteractEvent) {
         val clickedBlock = e.clickedBlock ?: return
         val blockData = clickedBlock.blockData
-
         if (e.hand != EquipmentSlot.HAND || e.action != Action.RIGHT_CLICK_BLOCK || e.useInteractedBlock() == Event.Result.DENY || e.useItemInHand() == Event.Result.DENY || !e.player
                 .hasPermission(
                     PERMS.USE
-                ) || !(blockData is Door || blockData is Gate) || !FC.getBoolean(cn + CONFIG.ALLOW_DOUBLEDOORS)
+                ) || !(blockData is Door || blockData is Gate) || !instance.config.getBoolean(cn + CONFIG.ALLOW_DOUBLEDOORS)
         ) return
-
         if (blockData is Door) {
             val door = getBottomDoor(blockData, clickedBlock)
             val otherDoorBlock = getOtherPart(door, clickedBlock)
@@ -75,33 +72,31 @@ class DoorsModule : ModuleInterface {
                 toggleOtherDoor(clickedBlock, otherDoorBlock, !otherDoor.isOpen)
                 if (e.player.hasPermission(PERMS.AUTOCLOSE)) {
                     autoClose[otherDoorBlock] = System.currentTimeMillis() +
-                            FC.getLong(cn + CONFIG.AUTOCLOSE_DELAY) * 1000
+                            instance.config.getLong(cn + CONFIG.AUTOCLOSE_DELAY) * 1000
                 }
             }
         }
         if (e.player.hasPermission(PERMS.AUTOCLOSE)) {
-            autoClose[clickedBlock] = System.currentTimeMillis() + FC.getLong(cn + CONFIG.AUTOCLOSE_DELAY) * 1000
+            autoClose[clickedBlock] =
+                System.currentTimeMillis() + instance.config.getLong(cn + CONFIG.AUTOCLOSE_DELAY) * 1000
         }
     }
 
     @EventHandler
     fun onKnock(e: PlayerInteractEvent) {
         val p = e.player
-
-        if (p.gameMode == GameMode.CREATIVE || p.gameMode == GameMode.SPECTATOR || !p.hasPermission(PERMS.KNOCK) || e.action != Action.LEFT_CLICK_BLOCK || e.hand != EquipmentSlot.HAND || (FC.getBoolean(
+        if (p.gameMode == GameMode.CREATIVE || p.gameMode == GameMode.SPECTATOR || !p.hasPermission(PERMS.KNOCK) || e.action != Action.LEFT_CLICK_BLOCK || e.hand != EquipmentSlot.HAND || (instance.config.getBoolean(
                 cn + CONFIG.KNOCKING_REQUIRES_SHIFT
             ) && !p.isSneaking)
-            || (FC.getBoolean(cn + CONFIG.KNOCKING_REQUIRES_EMPTY_HAND)
+            || (instance.config.getBoolean(cn + CONFIG.KNOCKING_REQUIRES_EMPTY_HAND)
                     && p.inventory.itemInMainHand.type != Material.AIR)
             || e.clickedBlock == null
         ) return
-
         val block = e.clickedBlock
         val blockData = block!!.blockData
-
-        if ((blockData is Door && FC.getBoolean(cn + CONFIG.ALLOW_KNOCKING))
-            || (blockData is TrapDoor && FC.getBoolean(cn + CONFIG.ALLOW_KNOCKING_TRAPDOORS))
-            || (blockData is Gate && FC.getBoolean(cn + CONFIG.ALLOW_KNOCKING_GATES))
+        if ((blockData is Door && instance.config.getBoolean(cn + CONFIG.ALLOW_KNOCKING))
+            || (blockData is TrapDoor && instance.config.getBoolean(cn + CONFIG.ALLOW_KNOCKING_TRAPDOORS))
+            || (blockData is Gate && instance.config.getBoolean(cn + CONFIG.ALLOW_KNOCKING_GATES))
         ) {
             playKnockSound(block)
         }
@@ -125,7 +120,6 @@ class DoorsModule : ModuleInterface {
 
     private fun toggleOtherDoor(block: Block, otherBlock: Block, open: Boolean) {
         if (block.blockData !is Door || otherBlock.blockData !is Door) return
-
         object : BukkitRunnable() {
             override fun run() {
                 val currentDoor = block.blockData as Door
@@ -133,14 +127,9 @@ class DoorsModule : ModuleInterface {
                 if (currentDoor.isOpen == otherDoor.isOpen) {
                     return
                 }
-
                 toggleDoor(otherBlock, otherDoor, open)
             }
-        }.runTaskLater(VP, 1L)
-    }
-
-    override fun enabled(): Boolean {
-        return FC.getBoolean(cn + ModuleInterface.CONFIG.ENABLE)
+        }.runTaskLater(instance, 1L)
     }
 
     private fun getBottomDoor(door: Door, block: Block): Door? {
@@ -164,21 +153,25 @@ class DoorsModule : ModuleInterface {
         return null
     }
 
+    override fun enabled(): Boolean {
+        return instance.config.getBoolean(cn + ModuleInterface.CONFIG.ENABLE)
+    }
+
     override fun config() {
-        FC.addDefault(cn + ModuleInterface.CONFIG.ENABLE, true)
-        FC.addDefault(cn + CONFIG.SOUND_KNOCK_CATEGORY, "BLOCKS")
-        FC.addDefault(cn + CONFIG.SOUND_KNOCK_PITCH, 1.0)
-        FC.addDefault(cn + CONFIG.SOUND_KNOCK_VOLUME, 1.0)
-        FC.addDefault(cn + CONFIG.SOUND_KNOCK_WOOD, "entity_zombie_attack_wooden_door")
-        FC.addDefault(cn + CONFIG.ALLOW_AUTOCLOSE, true)
-        FC.addDefault(cn + CONFIG.ALLOW_DOUBLEDOORS, true)
-        FC.addDefault(cn + CONFIG.ALLOW_KNOCKING, true)
-        FC.addDefault(cn + CONFIG.ALLOW_KNOCKING_GATES, true)
-        FC.addDefault(cn + CONFIG.ALLOW_KNOCKING_TRAPDOORS, true)
-        FC.addDefault(cn + CONFIG.KNOCKING_REQUIRES_EMPTY_HAND, true)
-        FC.addDefault(cn + CONFIG.KNOCKING_REQUIRES_SHIFT, false)
-        FC.addDefault(cn + CONFIG.AUTOCLOSE_DELAY, 6)
-        VP.saveConfig()
+        instance.config.addDefault(cn + ModuleInterface.CONFIG.ENABLE, true)
+        instance.config.addDefault(cn + CONFIG.SOUND_KNOCK_CATEGORY, "BLOCKS")
+        instance.config.addDefault(cn + CONFIG.SOUND_KNOCK_PITCH, 1.0)
+        instance.config.addDefault(cn + CONFIG.SOUND_KNOCK_VOLUME, 1.0)
+        instance.config.addDefault(cn + CONFIG.SOUND_KNOCK_WOOD, "entity_zombie_attack_wooden_door")
+        instance.config.addDefault(cn + CONFIG.ALLOW_AUTOCLOSE, true)
+        instance.config.addDefault(cn + CONFIG.ALLOW_DOUBLEDOORS, true)
+        instance.config.addDefault(cn + CONFIG.ALLOW_KNOCKING, true)
+        instance.config.addDefault(cn + CONFIG.ALLOW_KNOCKING_GATES, true)
+        instance.config.addDefault(cn + CONFIG.ALLOW_KNOCKING_TRAPDOORS, true)
+        instance.config.addDefault(cn + CONFIG.KNOCKING_REQUIRES_EMPTY_HAND, true)
+        instance.config.addDefault(cn + CONFIG.KNOCKING_REQUIRES_SHIFT, false)
+        instance.config.addDefault(cn + CONFIG.AUTOCLOSE_DELAY, 6)
+        instance.saveConfig()
     }
 
     private interface CONFIG : ModuleInterface.CONFIG {
@@ -205,15 +198,13 @@ class DoorsModule : ModuleInterface {
 
     private interface PERMS {
         companion object {
-            val USE: String = VP.javaClass.getSimpleName() + ".doubledoors"
-            val KNOCK: String = VP.javaClass.getSimpleName() + ".knock"
-            val AUTOCLOSE: String = VP.javaClass.getSimpleName() + ".autoclose"
+            val USE: String = instance.javaClass.getSimpleName() + ".doubledoors"
+            val KNOCK: String = instance.javaClass.getSimpleName() + ".knock"
+            val AUTOCLOSE: String = instance.javaClass.getSimpleName() + ".autoclose"
         }
     }
 
     companion object {
-        private val VP = instance
-        private val FC: FileConfiguration = instance.config
         private val POSSIBLE_NEIGHBOURS = arrayOf<AdjacentBlockData?>(
             AdjacentBlockData(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
             AdjacentBlockData(0, 1, Door.Hinge.LEFT, BlockFace.EAST),
