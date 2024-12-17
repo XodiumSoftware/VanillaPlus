@@ -14,6 +14,7 @@ import org.xodium.vanillaplus.VanillaPlus
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 
 object ReloadCommand {
+    private val cn: String = javaClass.simpleName
     private val MM = MiniMessage.miniMessage()
 
     init {
@@ -42,22 +43,18 @@ object ReloadCommand {
         }
     }
 
-    private interface MSG {
-        companion object {
-            const val PREFIX: String = "<gold>[<dark_aqua>VanillaPlus<gold>] <reset>"
-            val PERM_ERR: Component = MM.deserialize(
-                VanillaPlus.PREFIX
-                        + "<red>You do not have permission to use this command!"
-            )
-            val RELOAD_SUCC_MSG: Component = MM
-                .deserialize("$PREFIX<green>Configuration reloaded successfully.")
-            const val RELOAD_SUCC_LOG_MSG: String = "Configuration reloaded successfully."
-        }
+    private object MSG {
+        const val PREFIX: String = "<gold>[<dark_aqua>VanillaPlus<gold>] <reset>"
+        val PERM_ERR: Component = MM.deserialize(
+            VanillaPlus.PREFIX
+                    + "<red>You do not have permission to use this command!"
+        )
+        val RELOAD_SUCC_MSG: Component = MM
+            .deserialize("$PREFIX<green>Configuration reloaded successfully.")
+        const val RELOAD_SUCC_LOG_MSG: String = "Configuration reloaded successfully."
     }
 
-    private interface PERMS {
-        companion object {
-            val RELOAD: String = instance.javaClass.getSimpleName() + ".reload"
-        }
+    private object PERMS {
+        val RELOAD: String = "$cn.reload"
     }
 }

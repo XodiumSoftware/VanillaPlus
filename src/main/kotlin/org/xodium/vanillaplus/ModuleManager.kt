@@ -7,7 +7,6 @@ import org.xodium.vanillaplus.modules.SaplingModule
 object ModuleManager {
     init {
         listOf(DoorsModule(), SaplingModule())
-            .onEach { it.config() }
             .filter { it.enabled() }
             .forEach { mod ->
                 val startTime = System.currentTimeMillis()

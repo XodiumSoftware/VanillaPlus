@@ -24,12 +24,34 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
-// TODO: refactor.
 class DoorsModule : ModuleInterface {
     private val cn: String = javaClass.getSimpleName()
-    private val autoCloseDelay: Long = instance.config.getLong("$cn${CONFIG.AUTOCLOSE_DELAY}") * 1000
+    private val autoCloseDelay: Long = instance.config.getLong("$cn.autoclose_delay") * 1000
     private val autoClose = ConcurrentHashMap<Block, Long>()
 
+    companion object {
+        val cn: String = DoorsModule::class.java.simpleName
+        private val POSSIBLE_NEIGHBOURS = arrayOf<AdjacentBlockData?>(
+            AdjacentBlockData(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
+            AdjacentBlockData(0, 1, Door.Hinge.LEFT, BlockFace.EAST),
+
+            AdjacentBlockData(1, 0, Door.Hinge.RIGHT, BlockFace.SOUTH),
+            AdjacentBlockData(-1, 0, Door.Hinge.LEFT, BlockFace.SOUTH),
+
+            AdjacentBlockData(0, 1, Door.Hinge.RIGHT, BlockFace.WEST),
+            AdjacentBlockData(0, -1, Door.Hinge.LEFT, BlockFace.WEST),
+
+            AdjacentBlockData(-1, 0, Door.Hinge.RIGHT, BlockFace.NORTH),
+            AdjacentBlockData(1, 0, Door.Hinge.LEFT, BlockFace.NORTH)
+        )
+
+        fun toggleDoor(doorBlock: Block, openable: Openable, open: Boolean) {
+            openable.isOpen = open
+            doorBlock.blockData = openable
+        }
+    }
+
+    // TODO: refactor.
     init {
         Bukkit.getScheduler().runTaskTimer(instance, Runnable {
             val currentTime = System.currentTimeMillis()
@@ -60,6 +82,7 @@ class DoorsModule : ModuleInterface {
         }, 1L, 1L)
     }
 
+    // TODO: refactor.
     @EventHandler(priority = EventPriority.MONITOR)
     fun onRightClick(e: PlayerInteractEvent) {
         val clickedBlock = e.clickedBlock ?: return
@@ -67,7 +90,7 @@ class DoorsModule : ModuleInterface {
         if (e.hand != EquipmentSlot.HAND || e.action != Action.RIGHT_CLICK_BLOCK || e.useInteractedBlock() == Event.Result.DENY || e.useItemInHand() == Event.Result.DENY || !e.player.hasPermission(
                 PERMS.USE
             )
-            || !(blockData is Door || blockData is Gate) || !instance.config.getBoolean("$cn${CONFIG.ALLOW_DOUBLEDOORS}")
+            || !(blockData is Door || blockData is Gate) || !instance.config.getBoolean("$cn.allow_doubledoors")
         ) return
         if (blockData is Door) {
             val door = getDoorBottom(blockData, clickedBlock)
@@ -87,11 +110,8 @@ class DoorsModule : ModuleInterface {
 
     @EventHandler
     fun onKnock(e: PlayerInteractEvent) {
-        if (!canKnock(e.player, e)) return
-        val cb = e.clickedBlock ?: return
-        if (isKnockableBlock(cb.blockData)) {
-            playKnockSound(cb)
-        }
+        e.clickedBlock?.takeIf { canKnock(e.player, e) && isKnockableBlock(it.blockData) }
+            ?.let(::playKnockSound)
     }
 
     private fun canKnock(p: Player, e: PlayerInteractEvent): Boolean {
@@ -105,16 +125,16 @@ class DoorsModule : ModuleInterface {
     }
 
     private fun isKnockingConditionViolated(p: Player): Boolean {
-        return (instance.config.getBoolean("$cn${CONFIG.KNOCKING_REQUIRES_SHIFT}") && !p.isSneaking) ||
-                (instance.config.getBoolean("$cn${CONFIG.KNOCKING_REQUIRES_EMPTY_HAND}") &&
+        return (instance.config.getBoolean("$cn.knocking_requires_shift") && !p.isSneaking) ||
+                (instance.config.getBoolean("$cn.knocking_requires_empty_hand") &&
                         p.inventory.itemInMainHand.type != Material.AIR)
     }
 
     private fun isKnockableBlock(bd: BlockData): Boolean {
         return when (bd) {
-            is Door -> instance.config.getBoolean("$cn${CONFIG.ALLOW_KNOCKING}")
-            is TrapDoor -> instance.config.getBoolean("$cn${CONFIG.ALLOW_KNOCKING_TRAPDOORS}")
-            is Gate -> instance.config.getBoolean("$cn${CONFIG.ALLOW_KNOCKING_GATES}")
+            is Door -> instance.config.getBoolean("$cn.allow_knocking")
+            is TrapDoor -> instance.config.getBoolean("$cn.allow_knocking_trapdoors")
+            is Gate -> instance.config.getBoolean("$cn.allow_knocking_gates")
             else -> false
         }
     }
@@ -122,17 +142,17 @@ class DoorsModule : ModuleInterface {
     private fun playKnockSound(block: Block) {
         block.world.playSound(
             block.location,
-            instance.config.getString("$cn${CONFIG.SOUND_KNOCK_WOOD}")
+            instance.config.getString("$cn.sound_knock_wood")
                 ?.lowercase(Locale.getDefault())
                 ?.let { NamespacedKey.minecraft(it) }
                 ?.let(Registry.SOUNDS::get)
                 ?: Sound.ITEM_SHIELD_BLOCK,
-            instance.config.getString("$cn${CONFIG.SOUND_KNOCK_CATEGORY}")
+            instance.config.getString("$cn.sound_knock_category")
                 ?.uppercase(Locale.getDefault())
                 ?.let { Enums.getIfPresent(SoundCategory::class.java, it).orNull() }
                 ?: SoundCategory.BLOCKS,
-            instance.config.getInt("$cn${CONFIG.SOUND_KNOCK_VOLUME}").toFloat(),
-            instance.config.getInt("$cn${CONFIG.SOUND_KNOCK_PITCH}").toFloat())
+            instance.config.getInt("$cn.sound_knock_volume").toFloat(),
+            instance.config.getInt("$cn.sound_knock_pitch").toFloat())
     }
 
     private fun toggleOtherDoor(block: Block, otherBlock: Block, open: Boolean) {
@@ -168,74 +188,12 @@ class DoorsModule : ModuleInterface {
     }
 
     override fun enabled(): Boolean {
-        return instance.config.getBoolean("$cn${ModuleInterface.CONFIG.ENABLE}")
+        return instance.config.getBoolean("$cn.enable")
     }
 
-    override fun config() {
-        instance.config.addDefault("$cn${ModuleInterface.CONFIG.ENABLE}", true)
-        instance.config.addDefault("$cn${CONFIG.SOUND_KNOCK_CATEGORY}", "BLOCKS")
-        instance.config.addDefault("$cn${CONFIG.SOUND_KNOCK_PITCH}", 1.0)
-        instance.config.addDefault("$cn${CONFIG.SOUND_KNOCK_VOLUME}", 1.0)
-        instance.config.addDefault("$cn${CONFIG.SOUND_KNOCK_WOOD}", "entity_zombie_attack_wooden_door")
-        instance.config.addDefault("$cn${CONFIG.ALLOW_AUTOCLOSE}", true)
-        instance.config.addDefault("$cn${CONFIG.ALLOW_DOUBLEDOORS}", true)
-        instance.config.addDefault("$cn${CONFIG.ALLOW_KNOCKING}", true)
-        instance.config.addDefault("$cn${CONFIG.ALLOW_KNOCKING_GATES}", true)
-        instance.config.addDefault("$cn${CONFIG.ALLOW_KNOCKING_TRAPDOORS}", true)
-        instance.config.addDefault("$cn${CONFIG.KNOCKING_REQUIRES_EMPTY_HAND}", true)
-        instance.config.addDefault("$cn${CONFIG.KNOCKING_REQUIRES_SHIFT}", false)
-        instance.config.addDefault("$cn${CONFIG.AUTOCLOSE_DELAY}", 6)
-        instance.saveConfig()
-    }
-
-    private interface CONFIG : ModuleInterface.CONFIG {
-        companion object {
-            // Sound settings
-            const val SOUND_KNOCK_CATEGORY: String = ".sound_knock_category"
-            const val SOUND_KNOCK_PITCH: String = ".sound_knock_pitch"
-            const val SOUND_KNOCK_VOLUME: String = ".sound_knock_volume"
-            const val SOUND_KNOCK_WOOD: String = ".sound_knock_wood"
-
-            // Behavior settings
-            const val ALLOW_AUTOCLOSE: String = ".allow_autoclose"
-            const val ALLOW_DOUBLEDOORS: String = ".allow_doubledoors"
-            const val ALLOW_KNOCKING: String = ".allow_knocking"
-            const val ALLOW_KNOCKING_GATES: String = ".allow_knocking_gates"
-            const val ALLOW_KNOCKING_TRAPDOORS: String = ".allow_knocking_trapdoors"
-            const val KNOCKING_REQUIRES_EMPTY_HAND: String = ".knocking_requires_empty_hand"
-            const val KNOCKING_REQUIRES_SHIFT: String = ".knocking_requires_shift"
-
-            // Auto-close settings
-            const val AUTOCLOSE_DELAY: String = ".autoclose_delay"
-        }
-    }
-
-    private interface PERMS {
-        companion object {
-            val USE: String = instance.javaClass.getSimpleName() + ".doubledoors"
-            val KNOCK: String = instance.javaClass.getSimpleName() + ".knock"
-            val AUTOCLOSE: String = instance.javaClass.getSimpleName() + ".autoclose"
-        }
-    }
-
-    companion object {
-        private val POSSIBLE_NEIGHBOURS = arrayOf<AdjacentBlockData?>(
-            AdjacentBlockData(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
-            AdjacentBlockData(0, 1, Door.Hinge.LEFT, BlockFace.EAST),
-
-            AdjacentBlockData(1, 0, Door.Hinge.RIGHT, BlockFace.SOUTH),
-            AdjacentBlockData(-1, 0, Door.Hinge.LEFT, BlockFace.SOUTH),
-
-            AdjacentBlockData(0, 1, Door.Hinge.RIGHT, BlockFace.WEST),
-            AdjacentBlockData(0, -1, Door.Hinge.LEFT, BlockFace.WEST),
-
-            AdjacentBlockData(-1, 0, Door.Hinge.RIGHT, BlockFace.NORTH),
-            AdjacentBlockData(1, 0, Door.Hinge.LEFT, BlockFace.NORTH)
-        )
-
-        fun toggleDoor(doorBlock: Block, openable: Openable, open: Boolean) {
-            openable.isOpen = open
-            doorBlock.blockData = openable
-        }
+    private object PERMS {
+        val USE: String = "$cn.doubledoors"
+        val KNOCK: String = "$cn.knock"
+        val AUTOCLOSE: String = "$cn.autoclose"
     }
 }
