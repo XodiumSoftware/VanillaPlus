@@ -28,7 +28,7 @@ class DoorsModule : ModuleInterface {
     private val autoClose = HashMap<Block?, Long?>()
 
     init {
-        Bukkit.getScheduler().runTaskTimer(VP, Runnable {
+        Bukkit.getScheduler().runTaskTimer(instance, Runnable {
             val it = autoClose.entries.iterator()
             while (it.hasNext()) {
                 val entry = it.next()
@@ -224,7 +224,7 @@ class DoorsModule : ModuleInterface {
 
     companion object {
         private val VP = instance
-        private val FC: FileConfiguration = VP.config
+        private val FC: FileConfiguration = instance.config
         private val POSSIBLE_NEIGHBOURS = arrayOf<AdjacentBlockData?>(
             AdjacentBlockData(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
             AdjacentBlockData(0, 1, Door.Hinge.LEFT, BlockFace.EAST),
