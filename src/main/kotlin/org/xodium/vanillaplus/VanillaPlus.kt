@@ -4,6 +4,21 @@ import org.bukkit.plugin.java.JavaPlugin
 import org.xodium.vanillaplus.commands.ReloadCommand
 
 class VanillaPlus : JavaPlugin() {
+    companion object {
+        private val SUPPORTED_VERSIONS = listOf("1.21.3")
+        private val SUPPORTED_PLATFORMS = listOf("Paper")
+        private val UNSUPPORTED_PLATFORM_MSG =
+            "This plugin requires a supported server platform. Supported platforms: ${SUPPORTED_PLATFORMS.joinToString(", ")}."
+        private val UNSUPPORTED_VERSION_MSG =
+            "This plugin requires a supported server version. Supported versions: ${SUPPORTED_VERSIONS.joinToString(", ")}."
+
+        const val PREFIX: String = "<gold>[<dark_aqua>VanillaPlus<gold>] <reset>"
+
+        @JvmStatic
+        lateinit var instance: VanillaPlus
+            private set
+    }
+
     override fun onEnable() {
         instance = this
         when {
@@ -28,20 +43,5 @@ class VanillaPlus : JavaPlugin() {
 
     private fun isSupportedPlatform(): Boolean {
         return SUPPORTED_PLATFORMS.any { k -> server.name.contains(k) }
-    }
-
-    companion object {
-        private val SUPPORTED_VERSIONS = listOf("1.21.3")
-        private val SUPPORTED_PLATFORMS = listOf("Paper")
-        private val UNSUPPORTED_PLATFORM_MSG =
-            "This plugin requires a supported server platform. Supported platforms: ${SUPPORTED_PLATFORMS.joinToString(", ")}."
-        private val UNSUPPORTED_VERSION_MSG =
-            "This plugin requires a supported server version. Supported versions: ${SUPPORTED_VERSIONS.joinToString(", ")}."
-
-        const val PREFIX: String = "<gold>[<dark_aqua>VanillaPlus<gold>] <reset>"
-
-        @JvmStatic
-        lateinit var instance: VanillaPlus
-            private set
     }
 }
