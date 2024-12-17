@@ -5,10 +5,12 @@ import org.bukkit.*
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Bisected
+import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.Openable
 import org.bukkit.block.data.type.Door
 import org.bukkit.block.data.type.Gate
 import org.bukkit.block.data.type.TrapDoor
+import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -65,10 +67,10 @@ class DoorsModule : ModuleInterface {
         if (e.hand != EquipmentSlot.HAND || e.action != Action.RIGHT_CLICK_BLOCK || e.useInteractedBlock() == Event.Result.DENY || e.useItemInHand() == Event.Result.DENY || !e.player.hasPermission(
                 PERMS.USE
             )
-            || !(blockData is Door || blockData is Gate) || !instance.config.getBoolean(cn + CONFIG.ALLOW_DOUBLEDOORS)
+            || !(blockData is Door || blockData is Gate) || !instance.config.getBoolean("$cn${CONFIG.ALLOW_DOUBLEDOORS}")
         ) return
         if (blockData is Door) {
-            val door = getBottomDoor(blockData, clickedBlock)
+            val door = getDoorBottom(blockData, clickedBlock)
             val otherDoorBlock = getOtherPart(door, clickedBlock)
             if (otherDoorBlock != null && otherDoorBlock.blockData is Door) {
                 val otherDoor = otherDoorBlock.blockData as Door
@@ -85,21 +87,35 @@ class DoorsModule : ModuleInterface {
 
     @EventHandler
     fun onKnock(e: PlayerInteractEvent) {
-        val p = e.player
-        if (p.gameMode == GameMode.CREATIVE || p.gameMode == GameMode.SPECTATOR || !p.hasPermission(PERMS.KNOCK) || e.action != Action.LEFT_CLICK_BLOCK || e.hand != EquipmentSlot.HAND || (instance.config.getBoolean(
-                cn + CONFIG.KNOCKING_REQUIRES_SHIFT
-            ) && !p.isSneaking)
-            || (instance.config.getBoolean(cn + CONFIG.KNOCKING_REQUIRES_EMPTY_HAND)
-                    && p.inventory.itemInMainHand.type != Material.AIR)
-            || e.clickedBlock == null
-        ) return
-        val block = e.clickedBlock
-        val blockData = block!!.blockData
-        if ((blockData is Door && instance.config.getBoolean(cn + CONFIG.ALLOW_KNOCKING))
-            || (blockData is TrapDoor && instance.config.getBoolean(cn + CONFIG.ALLOW_KNOCKING_TRAPDOORS))
-            || (blockData is Gate && instance.config.getBoolean(cn + CONFIG.ALLOW_KNOCKING_GATES))
-        ) {
-            playKnockSound(block)
+        if (!canKnock(e.player, e)) return
+        val cb = e.clickedBlock ?: return
+        if (isKnockableBlock(cb.blockData)) {
+            playKnockSound(cb)
+        }
+    }
+
+    private fun canKnock(p: Player, e: PlayerInteractEvent): Boolean {
+        return when {
+            p.gameMode == GameMode.CREATIVE || p.gameMode == GameMode.SPECTATOR -> false
+            !p.hasPermission(PERMS.KNOCK) -> false
+            e.action != Action.LEFT_CLICK_BLOCK || e.hand != EquipmentSlot.HAND -> false
+            isKnockingConditionViolated(p) -> false
+            else -> true
+        }
+    }
+
+    private fun isKnockingConditionViolated(p: Player): Boolean {
+        return (instance.config.getBoolean("$cn${CONFIG.KNOCKING_REQUIRES_SHIFT}") && !p.isSneaking) ||
+                (instance.config.getBoolean("$cn${CONFIG.KNOCKING_REQUIRES_EMPTY_HAND}") &&
+                        p.inventory.itemInMainHand.type != Material.AIR)
+    }
+
+    private fun isKnockableBlock(bd: BlockData): Boolean {
+        return when (bd) {
+            is Door -> instance.config.getBoolean("$cn${CONFIG.ALLOW_KNOCKING}")
+            is TrapDoor -> instance.config.getBoolean("$cn${CONFIG.ALLOW_KNOCKING_TRAPDOORS}")
+            is Gate -> instance.config.getBoolean("$cn${CONFIG.ALLOW_KNOCKING_GATES}")
+            else -> false
         }
     }
 
@@ -133,9 +149,9 @@ class DoorsModule : ModuleInterface {
         }.runTaskLater(instance, 1L)
     }
 
-    private fun getBottomDoor(door: Door, block: Block): Door? {
-        val belowBlock = if (door.half == Bisected.Half.BOTTOM) block else block.getRelative(BlockFace.DOWN)
-        return (belowBlock.blockData as? Door)?.takeIf { belowBlock.type == block.type }
+    private fun getDoorBottom(door: Door, block: Block): Door? {
+        val bottomHalf = if (door.half == Bisected.Half.BOTTOM) block else block.getRelative(BlockFace.DOWN)
+        return (bottomHalf.blockData as? Door)?.takeIf { bottomHalf.type == block.type }
     }
 
     private fun getOtherPart(door: Door?, block: Block): Block? {
@@ -152,23 +168,23 @@ class DoorsModule : ModuleInterface {
     }
 
     override fun enabled(): Boolean {
-        return instance.config.getBoolean(cn + ModuleInterface.CONFIG.ENABLE)
+        return instance.config.getBoolean("$cn${ModuleInterface.CONFIG.ENABLE}")
     }
 
     override fun config() {
-        instance.config.addDefault(cn + ModuleInterface.CONFIG.ENABLE, true)
-        instance.config.addDefault(cn + CONFIG.SOUND_KNOCK_CATEGORY, "BLOCKS")
-        instance.config.addDefault(cn + CONFIG.SOUND_KNOCK_PITCH, 1.0)
-        instance.config.addDefault(cn + CONFIG.SOUND_KNOCK_VOLUME, 1.0)
-        instance.config.addDefault(cn + CONFIG.SOUND_KNOCK_WOOD, "entity_zombie_attack_wooden_door")
-        instance.config.addDefault(cn + CONFIG.ALLOW_AUTOCLOSE, true)
-        instance.config.addDefault(cn + CONFIG.ALLOW_DOUBLEDOORS, true)
-        instance.config.addDefault(cn + CONFIG.ALLOW_KNOCKING, true)
-        instance.config.addDefault(cn + CONFIG.ALLOW_KNOCKING_GATES, true)
-        instance.config.addDefault(cn + CONFIG.ALLOW_KNOCKING_TRAPDOORS, true)
-        instance.config.addDefault(cn + CONFIG.KNOCKING_REQUIRES_EMPTY_HAND, true)
-        instance.config.addDefault(cn + CONFIG.KNOCKING_REQUIRES_SHIFT, false)
-        instance.config.addDefault(cn + CONFIG.AUTOCLOSE_DELAY, 6)
+        instance.config.addDefault("$cn${ModuleInterface.CONFIG.ENABLE}", true)
+        instance.config.addDefault("$cn${CONFIG.SOUND_KNOCK_CATEGORY}", "BLOCKS")
+        instance.config.addDefault("$cn${CONFIG.SOUND_KNOCK_PITCH}", 1.0)
+        instance.config.addDefault("$cn${CONFIG.SOUND_KNOCK_VOLUME}", 1.0)
+        instance.config.addDefault("$cn${CONFIG.SOUND_KNOCK_WOOD}", "entity_zombie_attack_wooden_door")
+        instance.config.addDefault("$cn${CONFIG.ALLOW_AUTOCLOSE}", true)
+        instance.config.addDefault("$cn${CONFIG.ALLOW_DOUBLEDOORS}", true)
+        instance.config.addDefault("$cn${CONFIG.ALLOW_KNOCKING}", true)
+        instance.config.addDefault("$cn${CONFIG.ALLOW_KNOCKING_GATES}", true)
+        instance.config.addDefault("$cn${CONFIG.ALLOW_KNOCKING_TRAPDOORS}", true)
+        instance.config.addDefault("$cn${CONFIG.KNOCKING_REQUIRES_EMPTY_HAND}", true)
+        instance.config.addDefault("$cn${CONFIG.KNOCKING_REQUIRES_SHIFT}", false)
+        instance.config.addDefault("$cn${CONFIG.AUTOCLOSE_DELAY}", 6)
         instance.saveConfig()
     }
 
