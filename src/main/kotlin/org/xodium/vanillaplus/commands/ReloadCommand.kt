@@ -14,11 +14,10 @@ import org.xodium.vanillaplus.VanillaPlus
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 
 object ReloadCommand {
-    private val VP = instance
     private val MM = MiniMessage.miniMessage()
 
     init {
-        VP.lifecycleManager.registerEventHandler(
+        instance.lifecycleManager.registerEventHandler(
             LifecycleEvents.COMMANDS
         ) { e ->
             e.registrar().register(
@@ -31,9 +30,9 @@ object ReloadCommand {
                                 return@Command 0
                             }
                         }
-                        VP.reloadConfig()
+                        instance.reloadConfig()
                         cs.sendMessage(MSG.RELOAD_SUCC_MSG)
-                        VP.logger.info(MSG.RELOAD_SUCC_LOG_MSG)
+                        instance.logger.info(MSG.RELOAD_SUCC_LOG_MSG)
                         Command.SINGLE_SUCCESS
                     })
                     .build(),
@@ -58,7 +57,7 @@ object ReloadCommand {
 
     private interface PERMS {
         companion object {
-            val RELOAD: String = VP.javaClass.getSimpleName() + ".reload"
+            val RELOAD: String = instance.javaClass.getSimpleName() + ".reload"
         }
     }
 }

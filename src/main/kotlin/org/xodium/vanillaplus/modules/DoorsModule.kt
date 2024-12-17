@@ -108,30 +108,19 @@ class DoorsModule : ModuleInterface {
     }
 
     private fun playKnockSound(block: Block) {
-        val loc = block.location
-        val world = block.world
-        val sound = Optional
-            .ofNullable<Sound>(
-                Registry.SOUNDS
-                    .get(
-                        NamespacedKey.minecraft(
-                            Objects.requireNonNull<String?>(FC.getString(cn + CONFIG.SOUND_KNOCK_WOOD))
-                                .lowercase(Locale.getDefault())
-                        )
-                    )
-            )
-            .orElse(Sound.ITEM_SHIELD_BLOCK)
-        val category = Enums
-            .getIfPresent(
-                SoundCategory::class.java,
-                Objects.requireNonNull<String?>(FC.getString(cn + CONFIG.SOUND_KNOCK_CATEGORY))
-                    .uppercase(Locale.getDefault())
-            )
-            .or(SoundCategory.BLOCKS)
-        val volume = FC.getInt(cn + CONFIG.SOUND_KNOCK_VOLUME).toFloat()
-        val pitch = FC.getInt(cn + CONFIG.SOUND_KNOCK_PITCH).toFloat()
-
-        world.playSound(loc, sound, category, volume, pitch)
+        block.world.playSound(
+            block.location,
+            instance.config.getString("$cn${CONFIG.SOUND_KNOCK_WOOD}")
+                ?.lowercase(Locale.getDefault())
+                ?.let { NamespacedKey.minecraft(it) }
+                ?.let(Registry.SOUNDS::get)
+                ?: Sound.ITEM_SHIELD_BLOCK,
+            instance.config.getString("$cn${CONFIG.SOUND_KNOCK_CATEGORY}")
+                ?.uppercase(Locale.getDefault())
+                ?.let { Enums.getIfPresent(SoundCategory::class.java, it).orNull() }
+                ?: SoundCategory.BLOCKS,
+            instance.config.getInt("$cn${CONFIG.SOUND_KNOCK_VOLUME}").toFloat(),
+            instance.config.getInt("$cn${CONFIG.SOUND_KNOCK_PITCH}").toFloat())
     }
 
     private fun toggleOtherDoor(block: Block, otherBlock: Block, open: Boolean) {

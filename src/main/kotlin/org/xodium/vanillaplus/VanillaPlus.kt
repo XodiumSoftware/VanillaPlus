@@ -5,6 +5,7 @@ import org.xodium.vanillaplus.commands.ReloadCommand
 
 class VanillaPlus : JavaPlugin() {
     override fun onEnable() {
+        instance = this
         when {
             !isSupportedVersion() -> disablePlugin(UNSUPPORTED_VERSION_MSG)
             !isSupportedPlatform() -> disablePlugin(UNSUPPORTED_PLATFORM_MSG)
@@ -40,6 +41,7 @@ class VanillaPlus : JavaPlugin() {
         const val PREFIX: String = "<gold>[<dark_aqua>VanillaPlus<gold>] <reset>"
 
         @JvmStatic
-        val instance: VanillaPlus = getPlugin(VanillaPlus::class.java)
+        lateinit var instance: VanillaPlus
+            private set
     }
 }
