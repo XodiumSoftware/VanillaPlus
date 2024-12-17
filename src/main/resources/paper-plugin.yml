@@ -6,6 +6,9 @@ api-version: 1.21.3
 authors:
   - XodiumSoftware
 permissions:
+  VanillaPlus.reload:
+    description: Allows to reload the configuration
+    default: op
   VanillaPlus.doubledoors:
     description: Allows to open double doors with one click
     default: true

@@ -25,12 +25,12 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 class DoorsModule : ModuleInterface {
-    private val cn: String = javaClass.getSimpleName()
+    private val cn: String = javaClass.simpleName
+    private val pcn: String = instance.javaClass.simpleName
     private val autoCloseDelay: Long = instance.config.getLong("$cn.autoclose_delay") * 1000
     private val autoClose = ConcurrentHashMap<Block, Long>()
 
     companion object {
-        val cn: String = DoorsModule::class.java.simpleName
         private val POSSIBLE_NEIGHBOURS = arrayOf<AdjacentBlockData?>(
             AdjacentBlockData(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
             AdjacentBlockData(0, 1, Door.Hinge.LEFT, BlockFace.EAST),
@@ -88,7 +88,7 @@ class DoorsModule : ModuleInterface {
         val clickedBlock = e.clickedBlock ?: return
         val blockData = clickedBlock.blockData
         if (e.hand != EquipmentSlot.HAND || e.action != Action.RIGHT_CLICK_BLOCK || e.useInteractedBlock() == Event.Result.DENY || e.useItemInHand() == Event.Result.DENY || !e.player.hasPermission(
-                PERMS.USE
+                "$pcn.doubledoors"
             )
             || !(blockData is Door || blockData is Gate) || !instance.config.getBoolean("$cn.allow_doubledoors")
         ) return
@@ -98,12 +98,12 @@ class DoorsModule : ModuleInterface {
             if (otherDoorBlock != null && otherDoorBlock.blockData is Door) {
                 val otherDoor = otherDoorBlock.blockData as Door
                 toggleOtherDoor(clickedBlock, otherDoorBlock, !otherDoor.isOpen)
-                if (e.player.hasPermission(PERMS.AUTOCLOSE)) {
+                if (e.player.hasPermission("$pcn.autoclose")) {
                     autoClose[otherDoorBlock] = System.currentTimeMillis() + autoCloseDelay
                 }
             }
         }
-        if (e.player.hasPermission(PERMS.AUTOCLOSE)) {
+        if (e.player.hasPermission("$pcn.autoclose")) {
             autoClose[clickedBlock] = System.currentTimeMillis() + autoCloseDelay
         }
     }
@@ -117,7 +117,7 @@ class DoorsModule : ModuleInterface {
     private fun canKnock(p: Player, e: PlayerInteractEvent): Boolean {
         return when {
             p.gameMode == GameMode.CREATIVE || p.gameMode == GameMode.SPECTATOR -> false
-            !p.hasPermission(PERMS.KNOCK) -> false
+            !p.hasPermission("$pcn.knock") -> false
             e.action != Action.LEFT_CLICK_BLOCK || e.hand != EquipmentSlot.HAND -> false
             isKnockingConditionViolated(p) -> false
             else -> true
@@ -189,11 +189,5 @@ class DoorsModule : ModuleInterface {
 
     override fun enabled(): Boolean {
         return instance.config.getBoolean("$cn.enable")
-    }
-
-    private object PERMS {
-        val USE: String = "$cn.doubledoors"
-        val KNOCK: String = "$cn.knock"
-        val AUTOCLOSE: String = "$cn.autoclose"
     }
 }

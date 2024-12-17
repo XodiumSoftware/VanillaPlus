@@ -14,7 +14,7 @@ import org.xodium.vanillaplus.VanillaPlus
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 
 object ReloadCommand {
-    private val cn: String = javaClass.simpleName
+    private val pcn: String = instance.javaClass.simpleName
     private val MM = MiniMessage.miniMessage()
 
     init {
@@ -26,7 +26,7 @@ object ReloadCommand {
                     .executes(Command { ctx: CommandContext<CommandSourceStack?>? ->
                         val cs = ctx!!.source!!.sender
                         if (cs is Player) {
-                            if (!cs.hasPermission(PERMS.RELOAD)) {
+                            if (!cs.hasPermission("$pcn.reload")) {
                                 cs.sendMessage(MSG.PERM_ERR)
                                 return@Command 0
                             }
@@ -52,9 +52,5 @@ object ReloadCommand {
         val RELOAD_SUCC_MSG: Component = MM
             .deserialize("$PREFIX<green>Configuration reloaded successfully.")
         const val RELOAD_SUCC_LOG_MSG: String = "Configuration reloaded successfully."
-    }
-
-    private object PERMS {
-        val RELOAD: String = "$cn.reload"
     }
 }
