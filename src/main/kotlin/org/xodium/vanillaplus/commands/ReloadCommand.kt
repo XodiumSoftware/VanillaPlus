@@ -13,6 +13,19 @@ import org.bukkit.entity.Player
 import org.xodium.vanillaplus.VanillaPlus
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 
+
+/**
+ * The `ReloadCommand` object represents a command handler for reloading the plugin configuration.
+ * This command is registered during the plugin's lifecycle and can be executed by players
+ * or the console to reload the plugin's configuration without restarting the server.
+ *
+ * The command only allows players with the appropriate permissions to execute the reload.
+ * Upon successful execution, it notifies the sender with a confirmation message and logs
+ * the reload action to the server console.
+ *
+ * Permissions:
+ * - Requires the `<class_name_placeholder>.reload` permission to execute the reload command.
+ */
 object ReloadCommand {
     private val pcn: String = instance.javaClass.simpleName
     private val MM = MiniMessage.miniMessage()

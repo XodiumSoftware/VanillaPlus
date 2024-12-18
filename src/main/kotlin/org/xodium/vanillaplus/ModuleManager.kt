@@ -14,13 +14,6 @@ import org.xodium.vanillaplus.modules.SaplingModule
  */
 object ModuleManager {
     init {
-        /**
-         * Initializes the modules by performing the following steps:
-         * 1. A list of modules to manage is created.
-         * 2. Filters the modules to only keep those where the `enabled()` method returns `true`.
-         * 3. Registers each enabled module's event listeners with the Bukkit plugin manager.
-         * 4. Logs the time taken to load each module for diagnostic purposes.
-         */
         listOf(DoorsModule(), SaplingModule())
             .filter { it.enabled() }
             .forEach { mod ->

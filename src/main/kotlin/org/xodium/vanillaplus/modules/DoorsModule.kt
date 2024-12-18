@@ -24,6 +24,16 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
+
+/**
+ * The `DoorsModule` class is a module implementation that handles advanced interactions with doors,
+ * trapdoors, and gates in a Bukkit server environment. It provides features like automatic door
+ * closing, double door synchronization, and knock interactions on supported blocks. The module can
+ * be enabled or disabled based on the configuration.
+ *
+ * This class implements the `ModuleInterface` and operates as a Bukkit event listener to respond
+ * to player interactions and manage door-related behaviors.
+ */
 class DoorsModule : ModuleInterface {
     override val cn: String = javaClass.simpleName
     private val pcn: String = instance.javaClass.simpleName
