@@ -94,34 +94,48 @@ class DoorsModule : ModuleInterface {
 
     // TODO: refactor.
     @EventHandler(priority = EventPriority.MONITOR)
-    fun onRightClick(e: PlayerInteractEvent) {
+    fun on(e: PlayerInteractEvent) {
         val clickedBlock = e.clickedBlock ?: return
         val blockData = clickedBlock.blockData
-        if (e.hand != EquipmentSlot.HAND || e.action != Action.RIGHT_CLICK_BLOCK || e.useInteractedBlock() == Event.Result.DENY || e.useItemInHand() == Event.Result.DENY || !e.player.hasPermission(
-                "$pcn.doubledoors"
-            )
-            || !(blockData is Door || blockData is Gate) || !instance.config.getBoolean("$cn.allow_doubledoors")
+
+        // Check if action-related conditions are met
+        if (e.hand != EquipmentSlot.HAND ||
+            e.useInteractedBlock() == Event.Result.DENY ||
+            e.useItemInHand() == Event.Result.DENY
         ) return
-        if (blockData is Door) {
-            val door = getDoorBottom(blockData, clickedBlock)
-            val otherDoorBlock = getOtherPart(door, clickedBlock)
-            if (otherDoorBlock != null && otherDoorBlock.blockData is Door) {
-                val otherDoor = otherDoorBlock.blockData as Door
-                toggleOtherDoor(clickedBlock, otherDoorBlock, !otherDoor.isOpen)
-                if (e.player.hasPermission("$pcn.autoclose")) {
-                    autoClose[otherDoorBlock] = System.currentTimeMillis() + autoCloseDelay
-                }
+
+        // Handle knocking functionality on the left click
+        if (e.action == Action.LEFT_CLICK_BLOCK) {
+            val player = e.player
+            if (canKnock(player, e) && isKnockableBlock(blockData)) {
+                playKnockSound(clickedBlock)
+                return
             }
         }
-        if (e.player.hasPermission("$pcn.autoclose")) {
-            autoClose[clickedBlock] = System.currentTimeMillis() + autoCloseDelay
-        }
-    }
 
-    @EventHandler
-    fun on(e: PlayerInteractEvent) {
-        e.clickedBlock?.takeIf { canKnock(e.player, e) && isKnockableBlock(it.blockData) }
-            ?.let(::playKnockSound)
+        // Handle double door and gate functionality on the right click
+        if (e.action == Action.RIGHT_CLICK_BLOCK) {
+            val player = e.player
+            if (!(blockData is Door || blockData is Gate) ||
+                !player.hasPermission("$pcn.doubledoors") ||
+                !instance.config.getBoolean("$cn.allow_doubledoors")
+            ) return
+
+            if (blockData is Door) {
+                val door = getDoorBottom(blockData, clickedBlock)
+                val otherDoorBlock = getOtherPart(door, clickedBlock)
+                if (otherDoorBlock != null && otherDoorBlock.blockData is Door) {
+                    val otherDoor = otherDoorBlock.blockData as Door
+                    toggleOtherDoor(clickedBlock, otherDoorBlock, !otherDoor.isOpen)
+                    if (e.player.hasPermission("$pcn.autoclose")) {
+                        autoClose[otherDoorBlock] = System.currentTimeMillis() + autoCloseDelay
+                    }
+                }
+            }
+            if (e.player.hasPermission("$pcn.autoclose")) {
+                autoClose[clickedBlock] = System.currentTimeMillis() + autoCloseDelay
+            }
+        }
     }
 
     private fun canKnock(p: Player, e: PlayerInteractEvent): Boolean {

@@ -8,12 +8,13 @@ import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.data.type.Sapling
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.world.StructureGrowEvent
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import java.io.File
 
-
+//TODO: make it take all the schematics in a folder when only a folder gets specified.
 /**
  * The `SaplingModule` class is responsible for handling custom behavior when saplings grow into trees
  * within a Minecraft Bukkit server. It implements the `ModuleInterface` and listens for `StructureGrowEvent`
@@ -60,7 +61,7 @@ class SaplingModule : ModuleInterface {
         }?.toMap() ?: emptyMap()
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     fun on(e: StructureGrowEvent) {
         if (saplings.contains(e.location.block.type)) e.isCancelled = true
         replaceWithSchematicTree(e.location.block)
