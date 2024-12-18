@@ -25,7 +25,7 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 class DoorsModule : ModuleInterface {
-    private val cn: String = javaClass.simpleName
+    override val cn: String = javaClass.simpleName
     private val pcn: String = instance.javaClass.simpleName
     private val autoCloseDelay: Long = instance.config.getLong("$cn.autoclose_delay") * 1000
     private val autoClose = ConcurrentHashMap<Block, Long>()
@@ -109,7 +109,7 @@ class DoorsModule : ModuleInterface {
     }
 
     @EventHandler
-    fun onKnock(e: PlayerInteractEvent) {
+    fun on(e: PlayerInteractEvent) {
         e.clickedBlock?.takeIf { canKnock(e.player, e) && isKnockableBlock(it.blockData) }
             ?.let(::playKnockSound)
     }
@@ -142,7 +142,7 @@ class DoorsModule : ModuleInterface {
     private fun playKnockSound(block: Block) {
         block.world.playSound(
             block.location,
-            instance.config.getString("$cn.sound_knock_wood")
+            instance.config.getString("$cn.sound_knock_effect")
                 ?.lowercase(Locale.getDefault())
                 ?.let { NamespacedKey.minecraft(it) }
                 ?.let(Registry.SOUNDS::get)

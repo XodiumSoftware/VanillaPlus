@@ -1,19 +1,43 @@
+# Configuration settings for the DoorsModule. This module controls door-related features.
 DoorsModule:
-  enable: true
-  sound_knock_category: "BLOCKS"
-  sound_knock_pitch: 1.0
-  sound_knock_volume: 1.0
-  sound_knock_wood: "entity_zombie_attack_wooden_door"
-  allow_autoclose: true
-  allow_doubledoors: true
-  allow_knocking: true
-  allow_knocking_gates: true
-  allow_knocking_trapdoors: true
-  knocking_requires_empty_hand: true
-  knocking_requires_shift: true
-  autoclose_delay: 6
+  enable: true # Enables or disables the DoorsModule. Set to 'false' to disable.
 
+  sound_knock_category: "BLOCKS" # The sound category used for knocking.
+  sound_knock_effect: "entity_zombie_attack_wooden_door" # The sound effect used for knocking.
+  sound_knock_pitch: 1.0 # The pitch of the knocking sound. Adjust between 0.5 and 2.0.
+  sound_knock_volume: 1.0 # The volume of the knocking sound. Values range from 0.0 to 1.0.
+
+  allow_autoclose: true # Enables automatic closing of doors after a set delay.
+  allow_doubledoors: true # Allows both sides of double doors to open/close simultaneously.
+  allow_knocking: true # Enables knocking on doors.
+  allow_knocking_gates: true # Enables knocking on gates.
+  allow_knocking_trapdoors: true # Enables knocking on trapdoors.
+
+  knocking_requires_empty_hand: true # Knocking requires the player's hand to be empty.
+  knocking_requires_shift: true # Players must shift (crouch) to knock.
+
+  autoclose_delay: 6 # The delay (in seconds) before automatic closure.
+
+# Configuration settings for the SaplingModule. This module controls sapling-related features.
 SaplingModule:
-  enable: false
+  enable: true # Enables or disables the SaplingModule. Set to 'false' to disable.
 
-version: 1.0
+  # If a sapling type is missing here, no custom schematic will be used and default behavior applies.
+  sapling_link:
+    OAK_SAPLING:
+      - "oak_structure1.schematic"
+      - "oak_structure2.schematic"
+    SPRUCE_SAPLING:
+      - "spruce_structure.schematic"
+    BIRCH_SAPLING:
+      - "birch_structure1.schematic"
+      - "birch_structure2.schematic"
+    JUNGLE_SAPLING:
+      - "jungle_structure.schematic"
+    ACACIA_SAPLING:
+      - "acacia_structure.schematic"
+    DARK_OAK_SAPLING:
+      - "dark_oak_structure1.schematic"
+      - "dark_oak_structure2.schematic"
+
+version: 1.0 # The version of the configuration file.
