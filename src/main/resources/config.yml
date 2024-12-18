@@ -36,6 +36,8 @@ SaplingModule:
       - "jungle_structure.schematic"
     ACACIA_SAPLING:
       - "acacia_structure.schematic"
+    CHERRY_SAPLING:
+      - "cherry_structure.schematic"
     DARK_OAK_SAPLING:
       - "dark_oak_structure1.schematic"
       - "dark_oak_structure2.schematic"
