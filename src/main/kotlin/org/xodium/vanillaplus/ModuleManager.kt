@@ -17,6 +17,7 @@ object ModuleManager {
         listOf(DoorsModule(), SaplingModule())
             .filter { it.enabled() }
             .forEach { mod ->
+                // TODO: something is off with the timer.
                 val startTime = System.currentTimeMillis()
                 instance.server.pluginManager.registerEvents(mod, instance)
                 val endTime = System.currentTimeMillis()

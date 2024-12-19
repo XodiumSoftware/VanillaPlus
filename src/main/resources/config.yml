@@ -35,7 +35,7 @@ SaplingModule:
       - "dark_oak_trees"
     JUNGLE_SAPLING:
       - "jungle_trees"
-    MANGROVE_SAPLING:
+    MANGROVE_PROPAGULE:
       - "mangrove_trees"
     OAK_SAPLING:
       - "oak_trees"

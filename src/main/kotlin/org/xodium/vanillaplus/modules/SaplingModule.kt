@@ -34,6 +34,7 @@ import java.io.File
  * - **Schematics**: Files representing custom tree structures.
  * - **Configuration**: Specifies mappings between sapling types and their schematic file lists.
  */
+// TODO: fix not recognizing the schematics.
 class SaplingModule : ModuleInterface {
     override val cn: String = javaClass.simpleName
     private val schematicsPath = File(instance.dataFolder, "schematics")
@@ -43,7 +44,7 @@ class SaplingModule : ModuleInterface {
     private val saplingSchematicMap: Map<Material, List<File>>
 
     init {
-        schematicsPath.mkdirs()
+        setupDefaultSchematics()
         val saplingConfig = instance.config.getConfigurationSection("$cn.sapling_link")
         saplingSchematicMap = saplingConfig?.getKeys(false)?.mapNotNull { k ->
             val m = Material.matchMaterial(k)
@@ -60,6 +61,34 @@ class SaplingModule : ModuleInterface {
                 null
             }
         }?.toMap() ?: emptyMap()
+    }
+
+    private fun setupDefaultSchematics() {
+        schematicsPath.mkdirs()
+        if (instance.javaClass.classLoader.getResource("schematics") != null) {
+            copyResourcesFromJar(schematicsPath)
+        } else {
+            instance.logger.warning("Default schematics directory not found in resources.")
+        }
+    }
+
+    private fun copyResourcesFromJar(targetDir: File) {
+        val resourcePath = "schematics"
+        val jar = File(instance.javaClass.protectionDomain.codeSource.location.toURI())
+        if (!jar.exists()) return
+        java.util.jar.JarFile(jar).use { jarFile ->
+            val entries = jarFile.entries()
+            while (entries.hasMoreElements()) {
+                val entry = entries.nextElement()
+                if (entry.name.startsWith(resourcePath) && !entry.isDirectory) {
+                    val entryTarget = File(targetDir, entry.name.removePrefix("$resourcePath/"))
+                    entryTarget.parentFile.mkdirs()
+                    instance.javaClass.classLoader.getResourceAsStream(entry.name)?.use { input ->
+                        entryTarget.outputStream().use { output -> input.copyTo(output) }
+                    }
+                }
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
