@@ -37,15 +37,13 @@ class VanillaPlus : JavaPlugin() {
         private val UNSUPPORTED_VERSION_MSG =
             "This plugin requires a supported server version. Supported versions: ${SUPPORTED_VERSIONS.joinToString(", ")}."
 
-        const val PREFIX: String = "<gold>[<dark_aqua>VanillaPlus<gold>] <reset>"
+        const val PREFIX = "<gold>[<dark_aqua>VanillaPlus<gold>] <reset>"
 
         @JvmStatic
-        lateinit var instance: VanillaPlus
-            private set
+        val instance by lazy { getPlugin(VanillaPlus::class.java) }
     }
 
     override fun onEnable() {
-        instance = this
         when {
             !isSupportedVersion() -> disablePlugin(UNSUPPORTED_VERSION_MSG)
             !isSupportedPlatform() -> disablePlugin(UNSUPPORTED_PLATFORM_MSG)

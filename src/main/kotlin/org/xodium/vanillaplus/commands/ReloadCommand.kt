@@ -7,7 +7,6 @@ import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
-import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.entity.Player
 import org.xodium.vanillaplus.VanillaPlus
@@ -27,18 +26,18 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
  * - Requires the `<class_name_placeholder>.reload` permission to execute the reload command.
  */
 object ReloadCommand {
-    private val pcn: String = instance.javaClass.simpleName
+    private val pcn = instance.javaClass.simpleName
     private val MM = MiniMessage.miniMessage()
 
     private object MSG {
-        const val PREFIX: String = "<gold>[<dark_aqua>VanillaPlus<gold>] <reset>"
-        val PERM_ERR: Component = MM.deserialize(
+        const val PREFIX = "<gold>[<dark_aqua>VanillaPlus<gold>] <reset>"
+        val PERM_ERR = MM.deserialize(
             VanillaPlus.PREFIX
                     + "<red>You do not have permission to use this command!"
         )
-        val RELOAD_SUCC_MSG: Component = MM
+        val RELOAD_SUCC_MSG = MM
             .deserialize("$PREFIX<green>Configuration reloaded successfully.")
-        const val RELOAD_SUCC_LOG_MSG: String = "Configuration reloaded successfully."
+        const val RELOAD_SUCC_LOG_MSG = "Configuration reloaded successfully."
     }
 
     init {

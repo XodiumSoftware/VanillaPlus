@@ -36,8 +36,8 @@ import java.util.concurrent.ConcurrentHashMap
  */
 class DoorsModule : ModuleInterface {
     override val cn: String = javaClass.simpleName
-    private val pcn: String = instance.javaClass.simpleName
-    private val autoCloseDelay: Long = instance.config.getLong("$cn.autoclose_delay") * 1000
+    private val pcn = instance.javaClass.simpleName
+    private val autoCloseDelay = instance.config.getLong("$cn.autoclose_delay") * 1000
     private val autoClose = ConcurrentHashMap<Block, Long>()
 
     companion object {
