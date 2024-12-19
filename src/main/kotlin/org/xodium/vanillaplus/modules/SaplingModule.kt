@@ -38,9 +38,9 @@ import java.io.File
 class SaplingModule : ModuleInterface {
     override val cn: String = javaClass.simpleName
     private val schematicsPath = File(instance.dataFolder, "schematics")
-
-    // TODO: fix null point exception.
-    private val saplings = Material.entries.filter { it.createBlockData() is Sapling }.toSet()
+    private val saplings =
+        Material.entries.filter { runCatching { it.isBlock && it.createBlockData() is Sapling }.getOrDefault(false) }
+            .toSet()
     private val saplingSchematicMap: Map<Material, List<File>>
 
     init {
