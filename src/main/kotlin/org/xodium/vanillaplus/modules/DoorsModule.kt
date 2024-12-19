@@ -17,7 +17,6 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
-import org.bukkit.scheduler.BukkitRunnable
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.AdjacentBlockData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
@@ -61,79 +60,85 @@ class DoorsModule : ModuleInterface {
         }
     }
 
-    // TODO: refactor.
     init {
         Bukkit.getScheduler().runTaskTimer(instance, Runnable {
-            val currentTime = System.currentTimeMillis()
-            val iterator = autoClose.entries.iterator()
-            while (iterator.hasNext()) {
-                val entry = iterator.next()
-                val block = entry.key
-                val expiryTime = entry.value
-                if (currentTime >= expiryTime) {
-                    if (block.blockData is Openable) {
-                        val openable = block.blockData as Openable
-                        if (openable.isOpen) {
-                            if (openable is Door) {
-                                getOtherPart(openable, block)?.let { otherDoor ->
-                                    toggleOtherDoor(block, otherDoor, false)
-                                }
-                            } else if (openable is Gate) {
-                                block.world.playSound(block.location, Sound.BLOCK_FENCE_GATE_CLOSE, 1.0f, 1.0f)
-                            }
-                            openable.isOpen = false
-                            block.blockData = openable
-                            block.world.playSound(block.location, Sound.BLOCK_IRON_DOOR_CLOSE, 1.0f, 1.0f)
-                        }
-                    }
-                    iterator.remove()
+            autoClose.entries.filter { (_, t) -> System.currentTimeMillis() >= t }
+                .forEach { (block, _) ->
+                    handleAutoClose(block)
+                    autoClose.remove(block)
                 }
-            }
         }, 1L, 1L)
     }
 
-    // TODO: refactor.
+    private fun handleAutoClose(block: Block) {
+        val data = block.blockData
+        if (data !is Openable || !data.isOpen) return
+        when (data) {
+            is Door -> handleDoorClose(block, data)
+            is Gate -> handleGateClose(block)
+        }
+        data.isOpen = false
+        block.blockData = data
+    }
+
+    private fun handleDoorClose(block: Block, door: Door) {
+        getOtherPart(door, block)?.let { otherDoor ->
+            toggleOtherDoor(block, otherDoor, false)
+        }
+        block.world.playSound(block.location, Sound.BLOCK_IRON_DOOR_CLOSE, 1.0f, 1.0f)
+    }
+
+    private fun handleGateClose(block: Block) {
+        block.world.playSound(block.location, Sound.BLOCK_FENCE_GATE_CLOSE, 1.0f, 1.0f)
+    }
+
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(e: PlayerInteractEvent) {
         val clickedBlock = e.clickedBlock ?: return
-        val blockData = clickedBlock.blockData
-
-        // Check if action-related conditions are met
-        if (e.hand != EquipmentSlot.HAND ||
-            e.useInteractedBlock() == Event.Result.DENY ||
-            e.useItemInHand() == Event.Result.DENY
-        ) return
-
-        // Handle knocking functionality on the left click
-        if (e.action == Action.LEFT_CLICK_BLOCK) {
-            val player = e.player
-            if (canKnock(player, e) && isKnockableBlock(blockData)) {
-                playKnockSound(clickedBlock)
-                return
-            }
+        val data = clickedBlock.blockData
+        if (!isValidInteraction(e)) return
+        when (e.action) {
+            Action.LEFT_CLICK_BLOCK -> handleLeftClick(e, data, clickedBlock)
+            Action.RIGHT_CLICK_BLOCK -> handleRightClick(e, data, clickedBlock)
+            else -> return
         }
+    }
 
-        // Handle double door and gate functionality on the right click
-        if (e.action == Action.RIGHT_CLICK_BLOCK) {
-            val player = e.player
-            if (!(blockData is Door || blockData is Gate) ||
-                !player.hasPermission("$pcn.doubledoors") ||
-                !instance.config.getBoolean("$cn.allow_doubledoors")
-            ) return
+    private fun isValidInteraction(e: PlayerInteractEvent): Boolean {
+        return e.hand == EquipmentSlot.HAND &&
+                e.useInteractedBlock() != Event.Result.DENY &&
+                e.useItemInHand() != Event.Result.DENY
+    }
 
-            if (blockData is Door) {
-                val door = getDoorBottom(blockData, clickedBlock)
-                val otherDoorBlock = getOtherPart(door, clickedBlock)
-                if (otherDoorBlock != null && otherDoorBlock.blockData is Door) {
-                    val otherDoor = otherDoorBlock.blockData as Door
-                    toggleOtherDoor(clickedBlock, otherDoorBlock, !otherDoor.isOpen)
-                    if (e.player.hasPermission("$pcn.autoclose")) {
-                        autoClose[otherDoorBlock] = System.currentTimeMillis() + autoCloseDelay
-                    }
+    private fun handleLeftClick(e: PlayerInteractEvent, data: BlockData, block: Block) {
+        if (canKnock(e.player, e) && isKnockableBlock(data)) {
+            playKnockSound(block)
+        }
+    }
+
+    private fun handleRightClick(e: PlayerInteractEvent, data: BlockData, block: Block) {
+        val p = e.player
+        if (p.hasPermission("$pcn.doubledoors") &&
+            instance.config.getBoolean("$cn.allow_doubledoors") &&
+            (data is Door || data is Gate)
+        ) {
+            processDoorOrGateInteraction(p, data, block)
+        }
+        if (p.hasPermission("$pcn.autoclose")) {
+            autoClose[block] = System.currentTimeMillis() + autoCloseDelay
+        }
+    }
+
+    private fun processDoorOrGateInteraction(p: Player, data: BlockData, block: Block) {
+        if (data is Door) {
+            val door = getDoorBottom(data, block)
+            val otherDoorBlock = getOtherPart(door, block)
+            if (otherDoorBlock != null && otherDoorBlock.blockData is Door) {
+                val otherDoor = otherDoorBlock.blockData as Door
+                toggleOtherDoor(block, otherDoorBlock, !otherDoor.isOpen)
+                if (p.hasPermission("$pcn.autoclose")) {
+                    autoClose[otherDoorBlock] = System.currentTimeMillis() + autoCloseDelay
                 }
-            }
-            if (e.player.hasPermission("$pcn.autoclose")) {
-                autoClose[clickedBlock] = System.currentTimeMillis() + autoCloseDelay
             }
         }
     }
@@ -154,8 +159,8 @@ class DoorsModule : ModuleInterface {
                         p.inventory.itemInMainHand.type != Material.AIR)
     }
 
-    private fun isKnockableBlock(bd: BlockData): Boolean {
-        return when (bd) {
+    private fun isKnockableBlock(data: BlockData): Boolean {
+        return when (data) {
             is Door -> instance.config.getBoolean("$cn.allow_knocking")
             is TrapDoor -> instance.config.getBoolean("$cn.allow_knocking_trapdoors")
             is Gate -> instance.config.getBoolean("$cn.allow_knocking_gates")
@@ -179,18 +184,15 @@ class DoorsModule : ModuleInterface {
             instance.config.getInt("$cn.sound_knock_pitch").toFloat())
     }
 
-    private fun toggleOtherDoor(block: Block, otherBlock: Block, open: Boolean) {
-        if (block.blockData !is Door || otherBlock.blockData !is Door) return
-        object : BukkitRunnable() {
-            override fun run() {
-                val currentDoor = block.blockData as Door
-                val otherDoor = otherBlock.blockData as Door
-                if (currentDoor.isOpen == otherDoor.isOpen) {
-                    return
-                }
-                toggleDoor(otherBlock, otherDoor, open)
+    private fun toggleOtherDoor(block: Block, block2: Block, open: Boolean) {
+        if (block.blockData !is Door || block2.blockData !is Door) return
+        Bukkit.getScheduler().runTaskLater(instance, Runnable {
+            val door = block.blockData as Door
+            val door2 = block2.blockData as Door
+            if (door.isOpen != door2.isOpen) {
+                toggleDoor(block2, door2, open)
             }
-        }.runTaskLater(instance, 1L)
+        }, 1L)
     }
 
     private fun getDoorBottom(door: Door, block: Block): Door? {
