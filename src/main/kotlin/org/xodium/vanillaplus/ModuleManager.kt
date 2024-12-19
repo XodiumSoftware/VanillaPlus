@@ -14,14 +14,16 @@ import org.xodium.vanillaplus.modules.SaplingModule
  */
 object ModuleManager {
     init {
-        listOf(DoorsModule(), SaplingModule())
-            .filter { it.enabled() }
+        listOf(
+            DoorsModule(),
+            SaplingModule()
+        ).filter { it.enabled() }
             .forEach { mod ->
-                // TODO: something is off with the timer.
-                val startTime = System.currentTimeMillis()
+                val t = System.currentTimeMillis()
+                mod.init()
                 instance.server.pluginManager.registerEvents(mod, instance)
-                val endTime = System.currentTimeMillis()
-                instance.logger.info("Loaded: ${mod.javaClass.simpleName} | Took ${endTime - startTime}ms")
+                instance.logger.info("Loaded: ${mod.javaClass.simpleName} | Took ${System.currentTimeMillis() - t}ms")
             }
     }
 }
+

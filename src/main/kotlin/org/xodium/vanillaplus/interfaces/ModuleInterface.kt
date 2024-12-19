@@ -2,20 +2,23 @@ package org.xodium.vanillaplus.interfaces
 
 import org.bukkit.event.Listener
 
+
 /**
- * This interface defines a module system that integrates with the Bukkit event handling mechanism.
- * Developers implementing this interface are required to provide a name for the module (`cn`)
- * and define whether it is enabled through the `enabled()` function.
- *
- * The implementation classes of this interface are expected to also function as Bukkit event listeners.
+ * Represents a contract for a module within the system.
+ * Every implementing module must define initialization logic and state management.
+ * This interface extends the Listener interface, allowing modules to handle events.
  */
 interface ModuleInterface : Listener {
 
     /**
      * The unique name or identifier for the module.
-     * This can be used to distinguish this module from others.
      */
     val cn: String
+
+    /**
+     * Initializes the functionality of the implementing module.
+     */
+    fun init()
 
     /**
      * Determines if this module is currently enabled or not.

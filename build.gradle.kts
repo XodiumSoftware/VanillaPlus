@@ -21,6 +21,7 @@ dependencies {
     implementation(platform("com.intellectualsites.bom:bom-newest:1.51"))
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core")
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit") { isTransitive = false }
+    implementation(kotlin("reflect"))
 }
 
 java {

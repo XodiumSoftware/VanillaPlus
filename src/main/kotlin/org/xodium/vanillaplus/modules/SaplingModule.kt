@@ -35,15 +35,16 @@ import java.io.File
  * - **Configuration**: Specifies mappings between sapling types and their schematic file lists.
  */
 // TODO: fix not recognizing the schematics.
+// TODO: fix the usage of craftbukkit legacy support.
 class SaplingModule : ModuleInterface {
     override val cn: String = javaClass.simpleName
     private val schematicsPath = File(instance.dataFolder, "schematics")
     private val saplings =
         (Material.entries.filter { runCatching { it.isBlock && it.createBlockData() is Sapling }.getOrDefault(false) }
             .toSet() + Material.MANGROVE_PROPAGULE)
-    private val saplingSchematicMap: Map<Material, List<File>>
+    private lateinit var saplingSchematicMap: Map<Material, List<File>>
 
-    init {
+    override fun init() {
         setupDefaultSchematics()
         val saplingConfig = instance.config.getConfigurationSection("$cn.sapling_link")
         saplingSchematicMap = saplingConfig?.getKeys(false)?.mapNotNull { k ->
