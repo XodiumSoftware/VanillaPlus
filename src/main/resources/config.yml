@@ -23,6 +23,7 @@ SaplingModule:
   enable: true # Enables or disables the SaplingModule. Set to 'false' to disable.
 
   # If a sapling type is missing here, no custom schematic will be used and default behavior applies.
+  # Its also possible to define directories instead, where it will take all the schematic files.
   sapling_link:
     OAK_SAPLING:
       - "oak_structure1.schematic"

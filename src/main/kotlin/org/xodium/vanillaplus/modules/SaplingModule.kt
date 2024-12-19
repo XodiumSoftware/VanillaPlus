@@ -14,7 +14,6 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import java.io.File
 
-//TODO: make it take all the schematics in a folder when only a folder gets specified.
 /**
  * The `SaplingModule` class is responsible for handling custom behavior when saplings grow into trees
  * within a Minecraft Bukkit server. It implements the `ModuleInterface` and listens for `StructureGrowEvent`
@@ -87,8 +86,23 @@ class SaplingModule : ModuleInterface {
         }
     }
 
-    private fun parseSchematicFiles(v: Any): List<File> =
-        (v as? List<*>)?.mapNotNull { it?.toString()?.let(::File) } ?: emptyList()
+    private fun parseSchematicFiles(v: Any): List<File> {
+        val files = mutableListOf<File>()
+        when (v) {
+            is List<*> -> v.mapNotNull { it?.toString()?.let(::File) }.forEach { collectSchematicFiles(it, files) }
+            is String -> collectSchematicFiles(File(v), files)
+        }
+        return files
+    }
+
+    private fun collectSchematicFiles(file: File, files: MutableList<File>) {
+        if (file.isDirectory) {
+            files.addAll(file.listFiles { _, name -> name.endsWith(".schematic", ignoreCase = true) }
+                ?: emptyArray())
+        } else if (file.isFile && file.extension.equals("schematic", ignoreCase = true)) {
+            files.add(file)
+        }
+    }
 
     override fun enabled(): Boolean {
         return instance.config.getBoolean("$cn.enable")
