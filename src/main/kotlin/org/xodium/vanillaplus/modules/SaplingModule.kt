@@ -6,7 +6,6 @@ import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats
 import com.sk89q.worldedit.math.BlockVector3
 import org.bukkit.Material
 import org.bukkit.block.Block
-import org.bukkit.block.data.type.Sapling
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.world.StructureGrowEvent
@@ -35,13 +34,18 @@ import java.io.File
  * - **Configuration**: Specifies mappings between sapling types and their schematic file lists.
  */
 // TODO: fix not recognizing the schematics.
-// TODO: fix the usage of craftbukkit legacy support.
 class SaplingModule : ModuleInterface {
     override val cn: String = javaClass.simpleName
     private val schematicsPath = File(instance.dataFolder, "schematics")
-    private val saplings =
-        (Material.entries.filter { runCatching { it.isBlock && it.createBlockData() is Sapling }.getOrDefault(false) }
-            .toSet() + Material.MANGROVE_PROPAGULE)
+    private val saplings = setOf(
+        Material.OAK_SAPLING,
+        Material.BIRCH_SAPLING,
+        Material.SPRUCE_SAPLING,
+        Material.JUNGLE_SAPLING,
+        Material.ACACIA_SAPLING,
+        Material.DARK_OAK_SAPLING,
+        Material.MANGROVE_PROPAGULE
+    )
     private lateinit var saplingSchematicMap: Map<Material, List<File>>
 
     override fun init() {
