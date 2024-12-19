@@ -38,8 +38,8 @@ class SaplingModule : ModuleInterface {
     override val cn: String = javaClass.simpleName
     private val schematicsPath = File(instance.dataFolder, "schematics")
     private val saplings =
-        Material.entries.filter { runCatching { it.isBlock && it.createBlockData() is Sapling }.getOrDefault(false) }
-            .toSet()
+        (Material.entries.filter { runCatching { it.isBlock && it.createBlockData() is Sapling }.getOrDefault(false) }
+            .toSet() + Material.MANGROVE_PROPAGULE)
     private val saplingSchematicMap: Map<Material, List<File>>
 
     init {
@@ -97,9 +97,10 @@ class SaplingModule : ModuleInterface {
 
     private fun collectSchematicFiles(file: File, files: MutableList<File>) {
         if (file.isDirectory) {
-            files.addAll(file.listFiles { _, name -> name.endsWith(".schematic", ignoreCase = true) }
+            files.addAll(file.listFiles { _, name -> name.endsWith(".schem", ignoreCase = true) }
                 ?: emptyArray())
-        } else if (file.isFile && file.extension.equals("schematic", ignoreCase = true)) {
+
+        } else if (file.isFile && file.extension.equals("schem", ignoreCase = true)) {
             files.add(file)
         }
     }
