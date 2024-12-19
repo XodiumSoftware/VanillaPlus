@@ -31,6 +31,7 @@ tasks {
     shadowJar {
         archiveClassifier.set("")
         relocate("kotlin", "org.xodium.vanillaplus.kotlin")
+        destinationDirectory.set(file(".server/plugins"))
     }
     jar {
         enabled = false
