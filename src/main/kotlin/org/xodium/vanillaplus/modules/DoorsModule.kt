@@ -62,11 +62,12 @@ class DoorsModule : ModuleInterface {
 
     init {
         Bukkit.getScheduler().runTaskTimer(instance, Runnable {
-            autoClose.entries.filter { (_, t) -> System.currentTimeMillis() >= t }
-                .forEach { (block, _) ->
+            autoClose.forEach { (block, t) ->
+                if (System.currentTimeMillis() >= t) {
                     handleAutoClose(block)
                     autoClose.remove(block)
                 }
+            }
         }, 1L, 1L)
     }
 
