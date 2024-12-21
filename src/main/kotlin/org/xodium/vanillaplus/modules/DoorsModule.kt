@@ -77,6 +77,7 @@ class DoorsModule : ModuleInterface {
         when (data) {
             is Door -> handleDoorClose(block, data)
             is Gate -> handleGateClose(block)
+            else -> return
         }
         data.isOpen = false
         block.blockData = data
