@@ -20,7 +20,7 @@ DoorsModule:
 
 # Configuration settings for the SaplingModule. This module controls sapling-related features.
 SaplingModule:
-  enable: false # Enables or disables the SaplingModule. Set to 'false' to disable.
+  enable: true # Enables or disables the SaplingModule. Set to 'false' to disable.
 
   # If a sapling type is missing here, no custom schematic will be used and default behavior applies.
   # You can define a file, multiple files or a folder.

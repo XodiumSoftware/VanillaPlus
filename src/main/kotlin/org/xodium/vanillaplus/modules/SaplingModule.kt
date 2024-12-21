@@ -33,13 +33,14 @@ import java.io.File
  * - **Schematics**: Files representing custom tree structures.
  * - **Configuration**: Specifies mappings between sapling types and their schematic file lists.
  */
-// TODO: fix not recognizing the schematics.
+// TODO: fix not recognizing the schematics, might be the fact that its not searching recursively.
 class SaplingModule : ModuleInterface {
     override val cn: String = javaClass.simpleName
     private val schematicsPath = File(instance.dataFolder, "schematics")
     private val saplings = setOf(
         Material.OAK_SAPLING,
         Material.BIRCH_SAPLING,
+        Material.CHERRY_SAPLING,
         Material.SPRUCE_SAPLING,
         Material.JUNGLE_SAPLING,
         Material.ACACIA_SAPLING,
@@ -54,8 +55,10 @@ class SaplingModule : ModuleInterface {
         saplingSchematicMap = saplingConfig?.getKeys(false)?.mapNotNull { k ->
             val m = Material.matchMaterial(k)
             if (m != null && saplings.contains(m)) {
+                instance.logger.info("Processing sapling config for: $k")
                 val files = parseSchematicFiles(saplingConfig[k] ?: emptyList<String>())
                 if (files.isNotEmpty()) {
+                    instance.logger.info("Matched schematics for $m: ${files.map { it.absolutePath }}")
                     m to files
                 } else {
                     instance.logger.warning("No valid schematics found for $k.")
@@ -66,6 +69,7 @@ class SaplingModule : ModuleInterface {
                 null
             }
         }?.toMap() ?: emptyMap()
+        instance.logger.info("Sapling-Schematic Map: ${saplingSchematicMap.mapValues { it.value.map { file -> file.absolutePath } }}")
     }
 
     private fun setupDefaultSchematics() {
@@ -80,17 +84,21 @@ class SaplingModule : ModuleInterface {
     private fun copyResourcesFromJar(targetDir: File) {
         val resourcePath = "schematics"
         val jar = File(instance.javaClass.protectionDomain.codeSource.location.toURI())
-        if (!jar.exists()) return
+        if (!jar.exists()) {
+            instance.logger.warning("Jar file does not exist: ${jar.absolutePath}")
+            return
+        }
         java.util.jar.JarFile(jar).use { jarFile ->
             val entries = jarFile.entries()
             while (entries.hasMoreElements()) {
                 val entry = entries.nextElement()
                 if (entry.name.startsWith(resourcePath) && !entry.isDirectory) {
                     val entryTarget = File(targetDir, entry.name.removePrefix("$resourcePath/"))
+                    instance.logger.info("Copying ${entry.name} to ${entryTarget.absolutePath}")
                     entryTarget.parentFile.mkdirs()
                     instance.javaClass.classLoader.getResourceAsStream(entry.name)?.use { input ->
                         entryTarget.outputStream().use { output -> input.copyTo(output) }
-                    }
+                    } ?: instance.logger.warning("Failed to get input stream for ${entry.name}")
                 }
             }
         }
@@ -121,21 +129,41 @@ class SaplingModule : ModuleInterface {
     }
 
     private fun parseSchematicFiles(v: Any): List<File> {
+        instance.logger.info("Parsing schematic files for value: $v")
         val files = mutableListOf<File>()
+
         when (v) {
-            is List<*> -> v.mapNotNull { it?.toString()?.let(::File) }.forEach { collectSchematicFiles(it, files) }
-            is String -> collectSchematicFiles(File(v), files)
+            is List<*> -> v.mapNotNull {
+                it?.toString()?.let { subDir ->
+                    File(schematicsPath, subDir)
+                }
+            }.forEach { collectSchematicFiles(it, files) }
+
+            is String -> {
+                val resolvedDir = File(schematicsPath, v)
+                collectSchematicFiles(resolvedDir, files)
+            }
+
+            else -> {
+                instance.logger.warning("Invalid schematic value type: $v")
+            }
         }
+
+        instance.logger.info("Collected schematic files: ${files.map { it.absolutePath }}")
         return files
     }
 
     private fun collectSchematicFiles(file: File, files: MutableList<File>) {
         if (file.isDirectory) {
-            files.addAll(file.listFiles { _, name -> name.endsWith(".schem", ignoreCase = true) }
-                ?: emptyArray())
-
+            instance.logger.info("Searching directory: ${file.absolutePath}")
+            val schematics = file.listFiles { _, name -> name.endsWith(".schem", ignoreCase = true) } ?: emptyArray()
+            instance.logger.info("Found schematics in ${file.absolutePath}: ${schematics.joinToString(", ") { it.name }}")
+            files.addAll(schematics)
         } else if (file.isFile && file.extension.equals("schem", ignoreCase = true)) {
+            instance.logger.info("Adding schematic file: ${file.absolutePath}")
             files.add(file)
+        } else {
+            instance.logger.warning("Invalid file or directory: ${file.absolutePath}")
         }
     }
 
