@@ -144,8 +144,7 @@ class SaplingModule : ModuleInterface {
             }.forEach { collectSchematicFiles(it, files) }
 
             is String -> {
-                val resolvedDir = File(schematicsPath, v)
-                collectSchematicFiles(resolvedDir, files)
+                collectSchematicFiles(File(schematicsPath, v), files)
             }
 
             else -> {
@@ -157,8 +156,7 @@ class SaplingModule : ModuleInterface {
 
     private fun collectSchematicFiles(file: File, files: MutableList<File>) {
         if (file.isDirectory) {
-            val schematics = file.listFiles { _, name -> name.endsWith(".schem", ignoreCase = true) } ?: emptyArray()
-            files.addAll(schematics)
+            files.addAll(file.listFiles { _, name -> name.endsWith(".schem", ignoreCase = true) } ?: emptyArray())
         } else if (file.isFile && file.extension.equals("schem", ignoreCase = true)) {
             files.add(file)
         } else {

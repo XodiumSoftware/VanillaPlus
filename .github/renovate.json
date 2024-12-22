@@ -9,5 +9,9 @@
   ],
   "labels": [
     "Dependencies"
+  ],
+  "automerge": true,
+  "baseBranches": [
+    "dev"
   ]
 }
