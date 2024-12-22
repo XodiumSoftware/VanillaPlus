@@ -107,6 +107,8 @@ class SaplingModule : ModuleInterface {
     }
 
     private fun replaceWithSchematicTree(block: Block) {
+        // TODO: Fawe instance is null even tho present at plugins folder,
+        // TODO: Probs something wrong with the shadowjarring.
         val faweInstance = Fawe.instance()
         if (faweInstance == null) {
             instance.logger.warning("Fawe instance is null. Unable to replace tree with schematic.")
