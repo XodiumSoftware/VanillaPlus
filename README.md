@@ -35,7 +35,7 @@
 [contributing_url]: https://github.com/XodiumSoftware/VanillaPlus/blob/main/CONTRIBUTING.md
 [contributors_shield_url]: https://img.shields.io/github/contributors/XodiumSoftware/VanillaPlus?style=for-the-badge&color=blue
 [contributors_url]: https://github.com/XodiumSoftware/VanillaPlus/graphs/contributors
-[issues_shield_url]: https://img.shields.io/github/issues/XodiumSoftware/xCLOUD?style=for-the-badge&color=yellow
+[issues_shield_url]: https://img.shields.io/github/issues/XodiumSoftware/VanillaPlus?style=for-the-badge&color=yellow
 [issues_url]: https://github.com/XodiumSoftware/VanillaPlus/issues
 [license_url]: https://github.com/XodiumSoftware/VanillaPlus?tab=AGPL-3.0-1-ov-file
 [roadmap_shield_url]: https://img.shields.io/badge/Roadmap-Click%20Me!-purple.svg?style=for-the-badge
