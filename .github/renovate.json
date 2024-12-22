@@ -2,5 +2,12 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended"
+  ],
+  "prHeader": "Xodium Dependencies Updater",
+  "assignees": [
+    "illyrius666"
+  ],
+  "labels": [
+    "Dependencies"
   ]
 }
