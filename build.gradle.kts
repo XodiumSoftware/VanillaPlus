@@ -19,8 +19,8 @@ dependencies {
     implementation("net.kyori:adventure-api:4.17.0")
     implementation(kotlin("stdlib-jdk8"))
     implementation(platform("com.intellectualsites.bom:bom-newest:1.51"))
-    compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core")
-    compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit") { isTransitive = false }
+    implementation("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.12.2")
+    implementation("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit:2.12.2")
 }
 
 java {
@@ -31,6 +31,7 @@ tasks {
     shadowJar {
         archiveClassifier.set("")
         relocate("kotlin", "org.xodium.vanillaplus.kotlin")
+        relocate("com.fastasyncworldedit", "org.xodium.vanillaplus.fawe")
         destinationDirectory.set(file(".server/plugins"))
     }
     jar {
