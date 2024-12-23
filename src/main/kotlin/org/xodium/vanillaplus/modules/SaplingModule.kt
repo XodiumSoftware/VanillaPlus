@@ -72,10 +72,9 @@ class SaplingModule : ModuleInterface {
 
     private fun setupDefaultSchematics() {
         schematicsPath.mkdirs()
-        if (instance.javaClass.classLoader.getResource(schematicsFolder) != null) {
-            copyResourcesFromJar(schematicsPath)
-        } else {
-            instance.logger.warning("Default schematics directory not found in resources.")
+        when (instance.javaClass.classLoader.getResource(schematicsFolder)) {
+            null -> instance.logger.warning("Default schematics directory not found in resources.")
+            else -> copyResourcesFromJar(schematicsPath)
         }
     }
 

@@ -113,9 +113,7 @@ class DoorsModule : ModuleInterface {
     }
 
     private fun handleLeftClick(e: PlayerInteractEvent, data: BlockData, block: Block) {
-        if (canKnock(e.player, e) && isKnockableBlock(data)) {
-            playKnockSound(block)
-        }
+        if (canKnock(e.player, e) && isKnockableBlock(data)) playKnockSound(block)
     }
 
     private fun handleRightClick(e: PlayerInteractEvent, data: BlockData, block: Block) {
@@ -123,12 +121,8 @@ class DoorsModule : ModuleInterface {
         if (p.hasPermission("$pcn.doubledoors") &&
             instance.config.getBoolean("$cn.allow_doubledoors") &&
             (data is Door || data is Gate)
-        ) {
-            processDoorOrGateInteraction(p, data, block)
-        }
-        if (p.hasPermission("$pcn.autoclose")) {
-            autoClose[block] = System.currentTimeMillis() + autoCloseDelay
-        }
+        ) processDoorOrGateInteraction(p, data, block)
+        if (p.hasPermission("$pcn.autoclose")) autoClose[block] = System.currentTimeMillis() + autoCloseDelay
     }
 
     private fun processDoorOrGateInteraction(p: Player, data: BlockData, block: Block) {
