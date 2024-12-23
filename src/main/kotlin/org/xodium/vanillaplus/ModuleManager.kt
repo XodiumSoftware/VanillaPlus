@@ -18,11 +18,11 @@ object ModuleManager {
             DoorsModule(),
             SaplingModule()
         ).filter { it.enabled() }
-            .forEach { mod ->
+            .forEach {
                 val t = System.currentTimeMillis()
-                mod.init()
-                instance.server.pluginManager.registerEvents(mod, instance)
-                instance.logger.info("Loaded: ${mod.javaClass.simpleName} | Took ${System.currentTimeMillis() - t}ms")
+                it.init()
+                instance.server.pluginManager.registerEvents(it, instance)
+                instance.logger.info("Loaded: ${it.javaClass.simpleName} | Took ${System.currentTimeMillis() - t}ms")
             }
     }
 }

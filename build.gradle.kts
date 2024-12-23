@@ -23,9 +23,7 @@ dependencies {
     implementation("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit:2.12.2")
 }
 
-java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
-}
+java { toolchain.languageVersion.set(JavaLanguageVersion.of(21)) }
 
 tasks {
     shadowJar {
@@ -34,15 +32,7 @@ tasks {
         relocate("com.fastasyncworldedit", "org.xodium.vanillaplus.fawe")
         destinationDirectory.set(file(".server/plugins"))
     }
-    jar {
-        enabled = false
-    }
-    withType<JavaCompile> {
-        options.encoding = "UTF-8"
-    }
-    register("printVersion") {
-        doLast {
-            println(project.version)
-        }
-    }
+    jar { enabled = false }
+    withType<JavaCompile> { options.encoding = "UTF-8" }
+    register("printVersion") { doLast { println(project.version) } }
 }

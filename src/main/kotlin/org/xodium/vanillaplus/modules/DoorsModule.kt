@@ -215,7 +215,5 @@ class DoorsModule : ModuleInterface {
         }?.let { block.getRelative(it.offsetX, 0, it.offsetZ) }
     }
 
-    override fun enabled(): Boolean {
-        return instance.config.getBoolean("$cn.enable")
-    }
+    override fun enabled() = instance.config.getBoolean("$cn.enable")
 }

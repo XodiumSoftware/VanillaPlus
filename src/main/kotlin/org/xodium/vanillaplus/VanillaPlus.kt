@@ -60,11 +60,7 @@ class VanillaPlus : JavaPlugin() {
         server.pluginManager.disablePlugin(this)
     }
 
-    private fun isSupportedVersion(): Boolean {
-        return SUPPORTED_VERSIONS.any { k -> server.version.contains(k) }
-    }
+    private fun isSupportedVersion() = SUPPORTED_VERSIONS.any { server.version.contains(it) }
 
-    private fun isSupportedPlatform(): Boolean {
-        return SUPPORTED_PLATFORMS.any { k -> server.name.contains(k) }
-    }
+    private fun isSupportedPlatform() = SUPPORTED_PLATFORMS.any { server.name.contains(it) }
 }

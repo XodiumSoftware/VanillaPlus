@@ -143,13 +143,9 @@ class SaplingModule : ModuleInterface {
                 }
             }.forEach { collectSchematicFiles(it, files) }
 
-            is String -> {
-                collectSchematicFiles(File(schematicsPath, v), files)
-            }
+            is String -> collectSchematicFiles(File(schematicsPath, v), files)
 
-            else -> {
-                instance.logger.warning("Invalid schematic value type: $v")
-            }
+            else -> instance.logger.warning("Invalid schematic value type: $v")
         }
         return files
     }
@@ -164,7 +160,5 @@ class SaplingModule : ModuleInterface {
         }
     }
 
-    override fun enabled(): Boolean {
-        return instance.config.getBoolean("$cn.enable")
-    }
+    override fun enabled() = instance.config.getBoolean("$cn.enable")
 }

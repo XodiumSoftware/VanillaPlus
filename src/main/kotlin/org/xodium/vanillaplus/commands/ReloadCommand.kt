@@ -41,10 +41,8 @@ object ReloadCommand {
     }
 
     init {
-        instance.lifecycleManager.registerEventHandler(
-            LifecycleEvents.COMMANDS
-        ) { e ->
-            e.registrar().register(
+        instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) {
+            it.registrar().register(
                 Commands.literal("vanillaplus")
                     .executes(Command { ctx: CommandContext<CommandSourceStack?>? ->
                         val cs = ctx?.source?.sender ?: return@Command 0
