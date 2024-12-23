@@ -16,7 +16,7 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.3-R0.1-SNAPSHOT")
-    implementation("net.kyori:adventure-api:4.17.0")
+    implementation("net.kyori:adventure-api:4.18.0")
     implementation(kotlin("stdlib-jdk8"))
     implementation(platform("com.intellectualsites.bom:bom-newest:1.51"))
     implementation("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.12.2")
