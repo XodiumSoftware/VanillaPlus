@@ -17,7 +17,7 @@ object ModuleManager {
         listOf(
             DoorsModule(),
             SaplingModule()
-        ).filter { it.enabled() && it.hasDependencies() }
+        ).filter { it.enabled() }
             .forEach {
                 val t = System.currentTimeMillis()
                 it.init()

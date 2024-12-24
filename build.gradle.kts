@@ -19,8 +19,8 @@ dependencies {
     implementation("net.kyori:adventure-api:4.18.0")
     implementation(kotlin("stdlib-jdk8"))
     implementation(platform("com.intellectualsites.bom:bom-newest:1.51"))
-    compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.12.2")
-    compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit:2.12.2") { isTransitive = false }
+    implementation("com.sk89q.worldedit:worldedit-core:7.3.9")
+    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.9")
 }
 
 java { toolchain.languageVersion.set(JavaLanguageVersion.of(21)) }
@@ -30,6 +30,7 @@ tasks {
         archiveClassifier.set("")
         relocate("kotlin", "org.xodium.vanillaplus.kotlin")
         destinationDirectory.set(file(".server/plugins"))
+        minimize()
     }
     jar { enabled = false }
     withType<JavaCompile> { options.encoding = "UTF-8" }

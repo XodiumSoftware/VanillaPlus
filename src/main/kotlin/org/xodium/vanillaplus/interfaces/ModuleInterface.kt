@@ -26,11 +26,4 @@ interface ModuleInterface : Listener {
      * @return `true` if the module is enabled, `false` otherwise.
      */
     fun enabled(): Boolean
-
-    /**
-     * Determines if this module has dependencies.
-     *
-     * @return `true` if it has dependencies, `false` otherwise.
-     */
-    fun hasDependencies(): Boolean
 }

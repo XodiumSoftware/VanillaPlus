@@ -1,10 +1,11 @@
 package org.xodium.vanillaplus.modules
 
-import com.fastasyncworldedit.core.Fawe
-import com.fastasyncworldedit.core.extent.clipboard.io.FastSchematicReaderV3
-import com.fastasyncworldedit.core.math.MutableBlockVector3
+import com.sk89q.worldedit.WorldEdit
 import com.sk89q.worldedit.bukkit.BukkitAdapter
-import org.bukkit.Bukkit
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats
+import com.sk89q.worldedit.function.operation.Operations
+import com.sk89q.worldedit.math.BlockVector3
+import com.sk89q.worldedit.session.ClipboardHolder
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.event.EventHandler
@@ -102,36 +103,41 @@ class SaplingModule : ModuleInterface {
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: StructureGrowEvent) {
         if (saplings.contains(event.location.block.type)) event.isCancelled = true
-        replaceWithSchematicTree(event.location.block)
+        replaceWithSchematicTree(event.location.block, event)
     }
 
-    private fun replaceWithSchematicTree(block: Block) {
-        // TODO: Fawe instance is null even tho present at plugins folder,
-        // TODO: Probs something wrong with the shadowjarring.
-        // TODO: We should move this check to the on method before we cancel the event so at least the default behaviour doesnt get cancelled when this doesnt work.
-        // TODO: Actually shouldnt be an issue because we ship FAWE with this plugin.
-        val faweInstance = Fawe.instance()
-        if (faweInstance == null) {
-            instance.logger.warning("Fawe instance is null. Unable to replace tree with schematic.")
-            return
-        }
+    private fun replaceWithSchematicTree(block: Block, event: StructureGrowEvent) {
         val schematicFile = saplingSchematicMap[block.type]?.randomOrNull()
         if (schematicFile != null && schematicFile.exists()) {
-            Bukkit.getScheduler().runTaskAsynchronously(instance, Runnable {
+            val format = ClipboardFormats.findByFile(schematicFile)
+            if (format != null) {
                 schematicFile.inputStream().use { inputStream ->
-                    // TODO: in the future replace BukkitAdapter with FaweAdapter.
-                    faweInstance.worldEdit.newEditSession(BukkitAdapter.adapt(block.world)).use { editSession ->
-                        try {
-                            FastSchematicReaderV3(inputStream).read(block.world.uid)
-                                .paste(editSession, MutableBlockVector3.at(block.x, block.y, block.z), true)
-                        } catch (ex: Exception) {
-                            instance.logger.warning("Error pasting schematic: ${schematicFile.name}: ${ex.message}")
-                        }
+                    val clipboard = format.getReader(inputStream).read()
+                    val world = BukkitAdapter.adapt(block.world)
+                    val session = WorldEdit.getInstance().newEditSession(world)
+                    val location = BlockVector3.at(block.x, block.y, block.z)
+                    val holder = ClipboardHolder(clipboard)
+
+                    try {
+                        val operation = holder.createPaste(session)
+                            .to(location)
+                            .ignoreAirBlocks(true)
+                            .build()
+                        Operations.complete(operation)
+                    } catch (ex: Exception) {
+                        instance.logger.severe("Error while pasting schematic: ${ex.message}")
+                        event.isCancelled = false
+                    } finally {
+                        session.close()
                     }
                 }
-            })
+            } else {
+                instance.logger.warning("Unsupported schematic format for file: ${schematicFile.name}")
+                event.isCancelled = false
+            }
         } else {
             instance.logger.info("No custom schematic found for ${block.type}. Using default Minecraft behavior.")
+            event.isCancelled = false
         }
     }
 
@@ -162,13 +168,4 @@ class SaplingModule : ModuleInterface {
     }
 
     override fun enabled() = instance.config.getBoolean("$cn.enable")
-
-    override fun hasDependencies(): Boolean {
-        return try {
-            Fawe.instance() != null
-        } catch (ex: Exception) {
-            instance.logger.warning("FAWE is not available or failed to initialize: ${ex.message}")
-            false
-        }
-    }
 }

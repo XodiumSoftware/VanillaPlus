@@ -210,6 +210,4 @@ class DoorsModule : ModuleInterface {
     }
 
     override fun enabled() = instance.config.getBoolean("$cn.enable")
-
-    override fun hasDependencies() = true
 }
