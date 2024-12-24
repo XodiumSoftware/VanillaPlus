@@ -3,8 +3,13 @@ version: 1.0.0
 main: org.xodium.vanillaplus.VanillaPlus
 description: Minecraft plugin that enhances the base gameplay.
 api-version: 1.21.3
-authors:
-  - XodiumSoftware
+authors: [ XodiumSoftware ]
+dependencies:
+  server:
+    WorldEdit:
+      load: BEFORE
+      required: true
+      join-classpath: true
 permissions:
   VanillaPlus.reload:
     description: Allows to reload the configuration

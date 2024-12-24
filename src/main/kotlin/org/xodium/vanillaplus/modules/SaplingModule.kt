@@ -6,6 +6,7 @@ import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats
 import com.sk89q.worldedit.function.operation.Operations
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.session.ClipboardHolder
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.event.EventHandler
@@ -103,42 +104,36 @@ class SaplingModule : ModuleInterface {
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: StructureGrowEvent) {
         if (saplings.contains(event.location.block.type)) event.isCancelled = true
-        replaceWithSchematicTree(event.location.block, event)
+        replaceWithSchematicTree(event.location.block)
     }
 
-    private fun replaceWithSchematicTree(block: Block, event: StructureGrowEvent) {
+    private fun replaceWithSchematicTree(block: Block) {
         val schematicFile = saplingSchematicMap[block.type]?.randomOrNull()
-        if (schematicFile != null && schematicFile.exists()) {
-            val format = ClipboardFormats.findByFile(schematicFile)
-            if (format != null) {
-                schematicFile.inputStream().use { inputStream ->
-                    val clipboard = format.getReader(inputStream).read()
-                    val world = BukkitAdapter.adapt(block.world)
-                    val session = WorldEdit.getInstance().newEditSession(world)
-                    val location = BlockVector3.at(block.x, block.y, block.z)
-                    val holder = ClipboardHolder(clipboard)
-
-                    try {
-                        val operation = holder.createPaste(session)
-                            .to(location)
+        if (schematicFile == null || !schematicFile.exists()) {
+            instance.logger.info("No custom schematic found for ${block.type}.")
+            return
+        }
+        val format = ClipboardFormats.findByFile(schematicFile)
+        if (format == null) {
+            instance.logger.warning("Unsupported schematic format for file: ${schematicFile.name}")
+            return
+        }
+        Bukkit.getScheduler().runTask(instance, Runnable {
+            schematicFile.inputStream().use {
+                try {
+                    Operations.complete(
+                        ClipboardHolder(
+                            format.getReader(it).read()
+                        ).createPaste(WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(block.world)))
+                            .to(BlockVector3.at(block.x, block.y, block.z))
                             .ignoreAirBlocks(true)
                             .build()
-                        Operations.complete(operation)
-                    } catch (ex: Exception) {
-                        instance.logger.severe("Error while pasting schematic: ${ex.message}")
-                        event.isCancelled = false
-                    } finally {
-                        session.close()
-                    }
+                    )
+                } catch (ex: Exception) {
+                    instance.logger.severe("Error while pasting schematic: ${ex.message}")
                 }
-            } else {
-                instance.logger.warning("Unsupported schematic format for file: ${schematicFile.name}")
-                event.isCancelled = false
             }
-        } else {
-            instance.logger.info("No custom schematic found for ${block.type}. Using default Minecraft behavior.")
-            event.isCancelled = false
-        }
+        })
     }
 
     private fun parseSchematicFiles(v: Any): List<File> {
