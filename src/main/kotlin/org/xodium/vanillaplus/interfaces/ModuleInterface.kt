@@ -21,9 +21,16 @@ interface ModuleInterface : Listener {
     fun init()
 
     /**
-     * Determines if this module is currently enabled or not.
+     * Determines if this module is currently enabled.
      *
      * @return `true` if the module is enabled, `false` otherwise.
      */
     fun enabled(): Boolean
+
+    /**
+     * Determines if this module has dependencies.
+     *
+     * @return `true` if it has dependencies, `false` otherwise.
+     */
+    fun hasDependencies(): Boolean
 }

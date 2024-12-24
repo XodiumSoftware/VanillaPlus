@@ -54,9 +54,9 @@ class DoorsModule : ModuleInterface {
             AdjacentBlockData(1, 0, Door.Hinge.LEFT, BlockFace.NORTH)
         )
 
-        fun toggleDoor(doorBlock: Block, openable: Openable, open: Boolean) {
+        fun toggleDoor(block: Block, openable: Openable, open: Boolean) {
             openable.isOpen = open
-            doorBlock.blockData = openable
+            block.blockData = openable
         }
     }
 
@@ -95,64 +95,64 @@ class DoorsModule : ModuleInterface {
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    fun on(e: PlayerInteractEvent) {
-        val clickedBlock = e.clickedBlock ?: return
+    fun on(event: PlayerInteractEvent) {
+        val clickedBlock = event.clickedBlock ?: return
         val data = clickedBlock.blockData
-        if (!isValidInteraction(e)) return
-        when (e.action) {
-            Action.LEFT_CLICK_BLOCK -> handleLeftClick(e, data, clickedBlock)
-            Action.RIGHT_CLICK_BLOCK -> handleRightClick(e, data, clickedBlock)
+        if (!isValidInteraction(event)) return
+        when (event.action) {
+            Action.LEFT_CLICK_BLOCK -> handleLeftClick(event, data, clickedBlock)
+            Action.RIGHT_CLICK_BLOCK -> handleRightClick(event, data, clickedBlock)
             else -> return
         }
     }
 
-    private fun isValidInteraction(e: PlayerInteractEvent): Boolean {
-        return e.hand == EquipmentSlot.HAND &&
-                e.useInteractedBlock() != Event.Result.DENY &&
-                e.useItemInHand() != Event.Result.DENY
+    private fun isValidInteraction(event: PlayerInteractEvent): Boolean {
+        return event.hand == EquipmentSlot.HAND &&
+                event.useInteractedBlock() != Event.Result.DENY &&
+                event.useItemInHand() != Event.Result.DENY
     }
 
-    private fun handleLeftClick(e: PlayerInteractEvent, data: BlockData, block: Block) {
-        if (canKnock(e.player, e) && isKnockableBlock(data)) playKnockSound(block)
+    private fun handleLeftClick(event: PlayerInteractEvent, data: BlockData, block: Block) {
+        if (canKnock(event, event.player) && isKnockableBlock(data)) playKnockSound(block)
     }
 
-    private fun handleRightClick(e: PlayerInteractEvent, data: BlockData, block: Block) {
-        val p = e.player
-        if (p.hasPermission("$pcn.doubledoors") &&
+    private fun handleRightClick(event: PlayerInteractEvent, data: BlockData, block: Block) {
+        val player = event.player
+        if (player.hasPermission("$pcn.doubledoors") &&
             instance.config.getBoolean("$cn.allow_doubledoors") &&
             (data is Door || data is Gate)
-        ) processDoorOrGateInteraction(p, data, block)
-        if (p.hasPermission("$pcn.autoclose")) autoClose[block] = System.currentTimeMillis() + autoCloseDelay
+        ) processDoorOrGateInteraction(player, data, block)
+        if (player.hasPermission("$pcn.autoclose")) autoClose[block] = System.currentTimeMillis() + autoCloseDelay
     }
 
-    private fun processDoorOrGateInteraction(p: Player, data: BlockData, block: Block) {
+    private fun processDoorOrGateInteraction(player: Player, data: BlockData, block: Block) {
         if (data is Door) {
             val door = getDoorBottom(data, block)
             val otherDoorBlock = getOtherPart(door, block)
             if (otherDoorBlock != null && otherDoorBlock.blockData is Door) {
                 val otherDoor = otherDoorBlock.blockData as Door
                 toggleOtherDoor(block, otherDoorBlock, !otherDoor.isOpen)
-                if (p.hasPermission("$pcn.autoclose")) {
+                if (player.hasPermission("$pcn.autoclose")) {
                     autoClose[otherDoorBlock] = System.currentTimeMillis() + autoCloseDelay
                 }
             }
         }
     }
 
-    private fun canKnock(p: Player, e: PlayerInteractEvent): Boolean {
+    private fun canKnock(event: PlayerInteractEvent, player: Player): Boolean {
         return when {
-            p.gameMode == GameMode.CREATIVE || p.gameMode == GameMode.SPECTATOR -> false
-            !p.hasPermission("$pcn.knock") -> false
-            e.action != Action.LEFT_CLICK_BLOCK || e.hand != EquipmentSlot.HAND -> false
-            isKnockingConditionViolated(p) -> false
+            player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR -> false
+            !player.hasPermission("$pcn.knock") -> false
+            event.action != Action.LEFT_CLICK_BLOCK || event.hand != EquipmentSlot.HAND -> false
+            isKnockingConditionViolated(player) -> false
             else -> true
         }
     }
 
-    private fun isKnockingConditionViolated(p: Player): Boolean {
-        return (instance.config.getBoolean("$cn.knocking_requires_shift") && !p.isSneaking) ||
+    private fun isKnockingConditionViolated(player: Player): Boolean {
+        return (instance.config.getBoolean("$cn.knocking_requires_shift") && !player.isSneaking) ||
                 (instance.config.getBoolean("$cn.knocking_requires_empty_hand") &&
-                        p.inventory.itemInMainHand.type != Material.AIR)
+                        player.inventory.itemInMainHand.type != Material.AIR)
     }
 
     private fun isKnockableBlock(data: BlockData): Boolean {
@@ -210,4 +210,6 @@ class DoorsModule : ModuleInterface {
     }
 
     override fun enabled() = instance.config.getBoolean("$cn.enable")
+
+    override fun hasDependencies() = true
 }

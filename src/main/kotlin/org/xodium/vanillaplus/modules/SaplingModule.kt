@@ -100,14 +100,16 @@ class SaplingModule : ModuleInterface {
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    fun on(e: StructureGrowEvent) {
-        if (saplings.contains(e.location.block.type)) e.isCancelled = true
-        replaceWithSchematicTree(e.location.block)
+    fun on(event: StructureGrowEvent) {
+        if (saplings.contains(event.location.block.type)) event.isCancelled = true
+        replaceWithSchematicTree(event.location.block)
     }
 
     private fun replaceWithSchematicTree(block: Block) {
         // TODO: Fawe instance is null even tho present at plugins folder,
         // TODO: Probs something wrong with the shadowjarring.
+        // TODO: We should move this check to the on method before we cancel the event so at least the default behaviour doesnt get cancelled when this doesnt work.
+        // TODO: Actually shouldnt be an issue because we ship FAWE with this plugin.
         val faweInstance = Fawe.instance()
         if (faweInstance == null) {
             instance.logger.warning("Fawe instance is null. Unable to replace tree with schematic.")
@@ -160,4 +162,13 @@ class SaplingModule : ModuleInterface {
     }
 
     override fun enabled() = instance.config.getBoolean("$cn.enable")
+
+    override fun hasDependencies(): Boolean {
+        return try {
+            Fawe.instance() != null
+        } catch (ex: Exception) {
+            instance.logger.warning("FAWE is not available or failed to initialize: ${ex.message}")
+            false
+        }
+    }
 }

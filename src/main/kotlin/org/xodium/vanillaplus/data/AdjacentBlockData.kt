@@ -19,4 +19,9 @@ import org.bukkit.block.data.type.Door.Hinge
  * @property facing The direction that the adjacent block is facing, represented by the `BlockFace` enum
  *                  (e.g., NORTH, EAST, SOUTH, WEST).
  */
-data class AdjacentBlockData(val offsetX: Int, val offsetZ: Int, val hinge: Hinge, val facing: BlockFace)
+data class AdjacentBlockData(
+    val offsetX: Int,
+    val offsetZ: Int,
+    val hinge: Hinge,
+    val facing: BlockFace
+)
