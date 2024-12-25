@@ -22,6 +22,11 @@ DoorsModule:
 SaplingModule:
   enable: true # Enables or disables the SaplingModule. Set to 'false' to disable.
 
+  ignore_air_blocks: true # When true, air blocks surrounding saplings are ignored during custom growth or generation logic.
+  ignore_structure_void_blocks: true
+  copy_entities: true
+  copy_biomes: false
+
   # If a sapling type is missing here, no custom schematic will be used and default behavior applies.
   # You can define a file, multiple files or a folder.
   sapling_link:

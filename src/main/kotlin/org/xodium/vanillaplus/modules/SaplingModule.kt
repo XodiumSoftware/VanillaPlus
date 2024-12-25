@@ -18,6 +18,8 @@ import java.io.File
 
 class SaplingModule : ModuleInterface {
     override val cn: String = javaClass.simpleName
+    private val config = instance.config
+    private val logger = instance.logger
     private val schematicsFolder = "schematics"
     private val schematicsPath = File(instance.dataFolder, schematicsFolder)
     private val saplings = setOf(
@@ -34,19 +36,19 @@ class SaplingModule : ModuleInterface {
 
     override fun init() {
         setupDefaultSchematics()
-        val saplingConfig = instance.config.getConfigurationSection("$cn.sapling_link")
-        saplingSchematicMap = saplingConfig?.getKeys(false)?.mapNotNull { k ->
-            val m = Material.matchMaterial(k)
+        val saplingConfig = config.getConfigurationSection("$cn.sapling_link")
+        saplingSchematicMap = saplingConfig?.getKeys(false)?.mapNotNull {
+            val m = Material.matchMaterial(it)
             if (m != null && saplings.contains(m)) {
-                val files = parseSchematicFiles(saplingConfig[k] ?: emptyList<String>())
+                val files = parseSchematicFiles(saplingConfig[it] ?: emptyList<String>())
                 if (files.isNotEmpty()) {
                     m to files
                 } else {
-                    instance.logger.warning("No valid schematics found for $k.")
+                    logger.warning("No valid schematics found for $it.")
                     null
                 }
             } else {
-                instance.logger.warning("Invalid sapling configuration entry: $k does not map to a valid sapling.")
+                logger.warning("Invalid sapling configuration entry: $it does not map to a valid sapling.")
                 null
             }
         }?.toMap() ?: emptyMap()
@@ -54,8 +56,8 @@ class SaplingModule : ModuleInterface {
 
     private fun setupDefaultSchematics() {
         schematicsPath.mkdirs()
-        when (instance.javaClass.classLoader.getResource(schematicsFolder)) {
-            null -> instance.logger.warning("Default schematics directory not found in resources.")
+        when (instance.getResource(schematicsFolder)) {
+            null -> logger.warning("Default schematics directory not found in resources.")
             else -> copyResourcesFromJar(schematicsPath)
         }
     }
@@ -63,7 +65,7 @@ class SaplingModule : ModuleInterface {
     private fun copyResourcesFromJar(targetDir: File) {
         val jar = File(instance.javaClass.protectionDomain.codeSource.location.toURI())
         if (!jar.exists()) {
-            instance.logger.warning("Jar file does not exist: ${jar.absolutePath}")
+            logger.warning("Jar file does not exist: ${jar.absolutePath}")
             return
         }
         java.util.jar.JarFile(jar).use { jarFile ->
@@ -75,7 +77,7 @@ class SaplingModule : ModuleInterface {
                     entryTarget.parentFile.mkdirs()
                     instance.javaClass.classLoader.getResourceAsStream(entry.name)?.use { input ->
                         entryTarget.outputStream().use { output -> input.copyTo(output) }
-                    } ?: instance.logger.warning("Failed to get input stream for ${entry.name}")
+                    } ?: logger.warning("Failed to get input stream for ${entry.name}")
                 }
             }
         }
@@ -92,58 +94,66 @@ class SaplingModule : ModuleInterface {
 
             is String -> collectSchematicFiles(File(schematicsPath, v), files)
 
-            else -> instance.logger.warning("Invalid schematic value type: $v")
+            else -> logger.warning("Invalid schematic value type: $v")
         }
         return files
     }
 
     private fun collectSchematicFiles(file: File, files: MutableList<File>) {
-        if (file.isDirectory) {
-            files.addAll(file.listFiles { _, name -> name.endsWith(".schem", ignoreCase = true) } ?: emptyArray())
-        } else if (file.isFile && file.extension.equals("schem", ignoreCase = true)) {
-            files.add(file)
-        } else {
-            instance.logger.warning("Invalid file or directory: ${file.absolutePath}")
+        when {
+            file.isDirectory -> files.addAll(file.listFiles { _, name -> name.endsWith(".schem", ignoreCase = true) }
+                ?: emptyArray())
+
+            file.isFile && file.extension.equals("schem", ignoreCase = true) -> files.add(file)
+            else -> logger.warning("Invalid file or directory: ${file.absolutePath}")
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: StructureGrowEvent) {
-        val block = event.location.block
-        if (saplings.contains(block.type)) {
-            event.isCancelled = true
-            replaceWithSchematicTree(block)
+        event.location.block.takeIf { saplings.contains(it.type) }?.let {
+            event.isCancelled = replaceWithSchematicTree(it)
         }
     }
 
-    private fun replaceWithSchematicTree(block: Block) {
+    private fun replaceWithSchematicTree(block: Block): Boolean {
         val schematicFile = saplingSchematicMap[block.type]?.randomOrNull()
         if (schematicFile == null || !schematicFile.exists()) {
-            instance.logger.info("No custom schematic found for ${block.type}.")
-            return
+            logger.info("No custom schematic found for ${block.type}.")
+            return false
         }
         val format = ClipboardFormats.findByFile(schematicFile)
         if (format == null) {
-            instance.logger.warning("Unsupported schematic format for file: ${schematicFile.name}")
-            return
+            logger.warning("Unsupported schematic format for file: ${schematicFile.name}")
+            return false
         }
         Bukkit.getScheduler().runTask(instance, Runnable {
             schematicFile.inputStream().use {
                 try {
-                    Operations.complete(
-                        ClipboardHolder(
-                            format.getReader(it).read()
-                        ).createPaste(WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(block.world)))
-                            .to(BlockVector3.at(block.x, block.y, block.z))
-                            .ignoreAirBlocks(true)
-                            .build()
-                    )
+                    val clipboard = format.getReader(it).read()
+                    try {
+                        WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(block.world)).use {
+                            Operations.complete(
+                                ClipboardHolder(clipboard)
+                                    .createPaste(it)
+                                    .to(BlockVector3.at(block.x, block.y, block.z))
+                                    .ignoreAirBlocks(config.getBoolean("$cn.ignore_air_blocks"))
+                                    .ignoreStructureVoidBlocks(config.getBoolean("$cn.ignore_structure_void_blocks"))
+                                    .copyEntities(config.getBoolean("$cn.copy_entities"))
+                                    .copyBiomes(config.getBoolean("$cn.copy_biomes"))
+                                    .build()
+                            )
+                        }
+                    } catch (ex: Exception) {
+                        logger.severe("Error while pasting schematic: ${ex.message}")
+                    }
                 } catch (ex: Exception) {
-                    instance.logger.severe("Error while pasting schematic: ${ex.message}")
+                    logger.severe("Error reading schematic file: ${ex.message}")
                 }
             }
         })
+        return true
     }
 
-    override fun enabled() = instance.config.getBoolean("$cn.enable")
+    override fun enabled() = config.getBoolean("$cn.enable")
 }

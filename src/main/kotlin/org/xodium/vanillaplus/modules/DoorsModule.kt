@@ -27,7 +27,8 @@ import java.util.concurrent.ConcurrentHashMap
 class DoorsModule : ModuleInterface {
     override val cn: String = javaClass.simpleName
     private val pcn = instance.javaClass.simpleName
-    private val autoCloseDelay = instance.config.getLong("$cn.autoclose_delay") * 1000
+    private val config = instance.config
+    private val autoCloseDelay = config.getLong("$cn.autoclose_delay") * 1000
     private val autoClose = ConcurrentHashMap<Block, Long>()
 
     companion object {
@@ -110,7 +111,7 @@ class DoorsModule : ModuleInterface {
     private fun handleRightClick(event: PlayerInteractEvent, data: BlockData, block: Block) {
         val player = event.player
         if (player.hasPermission("$pcn.doubledoors") &&
-            instance.config.getBoolean("$cn.allow_doubledoors") &&
+            config.getBoolean("$cn.allow_doubledoors") &&
             (data is Door || data is Gate)
         ) processDoorOrGateInteraction(player, data, block)
         if (player.hasPermission("$pcn.autoclose")) autoClose[block] = System.currentTimeMillis() + autoCloseDelay
@@ -141,16 +142,16 @@ class DoorsModule : ModuleInterface {
     }
 
     private fun isKnockingConditionViolated(player: Player): Boolean {
-        return (instance.config.getBoolean("$cn.knocking_requires_shift") && !player.isSneaking) ||
-                (instance.config.getBoolean("$cn.knocking_requires_empty_hand") &&
+        return (config.getBoolean("$cn.knocking_requires_shift") && !player.isSneaking) ||
+                (config.getBoolean("$cn.knocking_requires_empty_hand") &&
                         player.inventory.itemInMainHand.type != Material.AIR)
     }
 
     private fun isKnockableBlock(data: BlockData): Boolean {
         return when (data) {
-            is Door -> instance.config.getBoolean("$cn.allow_knocking")
-            is TrapDoor -> instance.config.getBoolean("$cn.allow_knocking_trapdoors")
-            is Gate -> instance.config.getBoolean("$cn.allow_knocking_gates")
+            is Door -> config.getBoolean("$cn.allow_knocking")
+            is TrapDoor -> config.getBoolean("$cn.allow_knocking_trapdoors")
+            is Gate -> config.getBoolean("$cn.allow_knocking_gates")
             else -> false
         }
     }
@@ -158,17 +159,17 @@ class DoorsModule : ModuleInterface {
     private fun playKnockSound(block: Block) {
         block.world.playSound(
             block.location,
-            instance.config.getString("$cn.sound_knock_effect")
+            config.getString("$cn.sound_knock_effect")
                 ?.lowercase(Locale.getDefault())
                 ?.let { NamespacedKey.minecraft(it) }
                 ?.let(Registry.SOUNDS::get)
                 ?: Sound.ITEM_SHIELD_BLOCK,
-            instance.config.getString("$cn.sound_knock_category")
+            config.getString("$cn.sound_knock_category")
                 ?.uppercase(Locale.getDefault())
                 ?.let { Enums.getIfPresent(SoundCategory::class.java, it).orNull() }
                 ?: SoundCategory.BLOCKS,
-            instance.config.getInt("$cn.sound_knock_volume").toFloat(),
-            instance.config.getInt("$cn.sound_knock_pitch").toFloat())
+            config.getInt("$cn.sound_knock_volume").toFloat(),
+            config.getInt("$cn.sound_knock_pitch").toFloat())
     }
 
     private fun toggleOtherDoor(block: Block, block2: Block, open: Boolean) {
@@ -200,5 +201,5 @@ class DoorsModule : ModuleInterface {
         }?.let { block.getRelative(it.offsetX, 0, it.offsetZ) }
     }
 
-    override fun enabled() = instance.config.getBoolean("$cn.enable")
+    override fun enabled() = config.getBoolean("$cn.enable")
 }
