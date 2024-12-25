@@ -40,7 +40,8 @@ class SaplingModule : ModuleInterface {
 
     // TODO: refactor the schematic handling mechanism till the fun on()
     override fun init() {
-        setupDefaultSchematics()
+        Files.createDirectories(schematicsPath)
+        copyResourcesFromJar(schematicsPath)
         val saplingConfig = config.getConfigurationSection("$cn.sapling_link")
         saplingSchematicMap = saplingConfig?.getKeys(false)?.mapNotNull {
             val m = Material.matchMaterial(it)
@@ -57,14 +58,6 @@ class SaplingModule : ModuleInterface {
                 null
             }
         }?.toMap() ?: emptyMap()
-    }
-
-    private fun setupDefaultSchematics() {
-        Files.createDirectories(schematicsPath)
-        when (instance.getResource(schematicsFolder)) {
-            null -> logger.warning("Default schematics directory not found in resources.")
-            else -> copyResourcesFromJar(schematicsPath)
-        }
     }
 
     private fun copyResourcesFromJar(targetDir: Path) {
@@ -102,13 +95,13 @@ class SaplingModule : ModuleInterface {
     }
 
     private fun collectSchematicFiles(path: Path, files: MutableList<Path>) {
-        when {
-            Files.isDirectory(path) -> Files.list(path).use { stream ->
-                files.addAll(stream.filter { it.toString().endsWith(".schem", ignoreCase = true) }.toList())
+        try {
+            Files.walk(path).use { stream ->
+                stream.filter { Files.isRegularFile(it) && it.toString().endsWith(".schem", ignoreCase = true) }
+                    .forEach { files.add(it) }
             }
-
-            Files.isRegularFile(path) && path.toString().endsWith(".schem", ignoreCase = true) -> files.add(path)
-            else -> logger.warning("Invalid file or directory: ${path.toAbsolutePath()}")
+        } catch (ex: Exception) {
+            logger.warning("Error processing path ${path.toAbsolutePath()}: ${ex.message}")
         }
     }
 
