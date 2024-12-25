@@ -16,26 +16,6 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import java.io.File
 
-/**
- * The `SaplingModule` class is responsible for handling custom behavior when saplings grow into trees
- * within a Minecraft Bukkit server. It implements the `ModuleInterface` and listens for `StructureGrowEvent`
- * to replace the default tree generation process with a schematic-defined structure.
- *
- * The module links specific sapling types to schematic files stored in a predefined directory
- * and can paste these custom structures at the location of sapling growth.
- *
- * This class supports configuration and operates based on the Bukkit's plugin data folder and configuration settings.
- *
- * Primary Features:
- * - Identifies saplings and their corresponding schematics.
- * - Intercepts natural tree growth events.
- * - Cancels default growth behavior and replaces it with schematic-based generation.
- *
- * Key Concepts:
- * - **Saplings**: A set of sapling materials defined from the Minecraft Block type system.
- * - **Schematics**: Files representing custom tree structures.
- * - **Configuration**: Specifies mappings between sapling types and their schematic file lists.
- */
 class SaplingModule : ModuleInterface {
     override val cn: String = javaClass.simpleName
     private val schematicsFolder = "schematics"
@@ -101,10 +81,39 @@ class SaplingModule : ModuleInterface {
         }
     }
 
+    private fun parseSchematicFiles(v: Any): List<File> {
+        val files = mutableListOf<File>()
+        when (v) {
+            is List<*> -> v.mapNotNull {
+                it?.toString()?.let { subDir ->
+                    File(schematicsPath, subDir)
+                }
+            }.forEach { collectSchematicFiles(it, files) }
+
+            is String -> collectSchematicFiles(File(schematicsPath, v), files)
+
+            else -> instance.logger.warning("Invalid schematic value type: $v")
+        }
+        return files
+    }
+
+    private fun collectSchematicFiles(file: File, files: MutableList<File>) {
+        if (file.isDirectory) {
+            files.addAll(file.listFiles { _, name -> name.endsWith(".schem", ignoreCase = true) } ?: emptyArray())
+        } else if (file.isFile && file.extension.equals("schem", ignoreCase = true)) {
+            files.add(file)
+        } else {
+            instance.logger.warning("Invalid file or directory: ${file.absolutePath}")
+        }
+    }
+
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: StructureGrowEvent) {
-        if (saplings.contains(event.location.block.type)) event.isCancelled = true
-        replaceWithSchematicTree(event.location.block)
+        val block = event.location.block
+        if (saplings.contains(block.type)) {
+            event.isCancelled = true
+            replaceWithSchematicTree(block)
+        }
     }
 
     private fun replaceWithSchematicTree(block: Block) {
@@ -134,32 +143,6 @@ class SaplingModule : ModuleInterface {
                 }
             }
         })
-    }
-
-    private fun parseSchematicFiles(v: Any): List<File> {
-        val files = mutableListOf<File>()
-        when (v) {
-            is List<*> -> v.mapNotNull {
-                it?.toString()?.let { subDir ->
-                    File(schematicsPath, subDir)
-                }
-            }.forEach { collectSchematicFiles(it, files) }
-
-            is String -> collectSchematicFiles(File(schematicsPath, v), files)
-
-            else -> instance.logger.warning("Invalid schematic value type: $v")
-        }
-        return files
-    }
-
-    private fun collectSchematicFiles(file: File, files: MutableList<File>) {
-        if (file.isDirectory) {
-            files.addAll(file.listFiles { _, name -> name.endsWith(".schem", ignoreCase = true) } ?: emptyArray())
-        } else if (file.isFile && file.extension.equals("schem", ignoreCase = true)) {
-            files.add(file)
-        } else {
-            instance.logger.warning("Invalid file or directory: ${file.absolutePath}")
-        }
     }
 
     override fun enabled() = instance.config.getBoolean("$cn.enable")
