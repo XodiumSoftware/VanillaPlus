@@ -16,9 +16,10 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.3-R0.1-SNAPSHOT")
+    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.9")
+
     implementation("net.kyori:adventure-api:4.18.0")
     implementation(kotlin("stdlib-jdk8"))
-    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.9")
 }
 
 java { toolchain.languageVersion.set(JavaLanguageVersion.of(21)) }
