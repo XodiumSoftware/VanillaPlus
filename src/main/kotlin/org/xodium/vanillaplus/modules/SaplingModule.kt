@@ -34,6 +34,7 @@ class SaplingModule : ModuleInterface {
     )
     private lateinit var saplingSchematicMap: Map<Material, List<File>>
 
+    // TODO: refactor the schematic handling mechanism till the fun on()
     override fun init() {
         setupDefaultSchematics()
         val saplingConfig = config.getConfigurationSection("$cn.sapling_link")
@@ -109,6 +110,7 @@ class SaplingModule : ModuleInterface {
         }
     }
 
+    // TODO: add check if there is enough space for the sapling to grow.
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: StructureGrowEvent) {
         event.location.block.takeIf { saplings.contains(it.type) }?.let {
