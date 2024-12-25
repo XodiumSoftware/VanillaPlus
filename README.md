@@ -9,7 +9,7 @@
   <br />
 </h1>
 
-<h4 align="center"> Minecraft plugin that enhances the base gameplay</h4><br />
+<h4 align="center">Minecraft plugin that enhances the base gameplay</h4><br />
 
 <div align="center">
 
