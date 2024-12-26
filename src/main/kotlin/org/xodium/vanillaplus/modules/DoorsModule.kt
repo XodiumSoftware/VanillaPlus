@@ -1,7 +1,9 @@
 package org.xodium.vanillaplus.modules
 
-import com.google.common.base.Enums
-import org.bukkit.*
+import org.bukkit.Bukkit
+import org.bukkit.GameMode
+import org.bukkit.Material
+import org.bukkit.Sound
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Bisected
@@ -17,10 +19,10 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
+import org.xodium.vanillaplus.Utils
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.AdjacentBlockData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 
@@ -76,14 +78,26 @@ class DoorsModule : ModuleInterface {
     }
 
     private fun handleDoorClose(block: Block, door: Door) {
-        getOtherPart(door, block)?.let { otherDoor ->
-            toggleOtherDoor(block, otherDoor, false)
+        getOtherPart(door, block)?.let {
+            toggleOtherDoor(block, it, false)
         }
-        block.world.playSound(block.location, Sound.BLOCK_IRON_DOOR_CLOSE, 1.0f, 1.0f)
+        Utils.playSound(
+            block,
+            config.getString("$cn.sound_close_door_effect"),
+            Sound.BLOCK_IRON_DOOR_CLOSE,
+            config.getInt("$cn.sound_close_door_volume"),
+            config.getInt("$cn.sound_close_door_pitch"),
+        )
     }
 
     private fun handleGateClose(block: Block) {
-        block.world.playSound(block.location, Sound.BLOCK_FENCE_GATE_CLOSE, 1.0f, 1.0f)
+        Utils.playSound(
+            block,
+            config.getString("$cn.sound_close_gate_effect"),
+            Sound.BLOCK_FENCE_GATE_CLOSE,
+            config.getInt("$cn.sound_close_gate_volume"),
+            config.getInt("$cn.sound_close_gate_pitch"),
+        )
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -105,7 +119,15 @@ class DoorsModule : ModuleInterface {
     }
 
     private fun handleLeftClick(event: PlayerInteractEvent, data: BlockData, block: Block) {
-        if (canKnock(event, event.player) && isKnockableBlock(data)) playKnockSound(block)
+        if (canKnock(event, event.player) && isKnockableBlock(data)) {
+            Utils.playSound(
+                block,
+                config.getString("$cn.sound_knock_effect"),
+                Sound.ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR,
+                config.getInt("$cn.sound_knock_volume"),
+                config.getInt("$cn.sound_knock_pitch")
+            )
+        }
     }
 
     private fun handleRightClick(event: PlayerInteractEvent, data: BlockData, block: Block) {
@@ -156,30 +178,12 @@ class DoorsModule : ModuleInterface {
         }
     }
 
-    private fun playKnockSound(block: Block) {
-        block.world.playSound(
-            block.location,
-            config.getString("$cn.sound_knock_effect")
-                ?.lowercase(Locale.getDefault())
-                ?.let { NamespacedKey.minecraft(it) }
-                ?.let(Registry.SOUNDS::get)
-                ?: Sound.ITEM_SHIELD_BLOCK,
-            config.getString("$cn.sound_knock_category")
-                ?.uppercase(Locale.getDefault())
-                ?.let { Enums.getIfPresent(SoundCategory::class.java, it).orNull() }
-                ?: SoundCategory.BLOCKS,
-            config.getInt("$cn.sound_knock_volume").toFloat(),
-            config.getInt("$cn.sound_knock_pitch").toFloat())
-    }
-
     private fun toggleOtherDoor(block: Block, block2: Block, open: Boolean) {
         if (block.blockData !is Door || block2.blockData !is Door) return
         Bukkit.getScheduler().runTaskLater(instance, Runnable {
             val door = block.blockData as Door
             val door2 = block2.blockData as Door
-            if (door.isOpen != door2.isOpen) {
-                toggleDoor(block2, door2, open)
-            }
+            if (door.isOpen != door2.isOpen) toggleDoor(block2, door2, open)
         }, 1L)
     }
 

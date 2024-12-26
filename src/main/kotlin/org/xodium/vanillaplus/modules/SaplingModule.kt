@@ -12,20 +12,19 @@ import org.bukkit.block.Block
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.world.StructureGrowEvent
+import org.xodium.vanillaplus.Utils
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import java.net.URI
-import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.StandardCopyOption
+import java.nio.file.Paths
 
 class SaplingModule : ModuleInterface {
     override val cn: String = javaClass.simpleName
     private val config = instance.config
     private val logger = instance.logger
-    private val schematicsFolder = "schematics"
-    private val schematicsPath: Path = instance.dataFolder.toPath().resolve(schematicsFolder)
+    private val schematicsFolder = Paths.get("schematics")
+    private val schematicsPath = instance.dataFolder.toPath().resolve(schematicsFolder)
     private val saplings = setOf(
         Material.OAK_SAPLING,
         Material.BIRCH_SAPLING,
@@ -38,44 +37,30 @@ class SaplingModule : ModuleInterface {
     )
     private lateinit var saplingSchematicMap: Map<Material, List<Path>>
 
-    // TODO: refactor the schematic handling mechanism till the fun on()
     override fun init() {
-        Files.createDirectories(schematicsPath)
-        copyResourcesFromJar(schematicsPath)
+        Utils.copyResourcesFromJar(schematicsFolder, schematicsPath)
+        saplingSchematicMap = loadSaplingSchematicMap()
+    }
+
+    private fun loadSaplingSchematicMap(): Map<Material, List<Path>> {
         val saplingConfig = config.getConfigurationSection("$cn.sapling_link")
-        saplingSchematicMap = saplingConfig?.getKeys(false)?.mapNotNull {
-            val m = Material.matchMaterial(it)
-            if (m != null && saplings.contains(m)) {
-                val files = parseSchematicFiles(saplingConfig[it] ?: emptyList<String>())
-                if (files.isNotEmpty()) {
-                    m to files
-                } else {
-                    logger.warning("No valid schematics found for $it.")
-                    null
-                }
-            } else {
-                logger.warning("Invalid sapling configuration entry: $it does not map to a valid sapling.")
-                null
-            }
+        return saplingConfig?.getKeys(false)?.mapNotNull {
+            validateAndMapSapling(it, saplingConfig[it])
         }?.toMap() ?: emptyMap()
     }
 
-    private fun copyResourcesFromJar(targetDir: Path) {
-        FileSystems.newFileSystem(
-            URI.create("jar:file:${instance.javaClass.protectionDomain.codeSource.location.toURI().path}"),
-            emptyMap<String, Any>()
-        ).use { fileSystem ->
-            val schematicsPath = fileSystem.getPath(schematicsFolder)
-            Files.walk(schematicsPath).use { streamPath ->
-                streamPath.filter { path ->
-                    Files.isRegularFile(path) && path.toString().endsWith(".schem", ignoreCase = true)
-                }.forEach { path ->
-                    val targetPath = targetDir.resolve(schematicsPath.relativize(path).toString())
-                    Files.createDirectories(targetPath.parent)
-                    Files.copy(path, targetPath, StandardCopyOption.REPLACE_EXISTING)
-                }
-            }
+    private fun validateAndMapSapling(key: String, value: Any?): Pair<Material, List<Path>>? {
+        val material = Material.matchMaterial(key)
+        if (material == null || !saplings.contains(material)) {
+            logger.warning("Invalid sapling configuration entry: $key does not map to a valid sapling.")
+            return null
         }
+        val files = parseSchematicFiles(value ?: emptyList<String>())
+        if (files.isEmpty()) {
+            logger.warning("No valid schematics found for $key.")
+            return null
+        }
+        return material to files
     }
 
     private fun parseSchematicFiles(v: Any): List<Path> {

@@ -2,10 +2,17 @@
 DoorsModule:
   enable: true # Enables or disables the DoorsModule. Set to 'false' to disable.
 
-  sound_knock_category: "BLOCKS" # The sound category used for knocking.
+  sound_close_door_effect: "block_iron_door_close" # The sound effect used for closing doors.
+  sound_close_door_pitch: 1.0 # The pitch of the closing doors.
+  sound_close_door_volume: 1.0 # The volume of the closing doors.
+
+  sound_close_gate_effect: "block_fence_gate_close" # The sound effect used for closing gates.
+  sound_close_gate_pitch: 1.0 # The pitch of the closing gates.
+  sound_close_gate_volume: 1.0 # The volume of the closing gates.
+
   sound_knock_effect: "entity_zombie_attack_wooden_door" # The sound effect used for knocking.
-  sound_knock_pitch: 1.0 # The pitch of the knocking sound. Adjust between 0.5 and 2.0.
-  sound_knock_volume: 1.0 # The volume of the knocking sound. Values range from 0.0 to 1.0.
+  sound_knock_pitch: 1.0 # The pitch of the knocking.
+  sound_knock_volume: 1.0 # The volume of the knocking.
 
   allow_autoclose: true # Enables automatic closing of doors after a set delay.
   allow_doubledoors: true # Allows both sides of double doors to open/close simultaneously.
