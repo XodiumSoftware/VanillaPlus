@@ -55,7 +55,7 @@ class SaplingModule : ModuleInterface {
             logger.warning("Invalid sapling configuration entry: $key does not map to a valid sapling.")
             return null
         }
-        val files = parseSchematicFiles(value ?: emptyList<String>())
+        val files = Utils.parseFiles(value ?: emptyList<String>(), schematicsPath, ".schem")
         if (files.isEmpty()) {
             logger.warning("No valid schematics found for $key.")
             return null
@@ -63,34 +63,6 @@ class SaplingModule : ModuleInterface {
         return material to files
     }
 
-    private fun parseSchematicFiles(v: Any): List<Path> {
-        val files = mutableListOf<Path>()
-        when (v) {
-            is List<*> -> v.mapNotNull {
-                it?.toString()?.let { subDir ->
-                    schematicsPath.resolve(subDir)
-                }
-            }.forEach { collectSchematicFiles(it, files) }
-
-            is String -> collectSchematicFiles(schematicsPath.resolve(v), files)
-
-            else -> logger.warning("Invalid schematic value type: $v")
-        }
-        return files
-    }
-
-    private fun collectSchematicFiles(path: Path, files: MutableList<Path>) {
-        try {
-            Files.walk(path).use { stream ->
-                stream.filter { Files.isRegularFile(it) && it.toString().endsWith(".schem", ignoreCase = true) }
-                    .forEach { files.add(it) }
-            }
-        } catch (ex: Exception) {
-            logger.warning("Error processing path ${path.toAbsolutePath()}: ${ex.message}")
-        }
-    }
-
-    // TODO: add check if there is enough space for the sapling to grow.
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: StructureGrowEvent) {
         event.location.block.takeIf { saplings.contains(it.type) }?.let {

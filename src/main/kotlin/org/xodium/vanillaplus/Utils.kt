@@ -49,6 +49,57 @@ class Utils {
         }
 
         /**
+         * Collects all files with a specific extension from a given directory.
+         *
+         * This function searches recursively in the specified [path] directory for files
+         * that end with the given [extension] and returns a list of such files.
+         *
+         * @param path The directory path to search for files.
+         * @param extension The file extension to filter by.
+         * @return A list of paths for all files found with the specified extension.
+         */
+        fun collectFiles(path: Path, extension: String): List<Path> {
+            return try {
+                Files.walk(path).use { stream ->
+                    stream.filter { Files.isRegularFile(it) && it.toString().endsWith(extension, ignoreCase = true) }
+                        .toList()
+                }
+            } catch (ex: Exception) {
+                logger.warning("Error processing path ${path.toAbsolutePath()}: ${ex.message}")
+                emptyList()
+            }
+        }
+
+        /**
+         * Parses the input to identify directories or files to be collected based on the specified extension.
+         *
+         * This function handles different types of input (List or String) to determine the paths to search for files.
+         * It collects files from each resolved path that match the given [extension].
+         *
+         * @param input The input specifying directories or files. Can be a List of directories or a single directory path as a String.
+         * @param basePath The base path to resolve relative paths from the input.
+         * @param extension The file extension to filter by.
+         * @return A list of paths for all files found with the specified extension.
+         */
+        fun parseFiles(input: Any, basePath: Path, extension: String): List<Path> {
+            return try {
+                when (input) {
+                    is List<*> -> input.mapNotNull { it?.toString() }
+                        .flatMap { collectFiles(basePath.resolve(it), extension) }
+
+                    is String -> collectFiles(basePath.resolve(input), extension)
+                    else -> {
+                        logger.warning("Invalid value type: $input")
+                        emptyList()
+                    }
+                }
+            } catch (ex: Exception) {
+                logger.warning("Error parsing files from input $input: ${ex.message}")
+                emptyList()
+            }
+        }
+
+        /**
          * Plays a sound at the location of the specified block.
          *
          * @param block The block at whose location the sound will be played.
