@@ -38,20 +38,20 @@ SaplingModule:
   # You can define a file, multiple files or a folder.
   sapling_link:
     ACACIA_SAPLING:
-      - "acacia_trees"
+      - "trees/acacia"
     BIRCH_SAPLING:
-      - "birch_trees"
+      - "trees/birch"
     CHERRY_SAPLING:
-      - "cherry_trees"
+      - "trees/cherry"
     DARK_OAK_SAPLING:
-      - "dark_oak_trees"
+      - "trees/dark_oak"
     JUNGLE_SAPLING:
-      - "jungle_trees"
+      - "trees/jungle"
     MANGROVE_PROPAGULE:
-      - "mangrove_trees"
+      - "trees/mangrove"
     OAK_SAPLING:
-      - "oak_trees"
+      - "trees/oak"
     SPRUCE_SAPLING:
-      - "spruce_trees"
+      - "trees/spruce"
 
 version: 1.0 # The version of the configuration file.
