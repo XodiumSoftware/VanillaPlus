@@ -2,6 +2,7 @@ package org.xodium.vanillaplus
 
 import org.bukkit.plugin.java.JavaPlugin
 import org.xodium.vanillaplus.commands.ReloadCommand
+import org.xodium.vanillaplus.managers.ModuleManager
 
 
 /**
