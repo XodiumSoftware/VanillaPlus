@@ -43,10 +43,12 @@ class SaplingModule : ModuleInterface {
     }
 
     private fun loadSaplingSchematicMap(): Map<Material, List<Path>> {
-        val saplingConfig = config.getConfigurationSection("$cn.sapling_link")
-        return saplingConfig?.getKeys(false)?.mapNotNull {
-            validateAndMapSapling(it, saplingConfig[it])
-        }?.toMap() ?: emptyMap()
+        return config.getConfigurationSection("$cn.sapling_link")
+            ?.let { saplingConfig ->
+                saplingConfig.getKeys(false)
+                    .mapNotNull { validateAndMapSapling(it, saplingConfig[it]) }
+                    .toMap()
+            } ?: emptyMap()
     }
 
     private fun validateAndMapSapling(key: String, value: Any?): Pair<Material, List<Path>>? {
