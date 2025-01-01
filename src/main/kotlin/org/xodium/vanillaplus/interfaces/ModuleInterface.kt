@@ -14,6 +14,7 @@ interface ModuleInterface : Listener {
      * The unique name or identifier for the module.
      */
     val cn: String
+        get() = javaClass.simpleName
 
     /**
      * Initializes the functionality of the implementing module.

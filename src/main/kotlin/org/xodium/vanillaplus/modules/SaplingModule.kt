@@ -22,23 +22,25 @@ import java.nio.file.Path
 import java.nio.file.Paths
 
 class SaplingModule : ModuleInterface {
-    override val cn: String = javaClass.simpleName
-    private val schematicsFolder = Paths.get("schematics")
-    private val schematicsPath = instance.dataFolder.toPath().resolve(schematicsFolder)
-    private val saplings = setOf(
-        Material.OAK_SAPLING,
-        Material.BIRCH_SAPLING,
-        Material.CHERRY_SAPLING,
-        Material.SPRUCE_SAPLING,
-        Material.JUNGLE_SAPLING,
-        Material.ACACIA_SAPLING,
-        Material.DARK_OAK_SAPLING,
-        Material.MANGROVE_PROPAGULE
-    )
+    private val schematicsPath = instance.dataFolder.toPath().resolve(SCHEMATICS_FOLDER)
     private lateinit var saplingSchematicMap: Map<Material, List<Path>>
 
+    companion object {
+        private val SCHEMATICS_FOLDER = Paths.get("schematics")
+        private val SAPLINGS = setOf(
+            Material.OAK_SAPLING,
+            Material.BIRCH_SAPLING,
+            Material.CHERRY_SAPLING,
+            Material.SPRUCE_SAPLING,
+            Material.JUNGLE_SAPLING,
+            Material.ACACIA_SAPLING,
+            Material.DARK_OAK_SAPLING,
+            Material.MANGROVE_PROPAGULE
+        )
+    }
+
     override fun init() {
-        Utils.copyResourcesFromJar(schematicsFolder, schematicsPath)
+        Utils.copyResourcesFromJar(SCHEMATICS_FOLDER, schematicsPath)
         saplingSchematicMap = loadSaplingSchematicMap()
     }
 
@@ -53,7 +55,7 @@ class SaplingModule : ModuleInterface {
 
     private fun validateAndMapSapling(key: String, value: Any?): Pair<Material, List<Path>>? {
         val material = Material.matchMaterial(key)
-        if (material == null || !saplings.contains(material)) {
+        if (material == null || !SAPLINGS.contains(material)) {
             logger.warning("Invalid sapling configuration entry: $key does not map to a valid sapling.")
             return null
         }
@@ -67,7 +69,7 @@ class SaplingModule : ModuleInterface {
 
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: StructureGrowEvent) {
-        event.location.block.takeIf { saplings.contains(it.type) }?.let {
+        event.location.block.takeIf { SAPLINGS.contains(it.type) }?.let {
             event.isCancelled = replaceWithSchematicTree(it)
         }
     }
