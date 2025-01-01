@@ -13,7 +13,9 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.world.StructureGrowEvent
 import org.xodium.vanillaplus.Utils
+import org.xodium.vanillaplus.VanillaPlus.Companion.config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.VanillaPlus.Companion.logger
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import java.nio.file.Files
 import java.nio.file.Path
@@ -21,8 +23,6 @@ import java.nio.file.Paths
 
 class SaplingModule : ModuleInterface {
     override val cn: String = javaClass.simpleName
-    private val config = instance.config
-    private val logger = instance.logger
     private val schematicsFolder = Paths.get("schematics")
     private val schematicsPath = instance.dataFolder.toPath().resolve(schematicsFolder)
     private val saplings = setOf(
@@ -88,18 +88,19 @@ class SaplingModule : ModuleInterface {
                 try {
                     val clipboard = format.getReader(it).read()
                     try {
-                        WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(block.world)).use { editSession ->
-                            Operations.complete(
-                                ClipboardHolder(clipboard)
-                                    .createPaste(editSession)
-                                    .to(BlockVector3.at(block.x, block.y, block.z))
-                                    .ignoreAirBlocks(config.getBoolean("$cn.ignore_air_blocks"))
-                                    .ignoreStructureVoidBlocks(config.getBoolean("$cn.ignore_structure_void_blocks"))
-                                    .copyEntities(config.getBoolean("$cn.copy_entities"))
-                                    .copyBiomes(config.getBoolean("$cn.copy_biomes"))
-                                    .build()
-                            )
-                        }
+                        WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(block.world))
+                            .use { editSession ->
+                                Operations.complete(
+                                    ClipboardHolder(clipboard)
+                                        .createPaste(editSession)
+                                        .to(BlockVector3.at(block.x, block.y, block.z))
+                                        .ignoreAirBlocks(config.getBoolean("$cn.ignore_air_blocks"))
+                                        .ignoreStructureVoidBlocks(config.getBoolean("$cn.ignore_structure_void_blocks"))
+                                        .copyEntities(config.getBoolean("$cn.copy_entities"))
+                                        .copyBiomes(config.getBoolean("$cn.copy_biomes"))
+                                        .build()
+                                )
+                            }
                     } catch (ex: Exception) {
                         logger.severe("Error while pasting schematic: ${ex.message}")
                     }

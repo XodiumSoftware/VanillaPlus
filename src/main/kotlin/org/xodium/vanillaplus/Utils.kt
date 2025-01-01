@@ -1,10 +1,12 @@
 package org.xodium.vanillaplus
 
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.NamespacedKey
 import org.bukkit.Registry
 import org.bukkit.Sound
 import org.bukkit.block.Block
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.VanillaPlus.Companion.logger
 import java.net.URI
 import java.nio.file.FileSystems
 import java.nio.file.Files
@@ -17,8 +19,8 @@ import java.util.*
  */
 class Utils {
     companion object {
-        val logger = instance.logger
-
+        val MM = MiniMessage.miniMessage()
+        
         /**
          * Copies all files from a directory inside the plugin JAR to a target directory in the filesystem.
          *

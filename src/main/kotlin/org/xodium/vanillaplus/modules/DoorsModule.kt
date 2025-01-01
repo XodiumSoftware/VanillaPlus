@@ -20,7 +20,9 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.xodium.vanillaplus.Utils
+import org.xodium.vanillaplus.VanillaPlus.Companion.config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.VanillaPlus.Companion.pcn
 import org.xodium.vanillaplus.data.AdjacentBlockData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import java.util.concurrent.ConcurrentHashMap
@@ -28,8 +30,6 @@ import java.util.concurrent.ConcurrentHashMap
 
 class DoorsModule : ModuleInterface {
     override val cn: String = javaClass.simpleName
-    private val pcn = instance.javaClass.simpleName
-    private val config = instance.config
     private val autoCloseDelay = config.getLong("$cn.autoclose_delay") * 1000
     private val autoClose = ConcurrentHashMap<Block, Long>()
 
