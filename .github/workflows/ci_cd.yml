@@ -3,7 +3,7 @@ run-name: "Xodium CI/CD"
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
     paths:
       - "src/**"
   workflow_dispatch:
@@ -56,7 +56,7 @@ jobs:
           path: build/libs/VanillaPlus-*.jar
 
   release:
-    needs: [build]
+    needs: [ build ]
     runs-on: ubuntu-latest
     environment:
       name: ${{ github.ref_name }}
@@ -70,7 +70,7 @@ jobs:
 
       - id: release_artifact
         name: Release Artifact
-        uses: softprops/action-gh-release@master
+        uses: softprops/action-gh-release@v2.1.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
