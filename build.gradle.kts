@@ -16,31 +16,22 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.3-R0.1-SNAPSHOT")
-    implementation("net.kyori:adventure-api:4.17.0")
+    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.9")
+
+    implementation("net.kyori:adventure-api:4.18.0")
     implementation(kotlin("stdlib-jdk8"))
-    implementation(platform("com.intellectualsites.bom:bom-newest:1.51"))
-    compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core")
-    compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit") { isTransitive = false }
 }
 
-java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
-}
+java { toolchain.languageVersion.set(JavaLanguageVersion.of(21)) }
 
 tasks {
     shadowJar {
         archiveClassifier.set("")
         relocate("kotlin", "org.xodium.vanillaplus.kotlin")
+        destinationDirectory.set(file(".server/plugins"))
+        minimize()
     }
-    jar {
-        enabled = false
-    }
-    withType<JavaCompile> {
-        options.encoding = "UTF-8"
-    }
-    register("printVersion") {
-        doLast {
-            println(project.version)
-        }
-    }
+    jar { enabled = false }
+    withType<JavaCompile> { options.encoding = "UTF-8" }
+    register("printVersion") { doLast { println(project.version) } }
 }
