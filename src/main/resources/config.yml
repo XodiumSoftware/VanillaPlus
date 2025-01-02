@@ -53,5 +53,3 @@ SaplingModule:
       - "trees/oak"
     SPRUCE_SAPLING:
       - "trees/spruce"
-
-version: 1.0 # The version of the configuration file.

@@ -29,14 +29,9 @@ object ReloadCommand {
     private val pcn: String = instance.javaClass.simpleName
 
     private object MSG {
-        const val PREFIX = "<gold>[<dark_aqua>VanillaPlus<gold>] <reset>"
-        val PERM_ERR = Utils.MM.deserialize(
-            VanillaPlus.PREFIX
-                    + "<red>You do not have permission to use this command!"
-        )
-        val RELOAD_SUCC_MSG = Utils.MM
-            .deserialize("$PREFIX<green>Configuration reloaded successfully.")
-        const val RELOAD_SUCC_LOG_MSG = "Configuration reloaded successfully."
+        val PERM_ERR = Utils.MM.deserialize("${VanillaPlus.PREFIX}<red>You do not have permission to use this command!")
+        val RELOAD_SUCC = Utils.MM.deserialize("${VanillaPlus.PREFIX}<green>Configuration reloaded successfully.")
+        const val RELOAD_SUCC_LOG = "Configuration reloaded successfully."
     }
 
     init {
@@ -50,8 +45,8 @@ object ReloadCommand {
                             return@Command 0
                         }
                         instance.reloadConfig()
-                        cs.sendMessage(MSG.RELOAD_SUCC_MSG)
-                        instance.logger.info(MSG.RELOAD_SUCC_LOG_MSG)
+                        cs.sendMessage(MSG.RELOAD_SUCC)
+                        instance.logger.info(MSG.RELOAD_SUCC_LOG)
                         Command.SINGLE_SUCCESS
                     })
                     .build(),
