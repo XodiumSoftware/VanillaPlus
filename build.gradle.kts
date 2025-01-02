@@ -25,7 +25,16 @@ dependencies {
 java { toolchain.languageVersion.set(JavaLanguageVersion.of(21)) }
 
 tasks {
+    processResources {
+        filesMatching("paper-plugin.yml") {
+            expand(
+                "version" to project.version,
+                "description" to project.description,
+            )
+        }
+    }
     shadowJar {
+        dependsOn(processResources)
         archiveClassifier.set("")
         relocate("kotlin", "org.xodium.vanillaplus.kotlin")
         destinationDirectory.set(file(".server/plugins"))

@@ -1,7 +1,6 @@
 package org.xodium.vanillaplus.managers
 
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.VanillaPlus.Companion.logger
 import org.xodium.vanillaplus.modules.DoorsModule
 import org.xodium.vanillaplus.modules.SaplingModule
 
@@ -23,7 +22,7 @@ object ModuleManager {
                 val t = System.currentTimeMillis()
                 it.init()
                 instance.server.pluginManager.registerEvents(it, instance)
-                logger.info("Loaded: ${it.javaClass.simpleName} | Took ${System.currentTimeMillis() - t}ms")
+                instance.logger.info("Loaded: ${it.javaClass.simpleName} | Took ${System.currentTimeMillis() - t}ms")
             }
     }
 }

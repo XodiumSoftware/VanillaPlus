@@ -6,7 +6,6 @@ import org.bukkit.Registry
 import org.bukkit.Sound
 import org.bukkit.block.Block
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.VanillaPlus.Companion.logger
 import java.net.URI
 import java.nio.file.FileSystems
 import java.nio.file.Files
@@ -18,6 +17,7 @@ import java.util.*
  * Provides utility functions for directory creation and file copying within the plugin.
  */
 object Utils {
+    private val logger = instance.logger
     val MM = MiniMessage.miniMessage()
 
     /**

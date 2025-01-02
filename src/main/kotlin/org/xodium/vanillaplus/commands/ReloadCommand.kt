@@ -11,7 +11,6 @@ import org.bukkit.entity.Player
 import org.xodium.vanillaplus.Utils
 import org.xodium.vanillaplus.VanillaPlus
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.VanillaPlus.Companion.pcn
 
 
 /**
@@ -27,6 +26,8 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.pcn
  * - Requires the `<class_name_placeholder>.reload` permission to execute the reload command.
  */
 object ReloadCommand {
+    private val pcn: String = instance.javaClass.simpleName
+
     private object MSG {
         const val PREFIX = "<gold>[<dark_aqua>VanillaPlus<gold>] <reset>"
         val PERM_ERR = Utils.MM.deserialize(

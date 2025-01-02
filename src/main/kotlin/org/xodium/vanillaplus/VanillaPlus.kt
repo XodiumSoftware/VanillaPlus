@@ -42,9 +42,6 @@ class VanillaPlus : JavaPlugin() {
 
         @JvmStatic
         val instance by lazy { getPlugin(VanillaPlus::class.java) }
-        val config = instance.config
-        val logger = instance.logger
-        val pcn: String = instance.javaClass.simpleName
     }
 
     override fun onEnable() {

@@ -13,15 +13,15 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.world.StructureGrowEvent
 import org.xodium.vanillaplus.Utils
-import org.xodium.vanillaplus.VanillaPlus.Companion.config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.VanillaPlus.Companion.logger
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 
 class SaplingModule : ModuleInterface {
+    private val config = instance.config
+    private val logger = instance.logger
     private val schematicsPath = instance.dataFolder.toPath().resolve(SCHEMATICS_FOLDER)
     private lateinit var saplingSchematicMap: Map<Material, List<Path>>
 
