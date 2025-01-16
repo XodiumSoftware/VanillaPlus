@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2025. Xodium.
+ * All rights reserved.
+ */
+
 plugins {
     id("java")
     kotlin("jvm") version "2.1.0"

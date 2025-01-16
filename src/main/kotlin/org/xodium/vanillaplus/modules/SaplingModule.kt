@@ -13,7 +13,6 @@ import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.session.ClipboardHolder
 import org.bukkit.Bukkit
 import org.bukkit.Material
-import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -92,26 +91,17 @@ class SaplingModule : ModuleInterface {
             logger.warning("Unsupported schematic format for file: ${schematicFile.fileName}")
             return false
         }
+        block.type = Material.AIR
         Bukkit.getScheduler().runTask(instance, Runnable {
-            Files.newInputStream(schematicFile).use {
+            Files.newInputStream(schematicFile).use { inputStream ->
                 try {
-                    val clipboard = format.getReader(it).read()
-                    if (!canPlaceTree(
-                            block.world,
-                            block.x,
-                            block.y,
-                            block.z,
-                            clipboard.dimensions.x(),
-                            clipboard.dimensions.y(),
-                            clipboard.dimensions.z()
-                        )
-                    ) return@Runnable
+                    val clipboard = format.getReader(inputStream).read()
                     try {
                         WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(block.world))
-                            .use {
+                            .use { editSession ->
                                 Operations.complete(
                                     ClipboardHolder(clipboard)
-                                        .createPaste(it)
+                                        .createPaste(editSession)
                                         .to(BlockVector3.at(block.x, block.y, block.z))
                                         .ignoreAirBlocks(config.getBoolean("$cn.ignore_air_blocks"))
                                         .ignoreStructureVoidBlocks(config.getBoolean("$cn.ignore_structure_void_blocks"))
@@ -129,27 +119,6 @@ class SaplingModule : ModuleInterface {
             }
         })
         return true
-    }
-
-    private fun canPlaceTree(
-        world: World,
-        startX: Int,
-        startY: Int,
-        startZ: Int,
-        schematicX: Int,
-        schematicY: Int,
-        schematicZ: Int
-    ): Boolean {
-        if (startY < 0 || (startY + schematicY) > world.maxHeight) return false
-        return sequence {
-            for (xOffset in 0 until schematicX) {
-                for (yOffset in 0 until schematicY) {
-                    for (zOffset in 0 until schematicZ) {
-                        yield(world.getBlockAt(startX + xOffset, startY + yOffset, startZ + zOffset))
-                    }
-                }
-            }
-        }.all { it.isReplaceable }
     }
 
     override fun enabled(): Boolean = config.getBoolean("$cn.enable")
