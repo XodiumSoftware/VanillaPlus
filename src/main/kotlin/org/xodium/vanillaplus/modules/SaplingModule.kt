@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2025. Xodium.
+ * All rights reserved.
+ */
+
 package org.xodium.vanillaplus.modules
 
 import com.sk89q.worldedit.WorldEdit
@@ -147,5 +152,5 @@ class SaplingModule : ModuleInterface {
         }.all { it.isReplaceable }
     }
 
-    override fun enabled() = config.getBoolean("$cn.enable")
+    override fun enabled(): Boolean = config.getBoolean("$cn.enable")
 }

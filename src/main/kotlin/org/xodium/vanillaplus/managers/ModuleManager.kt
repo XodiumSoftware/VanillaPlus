@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2025. Xodium.
+ * All rights reserved.
+ */
+
 package org.xodium.vanillaplus.managers
 
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance

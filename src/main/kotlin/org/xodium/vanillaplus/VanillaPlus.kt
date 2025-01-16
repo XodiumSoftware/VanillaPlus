@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2025. Xodium.
+ * All rights reserved.
+ */
+
 package org.xodium.vanillaplus
 
 import org.bukkit.plugin.java.JavaPlugin
@@ -39,10 +44,10 @@ class VanillaPlus : JavaPlugin() {
         private val UNSUPPORTED_VERSION_MSG =
             "This plugin requires a supported server version. Supported versions: ${SUPPORTED_VERSIONS.joinToString(", ")}."
 
-        const val PREFIX = "<gold>[<dark_aqua>VanillaPlus<gold>] <reset>"
+        const val PREFIX: String = "<gold>[<dark_aqua>VanillaPlus<gold>] <reset>"
 
         @JvmStatic
-        val instance by lazy { getPlugin(VanillaPlus::class.java) }
+        val instance: VanillaPlus by lazy { getPlugin(VanillaPlus::class.java) }
     }
 
     override fun onEnable() {

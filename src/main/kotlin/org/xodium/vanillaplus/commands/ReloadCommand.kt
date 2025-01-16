@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2025. Xodium.
+ * All rights reserved.
+ */
+
 @file:Suppress("UnstableApiUsage")
 
 package org.xodium.vanillaplus.commands

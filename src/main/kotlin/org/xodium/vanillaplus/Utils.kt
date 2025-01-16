@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2025. Xodium.
+ * All rights reserved.
+ */
+
 package org.xodium.vanillaplus
 
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -19,7 +24,7 @@ import java.util.*
  */
 object Utils {
     private val logger = instance.logger
-    val MM = MiniMessage.miniMessage()
+    val MM: MiniMessage = MiniMessage.miniMessage()
 
     /**
      * Copies all files from a directory inside the plugin JAR to a target directory in the filesystem.

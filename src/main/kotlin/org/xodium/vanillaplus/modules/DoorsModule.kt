@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2025. Xodium.
+ * All rights reserved.
+ */
+
 package org.xodium.vanillaplus.modules
 
 import org.bukkit.Bukkit
@@ -204,5 +209,5 @@ class DoorsModule : ModuleInterface {
         }?.let { block.getRelative(it.offsetX, 0, it.offsetZ) }
     }
 
-    override fun enabled() = config.getBoolean("$cn.enable")
+    override fun enabled(): Boolean = config.getBoolean("$cn.enable")
 }
