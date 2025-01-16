@@ -38,7 +38,7 @@ class DoorsModule : ModuleInterface {
     private val autoClose = ConcurrentHashMap<Block, Long>()
 
     companion object {
-        private val POSSIBLE_NEIGHBOURS = arrayOf<AdjacentBlockData?>(
+        private val POSSIBLE_NEIGHBOURS = listOf(
             AdjacentBlockData(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
             AdjacentBlockData(0, 1, Door.Hinge.LEFT, BlockFace.EAST),
 
@@ -60,18 +60,18 @@ class DoorsModule : ModuleInterface {
 
     override fun init() {
         Bukkit.getScheduler().runTaskTimer(instance, Runnable {
-            autoClose.forEach { (block, t) ->
-                if (System.currentTimeMillis() >= t) {
+            autoClose.entries.removeIf { (block, time) ->
+                if (System.currentTimeMillis() >= time) {
                     handleAutoClose(block)
-                    autoClose.remove(block)
-                }
+                    true
+                } else false
             }
         }, 1L, 1L)
     }
 
     private fun handleAutoClose(block: Block) {
-        val data = block.blockData
-        if (data !is Openable || !data.isOpen) return
+        val data = block.blockData as? Openable ?: return
+        if (!data.isOpen) return
         when (data) {
             is Door -> handleDoorClose(block, data)
             is Gate -> handleGateClose(block)
@@ -199,7 +199,7 @@ class DoorsModule : ModuleInterface {
     private fun getOtherPart(door: Door?, block: Block): Block? {
         if (door == null) return null
         return POSSIBLE_NEIGHBOURS.firstOrNull { neighbour ->
-            val relative = block.getRelative(neighbour!!.offsetX, 0, neighbour.offsetZ)
+            val relative = block.getRelative(neighbour.offsetX, 0, neighbour.offsetZ)
             (relative.blockData as? Door)?.takeIf {
                 it.facing == door.facing &&
                         it.hinge != door.hinge &&
