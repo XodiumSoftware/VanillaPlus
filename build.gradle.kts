@@ -20,8 +20,9 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21.3-R0.1-SNAPSHOT")
-    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.9")
+    compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
+    // TODO: use stable build when available.
+    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.4.0-20250109.111726-21")
 
     implementation("net.kyori:adventure-api:4.18.0")
     implementation(kotlin("stdlib-jdk8"))
