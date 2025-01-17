@@ -1,9 +1,9 @@
-name: VanillaPlus
+name: ${name}
 version: ${version}
 main: org.xodium.vanillaplus.VanillaPlus
 description: ${description}
-api-version: 1.21.3
-authors: [ XodiumSoftware ]
+api-version: ${apiVersion}
+authors: ${authors}
 dependencies:
   server:
     WorldEdit:

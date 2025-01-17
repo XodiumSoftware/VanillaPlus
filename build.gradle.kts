@@ -12,6 +12,9 @@ plugins {
 group = "org.xodium.vanillaplus"
 version = "1.0.0"
 description = "Minecraft plugin that enhances the base gameplay."
+var pluginName: String = "VanillaPlus"
+var apiVersion: String = "1.21.4"
+var authors: List<String> = listOf("XodiumSoftware")
 
 repositories {
     mavenCentral()
@@ -36,6 +39,9 @@ tasks {
             expand(
                 "version" to project.version,
                 "description" to project.description,
+                "name" to pluginName,
+                "apiVersion" to apiVersion,
+                "authors" to authors.joinToString(", ")
             )
         }
     }
