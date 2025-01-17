@@ -9,7 +9,7 @@ import org.bukkit.configuration.file.YamlConfiguration
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import java.io.InputStreamReader
 
-// TODO: fix, doesnt insert key.
+// FIX: doesnt insert key.
 object ConfigManager {
     init {
         val config = instance.config
