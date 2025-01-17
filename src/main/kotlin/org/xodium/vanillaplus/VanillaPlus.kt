@@ -37,7 +37,7 @@ import org.xodium.vanillaplus.managers.ModuleManager
  */
 class VanillaPlus : JavaPlugin() {
     companion object {
-        private val SUPPORTED_VERSIONS = listOf("1.21.3")
+        private val SUPPORTED_VERSIONS = listOf("1.21.4")
         private val SUPPORTED_PLATFORMS = listOf("Paper")
         private val UNSUPPORTED_PLATFORM_MSG =
             "This plugin requires a supported server platform. Supported platforms: ${SUPPORTED_PLATFORMS.joinToString(", ")}."
