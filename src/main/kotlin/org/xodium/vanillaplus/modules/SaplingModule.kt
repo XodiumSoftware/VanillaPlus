@@ -8,9 +8,11 @@ package org.xodium.vanillaplus.modules
 import com.sk89q.worldedit.WorldEdit
 import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats
+import com.sk89q.worldedit.function.mask.BlockTypeMask
 import com.sk89q.worldedit.function.operation.Operations
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.session.ClipboardHolder
+import com.sk89q.worldedit.world.block.BlockTypes
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.Block
@@ -43,6 +45,68 @@ class SaplingModule : ModuleInterface {
             Material.OAK_SAPLING,
 //            Material.PALE_OAK_SAPLING, // TODO: Add Pale Oak sapling in 1.21.4
             Material.SPRUCE_SAPLING,
+        )
+        private val OVERRIDEABLE_BLOCKS = setOf(
+            // General
+            BlockTypes.AIR,
+            // Greenery
+            BlockTypes.SHORT_GRASS,
+            BlockTypes.TALL_GRASS,
+            BlockTypes.SHORT_GRASS,
+            BlockTypes.FERN,
+            BlockTypes.LARGE_FERN,
+            BlockTypes.DEAD_BUSH,
+            BlockTypes.VINE,
+            BlockTypes.SEAGRASS,
+            BlockTypes.TALL_SEAGRASS,
+            BlockTypes.SUGAR_CANE,
+            BlockTypes.KELP,
+            BlockTypes.KELP_PLANT,
+            BlockTypes.CAVE_VINES,
+            BlockTypes.CAVE_VINES_PLANT,
+            BlockTypes.WEEPING_VINES,
+            BlockTypes.WEEPING_VINES_PLANT,
+            BlockTypes.TWISTING_VINES,
+            BlockTypes.TWISTING_VINES_PLANT,
+            BlockTypes.FLOWERING_AZALEA_LEAVES,
+            BlockTypes.AZALEA_LEAVES,
+            BlockTypes.AZALEA,
+            BlockTypes.FLOWERING_AZALEA,
+            BlockTypes.SNOW,
+            BlockTypes.MOSS_CARPET,
+            BlockTypes.MOSS_BLOCK,
+            // Small Flowers
+            BlockTypes.ALLIUM,
+            BlockTypes.AZURE_BLUET,
+            BlockTypes.BLUE_ORCHID,
+            BlockTypes.CORNFLOWER,
+            BlockTypes.DANDELION,
+//            BlockTypes.CLOSED_EYEBLOSSOM, // TODO: Add in 1.21.4
+//            BlockTypes.OPEN_EYEBLOSSOM, // TODO: Add in 1.21.4
+            BlockTypes.LILY_OF_THE_VALLEY,
+            BlockTypes.OXEYE_DAISY,
+            BlockTypes.POPPY,
+            BlockTypes.TORCHFLOWER,
+            BlockTypes.ORANGE_TULIP,
+            BlockTypes.PINK_TULIP,
+            BlockTypes.RED_TULIP,
+            BlockTypes.WHITE_TULIP,
+            BlockTypes.WITHER_ROSE,
+            // Tall Flowers
+            BlockTypes.LILAC,
+            BlockTypes.PEONY,
+            BlockTypes.PITCHER_PLANT,
+            BlockTypes.ROSE_BUSH,
+            BlockTypes.SUNFLOWER,
+            // Other Flowers
+            BlockTypes.CHERRY_LEAVES,
+            BlockTypes.CHORUS_FLOWER,
+            BlockTypes.FLOWERING_AZALEA,
+            BlockTypes.FLOWERING_AZALEA_LEAVES,
+            BlockTypes.MANGROVE_PROPAGULE,
+            BlockTypes.PINK_PETALS,
+//            BlockTypes.WILDFLOWERS, // TODO: Add in 1.21.5
+            BlockTypes.SPORE_BLOSSOM,
         )
     }
 
@@ -93,7 +157,6 @@ class SaplingModule : ModuleInterface {
             logger.warning("Unsupported schematic format for file: ${schematicFile.fileName}")
             return false
         }
-        block.type = Material.AIR
         Bukkit.getScheduler().runTask(instance, Runnable {
             Files.newInputStream(schematicFile).use { inputStream ->
                 try {
@@ -101,6 +164,8 @@ class SaplingModule : ModuleInterface {
                     try {
                         WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(block.world))
                             .use { editSession ->
+                                block.type = Material.AIR
+                                editSession.mask = BlockTypeMask(editSession, OVERRIDEABLE_BLOCKS)
                                 Operations.complete(
                                     ClipboardHolder(clipboard)
                                         .createPaste(editSession)
