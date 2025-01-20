@@ -81,6 +81,7 @@ class SaplingModule : ModuleInterface {
         }
     }
 
+    //    TODO: add mask to not delete structures.
     private fun replaceWithSchematicTree(block: Block): Boolean {
         val schematicFile = saplingSchematicMap[block.type]?.randomOrNull()
         if (schematicFile == null || !Files.exists(schematicFile)) {
