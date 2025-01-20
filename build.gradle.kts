@@ -22,9 +22,9 @@ repositories {
     maven { url = uri("https://repo.papermc.io/repository/maven-public/") }
     maven { url = uri("https://maven.enginehub.org/repo/") }
 }
-
+// TODO: shadowclone worldedit.
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21.3-R0.1-SNAPSHOT")
     // TODO: use stable build when available.
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.4.0-20250109.111726-21")
 

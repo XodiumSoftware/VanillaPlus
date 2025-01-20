@@ -24,7 +24,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 
-// TODO: add check if player is in the way of the tree.
+
 class SaplingModule : ModuleInterface {
     private val config = instance.config
     private val logger = instance.logger
@@ -34,14 +34,15 @@ class SaplingModule : ModuleInterface {
     companion object {
         private val SCHEMATICS_FOLDER = Paths.get("schematics")
         private val SAPLINGS = setOf(
-            Material.OAK_SAPLING,
+            Material.ACACIA_SAPLING,
             Material.BIRCH_SAPLING,
             Material.CHERRY_SAPLING,
-            Material.SPRUCE_SAPLING,
-            Material.JUNGLE_SAPLING,
-            Material.ACACIA_SAPLING,
             Material.DARK_OAK_SAPLING,
-            Material.MANGROVE_PROPAGULE
+            Material.JUNGLE_SAPLING,
+            Material.MANGROVE_PROPAGULE,
+            Material.OAK_SAPLING,
+//            Material.PALE_OAK_SAPLING, // TODO: Add Pale Oak sapling in 1.21.4
+            Material.SPRUCE_SAPLING,
         )
     }
 

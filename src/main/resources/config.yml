@@ -51,5 +51,7 @@ SaplingModule:
       - "trees/mangrove"
     OAK_SAPLING:
       - "trees/oak"
+    #    PALE_OAK_SAPLING: # TODO: Add pale oak tree for 1.21.4
+    #      - "trees/pale_oak"
     SPRUCE_SAPLING:
       - "trees/spruce"
