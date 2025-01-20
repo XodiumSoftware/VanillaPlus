@@ -12,6 +12,7 @@ plugins {
 group = "org.xodium.vanillaplus"
 version = "1.0.0"
 description = "Minecraft plugin that enhances the base gameplay."
+
 var pluginName: String = "VanillaPlus"
 var apiVersion: String = "1.21.4"
 var authors: List<String> = listOf("XodiumSoftware")
@@ -37,11 +38,13 @@ tasks {
     processResources {
         filesMatching("paper-plugin.yml") {
             expand(
-                "version" to project.version,
-                "description" to project.description,
-                "name" to pluginName,
-                "apiVersion" to apiVersion,
-                "authors" to authors.joinToString(", ")
+                mapOf(
+                    "version" to version,
+                    "description" to description,
+                    "name" to pluginName,
+                    "apiVersion" to apiVersion,
+                    "authors" to authors.joinToString(", ")
+                )
             )
         }
     }
@@ -54,5 +57,5 @@ tasks {
     }
     jar { enabled = false }
     withType<JavaCompile> { options.encoding = "UTF-8" }
-    register("printVersion") { doLast { println(project.version) } }
+    register("printVersion") { doLast { println(version) } }
 }
