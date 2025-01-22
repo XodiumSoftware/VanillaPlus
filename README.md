@@ -23,6 +23,7 @@
 - [Code of Conduct][code_of_conduct_url]
 - [Contributing][contributing_url]
 - [License][license_url]
+- [Security][security_url]
 
 <div align="center"><h3>Built With</h3>
 
@@ -31,12 +32,13 @@
 
 [built_with_shield_url]: https://skillicons.dev/icons?i=kotlin,gradle,github,githubactions
 [built_with_url]: https://skillicons.dev
-[code_of_conduct_url]: https://github.com/XodiumSoftware/xCLOUD?tab=coc-ov-file
-[contributing_url]: https://github.com/XodiumSoftware/xCLOUD/blob/main/CONTRIBUTING.md
-[contributors_shield_url]: https://img.shields.io/github/contributors/XodiumSoftware/xCLOUD?style=for-the-badge&color=blue
-[contributors_url]: https://github.com/XodiumSoftware/xCLOUD/graphs/contributors
-[issues_shield_url]: https://img.shields.io/github/issues/XodiumSoftware/xCLOUD?style=for-the-badge&color=yellow
-[issues_url]: https://github.com/XodiumSoftware/xCLOUD/issues
-[license_url]: https://github.com/XodiumSoftware/xCLOUD?tab=AGPL-3.0-1-ov-file
+[code_of_conduct_url]: https://github.com/XodiumSoftware/VanillaPlus?tab=coc-ov-file
+[contributing_url]: https://github.com/XodiumSoftware/VanillaPlus/blob/main/CONTRIBUTING.md
+[contributors_shield_url]: https://img.shields.io/github/contributors/XodiumSoftware/VanillaPlus?style=for-the-badge&color=blue
+[contributors_url]: https://github.com/XodiumSoftware/VanillaPlus/graphs/contributors
+[issues_shield_url]: https://img.shields.io/github/issues/XodiumSoftware/VanillaPlus?style=for-the-badge&color=yellow
+[issues_url]: https://github.com/XodiumSoftware/VanillaPlus/issues
+[license_url]: https://github.com/XodiumSoftware/VanillaPlus?tab=AGPL-3.0-1-ov-file
 [roadmap_shield_url]: https://img.shields.io/badge/Roadmap-Click%20Me!-purple.svg?style=for-the-badge
 [roadmap_url]: https://github.com/orgs/XodiumSoftware/projects/4
+[security_url]: https://github.com/XodiumSoftware/VanillaPlus?tab=security-ov-file
