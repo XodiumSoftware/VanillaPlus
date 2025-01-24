@@ -3,12 +3,12 @@
   "extends": [
     "config:recommended"
   ],
-  "prHeader": "Xodium Dependencies Updater",
+  "prHeader": "Dependencies Updater",
   "assignees": [
     "illyrius666"
   ],
   "labels": [
-    "Dependencies"
+    "dependencies"
   ],
   "automerge": true,
   "baseBranches": [
