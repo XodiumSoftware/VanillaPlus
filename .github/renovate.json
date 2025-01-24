@@ -1,17 +1,17 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended"
-  ],
-  "prHeader": "Dependencies Updater",
   "assignees": [
     "illyrius666"
-  ],
-  "labels": [
-    "dependencies"
   ],
   "automerge": true,
   "baseBranches": [
     "dev"
-  ]
+  ],
+  "extends": [
+    "config:recommended"
+  ],
+  "labels": [
+    "dependencies"
+  ],
+  "prHeader": "Dependencies Updater"
 }

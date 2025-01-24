@@ -1,19 +1,57 @@
+# Configuration settings for the DoorsModule. This module controls door-related features.
 DoorsModule:
-  enable: true
-  sound_knock_category: "BLOCKS"
-  sound_knock_pitch: 1.0
-  sound_knock_volume: 1.0
-  sound_knock_wood: "entity_zombie_attack_wooden_door"
-  allow_autoclose: true
-  allow_doubledoors: true
-  allow_knocking: true
-  allow_knocking_gates: true
-  allow_knocking_trapdoors: true
-  knocking_requires_empty_hand: true
-  knocking_requires_shift: true
-  autoclose_delay: 6
+  enable: true # Enables or disables the DoorsModule. Set to 'false' to disable.
 
+  sound_close_door_effect: "block_iron_door_close" # The sound effect used for closing doors.
+  sound_close_door_pitch: 1.0 # The pitch of the closing doors.
+  sound_close_door_volume: 1.0 # The volume of the closing doors.
+
+  sound_close_gate_effect: "block_fence_gate_close" # The sound effect used for closing gates.
+  sound_close_gate_pitch: 1.0 # The pitch of the closing gates.
+  sound_close_gate_volume: 1.0 # The volume of the closing gates.
+
+  sound_knock_effect: "entity_zombie_attack_wooden_door" # The sound effect used for knocking.
+  sound_knock_pitch: 1.0 # The pitch of the knocking.
+  sound_knock_volume: 1.0 # The volume of the knocking.
+
+  allow_autoclose: true # Enables automatic closing of doors after a set delay.
+  allow_doubledoors: true # Allows both sides of double doors to open/close simultaneously.
+  allow_knocking: true # Enables knocking on doors.
+  allow_knocking_gates: true # Enables knocking on gates.
+  allow_knocking_trapdoors: true # Enables knocking on trapdoors.
+
+  knocking_requires_empty_hand: true # Knocking requires the player's hand to be empty.
+  knocking_requires_shift: true # Players must shift (crouch) to knock.
+
+  autoclose_delay: 6 # The delay (in seconds) before automatic closure.
+
+# Configuration settings for the SaplingModule. This module controls sapling-related features.
 SaplingModule:
-  enable: false
+  enable: true # Enables or disables the SaplingModule. Set to 'false' to disable.
 
-version: 1.0
+  ignore_air_blocks: true # If it should ignore air blocks when placing custom tree.
+  ignore_structure_void_blocks: true # If it should ignore structure void blocks when placing custom tree.
+  paste_entities: false # If it should paste entities from the schematic.
+  paste_biomes: false # If it should paste biomes from the schematic.
+
+  # If a sapling type is missing here, no custom schematic will be used and default behavior applies.
+  # You can define a file, multiple files or a folder.
+  sapling_link:
+    ACACIA_SAPLING:
+      - "trees/acacia"
+    BIRCH_SAPLING:
+      - "trees/birch"
+    CHERRY_SAPLING:
+      - "trees/cherry"
+    DARK_OAK_SAPLING:
+      - "trees/dark_oak"
+    JUNGLE_SAPLING:
+      - "trees/jungle"
+    MANGROVE_PROPAGULE:
+      - "trees/mangrove"
+    OAK_SAPLING:
+      - "trees/oak"
+    #    PALE_OAK_SAPLING: # TODO: Add pale oak tree for 1.21.4
+    #      - "trees/pale_oak"
+    SPRUCE_SAPLING:
+      - "trees/spruce"

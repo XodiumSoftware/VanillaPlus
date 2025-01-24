@@ -1,7 +1,14 @@
+/*
+ * Copyright (c) 2025. Xodium.
+ * All rights reserved.
+ */
+
 package org.xodium.vanillaplus.modules
 
-import com.google.common.base.Enums
-import org.bukkit.*
+import org.bukkit.Bukkit
+import org.bukkit.GameMode
+import org.bukkit.Material
+import org.bukkit.Sound
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Bisected
@@ -17,21 +24,21 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
-import org.bukkit.scheduler.BukkitRunnable
+import org.xodium.vanillaplus.Utils
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.AdjacentBlockData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
+
 class DoorsModule : ModuleInterface {
-    private val cn: String = javaClass.simpleName
+    private val config = instance.config
     private val pcn: String = instance.javaClass.simpleName
-    private val autoCloseDelay: Long = instance.config.getLong("$cn.autoclose_delay") * 1000
+    private val autoCloseDelay = config.getLong("$cn.autoclose_delay") * 1000
     private val autoClose = ConcurrentHashMap<Block, Long>()
 
     companion object {
-        private val POSSIBLE_NEIGHBOURS = arrayOf<AdjacentBlockData?>(
+        private val POSSIBLE_NEIGHBOURS = listOf(
             AdjacentBlockData(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
             AdjacentBlockData(0, 1, Door.Hinge.LEFT, BlockFace.EAST),
 
@@ -45,128 +52,143 @@ class DoorsModule : ModuleInterface {
             AdjacentBlockData(1, 0, Door.Hinge.LEFT, BlockFace.NORTH)
         )
 
-        fun toggleDoor(doorBlock: Block, openable: Openable, open: Boolean) {
+        fun toggleDoor(block: Block, openable: Openable, open: Boolean) {
             openable.isOpen = open
-            doorBlock.blockData = openable
+            block.blockData = openable
         }
     }
 
-    // TODO: refactor.
-    init {
+    override fun init() {
         Bukkit.getScheduler().runTaskTimer(instance, Runnable {
-            val currentTime = System.currentTimeMillis()
-            val iterator = autoClose.entries.iterator()
-            while (iterator.hasNext()) {
-                val entry = iterator.next()
-                val block = entry.key
-                val expiryTime = entry.value
-                if (currentTime >= expiryTime) {
-                    if (block.blockData is Openable) {
-                        val openable = block.blockData as Openable
-                        if (openable.isOpen) {
-                            if (openable is Door) {
-                                getOtherPart(openable, block)?.let { otherDoor ->
-                                    toggleOtherDoor(block, otherDoor, false)
-                                }
-                            } else if (openable is Gate) {
-                                block.world.playSound(block.location, Sound.BLOCK_FENCE_GATE_CLOSE, 1.0f, 1.0f)
-                            }
-                            openable.isOpen = false
-                            block.blockData = openable
-                            block.world.playSound(block.location, Sound.BLOCK_IRON_DOOR_CLOSE, 1.0f, 1.0f)
-                        }
-                    }
-                    iterator.remove()
-                }
+            autoClose.entries.removeIf { (block, time) ->
+                if (System.currentTimeMillis() >= time) {
+                    handleAutoClose(block)
+                    true
+                } else false
             }
         }, 1L, 1L)
     }
 
-    // TODO: refactor.
+    private fun handleAutoClose(block: Block) {
+        val data = block.blockData as? Openable ?: return
+        if (!data.isOpen) return
+        when (data) {
+            is Door -> handleDoorClose(block, data)
+            is Gate -> handleGateClose(block)
+            else -> return
+        }
+        data.isOpen = false
+        block.blockData = data
+    }
+
+    private fun handleDoorClose(block: Block, door: Door) {
+        getOtherPart(door, block)?.let {
+            toggleOtherDoor(block, it, false)
+        }
+        Utils.playSound(
+            block,
+            config.getString("$cn.sound_close_door_effect"),
+            Sound.BLOCK_IRON_DOOR_CLOSE,
+            config.getInt("$cn.sound_close_door_volume"),
+            config.getInt("$cn.sound_close_door_pitch"),
+        )
+    }
+
+    private fun handleGateClose(block: Block) {
+        Utils.playSound(
+            block,
+            config.getString("$cn.sound_close_gate_effect"),
+            Sound.BLOCK_FENCE_GATE_CLOSE,
+            config.getInt("$cn.sound_close_gate_volume"),
+            config.getInt("$cn.sound_close_gate_pitch"),
+        )
+    }
+
     @EventHandler(priority = EventPriority.MONITOR)
-    fun onRightClick(e: PlayerInteractEvent) {
-        val clickedBlock = e.clickedBlock ?: return
-        val blockData = clickedBlock.blockData
-        if (e.hand != EquipmentSlot.HAND || e.action != Action.RIGHT_CLICK_BLOCK || e.useInteractedBlock() == Event.Result.DENY || e.useItemInHand() == Event.Result.DENY || !e.player.hasPermission(
-                "$pcn.doubledoors"
+    fun on(event: PlayerInteractEvent) {
+        val clickedBlock = event.clickedBlock ?: return
+        val data = clickedBlock.blockData
+        if (!isValidInteraction(event)) return
+        when (event.action) {
+            Action.LEFT_CLICK_BLOCK -> handleLeftClick(event, data, clickedBlock)
+            Action.RIGHT_CLICK_BLOCK -> handleRightClick(event, data, clickedBlock)
+            else -> return
+        }
+    }
+
+    private fun isValidInteraction(event: PlayerInteractEvent): Boolean {
+        return event.hand == EquipmentSlot.HAND &&
+                event.useInteractedBlock() != Event.Result.DENY &&
+                event.useItemInHand() != Event.Result.DENY
+    }
+
+    private fun handleLeftClick(event: PlayerInteractEvent, data: BlockData, block: Block) {
+        if (canKnock(event, event.player) && isKnockableBlock(data)) {
+            Utils.playSound(
+                block,
+                config.getString("$cn.sound_knock_effect"),
+                Sound.ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR,
+                config.getInt("$cn.sound_knock_volume"),
+                config.getInt("$cn.sound_knock_pitch")
             )
-            || !(blockData is Door || blockData is Gate) || !instance.config.getBoolean("$cn.allow_doubledoors")
-        ) return
-        if (blockData is Door) {
-            val door = getDoorBottom(blockData, clickedBlock)
-            val otherDoorBlock = getOtherPart(door, clickedBlock)
+        }
+    }
+
+    private fun handleRightClick(event: PlayerInteractEvent, data: BlockData, block: Block) {
+        val player = event.player
+        if (player.hasPermission("$pcn.doubledoors") &&
+            config.getBoolean("$cn.allow_doubledoors") &&
+            (data is Door || data is Gate)
+        ) processDoorOrGateInteraction(player, data, block)
+        if (player.hasPermission("$pcn.autoclose")) autoClose[block] = System.currentTimeMillis() + autoCloseDelay
+    }
+
+    private fun processDoorOrGateInteraction(player: Player, data: BlockData, block: Block) {
+        if (data is Door) {
+            val door = getDoorBottom(data, block)
+            val otherDoorBlock = getOtherPart(door, block)
             if (otherDoorBlock != null && otherDoorBlock.blockData is Door) {
                 val otherDoor = otherDoorBlock.blockData as Door
-                toggleOtherDoor(clickedBlock, otherDoorBlock, !otherDoor.isOpen)
-                if (e.player.hasPermission("$pcn.autoclose")) {
+                toggleOtherDoor(block, otherDoorBlock, !otherDoor.isOpen)
+                if (player.hasPermission("$pcn.autoclose")) {
                     autoClose[otherDoorBlock] = System.currentTimeMillis() + autoCloseDelay
                 }
             }
         }
-        if (e.player.hasPermission("$pcn.autoclose")) {
-            autoClose[clickedBlock] = System.currentTimeMillis() + autoCloseDelay
-        }
     }
 
-    @EventHandler
-    fun onKnock(e: PlayerInteractEvent) {
-        e.clickedBlock?.takeIf { canKnock(e.player, e) && isKnockableBlock(it.blockData) }
-            ?.let(::playKnockSound)
-    }
-
-    private fun canKnock(p: Player, e: PlayerInteractEvent): Boolean {
+    private fun canKnock(event: PlayerInteractEvent, player: Player): Boolean {
         return when {
-            p.gameMode == GameMode.CREATIVE || p.gameMode == GameMode.SPECTATOR -> false
-            !p.hasPermission("$pcn.knock") -> false
-            e.action != Action.LEFT_CLICK_BLOCK || e.hand != EquipmentSlot.HAND -> false
-            isKnockingConditionViolated(p) -> false
+            player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR -> false
+            !player.hasPermission("$pcn.knock") -> false
+            event.action != Action.LEFT_CLICK_BLOCK || event.hand != EquipmentSlot.HAND -> false
+            isKnockingConditionViolated(player) -> false
             else -> true
         }
     }
 
-    private fun isKnockingConditionViolated(p: Player): Boolean {
-        return (instance.config.getBoolean("$cn.knocking_requires_shift") && !p.isSneaking) ||
-                (instance.config.getBoolean("$cn.knocking_requires_empty_hand") &&
-                        p.inventory.itemInMainHand.type != Material.AIR)
+    private fun isKnockingConditionViolated(player: Player): Boolean {
+        return (config.getBoolean("$cn.knocking_requires_shift") && !player.isSneaking) ||
+                (config.getBoolean("$cn.knocking_requires_empty_hand") &&
+                        player.inventory.itemInMainHand.type != Material.AIR)
     }
 
-    private fun isKnockableBlock(bd: BlockData): Boolean {
-        return when (bd) {
-            is Door -> instance.config.getBoolean("$cn.allow_knocking")
-            is TrapDoor -> instance.config.getBoolean("$cn.allow_knocking_trapdoors")
-            is Gate -> instance.config.getBoolean("$cn.allow_knocking_gates")
+    private fun isKnockableBlock(data: BlockData): Boolean {
+        return when (data) {
+            is Door -> config.getBoolean("$cn.allow_knocking")
+            is TrapDoor -> config.getBoolean("$cn.allow_knocking_trapdoors")
+            is Gate -> config.getBoolean("$cn.allow_knocking_gates")
             else -> false
         }
     }
 
-    private fun playKnockSound(block: Block) {
-        block.world.playSound(
-            block.location,
-            instance.config.getString("$cn.sound_knock_wood")
-                ?.lowercase(Locale.getDefault())
-                ?.let { NamespacedKey.minecraft(it) }
-                ?.let(Registry.SOUNDS::get)
-                ?: Sound.ITEM_SHIELD_BLOCK,
-            instance.config.getString("$cn.sound_knock_category")
-                ?.uppercase(Locale.getDefault())
-                ?.let { Enums.getIfPresent(SoundCategory::class.java, it).orNull() }
-                ?: SoundCategory.BLOCKS,
-            instance.config.getInt("$cn.sound_knock_volume").toFloat(),
-            instance.config.getInt("$cn.sound_knock_pitch").toFloat())
-    }
-
-    private fun toggleOtherDoor(block: Block, otherBlock: Block, open: Boolean) {
-        if (block.blockData !is Door || otherBlock.blockData !is Door) return
-        object : BukkitRunnable() {
-            override fun run() {
-                val currentDoor = block.blockData as Door
-                val otherDoor = otherBlock.blockData as Door
-                if (currentDoor.isOpen == otherDoor.isOpen) {
-                    return
-                }
-                toggleDoor(otherBlock, otherDoor, open)
-            }
-        }.runTaskLater(instance, 1L)
+    private fun toggleOtherDoor(block: Block, block2: Block, open: Boolean) {
+        if (block.blockData !is Door || block2.blockData !is Door) return
+        Bukkit.getScheduler().runTaskLater(instance, Runnable {
+            val door = block.blockData as Door
+            val door2 = block2.blockData as Door
+            if (door.isOpen != door2.isOpen) toggleDoor(block2, door2, open)
+        }, 1L)
     }
 
     private fun getDoorBottom(door: Door, block: Block): Door? {
@@ -177,7 +199,7 @@ class DoorsModule : ModuleInterface {
     private fun getOtherPart(door: Door?, block: Block): Block? {
         if (door == null) return null
         return POSSIBLE_NEIGHBOURS.firstOrNull { neighbour ->
-            val relative = block.getRelative(neighbour!!.offsetX, 0, neighbour.offsetZ)
+            val relative = block.getRelative(neighbour.offsetX, 0, neighbour.offsetZ)
             (relative.blockData as? Door)?.takeIf {
                 it.facing == door.facing &&
                         it.hinge != door.hinge &&
@@ -187,7 +209,5 @@ class DoorsModule : ModuleInterface {
         }?.let { block.getRelative(it.offsetX, 0, it.offsetZ) }
     }
 
-    override fun enabled(): Boolean {
-        return instance.config.getBoolean("$cn.enable")
-    }
+    override fun enabled(): Boolean = config.getBoolean("$cn.enable")
 }
