@@ -54,6 +54,12 @@ tasks {
         relocate("kotlin", "org.xodium.vanillaplus.kotlin")
         destinationDirectory.set(file(".server/plugins"))
         minimize()
+        doLast {
+            copy {
+                from(archiveFile)
+                into(layout.buildDirectory.dir("libs"))
+            }
+        }
     }
     jar { enabled = false }
     withType<JavaCompile> { options.encoding = "UTF-8" }
