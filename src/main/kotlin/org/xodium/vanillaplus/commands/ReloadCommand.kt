@@ -33,12 +33,6 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 object ReloadCommand {
     private val pcn: String = instance.javaClass.simpleName
 
-    private object MSG {
-        val PERM_ERR = Utils.MM.deserialize("${VanillaPlus.PREFIX}<red>You do not have permission to use this command!")
-        val RELOAD_SUCC = Utils.MM.deserialize("${VanillaPlus.PREFIX}<green>Configuration reloaded successfully.")
-        const val RELOAD_SUCC_LOG = "Configuration reloaded successfully."
-    }
-
     init {
         instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) {
             it.registrar().register(
@@ -46,12 +40,12 @@ object ReloadCommand {
                     .executes(Command { ctx: CommandContext<CommandSourceStack?>? ->
                         val cs = ctx?.source?.sender ?: return@Command 0
                         if (cs is Player && !cs.hasPermission("$pcn.reload")) {
-                            cs.sendMessage(MSG.PERM_ERR)
+                            cs.sendMessage(Utils.MM.deserialize("${VanillaPlus.PREFIX}<red>You do not have permission to use this command!"))
                             return@Command 0
                         }
                         instance.reloadConfig()
-                        cs.sendMessage(MSG.RELOAD_SUCC)
-                        instance.logger.info(MSG.RELOAD_SUCC_LOG)
+                        cs.sendMessage(Utils.MM.deserialize("${VanillaPlus.PREFIX}<green>Configuration reloaded successfully."))
+                        instance.logger.info("Configuration reloaded successfully")
                         Command.SINGLE_SUCCESS
                     })
                     .build(),

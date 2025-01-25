@@ -7,7 +7,6 @@ body:
       value: |
         Thank you for taking the time to fill this out!
   - type: textarea
-    id: how
     attributes:
       label: Problem
       description: Please give a text description of how you reached the problem
@@ -19,7 +18,6 @@ body:
     validations:
       required: true
   - type: textarea
-    id: what
     attributes:
       label: Solution (if any)
       description: Explain where you think the problem comes from (optional)
@@ -27,7 +25,6 @@ body:
     validations:
       required: false
   - type: input
-    id: version
     attributes:
       label: Version
       description: What version are you running?
@@ -35,7 +32,6 @@ body:
     validations:
       required: true
   - type: input
-    id: logs
     attributes:
       label: Log
       description: Paste a full log. Always use [Pastebin](https://pastebin.com/). Must not be a crash report. Must be a full log. Must not be a screenshot of a log.

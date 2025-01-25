@@ -40,7 +40,7 @@ object Utils {
             FileSystems.newFileSystem(
                 URI.create("jar:file:${instance.javaClass.protectionDomain.codeSource.location.toURI().path}"),
                 emptyMap<String, Any>()
-            ).use {
+            ).use { it ->
                 val sourcePath = it.getPath(source.toString())
                 Files.walk(sourcePath)
                     .filter(Files::isRegularFile)
@@ -65,7 +65,7 @@ object Utils {
      * @param extension The file extension to filter by.
      * @return A list of paths for all files found with the specified extension.
      */
-    fun collectFiles(path: Path, extension: String): List<Path> {
+    private fun collectFiles(path: Path, extension: String): List<Path> {
         return try {
             Files.walk(path).use { stream ->
                 stream.filter { Files.isRegularFile(it) && it.toString().endsWith(extension, ignoreCase = true) }

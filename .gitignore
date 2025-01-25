@@ -2,10 +2,6 @@
 .gradle/
 build/
 
-# Eclipse specific files
-.project
-.classpath
-
 # OS generated files
 .DS_Store
 Thumbs.db
