@@ -35,6 +35,8 @@ class SaplingModule : ModuleInterface {
 
     companion object {
         private val SCHEMATICS_FOLDER = Paths.get("schematics")
+
+        @Suppress("UnstableApiUsage")
         private val SAPLINGS = setOf(
             Material.ACACIA_SAPLING,
             Material.BIRCH_SAPLING,
@@ -43,7 +45,7 @@ class SaplingModule : ModuleInterface {
             Material.JUNGLE_SAPLING,
             Material.MANGROVE_PROPAGULE,
             Material.OAK_SAPLING,
-//            Material.PALE_OAK_SAPLING, // TODO: Add Pale Oak sapling in 1.21.4
+            Material.PALE_OAK_SAPLING,
             Material.SPRUCE_SAPLING,
         )
         private val OVERRIDEABLE_BLOCKS = setOf(
@@ -81,8 +83,8 @@ class SaplingModule : ModuleInterface {
             BlockTypes.BLUE_ORCHID,
             BlockTypes.CORNFLOWER,
             BlockTypes.DANDELION,
-//            BlockTypes.CLOSED_EYEBLOSSOM, // TODO: Add in 1.21.4
-//            BlockTypes.OPEN_EYEBLOSSOM, // TODO: Add in 1.21.4
+            BlockTypes.CLOSED_EYEBLOSSOM,
+            BlockTypes.OPEN_EYEBLOSSOM,
             BlockTypes.LILY_OF_THE_VALLEY,
             BlockTypes.OXEYE_DAISY,
             BlockTypes.POPPY,
