@@ -38,6 +38,9 @@
     <inspection_tool class="CatchMayIgnoreException" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="CaughtExceptionImmediatelyRethrown" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="CharsetObjectCanBeUsed" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="CheckEmptyScriptTag" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="CheckImageSize" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="CheckValidXmlInScriptTagBody" enabled="false" level="ERROR" enabled_by_default="false" />
     <inspection_tool class="ClassCanBeRecord" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
     <inspection_tool class="ClassEscapesItsScope" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="ClassGetClass" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -153,6 +156,42 @@
     <inspection_tool class="FrequentlyUsedInheritorInspection" enabled="false" level="INFORMATION" enabled_by_default="false" />
     <inspection_tool class="FunctionalExpressionCanBeFolded" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="FuseStreamOperations" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="GrazieInspection" enabled="false" level="GRAMMAR_ERROR" enabled_by_default="false" />
+    <inspection_tool class="HtmlDeprecatedAttribute" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="HtmlDeprecatedTag" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="HtmlExtraClosingTag" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="HtmlFormInputWithoutLabel" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="HtmlMissingClosingTag" enabled="false" level="INFORMATION" enabled_by_default="false" />
+    <inspection_tool class="HtmlRequiredAltAttribute" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="HtmlRequiredLangAttribute" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="HtmlRequiredTitleElement" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="HtmlUnknownAnchorTarget" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="HtmlUnknownAttribute" enabled="false" level="WARNING" enabled_by_default="false">
+      <option name="myValues">
+        <value>
+          <list size="0" />
+        </value>
+      </option>
+      <option name="myCustomValuesEnabled" value="true" />
+    </inspection_tool>
+    <inspection_tool class="HtmlUnknownBooleanAttribute" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="HtmlUnknownTag" enabled="false" level="WARNING" enabled_by_default="false">
+      <option name="myValues">
+        <value>
+          <list size="6">
+            <item index="0" class="java.lang.String" itemvalue="nobr" />
+            <item index="1" class="java.lang.String" itemvalue="noembed" />
+            <item index="2" class="java.lang.String" itemvalue="comment" />
+            <item index="3" class="java.lang.String" itemvalue="noscript" />
+            <item index="4" class="java.lang.String" itemvalue="embed" />
+            <item index="5" class="java.lang.String" itemvalue="script" />
+          </list>
+        </value>
+      </option>
+      <option name="myCustomValuesEnabled" value="true" />
+    </inspection_tool>
+    <inspection_tool class="HtmlUnknownTarget" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="HtmlWrongAttributeValue" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="IOStreamConstructor" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="IdempotentLoopBody" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="IfCanBeAssertion" enabled="false" level="INFORMATION" enabled_by_default="false" />
@@ -216,6 +255,7 @@
     <inspection_tool class="LambdaCanBeMethodCall" enabled="false" level="INFORMATION" enabled_by_default="false" />
     <inspection_tool class="LambdaCanBeReplacedWithAnonymous" enabled="false" level="INFORMATION" enabled_by_default="false" />
     <inspection_tool class="LambdaParameterTypeCanBeSpecified" enabled="false" level="INFORMATION" enabled_by_default="false" />
+    <inspection_tool class="LanguageDetectionInspection" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="LengthOneStringsInConcatenation" enabled="false" level="INFORMATION" enabled_by_default="false" />
     <inspection_tool class="LimitedScopeInnerClass" enabled="false" level="INFORMATION" enabled_by_default="false" />
     <inspection_tool class="ListIndexOfReplaceableByContains" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -237,6 +277,14 @@
     <inspection_tool class="ManualMinMaxCalculation" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="MappingBeforeCount" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="MarkdownDocumentationCommentsMigration" enabled="false" level="INFORMATION" enabled_by_default="false" />
+    <inspection_tool class="MarkdownIncorrectTableFormatting" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="MarkdownIncorrectlyNumberedListItem" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="MarkdownLinkDestinationWithSpaces" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="MarkdownNoTableBorders" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="MarkdownOutdatedTableOfContents" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="MarkdownUnresolvedFileReference" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="MarkdownUnresolvedHeaderReference" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="MarkdownUnresolvedLinkLabel" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="MarkedForRemoval" enabled="false" level="ERROR" enabled_by_default="false" />
     <inspection_tool class="MaskedAssertion" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="MathRandomCastToInt" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -381,6 +429,9 @@
     <inspection_tool class="ReplaceNullCheck" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="ReplaceOnLiteralHasNoEffect" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="ReplaceWithJavadoc" enabled="false" level="INFORMATION" enabled_by_default="false" />
+    <inspection_tool class="RequiredAttributes" enabled="false" level="WARNING" enabled_by_default="false">
+      <option name="myAdditionalRequiredHtmlAttributes" value="" />
+    </inspection_tool>
     <inspection_tool class="ReturnFromFinallyBlock" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="ReturnSeparatedFromComputation" enabled="false" level="INFORMATION" enabled_by_default="false" />
     <inspection_tool class="ReuseOfLocalVariable" enabled="false" level="INFORMATION" enabled_by_default="false" />
@@ -408,6 +459,11 @@
     <inspection_tool class="SlowAbstractSetRemoveAll" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="SlowListContainsAll" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="SortedCollectionWithNonComparableKeys" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="SpellCheckingInspection" enabled="false" level="TYPO" enabled_by_default="false">
+      <option name="processCode" value="true" />
+      <option name="processLiterals" value="true" />
+      <option name="processComments" value="true" />
+    </inspection_tool>
     <inspection_tool class="StaticInitializerReferencesSubClass" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="StreamToLoop" enabled="false" level="INFORMATION" enabled_by_default="false" />
     <inspection_tool class="StringBufferReplaceableByString" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -558,6 +614,13 @@
     <inspection_tool class="WrapperTypeMayBePrimitive" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="WriteOnlyObject" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="WrongPackageStatement" enabled="false" level="ERROR" enabled_by_default="false" />
+    <inspection_tool class="YAMLDuplicatedKeys" enabled="false" level="ERROR" enabled_by_default="false" />
+    <inspection_tool class="YAMLIncompatibleTypes" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="YAMLRecursiveAlias" enabled="false" level="ERROR" enabled_by_default="false" />
+    <inspection_tool class="YAMLSchemaDeprecation" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="YAMLSchemaValidation" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="YAMLUnresolvedAlias" enabled="false" level="ERROR" enabled_by_default="false" />
+    <inspection_tool class="YAMLUnusedAnchor" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="unused" enabled="false" level="WARNING" enabled_by_default="false" checkParameterExcludingHierarchy="false">
       <option name="LOCAL_VARIABLE" value="true" />
       <option name="FIELD" value="true" />

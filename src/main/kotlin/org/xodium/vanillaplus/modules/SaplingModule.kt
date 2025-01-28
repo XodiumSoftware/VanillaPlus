@@ -36,7 +36,6 @@ class SaplingModule : ModuleInterface {
     companion object {
         private val SCHEMATICS_FOLDER = Paths.get("schematics")
 
-        @Suppress("UnstableApiUsage")
         private val SAPLINGS = setOf(
             Material.ACACIA_SAPLING,
             Material.BIRCH_SAPLING,
