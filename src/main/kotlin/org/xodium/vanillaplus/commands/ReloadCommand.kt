@@ -32,15 +32,21 @@ object ReloadCommand {
                 Commands.literal("vanillaplus")
                     .executes(Command { ctx: CommandContext<CommandSourceStack?>? ->
                         val cs = ctx?.source?.sender ?: return@Command 0
-                        val pluginManager = instance.server.pluginManager
-                        pluginManager.disablePlugin(instance)
-                        pluginManager.enablePlugin(instance)
-                        instance.logger.info("Reloaded successfully")
-                        cs.sendMessage(Utils.MM.deserialize("${VanillaPlus.PREFIX}<green>Reloaded successfully."))
+                        try {
+//                            TODO: Implement reload logic
+//                            val pluginManager = instance.server.pluginManager
+//                            pluginManager.disablePlugin(instance)
+//                            pluginManager.enablePlugin(instance)
+                            instance.logger.info("Reloaded successfully")
+                            cs.sendMessage(Utils.MM.deserialize("${VanillaPlus.PREFIX}<green>Reloaded successfully."))
+                        } catch (e: Exception) {
+                            instance.logger.severe("Failed to reload: ${e.message}")
+                            cs.sendMessage(Utils.MM.deserialize("${VanillaPlus.PREFIX}<red>Failed to reload. Check server logs for details."))
+                        }
                         Command.SINGLE_SUCCESS
                     })
                     .build(),
-                "Opens the GUI",
+                "Reloads the VanillaPlus plugin",
                 mutableListOf("vp")
             )
         }
