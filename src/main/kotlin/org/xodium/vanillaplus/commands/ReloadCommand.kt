@@ -34,6 +34,7 @@ object ReloadCommand {
     init {
         instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) {
             it.registrar().register(
+//                TODO: change to vanillaplus.reload
                 Commands.literal("vanillaplus")
                     .executes(Command { ctx: CommandContext<CommandSourceStack?>? ->
                         val cs = ctx?.source?.sender ?: return@Command 0

@@ -1,11 +1,12 @@
 /*
- * Copyright (c) 2025. Xodium.
- * All rights reserved.
+ *  Copyright (c) 2025. Xodium.
+ *  All rights reserved.
  */
 
 package org.xodium.vanillaplus.managers
 
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.modules.CommandPanelModule
 import org.xodium.vanillaplus.modules.DoorsModule
 import org.xodium.vanillaplus.modules.SaplingModule
 
@@ -20,6 +21,7 @@ import org.xodium.vanillaplus.modules.SaplingModule
 object ModuleManager {
     init {
         listOf(
+            CommandPanelModule(),
             DoorsModule(),
             SaplingModule(),
         ).filter { it.enabled() }
