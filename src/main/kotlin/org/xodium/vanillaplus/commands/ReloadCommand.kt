@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2025. Xodium.
- * All rights reserved.
+ *  Copyright (c) 2025. Xodium.
+ *  All rights reserved.
  */
 
 @file:Suppress("UnstableApiUsage")
@@ -31,19 +31,17 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
  * - Requires the `<class_name_placeholder>.reload` permission to execute the reload command.
  */
 object ReloadCommand {
-    private val pcn: String = instance.javaClass.simpleName
-
     init {
         instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) {
             it.registrar().register(
                 Commands.literal("vanillaplus")
                     .executes(Command { ctx: CommandContext<CommandSourceStack?>? ->
                         val cs = ctx?.source?.sender ?: return@Command 0
-                        if (cs is Player && !cs.hasPermission("$pcn.reload")) {
+                        if (cs is Player) {
                             cs.sendMessage(Utils.MM.deserialize("${VanillaPlus.PREFIX}<red>You do not have permission to use this command!"))
                             return@Command 0
                         }
-                        instance.reloadConfig()
+                        // TODO: reload plugin instead.
                         cs.sendMessage(Utils.MM.deserialize("${VanillaPlus.PREFIX}<green>Configuration reloaded successfully."))
                         instance.logger.info("Configuration reloaded successfully")
                         Command.SINGLE_SUCCESS

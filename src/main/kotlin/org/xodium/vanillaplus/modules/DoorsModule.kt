@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2025. Xodium.
- * All rights reserved.
+ *  Copyright (c) 2025. Xodium.
+ *  All rights reserved.
  */
 
 package org.xodium.vanillaplus.modules
@@ -24,6 +24,7 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
+import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Utils
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.AdjacentBlockData
@@ -32,9 +33,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 
 class DoorsModule : ModuleInterface {
-    private val config = instance.config
-    private val pcn: String = instance.javaClass.simpleName
-    private val autoCloseDelay = config.getLong("$cn.autoclose_delay") * 1000
+    private val autoCloseDelay = Config.DoorsModule.AUTO_CLOSE_DELAY * 1000
     private val autoClose = ConcurrentHashMap<Block, Long>()
 
     companion object {
@@ -87,20 +86,20 @@ class DoorsModule : ModuleInterface {
         }
         Utils.playSound(
             block,
-            config.getString("$cn.sound_close_door_effect"),
+            Config.DoorsModule.SOUND_CLOSE_DOOR_EFFECT,
             Sound.BLOCK_IRON_DOOR_CLOSE,
-            config.getInt("$cn.sound_close_door_volume"),
-            config.getInt("$cn.sound_close_door_pitch"),
+            Config.DoorsModule.SOUND_CLOSE_DOOR_VOLUME,
+            Config.DoorsModule.SOUND_CLOSE_DOOR_PITCH,
         )
     }
 
     private fun handleGateClose(block: Block) {
         Utils.playSound(
             block,
-            config.getString("$cn.sound_close_gate_effect"),
+            Config.DoorsModule.SOUND_CLOSE_GATE_EFFECT,
             Sound.BLOCK_FENCE_GATE_CLOSE,
-            config.getInt("$cn.sound_close_gate_volume"),
-            config.getInt("$cn.sound_close_gate_pitch"),
+            Config.DoorsModule.SOUND_CLOSE_GATE_VOLUME,
+            Config.DoorsModule.SOUND_CLOSE_GATE_PITCH,
         )
     }
 
@@ -111,7 +110,7 @@ class DoorsModule : ModuleInterface {
         if (!isValidInteraction(event)) return
         when (event.action) {
             Action.LEFT_CLICK_BLOCK -> handleLeftClick(event, data, clickedBlock)
-            Action.RIGHT_CLICK_BLOCK -> handleRightClick(event, data, clickedBlock)
+            Action.RIGHT_CLICK_BLOCK -> handleRightClick(data, clickedBlock)
             else -> return
         }
     }
@@ -126,31 +125,28 @@ class DoorsModule : ModuleInterface {
         if (canKnock(event, event.player) && isKnockableBlock(data)) {
             Utils.playSound(
                 block,
-                config.getString("$cn.sound_knock_effect"),
+                Config.DoorsModule.SOUND_KNOCK_EFFECT,
                 Sound.ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR,
-                config.getInt("$cn.sound_knock_volume"),
-                config.getInt("$cn.sound_knock_pitch")
+                Config.DoorsModule.SOUND_KNOCK_VOLUME,
+                Config.DoorsModule.SOUND_KNOCK_PITCH
             )
         }
     }
 
-    private fun handleRightClick(event: PlayerInteractEvent, data: BlockData, block: Block) {
-        val player = event.player
-        if (player.hasPermission("$pcn.doubledoors") &&
-            config.getBoolean("$cn.allow_doubledoors") &&
-            (data is Door || data is Gate)
-        ) processDoorOrGateInteraction(player, data, block)
-        if (player.hasPermission("$pcn.autoclose")) autoClose[block] = System.currentTimeMillis() + autoCloseDelay
+    private fun handleRightClick(data: BlockData, block: Block) {
+        if (Config.DoorsModule.ALLOW_DOUBLE_DOORS && (data is Door || data is Gate))
+            processDoorOrGateInteraction(data, block)
+        if (Config.DoorsModule.ALLOW_AUTO_CLOSE) autoClose[block] = System.currentTimeMillis() + autoCloseDelay
     }
 
-    private fun processDoorOrGateInteraction(player: Player, data: BlockData, block: Block) {
+    private fun processDoorOrGateInteraction(data: BlockData, block: Block) {
         if (data is Door) {
             val door = getDoorBottom(data, block)
             val otherDoorBlock = getOtherPart(door, block)
             if (otherDoorBlock != null && otherDoorBlock.blockData is Door) {
                 val otherDoor = otherDoorBlock.blockData as Door
                 toggleOtherDoor(block, otherDoorBlock, !otherDoor.isOpen)
-                if (player.hasPermission("$pcn.autoclose")) {
+                if (Config.DoorsModule.ALLOW_AUTO_CLOSE) {
                     autoClose[otherDoorBlock] = System.currentTimeMillis() + autoCloseDelay
                 }
             }
@@ -160,7 +156,6 @@ class DoorsModule : ModuleInterface {
     private fun canKnock(event: PlayerInteractEvent, player: Player): Boolean {
         return when {
             player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR -> false
-            !player.hasPermission("$pcn.knock") -> false
             event.action != Action.LEFT_CLICK_BLOCK || event.hand != EquipmentSlot.HAND -> false
             isKnockingConditionViolated(player) -> false
             else -> true
@@ -168,16 +163,16 @@ class DoorsModule : ModuleInterface {
     }
 
     private fun isKnockingConditionViolated(player: Player): Boolean {
-        return (config.getBoolean("$cn.knocking_requires_shift") && !player.isSneaking) ||
-                (config.getBoolean("$cn.knocking_requires_empty_hand") &&
+        return (Config.DoorsModule.KNOCKING_REQUIRES_SHIFT && !player.isSneaking) ||
+                (Config.DoorsModule.KNOCKING_REQUIRES_EMPTY_HAND &&
                         player.inventory.itemInMainHand.type != Material.AIR)
     }
 
     private fun isKnockableBlock(data: BlockData): Boolean {
         return when (data) {
-            is Door -> config.getBoolean("$cn.allow_knocking")
-            is TrapDoor -> config.getBoolean("$cn.allow_knocking_trapdoors")
-            is Gate -> config.getBoolean("$cn.allow_knocking_gates")
+            is Door -> Config.DoorsModule.ALLOW_KNOCKING_DOORS
+            is TrapDoor -> Config.DoorsModule.ALLOW_KNOCKING_TRAPDOORS
+            is Gate -> Config.DoorsModule.ALLOW_KNOCKING_GATES
             else -> false
         }
     }
@@ -209,5 +204,5 @@ class DoorsModule : ModuleInterface {
         }?.let { block.getRelative(it.offsetX, 0, it.offsetZ) }
     }
 
-    override fun enabled(): Boolean = config.getBoolean("$cn.enable")
+    override fun enabled(): Boolean = Config.DoorsModule.ENABLE
 }

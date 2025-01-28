@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2025. Xodium.
- * All rights reserved.
+ *  Copyright (c) 2025. Xodium.
+ *  All rights reserved.
  */
 
 package org.xodium.vanillaplus.modules
@@ -19,6 +19,7 @@ import org.bukkit.block.Block
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.world.StructureGrowEvent
+import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Utils
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
@@ -28,7 +29,6 @@ import java.nio.file.Paths
 
 
 class SaplingModule : ModuleInterface {
-    private val config = instance.config
     private val logger = instance.logger
     private val schematicsPath = instance.dataFolder.toPath().resolve(SCHEMATICS_FOLDER)
     private lateinit var saplingSchematicMap: Map<Material, List<Path>>
@@ -118,12 +118,9 @@ class SaplingModule : ModuleInterface {
     }
 
     private fun loadSaplingSchematicMap(): Map<Material, List<Path>> {
-        return config.getConfigurationSection("$cn.sapling_link")
-            ?.let { saplingConfig ->
-                saplingConfig.getKeys(false)
-                    .mapNotNull { validateAndMapSapling(it, saplingConfig[it]) }
-                    .toMap()
-            } ?: emptyMap()
+        return Config.SaplingModule.saplingLink
+            .mapNotNull { (k, v) -> validateAndMapSapling(k, v) }
+            .toMap()
     }
 
     private fun validateAndMapSapling(key: String, value: Any?): Pair<Material, List<Path>>? {
@@ -171,10 +168,10 @@ class SaplingModule : ModuleInterface {
                                     ClipboardHolder(clipboard)
                                         .createPaste(editSession)
                                         .to(BlockVector3.at(block.x, block.y, block.z))
-                                        .ignoreAirBlocks(config.getBoolean("$cn.ignore_air_blocks"))
-                                        .ignoreStructureVoidBlocks(config.getBoolean("$cn.ignore_structure_void_blocks"))
-                                        .copyEntities(config.getBoolean("$cn.copy_entities"))
-                                        .copyBiomes(config.getBoolean("$cn.copy_biomes"))
+                                        .ignoreAirBlocks(Config.SaplingModule.IGNORE_AIR_BLOCKS)
+                                        .ignoreStructureVoidBlocks(Config.SaplingModule.IGNORE_STRUCTURE_VOID_BLOCKS)
+                                        .copyEntities(Config.SaplingModule.COPY_ENTITIES)
+                                        .copyBiomes(Config.SaplingModule.COPY_BIOMES)
                                         .build()
                                 )
                             }
@@ -189,5 +186,5 @@ class SaplingModule : ModuleInterface {
         return true
     }
 
-    override fun enabled(): Boolean = config.getBoolean("$cn.enable")
+    override fun enabled(): Boolean = Config.SaplingModule.ENABLE
 }

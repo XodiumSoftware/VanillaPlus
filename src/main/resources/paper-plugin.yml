@@ -10,16 +10,3 @@ dependencies:
       load: BEFORE
       required: true
       join-classpath: true
-permissions:
-  VanillaPlus.reload:
-    description: Allows to reload the configuration
-    default: op
-  VanillaPlus.doubledoors:
-    description: Allows to open double doors with one click
-    default: true
-  VanillaPlus.knock:
-    description: Allows to knock on doors using left-click
-    default: true
-  VanillaPlus.autoclose:
-    description: Allows players to have their doors close automatically
-    default: true

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2025. Xodium.
- * All rights reserved.
+ *  Copyright (c) 2025. Xodium.
+ *  All rights reserved.
  */
 
 package org.xodium.vanillaplus.interfaces
@@ -14,13 +14,6 @@ import org.bukkit.event.Listener
  * This interface extends the Listener interface, allowing modules to handle events.
  */
 interface ModuleInterface : Listener {
-
-    /**
-     * The unique name or identifier for the module.
-     */
-    val cn: String
-        get() = javaClass.simpleName
-
     /**
      * Initializes the functionality of the implementing module.
      */

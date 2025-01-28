@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2025. Xodium.
- * All rights reserved.
+ *  Copyright (c) 2025. Xodium.
+ *  All rights reserved.
  */
 
 package org.xodium.vanillaplus
@@ -54,7 +54,6 @@ class VanillaPlus : JavaPlugin() {
             !isSupportedVersion() -> disablePlugin(UNSUPPORTED_VERSION_MSG)
             !isSupportedPlatform() -> disablePlugin(UNSUPPORTED_PLATFORM_MSG)
             else -> {
-                saveDefaultConfig()
                 ReloadCommand
                 ModuleManager
             }
