@@ -6,11 +6,6 @@
 package org.xodium.vanillaplus
 
 object Config {
-    // Configuration settings for the CommandPanelModule. This module controls command-related features.
-    object CommandPanelModule {
-        const val ENABLE: Boolean = true // Enables or disables the CommandPanelModule. Set to 'false' to disable.
-    }
-
     // Configuration settings for the DoorsModule. This module controls door-related features.
     object DoorsModule {
         const val ENABLE: Boolean = true // Enables or disables the DoorsModule. Set to 'false' to disable.
