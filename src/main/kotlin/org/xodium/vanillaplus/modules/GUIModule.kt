@@ -26,6 +26,7 @@ import java.time.format.DateTimeFormatter
 
 
 class GUIModule : ModuleInterface {
+    //    FIX: bug in the code, see console after opening GUI/clicking an item in it.
     override fun init() {
         PaperInterfaceListeners.install(instance)
     }
