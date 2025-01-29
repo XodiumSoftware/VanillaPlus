@@ -26,7 +26,7 @@ object FAQCommand {
                     .executes(Command { ctx: CommandContext<CommandSourceStack?>? ->
                         val cs = ctx?.source?.sender ?: return@Command 0
                         try {
-                            GUIModule().openFAQ(cs as Player)
+                            GUIModule().faqGUI().open(cs as Player)
                         } catch (e: Exception) {
                             instance.logger.severe("Failed to open FAQ: ${e.message}")
                             cs.sendMessage(Utils.MM.deserialize("${VanillaPlus.PREFIX}<red>Failed to open FAQ. Check server logs for details."))

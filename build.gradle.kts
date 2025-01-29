@@ -31,7 +31,7 @@ repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://maven.enginehub.org/repo/")
-    maven("https://oss.sonatype.org/content/repositories/snapshots/")
+    maven("https://repo.triumphteam.dev/snapshots")
 }
 
 dependencies {
@@ -40,7 +40,7 @@ dependencies {
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.4.0-20250109.111726-21")
     implementation("net.kyori:adventure-api:4.18.0")
     implementation(kotlin("stdlib-jdk8"))
-    implementation("org.incendo.interfaces:interfaces-paper:1.0.0-SNAPSHOT")
+    implementation("dev.triumphteam:triumph-gui-paper-kotlin:4.0.0-SNAPSHOT")
 }
 
 java { toolchain.languageVersion.set(JavaLanguageVersion.of(21)) }
@@ -63,6 +63,7 @@ tasks {
         dependsOn(processResources)
         archiveClassifier.set("")
         relocate("kotlin", "org.xodium.vanillaplus.kotlin")
+        relocate("dev.triumphteam.gui", "org.xodium.vanillaplus.gui")
         destinationDirectory.set(file(".server/plugins"))
         minimize()
         doLast {
