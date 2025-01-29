@@ -106,7 +106,7 @@ class SaplingModule : ModuleInterface {
             BlockTypes.FLOWERING_AZALEA_LEAVES,
             BlockTypes.MANGROVE_PROPAGULE,
             BlockTypes.PINK_PETALS,
-            TODO("Add in 1.21.5"),
+//            TODO("Add in 1.21.5"),
 //            BlockTypes.WILDFLOWERS,
             BlockTypes.SPORE_BLOSSOM,
         )

@@ -3,10 +3,20 @@
  *  All rights reserved.
  */
 
+import de.undercouch.gradle.tasks.download.Download
+import groovy.json.JsonSlurper
+import java.net.URI
+
+/*
+ *  Copyright (c) 2025. Xodium.
+ *  All rights reserved.
+ */
+
 plugins {
     id("java")
     kotlin("jvm") version "2.1.10"
     id("com.gradleup.shadow") version "9.0.0-beta6"
+    id("de.undercouch.download") version "5.6.0"
 }
 
 group = "org.xodium.vanillaplus"
@@ -65,4 +75,39 @@ tasks {
     jar { enabled = false }
     withType<JavaCompile> { options.encoding = "UTF-8" }
     register("printVersion") { doLast { println(version) } }
+    register<Download>("downloadServerJar") {
+        group = "application"
+        description = "Download the PaperMC server jar"
+        doFirst {
+            val latestBuild = (JsonSlurper().parse(
+                URI("https://api.papermc.io/v2/projects/paper/versions/$apiVersion/builds").toURL()
+            ) as? Map<*, *>)?.get("builds")?.let { builds ->
+                (builds as? List<*>)?.mapNotNull { it as? Map<*, *> }
+                    ?.findLast { it["channel"] == "default" }?.get("build")
+            } ?: throw GradleException("No build with channel='default' found.")
+            src("https://api.papermc.io/v2/projects/paper/versions/$apiVersion/builds/$latestBuild/downloads/paper-$apiVersion-$latestBuild.jar")
+            dest(file(".server/server.jar"))
+            onlyIfModified(true)
+        }
+    }
+    register("acceptEula") {
+        group = "application"
+        description = "Accept EULA before running the server"
+        doLast {
+            file(".server/eula.txt").apply {
+                if (!exists()) {
+                    createNewFile()
+                    println("Created eula.txt file.")
+                }
+                writeText("eula=true\n")
+            }.also { println("EULA has been accepted.") }
+        }
+    }
+    register<Exec>("runDevServer") {
+        group = "application"
+        description = "RUN: DEV SERVER"
+        workingDir = file(".server")
+        dependsOn("downloadServerJar", "acceptEula", "shadowJar")
+        commandLine = listOf("java", "-jar", "server.jar", "nogui")
+    }
 }

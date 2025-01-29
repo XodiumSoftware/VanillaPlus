@@ -24,15 +24,10 @@ import java.time.format.DateTimeFormatter
 
 
 class GUIModule : ModuleInterface {
-
-    private lateinit var _faqInterface: ChestInterface
-
-    override fun init() {
-        faqInterface()
-    }
+    override fun init() {}
 
     fun openFAQ(player: Player) {
-        _faqInterface.open(
+        faqInterface().open(
             PlayerViewer.of(player),
             HashMapInterfaceArguments
                 .with(ArgumentKey.of("player", Player::class.java), player)
@@ -43,8 +38,8 @@ class GUIModule : ModuleInterface {
         )
     }
 
-    private fun faqInterface() {
-        _faqInterface = ChestInterface.builder()
+    private fun faqInterface(): ChestInterface {
+        return ChestInterface.builder()
             .title(Component.text("FAQ"))
             .rows(1)
             .updates(true, 5)
