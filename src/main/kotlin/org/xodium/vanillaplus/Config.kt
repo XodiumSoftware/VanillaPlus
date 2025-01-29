@@ -5,6 +5,9 @@
 
 package org.xodium.vanillaplus
 
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
+
 object Config {
     // Configuration settings for the DoorsModule. This module controls door-related features.
     object DoorsModule {
@@ -37,13 +40,15 @@ object Config {
     // Configuration settings for the GUIModule. This module controls GUI-related features.
     object GUIModule {
         var ENABLED: Boolean = true // Enables or disables the GUIModule. Set to 'false' to disable.
+
+        var ANTI_SPAM_DURATION: Duration = 1.seconds // The duration of the anti-spam feature.
     }
 
     // Configuration settings for the SaplingModule. This module controls sapling-related features.
     object SaplingModule {
         var ENABLED: Boolean = true // Enables or disables the SaplingModule. Set to 'false' to disable.
 
-        var IGNORE_AIR_BLOCKS: Boolean = true // If it should ignore air blocks when placing custom tree.
+        var IGNORE_AIR_BLOCKS: Boolean = true // If it should ignore air blocks when placing custom tree..
         var IGNORE_STRUCTURE_VOID_BLOCKS: Boolean =
             true // If it should ignore structure void blocks when placing custom tree.
         var COPY_ENTITIES: Boolean = false // If it should copy entities from the schematic.
