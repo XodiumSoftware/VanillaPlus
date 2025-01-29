@@ -204,5 +204,5 @@ class DoorsModule : ModuleInterface {
         }?.let { block.getRelative(it.offsetX, 0, it.offsetZ) }
     }
 
-    override fun enabled(): Boolean = Config.DoorsModule.ENABLE
+    override fun enabled(): Boolean = Config.DoorsModule.ENABLED
 }

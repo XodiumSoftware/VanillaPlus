@@ -8,7 +8,7 @@ package org.xodium.vanillaplus
 object Config {
     // Configuration settings for the DoorsModule. This module controls door-related features.
     object DoorsModule {
-        var ENABLE: Boolean = true // Enables or disables the DoorsModule. Set to 'false' to disable.
+        var ENABLED: Boolean = true // Enables or disables the DoorsModule. Set to 'false' to disable.
 
         var SOUND_CLOSE_DOOR_EFFECT: String = "block_iron_door_close" // The sound effect used for closing doors.
         var SOUND_CLOSE_DOOR_PITCH: Int = 1 // The pitch of the closing doors.
@@ -34,9 +34,14 @@ object Config {
         var AUTO_CLOSE_DELAY: Int = 6 // The delay (in seconds) before automatic closure.
     }
 
+    // Configuration settings for the GUIModule. This module controls GUI-related features.
+    object GUIModule {
+        var ENABLED: Boolean = true // Enables or disables the GUIModule. Set to 'false' to disable.
+    }
+
     // Configuration settings for the SaplingModule. This module controls sapling-related features.
     object SaplingModule {
-        var ENABLE: Boolean = true // Enables or disables the SaplingModule. Set to 'false' to disable.
+        var ENABLED: Boolean = true // Enables or disables the SaplingModule. Set to 'false' to disable.
 
         var IGNORE_AIR_BLOCKS: Boolean = true // If it should ignore air blocks when placing custom tree.
         var IGNORE_STRUCTURE_VOID_BLOCKS: Boolean =

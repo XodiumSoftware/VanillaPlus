@@ -6,6 +6,7 @@
 package org.xodium.vanillaplus
 
 import org.bukkit.plugin.java.JavaPlugin
+import org.xodium.vanillaplus.commands.FAQCommand
 import org.xodium.vanillaplus.commands.ReloadCommand
 import org.xodium.vanillaplus.managers.ModuleManager
 
@@ -54,8 +55,9 @@ class VanillaPlus : JavaPlugin() {
             !isSupportedVersion() -> disablePlugin(UNSUPPORTED_VERSION_MSG)
             !isSupportedPlatform() -> disablePlugin(UNSUPPORTED_PLATFORM_MSG)
             else -> {
-                ReloadCommand
                 ModuleManager
+                ReloadCommand
+                FAQCommand
             }
         }
     }
