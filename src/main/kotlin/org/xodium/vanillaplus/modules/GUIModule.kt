@@ -13,18 +13,22 @@ import org.bukkit.inventory.ItemStack
 import org.incendo.interfaces.core.arguments.ArgumentKey
 import org.incendo.interfaces.core.arguments.HashMapInterfaceArguments
 import org.incendo.interfaces.core.click.ClickHandler
+import org.incendo.interfaces.paper.PaperInterfaceListeners
 import org.incendo.interfaces.paper.PlayerViewer
 import org.incendo.interfaces.paper.element.ItemStackElement
 import org.incendo.interfaces.paper.transform.PaperTransform
 import org.incendo.interfaces.paper.type.ChestInterface
 import org.xodium.vanillaplus.Config
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 
 class GUIModule : ModuleInterface {
-    override fun init() {}
+    override fun init() {
+        PaperInterfaceListeners.install(instance)
+    }
 
     fun openFAQ(player: Player) {
         faqInterface().open(
@@ -44,7 +48,13 @@ class GUIModule : ModuleInterface {
             .rows(1)
             .updates(true, 5)
             .clickHandler(ClickHandler.cancel())
-            .addTransform(PaperTransform.chestFill(ItemStackElement.of(ItemStack(Material.BLACK_STAINED_GLASS_PANE))))
+            .addTransform(PaperTransform.chestFill(ItemStackElement.of(ItemStack(Material.BLACK_STAINED_GLASS_PANE).apply {
+                itemMeta = itemMeta?.apply {
+                    displayName(
+                        Component.text("")
+                    )
+                }
+            })))
             .addTransform { pane, view ->
                 val clicks: Int = view.arguments().get(ArgumentKey.of("clicks", Int::class.java))
                 pane.element(
