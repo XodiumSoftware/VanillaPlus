@@ -40,7 +40,7 @@ class GuiModule : ModuleInterface {
             statelessComponent { gui ->
                 filler(gui, 0..8)
                 gui.setItem(
-                    0, ItemBuilder.from(Material.BLAZE_ROD)
+                    0, ItemBuilder.from(Material.NETHERITE_SWORD)
                         .name(p1Format("Skills"))
                         .lore(
                             listOf(
@@ -50,7 +50,6 @@ class GuiModule : ModuleInterface {
                                 "   <gray>Shortcut: <gold>/skills"
                             ).mm()
                         )
-                        .model(0)
                         .asGuiItem { player, _ -> player.performCommand("skills") })
                 gui.setItem(
                     1, ItemBuilder.from(Material.BLAZE_ROD)
@@ -63,10 +62,10 @@ class GuiModule : ModuleInterface {
                                 "   <gray>Shortcut: <gold>/dims"
                             ).mm()
                         )
-                        .model(0)
+                        .model(2)
                         .asGuiItem { player, _ -> dimsGUI().open(player) })
                 gui.setItem(
-                    3, ItemBuilder.from(Material.BLAZE_ROD)
+                    3, ItemBuilder.from(Material.LIGHT)
                         .name(p1Format("Tips"))
                         .lore(
                             listOf(
@@ -76,7 +75,6 @@ class GuiModule : ModuleInterface {
                                 "   <gray>Shortcut: <gold>/tips"
                             ).mm()
                         )
-                        .model(0)
                         .asGuiItem { player, _ -> player.performCommand("tips") })
                 gui.setItem(
                     4, ItemBuilder.from(Material.BLAZE_ROD)
@@ -89,10 +87,10 @@ class GuiModule : ModuleInterface {
                                 "   <gray>Shortcut: <gold>/rules"
                             ).mm()
                         )
-                        .model(0)
+                        .model(1)
                         .asGuiItem { player, _ -> player.performCommand("rules") })
                 gui.setItem(
-                    7, ItemBuilder.from(Material.BLAZE_ROD)
+                    7, ItemBuilder.from(Material.RED_BED)
                         .name(p1Format("Homes"))
                         .lore(
                             listOf(
@@ -102,7 +100,6 @@ class GuiModule : ModuleInterface {
                                 "   <gray>Shortcut: <gold>/homes"
                             ).mm()
                         )
-                        .model(0)
                         .asGuiItem { player, _ -> player.performCommand("homes") })
                 gui.setItem(
                     8, ItemBuilder.from(Material.BLAZE_ROD)
@@ -115,7 +112,7 @@ class GuiModule : ModuleInterface {
                                 "   <gray>Shortcut: <gold>/settings"
                             ).mm()
                         )
-                        .model(0)
+                        .model(3)
                         .asGuiItem { player, _ -> settingsGUI().open(player) })
             }
         }
@@ -129,9 +126,9 @@ class GuiModule : ModuleInterface {
             statelessComponent { gui ->
                 filler(gui, 0..4)
                 listOf(
-                    DimensionData(0, "world", "<green><bold>The Overworld", 0),
-                    DimensionData(1, "world_nether", "<red><bold>The Underworld", 0),
-                    DimensionData(2, "world_the_end", "<dark_purple><bold>The Endworld", 0)
+                    DimensionData(0, "world", "<green><bold>The Overworld", 4),
+                    DimensionData(1, "world_nether", "<red><bold>The Underworld", 5),
+                    DimensionData(2, "world_the_end", "<dark_purple><bold>The Endworld", 6)
                 ).forEach { data ->
                     val world = instance.server.getWorld(data.worldName) ?: return@forEach
                     val environment = world.environment.name.lowercase()
@@ -158,7 +155,6 @@ class GuiModule : ModuleInterface {
                         4, ItemBuilder.from(Material.BARRIER)
                             .name(p0Format("Back"))
                             .lore(listOf("<dark_gray>✖ <gray>Return to the previous menu").mm())
-                            .model(0)
                             .asGuiItem { player, _ -> faqGUI().open(player) })
 
                 }
@@ -184,13 +180,11 @@ class GuiModule : ModuleInterface {
                                 "   <gray>Shortcut: <gold>/sort"
                             ).mm()
                         )
-                        .model(0)
                         .asGuiItem { player, _ -> player.performCommand("sort") })
                 gui.setItem(
                     4, ItemBuilder.from(Material.BARRIER)
                         .name(p0Format("Back"))
                         .lore(listOf("<dark_gray>✖ <gray>Return to the previous menu").mm())
-                        .model(0)
                         .asGuiItem { player, _ -> faqGUI().open(player) })
             }
         }
