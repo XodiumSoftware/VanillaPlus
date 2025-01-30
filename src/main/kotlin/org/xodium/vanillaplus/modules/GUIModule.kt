@@ -8,6 +8,8 @@ package org.xodium.vanillaplus.modules
 import dev.triumphteam.gui.container.GuiContainer
 import dev.triumphteam.gui.paper.Gui
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder
+import dev.triumphteam.gui.paper.container.type.HopperContainerType
+import dev.triumphteam.gui.paper.container.type.PaperContainerType
 import dev.triumphteam.gui.paper.kotlin.builder.buildGui
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
@@ -189,7 +191,21 @@ class GUIModule : ModuleInterface {
                         .name(p0Format("Back"))
                         .lore(listOf("<dark_gray>✖ <gray>Return to the previous menu").mm())
                         .model(0)
-                        .asGuiItem { player, _ -> faqGUI().open(player) })
+                        .asGuiItem { player, _ -> testGUI().open(player) }) // TODO: change back to faqGUI() after testing testGUI()
+            }
+        }
+    }
+
+    fun testGUI(): Gui {
+        return buildGui {
+            containerType = HopperContainerType.of() as? PaperContainerType
+            spamPreventionDuration = antiSpamDuration
+            title(p0Format("TEST"))
+            statelessComponent { gui ->
+                gui.setItem(
+                    0, ItemBuilder.from(Material.DIAMOND)
+                        .name("Click me!".mm())
+                        .asGuiItem { player, _ -> player.sendMessage("You have clicked on the diamond item!".mm()) })
             }
         }
     }
