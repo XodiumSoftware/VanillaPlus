@@ -26,7 +26,7 @@ object DimsCommand {
                     .executes(Command { ctx: CommandContext<CommandSourceStack?>? ->
                         val cs = ctx?.source?.sender ?: return@Command 0
                         try {
-                            GuiModule().faqGUI().open(cs as Player)
+                            GuiModule().dimsGUI().open(cs as Player)
                         } catch (e: Exception) {
                             instance.logger.severe("Failed to open GUI: ${e.message}")
                             cs.sendMessage(Utils.MM.deserialize("${VanillaPlus.PREFIX}<red>Failed to open GUI. Check server logs for details."))
