@@ -122,16 +122,16 @@ class GUIModule : ModuleInterface {
     }
 
     fun dimGUI(): Gui {
-//        TODO: change to an Hopper GUI
         return buildGui {
+            containerType = HopperContainerType.of() as? PaperContainerType
             spamPreventionDuration = antiSpamDuration
             title(p0Format("Dimensions"))
             statelessComponent { gui ->
                 filler(gui)
                 listOf(
                     DimensionData(0, "world", "<green><bold>The Overworld", 0),
-                    DimensionData(1, "world_nether", "<red><bold>The Underworld", 0),
-                    DimensionData(2, "world_the_end", "<dark_purple><bold>The Endworld", 0)
+                    DimensionData(2, "world_nether", "<red><bold>The Underworld", 0),
+                    DimensionData(4, "world_the_end", "<dark_purple><bold>The Endworld", 0)
                 ).forEach { data ->
                     val world = instance.server.getWorld(data.worldName) ?: return@forEach
                     val environment = world.environment.name.lowercase()
@@ -167,8 +167,8 @@ class GUIModule : ModuleInterface {
     }
 
     fun settingsGUI(): Gui {
-        //        TODO: change to an Hopper GUI
         return buildGui {
+            containerType = HopperContainerType.of() as? PaperContainerType
             spamPreventionDuration = antiSpamDuration
             title(p0Format("Settings"))
             statelessComponent { gui ->
@@ -191,21 +191,7 @@ class GUIModule : ModuleInterface {
                         .name(p0Format("Back"))
                         .lore(listOf("<dark_gray>✖ <gray>Return to the previous menu").mm())
                         .model(0)
-                        .asGuiItem { player, _ -> testGUI().open(player) }) // TODO: change back to faqGUI() after testing testGUI()
-            }
-        }
-    }
-
-    fun testGUI(): Gui {
-        return buildGui {
-            containerType = HopperContainerType.of() as? PaperContainerType
-            spamPreventionDuration = antiSpamDuration
-            title(p0Format("TEST"))
-            statelessComponent { gui ->
-                gui.setItem(
-                    0, ItemBuilder.from(Material.DIAMOND)
-                        .name("Click me!".mm())
-                        .asGuiItem { player, _ -> player.sendMessage("You have clicked on the diamond item!".mm()) })
+                        .asGuiItem { player, _ -> faqGUI().open(player) })
             }
         }
     }
