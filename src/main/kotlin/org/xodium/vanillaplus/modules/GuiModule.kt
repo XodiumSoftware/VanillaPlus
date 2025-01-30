@@ -23,7 +23,7 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 
 
 //TODO: refactor
-class GUIModule : ModuleInterface {
+class GuiModule : ModuleInterface {
     private val antiSpamDuration = Config.GUIModule.ANTI_SPAM_DURATION
 
     private fun String.mm() = MM.deserialize(this)

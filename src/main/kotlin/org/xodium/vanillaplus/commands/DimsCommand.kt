@@ -16,25 +16,25 @@ import org.bukkit.entity.Player
 import org.xodium.vanillaplus.Utils
 import org.xodium.vanillaplus.VanillaPlus
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.modules.GUIModule
+import org.xodium.vanillaplus.modules.GuiModule
 
-object FAQCommand {
+object DimsCommand {
     init {
         instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) {
             it.registrar().register(
-                Commands.literal("faq")
+                Commands.literal("dims")
                     .executes(Command { ctx: CommandContext<CommandSourceStack?>? ->
                         val cs = ctx?.source?.sender ?: return@Command 0
                         try {
-                            GUIModule().faqGUI().open(cs as Player)
+                            GuiModule().faqGUI().open(cs as Player)
                         } catch (e: Exception) {
-                            instance.logger.severe("Failed to open FAQ: ${e.message}")
-                            cs.sendMessage(Utils.MM.deserialize("${VanillaPlus.PREFIX}<red>Failed to open FAQ. Check server logs for details."))
+                            instance.logger.severe("Failed to open GUI: ${e.message}")
+                            cs.sendMessage(Utils.MM.deserialize("${VanillaPlus.PREFIX}<red>Failed to open GUI. Check server logs for details."))
                         }
                         Command.SINGLE_SUCCESS
                     })
                     .build(),
-                "Opens the FAQ GUI",
+                "Opens the Dimensions GUI",
             )
         }
     }

@@ -6,8 +6,10 @@
 package org.xodium.vanillaplus
 
 import org.bukkit.plugin.java.JavaPlugin
-import org.xodium.vanillaplus.commands.FAQCommand
+import org.xodium.vanillaplus.commands.DimsCommand
+import org.xodium.vanillaplus.commands.FaqCommand
 import org.xodium.vanillaplus.commands.ReloadCommand
+import org.xodium.vanillaplus.commands.SettingsCommand
 import org.xodium.vanillaplus.managers.ModuleManager
 
 
@@ -57,7 +59,9 @@ class VanillaPlus : JavaPlugin() {
             else -> {
                 ModuleManager
                 ReloadCommand
-                FAQCommand
+                FaqCommand
+                DimsCommand
+                SettingsCommand
             }
         }
     }
