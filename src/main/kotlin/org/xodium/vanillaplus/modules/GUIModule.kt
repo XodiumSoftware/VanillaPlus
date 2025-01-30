@@ -197,13 +197,11 @@ class GUIModule : ModuleInterface {
     }
 
     private fun filler(gui: GuiContainer<Player, ItemStack>, range: IntRange) {
-        for (slot in range) {
-            gui.setItem(
-                slot, ItemBuilder.from(Material.BLACK_STAINED_GLASS_PANE)
-                    .name("".mm())
-                    .asGuiItem()
-            )
-        }
+        for (slot in range) gui.setItem(
+            slot, ItemBuilder.from(Material.BLACK_STAINED_GLASS_PANE)
+                .name("".mm())
+                .asGuiItem()
+        )
     }
 
     override fun enabled(): Boolean = Config.GUIModule.ENABLED
