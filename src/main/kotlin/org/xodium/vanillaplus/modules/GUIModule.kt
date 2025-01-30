@@ -20,6 +20,7 @@ import org.xodium.vanillaplus.data.DimensionData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 
 
+//TODO: refactor
 class GUIModule : ModuleInterface {
     private val antiSpamDuration = Config.GUIModule.ANTI_SPAM_DURATION
 
@@ -128,7 +129,7 @@ class GUIModule : ModuleInterface {
                 listOf(
                     DimensionData(0, "world", "<green><bold>The Overworld", 0),
                     DimensionData(1, "world_nether", "<red><bold>The Underworld", 0),
-                    DimensionData(2, "world_the_end", "<purple><bold>The Endworld", 0) // FIX: <purple> is not a tag
+                    DimensionData(2, "world_the_end", "<dark_purple><bold>The Endworld", 0)
                 ).forEach { data ->
                     val world = instance.server.getWorld(data.worldName) ?: return@forEach
                     val environment = world.environment.name.lowercase()
