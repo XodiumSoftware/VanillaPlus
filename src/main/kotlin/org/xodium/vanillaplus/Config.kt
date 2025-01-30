@@ -37,9 +37,9 @@ object Config {
         var AUTO_CLOSE_DELAY: Int = 6 // The delay (in seconds) before automatic closure.
     }
 
-    // Configuration settings for the GUIModule. This module controls GUI-related features.
-    object GUIModule {
-        var ENABLED: Boolean = true // Enables or disables the GUIModule. Set to 'false' to disable.
+    // Configuration settings for the GuiModule. This module controls GUI-related features.
+    object GuiModule {
+        var ENABLED: Boolean = true // Enables or disables the GuiModule. Set to 'false' to disable.
 
         var ANTI_SPAM_DURATION: Duration = 1.seconds // The duration of the anti-spam feature.
     }
