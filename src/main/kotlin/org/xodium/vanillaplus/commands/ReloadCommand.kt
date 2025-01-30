@@ -33,7 +33,7 @@ object ReloadCommand {
                     .executes(Command { ctx: CommandContext<CommandSourceStack?>? ->
                         val cs = ctx?.source?.sender ?: return@Command 0
                         try {
-//                            TODO: Implement reload logic
+                            TODO("Not yet implemented")
 //                            val pluginManager = instance.server.pluginManager
 //                            pluginManager.disablePlugin(instance)
 //                            pluginManager.enablePlugin(instance)

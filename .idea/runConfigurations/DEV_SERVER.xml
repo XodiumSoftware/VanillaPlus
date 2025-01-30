@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="DEV SERVER" type="JarApplication">
+    <option name="JAR_PATH" value="server.jar" />
+    <option name="PROGRAM_PARAMETERS" value="nogui" />
+    <option name="WORKING_DIRECTORY" value="$ProjectFileDir$\.server" />
+    <option name="ALTERNATIVE_JRE_PATH" />
+    <method v="2">
+      <option name="RunConfigurationTask" enabled="true" run_configuration_name="VanillaPlus [shadowJar]" run_configuration_type="GradleRunConfiguration" />
+      <option name="RunConfigurationTask" enabled="true" run_configuration_name="VanillaPlus [acceptEula]" run_configuration_type="GradleRunConfiguration" />
+      <option name="RunConfigurationTask" enabled="true" run_configuration_name="VanillaPlus [downloadServerJar]" run_configuration_type="GradleRunConfiguration" />
+    </method>
+  </configuration>
+</component>

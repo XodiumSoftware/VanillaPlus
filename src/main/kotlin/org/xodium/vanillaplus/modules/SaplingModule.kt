@@ -106,7 +106,8 @@ class SaplingModule : ModuleInterface {
             BlockTypes.FLOWERING_AZALEA_LEAVES,
             BlockTypes.MANGROVE_PROPAGULE,
             BlockTypes.PINK_PETALS,
-//            BlockTypes.WILDFLOWERS, // TODO: Add in 1.21.5
+//            TODO("Add in 1.21.5"),
+//            BlockTypes.WILDFLOWERS,
             BlockTypes.SPORE_BLOSSOM,
         )
     }
@@ -185,5 +186,5 @@ class SaplingModule : ModuleInterface {
         return true
     }
 
-    override fun enabled(): Boolean = Config.SaplingModule.ENABLE
+    override fun enabled(): Boolean = Config.SaplingModule.ENABLED
 }
