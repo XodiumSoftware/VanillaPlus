@@ -24,7 +24,7 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 
 //TODO: refactor
 class GuiModule : ModuleInterface {
-    private val antiSpamDuration = Config.GUIModule.ANTI_SPAM_DURATION
+    private val antiSpamDuration = Config.GuiModule.ANTI_SPAM_DURATION
 
     private fun String.mm() = MM.deserialize(this)
     private fun List<String>.mm() = map { it.mm() }
@@ -204,5 +204,5 @@ class GuiModule : ModuleInterface {
         )
     }
 
-    override fun enabled(): Boolean = Config.GUIModule.ENABLED
+    override fun enabled(): Boolean = Config.GuiModule.ENABLED
 }
