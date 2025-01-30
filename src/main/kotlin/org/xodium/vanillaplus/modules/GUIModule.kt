@@ -38,7 +38,7 @@ class GUIModule : ModuleInterface {
             spamPreventionDuration = antiSpamDuration
             title(p0Format("FAQ"))
             statelessComponent { gui ->
-                filler(gui)
+                filler(gui, 0..8)
                 gui.setItem(
                     0, ItemBuilder.from(Material.BLAZE_ROD)
                         .name(p1Format("Skills"))
@@ -127,11 +127,11 @@ class GUIModule : ModuleInterface {
             spamPreventionDuration = antiSpamDuration
             title(p0Format("Dimensions"))
             statelessComponent { gui ->
-                filler(gui)
+                filler(gui, 0..4)
                 listOf(
                     DimensionData(0, "world", "<green><bold>The Overworld", 0),
-                    DimensionData(2, "world_nether", "<red><bold>The Underworld", 0),
-                    DimensionData(4, "world_the_end", "<dark_purple><bold>The Endworld", 0)
+                    DimensionData(1, "world_nether", "<red><bold>The Underworld", 0),
+                    DimensionData(2, "world_the_end", "<dark_purple><bold>The Endworld", 0)
                 ).forEach { data ->
                     val world = instance.server.getWorld(data.worldName) ?: return@forEach
                     val environment = world.environment.name.lowercase()
@@ -155,7 +155,7 @@ class GUIModule : ModuleInterface {
                             .model(data.itemModelNumber)
                             .asGuiItem { player, _ -> player.performCommand("cmi rt ${data.worldName}") })
                     gui.setItem(
-                        8, ItemBuilder.from(Material.BARRIER)
+                        4, ItemBuilder.from(Material.BARRIER)
                             .name(p0Format("Back"))
                             .lore(listOf("<dark_gray>✖ <gray>Return to the previous menu").mm())
                             .model(0)
@@ -172,7 +172,7 @@ class GUIModule : ModuleInterface {
             spamPreventionDuration = antiSpamDuration
             title(p0Format("Settings"))
             statelessComponent { gui ->
-                filler(gui)
+                filler(gui, 0..4)
                 gui.setItem(
                     0, ItemBuilder.from(Material.CHEST)
                         .name(p1Format("BestTools"))
@@ -187,7 +187,7 @@ class GUIModule : ModuleInterface {
                         .model(0)
                         .asGuiItem { player, _ -> player.performCommand("sort") })
                 gui.setItem(
-                    8, ItemBuilder.from(Material.BARRIER)
+                    4, ItemBuilder.from(Material.BARRIER)
                         .name(p0Format("Back"))
                         .lore(listOf("<dark_gray>✖ <gray>Return to the previous menu").mm())
                         .model(0)
@@ -196,12 +196,14 @@ class GUIModule : ModuleInterface {
         }
     }
 
-    private fun filler(gui: GuiContainer<Player, ItemStack>) {
-        for (slot in 0 until 9) gui.setItem(
-            slot, ItemBuilder.from(Material.BLACK_STAINED_GLASS_PANE)
-                .name("".mm())
-                .asGuiItem()
-        )
+    private fun filler(gui: GuiContainer<Player, ItemStack>, range: IntRange) {
+        for (slot in range) {
+            gui.setItem(
+                slot, ItemBuilder.from(Material.BLACK_STAINED_GLASS_PANE)
+                    .name("".mm())
+                    .asGuiItem()
+            )
+        }
     }
 
     override fun enabled(): Boolean = Config.GUIModule.ENABLED
