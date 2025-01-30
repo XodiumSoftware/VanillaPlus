@@ -64,7 +64,7 @@ class GuiModule : ModuleInterface {
                             ).mm()
                         )
                         .model(0)
-                        .asGuiItem { player, _ -> dimGUI().open(player) })
+                        .asGuiItem { player, _ -> dimsGUI().open(player) })
                 gui.setItem(
                     3, ItemBuilder.from(Material.BLAZE_ROD)
                         .name(p1Format("Tips"))
@@ -121,7 +121,7 @@ class GuiModule : ModuleInterface {
         }
     }
 
-    fun dimGUI(): Gui {
+    fun dimsGUI(): Gui {
         return buildGui {
             containerType = HopperContainerType.of() as? PaperContainerType
             spamPreventionDuration = antiSpamDuration
