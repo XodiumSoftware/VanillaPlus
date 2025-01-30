@@ -152,7 +152,7 @@ class GuiModule : ModuleInterface {
                             .model(data.itemModelNumber)
                             .asGuiItem { player, _ -> player.performCommand("cmi rt ${data.worldName}") })
                     gui.setItem(
-                        4, ItemBuilder.from(Material.BARRIER)
+                        4, ItemBuilder.from(Material.RED_STAINED_GLASS_PANE)
                             .name(p0Format("Back"))
                             .lore(listOf("<dark_gray>✖ <gray>Return to the previous menu").mm())
                             .asGuiItem { player, _ -> faqGUI().open(player) })
@@ -182,7 +182,7 @@ class GuiModule : ModuleInterface {
                         )
                         .asGuiItem { player, _ -> player.performCommand("sort") })
                 gui.setItem(
-                    4, ItemBuilder.from(Material.BARRIER)
+                    4, ItemBuilder.from(Material.RED_STAINED_GLASS_PANE)
                         .name(p0Format("Back"))
                         .lore(listOf("<dark_gray>✖ <gray>Return to the previous menu").mm())
                         .asGuiItem { player, _ -> faqGUI().open(player) })
