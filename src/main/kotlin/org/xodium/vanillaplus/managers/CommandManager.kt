@@ -8,6 +8,7 @@
 package org.xodium.vanillaplus.managers
 
 import com.mojang.brigadier.Command
+import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import org.bukkit.entity.Player
@@ -27,17 +28,14 @@ object CommandManager {
         instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
             event.registrar().register(
                 Commands.literal("vanillaplus")
-                    .requires { cs -> cs.sender.hasPermission(Perms.Command.USE) }
+                    .requires { it.sender.hasPermission(Perms.Command.USE) }
                     .then(
                         Commands.literal("reload")
-                            .requires { cs -> cs.sender.hasPermission(Perms.Command.RELOAD) }
+                            .requires { it.sender.hasPermission(Perms.Command.RELOAD) }
                             .executes(Command { ctx ->
                                 val sender = ctx?.source?.sender ?: return@Command 0
                                 try {
                                     //TODO("Not yet implemented")
-                                    //val pluginManager = instance.server.pluginManager
-                                    //pluginManager.disablePlugin(instance)
-                                    //pluginManager.enablePlugin(instance)
                                     instance.logger.info("Reloaded successfully")
                                     sender.sendMessage("${VanillaPlus.PREFIX}<green>Reloaded successfully.".mm())
                                 } catch (e: Exception) {
@@ -50,53 +48,43 @@ object CommandManager {
                     )
                     .then(
                         Commands.literal("faq")
-                            .requires { cs -> cs.sender.hasPermission(Perms.Command.Gui.FAQ) }
-                            .executes(Command { ctx ->
-                                val sender = ctx?.source?.sender ?: return@Command 0
-                                try {
-                                    gui.faqGUI().open(sender as Player)
-                                } catch (e: Exception) {
-                                    instance.logger.severe("Failed to open: ${e.message}")
-                                    e.printStackTrace()
-                                    sender.sendMessage("${VanillaPlus.PREFIX}<red>Failed to open. Check server logs for details.".mm())
-                                }
-                                Command.SINGLE_SUCCESS
-                            })
+                            .requires { it.sender.hasPermission(Perms.Command.Gui.FAQ) }
+                            .executes(Command { tryCatch(it) { gui.faqGUI().open(it) } })
                     )
                     .then(
                         Commands.literal("dims")
-                            .requires { cs -> cs.sender.hasPermission(Perms.Command.Gui.DIMS) }
-                            .executes(Command { ctx ->
-                                val sender = ctx?.source?.sender ?: return@Command 0
-                                try {
-                                    gui.dimsGUI().open(sender as Player)
-                                } catch (e: Exception) {
-                                    instance.logger.severe("Failed to open: ${e.message}")
-                                    e.printStackTrace()
-                                    sender.sendMessage("${VanillaPlus.PREFIX}<red>Failed to open. Check server logs for details.".mm())
-                                }
-                                Command.SINGLE_SUCCESS
-                            })
+                            .requires { it.sender.hasPermission(Perms.Command.Gui.DIMS) }
+                            .executes(Command { tryCatch(it) { gui.dimsGUI().open(it) } })
                     )
                     .then(
                         Commands.literal("settings")
-                            .requires { cs -> cs.sender.hasPermission(Perms.Command.Gui.SETTINGS) }
-                            .executes(Command { ctx ->
-                                val sender = ctx?.source?.sender ?: return@Command 0
-                                try {
-                                    gui.settingsGUI().open(sender as Player)
-                                } catch (e: Exception) {
-                                    instance.logger.severe("Failed to open: ${e.message}")
-                                    e.printStackTrace()
-                                    sender.sendMessage("${VanillaPlus.PREFIX}<red>Failed to open. Check server logs for details.".mm())
-                                }
-                                Command.SINGLE_SUCCESS
-                            })
+                            .requires { it.sender.hasPermission(Perms.Command.Gui.SETTINGS) }
+                            .executes(Command { tryCatch(it) { gui.settingsGUI().open(it) } })
                     )
                     .build(),
                 "VanillaPlus plugin",
                 mutableListOf("vp")
             )
+        }
+    }
+
+    /**
+     * Helper function to execute actions with standardized error handling.
+     *
+     * @param ctx The command context.
+     * @param action The action to execute, receiving a Player as a parameter.
+     * @return Command.SINGLE_SUCCESS after execution.
+     */
+    private fun tryCatch(ctx: CommandContext<*>?, action: (Player) -> Unit): Int {
+        val sender = ctx?.source as? Player ?: return Command.SINGLE_SUCCESS
+        return try {
+            action(sender)
+            Command.SINGLE_SUCCESS
+        } catch (e: Exception) {
+            instance.logger.severe("An Error has occured: ${e.message}")
+            e.printStackTrace()
+            sender.sendMessage("${VanillaPlus.PREFIX}<red>An Error has occured. Check server logs for details.".mm())
+            Command.SINGLE_SUCCESS
         }
     }
 }
