@@ -13,16 +13,16 @@ dependencies:
 permissions:
   vanillaplus.use:
     description: Allows use of the VanillaPlus commands
-    default: default
+    default: true
   vanillaplus.reload:
     description: Allows reloading the VanillaPlus plugin
     default: op
   vanillaplus.gui.faq:
     description: Allows viewing the VanillaPlus FAQ
-    default: default
+    default: true
   vanillaplus.gui.dims:
     description: Allows viewing the VanillaPlus dimensions
-    default: default
+    default: true
   vanillaplus.gui.settings:
     description: Allows viewing the VanillaPlus settings
-    default: default
+    default: true
