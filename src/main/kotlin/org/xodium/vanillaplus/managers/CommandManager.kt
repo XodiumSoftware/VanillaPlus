@@ -9,6 +9,7 @@ package org.xodium.vanillaplus.managers
 
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.context.CommandContext
+import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import org.bukkit.entity.Player
@@ -71,12 +72,12 @@ object CommandManager {
     /**
      * Helper function to execute actions with standardized error handling.
      *
-     * @param ctx The command context.
+     * @param ctx The CommandContext to get the Player from.
      * @param action The action to execute, receiving a Player as a parameter.
      * @return Command.SINGLE_SUCCESS after execution.
      */
-    private fun tryCatch(ctx: CommandContext<*>?, action: (Player) -> Unit): Int {
-        val sender = ctx?.source as? Player ?: return Command.SINGLE_SUCCESS
+    private fun tryCatch(ctx: CommandContext<CommandSourceStack>, action: (Player) -> Unit): Int {
+        val sender = ctx.source?.sender as Player
         return try {
             action(sender)
             Command.SINGLE_SUCCESS
