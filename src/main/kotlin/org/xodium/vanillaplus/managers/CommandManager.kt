@@ -34,15 +34,17 @@ object CommandManager {
                         Commands.literal("reload")
                             .requires { it.sender.hasPermission(Perms.Command.RELOAD) }
                             .executes(Command { ctx ->
-                                val sender = ctx?.source?.sender ?: return@Command 0
+                                val sender = ctx?.source?.sender as Player
                                 try {
                                     //TODO("Not yet implemented")
                                     instance.logger.info("Reloaded successfully")
                                     sender.sendMessage("${VanillaPlus.PREFIX}<green>Reloaded successfully.".mm())
+                                    Command.SINGLE_SUCCESS
                                 } catch (e: Exception) {
                                     instance.logger.severe("Failed to reload: ${e.message}")
                                     e.printStackTrace()
                                     sender.sendMessage("${VanillaPlus.PREFIX}<red>Failed to reload. Check server logs for details.".mm())
+                                    Command.SINGLE_SUCCESS
                                 }
                                 Command.SINGLE_SUCCESS
                             })
