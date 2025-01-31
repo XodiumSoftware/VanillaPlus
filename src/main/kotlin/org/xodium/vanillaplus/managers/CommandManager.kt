@@ -30,7 +30,7 @@ object CommandManager {
                     .executes(Command { ctx: CommandContext<CommandSourceStack?>? ->
                         val cs = ctx?.source?.sender ?: return@Command 0
                         try {
-                            TODO("Not yet implemented")
+//                            TODO("Not yet implemented")
 //                            val pluginManager = instance.server.pluginManager
 //                            pluginManager.disablePlugin(instance)
 //                            pluginManager.enablePlugin(instance)
@@ -43,7 +43,7 @@ object CommandManager {
                         Command.SINGLE_SUCCESS
                     })
                     .build(),
-                "Reloads the VanillaPlus plugin",
+                "Reloads the plugin",
                 mutableListOf("vp")
             )
             registrar.register(
@@ -53,8 +53,8 @@ object CommandManager {
                         try {
                             GuiModule().faqGUI().open(cs as Player)
                         } catch (e: Exception) {
-                            instance.logger.severe("Failed to open GUI: ${e.message}")
-                            cs.sendMessage(Utils.MM.deserialize("${VanillaPlus.PREFIX}<red>Failed to open GUI. Check server logs for details."))
+                            instance.logger.severe("Failed to open: ${e.message}")
+                            cs.sendMessage(Utils.MM.deserialize("${VanillaPlus.PREFIX}<red>Failed to open. Check server logs for details."))
                         }
                         Command.SINGLE_SUCCESS
                     })
@@ -68,8 +68,8 @@ object CommandManager {
                         try {
                             GuiModule().dimsGUI().open(cs as Player)
                         } catch (e: Exception) {
-                            instance.logger.severe("Failed to open GUI: ${e.message}")
-                            cs.sendMessage(Utils.MM.deserialize("${VanillaPlus.PREFIX}<red>Failed to open GUI. Check server logs for details."))
+                            instance.logger.severe("Failed to open: ${e.message}")
+                            cs.sendMessage(Utils.MM.deserialize("${VanillaPlus.PREFIX}<red>Failed to open. Check server logs for details."))
                         }
                         Command.SINGLE_SUCCESS
                     })
@@ -83,8 +83,8 @@ object CommandManager {
                         try {
                             GuiModule().settingsGUI().open(cs as Player)
                         } catch (e: Exception) {
-                            instance.logger.severe("Failed to open GUI: ${e.message}")
-                            cs.sendMessage(Utils.MM.deserialize("${VanillaPlus.PREFIX}<red>Failed to open GUI. Check server logs for details."))
+                            instance.logger.severe("Failed to open: ${e.message}")
+                            cs.sendMessage(Utils.MM.deserialize("${VanillaPlus.PREFIX}<red>Failed to open. Check server logs for details."))
                         }
                         Command.SINGLE_SUCCESS
                     })
