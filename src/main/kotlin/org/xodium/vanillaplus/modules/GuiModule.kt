@@ -17,7 +17,7 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.Config
-import org.xodium.vanillaplus.Utils.MM
+import org.xodium.vanillaplus.Utils.mm
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.DimensionData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
@@ -27,9 +27,6 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 //FIX: ModelData not working
 class GuiModule : ModuleInterface {
     private val antiSpamDuration = Config.GuiModule.ANTI_SPAM_DURATION
-
-    private fun String.mm() = MM.deserialize(this)
-    private fun List<String>.mm() = map { it.mm() }
 
     private fun birdflopFormat(p0: String): Component = "<b><gradient:#CB2D3E:#EF473A>$p0</gradient></b>".mm()
     private fun mangoFormat(p0: String): Component = "<b><gradient:#FFE259:#FFA751>$p0</gradient></b>".mm()

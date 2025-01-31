@@ -25,6 +25,8 @@ import java.util.*
 object Utils {
     private val logger = instance.logger
     val MM: MiniMessage = MiniMessage.miniMessage()
+    fun String.mm() = MM.deserialize(this)
+    fun List<String>.mm() = map { it.mm() }
 
     /**
      * Copies all files from a directory inside the plugin JAR to a target directory in the filesystem.
