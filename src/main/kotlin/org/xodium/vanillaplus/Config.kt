@@ -8,8 +8,13 @@ package org.xodium.vanillaplus
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
+/**
+ * Configuration settings for the VanillaPlus plugin.
+ */
 object Config {
-    // Configuration settings for the DoorsModule. This module controls door-related features.
+    /**
+     * Configuration settings for the MainModule. This module controls the main features of the plugin.
+     */
     object DoorsModule {
         var ENABLED: Boolean = true // Enables or disables the DoorsModule. Set to 'false' to disable.
 
@@ -37,14 +42,18 @@ object Config {
         var AUTO_CLOSE_DELAY: Int = 6 // The delay (in seconds) before automatic closure.
     }
 
-    // Configuration settings for the GuiModule. This module controls GUI-related features.
+    /**
+     * Configuration settings for the GuiModule. This module controls the GUI features of the plugin.
+     */
     object GuiModule {
         var ENABLED: Boolean = true // Enables or disables the GuiModule. Set to 'false' to disable.
 
         var ANTI_SPAM_DURATION: Duration = 1.seconds // The duration of the anti-spam feature.
     }
 
-    // Configuration settings for the SaplingModule. This module controls sapling-related features.
+    /**
+     * Configuration settings for the SaplingModule. This module controls the sapling features of the plugin.
+     */
     object SaplingModule {
         var ENABLED: Boolean = true // Enables or disables the SaplingModule. Set to 'false' to disable.
 

@@ -10,3 +10,19 @@ dependencies:
       load: BEFORE
       required: true
       join-classpath: true
+permissions:
+  vanillaplus.use:
+    description: Allows use of the VanillaPlus commands
+    default: default
+  vanillaplus.reload:
+    description: Allows reloading the VanillaPlus plugin
+    default: op
+  vanillaplus.gui.faq:
+    description: Allows viewing the VanillaPlus FAQ
+    default: default
+  vanillaplus.gui.dims:
+    description: Allows viewing the VanillaPlus dimensions
+    default: default
+  vanillaplus.gui.settings:
+    description: Allows viewing the VanillaPlus settings
+    default: default
