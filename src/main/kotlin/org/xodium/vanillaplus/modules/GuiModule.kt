@@ -6,6 +6,7 @@
 package org.xodium.vanillaplus.modules
 
 import dev.triumphteam.gui.container.GuiContainer
+import dev.triumphteam.gui.item.GuiItem
 import dev.triumphteam.gui.paper.Gui
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder
 import dev.triumphteam.gui.paper.container.type.HopperContainerType
@@ -23,25 +24,26 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 
 
 //TODO: refactor
+//FIX: ModelData not working
 class GuiModule : ModuleInterface {
     private val antiSpamDuration = Config.GuiModule.ANTI_SPAM_DURATION
 
     private fun String.mm() = MM.deserialize(this)
     private fun List<String>.mm() = map { it.mm() }
 
-    private fun p0Format(p0: String): Component = "<b><gradient:#CB2D3E:#EF473A>$p0</gradient></b>".mm()
-    private fun p1Format(p0: String): Component = "<b><gradient:#FFE259:#FFA751>$p0</gradient></b>".mm()
+    private fun birdflopFormat(p0: String): Component = "<b><gradient:#CB2D3E:#EF473A>$p0</gradient></b>".mm()
+    private fun mangoFormat(p0: String): Component = "<b><gradient:#FFE259:#FFA751>$p0</gradient></b>".mm()
     private fun worldSizeFormat(p0: Int): String = if (p0 >= 1000) "${p0 / 1000}k" else p0.toString()
 
     fun faqGUI(): Gui {
         return buildGui {
             spamPreventionDuration = antiSpamDuration
-            title(p0Format("FAQ"))
+            title(birdflopFormat("FAQ"))
             statelessComponent { gui ->
                 filler(gui, 0..8)
                 gui.setItem(
                     0, ItemBuilder.from(Material.NETHERITE_SWORD)
-                        .name(p1Format("Skills"))
+                        .name(mangoFormat("Skills"))
                         .lore(
                             listOf(
                                 "<dark_gray>▶ <gray>Click the item to open <dark_gray>◀",
@@ -53,7 +55,7 @@ class GuiModule : ModuleInterface {
                         .asGuiItem { player, _ -> player.performCommand("skills") })
                 gui.setItem(
                     1, ItemBuilder.from(Material.BLAZE_ROD)
-                        .name(p1Format("Dimensions"))
+                        .name(mangoFormat("Dimensions"))
                         .lore(
                             listOf(
                                 "<dark_gray>▶ <gray>Click the item to open <dark_gray>◀",
@@ -66,7 +68,7 @@ class GuiModule : ModuleInterface {
                         .asGuiItem { player, _ -> dimsGUI().open(player) })
                 gui.setItem(
                     3, ItemBuilder.from(Material.LIGHT)
-                        .name(p1Format("Tips"))
+                        .name(mangoFormat("Tips"))
                         .lore(
                             listOf(
                                 "<dark_gray>▶ <gray>Click the item to open <dark_gray>◀",
@@ -78,7 +80,7 @@ class GuiModule : ModuleInterface {
                         .asGuiItem { player, _ -> player.performCommand("tips") })
                 gui.setItem(
                     4, ItemBuilder.from(Material.BLAZE_ROD)
-                        .name(p1Format("Rules"))
+                        .name(mangoFormat("Rules"))
                         .lore(
                             listOf(
                                 "<dark_gray>▶ <gray>Click the item to open <dark_gray>◀",
@@ -91,7 +93,7 @@ class GuiModule : ModuleInterface {
                         .asGuiItem { player, _ -> player.performCommand("rules") })
                 gui.setItem(
                     7, ItemBuilder.from(Material.RED_BED)
-                        .name(p1Format("Homes"))
+                        .name(mangoFormat("Homes"))
                         .lore(
                             listOf(
                                 "<dark_gray>▶ <gray>Click the item to open <dark_gray>◀",
@@ -103,7 +105,7 @@ class GuiModule : ModuleInterface {
                         .asGuiItem { player, _ -> player.performCommand("homes") })
                 gui.setItem(
                     8, ItemBuilder.from(Material.BLAZE_ROD)
-                        .name(p1Format("Settings"))
+                        .name(mangoFormat("Settings"))
                         .lore(
                             listOf(
                                 "<dark_gray>▶ <gray>Click the item to open <dark_gray>◀",
@@ -122,7 +124,7 @@ class GuiModule : ModuleInterface {
         return buildGui {
             containerType = HopperContainerType.of() as? PaperContainerType
             spamPreventionDuration = antiSpamDuration
-            title(p0Format("Dimensions"))
+            title(birdflopFormat("Dimensions"))
             statelessComponent { gui ->
                 filler(gui, 0..4)
                 listOf(
@@ -151,12 +153,7 @@ class GuiModule : ModuleInterface {
                             )
                             .model(data.itemModelNumber)
                             .asGuiItem { player, _ -> player.performCommand("cmi rt ${data.worldName}") })
-                    gui.setItem(
-                        4, ItemBuilder.from(Material.RED_STAINED_GLASS_PANE)
-                            .name(p0Format("Back"))
-                            .lore(listOf("<dark_gray>✖ <gray>Return to the previous menu").mm())
-                            .asGuiItem { player, _ -> faqGUI().open(player) })
-
+                    gui.setItem(4, backButton())
                 }
             }
         }
@@ -166,12 +163,12 @@ class GuiModule : ModuleInterface {
         return buildGui {
             containerType = HopperContainerType.of() as? PaperContainerType
             spamPreventionDuration = antiSpamDuration
-            title(p0Format("Settings"))
+            title(birdflopFormat("Settings"))
             statelessComponent { gui ->
                 filler(gui, 0..4)
                 gui.setItem(
                     0, ItemBuilder.from(Material.CHEST)
-                        .name(p1Format("BestTools"))
+                        .name(mangoFormat("BestTools"))
                         .lore(
                             listOf(
                                 "<dark_gray>▶ <gray>Click the item to open <dark_gray>◀",
@@ -181,13 +178,16 @@ class GuiModule : ModuleInterface {
                             ).mm()
                         )
                         .asGuiItem { player, _ -> player.performCommand("sort") })
-                gui.setItem(
-                    4, ItemBuilder.from(Material.RED_STAINED_GLASS_PANE)
-                        .name(p0Format("Back"))
-                        .lore(listOf("<dark_gray>✖ <gray>Return to the previous menu").mm())
-                        .asGuiItem { player, _ -> faqGUI().open(player) })
+                gui.setItem(4, backButton())
             }
         }
+    }
+
+    private fun backButton(): GuiItem<Player, ItemStack> {
+        return ItemBuilder.from(Material.RED_STAINED_GLASS_PANE)
+            .name(birdflopFormat("Back"))
+            .lore(listOf("<dark_gray>✖ <gray>Return to the previous menu").mm())
+            .asGuiItem { player, _ -> faqGUI().open(player) }
     }
 
     private fun filler(gui: GuiContainer<Player, ItemStack>, range: IntRange) {
