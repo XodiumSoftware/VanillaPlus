@@ -85,7 +85,7 @@ class TreesModule : ModuleInterface {
                         WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(block.world))
                             .use { editSession ->
                                 block.type = Material.AIR
-                                editSession.mask = BlockTypeMask(editSession, TreeRegistry.OVERRIDEABLE_BLOCKS)
+                                editSession.mask = BlockTypeMask(editSession, TreeRegistry.TREE_MASK)
                                 Operations.complete(
                                     ClipboardHolder(clipboard)
                                         .createPaste(editSession)

@@ -24,7 +24,7 @@ object TreeRegistry {
         Material.SPRUCE_SAPLING,
     )
 
-    val OVERRIDEABLE_BLOCKS = setOf(
+    val TREE_MASK = setOf(
         // General
         BlockTypes.AIR,
         // Greenery

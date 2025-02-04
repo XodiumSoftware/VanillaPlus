@@ -29,10 +29,10 @@ object CommandManager {
         instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
             event.registrar().register(
                 Commands.literal("vanillaplus")
-                    .requires { it.sender.hasPermission(Perms.Command.USE) }
+                    .requires { it.sender.hasPermission(Perms.VanillaPlus.USE) }
                     .then(
                         Commands.literal("reload")
-                            .requires { it.sender.hasPermission(Perms.Command.RELOAD) }
+                            .requires { it.sender.hasPermission(Perms.VanillaPlus.RELOAD) }
                             .executes(Command { ctx ->
                                 val sender = ctx?.source?.sender as Player
                                 try {
@@ -51,17 +51,17 @@ object CommandManager {
                     )
                     .then(
                         Commands.literal("faq")
-                            .requires { it.sender.hasPermission(Perms.Command.Gui.FAQ) }
+                            .requires { it.sender.hasPermission(Perms.GuiModule.FAQ) }
                             .executes(Command { tryCatch(it) { gui.faqGUI().open(it) } })
                     )
                     .then(
                         Commands.literal("dims")
-                            .requires { it.sender.hasPermission(Perms.Command.Gui.DIMS) }
+                            .requires { it.sender.hasPermission(Perms.GuiModule.DIMS) }
                             .executes(Command { tryCatch(it) { gui.dimsGUI().open(it) } })
                     )
                     .then(
                         Commands.literal("settings")
-                            .requires { it.sender.hasPermission(Perms.Command.Gui.SETTINGS) }
+                            .requires { it.sender.hasPermission(Perms.GuiModule.SETTINGS) }
                             .executes(Command { tryCatch(it) { gui.settingsGUI().open(it) } })
                     )
                     .build(),
