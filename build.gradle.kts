@@ -41,7 +41,9 @@ dependencies {
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.4.0-20250109.111726-21")
     implementation("net.kyori:adventure-api:4.18.0")
     implementation(kotlin("stdlib-jdk8"))
-    implementation("dev.triumphteam:triumph-gui-paper-kotlin:4.0.0-SNAPSHOT")
+    implementation("dev.triumphteam:triumph-gui-paper-kotlin:4.0.0-SNAPSHOT") {
+        exclude(group = "com.google.guava", module = "guava")
+    }
 }
 
 java { toolchain.languageVersion.set(JavaLanguageVersion.of(21)) }
