@@ -4,12 +4,6 @@ main: org.xodium.vanillaplus.VanillaPlus
 description: ${description}
 api-version: ${apiVersion}
 authors: ${authors}
-dependencies:
-  server:
-    WorldEdit:
-      load: BEFORE
-      required: true
-      join-classpath: true
 permissions:
   vanillaplus.use:
     description: Allows use of the VanillaPlus commands

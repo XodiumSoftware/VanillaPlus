@@ -13,15 +13,6 @@ import com.sk89q.worldedit.function.operation.Operations
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.session.ClipboardHolder
 import org.bukkit.Bukkit
-import org.bukkit.Material
-import org.bukkit.block.Block
-import org.bukkit.event.EventHandler
-import org.bukkit.event.EventPriority
-import org.bukkit.event.world.StructureGrowEvent
-import org.xodium.vanillaplus.Config
-import org.xodium.vanillaplus.Utils
-import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.registries.TreeRegistry
 import java.nio.file.Files
 import java.nio.file.Path
@@ -37,12 +28,6 @@ class TreesModule : ModuleInterface {
     override fun init() {
         Utils.copyResourcesFromJar(schematicsFolder, schematicsPath)
         saplingSchematicMap = loadSaplingSchematicMap()
-    }
-
-    private fun loadSaplingSchematicMap(): Map<Material, List<Path>> {
-        return Config.TreesModule.saplingLink
-            .mapNotNull { (k, v) -> validateAndMapSapling(k, v) }
-            .toMap()
     }
 
     private fun validateAndMapSapling(key: String, value: Any?): Pair<Material, List<Path>>? {
@@ -100,12 +85,9 @@ class TreesModule : ModuleInterface {
                     } catch (ex: Exception) {
                         logger.severe("Error while pasting schematic: ${ex.message}")
                     }
-                } catch (ex: Exception) {
-                    logger.severe("Error reading schematic file: ${ex.message}")
                 }
             }
-        })
-        return true
+        }
     }
 
     override fun enabled(): Boolean = Config.TreesModule.ENABLED
