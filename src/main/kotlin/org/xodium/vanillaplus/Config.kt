@@ -52,10 +52,10 @@ object Config {
     }
 
     /**
-     * Configuration settings for the SaplingModule. This module controls the sapling features of the plugin.
+     * Configuration settings for the TreesModule. This module controls the sapling features of the plugin.
      */
-    object SaplingModule {
-        var ENABLED: Boolean = true // Enables or disables the SaplingModule. Set to 'false' to disable.
+    object TreesModule {
+        var ENABLED: Boolean = true // Enables or disables the TreesModule. Set to 'false' to disable.
 
         var IGNORE_AIR_BLOCKS: Boolean = true // If it should ignore air blocks when placing custom tree..
         var IGNORE_STRUCTURE_VOID_BLOCKS: Boolean =

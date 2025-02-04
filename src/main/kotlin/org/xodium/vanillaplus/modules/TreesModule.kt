@@ -28,7 +28,7 @@ import java.nio.file.Path
 import java.nio.file.Paths
 
 
-class SaplingModule : ModuleInterface {
+class TreesModule : ModuleInterface {
     private val logger = instance.logger
     private val schematicsPath = instance.dataFolder.toPath().resolve(SCHEMATICS_FOLDER)
     private lateinit var saplingSchematicMap: Map<Material, List<Path>>
@@ -118,7 +118,7 @@ class SaplingModule : ModuleInterface {
     }
 
     private fun loadSaplingSchematicMap(): Map<Material, List<Path>> {
-        return Config.SaplingModule.saplingLink
+        return Config.TreesModule.saplingLink
             .mapNotNull { (k, v) -> validateAndMapSapling(k, v) }
             .toMap()
     }
@@ -168,10 +168,10 @@ class SaplingModule : ModuleInterface {
                                     ClipboardHolder(clipboard)
                                         .createPaste(editSession)
                                         .to(BlockVector3.at(block.x, block.y, block.z))
-                                        .ignoreAirBlocks(Config.SaplingModule.IGNORE_AIR_BLOCKS)
-                                        .ignoreStructureVoidBlocks(Config.SaplingModule.IGNORE_STRUCTURE_VOID_BLOCKS)
-                                        .copyEntities(Config.SaplingModule.COPY_ENTITIES)
-                                        .copyBiomes(Config.SaplingModule.COPY_BIOMES)
+                                        .ignoreAirBlocks(Config.TreesModule.IGNORE_AIR_BLOCKS)
+                                        .ignoreStructureVoidBlocks(Config.TreesModule.IGNORE_STRUCTURE_VOID_BLOCKS)
+                                        .copyEntities(Config.TreesModule.COPY_ENTITIES)
+                                        .copyBiomes(Config.TreesModule.COPY_BIOMES)
                                         .build()
                                 )
                             }
@@ -186,5 +186,5 @@ class SaplingModule : ModuleInterface {
         return true
     }
 
-    override fun enabled(): Boolean = Config.SaplingModule.ENABLED
+    override fun enabled(): Boolean = Config.TreesModule.ENABLED
 }

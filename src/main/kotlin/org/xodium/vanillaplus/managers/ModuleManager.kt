@@ -8,7 +8,7 @@ package org.xodium.vanillaplus.managers
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.modules.DoorsModule
 import org.xodium.vanillaplus.modules.GuiModule
-import org.xodium.vanillaplus.modules.SaplingModule
+import org.xodium.vanillaplus.modules.TreesModule
 
 /**
  * The `ModuleManager` is responsible for managing and initializing modules in the VanillaPlus plugin.
@@ -23,7 +23,7 @@ object ModuleManager {
         listOf(
             DoorsModule(),
             GuiModule(),
-            SaplingModule(),
+            TreesModule(),
         ).filter { it.enabled() }
             .forEach {
                 val t = System.currentTimeMillis()
