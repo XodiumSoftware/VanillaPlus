@@ -5,81 +5,85 @@
 
 package org.xodium.vanillaplus.modules
 
-import org.bukkit.Material
-import org.bukkit.World
-import org.bukkit.block.Block
-import org.bukkit.event.EventHandler
-import org.bukkit.event.EventPriority
-import org.bukkit.event.world.StructureGrowEvent
-import org.xodium.vanillaplus.Config
-import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.registries.MaterialRegistry
-import kotlin.math.ceil
-import kotlin.random.Random
+import com.sk89q.worldedit.WorldEdit
+import com.sk89q.worldedit.bukkit.BukkitAdapter
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats
+import com.sk89q.worldedit.function.mask.BlockTypeMask
+import com.sk89q.worldedit.function.operation.Operations
+import com.sk89q.worldedit.math.BlockVector3
+import com.sk89q.worldedit.session.ClipboardHolder
+import org.bukkit.Bukkit
+import org.xodium.vanillaplus.registries.TreeRegistry
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
 
 
 class TreesModule : ModuleInterface {
+    private val logger = instance.logger
+    private val schematicsFolder = Paths.get("schematics")
+    private val schematicsPath = instance.dataFolder.toPath().resolve(schematicsFolder)
+    private lateinit var saplingSchematicMap: Map<Material, List<Path>>
+
+    override fun init() {
+        Utils.copyResourcesFromJar(schematicsFolder, schematicsPath)
+        saplingSchematicMap = loadSaplingSchematicMap()
+    }
+
+    private fun validateAndMapSapling(key: String, value: Any?): Pair<Material, List<Path>>? {
+        val material = Material.matchMaterial(key)
+        if (material == null || !TreeRegistry.SAPLINGS.contains(material)) {
+            logger.warning("Invalid sapling configuration entry: $key does not map to a valid sapling.")
+            return null
+        }
+        val files = Utils.parseFiles(value ?: emptyList<String>(), schematicsPath, ".schem")
+        if (files.isEmpty()) {
+            logger.warning("No valid schematics found for $key.")
+            return null
+        }
+        return material to files
+    }
+
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: StructureGrowEvent) {
-        event.location.block.takeIf { MaterialRegistry.SAPLINGS.contains(it.type) }?.let {
-            event.isCancelled = createCustomTree(it)
+        event.location.block.takeIf { TreeRegistry.SAPLINGS.contains(it.type) }?.let {
+            event.isCancelled = replaceWithSchematicTree(it)
         }
     }
 
-    private fun getTreeComponents(sapling: Material): Pair<Material, Material>? {
-        return when (sapling) {
-            Material.ACACIA_SAPLING -> Pair(Material.ACACIA_WOOD, Material.ACACIA_LEAVES)
-            Material.BIRCH_SAPLING -> Pair(Material.BIRCH_WOOD, Material.BIRCH_LEAVES)
-            Material.CHERRY_SAPLING -> Pair(Material.CHERRY_WOOD, Material.CHERRY_LEAVES)
-            Material.DARK_OAK_SAPLING -> Pair(Material.DARK_OAK_WOOD, Material.DARK_OAK_LEAVES)
-            Material.JUNGLE_SAPLING -> Pair(Material.JUNGLE_WOOD, Material.JUNGLE_LEAVES)
-            Material.OAK_SAPLING -> Pair(Material.OAK_WOOD, Material.OAK_LEAVES)
-            Material.PALE_OAK_SAPLING -> Pair(Material.PALE_OAK_WOOD, Material.PALE_OAK_LEAVES)
-            Material.SPRUCE_SAPLING -> Pair(Material.SPRUCE_WOOD, Material.SPRUCE_LEAVES)
-            else -> null
+    private fun replaceWithSchematicTree(block: Block): Boolean {
+        val schematicFile = saplingSchematicMap[block.type]?.randomOrNull()
+        if (schematicFile == null || !Files.exists(schematicFile)) {
+            logger.info("No custom schematic found for ${block.type}.")
+            return false
         }
-    }
-
-
-    private fun createCustomTree(block: Block): Boolean {
-        val (trunkMaterial, leavesMaterial) = getTreeComponents(block.type) ?: return false
-        val world = block.world
-        val (x, y, z) = Triple(block.x, block.y, block.z)
-        val trunkHeight = Random.nextInt(4, 12)
-        val trunkRadius1 = Random.nextInt(2, 5)
-        val trunkRadius2 = if (trunkRadius1 > 1) Random.nextInt(1, trunkRadius1) else 1
-        val leavesRadius = Random.nextInt(1, 6)
-        block.type = Material.AIR
-        generateTrunk(world, x, y, z, trunkHeight, trunkMaterial, trunkRadius1, trunkRadius2)
-        generateLeaves(world, x, y, z, trunkHeight, leavesMaterial, leavesRadius)
-        return true
-    }
-
-    private fun generateTrunk(world: World, x: Int, y: Int, z: Int, height: Int, mat: Material, r1: Int, r2: Int) {
-        for (layer in 0 until height) {
-            val fraction = layer.toDouble() / (if (height > 1) height - 1 else 1)
-            val radiusDouble = r1 - (r1 - r2) * fraction
-            val intRadius = ceil(radiusDouble).toInt()
-            for (xOffset in -intRadius..intRadius) {
-                for (zOffset in -intRadius..intRadius) {
-                    if (xOffset * xOffset + zOffset * zOffset <= radiusDouble * radiusDouble) {
-                        world.getBlockAt(x + xOffset, y + layer, z + zOffset).apply {
-                            if (MaterialRegistry.TREE_MASK.contains(type)) type = mat
-                        }
-                    }
-                }
-            }
+        val format = ClipboardFormats.findByFile(schematicFile.toFile())
+        if (format == null) {
+            logger.warning("Unsupported schematic format for file: ${schematicFile.fileName}")
+            return false
         }
-    }
-
-    private fun generateLeaves(world: World, x: Int, y: Int, z: Int, height: Int, mat: Material, r: Int) {
-        for (xOffset in -r..r) {
-            for (yOffset in -r..r) {
-                for (zOffset in -r..r) {
-                    if (xOffset * xOffset + yOffset * yOffset + zOffset * zOffset <= r * r) {
-                        world.getBlockAt(x + xOffset, y + height - 1 + yOffset, z + zOffset).apply {
-                            if (MaterialRegistry.TREE_MASK.contains(type)) type = mat
-                        }
+        Bukkit.getScheduler().runTask(instance, Runnable {
+            Files.newInputStream(schematicFile).use { inputStream ->
+                try {
+                    val clipboard = format.getReader(inputStream).read()
+                    try {
+                        WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(block.world))
+                            .use { editSession ->
+                                block.type = Material.AIR
+                                editSession.mask = BlockTypeMask(editSession, TreeRegistry.OVERRIDEABLE_BLOCKS)
+                                Operations.complete(
+                                    ClipboardHolder(clipboard)
+                                        .createPaste(editSession)
+                                        .to(BlockVector3.at(block.x, block.y, block.z))
+                                        .ignoreAirBlocks(Config.TreesModule.IGNORE_AIR_BLOCKS)
+                                        .ignoreStructureVoidBlocks(Config.TreesModule.IGNORE_STRUCTURE_VOID_BLOCKS)
+                                        .copyEntities(Config.TreesModule.COPY_ENTITIES)
+                                        .copyBiomes(Config.TreesModule.COPY_BIOMES)
+                                        .build()
+                                )
+                            }
+                    } catch (ex: Exception) {
+                        logger.severe("Error while pasting schematic: ${ex.message}")
                     }
                 }
             }
