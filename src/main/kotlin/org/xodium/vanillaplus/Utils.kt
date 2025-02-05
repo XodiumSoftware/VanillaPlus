@@ -5,11 +5,15 @@
 
 package org.xodium.vanillaplus
 
+import com.mojang.brigadier.Command
+import com.mojang.brigadier.context.CommandContext
+import io.papermc.paper.command.brigadier.CommandSourceStack
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.NamespacedKey
 import org.bukkit.Registry
 import org.bukkit.Sound
 import org.bukkit.block.Block
+import org.bukkit.entity.Player
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import java.net.URI
 import java.nio.file.FileSystems
@@ -123,13 +127,34 @@ object Utils {
                 block.location,
                 sound
                     ?.lowercase(Locale.getDefault())
-                    ?.let { NamespacedKey.minecraft(it) }
+                    ?.let(NamespacedKey::minecraft)
                     ?.let(Registry.SOUNDS::get)
                     ?: fallbackSound,
                 volume.toFloat(),
-                pitch.toFloat())
+                pitch.toFloat()
+            )
         } catch (ex: Exception) {
             logger.severe("Failed to play sound '${sound ?: fallbackSound}' at block '${block.location}': ${ex.message}")
+            ex.printStackTrace()
         }
+    }
+
+    /**
+     * A helper function to wrap command execution with standardized error handling.
+     *
+     * @param ctx The CommandContext used to obtain the CommandSourceStack.
+     * @param action The action to execute, receiving a CommandSourceStack as a parameter.
+     * @return Command.SINGLE_SUCCESS after execution.
+     */
+    @Suppress("UnstableApiUsage")
+    fun tryCatch(ctx: CommandContext<CommandSourceStack>, action: (CommandSourceStack) -> Unit): Int {
+        try {
+            action(ctx.source)
+        } catch (e: Exception) {
+            instance.logger.severe("An Error has occured: ${e.message}")
+            e.printStackTrace()
+            (ctx.source.sender as Player).sendMessage("${VanillaPlus.PREFIX}<red>An Error has occured. Check server logs for details.".mm())
+        }
+        return Command.SINGLE_SUCCESS
     }
 }

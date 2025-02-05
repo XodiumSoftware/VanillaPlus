@@ -8,12 +8,11 @@
 package org.xodium.vanillaplus.managers
 
 import com.mojang.brigadier.Command
-import com.mojang.brigadier.context.CommandContext
-import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import org.bukkit.entity.Player
 import org.xodium.vanillaplus.Perms
+import org.xodium.vanillaplus.Utils
 import org.xodium.vanillaplus.Utils.mm
 import org.xodium.vanillaplus.VanillaPlus
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -34,60 +33,32 @@ object CommandManager {
                         Commands.literal("reload")
                             .requires { it.sender.hasPermission(Perms.VanillaPlus.RELOAD) }
                             .executes(Command { ctx ->
-                                val sender = ctx?.source?.sender as Player
-                                try {
-                                    //TODO("Not yet implemented")
+                                Utils.tryCatch(ctx) {
+//                                    TODO: implement functionality.
                                     instance.logger.info("Reloaded successfully")
-                                    sender.sendMessage("${VanillaPlus.PREFIX}<green>Reloaded successfully.".mm())
-                                    Command.SINGLE_SUCCESS
-                                } catch (e: Exception) {
-                                    instance.logger.severe("Failed to reload: ${e.message}")
-                                    e.printStackTrace()
-                                    sender.sendMessage("${VanillaPlus.PREFIX}<red>Failed to reload. Check server logs for details.".mm())
-                                    Command.SINGLE_SUCCESS
+                                    (ctx.source.sender as Player).sendMessage("${VanillaPlus.PREFIX}<green>Reloaded successfully.".mm())
                                 }
-                                Command.SINGLE_SUCCESS
                             })
                     )
                     .then(
                         Commands.literal("faq")
                             .requires { it.sender.hasPermission(Perms.GuiModule.FAQ) }
-                            .executes(Command { tryCatch(it) { gui.faqGUI().open(it) } })
+                            .executes(Command { Utils.tryCatch(it) { gui.faqGUI().open(it as Player) } })
                     )
                     .then(
                         Commands.literal("dims")
                             .requires { it.sender.hasPermission(Perms.GuiModule.DIMS) }
-                            .executes(Command { tryCatch(it) { gui.dimsGUI().open(it) } })
+                            .executes(Command { Utils.tryCatch(it) { gui.dimsGUI().open(it as Player) } })
                     )
                     .then(
                         Commands.literal("settings")
                             .requires { it.sender.hasPermission(Perms.GuiModule.SETTINGS) }
-                            .executes(Command { tryCatch(it) { gui.settingsGUI().open(it) } })
+                            .executes(Command { Utils.tryCatch(it) { gui.settingsGUI().open(it as Player) } })
                     )
                     .build(),
                 "VanillaPlus plugin",
                 mutableListOf("vp")
             )
-        }
-    }
-
-    /**
-     * Helper function to execute actions with standardized error handling.
-     *
-     * @param ctx The CommandContext to get the Player from.
-     * @param action The action to execute, receiving a Player as a parameter.
-     * @return Command.SINGLE_SUCCESS after execution.
-     */
-    private fun tryCatch(ctx: CommandContext<CommandSourceStack>, action: (Player) -> Unit): Int {
-        val sender = ctx.source?.sender as Player
-        return try {
-            action(sender)
-            Command.SINGLE_SUCCESS
-        } catch (e: Exception) {
-            instance.logger.severe("An Error has occured: ${e.message}")
-            e.printStackTrace()
-            sender.sendMessage("${VanillaPlus.PREFIX}<red>An Error has occured. Check server logs for details.".mm())
-            Command.SINGLE_SUCCESS
         }
     }
 }
