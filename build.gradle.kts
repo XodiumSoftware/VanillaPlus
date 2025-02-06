@@ -38,7 +38,7 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
 //    TODO("Use stable build when available")
 //    TODO("Move away from WorldEdit")
-    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.4.0-20250109.111726-21")
+    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.4.0-20250126.070433-22")
     implementation("net.kyori:adventure-api:4.18.0")
     implementation(kotlin("stdlib-jdk8"))
     implementation("dev.triumphteam:triumph-gui-paper-kotlin:4.0.0-SNAPSHOT") {
