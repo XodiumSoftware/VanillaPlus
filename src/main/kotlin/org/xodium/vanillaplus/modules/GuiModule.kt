@@ -76,7 +76,7 @@ class GuiModule : ModuleInterface {
                         )
                         .asGuiItem { player, _ -> player.performCommand("tips") })
                 gui.setItem(
-                    4, ItemBuilder.from(Material.BLAZE_ROD)
+                    4, ItemBuilder.from(Material.WRITABLE_BOOK)
                         .name(mangoFormat("Rules"))
                         .lore(
                             listOf(
@@ -86,7 +86,6 @@ class GuiModule : ModuleInterface {
                                 "   <gray>Shortcut: <gold>/rules"
                             ).mm()
                         )
-                        .model(1)
                         .asGuiItem { player, _ -> player.performCommand("rules") })
                 gui.setItem(
                     7, ItemBuilder.from(Material.RED_BED)
