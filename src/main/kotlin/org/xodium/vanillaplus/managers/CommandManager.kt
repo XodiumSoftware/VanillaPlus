@@ -43,17 +43,17 @@ object CommandManager {
                     .then(
                         Commands.literal("faq")
                             .requires { it.sender.hasPermission(Perms.GuiModule.FAQ) }
-                            .executes(Command { Utils.tryCatch(it) { gui.faqGUI().open(it as Player) } })
+                            .executes(Command { Utils.tryCatch(it) { gui.faqGUI().open(it.sender as Player) } })
                     )
                     .then(
                         Commands.literal("dims")
                             .requires { it.sender.hasPermission(Perms.GuiModule.DIMS) }
-                            .executes(Command { Utils.tryCatch(it) { gui.dimsGUI().open(it as Player) } })
+                            .executes(Command { Utils.tryCatch(it) { gui.dimsGUI().open(it.sender as Player) } })
                     )
                     .then(
                         Commands.literal("settings")
                             .requires { it.sender.hasPermission(Perms.GuiModule.SETTINGS) }
-                            .executes(Command { Utils.tryCatch(it) { gui.settingsGUI().open(it as Player) } })
+                            .executes(Command { Utils.tryCatch(it) { gui.settingsGUI().open(it.sender as Player) } })
                     )
                     .build(),
                 "VanillaPlus plugin",
