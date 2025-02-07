@@ -33,10 +33,11 @@ import java.util.concurrent.ConcurrentHashMap
 
 
 class DoorsModule : ModuleInterface {
-    private val autoCloseDelay = Config.DoorsModule.AUTO_CLOSE_DELAY * 1000
+    private val autoCloseDelay = Config.DoorsModule.AUTO_CLOSE_DELAY * 1000L
     private val autoClose = ConcurrentHashMap<Block, Long>()
 
     companion object {
+        private const val SCHEDULER_PERIOD_TICKS = 1L
         private val POSSIBLE_NEIGHBOURS = listOf(
             AdjacentBlockData(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
             AdjacentBlockData(0, 1, Door.Hinge.LEFT, BlockFace.EAST),
@@ -51,7 +52,7 @@ class DoorsModule : ModuleInterface {
             AdjacentBlockData(1, 0, Door.Hinge.LEFT, BlockFace.NORTH)
         )
 
-        fun toggleDoor(block: Block, openable: Openable, open: Boolean) {
+        private fun toggleDoor(block: Block, openable: Openable, open: Boolean) {
             openable.isOpen = open
             block.blockData = openable
         }
@@ -65,7 +66,7 @@ class DoorsModule : ModuleInterface {
                     true
                 } else false
             }
-        }, 1L, 1L)
+        }, SCHEDULER_PERIOD_TICKS, SCHEDULER_PERIOD_TICKS)
     }
 
     private fun handleAutoClose(block: Block) {
@@ -106,11 +107,10 @@ class DoorsModule : ModuleInterface {
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: PlayerInteractEvent) {
         val clickedBlock = event.clickedBlock ?: return
-        val data = clickedBlock.blockData
         if (!isValidInteraction(event)) return
         when (event.action) {
-            Action.LEFT_CLICK_BLOCK -> handleLeftClick(event, data, clickedBlock)
-            Action.RIGHT_CLICK_BLOCK -> handleRightClick(data, clickedBlock)
+            Action.LEFT_CLICK_BLOCK -> handleLeftClick(event, clickedBlock)
+            Action.RIGHT_CLICK_BLOCK -> handleRightClick(clickedBlock)
             else -> return
         }
     }
@@ -121,8 +121,8 @@ class DoorsModule : ModuleInterface {
                 event.useItemInHand() != Event.Result.DENY
     }
 
-    private fun handleLeftClick(event: PlayerInteractEvent, data: BlockData, block: Block) {
-        if (canKnock(event, event.player) && isKnockableBlock(data)) {
+    private fun handleLeftClick(event: PlayerInteractEvent, block: Block) {
+        if (canKnock(event, event.player) && isKnockableBlock(block.blockData)) {
             Utils.playSound(
                 block,
                 Config.DoorsModule.SOUND_KNOCK_EFFECT,
@@ -133,16 +133,15 @@ class DoorsModule : ModuleInterface {
         }
     }
 
-    private fun handleRightClick(data: BlockData, block: Block) {
-        if (Config.DoorsModule.ALLOW_DOUBLE_DOORS && (data is Door || data is Gate))
-            processDoorOrGateInteraction(data, block)
+    private fun handleRightClick(block: Block) {
+        if (Config.DoorsModule.ALLOW_DOUBLE_DOORS && (block.blockData is Door || block.blockData is Gate))
+            processDoorOrGateInteraction(block)
         if (Config.DoorsModule.ALLOW_AUTO_CLOSE) autoClose[block] = System.currentTimeMillis() + autoCloseDelay
     }
 
-    private fun processDoorOrGateInteraction(data: BlockData, block: Block) {
-        if (data is Door) {
-            val door = getDoorBottom(data, block)
-            val otherDoorBlock = getOtherPart(door, block)
+    private fun processDoorOrGateInteraction(block: Block) {
+        if (block.blockData is Door) {
+            val otherDoorBlock = getOtherPart(getDoorBottom(block.blockData as Door, block), block)
             if (otherDoorBlock != null && otherDoorBlock.blockData is Door) {
                 val otherDoor = otherDoorBlock.blockData as Door
                 toggleOtherDoor(block, otherDoorBlock, !otherDoor.isOpen)
