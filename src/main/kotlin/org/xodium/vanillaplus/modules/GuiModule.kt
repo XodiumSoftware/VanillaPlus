@@ -49,9 +49,10 @@ class GuiModule : ModuleInterface {
                                 "   <gray>Shortcut: <gold>/skills"
                             ).mm()
                         )
+                        .glow()
                         .asGuiItem { player, _ -> player.performCommand("skills") })
                 gui.setItem(
-                    1, ItemBuilder.from(Material.BLAZE_ROD)
+                    1, ItemBuilder.from(Material.ENDER_PEARL)
                         .name(mangoFormat("Dimensions"))
                         .lore(
                             listOf(
@@ -61,7 +62,7 @@ class GuiModule : ModuleInterface {
                                 "   <gray>Shortcut: <gold>/dims"
                             ).mm()
                         )
-                        .model(2)
+                        .glow()
                         .asGuiItem { player, _ -> dimsGUI().open(player) })
                 gui.setItem(
                     3, ItemBuilder.from(Material.LIGHT)
@@ -74,6 +75,7 @@ class GuiModule : ModuleInterface {
                                 "   <gray>Shortcut: <gold>/tips"
                             ).mm()
                         )
+                        .glow()
                         .asGuiItem { player, _ -> player.performCommand("tips") })
                 gui.setItem(
                     4, ItemBuilder.from(Material.WRITABLE_BOOK)
@@ -86,6 +88,7 @@ class GuiModule : ModuleInterface {
                                 "   <gray>Shortcut: <gold>/rules"
                             ).mm()
                         )
+                        .glow()
                         .asGuiItem { player, _ -> player.performCommand("rules") })
                 gui.setItem(
                     7, ItemBuilder.from(Material.RED_BED)
@@ -98,9 +101,10 @@ class GuiModule : ModuleInterface {
                                 "   <gray>Shortcut: <gold>/homes"
                             ).mm()
                         )
+                        .glow()
                         .asGuiItem { player, _ -> player.performCommand("homes") })
                 gui.setItem(
-                    8, ItemBuilder.from(Material.BLAZE_ROD)
+                    8, ItemBuilder.from(Material.CLOCK)
                         .name(mangoFormat("Settings"))
                         .lore(
                             listOf(
@@ -110,7 +114,7 @@ class GuiModule : ModuleInterface {
                                 "   <gray>Shortcut: <gold>/settings"
                             ).mm()
                         )
-                        .model(3)
+                        .glow()
                         .asGuiItem { player, _ -> settingsGUI().open(player) })
             }
         }
@@ -124,9 +128,9 @@ class GuiModule : ModuleInterface {
             statelessComponent { gui ->
                 filler(gui, 0..4)
                 listOf(
-                    DimensionData(0, "world", "<green><bold>The Overworld", 4),
-                    DimensionData(1, "world_nether", "<red><bold>The Underworld", 5),
-                    DimensionData(2, "world_the_end", "<dark_purple><bold>The Endworld", 6)
+                    DimensionData(0, "world", "<green><bold>The Overworld", Material.GRASS_BLOCK),
+                    DimensionData(1, "world_nether", "<red><bold>The Underworld", Material.NETHERRACK),
+                    DimensionData(2, "world_the_end", "<dark_purple><bold>The Endworld", Material.END_STONE)
                 ).forEach { data ->
                     val world = instance.server.getWorld(data.worldName) ?: return@forEach
                     val environment = world.environment.name.lowercase()
@@ -134,7 +138,7 @@ class GuiModule : ModuleInterface {
                     val difficulty = world.difficulty.name.uppercase()
                     val pvp = if (world.pvp) "<green>True" else "<red>False"
                     gui.setItem(
-                        data.guiIndex, ItemBuilder.from(Material.BLAZE_ROD)
+                        data.guiIndex, ItemBuilder.from(data.itemMaterial)
                             .name(data.displayName.mm())
                             .lore(
                                 listOf(
@@ -147,7 +151,7 @@ class GuiModule : ModuleInterface {
                                     "   <aqua>PVP: $pvp"
                                 ).mm()
                             )
-                            .model(data.itemModelNumber)
+                            .glow()
                             .asGuiItem { player, _ -> player.performCommand("cmi rt ${data.worldName}") })
                     gui.setItem(4, backButton())
                 }
@@ -173,6 +177,7 @@ class GuiModule : ModuleInterface {
                                 "   <gray>Shortcut: <gold>/sort"
                             ).mm()
                         )
+                        .glow()
                         .asGuiItem { player, _ -> player.performCommand("sort") })
                 gui.setItem(4, backButton())
             }
@@ -183,6 +188,7 @@ class GuiModule : ModuleInterface {
         return ItemBuilder.from(Material.RED_STAINED_GLASS_PANE)
             .name(birdflopFormat("Back"))
             .lore(listOf("<dark_gray>✖ <gray>Return to the previous menu").mm())
+            .glow()
             .asGuiItem { player, _ -> faqGUI().open(player) }
     }
 
@@ -190,6 +196,7 @@ class GuiModule : ModuleInterface {
         for (slot in range) gui.setItem(
             slot, ItemBuilder.from(Material.BLACK_STAINED_GLASS_PANE)
                 .name("".mm())
+                .glow()
                 .asGuiItem()
         )
     }
