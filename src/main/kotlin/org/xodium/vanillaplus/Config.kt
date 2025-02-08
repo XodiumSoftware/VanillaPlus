@@ -52,6 +52,25 @@ object Config {
     }
 
     /**
+     * Configuration settings for the MotdModule. This module controls the MOTD features of the plugin.
+     */
+    object MotdModule {
+        var ENABLED: Boolean = false // Enables or disables the MotdModule. Set to 'false' to disable.
+
+        var MOTD: String = "&6Welcome to the server!" // The message of the day.
+    }
+
+    /**
+     * Configuration settings for the TabListModule. This module controls the tab list features of the plugin.
+     */
+    object TabListModule {
+        var ENABLED: Boolean = false // Enables or disables the TabListModule. Set to 'false' to disable.
+
+        var HEADER: String = "&6Welcome to the server!" // The header of the tab list.
+        var FOOTER: String = "&6Enjoy your stay!" // The footer of the tab list.
+    }
+
+    /**
      * Configuration settings for the TreesModule. This module controls the sapling features of the plugin.
      */
     object TreesModule {

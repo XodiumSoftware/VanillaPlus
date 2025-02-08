@@ -19,6 +19,8 @@ import org.xodium.vanillaplus.data.DimensionData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 
 class GuiModule : ModuleInterface {
+    override fun enabled(): Boolean = Config.GuiModule.ENABLED
+
     private val antiSpamDuration = Config.GuiModule.ANTI_SPAM_DURATION
 
     private fun birdflopFormat(text: String): Component = "<b><gradient:#CB2D3E:#EF473A>$text</gradient></b>".mm()
@@ -186,6 +188,4 @@ class GuiModule : ModuleInterface {
             }
         }
     }
-
-    override fun enabled(): Boolean = Config.GuiModule.ENABLED
 }

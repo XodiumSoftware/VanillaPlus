@@ -29,6 +29,8 @@ import java.nio.file.Paths
 
 
 class TreesModule : ModuleInterface {
+    override fun enabled(): Boolean = Config.TreesModule.ENABLED
+    
     private val logger = instance.logger
     private val schematicsFolder = Paths.get("schematics")
     private val schematicsPath = instance.dataFolder.toPath().resolve(schematicsFolder)
@@ -107,6 +109,4 @@ class TreesModule : ModuleInterface {
         })
         return true
     }
-
-    override fun enabled(): Boolean = Config.TreesModule.ENABLED
 }

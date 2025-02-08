@@ -33,6 +33,8 @@ import java.util.concurrent.ConcurrentHashMap
 
 
 class DoorsModule : ModuleInterface {
+    override fun enabled(): Boolean = Config.DoorsModule.ENABLED
+
     private val autoCloseDelay = Config.DoorsModule.AUTO_CLOSE_DELAY * 1000L
     private val autoClose = ConcurrentHashMap<Block, Long>()
 
@@ -202,6 +204,4 @@ class DoorsModule : ModuleInterface {
             } != null
         }?.let { block.getRelative(it.offsetX, 0, it.offsetZ) }
     }
-
-    override fun enabled(): Boolean = Config.DoorsModule.ENABLED
 }
