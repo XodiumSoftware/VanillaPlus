@@ -57,7 +57,7 @@ object Config {
     object MotdModule {
         var ENABLED: Boolean = false // Enables or disables the MotdModule. Set to 'false' to disable.
 
-        var MOTD: String = "&6Welcome to the server!" // The message of the day.
+        var MOTD: String = "<b><gradient:#CB2D3E:#EF473A>Ultimate Private SMP</gradient></b>" // The message of the day.
     }
 
     /**
