@@ -15,7 +15,7 @@ import java.net.URI
 plugins {
     id("java")
     kotlin("jvm") version "2.1.10"
-    id("com.gradleup.shadow") version "9.0.0-beta7"
+    id("com.gradleup.shadow") version "9.0.0-beta8"
     id("de.undercouch.download") version "5.6.0"
 }
 
