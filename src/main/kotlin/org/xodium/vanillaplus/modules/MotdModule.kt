@@ -16,5 +16,9 @@ class MotdModule : ModuleInterface {
     override fun enabled(): Boolean = Config.MotdModule.ENABLED
 
     @EventHandler(priority = EventPriority.MONITOR)
-    fun on(event: ServerListPingEvent) = event.motd(Config.MotdModule.MOTD.mm())
+    fun on(event: ServerListPingEvent) = event.motd(
+        Config.MotdModule.MOTD.joinToString(separator = "\n")
+            .replace("\\n", "\n")
+            .mm()
+    )
 }

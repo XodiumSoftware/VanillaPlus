@@ -55,19 +55,22 @@ object Config {
      * Configuration settings for the MotdModule. This module controls the MOTD features of the plugin.
      */
     object MotdModule {
-        var ENABLED: Boolean = false // Enables or disables the MotdModule. Set to 'false' to disable.
+        var ENABLED: Boolean = true // Enables or disables the MotdModule. Set to 'false' to disable.
 
-        var MOTD: String = "<b><gradient:#CB2D3E:#EF473A>Ultimate Private SMP</gradient></b>" // The message of the day.
+        var MOTD: List<String> = listOf(
+            "<b><gradient:#CB2D3E:#EF473A>Ultimate Private SMP</gradient></b>",
+            "<b><gradient:#CB2D3E:#EF473A>WELCOME BACK LADS!</gradient></b>"
+        ) // The message of the day.
     }
 
     /**
      * Configuration settings for the TabListModule. This module controls the tab list features of the plugin.
      */
     object TabListModule {
-        var ENABLED: Boolean = false // Enables or disables the TabListModule. Set to 'false' to disable.
+        var ENABLED: Boolean = true // Enables or disables the TabListModule. Set to 'false' to disable.
 
-        var HEADER: String = "&6Welcome to the server!" // The header of the tab list.
-        var FOOTER: String = "&6Enjoy your stay!" // The footer of the tab list.
+        var HEADER: String = "<b><gradient:#CB2D3E:#EF473A>TEST1</gradient></b>" // The header of the tab list.
+        var FOOTER: String = "<b><gradient:#CB2D3E:#EF473A>TEST2</gradient></b>" // The footer of the tab list.
     }
 
     /**
