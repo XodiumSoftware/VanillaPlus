@@ -6,7 +6,10 @@
 package org.xodium.vanillaplus.managers
 
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.modules.*
+import org.xodium.vanillaplus.modules.DoorsModule
+import org.xodium.vanillaplus.modules.GuiModule
+import org.xodium.vanillaplus.modules.MotdModule
+import org.xodium.vanillaplus.modules.TreesModule
 import kotlin.time.measureTime
 
 /**
@@ -23,7 +26,6 @@ object ModuleManager {
             DoorsModule(),
             GuiModule(),
             MotdModule(),
-            TabListModule(),
             TreesModule(),
         ).filter { it.enabled() }
             .forEach {

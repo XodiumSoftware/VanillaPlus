@@ -59,18 +59,8 @@ object Config {
 
         var MOTD: List<String> = listOf(
             "<b><gradient:#CB2D3E:#EF473A>Ultimate Private SMP</gradient></b>",
-            "<b><gradient:#CB2D3E:#EF473A>WELCOME BACK LADS!</gradient></b>"
+            "<gradient:#CB2D3E:#EF473A>WELCOME BACK LADS!</gradient>"
         ) // The message of the day.
-    }
-
-    /**
-     * Configuration settings for the TabListModule. This module controls the tab list features of the plugin.
-     */
-    object TabListModule {
-        var ENABLED: Boolean = true // Enables or disables the TabListModule. Set to 'false' to disable.
-
-        var HEADER: String = "<b><gradient:#CB2D3E:#EF473A>TEST1</gradient></b>" // The header of the tab list.
-        var FOOTER: String = "<b><gradient:#CB2D3E:#EF473A>TEST2</gradient></b>" // The footer of the tab list.
     }
 
     /**
