@@ -21,9 +21,8 @@ object Database {
             Class.forName(DRIVER)
             databaseFile.parentFile.apply { if (!exists()) mkdirs() }
             conn = DriverManager.getConnection("jdbc:sqlite:${databaseFile.absolutePath}")
+            instance.logger.info("Opened Database Connection.")
             Runtime.getRuntime().addShutdownHook(Thread { close() })
-            conn.createStatement()
-                .use { stmt -> stmt.executeUpdate("CREATE TABLE IF NOT EXISTS example (id INTEGER PRIMARY KEY, value TEXT);") }
         } catch (ex: Exception) {
             ex.printStackTrace()
         }
@@ -33,6 +32,7 @@ object Database {
         if (this::conn.isInitialized && !conn.isClosed) {
             try {
                 conn.close()
+                instance.logger.info("Closed Database Connection.")
             } catch (ex: SQLException) {
                 ex.printStackTrace()
             }
