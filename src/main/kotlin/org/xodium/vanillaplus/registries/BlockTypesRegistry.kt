@@ -6,24 +6,11 @@
 package org.xodium.vanillaplus.registries
 
 import com.sk89q.worldedit.world.block.BlockTypes
-import org.bukkit.Material
 
 /**
- * Registry for the TreeModule.
+ * Registry for blocktypes.
  */
-object TreeRegistry {
-    val SAPLINGS = setOf(
-        Material.ACACIA_SAPLING,
-        Material.BIRCH_SAPLING,
-        Material.CHERRY_SAPLING,
-        Material.DARK_OAK_SAPLING,
-        Material.JUNGLE_SAPLING,
-        Material.MANGROVE_PROPAGULE,
-        Material.OAK_SAPLING,
-        Material.PALE_OAK_SAPLING,
-        Material.SPRUCE_SAPLING,
-    )
-
+object BlockTypesRegistry {
     val TREE_MASK = setOf(
         // General
         BlockTypes.AIR,

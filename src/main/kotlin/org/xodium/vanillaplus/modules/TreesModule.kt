@@ -22,7 +22,8 @@ import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Utils
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.registries.TreeRegistry
+import org.xodium.vanillaplus.registries.BlockTypesRegistry
+import org.xodium.vanillaplus.registries.MaterialRegistry
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -30,7 +31,7 @@ import java.nio.file.Paths
 
 class TreesModule : ModuleInterface {
     override fun enabled(): Boolean = Config.TreesModule.ENABLED
-    
+
     private val logger = instance.logger
     private val schematicsFolder = Paths.get("schematics")
     private val schematicsPath = instance.dataFolder.toPath().resolve(schematicsFolder)
@@ -49,7 +50,7 @@ class TreesModule : ModuleInterface {
 
     private fun validateAndMapSapling(key: String, value: Any?): Pair<Material, List<Path>>? {
         val material = Material.matchMaterial(key)
-        if (material == null || !TreeRegistry.SAPLINGS.contains(material)) {
+        if (material == null || !MaterialRegistry.SAPLINGS.contains(material)) {
             logger.warning("Invalid sapling configuration entry: $key does not map to a valid sapling.")
             return null
         }
@@ -63,7 +64,7 @@ class TreesModule : ModuleInterface {
 
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: StructureGrowEvent) {
-        event.location.block.takeIf { TreeRegistry.SAPLINGS.contains(it.type) }?.let {
+        event.location.block.takeIf { MaterialRegistry.SAPLINGS.contains(it.type) }?.let {
             event.isCancelled = replaceWithSchematicTree(it)
         }
     }
@@ -87,7 +88,7 @@ class TreesModule : ModuleInterface {
                         WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(block.world))
                             .use { editSession ->
                                 block.type = Material.AIR
-                                editSession.mask = BlockTypeMask(editSession, TreeRegistry.TREE_MASK)
+                                editSession.mask = BlockTypeMask(editSession, BlockTypesRegistry.TREE_MASK)
                                 Operations.complete(
                                     ClipboardHolder(clipboard)
                                         .createPaste(editSession)

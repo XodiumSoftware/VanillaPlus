@@ -22,6 +22,7 @@ object ModuleManager {
         listOf(
             DoorsModule(),
             GuiModule(),
+            LogStripModule(),
             MotdModule(),
             RecipiesModule(),
             TreesModule(),
