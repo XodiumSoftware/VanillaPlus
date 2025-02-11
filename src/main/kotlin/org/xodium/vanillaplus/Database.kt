@@ -9,10 +9,10 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
+import kotlin.reflect.KClass
 
 object Database {
     private val databaseFile = instance.dataFolder.resolve("vanillaplus.db")
-    private val TABLE_NAME = Config::class.simpleName
     private const val DRIVER = "org.sqlite.JDBC"
     lateinit var conn: Connection
         private set
@@ -23,22 +23,22 @@ object Database {
             databaseFile.parentFile.apply { if (!exists()) mkdirs() }
             conn = DriverManager.getConnection("jdbc:sqlite:${databaseFile.absolutePath}")
             instance.logger.info("Opened Database Connection.")
-            createTable()
+            listOf(Config).forEach { createTables(it::class) }
             Runtime.getRuntime().addShutdownHook(Thread { close() })
         } catch (ex: Exception) {
             ex.printStackTrace()
         }
     }
 
-    private fun createTable() {
+    private fun createTables(table: KClass<*>) {
         conn.createStatement().use { stmt ->
             stmt.execute(
                 """
-                CREATE TABLE IF NOT EXISTS $TABLE_NAME (
-                    k TEXT PRIMARY KEY,
-                    v TEXT
-                );
-                """.trimIndent()
+                    CREATE TABLE IF NOT EXISTS ${table.simpleName} (
+                        k TEXT PRIMARY KEY,
+                        v TEXT
+                    );
+                    """.trimIndent()
             )
         }
     }

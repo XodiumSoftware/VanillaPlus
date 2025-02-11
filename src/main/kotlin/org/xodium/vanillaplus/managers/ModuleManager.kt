@@ -30,7 +30,7 @@ object ModuleManager {
         ).filter { it.enabled() }
             .forEach {
                 instance.logger.info(
-                    "Loaded: ${it.javaClass.simpleName} | Took ${
+                    "Loaded: ${it::class.simpleName} | Took ${
                         measureTime {
                             it.init()
                             instance.server.pluginManager.registerEvents(it, instance)
