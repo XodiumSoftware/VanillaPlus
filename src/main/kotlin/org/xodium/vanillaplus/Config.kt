@@ -64,6 +64,13 @@ object Config {
     }
 
     /**
+     * Configuration settings for the RecipiesModule. This module controls the recipe features of the plugin.
+     */
+    object RecipiesModule {
+        var ENABLED: Boolean = true // Enables or disables the RecipiesModule. Set to 'false' to disable.
+    }
+
+    /**
      * Configuration settings for the TreesModule. This module controls the sapling features of the plugin.
      */
     object TreesModule {
