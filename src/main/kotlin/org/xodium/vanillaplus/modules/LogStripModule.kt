@@ -20,10 +20,13 @@ class LogStripModule : ModuleInterface {
 
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: PlayerInteractEvent) {
-        if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return
-        if (!isAxe(event.getItem())) return
-        if (Config.LogStripModule.ALLOW_SHIFT_RIGHT_CLICK_STRIPPING && event.getPlayer().isSneaking) return
-        event.isCancelled = true
+        when {
+            event.action != Action.RIGHT_CLICK_BLOCK -> return
+            event.clickedBlock?.type !in MaterialRegistry.LOGS -> return
+            !isAxe(event.item) -> return
+            Config.LogStripModule.ALLOW_SHIFT_RIGHT_CLICK_STRIPPING && event.player.isSneaking -> return
+            else -> event.isCancelled = true
+        }
     }
 
     private fun isAxe(item: ItemStack?): Boolean =

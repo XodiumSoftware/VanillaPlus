@@ -20,6 +20,19 @@ object MaterialRegistry {
         Material.NETHERITE_AXE,
     )
 
+    val LOGS = setOf(
+        Material.ACACIA_LOG,
+        Material.BIRCH_LOG,
+        Material.CHERRY_LOG,
+        Material.CRIMSON_STEM,
+        Material.DARK_OAK_LOG,
+        Material.JUNGLE_LOG,
+        Material.OAK_LOG,
+        Material.PALE_OAK_LOG,
+        Material.SPRUCE_LOG,
+        Material.WARPED_STEM,
+    )
+
     val SAPLINGS = setOf(
         Material.ACACIA_SAPLING,
         Material.BIRCH_SAPLING,
