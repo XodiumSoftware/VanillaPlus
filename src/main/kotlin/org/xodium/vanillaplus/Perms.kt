@@ -24,5 +24,6 @@ object Perms {
         const val FAQ = "vanillaplus.gui.faq"
         const val DIMS = "vanillaplus.gui.dims"
         const val SETTINGS = "vanillaplus.gui.settings"
+        const val SKINS = "vanillaplus.gui.skins"
     }
 }

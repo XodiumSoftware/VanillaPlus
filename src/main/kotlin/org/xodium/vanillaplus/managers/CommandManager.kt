@@ -17,13 +17,12 @@ import org.xodium.vanillaplus.Utils.mm
 import org.xodium.vanillaplus.VanillaPlus
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.modules.GuiModule
+import org.xodium.vanillaplus.modules.SkinsModule
 
 /**
  * Class for registering GUI commands.
  */
 object CommandManager {
-    private val gui = GuiModule()
-
     init {
         instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
             event.registrar().register(
@@ -43,17 +42,33 @@ object CommandManager {
                     .then(
                         Commands.literal("faq")
                             .requires { it.sender.hasPermission(Perms.GuiModule.FAQ) }
-                            .executes(Command { Utils.tryCatch(it) { gui.faqGUI().open(it.sender as Player) } })
+                            .executes(Command { Utils.tryCatch(it) { GuiModule().faqGUI().open(it.sender as Player) } })
                     )
                     .then(
                         Commands.literal("dims")
                             .requires { it.sender.hasPermission(Perms.GuiModule.DIMS) }
-                            .executes(Command { Utils.tryCatch(it) { gui.dimsGUI().open(it.sender as Player) } })
+                            .executes(Command {
+                                Utils.tryCatch(it) {
+                                    GuiModule().dimsGUI().open(it.sender as Player)
+                                }
+                            })
                     )
                     .then(
                         Commands.literal("settings")
                             .requires { it.sender.hasPermission(Perms.GuiModule.SETTINGS) }
-                            .executes(Command { Utils.tryCatch(it) { gui.settingsGUI().open(it.sender as Player) } })
+                            .executes(Command {
+                                Utils.tryCatch(it) {
+                                    GuiModule().settingsGUI().open(it.sender as Player)
+                                }
+                            })
+                    ).then(
+                        Commands.literal("skins")
+                            .requires { it.sender.hasPermission(Perms.GuiModule.SKINS) }
+                            .executes(Command {
+                                Utils.tryCatch(it) {
+                                    SkinsModule().Gui().open(it.sender as Player)
+                                }
+                            })
                     )
                     .build(),
                 "VanillaPlus plugin",

@@ -25,6 +25,7 @@ object ModuleManager {
             LogStripModule(),
             MotdModule(),
             RecipiesModule(),
+            SkinsModule(),
             TreesModule(),
         ).filter { it.enabled() }
             .forEach {

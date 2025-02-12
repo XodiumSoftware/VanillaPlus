@@ -10,22 +10,21 @@ import dev.triumphteam.gui.paper.builder.item.ItemBuilder
 import dev.triumphteam.gui.paper.container.type.HopperContainerType
 import dev.triumphteam.gui.paper.container.type.PaperContainerType
 import dev.triumphteam.gui.paper.kotlin.builder.buildGui
-import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.xodium.vanillaplus.Config
+import org.xodium.vanillaplus.Utils.antiSpamDuration
+import org.xodium.vanillaplus.Utils.backItem
+import org.xodium.vanillaplus.Utils.birdflopFormat
+import org.xodium.vanillaplus.Utils.fillerItem
+import org.xodium.vanillaplus.Utils.mangoFormat
 import org.xodium.vanillaplus.Utils.mm
+import org.xodium.vanillaplus.Utils.worldSizeFormat
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.DimensionData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 
 class GuiModule : ModuleInterface {
     override fun enabled(): Boolean = Config.GuiModule.ENABLED
-
-    private val antiSpamDuration = Config.GuiModule.ANTI_SPAM_DURATION
-
-    private fun birdflopFormat(text: String): Component = "<b><gradient:#CB2D3E:#EF473A>$text</gradient></b>".mm()
-    private fun mangoFormat(text: String): Component = "<b><gradient:#FFE259:#FFA751>$text</gradient></b>".mm()
-    private fun worldSizeFormat(size: Int): String = if (size >= 1000) "${size / 1000}k" else size.toString()
 
     private val skillsItem = ItemBuilder.from(Material.NETHERITE_SWORD)
         .name(mangoFormat("Skills"))
@@ -111,13 +110,17 @@ class GuiModule : ModuleInterface {
         )
         .asGuiItem { player, _ -> player.performCommand("sort") }
 
-    private val backItem = ItemBuilder.from(Material.RED_STAINED_GLASS_PANE)
-        .name(birdflopFormat("Back"))
-        .lore(listOf("<dark_gray>✖ <gray>Return to the previous menu").mm())
-        .asGuiItem { player, _ -> faqGUI().open(player) }
-
-    private val fillerItem = ItemBuilder.from(Material.BLACK_STAINED_GLASS_PANE)
-        .name("".mm()).asGuiItem()
+    private val skinsItem = ItemBuilder.from(Material.WITHER_SKELETON_SKULL)
+        .name(mangoFormat("Skins"))
+        .lore(
+            listOf(
+                "<dark_gray>▶ <gray>Click the item to open <dark_gray>◀",
+                "",
+                "<dark_gray>✖ <dark_aqua>Opens the Skins Manager",
+                "   <gray>Shortcut: <gold>/skins"
+            ).mm()
+        )
+        .asGuiItem { player, _ -> SkinsModule().Gui().open(player) }
 
     fun faqGUI(): Gui {
         return buildGui {
@@ -129,7 +132,7 @@ class GuiModule : ModuleInterface {
                 gui.setItem(2, fillerItem)
                 gui.setItem(3, tipsItem)
                 gui.setItem(4, rulesItem)
-                gui.setItem(5, fillerItem)
+                gui.setItem(5, skinsItem)
                 gui.setItem(6, fillerItem)
                 gui.setItem(7, homesItem)
                 gui.setItem(8, settingsItem)
@@ -181,9 +184,7 @@ class GuiModule : ModuleInterface {
             title(birdflopFormat("Settings"))
             statelessComponent { gui ->
                 gui.setItem(0, besttoolsItem)
-                gui.setItem(1, fillerItem)
-                gui.setItem(2, fillerItem)
-                gui.setItem(3, fillerItem)
+                (1..3).forEach { index -> gui.setItem(index, fillerItem) }
                 gui.setItem(4, backItem)
             }
         }

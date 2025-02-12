@@ -80,6 +80,13 @@ object Config {
     }
 
     /**
+     * Configuration settings for the SkinsModule. This module controls the skin features of the plugin.
+     */
+    object SkinsModule {
+        var ENABLED: Boolean = true // Enables or disables the SkinsModule. Set to 'false' to disable.
+    }
+
+    /**
      * Configuration settings for the TreesModule. This module controls the sapling features of the plugin.
      */
     object TreesModule {

@@ -26,3 +26,6 @@ permissions:
   vanillaplus.gui.settings:
     description: Allows viewing the VanillaPlus settings
     default: true
+  vanillaplus.gui.skins:
+    description: Allows viewing the VanillaPlus skins
+    default: true

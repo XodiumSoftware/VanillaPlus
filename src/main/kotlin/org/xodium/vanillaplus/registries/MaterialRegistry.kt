@@ -44,4 +44,13 @@ object MaterialRegistry {
         Material.PALE_OAK_SAPLING,
         Material.SPRUCE_SAPLING,
     )
+
+    val SWORDS = setOf(
+        Material.WOODEN_SWORD,
+        Material.STONE_SWORD,
+        Material.IRON_SWORD,
+        Material.GOLDEN_SWORD,
+        Material.DIAMOND_SWORD,
+        Material.NETHERITE_SWORD,
+    )
 }
