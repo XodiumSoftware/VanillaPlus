@@ -45,15 +45,6 @@ object Config {
     }
 
     /**
-     * Configuration settings for the LogStripModule. This module controls the log stripping features of the plugin.
-     */
-    object LogStripModule {
-        var ENABLED: Boolean = true // Enables or disables the LogStripModule. Set to 'false' to disable.
-
-        var ALLOW_SHIFT_RIGHT_CLICK_STRIPPING: Boolean = true // Allows stripping when shift-right-clicking.
-    }
-
-    /**
      * Configuration settings for the MotdModule. This module controls the MOTD features of the plugin.
      */
     object MotdModule {
@@ -61,7 +52,7 @@ object Config {
 
         var MOTD: List<String> = listOf(
             "<b><gradient:#CB2D3E:#EF473A>Ultimate Private SMP</gradient></b>",
-            "<gradient:#CB2D3E:#EF473A>WELCOME BACK LADS!</gradient>"
+            "<b><gradient:#CB2D3E:#EF473A>WELCOME BACK LADS!</gradient></b>"
         ) // The message of the day.
     }
 

@@ -37,8 +37,8 @@ class SkinsModule : ModuleInterface {
     private val itemSkins = listOf(
         SkinData(EntityType.WITHER, 100, Material.WITHER_SPAWN_EGG),
         SkinData(EntityType.ELDER_GUARDIAN, 101, Material.ELDER_GUARDIAN_SPAWN_EGG),
-        SkinData(EntityType.ENDER_DRAGON, 102, Material.ENDER_DRAGON_SPAWN_EGG),
-        SkinData(EntityType.WARDEN, 103, Material.WARDEN_SPAWN_EGG)
+        SkinData(EntityType.WARDEN, 103, Material.WARDEN_SPAWN_EGG),
+        SkinData(EntityType.ENDER_DRAGON, 102, Material.ENDER_DRAGON_SPAWN_EGG)
     )
 
     private fun getSkinLore(player: Player, skinData: SkinData): List<String> =

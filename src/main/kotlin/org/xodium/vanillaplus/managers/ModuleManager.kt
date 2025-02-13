@@ -21,7 +21,6 @@ object ModuleManager {
     init {
         listOf(
             DoorsModule(),
-            LogStripModule(),
             MotdModule(),
             RecipiesModule(),
             SkinsModule(),
