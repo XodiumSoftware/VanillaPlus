@@ -144,18 +144,10 @@ class SkinsModule : ModuleInterface {
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    fun on(event: PlayerItemHeldEvent) {
-        val player = event.player
-        val item = player.inventory.getItem(event.newSlot)
-        validateSkin(item, player)
-    }
+    fun on(event: PlayerItemHeldEvent) = validateSkin(event.player.inventory.getItem(event.newSlot), event.player)
 
     @EventHandler(priority = EventPriority.MONITOR)
-    fun on(event: InventoryClickEvent) {
-        val player = event.whoClicked
-        val item = event.currentItem
-        validateSkin(item, player)
-    }
+    fun on(event: InventoryClickEvent) = validateSkin(event.currentItem, event.whoClicked)
 
     override fun gui(): Gui {
         return buildGui {
