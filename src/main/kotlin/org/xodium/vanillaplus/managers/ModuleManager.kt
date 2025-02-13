@@ -6,7 +6,6 @@
 package org.xodium.vanillaplus.managers
 
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.modules.*
 import kotlin.time.measureTime
 
@@ -20,7 +19,7 @@ import kotlin.time.measureTime
  */
 object ModuleManager {
     init {
-        listOf<ModuleInterface<*>>(
+        listOf(
             DoorsModule(),
             LogStripModule(),
             MotdModule(),

@@ -7,9 +7,6 @@ package org.xodium.vanillaplus.interfaces
 
 import dev.triumphteam.gui.paper.Gui
 import dev.triumphteam.gui.paper.kotlin.builder.buildGui
-import org.bukkit.event.Event
-import org.bukkit.event.EventHandler
-import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 
 
@@ -18,7 +15,7 @@ import org.bukkit.event.Listener
  * Every implementing module must define initialization logic and state management.
  * This interface extends the Listener interface, allowing modules to handle events.
  */
-interface ModuleInterface<T : Event> : Listener {
+interface ModuleInterface : Listener {
     /**
      * Determines if this module is currently enabled.
      *
@@ -31,15 +28,6 @@ interface ModuleInterface<T : Event> : Listener {
      * Default implementation does nothing.
      */
     fun init() = Unit
-
-    /**
-     * Handles a given Bukkit event.
-     * This method is annotated with @EventHandler to ensure it is properly registered with the Bukkit event system.
-     *
-     * @param event The Bukkit event to be handled. This can be any event that extends org.bukkit.event.Event.
-     */
-    @EventHandler(priority = EventPriority.MONITOR)
-    fun on(event: T) = Unit
 
     /**
      * Builds the GUI for the module.

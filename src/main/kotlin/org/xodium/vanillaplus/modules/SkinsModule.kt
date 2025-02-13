@@ -11,6 +11,8 @@ import dev.triumphteam.gui.paper.kotlin.builder.buildGui
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
+import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.EntityDeathEvent
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Utils
@@ -20,7 +22,7 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.registries.MaterialRegistry
 import java.util.*
 
-class SkinsModule : ModuleInterface<EntityDeathEvent> {
+class SkinsModule : ModuleInterface {
     override fun enabled(): Boolean = Config.SkinsModule.ENABLED
 
     private val witherWinners: MutableSet<UUID> = mutableSetOf()
@@ -93,7 +95,8 @@ class SkinsModule : ModuleInterface<EntityDeathEvent> {
         EntityType.WARDEN to (wardenWinners to "Warden")
     )
 
-    override fun on(event: EntityDeathEvent) {
+    @EventHandler(priority = EventPriority.MONITOR)
+    fun on(event: EntityDeathEvent) {
         val killer = event.entity.killer ?: return
         val bossData = bossMap[event.entityType] ?: return
         bossData.first.add(killer.uniqueId)
