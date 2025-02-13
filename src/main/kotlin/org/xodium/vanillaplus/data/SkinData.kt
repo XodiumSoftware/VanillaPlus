@@ -29,20 +29,18 @@ data class SkinData(
     val unlockedPlayers: MutableSet<UUID> = mutableSetOf()
 ) {
     companion object {
-        fun loadUnlockedPlayers(skinData: SkinData) {
-            val data = Database.getData(SkinsModule::class, skinData.model)
-            if (data != null && data.isNotBlank()) {
-                val uuids = data.split(",").mapNotNull {
-                    try {
-                        UUID.fromString(it)
-                    } catch (_: Exception) {
-                        null
-                    }
+        fun loadUnlockedPlayers(skinData: SkinData) = Database.getData(
+            SkinsModule::class, skinData.model
+        )
+            ?.takeIf { it.isNotBlank() }
+            ?.split(",")
+            ?.mapNotNull { runCatching { UUID.fromString(it) }.getOrNull() }
+            ?.let { uuids ->
+                skinData.unlockedPlayers.apply {
+                    clear()
+                    addAll(uuids)
                 }
-                skinData.unlockedPlayers.clear()
-                skinData.unlockedPlayers.addAll(uuids)
             }
-        }
 
         fun saveUnlockedPlayers(skinData: SkinData) = Database.setData(
             SkinsModule::class,
