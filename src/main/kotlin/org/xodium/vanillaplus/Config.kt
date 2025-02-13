@@ -12,6 +12,8 @@ import kotlin.time.Duration.Companion.seconds
  * Configuration settings for the VanillaPlus plugin.
  */
 object Config {
+    var GUI_ANTI_SPAM_DURATION: Duration = 1.seconds // The duration of the anti-spam feature.
+
     /**
      * Configuration settings for the MainModule. This module controls the main features of the plugin.
      */
@@ -40,15 +42,6 @@ object Config {
         var KNOCKING_REQUIRES_SHIFT: Boolean = true // Players must shift (crouch) to knock.
 
         var AUTO_CLOSE_DELAY: Int = 6 // The delay (in seconds) before automatic closure.
-    }
-
-    /**
-     * Configuration settings for the GuiModule. This module controls the GUI features of the plugin.
-     */
-    object GuiModule {
-        var ENABLED: Boolean = true // Enables or disables the GuiModule. Set to 'false' to disable.
-
-        var ANTI_SPAM_DURATION: Duration = 1.seconds // The duration of the anti-spam feature.
     }
 
     /**

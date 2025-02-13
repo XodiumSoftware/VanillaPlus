@@ -33,7 +33,7 @@ object Utils {
     private val logger = instance.logger
 
     val MM: MiniMessage = MiniMessage.miniMessage()
-    val antiSpamDuration = Config.GuiModule.ANTI_SPAM_DURATION
+    val antiSpamDuration = Config.GUI_ANTI_SPAM_DURATION
     val fillerItem = ItemBuilder.from(Material.BLACK_STAINED_GLASS_PANE).name("".mm()).asGuiItem()
     val backItem = ItemBuilder.from(Material.RED_STAINED_GLASS_PANE)
         .name(birdflopFormat("Back"))

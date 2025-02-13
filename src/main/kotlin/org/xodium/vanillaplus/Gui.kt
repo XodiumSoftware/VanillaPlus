@@ -115,7 +115,6 @@ object Gui {
 
     fun faqGUI(): Gui {
         return buildGui {
-            spamPreventionDuration = Utils.antiSpamDuration
             title(Utils.birdflopFormat("FAQ"))
             statelessComponent { gui ->
                 gui.setItem(0, skillsItem)
@@ -134,7 +133,6 @@ object Gui {
     fun dimsGUI(): Gui {
         return buildGui {
             containerType = HopperContainerType.of() as? PaperContainerType
-            spamPreventionDuration = Utils.antiSpamDuration
             title(Utils.birdflopFormat("Dimensions"))
             statelessComponent { gui ->
                 listOf(
@@ -171,7 +169,6 @@ object Gui {
     fun settingsGUI(): Gui {
         return buildGui {
             containerType = HopperContainerType.of() as? PaperContainerType
-            spamPreventionDuration = Utils.antiSpamDuration
             title(Utils.birdflopFormat("Settings"))
             statelessComponent { gui ->
                 gui.setItem(0, besttoolsItem)
