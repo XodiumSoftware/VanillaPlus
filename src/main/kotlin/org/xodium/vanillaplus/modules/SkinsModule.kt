@@ -3,6 +3,8 @@
  *  All rights reserved.
  */
 
+@file:Suppress("UnstableApiUsage")
+
 package org.xodium.vanillaplus.modules
 
 import dev.triumphteam.gui.paper.Gui
@@ -10,7 +12,6 @@ import dev.triumphteam.gui.paper.builder.item.ItemBuilder
 import dev.triumphteam.gui.paper.kotlin.builder.buildGui
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
-import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -28,18 +29,13 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.SkinData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.registries.MaterialRegistry
+import org.xodium.vanillaplus.registries.SkinRegistry
 
 class SkinsModule : ModuleInterface {
     override fun enabled(): Boolean = Config.SkinsModule.ENABLED
 
-    private val skinKey: NamespacedKey = NamespacedKey(instance, "vp_skin")
-
-    private val itemSkins = listOf(
-        SkinData(EntityType.WITHER, 100, Material.WITHER_SPAWN_EGG),
-        SkinData(EntityType.ELDER_GUARDIAN, 101, Material.ELDER_GUARDIAN_SPAWN_EGG),
-        SkinData(EntityType.WARDEN, 102, Material.WARDEN_SPAWN_EGG),
-        SkinData(EntityType.ENDER_DRAGON, 103, Material.ENDER_DRAGON_SPAWN_EGG)
-    )
+    private val skinKey = NamespacedKey(instance, "vp_skin")
+    private val itemSkins = SkinRegistry.skins
 
     private fun buildSkinItem(skinData: SkinData) = ItemBuilder.from(skinData.material)
         .name(Utils.mangoFormat("${skinData.entityName} Skin"))
@@ -90,18 +86,18 @@ class SkinsModule : ModuleInterface {
         val heldItem = player.inventory.getItem(player.inventory.heldItemSlot) ?: return
         val itemMeta = getValidHeldItemMeta(player) ?: return
         val container = itemMeta.persistentDataContainer
-        if (itemMeta.hasCustomModelData() && itemMeta.customModelData == skinData.model && container.has(
-                skinKey,
-                PersistentDataType.INTEGER
-            )
+        val component = itemMeta.customModelDataComponent
+        if (container.has(skinKey, PersistentDataType.STRING) &&
+            container.get(skinKey, PersistentDataType.STRING) == skinData.model
         ) {
-            itemMeta.setCustomModelData(null)
             container.remove(skinKey)
+            itemMeta.setCustomModelDataComponent(null)
             heldItem.itemMeta = itemMeta
             player.sendMessage("${VanillaPlus.PREFIX}<green>Custom skin removed from your item!".mm())
         } else {
-            itemMeta.setCustomModelData(skinData.model)
-            container.set(skinKey, PersistentDataType.INTEGER, skinData.model)
+            container.set(skinKey, PersistentDataType.STRING, skinData.model)
+            component.strings = listOf(skinData.model)
+            itemMeta.setCustomModelDataComponent(component)
             heldItem.itemMeta = itemMeta
             player.sendMessage("${VanillaPlus.PREFIX}<green>Custom skin applied to your item!".mm())
         }
@@ -110,15 +106,17 @@ class SkinsModule : ModuleInterface {
     private fun validateSkin(item: ItemStack?, player: org.bukkit.entity.HumanEntity) {
         if (item == null || item.type == Material.AIR) return
         val meta: ItemMeta = item.itemMeta ?: return
-        if (meta.persistentDataContainer.has(skinKey, PersistentDataType.INTEGER)) {
-            val skinModel = meta.persistentDataContainer.get(skinKey, PersistentDataType.INTEGER)
-            val skinData: SkinData? = itemSkins.find { it.model == skinModel }
-            if (skinData != null) {
-                if (!skinData.unlockedPlayers.contains(player.uniqueId)) {
-                    meta.setCustomModelData(null)
-                    meta.persistentDataContainer.remove(skinKey)
-                    item.itemMeta = meta
-                    player.sendMessage("${VanillaPlus.PREFIX}<red>You do not own this skin, so it has been removed!".mm())
+        if (meta.persistentDataContainer.has(skinKey, PersistentDataType.STRING)) {
+            val skinModel: String? = meta.persistentDataContainer.get(skinKey, PersistentDataType.STRING)
+            skinModel?.let { model ->
+                val skinData: SkinData? = SkinRegistry.getByModel(model)
+                if (skinData != null) {
+                    if (!skinData.unlockedPlayers.contains(player.uniqueId)) {
+                        meta.setCustomModelDataComponent(null)
+                        meta.persistentDataContainer.remove(skinKey)
+                        item.itemMeta = meta
+                        player.sendMessage("${VanillaPlus.PREFIX}<red>You have not unlocked this skin yet, so it has been removed!".mm())
+                    }
                 }
             }
         }
@@ -127,11 +125,13 @@ class SkinsModule : ModuleInterface {
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: EntityDeathEvent) {
         val killer = event.entity.killer ?: return
-        itemSkins.find { it.entityType == event.entityType }?.let { skin ->
-            skin.unlockedPlayers.add(killer.uniqueId)
-            killer.sendMessage(
-                "${VanillaPlus.PREFIX}<dark_aqua>Congratulations! You have defeated the ${skin.entityName} and unlocked custom skins!".mm()
-            )
+        SkinRegistry.getByEntityType(event.entityType)?.let { skin ->
+            if (!skin.unlockedPlayers.contains(killer.uniqueId)) {
+                skin.unlockedPlayers.add(killer.uniqueId)
+                killer.sendMessage(
+                    "${VanillaPlus.PREFIX}<gold>Congratulations! You have defeated the <dark_red>${skin.entityName} <gold>and unlocked its skin!".mm()
+                )
+            }
         }
     }
 
