@@ -36,7 +36,7 @@ class SkinsModule : ModuleInterface {
     override fun enabled(): Boolean = Config.SkinsModule.ENABLED
 
     private val skinKey = NamespacedKey(instance, "vp_skin")
-    private val itemSkins = SkinRegistry.skins
+    private val itemSkins = SkinRegistry.SKINS
 
     private fun buildSkinItem(skinData: SkinData) = ItemBuilder.from(skinData.material)
         .name(Utils.mangoFormat("${skinData.entityName} Skin"))
