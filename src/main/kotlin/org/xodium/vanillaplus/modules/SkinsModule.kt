@@ -9,17 +9,22 @@ import dev.triumphteam.gui.paper.Gui
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder
 import dev.triumphteam.gui.paper.kotlin.builder.buildGui
 import org.bukkit.Material
+import org.bukkit.NamespacedKey
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.EntityDeathEvent
+import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
+import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Utils
 import org.xodium.vanillaplus.Utils.mm
 import org.xodium.vanillaplus.VanillaPlus
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.SkinData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.registries.MaterialRegistry
@@ -28,6 +33,7 @@ import java.util.*
 class SkinsModule : ModuleInterface {
     override fun enabled(): Boolean = Config.SkinsModule.ENABLED
 
+    private val skinKey: NamespacedKey = NamespacedKey(instance, "vp_skin")
     private val baseLore = listOf("<dark_gray>▶ <gray>Click the item to toggle custom skin <dark_gray>◀")
     private val itemSkins = listOf(
         SkinData(EntityType.WITHER, 100, Material.WITHER_SPAWN_EGG),
@@ -84,15 +90,39 @@ class SkinsModule : ModuleInterface {
     private fun toggleSkin(player: Player, skinData: SkinData) {
         if (!isUnlocked(player, skinData)) return
         val heldItem = player.inventory.getItem(player.inventory.heldItemSlot) ?: return
-        val meta = getValidHeldItemMeta(player) ?: return
-        if (meta.hasCustomModelData() && meta.customModelData == skinData.model) {
-            meta.setCustomModelData(null)
-            heldItem.itemMeta = meta
+        val itemMeta = getValidHeldItemMeta(player) ?: return
+        val container = itemMeta.persistentDataContainer
+        if (itemMeta.hasCustomModelData() && itemMeta.customModelData == skinData.model && container.has(
+                skinKey,
+                PersistentDataType.INTEGER
+            )
+        ) {
+            itemMeta.setCustomModelData(null)
+            container.remove(skinKey)
+            heldItem.itemMeta = itemMeta
             player.sendMessage("${VanillaPlus.PREFIX}<green>Custom skin removed from your item!".mm())
         } else {
-            meta.setCustomModelData(skinData.model)
-            heldItem.itemMeta = meta
+            itemMeta.setCustomModelData(skinData.model)
+            container.set(skinKey, PersistentDataType.INTEGER, skinData.model)
+            heldItem.itemMeta = itemMeta
             player.sendMessage("${VanillaPlus.PREFIX}<green>Custom skin applied to your item!".mm())
+        }
+    }
+
+    private fun validateSkin(item: ItemStack?, player: org.bukkit.entity.HumanEntity) {
+        if (item == null || item.type == Material.AIR) return
+        val meta: ItemMeta = item.itemMeta ?: return
+        if (meta.persistentDataContainer.has(skinKey, PersistentDataType.INTEGER)) {
+            val skinModel = meta.persistentDataContainer.get(skinKey, PersistentDataType.INTEGER)
+            val skinData: SkinData? = itemSkins.find { it.model == skinModel }
+            if (skinData != null) {
+                if (!skinData.unlockedPlayers.contains(player.uniqueId)) {
+                    meta.setCustomModelData(null)
+                    meta.persistentDataContainer.remove(skinKey)
+                    item.itemMeta = meta
+                    player.sendMessage("${VanillaPlus.PREFIX}<red>You do not own this skin, so it has been removed!".mm())
+                }
+            }
         }
     }
 
@@ -105,6 +135,20 @@ class SkinsModule : ModuleInterface {
                 "${VanillaPlus.PREFIX}<dark_aqua>Congratulations! You have defeated the ${skin.entityName} and unlocked custom skins!".mm()
             )
         }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    fun on(event: PlayerItemHeldEvent) {
+        val player = event.player
+        val item = player.inventory.getItem(event.newSlot)
+        validateSkin(item, player)
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    fun on(event: InventoryClickEvent) {
+        val player = event.whoClicked
+        val item = event.currentItem
+        validateSkin(item, player)
     }
 
     override fun gui(): Gui {
