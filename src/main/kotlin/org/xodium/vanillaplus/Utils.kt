@@ -16,6 +16,7 @@ import org.bukkit.NamespacedKey
 import org.bukkit.Registry
 import org.bukkit.Sound
 import org.bukkit.block.Block
+import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import java.net.URI
@@ -46,6 +47,9 @@ object Utils {
 
     fun String.mm() = MM.deserialize(this)
     fun List<String>.mm() = map { it.mm() }
+    fun EntityType.format(): String = name.lowercase(Locale.ENGLISH)
+        .split("_")
+        .joinToString(" ") { it.replaceFirstChar { char -> char.uppercaseChar() } }
 
     /**
      * Copies all files from a directory inside the plugin JAR to a target directory in the filesystem.
