@@ -7,7 +7,6 @@ package org.xodium.vanillaplus.modules
 
 import org.bukkit.Bukkit
 import org.bukkit.Keyed
-import org.bukkit.NamespacedKey
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.player.PlayerJoinEvent
@@ -19,12 +18,12 @@ class RecipiesModule : ModuleInterface {
 
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: PlayerJoinEvent) {
-        val recipies = mutableListOf<NamespacedKey>()
-        val iter = Bukkit.recipeIterator()
-        while (iter.hasNext()) {
-            val recipe = iter.next()
-            if (recipe is Keyed) recipies.add(recipe.key)
-        }
-        event.player.discoverRecipes(recipies)
+        event.player.discoverRecipes(
+            Bukkit.recipeIterator()
+                .asSequence()
+                .filterIsInstance<Keyed>()
+                .map { it.key }
+                .toList()
+        )
     }
 }
