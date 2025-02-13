@@ -33,7 +33,8 @@ class SkinsModule : ModuleInterface {
     override fun enabled(): Boolean = Config.SkinsModule.ENABLED
 
     private val skinKey: NamespacedKey = NamespacedKey(instance, "vp_skin")
-    private val baseLore = listOf("<dark_gray>▶ <gray>Click the item to toggle custom skin <dark_gray>◀")
+
+    //    private val baseLore = listOf("<dark_gray>▶ <gray>Click the item to toggle custom skin <dark_gray>◀")
     private val itemSkins = listOf(
         SkinData(EntityType.WITHER, 100, Material.WITHER_SPAWN_EGG),
         SkinData(EntityType.ELDER_GUARDIAN, 101, Material.ELDER_GUARDIAN_SPAWN_EGG),
@@ -41,9 +42,9 @@ class SkinsModule : ModuleInterface {
         SkinData(EntityType.ENDER_DRAGON, 102, Material.ENDER_DRAGON_SPAWN_EGG)
     )
 
-    private fun getSkinLore(player: Player, skinData: SkinData): List<String> =
-        if (isUnlocked(player, skinData)) baseLore
-        else baseLore + "<red>Locked! Defeat the ${skinData.entityName} to unlock this skin."
+//    private fun getSkinLore(player: Player, skinData: SkinData): List<String> =
+//        if (isUnlocked(player, skinData)) baseLore
+//        else baseLore + "<red>Locked! Defeat the ${skinData.entityName} to unlock this skin."
 
     private fun buildSkinItem(skinData: SkinData) = ItemBuilder.from(skinData.material)
         .name(Utils.mangoFormat("${skinData.entityName} Skin"))
