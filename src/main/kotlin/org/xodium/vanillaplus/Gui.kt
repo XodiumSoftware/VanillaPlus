@@ -7,8 +7,6 @@ package org.xodium.vanillaplus
 
 import dev.triumphteam.gui.paper.Gui
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder
-import dev.triumphteam.gui.paper.container.type.HopperContainerType
-import dev.triumphteam.gui.paper.container.type.PaperContainerType
 import dev.triumphteam.gui.paper.kotlin.builder.buildGui
 import org.bukkit.Material
 import org.xodium.vanillaplus.Utils.mm
@@ -132,13 +130,12 @@ object Gui {
 
     fun dimsGUI(): Gui {
         return buildGui {
-            containerType = HopperContainerType.of() as? PaperContainerType
             title(Utils.birdflopFormat("Dimensions"))
             statelessComponent { gui ->
                 listOf(
-                    DimensionData(0, "world", "<green><bold>The Overworld", Material.GRASS_BLOCK),
-                    DimensionData(1, "world_nether", "<red><bold>The Underworld", Material.NETHERRACK),
-                    DimensionData(2, "world_the_end", "<dark_purple><bold>The Endworld", Material.END_STONE)
+                    DimensionData(2, "world", "<green><bold>The Overworld", Material.GRASS_BLOCK),
+                    DimensionData(4, "world_nether", "<red><bold>The Underworld", Material.NETHERRACK),
+                    DimensionData(6, "world_the_end", "<dark_purple><bold>The Endworld", Material.END_STONE)
                 ).forEach { data ->
                     val world = instance.server.getWorld(data.worldName) ?: return@forEach
                     val environment = world.environment.name.lowercase()
@@ -159,8 +156,12 @@ object Gui {
                                     "   <aqua>PVP: $pvp"
                                 ).mm()
                             ).asGuiItem { player, _ -> player.performCommand("cmi rt ${data.worldName}") })
+                    gui.setItem(0, Utils.fillerItem)
+                    gui.setItem(1, Utils.fillerItem)
                     gui.setItem(3, Utils.fillerItem)
-                    gui.setItem(4, Utils.backItem)
+                    gui.setItem(5, Utils.fillerItem)
+                    gui.setItem(7, Utils.fillerItem)
+                    gui.setItem(8, Utils.backItem)
                 }
             }
         }
@@ -168,12 +169,11 @@ object Gui {
 
     fun settingsGUI(): Gui {
         return buildGui {
-            containerType = HopperContainerType.of() as? PaperContainerType
             title(Utils.birdflopFormat("Settings"))
             statelessComponent { gui ->
                 gui.setItem(0, besttoolsItem)
-                (1..3).forEach { index -> gui.setItem(index, Utils.fillerItem) }
-                gui.setItem(4, Utils.backItem)
+                (1..7).forEach { index -> gui.setItem(index, Utils.fillerItem) }
+                gui.setItem(8, Utils.backItem)
             }
         }
     }
