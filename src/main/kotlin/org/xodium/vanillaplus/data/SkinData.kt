@@ -22,7 +22,7 @@ import java.util.*
 data class SkinData(
     val entityType: EntityType,
     val material: Material,
-    val model: String = entityType.name,
+    val model: String = entityType.name.lowercase(),
     val entityName: String = entityType.format(),
     val unlockedPlayers: MutableSet<UUID> = mutableSetOf()
 )
