@@ -19,7 +19,7 @@ object Gui {
         .name(Utils.mangoFormat("Skills"))
         .lore(
             listOf(
-                "<dark_gray>▶ <gray>Click the item to open <dark_gray>◀",
+                "<dark_gray>▶ <gray>Click to open <dark_gray>◀",
                 "",
                 "<dark_gray>✖ <dark_aqua>Leveling, Skills, and Abilities",
                 "   <gray>Shortcut: <gold>/skills"
@@ -31,7 +31,7 @@ object Gui {
         .name(Utils.mangoFormat("Dimensions"))
         .lore(
             listOf(
-                "<dark_gray>▶ <gray>Click the item to open <dark_gray>◀",
+                "<dark_gray>▶ <gray>Click to open <dark_gray>◀",
                 "",
                 "<dark_gray>✖ <dark_aqua>Teleport, Explore, and Discover",
                 "   <gray>Shortcut: <gold>/dims"
@@ -43,7 +43,7 @@ object Gui {
         .name(Utils.mangoFormat("Tips"))
         .lore(
             listOf(
-                "<dark_gray>▶ <gray>Click the item to open <dark_gray>◀",
+                "<dark_gray>▶ <gray>Click to open <dark_gray>◀",
                 "",
                 "<dark_gray>✖ <dark_aqua>All kinds of Tips & Tricks",
                 "   <gray>Shortcut: <gold>/tips"
@@ -55,7 +55,7 @@ object Gui {
         .name(Utils.mangoFormat("Rules"))
         .lore(
             listOf(
-                "<dark_gray>▶ <gray>Click the item to open <dark_gray>◀",
+                "<dark_gray>▶ <gray>Click to open <dark_gray>◀",
                 "",
                 "<dark_gray>✖ <dark_aqua>The Rules of this server",
                 "   <gray>Shortcut: <gold>/rules"
@@ -67,7 +67,7 @@ object Gui {
         .name(Utils.mangoFormat("Homes"))
         .lore(
             listOf(
-                "<dark_gray>▶ <gray>Click the item to open <dark_gray>◀",
+                "<dark_gray>▶ <gray>Click to open <dark_gray>◀",
                 "",
                 "<dark_gray>✖ <dark_aqua>Opens the Homes Settings",
                 "   <gray>Shortcut: <gold>/homes"
@@ -79,7 +79,7 @@ object Gui {
         .name(Utils.mangoFormat("Settings"))
         .lore(
             listOf(
-                "<dark_gray>▶ <gray>Click the item to open <dark_gray>◀",
+                "<dark_gray>▶ <gray>Click to open <dark_gray>◀",
                 "",
                 "<dark_gray>✖ <dark_aqua>Personal Settings and Preferences",
                 "   <gray>Shortcut: <gold>/settings"
@@ -91,7 +91,7 @@ object Gui {
         .name(Utils.mangoFormat("BestTools"))
         .lore(
             listOf(
-                "<dark_gray>▶ <gray>Click the item to open <dark_gray>◀",
+                "<dark_gray>▶ <gray>Click to open <dark_gray>◀",
                 "",
                 "<dark_gray>✖ <dark_aqua>Opens the ChestSort Settings",
                 "   <gray>Shortcut: <gold>/sort"
@@ -103,7 +103,7 @@ object Gui {
         .name(Utils.mangoFormat("Skins"))
         .lore(
             listOf(
-                "<dark_gray>▶ <gray>Click the item to open <dark_gray>◀",
+                "<dark_gray>▶ <gray>Click to open <dark_gray>◀",
                 "",
                 "<dark_gray>✖ <dark_aqua>Opens the Skins Manager",
                 "   <gray>Shortcut: <gold>/skins"
@@ -147,7 +147,7 @@ object Gui {
                             .name(data.displayName.mm())
                             .lore(
                                 listOf(
-                                    "<dark_gray>▶ <gray>Click the item to rtp <dark_gray>◀",
+                                    "<dark_gray>▶ <gray>Click to rtp <dark_gray>◀",
                                     "",
                                     "<dark_gray>✖ <gray>Information:",
                                     "   <aqua>Environment: <gold>$environment",

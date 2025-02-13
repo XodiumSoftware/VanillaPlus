@@ -43,7 +43,7 @@ class SkinsModule : ModuleInterface {
 
     private fun buildSkinItem(skinData: SkinData) = ItemBuilder.from(skinData.material)
         .name(Utils.mangoFormat("${skinData.entityName} Skin"))
-        .lore(listOf("<dark_gray>▶ <gray>Click the item to toggle custom skin <dark_gray>◀").mm())
+        .lore(listOf("<dark_gray>▶ <gray>Click to toggle custom skin <dark_gray>◀").mm())
         .asGuiItem { player, _ -> toggleSkin(player, skinData) }
 
     private fun isUnlocked(player: Player, skinData: SkinData): Boolean =
