@@ -84,7 +84,7 @@ class SkinsModule : ModuleInterface {
 
     private fun toggleSkin(player: Player, skinData: SkinData) {
         if (!isUnlocked(player, skinData)) {
-            player.sendMessage("${VanillaPlus.PREFIX}<red>Locked! Defeat the ${skinData.entityName} to unlock this skin.".mm())
+            player.sendMessage("${VanillaPlus.PREFIX}<red>Locked! Defeat the <dark_red>${skinData.entityName} <red>to unlock this skin.".mm())
             return
         }
         val heldItem = player.inventory.getItem(player.inventory.heldItemSlot) ?: return
