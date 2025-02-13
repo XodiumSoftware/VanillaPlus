@@ -7,7 +7,9 @@ package org.xodium.vanillaplus.data
 
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
+import org.xodium.vanillaplus.Database
 import org.xodium.vanillaplus.Utils.format
+import org.xodium.vanillaplus.modules.SkinsModule
 import java.util.*
 
 /**
@@ -25,4 +27,26 @@ data class SkinData(
     val model: String = entityType.name.lowercase(),
     val entityName: String = entityType.format(),
     val unlockedPlayers: MutableSet<UUID> = mutableSetOf()
-)
+) {
+    companion object {
+        fun loadUnlockedPlayers(skinData: SkinData) {
+            val data = Database.getData(SkinsModule::class, skinData.model)
+            if (data != null && data.isNotBlank()) {
+                val uuids = data.split(",").mapNotNull {
+                    try {
+                        UUID.fromString(it)
+                    } catch (_: Exception) {
+                        null
+                    }
+                }
+                skinData.unlockedPlayers.clear()
+                skinData.unlockedPlayers.addAll(uuids)
+            }
+        }
+
+        fun saveUnlockedPlayers(skinData: SkinData) = Database.setData(
+            SkinsModule::class,
+            skinData.model,
+            skinData.unlockedPlayers.joinToString(",") { it.toString() })
+    }
+}

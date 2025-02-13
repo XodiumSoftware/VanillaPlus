@@ -22,6 +22,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.Config
+import org.xodium.vanillaplus.Database
 import org.xodium.vanillaplus.Utils
 import org.xodium.vanillaplus.Utils.mm
 import org.xodium.vanillaplus.VanillaPlus
@@ -111,6 +112,7 @@ class SkinsModule : ModuleInterface {
             skinModel?.let { model ->
                 val skinData: SkinData? = SkinRegistry.getByModel(model)
                 if (skinData != null) {
+                    SkinData.loadUnlockedPlayers(skinData)
                     if (!skinData.unlockedPlayers.contains(player.uniqueId)) {
                         meta.setCustomModelDataComponent(null)
                         meta.persistentDataContainer.remove(skinKey)
@@ -122,15 +124,21 @@ class SkinsModule : ModuleInterface {
         }
     }
 
+    init {
+        Database.createTable(this::class)
+    }
+
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: EntityDeathEvent) {
         val killer = event.entity.killer ?: return
         SkinRegistry.getByEntityType(event.entityType)?.let { skin ->
+            SkinData.loadUnlockedPlayers(skin)
             if (!skin.unlockedPlayers.contains(killer.uniqueId)) {
                 skin.unlockedPlayers.add(killer.uniqueId)
                 killer.sendMessage(
                     "${VanillaPlus.PREFIX}<gold>Congratulations! You have defeated the <dark_red>${skin.entityName} <gold>and unlocked its skin!".mm()
                 )
+                SkinData.saveUnlockedPlayers(skin)
             }
         }
     }

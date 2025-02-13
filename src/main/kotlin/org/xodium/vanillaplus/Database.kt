@@ -23,14 +23,14 @@ object Database {
             databaseFile.parentFile.apply { if (!exists()) mkdirs() }
             conn = DriverManager.getConnection("jdbc:sqlite:${databaseFile.absolutePath}")
             instance.logger.info("Opened Database Connection.")
-            listOf(Config).forEach { createTables(it::class) }
+            listOf(Config).forEach { createTable(it::class) }
             Runtime.getRuntime().addShutdownHook(Thread { close() })
         } catch (ex: Exception) {
             ex.printStackTrace()
         }
     }
 
-    private fun createTables(table: KClass<*>) {
+    fun createTable(table: KClass<*>) {
         conn.createStatement().use { stmt ->
             stmt.execute(
                 """
@@ -40,6 +40,31 @@ object Database {
                     );
                     """.trimIndent()
             )
+        }
+    }
+
+    fun setData(table: KClass<*>, key: String, value: String) {
+        conn.prepareStatement(
+            """
+            INSERT OR REPLACE INTO ${table.simpleName} (k, v) VALUES (?, ?);
+            """.trimIndent()
+        ).use { stmt ->
+            stmt.setString(1, key)
+            stmt.setString(2, value)
+            stmt.executeUpdate()
+        }
+    }
+
+    fun getData(table: KClass<*>, key: String): String? {
+        return conn.prepareStatement(
+            """
+            SELECT v FROM ${table.simpleName} WHERE k = ?;
+            """.trimIndent()
+        ).use { stmt ->
+            stmt.setString(1, key)
+            stmt.executeQuery().use { rs ->
+                if (rs.next()) rs.getString("v") else null
+            }
         }
     }
 
