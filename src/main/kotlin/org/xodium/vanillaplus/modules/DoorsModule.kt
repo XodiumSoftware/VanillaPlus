@@ -60,7 +60,7 @@ class DoorsModule : ModuleInterface {
         }
     }
 
-    override fun init() {
+    init {
         Bukkit.getScheduler().runTaskTimer(instance, Runnable {
             autoClose.entries.removeIf { (block, time) ->
                 if (System.currentTimeMillis() >= time) {

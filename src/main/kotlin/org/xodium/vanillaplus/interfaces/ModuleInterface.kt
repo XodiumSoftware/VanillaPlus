@@ -25,12 +25,6 @@ interface ModuleInterface : Listener {
     fun enabled(): Boolean
 
     /**
-     * Initializes the functionality of the implementing module.
-     * Default implementation does nothing.
-     */
-    fun init() = Unit
-
-    /**
      * Builds the GUI for the module.
      * Default implementation returns an empty GUI.
      *

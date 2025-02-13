@@ -35,9 +35,9 @@ class TreesModule : ModuleInterface {
     private val logger = instance.logger
     private val schematicsFolder = Paths.get("schematics")
     private val schematicsPath = instance.dataFolder.toPath().resolve(schematicsFolder)
-    private lateinit var saplingSchematicMap: Map<Material, List<Path>>
+    private var saplingSchematicMap: Map<Material, List<Path>>
 
-    override fun init() {
+    init {
         Utils.copyResourcesFromJar(schematicsFolder, schematicsPath)
         saplingSchematicMap = loadSaplingSchematicMap()
     }
