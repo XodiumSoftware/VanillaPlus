@@ -15,8 +15,6 @@ import com.sk89q.worldedit.session.ClipboardHolder
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.Block
-import org.bukkit.event.EventHandler
-import org.bukkit.event.EventPriority
 import org.bukkit.event.world.StructureGrowEvent
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Utils
@@ -29,7 +27,7 @@ import java.nio.file.Path
 import java.nio.file.Paths
 
 
-class TreesModule : ModuleInterface {
+class TreesModule : ModuleInterface<StructureGrowEvent> {
     override fun enabled(): Boolean = Config.TreesModule.ENABLED
 
     private val logger = instance.logger
@@ -62,8 +60,7 @@ class TreesModule : ModuleInterface {
         return material to files
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
-    fun on(event: StructureGrowEvent) {
+    override fun on(event: StructureGrowEvent) {
         event.location.block.takeIf { MaterialRegistry.SAPLINGS.contains(it.type) }?.let {
             event.isCancelled = replaceWithSchematicTree(it)
         }

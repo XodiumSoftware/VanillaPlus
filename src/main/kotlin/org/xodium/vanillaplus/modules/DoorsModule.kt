@@ -19,8 +19,6 @@ import org.bukkit.block.data.type.Gate
 import org.bukkit.block.data.type.TrapDoor
 import org.bukkit.entity.Player
 import org.bukkit.event.Event
-import org.bukkit.event.EventHandler
-import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
@@ -32,7 +30,7 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import java.util.concurrent.ConcurrentHashMap
 
 
-class DoorsModule : ModuleInterface {
+class DoorsModule : ModuleInterface<PlayerInteractEvent> {
     override fun enabled(): Boolean = Config.DoorsModule.ENABLED
 
     private val autoCloseDelay = Config.DoorsModule.AUTO_CLOSE_DELAY * 1000L
@@ -106,8 +104,7 @@ class DoorsModule : ModuleInterface {
         )
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
-    fun on(event: PlayerInteractEvent) {
+    override fun on(event: PlayerInteractEvent) {
         val clickedBlock = event.clickedBlock ?: return
         if (!isValidInteraction(event)) return
         when (event.action) {

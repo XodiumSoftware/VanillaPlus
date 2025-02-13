@@ -18,7 +18,6 @@ import org.bukkit.Sound
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.modules.GuiModule
 import java.net.URI
 import java.nio.file.FileSystems
 import java.nio.file.Files
@@ -39,7 +38,7 @@ object Utils {
     val backItem = ItemBuilder.from(Material.RED_STAINED_GLASS_PANE)
         .name(birdflopFormat("Back"))
         .lore(listOf("<dark_gray>✖ <gray>Return to the previous menu").mm())
-        .asGuiItem { player, _ -> GuiModule().faqGUI().open(player) }
+        .asGuiItem { player, _ -> Gui.faqGUI().open(player) }
 
     fun birdflopFormat(text: String): Component = "<b><gradient:#CB2D3E:#EF473A>$text</gradient></b>".mm()
     fun mangoFormat(text: String): Component = "<b><gradient:#FFE259:#FFA751>$text</gradient></b>".mm()
