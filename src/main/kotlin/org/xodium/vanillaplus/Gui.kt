@@ -12,6 +12,7 @@ import dev.triumphteam.gui.paper.container.type.PaperContainerType
 import dev.triumphteam.gui.paper.kotlin.builder.buildGui
 import org.bukkit.Material
 import org.xodium.vanillaplus.Utils.mm
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.DimensionData
 import org.xodium.vanillaplus.modules.SkinsModule
 
@@ -141,7 +142,7 @@ object Gui {
                     DimensionData(1, "world_nether", "<red><bold>The Underworld", Material.NETHERRACK),
                     DimensionData(2, "world_the_end", "<dark_purple><bold>The Endworld", Material.END_STONE)
                 ).forEach { data ->
-                    val world = VanillaPlus.Companion.instance.server.getWorld(data.worldName) ?: return@forEach
+                    val world = instance.server.getWorld(data.worldName) ?: return@forEach
                     val environment = world.environment.name.lowercase()
                     val worldSize = Utils.worldSizeFormat(world.worldBorder.size.toInt())
                     val difficulty = world.difficulty.name.uppercase()
