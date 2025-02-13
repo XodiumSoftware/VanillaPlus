@@ -34,7 +34,6 @@ class SkinsModule : ModuleInterface {
 
     private val skinKey: NamespacedKey = NamespacedKey(instance, "vp_skin")
 
-    //    private val baseLore = listOf("<dark_gray>▶ <gray>Click the item to toggle custom skin <dark_gray>◀")
     private val itemSkins = listOf(
         SkinData(EntityType.WITHER, 100, Material.WITHER_SPAWN_EGG),
         SkinData(EntityType.ELDER_GUARDIAN, 101, Material.ELDER_GUARDIAN_SPAWN_EGG),
@@ -42,13 +41,9 @@ class SkinsModule : ModuleInterface {
         SkinData(EntityType.ENDER_DRAGON, 103, Material.ENDER_DRAGON_SPAWN_EGG)
     )
 
-//    private fun getSkinLore(player: Player, skinData: SkinData): List<String> =
-//        if (isUnlocked(player, skinData)) baseLore
-//        else baseLore + "<red>Locked! Defeat the ${skinData.entityName} to unlock this skin."
-
     private fun buildSkinItem(skinData: SkinData) = ItemBuilder.from(skinData.material)
         .name(Utils.mangoFormat("${skinData.entityName} Skin"))
-        .lore("".mm()) // FIX: skin lore
+        .lore(listOf("<dark_gray>▶ <gray>Click the item to toggle custom skin <dark_gray>◀").mm())
         .asGuiItem { player, _ -> toggleSkin(player, skinData) }
 
     private fun isUnlocked(player: Player, skinData: SkinData): Boolean =
@@ -88,7 +83,10 @@ class SkinsModule : ModuleInterface {
     }
 
     private fun toggleSkin(player: Player, skinData: SkinData) {
-        if (!isUnlocked(player, skinData)) return
+        if (!isUnlocked(player, skinData)) {
+            player.sendMessage("<red>Locked! Defeat the ${skinData.entityName} to unlock this skin.".mm())
+            return
+        }
         val heldItem = player.inventory.getItem(player.inventory.heldItemSlot) ?: return
         val itemMeta = getValidHeldItemMeta(player) ?: return
         val container = itemMeta.persistentDataContainer
