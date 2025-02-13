@@ -28,7 +28,6 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.SkinData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.registries.MaterialRegistry
-import java.util.*
 
 class SkinsModule : ModuleInterface {
     override fun enabled(): Boolean = Config.SkinsModule.ENABLED
@@ -48,7 +47,7 @@ class SkinsModule : ModuleInterface {
 
     private fun buildSkinItem(skinData: SkinData) = ItemBuilder.from(skinData.material)
         .name(Utils.mangoFormat("${skinData.entityName} Skin"))
-        .lore(getSkinLore(player, skinData).mm())
+        .lore("".mm()) // FIX: skin lore
         .asGuiItem { player, _ -> toggleSkin(player, skinData) }
 
     private fun isUnlocked(player: Player, skinData: SkinData): Boolean =

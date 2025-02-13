@@ -31,7 +31,7 @@ object ModuleManager {
                 instance.logger.info(
                     "Loaded: ${it::class.simpleName} | Took ${
                         measureTime {
-                            it.init()
+                            it
                             instance.server.pluginManager.registerEvents(it, instance)
                         }.inWholeMilliseconds
                     }ms"
