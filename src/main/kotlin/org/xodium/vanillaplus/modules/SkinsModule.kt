@@ -8,6 +8,7 @@ package org.xodium.vanillaplus.modules
 import dev.triumphteam.gui.paper.Gui
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder
 import dev.triumphteam.gui.paper.kotlin.builder.buildGui
+import io.papermc.paper.command.brigadier.argument.ArgumentTypes.player
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
@@ -52,7 +53,6 @@ class SkinsModule : ModuleInterface {
     }
 
     private fun buildSkinItem(
-        player: Player,
         material: Material,
         skinData: Int,
         displayName: String,
@@ -137,7 +137,6 @@ class SkinsModule : ModuleInterface {
                     it.setItem(
                         0,
                         buildSkinItem(
-                            it as Player,
                             Material.WITHER_SKELETON_SKULL,
                             witherSkinData,
                             "Wither Boss Skin",
@@ -147,7 +146,6 @@ class SkinsModule : ModuleInterface {
                     it.setItem(
                         1,
                         buildSkinItem(
-                            it as Player,
                             Material.ELDER_GUARDIAN_SPAWN_EGG,
                             elderGuardianSkinData,
                             "Elder Guardian Skin",
@@ -157,7 +155,6 @@ class SkinsModule : ModuleInterface {
                     it.setItem(
                         2,
                         buildSkinItem(
-                            it as Player,
                             Material.DRAGON_HEAD,
                             enderDragonSkinData,
                             "Ender Dragon Skin",
@@ -167,7 +164,6 @@ class SkinsModule : ModuleInterface {
                     it.setItem(
                         3,
                         buildSkinItem(
-                            it as Player,
                             Material.WARDEN_SPAWN_EGG,
                             wardenSkinData,
                             "Warden Skin",
