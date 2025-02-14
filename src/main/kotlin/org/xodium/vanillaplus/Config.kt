@@ -97,15 +97,15 @@ object Config {
 
         // If a sapling type is missing here, no custom schematic will be used and default behavior applies.
         // You can define a file, multiple files or a folder.
-        var saplingLink: Map<String, List<String>> = mapOf(
-            "ACACIA_SAPLING" to listOf("trees/acacia"),
-            "BIRCH_SAPLING" to listOf("trees/birch"),
-            "CHERRY_SAPLING" to listOf("trees/cherry"),
-            "DARK_OAK_SAPLING" to listOf("trees/dark_oak"),
-            "JUNGLE_SAPLING" to listOf("trees/jungle"),
-            "MANGROVE_PROPAGULE" to listOf("trees/mangrove"),
-            "OAK_SAPLING" to listOf("trees/oak"),
-            "SPRUCE_SAPLING" to listOf("trees/spruce")
+        var SAPLING_LINK: Map<Material, List<String>> = mapOf(
+            Material.ACACIA_SAPLING to listOf("trees/acacia"),
+            Material.BIRCH_SAPLING to listOf("trees/birch"),
+            Material.CHERRY_SAPLING to listOf("trees/cherry"),
+            Material.DARK_OAK_SAPLING to listOf("trees/dark_oak"),
+            Material.JUNGLE_SAPLING to listOf("trees/jungle"),
+            Material.MANGROVE_PROPAGULE to listOf("trees/mangrove"),
+            Material.OAK_SAPLING to listOf("trees/oak"),
+            Material.SPRUCE_SAPLING to listOf("trees/spruce")
         )
     }
 }

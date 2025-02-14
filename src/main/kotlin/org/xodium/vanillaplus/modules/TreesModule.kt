@@ -35,31 +35,13 @@ class TreesModule : ModuleInterface {
     private val logger = instance.logger
     private val schematicsFolder = Paths.get("schematics")
     private val schematicsPath = instance.dataFolder.toPath().resolve(schematicsFolder)
-    private var saplingSchematicMap: Map<Material, List<Path>>
+    private val saplingSchematicMap: Map<Material, List<Path>> =
+        Config.TreesModule.SAPLING_LINK.mapValues { (_, paths) ->
+            Utils.parseFiles(paths, schematicsPath, ".schem")
+        }
 
     init {
         Utils.copyResourcesFromJar(schematicsFolder, schematicsPath)
-        saplingSchematicMap = loadSaplingSchematicMap()
-    }
-
-    private fun loadSaplingSchematicMap(): Map<Material, List<Path>> {
-        return Config.TreesModule.saplingLink
-            .mapNotNull { (k, v) -> validateAndMapSapling(k, v) }
-            .toMap()
-    }
-
-    private fun validateAndMapSapling(key: String, value: Any?): Pair<Material, List<Path>>? {
-        val material = Material.matchMaterial(key)
-        if (material == null || !MaterialRegistry.SAPLINGS.contains(material)) {
-            logger.warning("Invalid sapling configuration entry: $key does not map to a valid sapling.")
-            return null
-        }
-        val files = Utils.parseFiles(value ?: emptyList<String>(), schematicsPath, ".schem")
-        if (files.isEmpty()) {
-            logger.warning("No valid schematics found for $key.")
-            return null
-        }
-        return material to files
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
