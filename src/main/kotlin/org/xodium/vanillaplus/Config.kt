@@ -5,6 +5,9 @@
 
 package org.xodium.vanillaplus
 
+import org.bukkit.Material
+import org.bukkit.entity.EntityType
+import org.xodium.vanillaplus.data.SkinData
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
@@ -72,6 +75,13 @@ object Config {
      */
     object SkinsModule {
         var ENABLED: Boolean = true // Enables or disables the SkinsModule. Set to 'false' to disable.
+
+        var SKINS: List<SkinData> = listOf(
+            SkinData(EntityType.WITHER, Material.WITHER_SPAWN_EGG),
+            SkinData(EntityType.ELDER_GUARDIAN, Material.ELDER_GUARDIAN_SPAWN_EGG),
+            SkinData(EntityType.WARDEN, Material.WARDEN_SPAWN_EGG),
+            SkinData(EntityType.ENDER_DRAGON, Material.ENDER_DRAGON_SPAWN_EGG)
+        ) // The list of skins available.
     }
 
     /**
