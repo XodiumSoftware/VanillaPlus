@@ -14,7 +14,6 @@ object Perms {
      */
     object VanillaPlus {
         const val USE = "vanillaplus.use"
-        const val RELOAD = "vanillaplus.reload"
     }
 
     /**

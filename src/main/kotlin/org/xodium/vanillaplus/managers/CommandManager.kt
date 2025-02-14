@@ -14,8 +14,6 @@ import org.bukkit.entity.Player
 import org.xodium.vanillaplus.Gui
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.Utils
-import org.xodium.vanillaplus.Utils.mm
-import org.xodium.vanillaplus.VanillaPlus
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.modules.SkinsModule
 
@@ -28,17 +26,6 @@ object CommandManager {
             event.registrar().register(
                 Commands.literal("vanillaplus")
                     .requires { it.sender.hasPermission(Perms.VanillaPlus.USE) }
-                    .then(
-                        Commands.literal("reload")
-                            .requires { it.sender.hasPermission(Perms.VanillaPlus.RELOAD) }
-                            .executes(Command { ctx ->
-                                Utils.tryCatch(ctx) {
-//                                    TODO: implement functionality.
-                                    instance.logger.info("Reloaded successfully")
-                                    (ctx.source.sender as Player).sendMessage("${VanillaPlus.PREFIX}<green>Reloaded successfully.".mm())
-                                }
-                            })
-                    )
                     .then(
                         Commands.literal("faq")
                             .requires { it.sender.hasPermission(Perms.GuiModule.FAQ) }

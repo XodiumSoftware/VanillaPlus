@@ -14,9 +14,6 @@ permissions:
   vanillaplus.use:
     description: Allows use of the VanillaPlus commands
     default: true
-  vanillaplus.reload:
-    description: Allows reloading the VanillaPlus plugin
-    default: op
   vanillaplus.gui.faq:
     description: Allows viewing the VanillaPlus FAQ
     default: true
