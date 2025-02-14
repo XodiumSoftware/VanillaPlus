@@ -75,11 +75,11 @@ class TreesModule : ModuleInterface {
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: StructureGrowEvent) {
         event.location.block.takeIf { MaterialRegistry.SAPLINGS.contains(it.type) }?.let {
-            event.isCancelled = replaceWithSchematicTree(it)
+            event.isCancelled = pasteSchematic(it)
         }
     }
 
-    private fun replaceWithSchematicTree(block: Block): Boolean {
+    private fun pasteSchematic(block: Block): Boolean {
         val clipboard = schematicCache[block.type]?.randomOrNull()
         if (clipboard == null) {
             instance.logger.info("No custom schematic found for ${block.type}.")
