@@ -14,6 +14,10 @@ import kotlin.time.Duration.Companion.seconds
 object Config {
     var GUI_ANTI_SPAM_DURATION: Duration = 1.seconds // The duration of the anti-spam feature.
 
+    init {
+        Database.createTable(this::class)
+    }
+
     /**
      * Configuration settings for the MainModule. This module controls the main features of the plugin.
      */

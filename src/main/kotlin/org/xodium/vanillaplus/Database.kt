@@ -23,7 +23,6 @@ object Database {
             databaseFile.parentFile.apply { if (!exists()) mkdirs() }
             conn = DriverManager.getConnection("jdbc:sqlite:${databaseFile.absolutePath}")
             instance.logger.info("Opened Database Connection.")
-            listOf(Config).forEach { createTable(it::class) }
             Runtime.getRuntime().addShutdownHook(Thread { close() })
         } catch (ex: Exception) {
             ex.printStackTrace()
