@@ -106,17 +106,6 @@ class DoorsModule : ModuleInterface {
         )
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
-    fun on(event: PlayerInteractEvent) {
-        val clickedBlock = event.clickedBlock ?: return
-        if (!isValidInteraction(event)) return
-        when (event.action) {
-            Action.LEFT_CLICK_BLOCK -> handleLeftClick(event, clickedBlock)
-            Action.RIGHT_CLICK_BLOCK -> handleRightClick(clickedBlock)
-            else -> return
-        }
-    }
-
     private fun isValidInteraction(event: PlayerInteractEvent): Boolean {
         return event.hand == EquipmentSlot.HAND &&
                 event.useInteractedBlock() != Event.Result.DENY &&
@@ -203,5 +192,16 @@ class DoorsModule : ModuleInterface {
                         relative.type == block.type
             } != null
         }?.let { block.getRelative(it.offsetX, 0, it.offsetZ) }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    fun on(event: PlayerInteractEvent) {
+        val clickedBlock = event.clickedBlock ?: return
+        if (!isValidInteraction(event)) return
+        when (event.action) {
+            Action.LEFT_CLICK_BLOCK -> handleLeftClick(event, clickedBlock)
+            Action.RIGHT_CLICK_BLOCK -> handleRightClick(clickedBlock)
+            else -> return
+        }
     }
 }
