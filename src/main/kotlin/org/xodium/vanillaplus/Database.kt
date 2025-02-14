@@ -11,12 +11,18 @@ import java.sql.DriverManager
 import java.sql.SQLException
 import kotlin.reflect.KClass
 
+/**
+ * Represents the database connection.
+ */
 object Database {
     private val databaseFile = instance.dataFolder.resolve("vanillaplus.db")
     private const val DRIVER = "org.sqlite.JDBC"
     lateinit var conn: Connection
         private set
 
+    /**
+     * Initializes the database connection.
+     */
     init {
         try {
             Class.forName(DRIVER)
@@ -29,6 +35,11 @@ object Database {
         }
     }
 
+    /**
+     * Creates a table in the database.
+     *
+     * @param table The table to create.
+     */
     fun createTable(table: KClass<*>) {
         conn.createStatement().use { stmt ->
             stmt.execute(
@@ -42,6 +53,13 @@ object Database {
         }
     }
 
+    /**
+     * Sets data in the database.
+     *
+     * @param table The table to set the data in.
+     * @param key The key to set the data with.
+     * @param value The value to set the data with.
+     */
     fun setData(table: KClass<*>, key: String, value: String) {
         conn.prepareStatement(
             """
@@ -54,6 +72,13 @@ object Database {
         }
     }
 
+    /**
+     * Gets data from the database.
+     *
+     * @param table The table to get the data from.
+     * @param key The key to get the data with.
+     * @return The data retrieved from the database.
+     */
     fun getData(table: KClass<*>, key: String): String? {
         return conn.prepareStatement(
             """
@@ -67,6 +92,9 @@ object Database {
         }
     }
 
+    /**
+     * Closes the database connection.
+     */
     private fun close() {
         if (this::conn.isInitialized && !conn.isClosed) {
             try {

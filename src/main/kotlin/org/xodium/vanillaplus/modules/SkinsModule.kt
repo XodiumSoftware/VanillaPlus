@@ -12,6 +12,7 @@ import dev.triumphteam.gui.paper.builder.item.ItemBuilder
 import dev.triumphteam.gui.paper.kotlin.builder.buildGui
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
+import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -28,23 +29,26 @@ import org.xodium.vanillaplus.Utils.mm
 import org.xodium.vanillaplus.VanillaPlus
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.SkinData
+import org.xodium.vanillaplus.data.SkinData.Companion.getByEntityType
+import org.xodium.vanillaplus.data.SkinData.Companion.getByModel
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.registries.MaterialRegistry
-import org.xodium.vanillaplus.registries.SkinRegistry
 
 class SkinsModule : ModuleInterface {
     override fun enabled(): Boolean = Config.SkinsModule.ENABLED
 
     private val skinKey = NamespacedKey(instance, "vp_skin")
-    private val itemSkins = SkinRegistry.SKINS
+    private val itemSkins = listOf(
+        SkinData(EntityType.WITHER, Material.WITHER_SPAWN_EGG),
+        SkinData(EntityType.ELDER_GUARDIAN, Material.ELDER_GUARDIAN_SPAWN_EGG),
+        SkinData(EntityType.WARDEN, Material.WARDEN_SPAWN_EGG),
+        SkinData(EntityType.ENDER_DRAGON, Material.ENDER_DRAGON_SPAWN_EGG)
+    )
 
     private fun buildSkinItem(skinData: SkinData) = ItemBuilder.from(skinData.material)
         .name(Utils.mangoFormat("${skinData.entityName} Skin"))
         .lore(listOf("<dark_gray>▶ <gray>Click to toggle custom skin <dark_gray>◀").mm())
         .asGuiItem { player, _ -> toggleSkin(player, skinData) }
-
-    private fun isUnlocked(player: Player, skinData: SkinData): Boolean =
-        skinData.unlockedPlayers.contains(player.uniqueId)
 
     private fun validateItemIsNotNullOrAir(itemStack: ItemStack?, player: Player): Boolean {
         if (itemStack == null || itemStack.type == Material.AIR) {
@@ -80,7 +84,7 @@ class SkinsModule : ModuleInterface {
     }
 
     private fun toggleSkin(player: Player, skinData: SkinData) {
-        if (!isUnlocked(player, skinData)) {
+        if (!SkinData.hasUnlocked(player.uniqueId, skinData)) {
             player.sendMessage("${VanillaPlus.PREFIX}<red>Locked! Defeat the <dark_red>${skinData.entityName} <red>to unlock this skin.".mm())
             return
         }
@@ -104,16 +108,15 @@ class SkinsModule : ModuleInterface {
         }
     }
 
-    private fun validateSkin(item: ItemStack?, player: org.bukkit.entity.HumanEntity) {
+    private fun validateSkin(item: ItemStack?, player: Player) {
         if (item == null || item.type == Material.AIR) return
         val meta: ItemMeta = item.itemMeta ?: return
         if (meta.persistentDataContainer.has(skinKey, PersistentDataType.STRING)) {
             val skinModel: String? = meta.persistentDataContainer.get(skinKey, PersistentDataType.STRING)
             skinModel?.let { model ->
-                val skinData: SkinData? = SkinRegistry.getByModel(model)
+                val skinData: SkinData? = itemSkins.getByModel(model)
                 if (skinData != null) {
-                    SkinData.loadUnlockedPlayers(skinData)
-                    if (!skinData.unlockedPlayers.contains(player.uniqueId)) {
+                    if (!SkinData.hasUnlocked(player.uniqueId, skinData)) {
                         meta.setCustomModelDataComponent(null)
                         meta.persistentDataContainer.remove(skinKey)
                         item.itemMeta = meta
@@ -131,14 +134,12 @@ class SkinsModule : ModuleInterface {
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: EntityDeathEvent) {
         val killer = event.entity.killer ?: return
-        SkinRegistry.getByEntityType(event.entityType)?.let { skin ->
-            SkinData.loadUnlockedPlayers(skin)
-            if (!skin.unlockedPlayers.contains(killer.uniqueId)) {
-                skin.unlockedPlayers.add(killer.uniqueId)
+        itemSkins.getByEntityType(event.entityType)?.let { skinData ->
+            if (!SkinData.hasUnlocked(killer.uniqueId, skinData)) {
+                SkinData.setUnlocked(killer.uniqueId, skinData)
                 killer.sendMessage(
-                    "${VanillaPlus.PREFIX}<gold>Congratulations! You have defeated the <dark_red>${skin.entityName} <gold>and unlocked its skin!".mm()
+                    "${VanillaPlus.PREFIX}<gold>Congratulations! You have defeated the <dark_red>${skinData.entityName} <gold>and unlocked its skin!".mm()
                 )
-                SkinData.saveUnlockedPlayers(skin)
             }
         }
     }
@@ -147,7 +148,7 @@ class SkinsModule : ModuleInterface {
     fun on(event: PlayerItemHeldEvent) = validateSkin(event.player.inventory.getItem(event.newSlot), event.player)
 
     @EventHandler(priority = EventPriority.MONITOR)
-    fun on(event: InventoryClickEvent) = validateSkin(event.currentItem, event.whoClicked)
+    fun on(event: InventoryClickEvent) = validateSkin(event.currentItem, event.whoClicked as Player)
 
     override fun gui(): Gui {
         return buildGui {
