@@ -108,14 +108,13 @@ class SkinsModule : ModuleInterface {
         }
     }
 
+
     private fun validateSkin(item: ItemStack?, player: Player) {
         if (item == null || item.type == Material.AIR) return
-        val meta: ItemMeta = item.itemMeta ?: return
+        val meta = item.itemMeta ?: return
         if (meta.persistentDataContainer.has(skinKey, PersistentDataType.STRING)) {
-            val skinModel: String? = meta.persistentDataContainer.get(skinKey, PersistentDataType.STRING)
-            skinModel?.let { model ->
-                val skinData: SkinData? = itemSkins.getByModel(model)
-                if (skinData != null) {
+            meta.persistentDataContainer.get(skinKey, PersistentDataType.STRING)?.let { skinModel ->
+                itemSkins.getByModel(skinModel)?.let { skinData ->
                     if (!SkinData.hasUnlocked(player.uniqueId, skinData)) {
                         meta.setCustomModelDataComponent(null)
                         meta.persistentDataContainer.remove(skinKey)
