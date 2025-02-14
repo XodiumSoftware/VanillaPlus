@@ -17,8 +17,6 @@ class MotdModule : ModuleInterface {
 
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: ServerListPingEvent) = event.motd(
-        Config.MotdModule.MOTD.joinToString(separator = "\n")
-            .replace("\\n", "\n")
-            .mm()
+        Config.MotdModule.MOTD.joinToString(separator = "\n").replace("\\n", "\n").mm()
     )
 }

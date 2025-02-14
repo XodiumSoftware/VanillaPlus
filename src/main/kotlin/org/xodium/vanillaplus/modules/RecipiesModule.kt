@@ -17,13 +17,7 @@ class RecipiesModule : ModuleInterface {
     override fun enabled(): Boolean = Config.RecipiesModule.ENABLED
 
     @EventHandler(priority = EventPriority.MONITOR)
-    fun on(event: PlayerJoinEvent) {
-        event.player.discoverRecipes(
-            Bukkit.recipeIterator()
-                .asSequence()
-                .filterIsInstance<Keyed>()
-                .map { it.key }
-                .toList()
-        )
-    }
+    fun on(event: PlayerJoinEvent) = event.player.discoverRecipes(
+        Bukkit.recipeIterator().asSequence().filterIsInstance<Keyed>().map { it.key }.toList()
+    )
 }
