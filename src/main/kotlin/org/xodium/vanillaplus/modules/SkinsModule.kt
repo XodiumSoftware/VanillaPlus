@@ -37,7 +37,7 @@ import org.xodium.vanillaplus.registries.MaterialRegistry
 class SkinsModule : ModuleInterface {
     override fun enabled(): Boolean = Config.SkinsModule.ENABLED
 
-    private val skinKey = NamespacedKey(instance, "vp_skin")
+    private val skinKey = NamespacedKey(instance, this::class.simpleName.toString())
     private val itemSkins = listOf(
         SkinData(EntityType.WITHER, Material.WITHER_SPAWN_EGG),
         SkinData(EntityType.ELDER_GUARDIAN, Material.ELDER_GUARDIAN_SPAWN_EGG),
