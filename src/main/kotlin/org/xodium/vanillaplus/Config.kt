@@ -91,9 +91,6 @@ object Config {
         var ENABLED: Boolean = true // Enables or disables the TreesModule. Set to 'false' to disable.
 
         var IGNORE_AIR_BLOCKS: Boolean = true // If it should ignore air blocks.
-        var IGNORE_STRUCTURE_VOID_BLOCKS: Boolean = true // If it should ignore structure void blocks.
-        var COPY_ENTITIES: Boolean = false // If it should copy entities from the schematic.
-        var COPY_BIOMES: Boolean = false // If it should copy biomes from the schematic.
 
         // If a sapling type is missing here, no custom schematic will be used and default behavior applies.
         // You can define a file, multiple files or a folder.
