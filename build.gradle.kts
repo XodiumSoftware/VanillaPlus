@@ -39,7 +39,7 @@ dependencies {
 //    TODO("Use stable build when available")
 //    TODO("Move away from WorldEdit")
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.4.0-20250126.070433-22")
-    implementation("net.kyori:adventure-api:4.18.0")
+    implementation("net.kyori:adventure-api:4.19.0")
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlin:kotlin-reflect:2.1.10")
     implementation("dev.triumphteam:triumph-gui-paper-kotlin:4.0.0-SNAPSHOT") {
