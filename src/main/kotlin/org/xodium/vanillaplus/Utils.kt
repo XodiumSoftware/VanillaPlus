@@ -3,6 +3,8 @@
  *  All rights reserved.
  */
 
+@file:Suppress("UnstableApiUsage")
+
 package org.xodium.vanillaplus
 
 import com.mojang.brigadier.Command
@@ -40,11 +42,13 @@ object Utils {
 
     fun String.mm() = MM.deserialize(this)
     fun List<String>.mm() = map { it.mm() }
-    fun EntityType.format(): String = name.lowercase(Locale.ENGLISH)
-        .split("_")
-        .joinToString(" ") { it.replaceFirstChar { char -> char.uppercaseChar() } }
 
-    fun List<EntityType>.formatList(): String = this.joinToString(" <red>and the<dark_red> ") { it.format() }
+    fun EntityType.format(locale: Locale = Locale.ENGLISH, delimiters: String = "_", separator: String = " "): String {
+        return name.lowercase(locale).split(delimiters).joinToString(separator)
+        { it.replaceFirstChar { char -> char.uppercaseChar() } }
+    }
+
+    fun List<EntityType>.format(separator: String): String = this.joinToString(separator) { it.format() }
 
     /**
      * Plays a sound at the location of the specified block.
@@ -80,7 +84,6 @@ object Utils {
      * @param action The action to execute, receiving a CommandSourceStack as a parameter.
      * @return Command.SINGLE_SUCCESS after execution.
      */
-    @Suppress("UnstableApiUsage")
     fun tryCatch(ctx: CommandContext<CommandSourceStack>, action: (CommandSourceStack) -> Unit): Int {
         try {
             action(ctx.source)
