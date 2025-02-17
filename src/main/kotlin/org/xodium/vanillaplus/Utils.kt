@@ -44,6 +44,8 @@ object Utils {
         .split("_")
         .joinToString(" ") { it.replaceFirstChar { char -> char.uppercaseChar() } }
 
+    fun List<EntityType>.formatList(): String = this.joinToString(", ") { it.format() }
+
     /**
      * Plays a sound at the location of the specified block.
      *

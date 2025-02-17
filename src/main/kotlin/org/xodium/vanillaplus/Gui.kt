@@ -9,6 +9,8 @@ import dev.triumphteam.gui.paper.Gui
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder
 import dev.triumphteam.gui.paper.kotlin.builder.buildGui
 import org.bukkit.Material
+import org.bukkit.entity.EntityType
+import org.xodium.vanillaplus.Utils.formatList
 import org.xodium.vanillaplus.Utils.mm
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.DimensionData
@@ -133,9 +135,26 @@ object Gui {
             title(Utils.birdflopFormat("Dimensions"))
             statelessComponent { gui ->
                 listOf(
-                    DimensionData(2, "world", "<green><bold>The Overworld", Material.GRASS_BLOCK),
-                    DimensionData(4, "world_nether", "<red><bold>The Underworld", Material.NETHERRACK),
-                    DimensionData(6, "world_the_end", "<dark_purple><bold>The Endworld", Material.END_STONE)
+                    DimensionData(
+                        2,
+                        "world",
+                        "<green><bold>The Overworld",
+                        Material.GRASS_BLOCK
+                    ),
+                    DimensionData(
+                        4,
+                        "world_nether",
+                        "<red><bold>The Underworld",
+                        Material.NETHERRACK,
+                        listOf(EntityType.ELDER_GUARDIAN)
+                    ),
+                    DimensionData(
+                        6,
+                        "world_the_end",
+                        "<dark_purple><bold>The Endworld",
+                        Material.END_STONE,
+                        listOf(EntityType.WITHER, EntityType.WARDEN)
+                    )
                 ).forEach { data ->
                     val world = instance.server.getWorld(data.worldName) ?: return@forEach
                     val environment = world.environment.name.lowercase()
@@ -155,7 +174,17 @@ object Gui {
                                     "   <aqua>Difficulty: <yellow>$difficulty",
                                     "   <aqua>PVP: $pvp"
                                 ).mm()
-                            ).asGuiItem { player, _ -> player.performCommand("cmi rt ${data.worldName}") })
+                            ).asGuiItem { player, _ ->
+                                if (DimensionData.hasUnlocked(player.uniqueId, data.requiredBossDefeated)) {
+                                    player.performCommand("cmi rt ${data.worldName}")
+                                } else {
+                                    player.sendMessage(
+                                        "${VanillaPlus.PREFIX}<red>Locked! Defeat the <dark_red>${
+                                            data.requiredBossDefeated?.formatList()
+                                        } <red>to unlock this skin.".mm()
+                                    )
+                                }
+                            })
                     gui.setItem(0, Utils.fillerItem)
                     gui.setItem(1, Utils.fillerItem)
                     gui.setItem(3, Utils.fillerItem)
