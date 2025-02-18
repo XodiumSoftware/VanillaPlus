@@ -11,9 +11,7 @@ import com.mojang.brigadier.Command
 import com.mojang.brigadier.context.CommandContext
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
-import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
-import net.kyori.adventure.title.Title
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
@@ -35,7 +33,6 @@ object Utils {
     fun firewatchFormat(text: String) = "<b><gradient:#CB2D3E:#EF473A>$text</gradient></b>"
     fun mangoFormat(text: String) = "<b><gradient:#FFE259:#FFA751>$text</gradient></b>"
     fun worldSizeFormat(size: Int) = if (size >= 1000) "${size / 1000}k" else size.toString()
-    fun subtitle(text: String) = Title.title(Component.empty(), text.mm())
 
     fun String.mm() = MM.deserialize(this)
     fun List<String>.mm() = map { it.mm() }

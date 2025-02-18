@@ -10,7 +10,10 @@ package org.xodium.vanillaplus.modules
 import dev.triumphteam.gui.paper.Gui
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder
 import dev.triumphteam.gui.paper.kotlin.builder.buildGui
+import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.sound.Sound
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.title.Title
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
@@ -33,54 +36,47 @@ import org.xodium.vanillaplus.data.SkinData.Companion.getByModel
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.registries.MaterialRegistry
 
+
 class SkinsModule : ModuleInterface {
     override fun enabled(): Boolean = ConfigData.SkinsModule().enabled
 
     private val nspacedKey = NamespacedKey(instance, this::class.simpleName.toString())
 
-    private fun buildSkinItem(skinData: SkinData) = ItemBuilder.from(skinData.material)
+    private fun buildSkinItem(lore: Component, skinData: SkinData) = ItemBuilder.from(skinData.material)
         .name(Utils.mangoFormat("${skinData.entityName} Skin").mm())
-        .lore(listOf("<dark_gray>▶ <gray>Click to toggle custom skin <dark_gray>◀").mm())
+        .lore(listOf(lore))
         .asGuiItem { player, _ -> toggleSkin(player, skinData) }
 
-    private fun validateItemIsNotNullOrAir(itemStack: ItemStack?, player: Player): Boolean {
+    private fun validateItemIsNotNullOrAir(itemStack: ItemStack?, audience: Audience): Boolean =
         if (itemStack == null || itemStack.type == Material.AIR) {
-            player.showTitle(Utils.subtitle(Utils.firewatchFormat("You must hold an item in your hotbar!")))
-            return false
-        }
-        return true
-    }
+            audience.sendActionBar(
+                Utils.firewatchFormat("You must hold an item in your hotbar!").mm()
+            ); false
+        } else true
 
-    private fun validateItemIsSword(itemStack: ItemStack, player: Player): Boolean {
+    private fun validateItemIsSword(itemStack: ItemStack, audience: Audience): Boolean =
         if (itemStack.type !in MaterialRegistry.SWORDS) {
-            player.showTitle(Utils.subtitle(Utils.firewatchFormat("This skin can only be applied to swords!")))
-            return false
-        }
-        return true
-    }
+            audience.sendActionBar(
+                Utils.firewatchFormat("This skin can only be applied to swords!").mm()
+            ); false
+        } else true
 
-    private fun validateItemMeta(itemMeta: ItemMeta?, player: Player): Boolean {
+    private fun validateItemMeta(itemMeta: ItemMeta?, audience: Audience): Boolean =
         if (itemMeta == null) {
-            player.showTitle(Utils.subtitle(Utils.firewatchFormat("This item cannot hold custom model data!")))
-            return false
-        }
-        return true
-    }
+            audience.sendActionBar(
+                Utils.firewatchFormat("This item cannot hold custom model data!").mm()
+            ); false
+        } else true
 
-    private fun getValidHeldItemMeta(player: Player): ItemMeta? {
-        val heldItem = player.inventory.getItem(player.inventory.heldItemSlot)
-        if (!validateItemIsNotNullOrAir(heldItem, player)) return null
-        if (!validateItemIsSword(heldItem!!, player)) return null
-        val meta = heldItem.itemMeta
-        if (!validateItemMeta(meta, player)) return null
-        return meta
-    }
+    private fun getValidHeldItemMeta(player: Player): ItemMeta? =
+        player.inventory.getItem(player.inventory.heldItemSlot)
+            ?.takeIf { validateItemIsNotNullOrAir(it, player) && validateItemIsSword(it, player) }
+            ?.itemMeta
+            ?.takeIf { validateItemMeta(it, player) }
 
     private fun toggleSkin(player: Player, skinData: SkinData) {
-        if (!SkinData.hasUnlocked(player.uniqueId, skinData)) {
-            player.showTitle(Utils.subtitle(Utils.firewatchFormat("Locked! Defeat the ${skinData.entityName} to unlock this skin")))
-            return
-        }
+        if (!SkinData.hasUnlocked(player.uniqueId, skinData)) return
+        val audience = Audience.audience(player)
         val heldItem = player.inventory.getItem(player.inventory.heldItemSlot) ?: return
         val itemMeta = getValidHeldItemMeta(player) ?: return
         val container = itemMeta.persistentDataContainer
@@ -91,13 +87,13 @@ class SkinsModule : ModuleInterface {
             container.remove(nspacedKey)
             itemMeta.setCustomModelDataComponent(null)
             heldItem.itemMeta = itemMeta
-            player.showTitle(Utils.subtitle(Utils.mangoFormat("Custom skin removed from your item!")))
+            audience.sendActionBar(Utils.mangoFormat("Custom skin removed from your item!").mm())
         } else {
             container.set(nspacedKey, PersistentDataType.STRING, skinData.model)
             component.strings = listOf(skinData.model)
             itemMeta.setCustomModelDataComponent(component)
             heldItem.itemMeta = itemMeta
-            player.showTitle(Utils.subtitle(Utils.mangoFormat("Custom skin applied to your item!")))
+            audience.sendActionBar(Utils.mangoFormat("Custom skin applied to your item!").mm())
         }
     }
 
@@ -112,7 +108,9 @@ class SkinsModule : ModuleInterface {
                         meta.setCustomModelDataComponent(null)
                         meta.persistentDataContainer.remove(nspacedKey)
                         item.itemMeta = meta
-                        player.showTitle(Utils.subtitle(Utils.firewatchFormat("You have not unlocked this skin yet, so it has been removed!")))
+                        Audience.audience(player).sendActionBar(
+                            Utils.firewatchFormat("You have not unlocked this skin yet, so it has been removed!").mm()
+                        )
                     }
                 }
             }
@@ -130,7 +128,13 @@ class SkinsModule : ModuleInterface {
             if (!SkinData.hasUnlocked(killer.uniqueId, skinData)) {
                 SkinData.setUnlocked(killer.uniqueId, skinData)
                 killer.playSound(ConfigData.SkinsModule().soundUnlockSkin, Sound.Emitter.self())
-                killer.showTitle(Utils.subtitle(Utils.mangoFormat("Congratulations! You have defeated the ${skinData.entityName} and unlocked its skin!")))
+                killer.showTitle(
+                    Title.title(
+                        Utils.firewatchFormat("Congratulations!").mm(),
+                        Utils.mangoFormat("You have defeated the ${skinData.entityName} and unlocked its skin!")
+                            .mm()
+                    )
+                )
             }
         }
     }
@@ -141,20 +145,21 @@ class SkinsModule : ModuleInterface {
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: InventoryClickEvent) = validateSkin(event.currentItem, event.whoClicked as Player)
 
-    override fun gui(): Gui {
+    fun gui(player: Player): Gui {
         return buildGui {
+            spamPreventionDuration = ConfigData().guiAntiSpamDuration
             title(Utils.firewatchFormat("Skins").mm())
-            component {
-                render {
-                    ConfigData.SkinsModule().skins.forEachIndexed { index, skin ->
-                        it.setItem(
-                            index,
-                            buildSkinItem(skin)
-                        )
+            statelessComponent {
+                ConfigData.SkinsModule().skins.forEachIndexed { index, skin ->
+                    val lore = if (SkinData.hasUnlocked(player.uniqueId, skin)) {
+                        "<dark_gray>▶ <gray>Click to toggle custom skin <dark_gray>◀".mm()
+                    } else {
+                        Utils.firewatchFormat("Locked! Defeat the ${skin.entityName} to unlock this skin").mm()
                     }
-                    (4..7).forEach { index -> it.setItem(index, Utils.fillerItem) }
-                    it.setItem(8, Utils.backItem)
+                    it.setItem(index, buildSkinItem(lore, skin))
                 }
+                (4..7).forEach { index -> it.setItem(index, Utils.fillerItem) }
+                it.setItem(8, Utils.backItem)
             }
         }
     }

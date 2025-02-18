@@ -50,7 +50,8 @@ object CommandManager {
                             .requires { it.sender.hasPermission(Perms.GuiModule.SKINS) }
                             .executes(Command {
                                 Utils.tryCatch(it) {
-                                    SkinsModule().gui().open(it.sender as Player)
+                                    val player = it.sender as Player
+                                    SkinsModule().gui(player).open(player)
                                 }
                             })
                     )

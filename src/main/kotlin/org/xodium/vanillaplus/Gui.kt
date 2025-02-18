@@ -112,7 +112,7 @@ object Gui {
                 "   <gray>Shortcut: <gold>/skins"
             ).mm()
         )
-        .asGuiItem { player, _ -> SkinsModule().gui().open(player) }
+        .asGuiItem { player, _ -> SkinsModule().gui(player).open(player) }
 
     fun faqGUI(): Gui {
         return buildGui {
