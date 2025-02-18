@@ -82,9 +82,7 @@ class DoorsModule : ModuleInterface {
     }
 
     private fun handleDoorClose(block: Block, door: Door) {
-        getOtherPart(door, block)?.let {
-            toggleOtherDoor(block, it, false)
-        }
+        getOtherPart(door, block)?.let { toggleOtherDoor(block, it, false) }
         block.world.playSound(ConfigData.DoorsModule().soundDoorClose)
     }
 
@@ -103,8 +101,9 @@ class DoorsModule : ModuleInterface {
     }
 
     private fun handleRightClick(block: Block) {
-        if (ConfigData.DoorsModule().allowDoubleDoors && (block.blockData is Door || block.blockData is Gate))
+        if (ConfigData.DoorsModule().allowDoubleDoors && (block.blockData is Door || block.blockData is Gate)) {
             processDoorOrGateInteraction(block)
+        }
         if (ConfigData.DoorsModule().allowAutoClose) autoClose[block] = System.currentTimeMillis() + autoCloseDelay
     }
 
@@ -136,13 +135,11 @@ class DoorsModule : ModuleInterface {
                         player.inventory.itemInMainHand.type != Material.AIR)
     }
 
-    private fun isKnockableBlock(data: BlockData): Boolean {
-        return when (data) {
-            is Door -> ConfigData.DoorsModule().allowKnockingDoors
-            is TrapDoor -> ConfigData.DoorsModule().allowKnockingTrapdoors
-            is Gate -> ConfigData.DoorsModule().allowKnockingGates
-            else -> false
-        }
+    private fun isKnockableBlock(data: BlockData): Boolean = when (data) {
+        is Door -> ConfigData.DoorsModule().allowKnockingDoors
+        is Gate -> ConfigData.DoorsModule().allowKnockingGates
+        is TrapDoor -> ConfigData.DoorsModule().allowKnockingTrapdoors
+        else -> false
     }
 
     private fun toggleOtherDoor(block: Block, block2: Block, open: Boolean) {
