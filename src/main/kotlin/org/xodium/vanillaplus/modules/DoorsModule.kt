@@ -8,7 +8,6 @@ package org.xodium.vanillaplus.modules
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Material
-import org.bukkit.Sound
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Bisected
@@ -25,7 +24,6 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.xodium.vanillaplus.Config
-import org.xodium.vanillaplus.Utils
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.AdjacentBlockData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
@@ -87,24 +85,10 @@ class DoorsModule : ModuleInterface {
         getOtherPart(door, block)?.let {
             toggleOtherDoor(block, it, false)
         }
-        Utils.playSound(
-            block,
-            Config.DoorsModule.SOUND_CLOSE_DOOR_EFFECT,
-            Sound.BLOCK_IRON_DOOR_CLOSE,
-            Config.DoorsModule.SOUND_CLOSE_DOOR_VOLUME,
-            Config.DoorsModule.SOUND_CLOSE_DOOR_PITCH,
-        )
+        block.world.playSound(Config.DoorsModule.SOUND_DOOR_CLOSE)
     }
 
-    private fun handleGateClose(block: Block) {
-        Utils.playSound(
-            block,
-            Config.DoorsModule.SOUND_CLOSE_GATE_EFFECT,
-            Sound.BLOCK_FENCE_GATE_CLOSE,
-            Config.DoorsModule.SOUND_CLOSE_GATE_VOLUME,
-            Config.DoorsModule.SOUND_CLOSE_GATE_PITCH,
-        )
-    }
+    private fun handleGateClose(block: Block) = block.world.playSound(Config.DoorsModule.SOUND_GATE_CLOSE)
 
     private fun isValidInteraction(event: PlayerInteractEvent): Boolean {
         return event.hand == EquipmentSlot.HAND &&
@@ -114,13 +98,7 @@ class DoorsModule : ModuleInterface {
 
     private fun handleLeftClick(event: PlayerInteractEvent, block: Block) {
         if (canKnock(event, event.player) && isKnockableBlock(block.blockData)) {
-            Utils.playSound(
-                block,
-                Config.DoorsModule.SOUND_KNOCK_EFFECT,
-                Sound.ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR,
-                Config.DoorsModule.SOUND_KNOCK_VOLUME,
-                Config.DoorsModule.SOUND_KNOCK_PITCH
-            )
+            block.world.playSound(Config.DoorsModule.SOUND_KNOCK)
         }
     }
 

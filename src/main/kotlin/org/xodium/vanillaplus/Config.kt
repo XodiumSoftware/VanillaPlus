@@ -29,17 +29,29 @@ object Config {
     object DoorsModule {
         var ENABLED: Boolean = true // Enables or disables the DoorsModule. Set to 'false' to disable.
 
-        var SOUND_CLOSE_DOOR_EFFECT: String = "block_iron_door_close" // The sound effect used for closing doors.
-        var SOUND_CLOSE_DOOR_PITCH: Int = 1 // The pitch of the closing doors.
-        var SOUND_CLOSE_DOOR_VOLUME: Int = 1 // The volume of the closing doors.
+        var SOUND_DOOR_CLOSE: Sound =
+            Sound.sound(
+                Key.key("block.iron_door.close"),
+                Sound.Source.BLOCK,
+                1.0f,
+                1.0f
+            ) // The sound effect used for closing doors.
 
-        var SOUND_CLOSE_GATE_EFFECT: String = "block_fence_gate_close" // The sound effect used for closing gates.
-        var SOUND_CLOSE_GATE_PITCH: Int = 1 // The pitch of the closing gates.
-        var SOUND_CLOSE_GATE_VOLUME: Int = 1 // The volume of the closing gates.
+        var SOUND_GATE_CLOSE: Sound =
+            Sound.sound(
+                Key.key("block.fence_gate.close"),
+                Sound.Source.BLOCK,
+                1.0f,
+                1.0f
+            ) // The sound effect used for closing gates.
 
-        var SOUND_KNOCK_EFFECT: String = "entity_zombie_attack_wooden_door" // The sound effect used for knocking.
-        var SOUND_KNOCK_PITCH: Int = 1 // The pitch of the knocking.
-        var SOUND_KNOCK_VOLUME: Int = 1 // The volume of the knocking.
+        var SOUND_KNOCK: Sound =
+            Sound.sound(
+                Key.key("entity.zombie.attack_wooden_door"),
+                Sound.Source.HOSTILE,
+                1.0f,
+                1.0f
+            ) // The sound effect used for knocking.
 
         var ALLOW_AUTO_CLOSE: Boolean = true // Enables automatic closing of doors after a set delay.
         var ALLOW_DOUBLE_DOORS: Boolean = true // Allows both sides of double doors to open/close simultaneously.
@@ -61,7 +73,7 @@ object Config {
 
         var MOTD: List<String> = listOf(
             "<b><gradient:#CB2D3E:#EF473A>Ultimate Private SMP</gradient></b>",
-            "<b><gradient:#CB2D3E:#EF473A>WELCOME BACK LADS!</gradient></b>"
+            "<b><gradient:#FFE259:#FFA751>WELCOME BACK LADS!</gradient></b>"
         ) // The message of the day.
     }
 
