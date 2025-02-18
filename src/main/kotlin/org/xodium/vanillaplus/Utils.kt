@@ -14,10 +14,6 @@ import io.papermc.paper.command.brigadier.CommandSourceStack
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Material
-import org.bukkit.NamespacedKey
-import org.bukkit.Registry
-import org.bukkit.Sound
-import org.bukkit.block.Block
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -49,33 +45,6 @@ object Utils {
     }
 
     fun List<EntityType>.format(separator: String): String = this.joinToString(separator) { it.format() }
-
-    /**
-     * Plays a sound at the location of the specified block.
-     *
-     * @param block The block at whose location the sound will be played.
-     * @param sound The name of the sound to play. If null or the sound is not found, the fallback sound will be used.
-     * @param fallbackSound The sound to play if the specified sound is not found or is null.
-     * @param volume The volume at which to play the sound. This should be a positive integer.
-     * @param pitch The pitch at which to play the sound. This should be a positive integer.
-     */
-    fun playSound(block: Block, sound: String?, fallbackSound: Sound, volume: Int, pitch: Int) {
-        try {
-            block.world.playSound(
-                block.location,
-                sound
-                    ?.lowercase(Locale.getDefault())
-                    ?.let(NamespacedKey::minecraft)
-                    ?.let(Registry.SOUNDS::get)
-                    ?: fallbackSound,
-                volume.toFloat(),
-                pitch.toFloat()
-            )
-        } catch (ex: Exception) {
-            instance.logger.severe("Failed to play sound '${sound ?: fallbackSound}' at block '${block.location}': ${ex.message}")
-            ex.printStackTrace()
-        }
-    }
 
     /**
      * A helper function to wrap command execution with standardized error handling.
