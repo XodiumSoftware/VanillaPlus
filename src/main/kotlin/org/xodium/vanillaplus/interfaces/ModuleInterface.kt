@@ -5,7 +5,10 @@
 
 package org.xodium.vanillaplus.interfaces
 
+import dev.triumphteam.gui.paper.Gui
+import dev.triumphteam.gui.paper.kotlin.builder.buildGui
 import org.bukkit.event.Listener
+import org.xodium.vanillaplus.data.ConfigData
 
 
 /**
@@ -15,15 +18,17 @@ import org.bukkit.event.Listener
  */
 interface ModuleInterface : Listener {
     /**
-     * Initializes the functionality of the implementing module.
-     * Default implementation does nothing.
-     */
-    fun init() {}
-
-    /**
      * Determines if this module is currently enabled.
      *
      * @return `true` if the module is enabled, `false` otherwise.
      */
     fun enabled(): Boolean
+
+    /**
+     * Builds the GUI for the module.
+     * Default implementation returns an empty GUI.
+     *
+     * @return The GUI for the module.
+     */
+    fun gui(): Gui = buildGui { spamPreventionDuration = ConfigData().guiAntiSpamDuration }
 }

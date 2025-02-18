@@ -6,9 +6,8 @@
 package org.xodium.vanillaplus.managers
 
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.modules.DoorsModule
-import org.xodium.vanillaplus.modules.GuiModule
-import org.xodium.vanillaplus.modules.SaplingModule
+import org.xodium.vanillaplus.modules.*
+import kotlin.time.measureTime
 
 /**
  * The `ModuleManager` is responsible for managing and initializing modules in the VanillaPlus plugin.
@@ -22,14 +21,20 @@ object ModuleManager {
     init {
         listOf(
             DoorsModule(),
-            GuiModule(),
-            SaplingModule(),
+            MotdModule(),
+            RecipiesModule(),
+            SkinsModule(),
+            TreesModule(),
         ).filter { it.enabled() }
             .forEach {
-                val t = System.currentTimeMillis()
-                it.init()
-                instance.server.pluginManager.registerEvents(it, instance)
-                instance.logger.info("Loaded: ${it.javaClass.simpleName} | Took ${System.currentTimeMillis() - t}ms")
+                instance.logger.info(
+                    "Loaded: ${it::class.simpleName} | Took ${
+                        measureTime {
+                            it
+                            instance.server.pluginManager.registerEvents(it, instance)
+                        }.inWholeMilliseconds
+                    }ms"
+                )
             }
     }
 }
