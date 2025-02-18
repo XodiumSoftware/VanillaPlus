@@ -15,12 +15,13 @@ import java.net.URI
 plugins {
     id("java")
     kotlin("jvm") version "2.1.10"
-    id("com.gradleup.shadow") version "9.0.0-beta6"
+    kotlin("plugin.serialization") version "2.1.10"
+    id("com.gradleup.shadow") version "9.0.0-beta8"
     id("de.undercouch.download") version "5.6.0"
 }
 
 group = "org.xodium.vanillaplus"
-version = "1.1.0"
+version = "1.2.0"
 description = "Minecraft plugin that enhances the base gameplay."
 
 var pluginName: String = "VanillaPlus"
@@ -36,12 +37,14 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
-//    TODO("Use stable build when available")
-//    TODO("Move away from WorldEdit")
-    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.4.0-20250109.111726-21")
-    implementation("net.kyori:adventure-api:4.18.0")
+    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.10") //TODO("Move away from WorldEdit")
+    implementation("net.kyori:adventure-api:4.19.0")
     implementation(kotlin("stdlib-jdk8"))
-    implementation("dev.triumphteam:triumph-gui-paper-kotlin:4.0.0-SNAPSHOT")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:2.1.10")
+    implementation("dev.triumphteam:triumph-gui-paper-kotlin:4.0.0-SNAPSHOT") {
+        exclude(group = "com.google.guava", module = "guava")
+    }
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
 }
 
 java { toolchain.languageVersion.set(JavaLanguageVersion.of(21)) }

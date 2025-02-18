@@ -15,12 +15,6 @@ import org.bukkit.event.Listener
  */
 interface ModuleInterface : Listener {
     /**
-     * Initializes the functionality of the implementing module.
-     * Default implementation does nothing.
-     */
-    fun init() {}
-
-    /**
      * Determines if this module is currently enabled.
      *
      * @return `true` if the module is enabled, `false` otherwise.

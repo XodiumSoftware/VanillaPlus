@@ -8,7 +8,6 @@ package org.xodium.vanillaplus.modules
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Material
-import org.bukkit.Sound
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Bisected
@@ -24,19 +23,21 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
-import org.xodium.vanillaplus.Config
-import org.xodium.vanillaplus.Utils
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.AdjacentBlockData
+import org.xodium.vanillaplus.data.ConfigData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import java.util.concurrent.ConcurrentHashMap
 
 
 class DoorsModule : ModuleInterface {
-    private val autoCloseDelay = Config.DoorsModule.AUTO_CLOSE_DELAY * 1000
+    override fun enabled(): Boolean = ConfigData.DoorsModule().enabled
+
+    private val autoCloseDelay = ConfigData.DoorsModule().autoCloseDelay * 1000L
     private val autoClose = ConcurrentHashMap<Block, Long>()
 
     companion object {
+        private const val SCHEDULER_PERIOD_TICKS = 1L
         private val POSSIBLE_NEIGHBOURS = listOf(
             AdjacentBlockData(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
             AdjacentBlockData(0, 1, Door.Hinge.LEFT, BlockFace.EAST),
@@ -51,13 +52,13 @@ class DoorsModule : ModuleInterface {
             AdjacentBlockData(1, 0, Door.Hinge.LEFT, BlockFace.NORTH)
         )
 
-        fun toggleDoor(block: Block, openable: Openable, open: Boolean) {
+        private fun toggleDoor(block: Block, openable: Openable, open: Boolean) {
             openable.isOpen = open
             block.blockData = openable
         }
     }
 
-    override fun init() {
+    init {
         Bukkit.getScheduler().runTaskTimer(instance, Runnable {
             autoClose.entries.removeIf { (block, time) ->
                 if (System.currentTimeMillis() >= time) {
@@ -65,7 +66,7 @@ class DoorsModule : ModuleInterface {
                     true
                 } else false
             }
-        }, 1L, 1L)
+        }, SCHEDULER_PERIOD_TICKS, SCHEDULER_PERIOD_TICKS)
     }
 
     private fun handleAutoClose(block: Block) {
@@ -81,39 +82,11 @@ class DoorsModule : ModuleInterface {
     }
 
     private fun handleDoorClose(block: Block, door: Door) {
-        getOtherPart(door, block)?.let {
-            toggleOtherDoor(block, it, false)
-        }
-        Utils.playSound(
-            block,
-            Config.DoorsModule.SOUND_CLOSE_DOOR_EFFECT,
-            Sound.BLOCK_IRON_DOOR_CLOSE,
-            Config.DoorsModule.SOUND_CLOSE_DOOR_VOLUME,
-            Config.DoorsModule.SOUND_CLOSE_DOOR_PITCH,
-        )
+        getOtherPart(door, block)?.let { toggleOtherDoor(block, it, false) }
+        block.world.playSound(ConfigData.DoorsModule().soundDoorClose)
     }
 
-    private fun handleGateClose(block: Block) {
-        Utils.playSound(
-            block,
-            Config.DoorsModule.SOUND_CLOSE_GATE_EFFECT,
-            Sound.BLOCK_FENCE_GATE_CLOSE,
-            Config.DoorsModule.SOUND_CLOSE_GATE_VOLUME,
-            Config.DoorsModule.SOUND_CLOSE_GATE_PITCH,
-        )
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    fun on(event: PlayerInteractEvent) {
-        val clickedBlock = event.clickedBlock ?: return
-        val data = clickedBlock.blockData
-        if (!isValidInteraction(event)) return
-        when (event.action) {
-            Action.LEFT_CLICK_BLOCK -> handleLeftClick(event, data, clickedBlock)
-            Action.RIGHT_CLICK_BLOCK -> handleRightClick(data, clickedBlock)
-            else -> return
-        }
-    }
+    private fun handleGateClose(block: Block) = block.world.playSound(ConfigData.DoorsModule().soundGateClose)
 
     private fun isValidInteraction(event: PlayerInteractEvent): Boolean {
         return event.hand == EquipmentSlot.HAND &&
@@ -121,32 +94,26 @@ class DoorsModule : ModuleInterface {
                 event.useItemInHand() != Event.Result.DENY
     }
 
-    private fun handleLeftClick(event: PlayerInteractEvent, data: BlockData, block: Block) {
-        if (canKnock(event, event.player) && isKnockableBlock(data)) {
-            Utils.playSound(
-                block,
-                Config.DoorsModule.SOUND_KNOCK_EFFECT,
-                Sound.ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR,
-                Config.DoorsModule.SOUND_KNOCK_VOLUME,
-                Config.DoorsModule.SOUND_KNOCK_PITCH
-            )
+    private fun handleLeftClick(event: PlayerInteractEvent, block: Block) {
+        if (canKnock(event, event.player) && isKnockableBlock(block.blockData)) {
+            block.world.playSound(ConfigData.DoorsModule().soundKnock)
         }
     }
 
-    private fun handleRightClick(data: BlockData, block: Block) {
-        if (Config.DoorsModule.ALLOW_DOUBLE_DOORS && (data is Door || data is Gate))
-            processDoorOrGateInteraction(data, block)
-        if (Config.DoorsModule.ALLOW_AUTO_CLOSE) autoClose[block] = System.currentTimeMillis() + autoCloseDelay
+    private fun handleRightClick(block: Block) {
+        if (ConfigData.DoorsModule().allowDoubleDoors && (block.blockData is Door || block.blockData is Gate)) {
+            processDoorOrGateInteraction(block)
+        }
+        if (ConfigData.DoorsModule().allowAutoClose) autoClose[block] = System.currentTimeMillis() + autoCloseDelay
     }
 
-    private fun processDoorOrGateInteraction(data: BlockData, block: Block) {
-        if (data is Door) {
-            val door = getDoorBottom(data, block)
-            val otherDoorBlock = getOtherPart(door, block)
+    private fun processDoorOrGateInteraction(block: Block) {
+        if (block.blockData is Door) {
+            val otherDoorBlock = getOtherPart(getDoorBottom(block.blockData as Door, block), block)
             if (otherDoorBlock != null && otherDoorBlock.blockData is Door) {
                 val otherDoor = otherDoorBlock.blockData as Door
                 toggleOtherDoor(block, otherDoorBlock, !otherDoor.isOpen)
-                if (Config.DoorsModule.ALLOW_AUTO_CLOSE) {
+                if (ConfigData.DoorsModule().allowAutoClose) {
                     autoClose[otherDoorBlock] = System.currentTimeMillis() + autoCloseDelay
                 }
             }
@@ -163,18 +130,16 @@ class DoorsModule : ModuleInterface {
     }
 
     private fun isKnockingConditionViolated(player: Player): Boolean {
-        return (Config.DoorsModule.KNOCKING_REQUIRES_SHIFT && !player.isSneaking) ||
-                (Config.DoorsModule.KNOCKING_REQUIRES_EMPTY_HAND &&
+        return (ConfigData.DoorsModule().knockingRequiresShift && !player.isSneaking) ||
+                (ConfigData.DoorsModule().knockingRequiresEmptyHand &&
                         player.inventory.itemInMainHand.type != Material.AIR)
     }
 
-    private fun isKnockableBlock(data: BlockData): Boolean {
-        return when (data) {
-            is Door -> Config.DoorsModule.ALLOW_KNOCKING_DOORS
-            is TrapDoor -> Config.DoorsModule.ALLOW_KNOCKING_TRAPDOORS
-            is Gate -> Config.DoorsModule.ALLOW_KNOCKING_GATES
-            else -> false
-        }
+    private fun isKnockableBlock(data: BlockData): Boolean = when (data) {
+        is Door -> ConfigData.DoorsModule().allowKnockingDoors
+        is Gate -> ConfigData.DoorsModule().allowKnockingGates
+        is TrapDoor -> ConfigData.DoorsModule().allowKnockingTrapdoors
+        else -> false
     }
 
     private fun toggleOtherDoor(block: Block, block2: Block, open: Boolean) {
@@ -204,5 +169,14 @@ class DoorsModule : ModuleInterface {
         }?.let { block.getRelative(it.offsetX, 0, it.offsetZ) }
     }
 
-    override fun enabled(): Boolean = Config.DoorsModule.ENABLED
+    @EventHandler(priority = EventPriority.MONITOR)
+    fun on(event: PlayerInteractEvent) {
+        val clickedBlock = event.clickedBlock ?: return
+        if (!isValidInteraction(event)) return
+        when (event.action) {
+            Action.LEFT_CLICK_BLOCK -> handleLeftClick(event, clickedBlock)
+            Action.RIGHT_CLICK_BLOCK -> handleRightClick(clickedBlock)
+            else -> return
+        }
+    }
 }
