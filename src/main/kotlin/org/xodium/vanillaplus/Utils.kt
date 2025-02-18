@@ -18,7 +18,6 @@ import org.bukkit.Material
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.data.ConfigData
 import java.util.*
 
 
@@ -26,28 +25,26 @@ import java.util.*
  * Provides utility functions for directory creation and file copying within the plugin.
  */
 object Utils {
-    val MM: MiniMessage = MiniMessage.miniMessage()
-    val antiSpamDuration = ConfigData().guiAntiSpamDuration
+    val MM = MiniMessage.miniMessage()
     val fillerItem = ItemBuilder.from(Material.BLACK_STAINED_GLASS_PANE).name("".mm()).asGuiItem()
     val backItem = ItemBuilder.from(Material.RED_STAINED_GLASS_PANE)
-        .name(birdflopFormat("Back"))
+        .name(firewatchFormat("Back").mm())
         .lore(listOf("<dark_gray>✖ <gray>Return to the previous menu").mm())
         .asGuiItem { player, _ -> Gui.faqGUI().open(player) }
 
-    fun birdflopFormat(text: String): Component = "<b><gradient:#CB2D3E:#EF473A>$text</gradient></b>".mm()
-    fun mangoFormat(text: String): Component = "<b><gradient:#FFE259:#FFA751>$text</gradient></b>".mm()
-    fun worldSizeFormat(size: Int): String = if (size >= 1000) "${size / 1000}k" else size.toString()
-    fun subtitle(text: String) = Title.title(Component.empty(), "${VanillaPlus.PREFIX}$text".mm())
+    fun firewatchFormat(text: String) = "<b><gradient:#CB2D3E:#EF473A>$text</gradient></b>"
+    fun mangoFormat(text: String) = "<b><gradient:#FFE259:#FFA751>$text</gradient></b>"
+    fun worldSizeFormat(size: Int) = if (size >= 1000) "${size / 1000}k" else size.toString()
+    fun subtitle(text: String) = Title.title(Component.empty(), text.mm())
 
     fun String.mm() = MM.deserialize(this)
     fun List<String>.mm() = map { it.mm() }
 
-    fun EntityType.format(locale: Locale = Locale.ENGLISH, delimiters: String = "_", separator: String = " "): String {
-        return name.lowercase(locale).split(delimiters).joinToString(separator)
+    fun EntityType.format(locale: Locale = Locale.ENGLISH, delimiters: String = "_", separator: String = " ") =
+        name.lowercase(locale).split(delimiters).joinToString(separator)
         { it.replaceFirstChar { char -> char.uppercaseChar() } }
-    }
 
-    fun List<EntityType>.format(separator: String): String = this.joinToString(separator) { it.format() }
+    fun List<EntityType>.format(separator: String) = this.joinToString(separator) { it.format() }
 
     /**
      * A helper function to wrap command execution with standardized error handling.

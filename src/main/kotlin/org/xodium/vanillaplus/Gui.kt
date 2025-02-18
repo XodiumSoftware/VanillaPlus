@@ -8,6 +8,7 @@ package org.xodium.vanillaplus
 import dev.triumphteam.gui.paper.Gui
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder
 import dev.triumphteam.gui.paper.kotlin.builder.buildGui
+import net.kyori.adventure.audience.Audience
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
 import org.xodium.vanillaplus.Utils.format
@@ -18,7 +19,7 @@ import org.xodium.vanillaplus.modules.SkinsModule
 
 object Gui {
     private val skillsItem = ItemBuilder.from(Material.NETHERITE_SWORD)
-        .name(Utils.mangoFormat("Skills"))
+        .name(Utils.mangoFormat("Skills").mm())
         .lore(
             listOf(
                 "<dark_gray>▶ <gray>Click to open <dark_gray>◀",
@@ -30,7 +31,7 @@ object Gui {
         .asGuiItem { player, _ -> player.performCommand("skills") }
 
     private val dimsItem = ItemBuilder.from(Material.ENDER_PEARL)
-        .name(Utils.mangoFormat("Dimensions"))
+        .name(Utils.mangoFormat("Dimensions").mm())
         .lore(
             listOf(
                 "<dark_gray>▶ <gray>Click to open <dark_gray>◀",
@@ -42,7 +43,7 @@ object Gui {
         .asGuiItem { player, _ -> dimsGUI().open(player) }
 
     private val tipsItem = ItemBuilder.from(Material.LIGHT)
-        .name(Utils.mangoFormat("Tips"))
+        .name(Utils.mangoFormat("Tips").mm())
         .lore(
             listOf(
                 "<dark_gray>▶ <gray>Click to open <dark_gray>◀",
@@ -54,7 +55,7 @@ object Gui {
         .asGuiItem { player, _ -> player.performCommand("tips") }
 
     private val rulesItem = ItemBuilder.from(Material.WRITABLE_BOOK)
-        .name(Utils.mangoFormat("Rules"))
+        .name(Utils.mangoFormat("Rules").mm())
         .lore(
             listOf(
                 "<dark_gray>▶ <gray>Click to open <dark_gray>◀",
@@ -66,7 +67,7 @@ object Gui {
         .asGuiItem { player, _ -> player.performCommand("rules") }
 
     private val homesItem = ItemBuilder.from(Material.RED_BED)
-        .name(Utils.mangoFormat("Homes"))
+        .name(Utils.mangoFormat("Homes").mm())
         .lore(
             listOf(
                 "<dark_gray>▶ <gray>Click to open <dark_gray>◀",
@@ -78,7 +79,7 @@ object Gui {
         .asGuiItem { player, _ -> player.performCommand("homes") }
 
     private val settingsItem = ItemBuilder.from(Material.CLOCK)
-        .name(Utils.mangoFormat("Settings"))
+        .name(Utils.mangoFormat("Settings").mm())
         .lore(
             listOf(
                 "<dark_gray>▶ <gray>Click to open <dark_gray>◀",
@@ -90,7 +91,7 @@ object Gui {
         .asGuiItem { player, _ -> settingsGUI().open(player) }
 
     private val besttoolsItem = ItemBuilder.from(Material.CHEST)
-        .name(Utils.mangoFormat("BestTools"))
+        .name(Utils.mangoFormat("BestTools").mm())
         .lore(
             listOf(
                 "<dark_gray>▶ <gray>Click to open <dark_gray>◀",
@@ -102,7 +103,7 @@ object Gui {
         .asGuiItem { player, _ -> player.performCommand("sort") }
 
     private val skinsItem = ItemBuilder.from(Material.WITHER_SKELETON_SKULL)
-        .name(Utils.mangoFormat("Skins"))
+        .name(Utils.mangoFormat("Skins").mm())
         .lore(
             listOf(
                 "<dark_gray>▶ <gray>Click to open <dark_gray>◀",
@@ -115,43 +116,43 @@ object Gui {
 
     fun faqGUI(): Gui {
         return buildGui {
-            title(Utils.birdflopFormat("FAQ"))
-            statelessComponent { gui ->
-                gui.setItem(0, skillsItem)
-                gui.setItem(1, dimsItem)
-                gui.setItem(2, Utils.fillerItem)
-                gui.setItem(3, tipsItem)
-                gui.setItem(4, rulesItem)
-                gui.setItem(5, skinsItem)
-                gui.setItem(6, Utils.fillerItem)
-                gui.setItem(7, homesItem)
-                gui.setItem(8, settingsItem)
+            title(Utils.firewatchFormat("FAQ").mm())
+            statelessComponent {
+                it.setItem(0, skillsItem)
+                it.setItem(1, dimsItem)
+                it.setItem(2, Utils.fillerItem)
+                it.setItem(3, tipsItem)
+                it.setItem(4, rulesItem)
+                it.setItem(5, skinsItem)
+                it.setItem(6, Utils.fillerItem)
+                it.setItem(7, homesItem)
+                it.setItem(8, settingsItem)
             }
         }
     }
 
     fun dimsGUI(): Gui {
         return buildGui {
-            title(Utils.birdflopFormat("Dimensions"))
-            statelessComponent { gui ->
+            title(Utils.firewatchFormat("Dimensions").mm())
+            statelessComponent {
                 listOf(
                     DimensionData(
                         2,
                         "world",
-                        "<green><bold>The Overworld",
+                        "<b><gradient:#36CB2D:#3AEF55>The Overworld</gradient></b>",
                         Material.GRASS_BLOCK
                     ),
                     DimensionData(
                         4,
                         "world_nether",
-                        "<red><bold>The Underworld",
+                        "<b><gradient:#CB2D3E:#EF473A>The Underworld</gradient></b>",
                         Material.NETHERRACK,
                         listOf(EntityType.ELDER_GUARDIAN)
                     ),
                     DimensionData(
                         6,
                         "world_the_end",
-                        "<dark_purple><bold>The Endworld",
+                        "<b><gradient:#A22DCB:#EF3AEA>The Endworld</gradient></b>",
                         Material.END_STONE,
                         listOf(EntityType.WITHER, EntityType.WARDEN)
                     )
@@ -161,7 +162,7 @@ object Gui {
                     val worldSize = Utils.worldSizeFormat(world.worldBorder.size.toInt())
                     val difficulty = world.difficulty.name.uppercase()
                     val pvp = if (world.pvp) "<green>True" else "<red>False"
-                    gui.setItem(
+                    it.setItem(
                         data.guiIndex, ItemBuilder.from(data.itemMaterial)
                             .name(data.displayName.mm())
                             .lore(
@@ -178,19 +179,18 @@ object Gui {
                                 if (DimensionData.hasUnlocked(player.uniqueId, data.requiredBossDefeated)) {
                                     player.performCommand("cmi rt ${data.worldName}")
                                 } else {
-                                    player.showTitle(
-                                        Utils.subtitle(
-                                            "<red>Defeat the ${data.requiredBossDefeated?.format(" <red>and the<dark_red> ")} to unlock this dimension."
-                                        )
+                                    player.closeInventory()
+                                    Audience.audience(player).sendActionBar(
+                                        (Utils.firewatchFormat("Defeat the ${data.requiredBossDefeated?.format(" and the ")} to unlock this dimension")).mm()
                                     )
                                 }
                             })
-                    gui.setItem(0, Utils.fillerItem)
-                    gui.setItem(1, Utils.fillerItem)
-                    gui.setItem(3, Utils.fillerItem)
-                    gui.setItem(5, Utils.fillerItem)
-                    gui.setItem(7, Utils.fillerItem)
-                    gui.setItem(8, Utils.backItem)
+                    it.setItem(0, Utils.fillerItem)
+                    it.setItem(1, Utils.fillerItem)
+                    it.setItem(3, Utils.fillerItem)
+                    it.setItem(5, Utils.fillerItem)
+                    it.setItem(7, Utils.fillerItem)
+                    it.setItem(8, Utils.backItem)
                 }
             }
         }
@@ -198,11 +198,11 @@ object Gui {
 
     fun settingsGUI(): Gui {
         return buildGui {
-            title(Utils.birdflopFormat("Settings"))
-            statelessComponent { gui ->
-                gui.setItem(0, besttoolsItem)
-                (1..7).forEach { index -> gui.setItem(index, Utils.fillerItem) }
-                gui.setItem(8, Utils.backItem)
+            title(Utils.firewatchFormat("Settings").mm())
+            statelessComponent {
+                it.setItem(0, besttoolsItem)
+                (1..7).forEach { index -> it.setItem(index, Utils.fillerItem) }
+                it.setItem(8, Utils.backItem)
             }
         }
     }

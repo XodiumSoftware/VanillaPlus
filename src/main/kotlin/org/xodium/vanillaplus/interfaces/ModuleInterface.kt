@@ -8,7 +8,7 @@ package org.xodium.vanillaplus.interfaces
 import dev.triumphteam.gui.paper.Gui
 import dev.triumphteam.gui.paper.kotlin.builder.buildGui
 import org.bukkit.event.Listener
-import org.xodium.vanillaplus.Utils
+import org.xodium.vanillaplus.data.ConfigData
 
 
 /**
@@ -30,5 +30,5 @@ interface ModuleInterface : Listener {
      *
      * @return The GUI for the module.
      */
-    fun gui(): Gui = buildGui { spamPreventionDuration = Utils.antiSpamDuration }
+    fun gui(): Gui = buildGui { spamPreventionDuration = ConfigData().guiAntiSpamDuration }
 }

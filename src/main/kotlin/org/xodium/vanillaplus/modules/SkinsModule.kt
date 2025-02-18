@@ -39,13 +39,13 @@ class SkinsModule : ModuleInterface {
     private val nspacedKey = NamespacedKey(instance, this::class.simpleName.toString())
 
     private fun buildSkinItem(skinData: SkinData) = ItemBuilder.from(skinData.material)
-        .name(Utils.mangoFormat("${skinData.entityName} Skin"))
+        .name(Utils.mangoFormat("${skinData.entityName} Skin").mm())
         .lore(listOf("<dark_gray>▶ <gray>Click to toggle custom skin <dark_gray>◀").mm())
         .asGuiItem { player, _ -> toggleSkin(player, skinData) }
 
     private fun validateItemIsNotNullOrAir(itemStack: ItemStack?, player: Player): Boolean {
         if (itemStack == null || itemStack.type == Material.AIR) {
-            player.showTitle(Utils.subtitle("<red>You must hold an item in your hotbar!"))
+            player.showTitle(Utils.subtitle(Utils.firewatchFormat("You must hold an item in your hotbar!")))
             return false
         }
         return true
@@ -53,7 +53,7 @@ class SkinsModule : ModuleInterface {
 
     private fun validateItemIsSword(itemStack: ItemStack, player: Player): Boolean {
         if (itemStack.type !in MaterialRegistry.SWORDS) {
-            player.showTitle(Utils.subtitle("<red>This skin can only be applied to swords!"))
+            player.showTitle(Utils.subtitle(Utils.firewatchFormat("This skin can only be applied to swords!")))
             return false
         }
         return true
@@ -61,7 +61,7 @@ class SkinsModule : ModuleInterface {
 
     private fun validateItemMeta(itemMeta: ItemMeta?, player: Player): Boolean {
         if (itemMeta == null) {
-            player.showTitle(Utils.subtitle("<red>This item cannot hold custom model data!"))
+            player.showTitle(Utils.subtitle(Utils.firewatchFormat("This item cannot hold custom model data!")))
             return false
         }
         return true
@@ -78,7 +78,7 @@ class SkinsModule : ModuleInterface {
 
     private fun toggleSkin(player: Player, skinData: SkinData) {
         if (!SkinData.hasUnlocked(player.uniqueId, skinData)) {
-            player.showTitle(Utils.subtitle("<red>Locked! Defeat the <dark_red>${skinData.entityName} <red>to unlock this skin"))
+            player.showTitle(Utils.subtitle(Utils.firewatchFormat("Locked! Defeat the ${skinData.entityName} to unlock this skin")))
             return
         }
         val heldItem = player.inventory.getItem(player.inventory.heldItemSlot) ?: return
@@ -91,13 +91,13 @@ class SkinsModule : ModuleInterface {
             container.remove(nspacedKey)
             itemMeta.setCustomModelDataComponent(null)
             heldItem.itemMeta = itemMeta
-            player.showTitle(Utils.subtitle("<green>Custom skin removed from your item!"))
+            player.showTitle(Utils.subtitle(Utils.mangoFormat("Custom skin removed from your item!")))
         } else {
             container.set(nspacedKey, PersistentDataType.STRING, skinData.model)
             component.strings = listOf(skinData.model)
             itemMeta.setCustomModelDataComponent(component)
             heldItem.itemMeta = itemMeta
-            player.showTitle(Utils.subtitle("<green>Custom skin applied to your item!"))
+            player.showTitle(Utils.subtitle(Utils.mangoFormat("Custom skin applied to your item!")))
         }
     }
 
@@ -112,7 +112,7 @@ class SkinsModule : ModuleInterface {
                         meta.setCustomModelDataComponent(null)
                         meta.persistentDataContainer.remove(nspacedKey)
                         item.itemMeta = meta
-                        player.showTitle(Utils.subtitle("<red>You have not unlocked this skin yet, so it has been removed!"))
+                        player.showTitle(Utils.subtitle(Utils.firewatchFormat("You have not unlocked this skin yet, so it has been removed!")))
                     }
                 }
             }
@@ -130,7 +130,7 @@ class SkinsModule : ModuleInterface {
             if (!SkinData.hasUnlocked(killer.uniqueId, skinData)) {
                 SkinData.setUnlocked(killer.uniqueId, skinData)
                 killer.playSound(ConfigData.SkinsModule().soundUnlockSkin, Sound.Emitter.self())
-                killer.showTitle(Utils.subtitle("<gold>Congratulations! You have defeated the <dark_red>${skinData.entityName} <gold>and unlocked its skin!"))
+                killer.showTitle(Utils.subtitle(Utils.mangoFormat("Congratulations! You have defeated the ${skinData.entityName} and unlocked its skin!")))
             }
         }
     }
@@ -143,7 +143,7 @@ class SkinsModule : ModuleInterface {
 
     override fun gui(): Gui {
         return buildGui {
-            title(Utils.birdflopFormat("Skins"))
+            title(Utils.firewatchFormat("Skins").mm())
             component {
                 render {
                     ConfigData.SkinsModule().skins.forEachIndexed { index, skin ->

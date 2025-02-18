@@ -55,6 +55,7 @@ class VanillaPlus : JavaPlugin() {
             !isSupportedPlatform() -> disablePlugin(UNSUPPORTED_PLATFORM_MSG)
             else -> {
                 Database
+                Admin
                 Gui
                 ModuleManager
                 CommandManager
