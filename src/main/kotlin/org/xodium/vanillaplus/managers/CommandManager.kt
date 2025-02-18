@@ -24,7 +24,7 @@ object CommandManager {
     init {
         instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
             event.registrar().register(
-                Commands.literal("vanillaplus")
+                Commands.literal(instance.name.lowercase())
                     .requires { it.sender.hasPermission(Perms.VanillaPlus.USE) }
                     .then(
                         Commands.literal("faq")
@@ -50,7 +50,7 @@ object CommandManager {
                             })
                     )
                     .build(),
-                "VanillaPlus plugin",
+                "${instance.name} plugin",
                 mutableListOf("vp")
             )
         }
