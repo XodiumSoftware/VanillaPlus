@@ -26,6 +26,7 @@ object CommandManager {
             event.registrar().register(
                 Commands.literal(instance.name.lowercase())
                     .requires { it.sender.hasPermission(Perms.VanillaPlus.USE) }
+                    .executes(Command { Utils.tryCatch(it) { Gui.faqGUI().open(it.sender as Player) } })
                     .then(
                         Commands.literal("faq")
                             .requires { it.sender.hasPermission(Perms.GuiModule.FAQ) }
