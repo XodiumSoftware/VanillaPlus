@@ -42,9 +42,9 @@ class SkinsModule : ModuleInterface {
 
     private val nspacedKey = NamespacedKey(instance, this::class.simpleName.toString())
 
-    private fun buildSkinItem(lore: Component, skinData: SkinData) = ItemBuilder.from(skinData.material)
+    private fun buildSkinItem(lore: List<Component>, skinData: SkinData) = ItemBuilder.from(skinData.material)
         .name(Utils.mangoFormat("${skinData.entityName} Skin").mm())
-        .lore(listOf(lore))
+        .lore(lore)
         .asGuiItem { player, _ -> toggleSkin(player, skinData) }
 
     private fun validateItemIsNotNullOrAir(itemStack: ItemStack?, audience: Audience): Boolean =
@@ -152,9 +152,12 @@ class SkinsModule : ModuleInterface {
             statelessComponent {
                 ConfigData.SkinsModule().skins.forEachIndexed { index, skin ->
                     val lore = if (SkinData.hasUnlocked(player.uniqueId, skin)) {
-                        "<dark_gray>▶ <gray>Click to toggle custom skin <dark_gray>◀".mm()
+                        listOf("<dark_gray>▶ <gray>Click to toggle custom skin <dark_gray>◀").mm()
                     } else {
-                        Utils.firewatchFormat("Locked! Defeat the ${skin.entityName} to unlock this skin").mm()
+                        listOf(
+                            "<dark_gray>✖ <gray>Requirements:",
+                            "   <red>Defeat <gold>${skin.entityName}",
+                        ).mm()
                     }
                     it.setItem(index, buildSkinItem(lore, skin))
                 }
