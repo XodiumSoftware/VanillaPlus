@@ -8,9 +8,9 @@ package org.xodium.vanillaplus
 import dev.triumphteam.gui.paper.Gui
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder
 import dev.triumphteam.gui.paper.kotlin.builder.buildGui
-import net.kyori.adventure.audience.Audience
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
+import org.bukkit.entity.Player
 import org.xodium.vanillaplus.Utils.format
 import org.xodium.vanillaplus.Utils.mm
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -40,7 +40,7 @@ object Gui {
                 "   <gray>Shortcut: <gold>/dims"
             ).mm()
         )
-        .asGuiItem { player, _ -> dimsGUI().open(player) }
+        .asGuiItem { player, _ -> dimsGUI(player).open(player) }
 
     private val tipsItem = ItemBuilder.from(Material.LIGHT)
         .name(Utils.mangoFormat("Tips").mm())
@@ -131,7 +131,7 @@ object Gui {
         }
     }
 
-    fun dimsGUI(): Gui {
+    fun dimsGUI(player: Player): Gui {
         return buildGui {
             title(Utils.firewatchFormat("Dimensions").mm())
             statelessComponent {
@@ -162,29 +162,28 @@ object Gui {
                     val worldSize = Utils.worldSizeFormat(world.worldBorder.size.toInt())
                     val difficulty = world.difficulty.name.uppercase()
                     val pvp = if (world.pvp) "<green>True" else "<red>False"
+                    val hasUnlocked = DimensionData.hasUnlocked(player.uniqueId, data.requiredBossDefeated)
+                    val lore = if (hasUnlocked) {
+                        listOf(
+                            "<dark_gray>▶ <gray>Click to teleport <dark_gray>◀",
+                            "",
+                            "<dark_gray>✖ <gray>Information:",
+                            "   <aqua>Environment: <gold>$environment",
+                            "   <aqua>Size: <gold>${worldSize} <gray>x <gold>$worldSize",
+                            "   <aqua>Difficulty: <yellow>$difficulty",
+                            "   <aqua>PVP: $pvp"
+                        ).mm()
+                    } else {
+                        listOf(
+                            "<dark_gray>✖ <gray>Requirements:",
+                            "   <red>Defeat <gold>${data.requiredBossDefeated?.format(" <red>&<gold> ")}",
+                        ).mm()
+                    }
                     it.setItem(
                         data.guiIndex, ItemBuilder.from(data.itemMaterial)
                             .name(data.displayName.mm())
-                            .lore(
-                                listOf(
-                                    "<dark_gray>▶ <gray>Click to rtp <dark_gray>◀",
-                                    "",
-                                    "<dark_gray>✖ <gray>Information:",
-                                    "   <aqua>Environment: <gold>$environment",
-                                    "   <aqua>Size: <gold>${worldSize} <gray>x <gold>$worldSize",
-                                    "   <aqua>Difficulty: <yellow>$difficulty",
-                                    "   <aqua>PVP: $pvp"
-                                ).mm()
-                            ).asGuiItem { player, _ ->
-                                if (DimensionData.hasUnlocked(player.uniqueId, data.requiredBossDefeated)) {
-                                    player.performCommand("cmi rt ${data.worldName}")
-                                } else {
-                                    player.closeInventory()
-                                    Audience.audience(player).sendActionBar(
-                                        (Utils.firewatchFormat("Defeat the ${data.requiredBossDefeated?.format(" and the ")} to unlock this dimension")).mm()
-                                    )
-                                }
-                            })
+                            .lore(lore)
+                            .asGuiItem { player, _ -> if (hasUnlocked) player.performCommand("cmi rt ${data.worldName}") })
                     it.setItem(0, Utils.fillerItem)
                     it.setItem(1, Utils.fillerItem)
                     it.setItem(3, Utils.fillerItem)

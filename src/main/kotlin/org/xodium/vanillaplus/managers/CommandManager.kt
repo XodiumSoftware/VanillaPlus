@@ -34,7 +34,12 @@ object CommandManager {
                     .then(
                         Commands.literal("dims")
                             .requires { it.sender.hasPermission(Perms.GuiModule.DIMS) }
-                            .executes(Command { Utils.tryCatch(it) { Gui.dimsGUI().open(it.sender as Player) } })
+                            .executes(Command {
+                                Utils.tryCatch(it) {
+                                    val player = it.sender as Player
+                                    Gui.dimsGUI(player).open(player)
+                                }
+                            })
                     )
                     .then(
                         Commands.literal("settings")

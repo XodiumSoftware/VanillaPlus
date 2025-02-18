@@ -35,12 +35,11 @@ data class DimensionData(
          * @param entities The entity types of the bosses that must be defeated to unlock the dimension.
          * @return `true` if the player has unlocked the skin, `false` otherwise.
          */
-        fun hasUnlocked(uuid: UUID, entities: List<EntityType>?): Boolean {
-            if (entities == null || entities.isEmpty()) return true
-            return entities.all { entity ->
-                (Database.getData(SkinsModule::class, uuid.toString())?.split(",")
-                    ?: emptyList()).contains(entity.name.lowercase())
+        fun hasUnlocked(uuid: UUID, entities: List<EntityType>?): Boolean =
+            entities.isNullOrEmpty() || entities.all {
+                Database.getData(SkinsModule::class, uuid.toString())
+                    ?.split(",")
+                    ?.contains(it.name.lowercase()) == true
             }
-        }
     }
 }
