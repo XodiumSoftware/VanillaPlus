@@ -10,6 +10,9 @@ package org.xodium.vanillaplus.modules
 import dev.triumphteam.gui.paper.Gui
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder
 import dev.triumphteam.gui.paper.kotlin.builder.buildGui
+import net.kyori.adventure.sound.Sound
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.title.Title
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
@@ -38,6 +41,8 @@ class SkinsModule : ModuleInterface {
 
     private val nspacedKey = NamespacedKey(instance, this::class.simpleName.toString())
 
+    private fun subtitle(text: String) = Title.title(Component.empty(), "${VanillaPlus.PREFIX}$text".mm())
+
     private fun buildSkinItem(skinData: SkinData) = ItemBuilder.from(skinData.material)
         .name(Utils.mangoFormat("${skinData.entityName} Skin"))
         .lore(listOf("<dark_gray>▶ <gray>Click to toggle custom skin <dark_gray>◀").mm())
@@ -45,7 +50,7 @@ class SkinsModule : ModuleInterface {
 
     private fun validateItemIsNotNullOrAir(itemStack: ItemStack?, player: Player): Boolean {
         if (itemStack == null || itemStack.type == Material.AIR) {
-            player.sendMessage("${VanillaPlus.PREFIX}<red>You must hold an item in your hotbar!".mm())
+            player.showTitle(subtitle("<red>You must hold an item in your hotbar!"))
             return false
         }
         return true
@@ -53,7 +58,7 @@ class SkinsModule : ModuleInterface {
 
     private fun validateItemIsSword(itemStack: ItemStack, player: Player): Boolean {
         if (itemStack.type !in MaterialRegistry.SWORDS) {
-            player.sendMessage("${VanillaPlus.PREFIX}<red>This skin can only be applied to swords!".mm())
+            player.showTitle(subtitle("<red>This skin can only be applied to swords!"))
             return false
         }
         return true
@@ -61,7 +66,7 @@ class SkinsModule : ModuleInterface {
 
     private fun validateItemMeta(itemMeta: ItemMeta?, player: Player): Boolean {
         if (itemMeta == null) {
-            player.sendMessage("${VanillaPlus.PREFIX}<red>This item cannot hold custom model data!".mm())
+            player.showTitle(subtitle("<red>This item cannot hold custom model data!"))
             return false
         }
         return true
@@ -78,7 +83,7 @@ class SkinsModule : ModuleInterface {
 
     private fun toggleSkin(player: Player, skinData: SkinData) {
         if (!SkinData.hasUnlocked(player.uniqueId, skinData)) {
-            player.sendMessage("${VanillaPlus.PREFIX}<red>Locked! Defeat the <dark_red>${skinData.entityName} <red>to unlock this skin.".mm())
+            player.showTitle(subtitle("<red>Locked! Defeat the <dark_red>${skinData.entityName} <red>to unlock this skin"))
             return
         }
         val heldItem = player.inventory.getItem(player.inventory.heldItemSlot) ?: return
@@ -91,13 +96,13 @@ class SkinsModule : ModuleInterface {
             container.remove(nspacedKey)
             itemMeta.setCustomModelDataComponent(null)
             heldItem.itemMeta = itemMeta
-            player.sendMessage("${VanillaPlus.PREFIX}<green>Custom skin removed from your item!".mm())
+            player.showTitle(subtitle("<green>Custom skin removed from your item!"))
         } else {
             container.set(nspacedKey, PersistentDataType.STRING, skinData.model)
             component.strings = listOf(skinData.model)
             itemMeta.setCustomModelDataComponent(component)
             heldItem.itemMeta = itemMeta
-            player.sendMessage("${VanillaPlus.PREFIX}<green>Custom skin applied to your item!".mm())
+            player.showTitle(subtitle("<green>Custom skin applied to your item!"))
         }
     }
 
@@ -112,7 +117,7 @@ class SkinsModule : ModuleInterface {
                         meta.setCustomModelDataComponent(null)
                         meta.persistentDataContainer.remove(nspacedKey)
                         item.itemMeta = meta
-                        player.sendMessage("${VanillaPlus.PREFIX}<red>You have not unlocked this skin yet, so it has been removed!".mm())
+                        player.showTitle(subtitle("<red>You have not unlocked this skin yet, so it has been removed!"))
                     }
                 }
             }
@@ -129,9 +134,8 @@ class SkinsModule : ModuleInterface {
         Config.SkinsModule.SKINS.getByEntityType(event.entityType)?.let { skinData ->
             if (!SkinData.hasUnlocked(killer.uniqueId, skinData)) {
                 SkinData.setUnlocked(killer.uniqueId, skinData)
-                killer.sendMessage(
-                    "${VanillaPlus.PREFIX}<gold>Congratulations! You have defeated the <dark_red>${skinData.entityName} <gold>and unlocked its skin!".mm()
-                )
+                killer.playSound(Config.SkinsModule.UNLOCK_SKIN_SOUND, Sound.Emitter.self())
+                killer.showTitle(subtitle("<gold>Congratulations! You have defeated the <dark_red>${skinData.entityName} <gold>and unlocked its skin!"))
             }
         }
     }

@@ -5,6 +5,8 @@
 
 package org.xodium.vanillaplus
 
+import net.kyori.adventure.key.Key
+import net.kyori.adventure.sound.Sound
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
 import org.xodium.vanillaplus.data.SkinData
@@ -82,6 +84,14 @@ object Config {
             SkinData(EntityType.WARDEN, Material.WARDEN_SPAWN_EGG),
             SkinData(EntityType.ENDER_DRAGON, Material.ENDER_DRAGON_SPAWN_EGG)
         ) // The list of skins available.
+
+        var UNLOCK_SKIN_SOUND: Sound =
+            Sound.sound(
+                Key.key("entity.player.levelup"),
+                Sound.Source.PLAYER,
+                1.0f,
+                1.0f
+            ) // The sound effect used when unlocking a skin.
     }
 
     /**
