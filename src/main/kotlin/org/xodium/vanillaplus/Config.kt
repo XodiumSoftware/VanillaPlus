@@ -73,7 +73,7 @@ object Config {
 
         var MOTD: List<String> = listOf(
             "<b><gradient:#CB2D3E:#EF473A>Ultimate Private SMP</gradient></b>",
-            "<b><gradient:#FFE259:#FFA751>WELCOME BACK LADS!</gradient></b>"
+            "<b><gradient:#FFE259:#FFA751>➤ WELCOME BACK LADS!</gradient></b>"
         ) // The message of the day.
     }
 
