@@ -13,10 +13,12 @@ import dev.triumphteam.gui.paper.builder.item.ItemBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.title.Title
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.data.ConfigData
 import java.util.*
 
 
@@ -25,7 +27,7 @@ import java.util.*
  */
 object Utils {
     val MM: MiniMessage = MiniMessage.miniMessage()
-    val antiSpamDuration = Config.GUI_ANTI_SPAM_DURATION
+    val antiSpamDuration = ConfigData().guiAntiSpamDuration
     val fillerItem = ItemBuilder.from(Material.BLACK_STAINED_GLASS_PANE).name("".mm()).asGuiItem()
     val backItem = ItemBuilder.from(Material.RED_STAINED_GLASS_PANE)
         .name(birdflopFormat("Back"))
@@ -35,6 +37,7 @@ object Utils {
     fun birdflopFormat(text: String): Component = "<b><gradient:#CB2D3E:#EF473A>$text</gradient></b>".mm()
     fun mangoFormat(text: String): Component = "<b><gradient:#FFE259:#FFA751>$text</gradient></b>".mm()
     fun worldSizeFormat(size: Int): String = if (size >= 1000) "${size / 1000}k" else size.toString()
+    fun subtitle(text: String) = Title.title(Component.empty(), "${VanillaPlus.PREFIX}$text".mm())
 
     fun String.mm() = MM.deserialize(this)
     fun List<String>.mm() = map { it.mm() }

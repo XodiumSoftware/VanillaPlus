@@ -8,8 +8,6 @@ package org.xodium.vanillaplus
 import dev.triumphteam.gui.paper.Gui
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder
 import dev.triumphteam.gui.paper.kotlin.builder.buildGui
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.title.Title
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
 import org.xodium.vanillaplus.Utils.format
@@ -181,11 +179,8 @@ object Gui {
                                     player.performCommand("cmi rt ${data.worldName}")
                                 } else {
                                     player.showTitle(
-                                        Title.title(
-                                            Component.empty(),
-                                            ("${VanillaPlus.PREFIX}<red>Defeat the " +
-                                                    "${data.requiredBossDefeated?.format(" <red>and the<dark_red> ")} " +
-                                                    "to unlock this dimension.").mm()
+                                        Utils.subtitle(
+                                            "<red>Defeat the ${data.requiredBossDefeated?.format(" <red>and the<dark_red> ")} to unlock this dimension."
                                         )
                                     )
                                 }

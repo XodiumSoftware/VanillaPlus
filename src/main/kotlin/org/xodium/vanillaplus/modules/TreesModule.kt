@@ -19,8 +19,8 @@ import org.bukkit.block.Block
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.world.StructureGrowEvent
-import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.data.ConfigData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.registries.BlockTypesRegistry
 import org.xodium.vanillaplus.registries.MaterialRegistry
@@ -30,10 +30,10 @@ import java.nio.file.Paths
 
 
 class TreesModule : ModuleInterface {
-    override fun enabled(): Boolean = Config.TreesModule.ENABLED
+    override fun enabled(): Boolean = ConfigData.TreesModule().enabled
 
     private val schematicCache: Map<Material, List<Clipboard>> =
-        Config.TreesModule.SAPLING_LINK.mapValues { (_, dirs) ->
+        ConfigData.TreesModule().saplingLink.mapValues { (_, dirs) ->
             dirs.flatMap { dir -> loadSchematics("/schematics/$dir") }
         }
 
@@ -95,7 +95,7 @@ class TreesModule : ModuleInterface {
                             ClipboardHolder(clipboard)
                                 .createPaste(editSession)
                                 .to(BlockVector3.at(block.x, block.y, block.z))
-                                .ignoreAirBlocks(Config.TreesModule.IGNORE_AIR_BLOCKS)
+                                .ignoreAirBlocks(ConfigData.TreesModule().ignoreAirBlocks)
                                 .build()
                         )
                     }

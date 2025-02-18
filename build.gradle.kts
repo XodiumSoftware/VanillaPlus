@@ -15,6 +15,7 @@ import java.net.URI
 plugins {
     id("java")
     kotlin("jvm") version "2.1.10"
+    kotlin("plugin.serialization") version "2.1.10"
     id("com.gradleup.shadow") version "9.0.0-beta8"
     id("de.undercouch.download") version "5.6.0"
 }
@@ -36,15 +37,14 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
-//    TODO("Use stable build when available")
-//    TODO("Move away from WorldEdit")
-    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.4.0-20250126.070433-22")
+    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.10") //TODO("Move away from WorldEdit")
     implementation("net.kyori:adventure-api:4.19.0")
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlin:kotlin-reflect:2.1.10")
     implementation("dev.triumphteam:triumph-gui-paper-kotlin:4.0.0-SNAPSHOT") {
         exclude(group = "com.google.guava", module = "guava")
     }
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
 }
 
 java { toolchain.languageVersion.set(JavaLanguageVersion.of(21)) }

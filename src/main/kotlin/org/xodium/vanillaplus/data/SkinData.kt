@@ -5,6 +5,7 @@
 
 package org.xodium.vanillaplus.data
 
+import kotlinx.serialization.Serializable
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
 import org.xodium.vanillaplus.Database
@@ -20,6 +21,7 @@ import java.util.*
  * @property model The data value representing the custom skin of the item.
  * @property entityName The name of the entity.
  */
+@Serializable
 data class SkinData(
     val entityType: EntityType,
     val material: Material,
