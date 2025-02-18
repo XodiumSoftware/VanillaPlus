@@ -97,7 +97,7 @@ object Config {
             SkinData(EntityType.ENDER_DRAGON, Material.ENDER_DRAGON_SPAWN_EGG)
         ) // The list of skins available.
 
-        var UNLOCK_SKIN_SOUND: Sound =
+        var SOUND_UNLOCK_SKIN: Sound =
             Sound.sound(
                 Key.key("entity.player.levelup"),
                 Sound.Source.PLAYER,

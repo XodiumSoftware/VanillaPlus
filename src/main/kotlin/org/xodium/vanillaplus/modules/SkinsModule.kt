@@ -134,7 +134,7 @@ class SkinsModule : ModuleInterface {
         Config.SkinsModule.SKINS.getByEntityType(event.entityType)?.let { skinData ->
             if (!SkinData.hasUnlocked(killer.uniqueId, skinData)) {
                 SkinData.setUnlocked(killer.uniqueId, skinData)
-                killer.playSound(Config.SkinsModule.UNLOCK_SKIN_SOUND, Sound.Emitter.self())
+                killer.playSound(Config.SkinsModule.SOUND_UNLOCK_SKIN, Sound.Emitter.self())
                 killer.showTitle(subtitle("<gold>Congratulations! You have defeated the <dark_red>${skinData.entityName} <gold>and unlocked its skin!"))
             }
         }
