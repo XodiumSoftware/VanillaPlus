@@ -5,13 +5,13 @@
 
 package org.xodium.vanillaplus
 
-import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
 import org.xodium.vanillaplus.data.SkinData
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
+import org.bukkit.Sound as BukkitSound
 
 /**
  * Configuration settings for the VanillaPlus plugin.
@@ -31,7 +31,7 @@ object Config {
 
         var SOUND_DOOR_CLOSE: Sound =
             Sound.sound(
-                Key.key("block.iron_door.close"),
+                BukkitSound.BLOCK_IRON_DOOR_CLOSE,
                 Sound.Source.BLOCK,
                 1.0f,
                 1.0f
@@ -39,7 +39,7 @@ object Config {
 
         var SOUND_GATE_CLOSE: Sound =
             Sound.sound(
-                Key.key("block.fence_gate.close"),
+                BukkitSound.BLOCK_FENCE_GATE_CLOSE,
                 Sound.Source.BLOCK,
                 1.0f,
                 1.0f
@@ -47,7 +47,7 @@ object Config {
 
         var SOUND_KNOCK: Sound =
             Sound.sound(
-                Key.key("entity.zombie.attack_wooden_door"),
+                BukkitSound.ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR,
                 Sound.Source.HOSTILE,
                 1.0f,
                 1.0f
@@ -99,7 +99,7 @@ object Config {
 
         var SOUND_UNLOCK_SKIN: Sound =
             Sound.sound(
-                Key.key("entity.player.levelup"),
+                BukkitSound.ENTITY_PLAYER_LEVELUP,
                 Sound.Source.PLAYER,
                 1.0f,
                 1.0f
