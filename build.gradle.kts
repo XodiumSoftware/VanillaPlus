@@ -40,7 +40,6 @@ dependencies {
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.10") //TODO("Move away from WorldEdit")
     implementation("net.kyori:adventure-api:4.19.0")
     implementation(kotlin("stdlib-jdk8"))
-    implementation("org.jetbrains.kotlin:kotlin-reflect:2.1.10")
     implementation("dev.triumphteam:triumph-gui-paper-kotlin:4.0.0-SNAPSHOT") {
         exclude(group = "com.google.guava", module = "guava")
     }

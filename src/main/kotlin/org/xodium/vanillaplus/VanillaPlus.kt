@@ -54,6 +54,7 @@ class VanillaPlus : JavaPlugin() {
             !isSupportedVersion() -> disablePlugin(UNSUPPORTED_VERSION_MSG)
             !isSupportedPlatform() -> disablePlugin(UNSUPPORTED_PLATFORM_MSG)
             else -> {
+                Perms
                 Database
                 Admin
                 Gui
