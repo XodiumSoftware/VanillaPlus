@@ -27,7 +27,7 @@ object Admin {
      * @param action The action to perform when the item is clicked.
      * @return The GUI item.
      */
-    fun item( //TODO: move builder to Utils.
+    private fun item(
         material: Material,
         name: Component,
         lore: List<String>,
@@ -36,9 +36,17 @@ object Admin {
         ItemBuilder.from(material).name(name).lore(lore.mm()).asGuiItem { player, _ -> action(player) }
 
     /**
-     * Create the GUI for the rules.
-     *
-     * @return The GUI for the rules.
+     * TODO
+     */
+    private fun getMaterialForValue(value: Any): Material = when (value) {
+        is Boolean -> if (value) Material.GREEN_WOOL else Material.RED_WOOL
+        is String -> Material.STRING
+        is Double, is Int, is Float -> Material.YELLOW_WOOL
+        else -> Material.WRITABLE_BOOK
+    }
+
+    /**
+     * TODO
      */
     fun gui(): Gui = buildGui {
 //        TODO: set container size automatically. maybe look even into pagination?
