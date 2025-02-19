@@ -10,16 +10,16 @@ package org.xodium.vanillaplus
  */
 object Perms {
     /**
-     * Permissions for General commands.
+     * Permissions for Usage commands.
      */
-    object VanillaPlus {
-        const val USE = "vanillaplus.use"
+    object Use {
+        const val GENERAL = "vanillaplus.use"
     }
 
     /**
      * Permissions for Gui commands.
      */
-    object GuiModule {
+    object Gui {
         const val FAQ = "vanillaplus.gui.faq"
         const val DIMS = "vanillaplus.gui.dims"
         const val SETTINGS = "vanillaplus.gui.settings"

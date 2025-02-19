@@ -25,16 +25,16 @@ object CommandManager {
         instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
             event.registrar().register(
                 Commands.literal(instance.name.lowercase())
-                    .requires { it.sender.hasPermission(Perms.VanillaPlus.USE) }
+                    .requires { it.sender.hasPermission(Perms.Use.GENERAL) }
                     .executes(Command { Utils.tryCatch(it) { Gui.faqGUI().open(it.sender as Player) } })
                     .then(
                         Commands.literal("faq")
-                            .requires { it.sender.hasPermission(Perms.GuiModule.FAQ) }
+                            .requires { it.sender.hasPermission(Perms.Gui.FAQ) }
                             .executes(Command { Utils.tryCatch(it) { Gui.faqGUI().open(it.sender as Player) } })
                     )
                     .then(
                         Commands.literal("dims")
-                            .requires { it.sender.hasPermission(Perms.GuiModule.DIMS) }
+                            .requires { it.sender.hasPermission(Perms.Gui.DIMS) }
                             .executes(Command {
                                 Utils.tryCatch(it) {
                                     val player = it.sender as Player
@@ -44,11 +44,11 @@ object CommandManager {
                     )
                     .then(
                         Commands.literal("settings")
-                            .requires { it.sender.hasPermission(Perms.GuiModule.SETTINGS) }
+                            .requires { it.sender.hasPermission(Perms.Gui.SETTINGS) }
                             .executes(Command { Utils.tryCatch(it) { Gui.settingsGUI().open(it.sender as Player) } })
                     ).then(
                         Commands.literal("skins")
-                            .requires { it.sender.hasPermission(Perms.GuiModule.SKINS) }
+                            .requires { it.sender.hasPermission(Perms.Gui.SKINS) }
                             .executes(Command {
                                 Utils.tryCatch(it) {
                                     val player = it.sender as Player
