@@ -7,11 +7,6 @@ import de.undercouch.gradle.tasks.download.Download
 import groovy.json.JsonSlurper
 import java.net.URI
 
-/*
- *  Copyright (c) 2025. Xodium.
- *  All rights reserved.
- */
-
 plugins {
     id("java")
     kotlin("jvm") version "2.1.10"
@@ -38,10 +33,9 @@ repositories {
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.10") //TODO("Move away from WorldEdit")
-    implementation("net.kyori:adventure-api:4.19.0")
     implementation(kotlin("stdlib-jdk8"))
     implementation("dev.triumphteam:triumph-gui-paper-kotlin:4.0.0-SNAPSHOT") {
-        exclude(group = "com.google.guava", module = "guava")
+        exclude(group = "com.google.guava", module = "guava") //TODO("Remove when fixed")
     }
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
 }
@@ -106,12 +100,5 @@ tasks {
                 writeText("eula=true\n")
             }.also { println("EULA has been accepted.") }
         }
-    }
-    register<Exec>("runDevServer") {
-        group = "application"
-        description = "RUN: DEV SERVER"
-        workingDir = file(".server")
-        dependsOn("downloadServerJar", "acceptEula", "shadowJar")
-        commandLine = listOf("java", "-jar", "server.jar", "nogui")
     }
 }
