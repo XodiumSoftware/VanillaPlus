@@ -17,6 +17,7 @@ import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import java.util.*
+import kotlin.math.roundToInt
 
 
 /**
@@ -59,5 +60,33 @@ object Utils {
             (ctx.source.sender as Player).sendMessage("${VanillaPlus.PREFIX}<red>An Error has occured. Check server logs for details.".mm())
         }
         return Command.SINGLE_SUCCESS
+    }
+
+    /**
+     * Calculates the TPS's colored representation.
+     * The TPS is shown relative to 20 TPS (100%) with a gradient
+     * from red (low TPS) to green (high TPS).
+     *
+     * @param tps the current TPS value
+     * @return the colored TPS representation
+     */
+    fun getColoredTPS(tps: Double): String =
+        ((tps.coerceIn(0.0, 20.0) / 20.0) * 255).roundToInt().let { p ->
+            "<#%02x%02x00>${tps.toInt()}</>".format(255 - p, p)
+        }
+
+    /**
+     * Gets the player's current weather.
+     *
+     * @param player the player to get the weather for
+     * @return the player's current weather
+     */
+    fun getPlayerWeather(player: Player): String {
+        val world = player.world
+        return when {
+            world.isClearWeather -> "<green>\uD83C\uDF24</>"
+            (world.isThundering || world.hasStorm()) -> "<red>\uD83C\uDF29</>"
+            else -> "<yellow>\uD83C\uDF26</>"
+        }
     }
 }
