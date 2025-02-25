@@ -13,7 +13,6 @@ import com.sk89q.worldedit.function.mask.BlockTypeMask
 import com.sk89q.worldedit.function.operation.Operations
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.session.ClipboardHolder
-import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.event.EventHandler
@@ -85,7 +84,7 @@ class TreesModule : ModuleInterface {
             instance.logger.info("No custom schematic found for ${block.type}.")
             return false
         }
-        Bukkit.getScheduler().runTask(instance, Runnable {
+        instance.server.scheduler.runTask(instance, Runnable {
             try {
                 WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(block.world))
                     .use { editSession ->
