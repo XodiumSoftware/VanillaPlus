@@ -11,7 +11,7 @@ plugins {
     id("java")
     kotlin("jvm") version "2.1.10"
     kotlin("plugin.serialization") version "2.1.10"
-    id("com.gradleup.shadow") version "9.0.0-beta9"
+    id("com.gradleup.shadow") version "9.0.0-beta10"
     id("de.undercouch.download") version "5.6.0"
 }
 
