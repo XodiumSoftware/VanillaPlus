@@ -9,8 +9,6 @@ import kotlinx.serialization.Serializable
 import net.kyori.adventure.sound.Sound
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
-import org.xodium.vanillaplus.Utils
-import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import org.bukkit.Sound as BukkitSound
@@ -112,10 +110,7 @@ data class ConfigData(
         val enabled: Boolean = true, // Enables or disables the TabListModule. Set to 'false' to disable.
 
         val header: String = "<gold>]|[=]|[=]|[=]|[=]|[=]|[=]|[   <gradient:#CB2D3E:#EF473A>⚡ IllyriaRPG 1.21.4 ⚡</gradient>   <gold>]|[=]|[=]|[=]|[=]|[=]|[=]|[", // The header of the tab list.
-//        TODO: Replace placeholders. (%cmi_user_weather%)
-        val footer: String = "<gold>]|[=]|[=]|[=]|[=]|[=]|[=]|[  <dark_aqua>TPS: ${Utils.getColoredTPS(instance.server.tps[0])} <gold>| <dark_aqua>Weather: ${
-            Utils.getPlayerWeather(player)
-        } <gold>]|[=]|[=]|[=]|[=]|[=]|[=]|[", // The footer of the tab list.
+        val footer: String = "<gold>]|[=]|[=]|[=]|[=]|[=]|[=]|[  <dark_aqua>TPS: \${player_tps} <gold>| <dark_aqua>Weather: \${player_weather} <gold>]|[=]|[=]|[=]|[=]|[=]|[=]|[", // The footer of the tab list.
 
         val startDelay: Long = 0, // The delay (in ticks) before the task starts.
         val period: Long = 100 // The period (in ticks) between each task.

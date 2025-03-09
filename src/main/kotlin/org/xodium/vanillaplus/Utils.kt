@@ -11,6 +11,7 @@ import com.mojang.brigadier.Command
 import com.mojang.brigadier.context.CommandContext
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
@@ -89,4 +90,16 @@ object Utils {
             else -> "<yellow>\uD83C\uDF26</>"
         }
     }
+
+    /**
+     * Replaces placeholders in a text with the player's current weather and the server's TPS.
+     *
+     * @param text the text to replace placeholders in
+     * @param player the player to get the weather for
+     * @return the text with placeholders replaced
+     */
+    fun replacePlaceholders(text: String, player: Player): Component = text
+        .replace("\${player_weather}", getPlayerWeather(player))
+        .replace("\${server_tps}", getColoredTPS(instance.server.tps[0]))
+        .mm()
 }
