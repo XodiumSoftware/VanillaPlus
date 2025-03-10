@@ -24,7 +24,6 @@ object ModuleManager {
             MotdModule(),
             RecipiesModule(),
             SkinsModule(),
-            TabListModule(),
             TreesModule(),
         ).filter { it.enabled() }
             .forEach {

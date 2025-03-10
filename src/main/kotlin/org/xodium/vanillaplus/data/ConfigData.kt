@@ -103,20 +103,6 @@ data class ConfigData(
     )
 
     /**
-     * Configuration settings for the TabListModule. This module controls the tab list features of the plugin.
-     */
-    @Serializable
-    data class TabListModule(
-        val enabled: Boolean = true, // Enables or disables the TabListModule. Set to 'false' to disable.
-
-        val header: String = "<gold>]|[=]|[=]|[=]|[=]|[=]|[=]|[   <gradient:#CB2D3E:#EF473A>⚡ IllyriaRPG 1.21.4 ⚡</gradient>   <gold>]|[=]|[=]|[=]|[=]|[=]|[=]|[", // The header of the tab list.
-        val footer: String = "<gold>]|[=]|[=]|[=]|[=]|[=]|[=]|[  <dark_aqua>TPS: \${player_tps} <gold>| <dark_aqua>Weather: \${player_weather} <gold>]|[=]|[=]|[=]|[=]|[=]|[=]|[", // The footer of the tab list.
-
-        val startDelay: Long = 0, // The delay (in ticks) before the task starts.
-        val period: Long = 100 // The period (in ticks) between each task.
-    )
-
-    /**
      * Configuration settings for the TreesModule. This module controls the sapling features of the plugin.
      */
     @Serializable
