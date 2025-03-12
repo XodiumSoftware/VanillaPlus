@@ -19,12 +19,7 @@ class AutoToolModule : ModuleInterface {
     override fun enabled(): Boolean = ConfigData.AutoToolModule().enabled
 
     @EventHandler
-    fun on(event: PlayerQuitEvent) {
-        val player = event.player
-//        TODO: use correct database settings.
-        main.playerSettings?.let { if (!it.containsKey(player.uniqueId)) return }
-        main.playerSettings?.remove(player.uniqueId)
-    }
+    fun on(event: PlayerQuitEvent): Unit = TODO("check database if enabled")
 
     val guiItem = ItemBuilder.from(Material.MILK_BUCKET)
         .name(Utils.mangoFormat("AutoTool").mm())
