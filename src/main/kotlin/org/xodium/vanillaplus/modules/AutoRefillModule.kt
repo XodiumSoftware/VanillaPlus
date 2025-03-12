@@ -36,6 +36,7 @@ class AutoRefillModule : ModuleInterface {
     }
 
     private fun attemptRefill(player: Player, offHand: Boolean) {
+        TODO("Implement properly")
         val inv = player.inventory
         val playerSetting = main.getPlayerSetting(player)
         val item = if (offHand) inv.itemInOffHand else inv.itemInMainHand

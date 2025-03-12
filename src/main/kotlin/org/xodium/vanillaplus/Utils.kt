@@ -23,7 +23,6 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.registries.EntityRegistry
 import org.xodium.vanillaplus.registries.MaterialRegistry
 import java.util.*
-import kotlin.collections.MutableMap
 
 
 /**
@@ -50,13 +49,11 @@ object Utils {
 
     fun List<EntityType>.format(separator: String) = this.joinToString(separator) { it.format() }
 
-    fun <K, V : Comparable<V?>?> sortByValue(map: MutableMap<K?, V?>): MutableMap<K?, V?> {
-        val list: MutableList<MutableMap.MutableEntry<K?, V?>> = ArrayList<MutableMap.MutableEntry<K?, V?>>(map.entries)
-        list.sortWith(Map.Entry.comparingByValue<K?, V?>())
-        val result: MutableMap<K?, V?> = LinkedHashMap<K?, V?>()
-        for (entry in list) {
-            result.put(entry.key, entry.value)
-        }
+    fun <K, V : Comparable<V>> sortByValue(map: MutableMap<K?, V?>): MutableMap<K?, V?> {
+        val list: MutableList<MutableMap.MutableEntry<K?, V?>> = ArrayList(map.entries)
+        list.sortWith(compareBy<MutableMap.MutableEntry<K?, V?>> { it.value })
+        val result: MutableMap<K?, V?> = LinkedHashMap()
+        for (entry in list) result[entry.key] = entry.value
         return result
     }
 
@@ -143,19 +140,13 @@ object Utils {
         if (!isBowlOrBottle(Objects.requireNonNull<ItemStack?>(inv.getItem(slot)).type)) return false
         val toBeMoved = inv.getItem(slot)
         inv.clear(slot)
-        val leftovers = inv.addItem(toBeMoved)
+        val leftovers = inv.addItem(toBeMoved!!)
         if (inv.getItem(slot) == null || Objects.requireNonNull<ItemStack?>(inv.getItem(slot))
                 .amount == 0 || Objects.requireNonNull<ItemStack?>(inv.getItem(slot)).type == Material.AIR
-        ) {
-            return true
-        }
+        ) return true
         if (!leftovers.isEmpty()) {
-            main.debug("Possible item loss detected due to RefillUtils#moveBowlsAndBottles, dropping leftover items...")
             for (leftover in leftovers.values) {
-                if (inv.holder !is Player) {
-                    main.debug("Could not drop items because inventory has no player as holder :(")
-                    return false
-                }
+                if (inv.holder !is Player) return false
                 val p = inv.holder as Player?
                 p!!.world.dropItem(p.location, leftover)
             }
@@ -173,36 +164,36 @@ object Utils {
         return false
     }
 
-    fun refillStack(inventory: Inventory, source: Int, dest: Int, itemStack: ItemStack) {
+    fun refillStack(inventory: Inventory, source: Int, dest: Int, itemStack: ItemStack?) {
         instance.server.scheduler.runTask(instance, Runnable {
-            if (inventory.getItem(source) == null) return@Runnable
-            if (inventory.getItem(source) != itemStack) {
-                return@Runnable
+            when {
+                inventory.getItem(source) == null -> return@Runnable
+                inventory.getItem(source) != itemStack -> return@Runnable
+                inventory.getItem(dest) != null && !moveBowlsAndBottles(inventory, dest) -> return@Runnable
+                else -> {
+                    inventory.setItem(source, null)
+                    inventory.setItem(dest, itemStack)
+                }
             }
-            if (inventory.getItem(dest) != null && !moveBowlsAndBottles(inventory, dest)) {
-                return@Runnable
-            }
-            inventory.setItem(source, null)
-            inventory.setItem(dest, itemStack)
         })
     }
 
-    fun getMatchingStackPosition(inv: PlayerInventory, mat: Material?, currentSlot: Int): Int {
+    fun getMatchingStackPosition(inventory: PlayerInventory, mat: Material, currentSlot: Int): Int {
         val slots = HashMap<Int?, Int?>()
         for (i in 0..<36) {
             if (i == currentSlot) continue
-            val item = inv.getItem(i)
+            val item = inventory.getItem(i)
             if (item == null) continue
             if (item.type != mat) continue
             if (item.amount == 64) return i
-            slots.put(i, item.amount)
+            slots[i] = item.amount
         }
         if (slots.isEmpty()) return -1
+
         val sortedSlots = sortByValue<Int?, Int?>(slots)
-        val entrySet: MutableSet<MutableMap.MutableEntry<Int?, Int?>?> = sortedSlots.entries
-        val entries: Array<MutableMap.MutableEntry<Int?, Int?>?> =
-            entrySet.toTypedArray<MutableMap.MutableEntry<*, *>?>()
-        return entries[entries.size - 1]!!.key!!
+        if (sortedSlots.isEmpty()) return -1
+
+        return sortedSlots.entries.toTypedArray().last().key!!
     }
 
     fun hasShears(hotbarOnly: Boolean, inventory: Array<ItemStack?>): Boolean {
