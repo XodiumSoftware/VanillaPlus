@@ -18,7 +18,6 @@ import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.PlayerInventory
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.registries.EntityRegistry
 import org.xodium.vanillaplus.registries.MaterialRegistry
@@ -48,14 +47,6 @@ object Utils {
         { it.replaceFirstChar { char -> char.uppercaseChar() } }
 
     fun List<EntityType>.format(separator: String) = this.joinToString(separator) { it.format() }
-
-    fun <K, V : Comparable<V>> sortByValue(map: MutableMap<K?, V?>): MutableMap<K?, V?> {
-        val list: MutableList<MutableMap.MutableEntry<K?, V?>> = ArrayList(map.entries)
-        list.sortWith(compareBy<MutableMap.MutableEntry<K?, V?>> { it.value })
-        val result: MutableMap<K?, V?> = LinkedHashMap()
-        for (entry in list) result[entry.key] = entry.value
-        return result
-    }
 
     /**
      * A helper function to wrap command execution with standardized error handling.
@@ -162,38 +153,6 @@ object Utils {
             }
         }
         return false
-    }
-
-    fun refillStack(inventory: Inventory, source: Int, dest: Int, itemStack: ItemStack?) {
-        instance.server.scheduler.runTask(instance, Runnable {
-            when {
-                inventory.getItem(source) == null -> return@Runnable
-                inventory.getItem(source) != itemStack -> return@Runnable
-                inventory.getItem(dest) != null && !moveBowlsAndBottles(inventory, dest) -> return@Runnable
-                else -> {
-                    inventory.setItem(source, null)
-                    inventory.setItem(dest, itemStack)
-                }
-            }
-        })
-    }
-
-    fun getMatchingStackPosition(inventory: PlayerInventory, mat: Material, currentSlot: Int): Int {
-        val slots = HashMap<Int?, Int?>()
-        for (i in 0..<36) {
-            if (i == currentSlot) continue
-            val item = inventory.getItem(i)
-            if (item == null) continue
-            if (item.type != mat) continue
-            if (item.amount == 64) return i
-            slots[i] = item.amount
-        }
-        if (slots.isEmpty()) return -1
-
-        val sortedSlots = sortByValue<Int?, Int?>(slots)
-        if (sortedSlots.isEmpty()) return -1
-
-        return sortedSlots.entries.toTypedArray().last().key!!
     }
 
     fun hasShears(hotbarOnly: Boolean, inventory: Array<ItemStack?>): Boolean {
