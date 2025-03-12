@@ -26,6 +26,32 @@ object MaterialRegistry {
         Material.WOODEN_SWORD to 4.0,
     )
 
+    val PROFITS_FROM_SILK_TOUCH = setOf(
+        Material.BLACK_STAINED_GLASS,
+        Material.BLUE_STAINED_GLASS,
+        Material.BROWN_STAINED_GLASS,
+        Material.CYAN_STAINED_GLASS,
+        Material.ENDER_CHEST,
+        Material.GLASS,
+        Material.GLOWSTONE,
+        Material.GRAY_STAINED_GLASS,
+        Material.GREEN_STAINED_GLASS,
+        Material.LIGHT_BLUE_STAINED_GLASS,
+        Material.LIGHT_GRAY_STAINED_GLASS,
+        Material.LIME_STAINED_GLASS,
+        Material.MAGENTA_STAINED_GLASS,
+        Material.NETHER_GOLD_ORE,
+        Material.ORANGE_STAINED_GLASS,
+        Material.PINK_STAINED_GLASS,
+        Material.PURPLE_STAINED_GLASS,
+        Material.QUARTZ,
+        Material.RED_STAINED_GLASS,
+        Material.SEA_LANTERN,
+        Material.SPAWNER,
+        Material.WHITE_STAINED_GLASS,
+        Material.YELLOW_STAINED_GLASS
+    )
+
     val SAPLINGS = setOf(
         Material.ACACIA_SAPLING,
         Material.BIRCH_SAPLING,

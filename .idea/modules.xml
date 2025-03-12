@@ -4,9 +4,9 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/.jetbrains.VanillaPlus.main.iml" filepath="$PROJECT_DIR$/.idea/modules/.jetbrains.VanillaPlus.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/.jetbrains.VanillaPlus.test.iml" filepath="$PROJECT_DIR$/.idea/modules/.jetbrains.VanillaPlus.test.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/VanillaPlus.main.iml" filepath="$PROJECT_DIR$/.idea/modules/VanillaPlus.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/org.xodium.vanillaplus.VanillaPlus.main.iml" filepath="$PROJECT_DIR$/.idea/modules/org.xodium.vanillaplus.VanillaPlus.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/org.xodium.vanillaplus.VanillaPlus.test.iml" filepath="$PROJECT_DIR$/.idea/modules/org.xodium.vanillaplus.VanillaPlus.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/vanillaplus.main.iml" filepath="$PROJECT_DIR$/.idea/modules/vanillaplus.main.iml" />
     </modules>
   </component>
 </project>

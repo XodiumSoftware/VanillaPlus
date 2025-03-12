@@ -7,12 +7,16 @@ package org.xodium.vanillaplus.old
 
 import org.bukkit.Material
 import org.bukkit.Tag
+import org.xodium.vanillaplus.registries.MaterialRegistry
 import java.util.*
 
 /**
  * Please don't cry because I use Strings instead of Material. It's for backward compatability and the map only gets built once on startup, so don't worry
  */
-class AutoToolsUtils(main: Main) {
+class AutoToolsUtils {
+    val handler: AutoToolsHandler =
+        Objects.requireNonNull<AutoToolsHandler>(AutoToolsHandler(), "ToolHandler must not be null")
+
     val wood: Array<String> = arrayOf<String>(
         "BIRCH",
         "ACACIA",
@@ -134,6 +138,7 @@ class AutoToolsUtils(main: Main) {
     )
     val axes: Array<String> =
         arrayOf<String>("NETHERITE_AXE", "DIAMOND_AXE", "GOLDEN_AXE", "IRON_AXE", "STONE_AXE", "WOODEN_AXE")
+
     val shovels: Array<String> = arrayOf<String>(
         "NETHERITE_SHOVEL",
         "DIAMOND_SHOVEL",
@@ -178,84 +183,63 @@ class AutoToolsUtils(main: Main) {
         "NETHERITE_SHOVEL"
     )
 
-    val main: Main = Objects.requireNonNull<Main>(main, "Main must not be null")
-
     // This is called AFTER BestToolsHandler, so the Utils can affect the Handler
     init {
         Objects.requireNonNull<AutoToolsHandler?>(
-            main.toolHandler,
+            handler,
             "BestToolsHandler must be instantiated before BestToolUtils!"
         )
 
         // Register valid weapons
         for (weapon in weapons) {
             if (Material.getMaterial(weapon) != null) {
-                main.toolHandler!!.weapons.add(Material.getMaterial(weapon))
+                handler.weapons.add(Material.getMaterial(weapon))
             }
         }
 
         // Register all InstaBreaksByHand
-        for (s in instaBreakableByHand) {
-            addToMap(s, main.toolHandler!!.instaBreakableByHand)
-        }
+        for (s in instaBreakableByHand) addToMap(s, handler.instaBreakableByHand)
 
         // Hoes
-        for (s in hoes) {
-            addToMap(s, main.toolHandler!!.hoes)
-        }
+        for (s in hoes) addToMap(s, handler.hoes)
 
         // Pickaxes
-        for (s in pickaxes) {
-            addToMap(s, main.toolHandler!!.pickaxes)
-        }
+        for (s in pickaxes) addToMap(s, handler.pickaxes)
 
         // Axes
-        for (s in axes) {
-            addToMap(s, main.toolHandler!!.axes)
-        }
+        for (s in axes) addToMap(s, handler.axes)
 
         // Shovels
-        for (s in shovels) {
-            addToMap(s, main.toolHandler!!.shovels)
-        }
+        for (s in shovels) addToMap(s, handler.shovels)
 
         // Swords
-        for (s in swords) {
-            addToMap(s, main.toolHandler!!.swords)
-        }
+        for (s in MaterialRegistry.SWORDS) addToMap(s, handler.swords)
 
-        main.toolHandler!!.allTools.addAll(listOf<Material?>(*defaultMats))
+        handler.allTools.addAll(listOf<Material?>(*defaultMats))
         for (s in netheriteTools) {
             if (Material.getMaterial(s) != null) {
-                main.toolHandler!!.allTools.add(Material.getMaterial(s))
+                handler.allTools.add(Material.getMaterial(s))
             }
         }
-
         this.initMap()
-
-        //uToolMap = Map.copyOf(main.toolHandler.toolMap); // Java 10+ only
     }
 
     private fun addToMap(name: String, list: ArrayList<Material?>) {
         val mat: Material? = Material.getMaterial(name)
-        if (mat != null) {
-            list.add(mat)
-        } else {
-            main.debug("Skipping unknown Material $name")
-        }
+        if (mat != null) list.add(mat)
     }
 
     private fun tagToMap(tag: Tag<Material>, tool: AutoToolsHandler.Tool) {
         tagToMap(
             Objects.requireNonNull<Tag<Material?>?>(tag, "Tag must not be null"),
-            Objects.requireNonNull<BestToolsHandler.Tool?>(tool, "Tool must not be null"),
+            Objects.requireNonNull<AutoToolsHandler.Tool?>(tool, "Tool must not be null"),
             null
         )
     }
 
     private fun tagToMap(tag: Tag<Material>, tool: AutoToolsHandler.Tool, match: String?) {
         Objects.requireNonNull<Tag<Material?>>(tag, "Tag must not be null")
-        Objects.requireNonNull<BestToolsHandler.Tool>(tool, "Tool must not be null")
+        Objects.requireNonNull<AutoToolsHandler.Tool>(tool, "Tool must not be null")
         for (mat in tag.getValues()) {
             if (match == null) {
                 addToMap(mat, tool)
@@ -269,28 +253,40 @@ class AutoToolsUtils(main: Main) {
 
     private fun addToMap(matName: String, tool: AutoToolsHandler.Tool) {
         val mat: Material? = Material.getMaterial(matName)
-        if (mat == null) {
-            main.debug("Skipping unknown fallback Material $matName")
-            return
-        }
+        if (mat == null) return
         addToMap(mat, tool)
     }
 
     private fun addToMap(mat: Material, tool: AutoToolsHandler.Tool) {
         Objects.requireNonNull<HashMap<Material?, AutoToolsHandler.Tool?>?>(
             Objects.requireNonNull<AutoToolsHandler?>(
-                main.toolHandler,
+                handler,
                 "ToolHandler must not be null"
             ).toolMap, "ToolMap must not be null"
         )
             .put(
                 Objects.requireNonNull<Material?>(mat, "Material must not be null"),
-                Objects.requireNonNull<BestToolsHandler.Tool?>(tool, "Tool must not be null")
+                Objects.requireNonNull<AutoToolsHandler.Tool?>(tool, "Tool must not be null")
             )
     }
 
+    private fun handleBambooPlantableOnFallback() {
+        for (s in arrayOf<String?>(
+            "GRASS_BLOCK",
+            "DIRT",
+            "COARSE_DIRT",
+            "GRAVEL",
+            "MYCELIUM",
+            "PODZOL",
+            "SAND",
+            "RED_SAND"
+        )) {
+            addToMap(s.toString(), AutoToolsHandler.Tool.SHOVEL)
+        }
+    }
+
     fun initMap() {
-        val startTime = System.nanoTime()
+        System.nanoTime()
         initFallbackMaterials()
         try {
             tagToMap(Tag.ANVIL, AutoToolsHandler.Tool.PICKAXE)
@@ -341,33 +337,9 @@ class AutoToolsUtils(main: Main) {
             tagToMap(Tag.FENCES, AutoToolsHandler.Tool.PICKAXE, "BRICK")
             // Order important END
         } catch (_: NoSuchFieldError) {
-            val bamboo_plantable_on = arrayOf<String?>(
-                "GRASS_BLOCK",
-                "DIRT",
-                "COARSE_DIRT",
-                "GRAVEL",
-                "MYCELIUM",
-                "PODZOL",
-                "SAND",
-                "RED_SAND"
-            )
-            for (s in bamboo_plantable_on) {
-                addToMap(s.toString(), AutoToolsHandler.Tool.SHOVEL)
-            }
+            handleBambooPlantableOnFallback()
         } catch (_: NoClassDefFoundError) {
-            val bamboo_plantable_on = arrayOf<String?>(
-                "GRASS_BLOCK",
-                "DIRT",
-                "COARSE_DIRT",
-                "GRAVEL",
-                "MYCELIUM",
-                "PODZOL",
-                "SAND",
-                "RED_SAND"
-            )
-            for (s in bamboo_plantable_on) {
-                addToMap(s.toString(), AutoToolsHandler.Tool.SHOVEL)
-            }
+            handleBambooPlantableOnFallback()
         }
 
         // Tags for 1.15+
@@ -685,14 +657,6 @@ class AutoToolsUtils(main: Main) {
             tagToMap(Tag.MINEABLE_SHOVEL, AutoToolsHandler.Tool.SHOVEL)
         } catch (_: NoSuchFieldError) {
         } catch (_: NoClassDefFoundError) {
-        }
-
-
-        val endTime = System.nanoTime()
-        //printMap();
-        if (main.verbose) {
-            main.logger
-                .info(String.format("Building the <Block,Tool> map took %d ms", (endTime - startTime) / 1000000))
         }
     }
 

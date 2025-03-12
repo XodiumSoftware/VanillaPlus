@@ -12,9 +12,9 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.PlayerInventory
 import org.bukkit.inventory.meta.Damageable
-import org.bukkit.inventory.meta.ItemMeta
 import org.xodium.vanillaplus.Utils
 import org.xodium.vanillaplus.data.ConfigData
+import org.xodium.vanillaplus.registries.MaterialRegistry
 import java.util.*
 import java.util.function.ToIntFunction
 import java.util.stream.Collectors
@@ -53,53 +53,26 @@ class AutoToolsHandler {
     fun isToolOrRoscoe(itemStack: ItemStack): Boolean =
         allTools.contains(itemStack.type) || swords.contains(itemStack.type)
 
-    fun getBestToolType(mat: Material): Tool {
-        var bestTool = toolMap[mat]
-        if (bestTool == null) bestTool = Tool.NONE
-        return bestTool
-    }
+    fun getBestToolType(mat: Material): Tool = toolMap[mat] ?: Tool.NONE
 
-    fun profitsFromSilkTouch(material: Material): Boolean {
-        when (material) {
-            Material.GLOWSTONE,
-            Material.ENDER_CHEST,
-            Material.QUARTZ,
-            Material.SPAWNER,
-            Material.SEA_LANTERN,
-            Material.NETHER_GOLD_ORE,
-            Material.GLASS,
-            Material.BLACK_STAINED_GLASS,
-            Material.BLUE_STAINED_GLASS,
-            Material.BROWN_STAINED_GLASS,
-            Material.CYAN_STAINED_GLASS,
-            Material.GRAY_STAINED_GLASS,
-            Material.GREEN_STAINED_GLASS,
-            Material.LIGHT_BLUE_STAINED_GLASS,
-            Material.LIGHT_GRAY_STAINED_GLASS,
-            Material.LIME_STAINED_GLASS,
-            Material.MAGENTA_STAINED_GLASS,
-            Material.ORANGE_STAINED_GLASS,
-            Material.PINK_STAINED_GLASS,
-            Material.PURPLE_STAINED_GLASS,
-            Material.RED_STAINED_GLASS,
-            Material.WHITE_STAINED_GLASS,
-            Material.YELLOW_STAINED_GLASS -> return true
+    fun hasSilkTouch(itemStack: ItemStack?): Boolean = itemStack?.itemMeta?.hasEnchant(Enchantment.SILK_TOUCH) == true
 
-            else -> return false
-        }
-    }
+    fun inventoryToArray(player: Player): Array<ItemStack?> = Array(INVENTORY_SIZE) { player.inventory.getItem(it) }
 
-    // TODO: Implement profitsFromFortune()
+    fun profitsFromSilkTouch(material: Material): Boolean = MaterialRegistry.PROFITS_FROM_SILK_TOUCH.contains(material)
+
+    fun profitsFromFortune(material: Material): Boolean = TODO()
+
     fun isTool(tool: Tool, itemStack: ItemStack): Boolean {
-        val m = itemStack.type
+        val material = itemStack.type
         return when (tool) {
-            Tool.PICKAXE -> pickaxes.contains(m)
-            Tool.AXE -> axes.contains(m)
-            Tool.SHOVEL -> shovels.contains(m)
-            Tool.HOE -> hoes.contains(m)
+            Tool.PICKAXE -> pickaxes.contains(material)
+            Tool.AXE -> axes.contains(material)
+            Tool.SHOVEL -> shovels.contains(material)
+            Tool.HOE -> hoes.contains(material)
             Tool.SHEARS -> itemStack.type == Material.SHEARS
             Tool.NONE -> isDamageable(itemStack)
-            Tool.SWORD -> swords.contains(m)
+            Tool.SWORD -> swords.contains(material)
         }
     }
 
@@ -109,12 +82,6 @@ class AutoToolsHandler {
         ) return currentItem
         for (item in items) if (isDamageable(item)) return item
         return null
-    }
-
-    fun hasSilkTouch(itemStack: ItemStack?): Boolean {
-        if (itemStack == null) return false
-        if (!itemStack.hasItemMeta()) return false
-        return Objects.requireNonNull<ItemMeta?>(itemStack.itemMeta).hasEnchant(Enchantment.SILK_TOUCH)
     }
 
     fun getBestItemStackFromArray(
@@ -179,12 +146,6 @@ class AutoToolsHandler {
     private fun isRoscoe(itemStack: ItemStack, useAxe: Boolean): Boolean = when {
         useAxe -> swords.contains(itemStack.type) || axes.contains(itemStack.type)
         else -> swords.contains(itemStack.type)
-    }
-
-    fun inventoryToArray(player: Player): Array<ItemStack?> {
-        val items = arrayOfNulls<ItemStack>(INVENTORY_SIZE)
-        for (i in 0..<INVENTORY_SIZE) items[i] = player.inventory.getItem(i)
-        return items
     }
 
     fun getBestToolFromInventory(
@@ -253,12 +214,8 @@ class AutoToolsHandler {
         }
     }
 
-    fun isDamageable(itemStack: ItemStack?): Boolean {
-        if (itemStack == null) return true
-        if (!itemStack.hasItemMeta()) return true
-        val itemMeta = itemStack.itemMeta
-        return itemMeta !is Damageable
-    }
+    fun isDamageable(itemStack: ItemStack?): Boolean =
+        itemStack == null || !itemStack.hasItemMeta() || itemStack.itemMeta !is Damageable
 
     fun freeSlot(source: Int, playerInventory: PlayerInventory) {
         playerInventory.itemInMainHand
@@ -301,7 +258,7 @@ class AutoToolsHandler {
     }
 
     companion object {
-        const val HOTBAR_SIZE: Int = 9
-        const val INVENTORY_SIZE: Int = 36
+        const val HOTBAR_SIZE = 9
+        const val INVENTORY_SIZE = 36
     }
 }
