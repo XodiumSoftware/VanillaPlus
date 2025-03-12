@@ -9,6 +9,7 @@ import dev.triumphteam.gui.paper.builder.item.ItemBuilder
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.player.PlayerQuitEvent
 import org.xodium.vanillaplus.Utils
 import org.xodium.vanillaplus.Utils.mm
@@ -18,7 +19,7 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 class AutoToolModule : ModuleInterface {
     override fun enabled(): Boolean = ConfigData.AutoToolModule().enabled
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: PlayerQuitEvent): Unit = TODO("check database if enabled")
 
     val guiItem = ItemBuilder.from(Material.MILK_BUCKET)

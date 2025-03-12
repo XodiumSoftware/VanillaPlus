@@ -97,8 +97,8 @@ object Utils {
      * @param entityType The entity type to get the damage against.
      * @return The damage of the item stack against the entity type.
      */
-    fun getDamage(itemStack: ItemStack, entityType: EntityType): Double {
-        val base = getBaseDamage(itemStack.type)
+    fun getDamage(itemStack: ItemStack?, entityType: EntityType): Double {
+        val base = getBaseDamage(itemStack?.type ?: Material.AIR)
         return if (base == 0.0) 0.0 else base + getBonus(itemStack, entityType)
     }
 
@@ -109,8 +109,8 @@ object Utils {
      * @param entityType The entity type to get the bonus damage against.
      * @return The bonus damage of the item stack against the entity type.
      */
-    fun getBonus(itemStack: ItemStack, entityType: EntityType): Double =
-        itemStack.itemMeta?.enchants?.entries?.sumOf { (enchantment, level) ->
+    fun getBonus(itemStack: ItemStack?, entityType: EntityType): Double =
+        itemStack?.itemMeta?.enchants?.entries?.sumOf { (enchantment, level) ->
             when (enchantment) {
                 Enchantment.SHARPNESS -> 0.5 * level + 0.5
                 Enchantment.BANE_OF_ARTHROPODS -> if (isArthropod(entityType)) 2.5 * level else 0.0
@@ -155,27 +155,24 @@ object Utils {
         return false
     }
 
-    fun hasShears(hotbarOnly: Boolean, inventory: Array<ItemStack?>): Boolean {
-        val maxSlot = if (hotbarOnly) 9 else inventory.size
-        for (i in 0..<maxSlot) {
+    fun hasShears(inventory: Array<ItemStack?>): Boolean {
+        for (i in 0..<9) {
             if (inventory[i] == null) continue
             if (inventory[i]!!.type == Material.SHEARS) return true
         }
         return false
     }
 
-    fun hasSword(hotbarOnly: Boolean, inventory: Array<ItemStack?>): Boolean {
-        val maxSlot = if (hotbarOnly) 9 else inventory.size
-        for (i in 0..<maxSlot) {
+    fun hasSword(inventory: Array<ItemStack?>): Boolean {
+        for (i in 0..<9) {
             if (inventory[i] == null) continue
             if (inventory[i]!!.type.name.endsWith("_SWORD")) return true
         }
         return false
     }
 
-    fun hasHoe(hotbarOnly: Boolean, inventory: Array<ItemStack?>): Boolean {
-        val maxSlot = if (hotbarOnly) 9 else inventory.size
-        for (i in 0..<maxSlot) {
+    fun hasHoe(inventory: Array<ItemStack?>): Boolean {
+        for (i in 0..<9) {
             if (inventory[i] == null) continue
             if (inventory[i]!!.type.name.endsWith("_HOE")) return true
         }

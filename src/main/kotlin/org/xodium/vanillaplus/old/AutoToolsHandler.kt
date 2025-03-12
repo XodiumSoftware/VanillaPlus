@@ -3,13 +3,8 @@
  *  All rights reserved.
  */
 
-package de.jeff_media.bestTools
+package org.xodium.vanillaplus.old
 
-import de.jeff_media.bestTools.LeavesUtils.hasHoe
-import de.jeff_media.bestTools.LeavesUtils.hasShears
-import de.jeff_media.bestTools.LeavesUtils.hasSword
-import de.jeff_media.bestTools.LeavesUtils.isLeaves
-import de.jeff_media.bestTools.SwordUtils.getDamage
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.EntityType
@@ -18,61 +13,38 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.PlayerInventory
 import org.bukkit.inventory.meta.Damageable
 import org.bukkit.inventory.meta.ItemMeta
+import org.xodium.vanillaplus.Utils
+import org.xodium.vanillaplus.data.ConfigData
 import java.util.*
 import java.util.function.ToIntFunction
 import java.util.stream.Collectors
 
-/**
- * This will probably be a separate plugin called BestTool or something
- */
-class AutoToolsHandler internal constructor(main: Main?) {
-    val main: Main = Objects.requireNonNull<Main>(main, "Main must not be null")
 
-    @JvmField
+class AutoToolsHandler {
     val toolMap: HashMap<Material?, Tool?> = HashMap<Material?, Tool?>()
 
-    @JvmField
-    val globalBlacklist: HashSet<Material?> = HashSet<Material?>()
-
     // TODO: Cache valid tool materials here
-    @JvmField
     val pickaxes: ArrayList<Material?> = ArrayList<Material?>()
 
-    @JvmField
     val axes: ArrayList<Material?> = ArrayList<Material?>()
 
-    @JvmField
     val hoes: ArrayList<Material?> = ArrayList<Material?>()
 
-    @JvmField
     val shovels: ArrayList<Material?> = ArrayList<Material?>()
 
-    @JvmField
     val swords: ArrayList<Material?> = ArrayList<Material?>()
 
-    @JvmField
     val allTools: ArrayList<Material?> = ArrayList<Material?>()
 
-    @JvmField
     val instaBreakableByHand: ArrayList<Material?> = ArrayList<Material?>()
 
     val leaves: EnumSet<Material?> = EnumSet.noneOf<Material?>(Material::class.java)
 
-
-    @JvmField
     val weapons: ArrayList<Material?> = ArrayList<Material?>()
 
     init {
-        for (name in main!!.config.getStringList("global-block-blacklist")) {
-            val mat = Material.valueOf(name.uppercase(Locale.getDefault()))
-            main.debug("Adding to global block blacklist: " + mat.name)
-            globalBlacklist.add(mat)
-        }
-
         Arrays.stream<Material?>(Material.entries.toTypedArray()).forEach { material: Material? ->
-            if (material!!.name.endsWith("_LEAVES")) {
-                leaves.add(material)
-            }
+            if (material!!.name.endsWith("_LEAVES")) leaves.add(material)
         }
     }
 
@@ -84,7 +56,6 @@ class AutoToolsHandler internal constructor(main: Main?) {
     fun getBestToolType(mat: Material): Tool {
         var bestTool = toolMap[mat]
         if (bestTool == null) bestTool = Tool.NONE
-        main.debug("Best ToolType for " + mat + " is " + bestTool.name)
         return bestTool
     }
 
@@ -136,12 +107,7 @@ class AutoToolsHandler internal constructor(main: Main?) {
         if (instaBreakableByHand.contains(target) && !hoes.contains(currentItem.type) ||
             !isToolOrRoscoe(currentItem)
         ) return currentItem
-
-        for (item in items) {
-            if (isDamageable(item)) {
-                return item
-            }
-        }
+        for (item in items) if (isDamageable(item)) return item
         return null
     }
 
@@ -159,42 +125,29 @@ class AutoToolsHandler internal constructor(main: Main?) {
         material: Material
     ): ItemStack? {
         if (tool == Tool.NONE) {
-            main.debug("getNonToolItemFromArray")
             return getNonToolItemFromArray(itemStacks, itemStack, material)
         }
         var list: MutableList<ItemStack?> = ArrayList<ItemStack?>()
         for (itemStack in itemStacks) {
             // TODO: Check if durability is 1
             if (isTool(tool, itemStack!!)) {
-                if (!trySilkTouch) {
-                    list.add(itemStack)
-                } else {
-                    if (hasSilkTouch(itemStack)) {
-                        list.add(itemStack)
-                    }
-                }
+                if (!trySilkTouch) list.add(itemStack) else if (hasSilkTouch(itemStack)) list.add(itemStack)
             }
         }
         if (list.isEmpty()) {
-            return if (trySilkTouch) {
-                getBestItemStackFromArray(tool, itemStacks, false, itemStack, material)
-            } else {
-                null
-            }
+            return if (trySilkTouch) getBestItemStackFromArray(tool, itemStacks, false, itemStack, material) else null
         }
-        list.sort(Comparator.comparingInt<ItemStack?>(ToIntFunction { itemStack: ItemStack ->
-            EnchantmentUtils.getMultiplier(itemStack)
+        list.sortWith(Comparator.comparingInt<ItemStack?>(ToIntFunction { itemStack: ItemStack ->
+            Utils.getMultiplier(itemStack)
         }).reversed())
 //        TODO: change to robust Material name
-        if (material.name.endsWith("DIAMOND_ORE")) {
-            list = putIronPlusBeforeGoldPickaxes(list)
-        }
+        if (material.name.endsWith("DIAMOND_ORE")) list = putIronPlusBeforeGoldPickaxes(list)
         return list[0]
     }
 
     private fun putIronPlusBeforeGoldPickaxes(list: MutableList<ItemStack?>?): MutableList<ItemStack?> {
         if (list == null || list.isEmpty()) return list!!
-        main.toolHandler?.let {
+        let {
             if (it.isTool(Tool.PICKAXE, list[0]!!)) {
                 val newList = list.stream().filter { itemStack: ItemStack? ->
                     when (itemStack!!.type) {
@@ -217,12 +170,8 @@ class AutoToolsHandler internal constructor(main: Main?) {
         // TODO: Check if durability is 1
         for (itemStack in itemStacks) if (isRoscoe(itemStack!!, useAxe)) itemStackArrayList.add(itemStack)
         if (itemStackArrayList.isEmpty()) return null
-        itemStackArrayList.sort(Comparator { o1: ItemStack?, o2: ItemStack? ->
-            if (getDamage(o1, entityType) < getDamage(
-                    o2,
-                    entityType
-                )
-            ) 1 else -1
+        itemStackArrayList.sortWith(Comparator { o1: ItemStack?, o2: ItemStack? ->
+            if (Utils.getDamage(o1, entityType) < Utils.getDamage(o2, entityType)) 1 else -1
         })
         return itemStackArrayList[0]
     }
@@ -232,32 +181,32 @@ class AutoToolsHandler internal constructor(main: Main?) {
         else -> swords.contains(itemStack.type)
     }
 
-    fun inventoryToArray(player: Player, hotBarOnly: Boolean): Array<ItemStack?> {
-        val items = arrayOfNulls<ItemStack>((if (hotBarOnly) HOTBAR_SIZE else INVENTORY_SIZE))
-        for (i in 0..<(if (hotBarOnly) HOTBAR_SIZE else INVENTORY_SIZE)) items[i] = player.inventory.getItem(i)
+    fun inventoryToArray(player: Player): Array<ItemStack?> {
+        val items = arrayOfNulls<ItemStack>(INVENTORY_SIZE)
+        for (i in 0..<INVENTORY_SIZE) items[i] = player.inventory.getItem(i)
         return items
     }
 
     fun getBestToolFromInventory(
         material: Material,
         player: Player,
-        hotBarOnly: Boolean,
         itemStack: ItemStack
     ): ItemStack? {
-        val items = inventoryToArray(player, hotBarOnly)
-
+        val items = inventoryToArray(player)
         val tool: Tool?
-        if (!isLeaves(material) && material != Material.COBWEB) {
+        if (!Utils.isLeaves(material) && material != Material.COBWEB) {
             tool = getBestToolType(material)
         } else {
-            tool = if (hasShears(hotBarOnly, player.inventory.storageContents)) {
+            tool = if (Utils.hasShears(player.inventory.storageContents)) {
                 Tool.SHEARS
-            } else if (hasHoe(hotBarOnly, player.inventory.storageContents) && material != Material.COBWEB) {
+            } else if (Utils.hasHoe(player.inventory.storageContents)
+                && material != Material.COBWEB
+            ) {
                 Tool.HOE
-            } else if (((main.config
-                    .getBoolean("consider-swords-for-cobwebs") && material == Material.COBWEB) || (material != Material.COBWEB && main.config
-                    .getBoolean("consider-swords-for-leaves"))) && hasSword(
-                    hotBarOnly,
+            } else if (((ConfigData.AutoToolModule().considerSwordsForCobwebs
+                        && material == Material.COBWEB) || (material != Material.COBWEB
+                        && ConfigData.AutoToolModule().considerSwordsForLeaves))
+                && Utils.hasSword(
                     player.inventory.storageContents
                 )
             ) {
@@ -267,36 +216,26 @@ class AutoToolsHandler internal constructor(main: Main?) {
             }
         }
         val bestStack = getBestItemStackFromArray(tool, items, profitsFromSilkTouch(material), itemStack, material)
-        if (bestStack == null) {
-            main.debug("bestStack is null")
-            return getNonToolItemFromArray(items, itemStack, material)
-        }
-        main.debug("bestStack is $bestStack")
+        if (bestStack == null) return getNonToolItemFromArray(items, itemStack, material)
         return bestStack
     }
 
     fun getBestRoscoeFromInventory(
         entityType: EntityType,
         player: Player,
-        hotBarOnly: Boolean,
-        itemStack: ItemStack?,
         useAxe: Boolean
-    ): ItemStack? = getBestRoscoeFromArray(inventoryToArray(player, hotBarOnly), itemStack, entityType, useAxe)
+    ): ItemStack? = getBestRoscoeFromArray(inventoryToArray(player), entityType, useAxe)
 
     fun getPositionInInventory(itemStack: ItemStack, playerInventory: PlayerInventory): Int {
         for (i in 0..<Objects.requireNonNull<PlayerInventory>(playerInventory, "Inventory must not be null").size) {
             val currentItem = playerInventory.getItem(i)
             if (currentItem == null) continue
-            if (currentItem == Objects.requireNonNull<ItemStack?>(itemStack, "Item must not be null")) {
-                main.debug(String.format("Found perfect tool %s at slot %d", currentItem.type.name, i))
-                return i
-            }
+            if (currentItem == Objects.requireNonNull<ItemStack?>(itemStack, "Item must not be null")) return i
         }
         return -1
     }
 
     fun moveToolToSlot(source: Int, dest: Int, playerInventory: PlayerInventory) {
-        main.debug(String.format("Moving item from slot %d to %d", source, dest))
         playerInventory.heldItemSlot = dest
         if (source == dest) return
         val sourceItem = playerInventory.getItem(source)
@@ -318,52 +257,34 @@ class AutoToolsHandler internal constructor(main: Main?) {
         if (itemStack == null) return true
         if (!itemStack.hasItemMeta()) return true
         val itemMeta = itemStack.itemMeta
-        if (itemMeta is Damageable) {
-            main.debug(itemStack.type.name + " is damageable")
-            return false
-        } else {
-            main.debug(itemStack.type.name + " is NOT damageable")
-            return true
-        }
+        return itemMeta !is Damageable
     }
 
     fun freeSlot(source: Int, playerInventory: PlayerInventory) {
         playerInventory.itemInMainHand
 
         if (isDamageable(playerInventory.itemInMainHand)) return
-
         val item = playerInventory.getItem(source)
-
         if (item == null) return
-
         if (isDamageable(item)) return
-
-        main.debug(String.format("Trying to free slot %d", source))
 
         playerInventory.setItem(source, null)
         playerInventory.addItem(item)
 
         if (playerInventory.getItem(source) == null) {
-            main.debug("Freed slot")
             playerInventory.heldItemSlot = source
             return
         }
-        main.debug("Could not free slot yet...")
         for (i in source..<INVENTORY_SIZE) {
             if (playerInventory.getItem(i) == null) {
                 playerInventory.setItem(i, item)
                 playerInventory.setItem(source, null)
                 playerInventory.heldItemSlot = source
-                main.debug("Freed slot on second try")
                 return
             }
         }
-
-        main.debug("WARNING: COULD NOT FREE SLOT AT ALL")
-
         for (i in 0..<HOTBAR_SIZE) {
             if (playerInventory.getItem(i) == null || isDamageable(playerInventory.getItem(i))) {
-                main.debug("Found not damageable item at slot $i")
                 playerInventory.heldItemSlot = i
             }
         }

@@ -3,7 +3,7 @@
  *  All rights reserved.
  */
 
-package de.jeff_media.bestTools
+package org.xodium.vanillaplus.old
 
 import org.bukkit.Material
 import org.bukkit.Tag
@@ -142,8 +142,7 @@ class AutoToolsUtils(main: Main) {
         "STONE_SHOVEL",
         "WOODEN_SHOVEL"
     )
-    val swords: Array<String> =
-        arrayOf<String>("NETHERITE_SWORD", "DIAMOND_SWORD", "GOLDEN_SWORD", "IRON_SWORD", "STONE_SWORD", "WOODEN_SWORD")
+
     val defaultMats: Array<Material?> = arrayOf<Material?>(
         Material.DIAMOND_PICKAXE,
         Material.DIAMOND_AXE,

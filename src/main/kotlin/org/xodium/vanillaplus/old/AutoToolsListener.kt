@@ -3,12 +3,8 @@
  *  All rights reserved.
  */
 
-package de.jeff_media.bestTools
+package org.xodium.vanillaplus.old
 
-import de.jeff_media.bestTools.AutoToolsHandler.Companion.getEmptyHotBarSlot
-import de.jeff_media.bestTools.Messages.Companion.sendMessage
-import de.jeff_media.bestTools.PlayerUtils.isAllowedGameMode
-import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.Monster
@@ -22,65 +18,39 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
+import org.xodium.vanillaplus.Perms
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.data.ConfigData
 import java.util.*
 
-class AutoToolsListener internal constructor(main: Main) : Listener {
+class AutoToolsListener : Listener {
     val handler: AutoToolsHandler =
-        Objects.requireNonNull<AutoToolsHandler>(main.toolHandler, "ToolHandler must not be null")
-    val main: Main = Objects.requireNonNull<Main>(main, "Main must not be null")
-    val useAxeAsWeapon: Boolean = main.config.getBoolean("use-axe-as-sword")
-
+        Objects.requireNonNull<AutoToolsHandler>(AutoToolsHandler(), "ToolHandler must not be null")
+    val useAxeAsWeapon: Boolean = ConfigData.AutoToolModule().useAxeAsSword
 
     @EventHandler
-    fun onPlayerAttackEntity(e: EntityDamageByEntityEvent) {
-        val st = if (main.measurePerformance) System.nanoTime() else 0
-        main.debug("EntityDamageByEntity 1")
-
-        if (e.damager !is Player) return
-        main.debug("EntityDamageByEntity 2")
-        val p = e.damager as Player
-        if (!p.hasPermission("besttools.use")) return
-        main.debug("EntityDamageByEntity 3")
-        val playerSetting = main.getPlayerSetting(p)
-        if (!playerSetting.isBestToolsEnabled()) return
-        main.debug("EntityDamageByEntity 4")
-        val enemy = e.getEntity()
-
-        if (isAllowedGameMode(p, main.config.getBoolean("allow-in-adventure-mode"))) {
-            return
-        }
-
-        if (!(enemy is Monster && playerSetting.isSwordOnMobs())
-        ) return
-
-        main.debug("Getting the best roscoe for " + enemy.type.name)
-
-        val inv = p.inventory
-        val bestRoscoe = handler.getBestRoscoeFromInventory(
-            enemy.type,
-            p,
-            playerSetting.isHotbarOnly(),
-            inv.itemInMainHand,
-            useAxeAsWeapon
-        )
-
-        if (bestRoscoe == null || bestRoscoe == inv.itemInMainHand) {
-            main.meter.add(st, false)
-            return
-        }
-        switchToBestRoscoe(p, bestRoscoe, playerSetting.isHotbarOnly(), playerSetting.getFavoriteSlot())
-        main.meter.add(st, false)
+    fun on(event: EntityDamageByEntityEvent) {
+        if (event.damager !is Player) return
+        val player = event.damager as Player
+        if (!player.hasPermission(Perms.AutoTool.USE)) return
+        TODO("check if autotool is enabled in db")
+        val entity = event.getEntity()
+        if (!(entity is Monster && ConfigData.AutoToolModule().useSwordOnHostileMobs)) return
+        val playerInventory = player.inventory
+        val bestRoscoe = handler.getBestRoscoeFromInventory(entity.type, player, useAxeAsWeapon)
+        if (bestRoscoe == null || bestRoscoe == playerInventory.itemInMainHand) return
+        switchToBestRoscoe(player, bestRoscoe, ConfigData.AutoToolModule().favoriteSlot)
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    fun onBreak(event: BlockBreakEvent) {
-        Bukkit.getScheduler().runTaskLater(main, Runnable {
-            Bukkit.getPluginManager().callEvent(BestToolsNotifyEvent(event.player, event.getBlock()))
+    fun on(event: BlockBreakEvent) {
+        instance.server.scheduler.runTaskLater(instance, Runnable {
+            instance.server.pluginManager.callEvent(AutoToolNotifyEvent(event.player, event.getBlock()))
         }, 1)
     }
 
-    @EventHandler
-    fun onNotify(event: BestToolsNotifyEvent) {
+    @EventHandler(priority = EventPriority.MONITOR)
+    fun on(event: AutoToolNotifyEvent) {
         onPlayerInteractWithBlock(
             PlayerInteractEvent(
                 event.getPlayer(),
@@ -93,146 +63,87 @@ class AutoToolsListener internal constructor(main: Main) : Listener {
         )
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     fun onPlayerInteractWithBlock(event: PlayerInteractEvent) {
-        val st = if (main.measurePerformance) System.nanoTime() else 0
-
-        val playerSetting = main.getPlayerSetting(event.getPlayer())
+        val playerSetting = main.getPlayerSetting(event.getPlayer()) // FIX
         if (playerSetting.getBtcache().valid
             && event.clickedBlock != null && event.clickedBlock!!
                 .type == playerSetting.getBtcache().lastMat
-        ) {
-            main.meter.add(st, true)
-            return
-        }
-        val p = event.getPlayer()
-        if (!p.hasPermission("besttools.use")) {
-            return
-        }
-        if (!hasBestToolsEnabled(p, playerSetting)) {
-            return
-        }
+        ) return
+        val player = event.player
+        if (!player.hasPermission(Perms.AutoTool.USE)) return
+        if (!hasBestToolsEnabled(player)) return
         val block = event.clickedBlock
-        if (block == null) {
+        if (block == null) return
+        if (block.type == Material.AIR) return
+        val playerInventory = player.inventory
+        if (ConfigData.AutoToolModule().dontSwitchDuringBattle && handler.isWeapon(playerInventory.itemInMainHand))
             return
-        }
-
-        if (block.type == Material.AIR) {
-            return
-        }
-
-        if (main.toolHandler.globalBlacklist.contains(block.type)) {
-            return
-        }
-
-        if (isAllowedGameMode(p, main.config.getBoolean("allow-in-adventure-mode"))) {
-            return
-        }
-        val inv = p.inventory
-
-        if (main.config.getBoolean("dont-switch-during-battle") && handler.isWeapon(inv.itemInMainHand)) {
-            main.debug("Return: It's a gun^^")
-            return
-        }
-
         if (event.getAction() != Action.LEFT_CLICK_BLOCK) return
         if (event.hand != EquipmentSlot.HAND) return
-
-        val bestTool =
-            handler.getBestToolFromInventory(block.type, p, playerSetting.isHotbarOnly(), inv.itemInMainHand)
-
-        if (bestTool == null || bestTool == inv.itemInMainHand) {
-            main.meter.add(st, false)
+        val bestTool = handler.getBestToolFromInventory(block.type, player, playerInventory.itemInMainHand)
+        if (bestTool == null || bestTool == playerInventory.itemInMainHand) {
             playerSetting.getBtcache().validate(block.type)
             return
         }
-        switchToBestTool(
-            p,
-            bestTool,
-            playerSetting.isHotbarOnly(),
-            block.type /*,playerSetting.getFavoriteSlot()*/
-        )
+        switchToBestTool(player, bestTool, block.type)
         playerSetting.getBtcache().validate(block.type)
-        main.meter.add(st, false)
     }
 
     private fun getFavoriteSlot(player: Player): Int {
-        return if (main.config.getInt("favorite-slot") == -1) {
+        return if (ConfigData.AutoToolModule().favoriteSlot == -1) {
             player.inventory.heldItemSlot
         } else {
-            main.config.getInt("favorite-slot")
+            ConfigData.AutoToolModule().favoriteSlot
         }
     }
 
-    private fun switchToBestTool(p: Player, bestTool: ItemStack?, hotbarOnly: Boolean, target: Material?) {
-        var bestTool = bestTool
-        val inv = p.inventory
+    private fun switchToBestTool(player: Player, itemStack: ItemStack?, target: Material?) {
+        var bestTool = itemStack
+        val playerInventory = player.inventory
         if (bestTool == null) {
-            val currentItem = inv.itemInMainHand
-
-            val emptyHotbarSlot = getEmptyHotBarSlot(inv)
-            if (emptyHotbarSlot != -1) {
-                inv.heldItemSlot = emptyHotbarSlot
-                return
-            }
-
-            if (main.toolHandler.isDamageable(currentItem)) return
-            bestTool = handler.getNonToolItemFromArray(handler.inventoryToArray(p, hotbarOnly), currentItem, target)
+            val currentItem = playerInventory.itemInMainHand
+            if (handler.isDamageable(currentItem)) return
+            bestTool = handler.getNonToolItemFromArray(handler.inventoryToArray(player), currentItem, target)
         }
         if (bestTool == null) {
-            handler.freeSlot(getFavoriteSlot(p), inv)
-            main.debug("Could not find any appropiate tool")
+            handler.freeSlot(getFavoriteSlot(player), playerInventory)
             return
         }
-        val positionInInventory = handler.getPositionInInventory(bestTool, inv)
+        val positionInInventory = handler.getPositionInInventory(bestTool, playerInventory)
         if (positionInInventory != -1) {
-            handler.moveToolToSlot(positionInInventory, getFavoriteSlot(p), inv)
-            main.debug("Found tool")
+            handler.moveToolToSlot(positionInInventory, getFavoriteSlot(player), playerInventory)
         } else {
-            handler.freeSlot(getFavoriteSlot(p), inv)
-            main.debug("Use no tool")
+            handler.freeSlot(getFavoriteSlot(player), playerInventory)
         }
     }
 
-    private fun switchToBestRoscoe(p: Player, bestRoscoe: ItemStack?, hotbarOnly: Boolean, favoriteSlot: Int) {
+    private fun switchToBestRoscoe(player: Player, bestRoscoe: ItemStack?, favoriteSlot: Int) {
         var bestRoscoe = bestRoscoe
-        val inv = p.inventory
+        val playerInventory = player.inventory
         if (bestRoscoe == null) {
-            val currentItem = inv.itemInMainHand
-
-            val emptyHotbarSlot = getEmptyHotBarSlot(inv)
-            if (emptyHotbarSlot != -1) {
-                inv.heldItemSlot = emptyHotbarSlot
-                return
-            }
-
-            if (main.toolHandler.isDamageable(currentItem)) return
+            val currentItem = playerInventory.itemInMainHand
+            if (handler.isDamageable(currentItem)) return
             bestRoscoe =
-                handler.getNonToolItemFromArray(handler.inventoryToArray(p, hotbarOnly), currentItem, Material.BEDROCK)
+                handler.getNonToolItemFromArray(
+                    handler.inventoryToArray(player),
+                    currentItem,
+                    Material.BEDROCK
+                )
         }
         if (bestRoscoe == null) {
-            handler.freeSlot(favoriteSlot, inv)
-            main.debug("Could not find any appropiate tool")
+            handler.freeSlot(favoriteSlot, playerInventory)
             return
         }
-        val positionInInventory = handler.getPositionInInventory(bestRoscoe, inv)
+        val positionInInventory = handler.getPositionInInventory(bestRoscoe, playerInventory)
         if (positionInInventory != -1) {
-            handler.moveToolToSlot(positionInInventory, favoriteSlot, inv)
-            main.debug("Found tool")
+            handler.moveToolToSlot(positionInInventory, favoriteSlot, playerInventory)
         } else {
-            handler.freeSlot(favoriteSlot, inv)
-            main.debug("Use no tool")
+            handler.freeSlot(favoriteSlot, playerInventory)
         }
     }
 
-    private fun hasBestToolsEnabled(p: Player, playerSetting: PlayerSetting): Boolean {
-        if (!playerSetting.isBestToolsEnabled()) {
-            if (!playerSetting.isHasSeenBestToolsMessage()) {
-                sendMessage(p, main.messages.MSG_BESTTOOL_USAGE)
-                playerSetting.setHasSeenBestToolsMessage()
-            }
-            return false
-        }
-        return true
+    private fun hasBestToolsEnabled(player: Player): Boolean {
+        TODO("change into toggle()?")
     }
 }

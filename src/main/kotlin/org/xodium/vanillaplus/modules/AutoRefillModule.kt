@@ -9,6 +9,7 @@ import dev.triumphteam.gui.paper.builder.item.ItemBuilder
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemConsumeEvent
@@ -26,13 +27,13 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 class AutoRefillModule : ModuleInterface {
     override fun enabled(): Boolean = ConfigData.AutoRefillModule().enabled
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: PlayerItemConsumeEvent) = attemptRefill(event.getPlayer())
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: BlockPlaceEvent) = attemptRefill(event.getPlayer())
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: PlayerInteractEvent) = attemptRefill(event.getPlayer())
 
     private fun attemptRefill(player: Player) {
