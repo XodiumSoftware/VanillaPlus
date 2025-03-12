@@ -11,14 +11,20 @@ import com.mojang.brigadier.Command
 import com.mojang.brigadier.context.CommandContext
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
-import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
+import org.bukkit.GameMode
 import org.bukkit.Material
+import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
+import org.bukkit.inventory.Inventory
+import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.PlayerInventory
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.registries.EntityRegistry
+import org.xodium.vanillaplus.registries.MaterialRegistry
 import java.util.*
-import kotlin.math.roundToInt
+import kotlin.collections.MutableMap
 
 
 /**
@@ -45,6 +51,16 @@ object Utils {
 
     fun List<EntityType>.format(separator: String) = this.joinToString(separator) { it.format() }
 
+    fun <K, V : Comparable<V?>?> sortByValue(map: MutableMap<K?, V?>): MutableMap<K?, V?> {
+        val list: MutableList<MutableMap.MutableEntry<K?, V?>> = ArrayList<MutableMap.MutableEntry<K?, V?>>(map.entries)
+        list.sortWith(Map.Entry.comparingByValue<K?, V?>())
+        val result: MutableMap<K?, V?> = LinkedHashMap<K?, V?>()
+        for (entry in list) {
+            result.put(entry.key, entry.value)
+        }
+        return result
+    }
+
     /**
      * A helper function to wrap command execution with standardized error handling.
      *
@@ -64,42 +80,189 @@ object Utils {
     }
 
     /**
-     * Calculates the TPS's colored representation.
-     * The TPS is shown relative to 20 TPS (100%) with a gradient
-     * from red (low TPS) to green (high TPS).
+     * A function to get the base damage of a material.
      *
-     * @param tps the current TPS value
-     * @return the colored TPS representation
+     * @param material The material to get the base damage of.
+     * @return The base damage of the material.
      */
-    fun getColoredTPS(tps: Double): String =
-        ((tps.coerceIn(0.0, 20.0) / 20.0) * 255).roundToInt().let { p ->
-            "<#%02x%02x00>${tps.toInt()}</>".format(255 - p, p)
-        }
+    fun getBaseDamage(material: Material): Double = MaterialRegistry.BASE_DAMAGE_MAP[material] ?: 0.0
 
     /**
-     * Gets the player's current weather.
+     * A function to check if an entity type is an arthropod.
      *
-     * @param player the player to get the weather for
-     * @return the player's current weather
+     * @param entityType The entity type to check.
+     * @return True if the entity type is an arthropod, false otherwise.
      */
-    fun getPlayerWeather(player: Player): String {
-        val world = player.world
-        return when {
-            world.isClearWeather -> "<green>\uD83C\uDF24</>"
-            (world.isThundering || world.hasStorm()) -> "<red>\uD83C\uDF29</>"
-            else -> "<yellow>\uD83C\uDF26</>"
-        }
+    fun isArthropod(entityType: EntityType): Boolean = EntityRegistry.ARTHROPODS.contains(entityType)
+
+    /**
+     * A function to check if an entity type is an undead.
+     *
+     * @param entityType The entity type to check.
+     * @return True if the entity type is an undead, false otherwise.
+     */
+    fun isUndead(entityType: EntityType): Boolean = EntityRegistry.UNDEAD.contains(entityType)
+
+    /**
+     * A function to get the damage of an item stack against an entity type.
+     *
+     * @param itemStack The item stack to get the damage of.
+     * @param entityType The entity type to get the damage against.
+     * @return The damage of the item stack against the entity type.
+     */
+    fun getDamage(itemStack: ItemStack, entityType: EntityType): Double {
+        val base = getBaseDamage(itemStack.type)
+        return if (base == 0.0) 0.0 else base + getBonus(itemStack, entityType)
     }
 
     /**
-     * Replaces placeholders in a text with the player's current weather and the server's TPS.
+     * A function to get the bonus damage of an item stack against an entity type.
      *
-     * @param text the text to replace placeholders in
-     * @param player the player to get the weather for
-     * @return the text with placeholders replaced
+     * @param itemStack The item stack to get the bonus damage of.
+     * @param entityType The entity type to get the bonus damage against.
+     * @return The bonus damage of the item stack against the entity type.
      */
-    fun replacePlaceholders(text: String, player: Player): Component = text
-        .replace("\${player_weather}", getPlayerWeather(player))
-        .replace("\${server_tps}", getColoredTPS(instance.server.tps[0]))
-        .mm()
+    fun getBonus(itemStack: ItemStack, entityType: EntityType): Double =
+        itemStack.itemMeta?.enchants?.entries?.sumOf { (enchantment, level) ->
+            when (enchantment) {
+                Enchantment.SHARPNESS -> 0.5 * level + 0.5
+                Enchantment.BANE_OF_ARTHROPODS -> if (isArthropod(entityType)) 2.5 * level else 0.0
+                Enchantment.SMITE -> if (isUndead(entityType)) 2.5 * level else 0.0
+                else -> 0.0
+            }
+        } ?: 0.0
+
+    /**
+     * A function to check if a material is a bowl or bottle.
+     *
+     * @param material The material to check.
+     * @return True if the material is a bowl or bottle, false otherwise.
+     */
+    fun isBowlOrBottle(material: Material): Boolean = material in setOf(Material.GLASS_BOTTLE, Material.BOWL)
+
+    fun moveBowlsAndBottles(inv: Inventory, slot: Int): Boolean {
+        if (!isBowlOrBottle(Objects.requireNonNull<ItemStack?>(inv.getItem(slot)).type)) return false
+        val toBeMoved = inv.getItem(slot)
+        inv.clear(slot)
+        val leftovers = inv.addItem(toBeMoved)
+        if (inv.getItem(slot) == null || Objects.requireNonNull<ItemStack?>(inv.getItem(slot))
+                .amount == 0 || Objects.requireNonNull<ItemStack?>(inv.getItem(slot)).type == Material.AIR
+        ) {
+            return true
+        }
+        if (!leftovers.isEmpty()) {
+            main.debug("Possible item loss detected due to RefillUtils#moveBowlsAndBottles, dropping leftover items...")
+            for (leftover in leftovers.values) {
+                if (inv.holder !is Player) {
+                    main.debug("Could not drop items because inventory has no player as holder :(")
+                    return false
+                }
+                val p = inv.holder as Player?
+                p!!.world.dropItem(p.location, leftover)
+            }
+            return false
+        }
+        for (i in 35 downTo 0) {
+            inv.clear(slot)
+            if (inv.getItem(i) == null || Objects.requireNonNull<ItemStack?>(inv.getItem(i))
+                    .amount == 0 || Objects.requireNonNull<ItemStack?>(inv.getItem(i)).type == Material.AIR
+            ) {
+                inv.setItem(i, toBeMoved)
+                return true
+            }
+        }
+        return false
+    }
+
+    fun refillStack(inventory: Inventory, source: Int, dest: Int, itemStack: ItemStack) {
+        instance.server.scheduler.runTask(instance, Runnable {
+            if (inventory.getItem(source) == null) return@Runnable
+            if (inventory.getItem(source) != itemStack) {
+                return@Runnable
+            }
+            if (inventory.getItem(dest) != null && !moveBowlsAndBottles(inventory, dest)) {
+                return@Runnable
+            }
+            inventory.setItem(source, null)
+            inventory.setItem(dest, itemStack)
+        })
+    }
+
+    fun getMatchingStackPosition(inv: PlayerInventory, mat: Material?, currentSlot: Int): Int {
+        val slots = HashMap<Int?, Int?>()
+
+        for (i in 0..<36) {
+            if (i == currentSlot) continue
+            val item = inv.getItem(i)
+            if (item == null) continue
+
+            if (item.type != mat) continue
+
+            if (item.amount == 64) return i
+
+            slots.put(i, item.amount)
+        }
+
+        if (slots.isEmpty()) return -1
+
+        val sortedSlots = sortByValue<Int?, Int?>(slots)
+        val entrySet: MutableSet<MutableMap.MutableEntry<Int?, Int?>?> = sortedSlots.entries
+        val entries: Array<MutableMap.MutableEntry<Int?, Int?>?> =
+            entrySet.toTypedArray<MutableMap.MutableEntry<*, *>?>()
+
+        return entries[entries.size - 1]!!.key!!
+    }
+
+    fun hasShears(hotbarOnly: Boolean, inventory: Array<ItemStack?>): Boolean {
+        val maxSlot = if (hotbarOnly) 9 else inventory.size
+        for (i in 0..<maxSlot) {
+            if (inventory[i] == null) continue
+            if (inventory[i]!!.type == Material.SHEARS) return true
+        }
+        return false
+    }
+
+    fun hasSword(hotbarOnly: Boolean, inventory: Array<ItemStack?>): Boolean {
+        val maxSlot = if (hotbarOnly) 9 else inventory.size
+        for (i in 0..<maxSlot) {
+            if (inventory[i] == null) continue
+            if (inventory[i]!!.type.name.endsWith("_SWORD")) return true
+        }
+        return false
+    }
+
+    fun hasHoe(hotbarOnly: Boolean, inventory: Array<ItemStack?>): Boolean {
+        val maxSlot = if (hotbarOnly) 9 else inventory.size
+        for (i in 0..<maxSlot) {
+            if (inventory[i] == null) continue
+            if (inventory[i]!!.type.name.endsWith("_HOE")) return true
+        }
+        return false
+    }
+
+    fun isLeaves(material: Material): Boolean = material.name.endsWith("_LEAVES")
+
+    fun isAllowedGameMode(player: Player, allowAdventure: Boolean): Boolean =
+        player.gameMode != GameMode.SURVIVAL && (player.gameMode != GameMode.ADVENTURE || !allowAdventure)
+
+    fun getMultiplier(itemStack: ItemStack): Int {
+        val base = getBaseMultiplier(itemStack)
+        val itemMeta = itemStack.itemMeta ?: return base
+        val efficiency = Enchantment.EFFICIENCY ?: return base
+        if (!itemMeta.hasEnchant(efficiency)) return base
+        val efficiencyLevel = itemMeta.getEnchantLevel(efficiency)
+        return base + (efficiencyLevel * efficiencyLevel) + 1
+    }
+
+    fun getBaseMultiplier(itemStack: ItemStack): Int {
+        return when {
+            itemStack.type.name.startsWith("DIAMOND") -> 8
+            itemStack.type.name.startsWith("IRON") -> 6
+            itemStack.type.name.startsWith("NETHERITE") -> 9
+            itemStack.type.name.startsWith("STONE") -> 4
+            itemStack.type.name.startsWith("WOOD") -> 2
+            itemStack.type.name.startsWith("GOLD") -> 12
+            else -> 1
+        }
+    }
 }

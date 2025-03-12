@@ -21,6 +21,27 @@ data class ConfigData(
     val guiAntiSpamDuration: Duration = 1.seconds // The duration of the anti-spam feature.
 ) {
     /**
+     * Configuration settings for the AutoToolModule. This module controls the automatic tool selection features of the plugin.
+     */
+    @Serializable
+    data class AutoToolModule(
+        val enabled: Boolean = true, // Enables or disables the AutoToolModule. Set to 'false' to disable.
+
+        val defaultEnabledAutoTool: Boolean = true, // Default state of the AutoTool feature for users.
+
+        val hotBarOnly: Boolean = true, // If the AutoTool feature should only work on the hotbar.
+        val favoriteSlot: Int = 8, // The slot where the favorite tool is stored.
+        val allowInAdventureMode: Boolean = false, // If the AutoTool feature should work in adventure mode.
+        val dontSwitchDuringBattle: Boolean = true, // If the AutoTool feature should not switch tools during battle.
+
+        val considerSwordsForLeaves: Boolean = true, // If swords should be considered for breaking leaves.
+        val considerSwordsForCobwebs: Boolean = true, // If swords should be considered for breaking cobwebs.
+
+        val useSwordOnHostileMobs: Boolean = true, // If swords should be used on hostile mobs.
+        val useAxeAsSword: Boolean = true, // If axes should be used as swords.
+    )
+
+    /**
      * Configuration settings for the MainModule. This module controls the main features of the plugin.
      */
     @Serializable
@@ -77,6 +98,18 @@ data class ConfigData(
     @Serializable
     data class RecipiesModule(
         val enabled: Boolean = true, // Enables or disables the SkinsModule. Set to 'false' to disable.
+    )
+
+    /**
+     * Configuration settings for the RefillModule. This module controls the refill features of the plugin.
+     */
+    @Serializable
+    data class RefillModule(
+        val enabled: Boolean = true, // Enables or disables the RefillModule. Set to 'false' to disable.
+
+        val defaultEnabledRefill: Boolean = true, // Default state of the Refill feature for users.
+
+        val allowInAdventureMode: Boolean = false, // If the Refill feature should work in adventure mode.
     )
 
     /**
