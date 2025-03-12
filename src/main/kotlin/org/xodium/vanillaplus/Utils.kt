@@ -12,7 +12,6 @@ import com.mojang.brigadier.context.CommandContext
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import net.kyori.adventure.text.minimessage.MiniMessage
-import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.EntityType
@@ -190,26 +189,19 @@ object Utils {
 
     fun getMatchingStackPosition(inv: PlayerInventory, mat: Material?, currentSlot: Int): Int {
         val slots = HashMap<Int?, Int?>()
-
         for (i in 0..<36) {
             if (i == currentSlot) continue
             val item = inv.getItem(i)
             if (item == null) continue
-
             if (item.type != mat) continue
-
             if (item.amount == 64) return i
-
             slots.put(i, item.amount)
         }
-
         if (slots.isEmpty()) return -1
-
         val sortedSlots = sortByValue<Int?, Int?>(slots)
         val entrySet: MutableSet<MutableMap.MutableEntry<Int?, Int?>?> = sortedSlots.entries
         val entries: Array<MutableMap.MutableEntry<Int?, Int?>?> =
             entrySet.toTypedArray<MutableMap.MutableEntry<*, *>?>()
-
         return entries[entries.size - 1]!!.key!!
     }
 
@@ -241,9 +233,6 @@ object Utils {
     }
 
     fun isLeaves(material: Material): Boolean = material.name.endsWith("_LEAVES")
-
-    fun isAllowedGameMode(player: Player, allowAdventure: Boolean): Boolean =
-        player.gameMode != GameMode.SURVIVAL && (player.gameMode != GameMode.ADVENTURE || !allowAdventure)
 
     fun getMultiplier(itemStack: ItemStack): Int {
         val base = getBaseMultiplier(itemStack)

@@ -15,6 +15,8 @@ import org.xodium.vanillaplus.Gui
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.Utils
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.modules.AutoRefillModule
+import org.xodium.vanillaplus.modules.AutoToolModule
 import org.xodium.vanillaplus.modules.SkinsModule
 
 /**
@@ -55,6 +57,14 @@ object CommandManager {
                                     SkinsModule().gui(player).open(player)
                                 }
                             })
+                    ).then(
+                        Commands.literal("autotool")
+                            .requires { it.sender.hasPermission(Perms.AutoTool.USE) }
+                            .executes(Command { Utils.tryCatch(it) { AutoToolModule().toggle(it.sender as Player) } })
+                    ).then(
+                        Commands.literal("autorefill")
+                            .requires { it.sender.hasPermission(Perms.AutoRefill.USE) }
+                            .executes(Command { Utils.tryCatch(it) { AutoRefillModule().toggle(it.sender as Player) } })
                     )
                     .build(),
                 "${instance.name} plugin",

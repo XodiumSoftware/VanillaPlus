@@ -18,6 +18,8 @@ object Perms {
     init {
         listOf<Permission>(
             Use.GENERAL,
+            AutoRefill.USE,
+            AutoTool.USE,
             Gui.FAQ,
             Gui.DIMS,
             Gui.SETTINGS,
@@ -32,6 +34,24 @@ object Perms {
         private val G1 = this::class.simpleName.toString().lowercase()
         val GENERAL: Permission =
             Permission("${G0}.${G1}", "Allows use of the commands", PermissionDefault.TRUE)
+    }
+
+    /**
+     * Permissions for AutoRefill commands.
+     */
+    object AutoRefill {
+        private val G1 = this::class.simpleName.toString().lowercase()
+        val USE: Permission =
+            Permission("${G0}.${G1}.use", "Allows use of the autorefill command", PermissionDefault.OP)
+    }
+
+    /**
+     * Permissions for AutoTool commands.
+     */
+    object AutoTool {
+        private val G1 = this::class.simpleName.toString().lowercase()
+        val USE: Permission =
+            Permission("${G0}.${G1}.use", "Allows use of the autotool command", PermissionDefault.OP)
     }
 
     /**

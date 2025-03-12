@@ -20,11 +20,11 @@ import kotlin.time.measureTime
 object ModuleManager {
     init {
         listOf(
+            AutoRefillModule(),
             AutoToolModule(),
             DoorsModule(),
             MotdModule(),
             RecipiesModule(),
-            RefillModule(),
             SkinsModule(),
             TreesModule(),
         ).filter { it.enabled() }

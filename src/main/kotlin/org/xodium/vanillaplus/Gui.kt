@@ -15,6 +15,8 @@ import org.xodium.vanillaplus.Utils.format
 import org.xodium.vanillaplus.Utils.mm
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.DimensionData
+import org.xodium.vanillaplus.modules.AutoRefillModule
+import org.xodium.vanillaplus.modules.AutoToolModule
 import org.xodium.vanillaplus.modules.SkinsModule
 
 object Gui {
@@ -90,8 +92,8 @@ object Gui {
         )
         .asGuiItem { player, _ -> settingsGUI().open(player) }
 
-    private val besttoolsItem = ItemBuilder.from(Material.CHEST)
-        .name(Utils.mangoFormat("BestTools").mm())
+    private val chestsortItem = ItemBuilder.from(Material.CHEST)
+        .name(Utils.mangoFormat("ChestSort").mm())
         .lore(
             listOf(
                 "<dark_gray>▶ <gray>Click to open <dark_gray>◀",
@@ -199,8 +201,10 @@ object Gui {
         return buildGui {
             title(Utils.firewatchFormat("Settings").mm())
             statelessComponent {
-                it.setItem(0, besttoolsItem)
-                (1..7).forEach { index -> it.setItem(index, Utils.fillerItem) }
+                it.setItem(0, chestsortItem)
+                it.setItem(1, AutoToolModule().guiItem)
+                it.setItem(2, AutoRefillModule().guiItem)
+                (3..7).forEach { index -> it.setItem(index, Utils.fillerItem) }
                 it.setItem(8, Utils.backItem)
             }
         }
