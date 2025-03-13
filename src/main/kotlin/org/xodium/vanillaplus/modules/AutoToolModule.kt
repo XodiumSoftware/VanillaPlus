@@ -314,7 +314,7 @@ class AutoToolModule : ModuleInterface {
     ): ItemStack? {
         val items = inventoryToArray(player)
         val tool: ToolEnum?
-        if (!Utils.isLeaves(material) && material != Material.COBWEB) {
+        if (!Tag.LEAVES.isTagged(material) && material != Material.COBWEB) {
             tool = getBestToolType(material)
         } else {
             tool = if (Utils.hasShears(player.inventory.storageContents)) {

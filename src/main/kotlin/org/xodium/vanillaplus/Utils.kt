@@ -179,8 +179,6 @@ object Utils {
         return false
     }
 
-    fun isLeaves(material: Material): Boolean = material.name.endsWith("_LEAVES")
-
     fun getMultiplier(itemStack: ItemStack): Int {
         val base = getBaseMultiplier(itemStack)
         val itemMeta = itemStack.itemMeta ?: return base
