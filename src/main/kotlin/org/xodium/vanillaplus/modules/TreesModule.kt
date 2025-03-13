@@ -24,8 +24,6 @@ import org.xodium.vanillaplus.data.ConfigData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.registries.BlockTypesRegistry
 import java.net.JarURLConnection
-import java.nio.file.Files
-import java.nio.file.Paths
 
 
 class TreesModule : ModuleInterface {
@@ -37,39 +35,18 @@ class TreesModule : ModuleInterface {
         }
 
     private fun loadSchematics(resourceDir: String): List<Clipboard> {
-        val url = javaClass.getResource(resourceDir)
-            ?: error("Resource directory not found: $resourceDir")
-        val schematics = mutableListOf<Clipboard>()
-        if (url.protocol == "jar") {
-            (url.openConnection() as JarURLConnection).jarFile.use { jarFile ->
-                jarFile.entries().asSequence().filter { entry ->
-                    !entry.isDirectory && entry.name.startsWith(resourceDir.removePrefix("/"))
-                }.forEach { entry ->
+        return ((javaClass.getResource(resourceDir)
+            ?: error("Resource directory not found: $resourceDir")).openConnection() as JarURLConnection).jarFile.use { jarFile ->
+            jarFile.entries().asSequence()
+                .filter { !it.isDirectory && it.name.endsWith(".schem") }
+                .map { entry ->
                     jarFile.getInputStream(entry).use { inputStream ->
-                        schematics.add(
-                            (ClipboardFormats.findByAlias("schem")?.getReader(inputStream)
-                                ?: error("Unsupported schematic format for resource entry: ${entry.name}")).read()
-                        )
+                        (ClipboardFormats.findByAlias("schem")?.getReader(inputStream)
+                            ?: error("Unsupported schematic format for resource entry: ${entry.name}")).read()
                     }
-                }
-            }
-        } else {
-            Files.list(Paths.get(url.toURI())).use { paths ->
-                paths.filter { Files.isRegularFile(it) }.forEach { path ->
-                    Files.newInputStream(path).use { inputStream ->
-                        schematics.add(
-                            (ClipboardFormats.findByAlias("schem")?.getReader(inputStream)
-                                ?: error("Unsupported schematic format for file: $path")).read()
-                        )
-                    }
-                }
-            }
+                }.toList()
         }
-        if (schematics.isEmpty())
-            error("No schematics found in directory: $resourceDir")
-        return schematics
     }
-
 
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: StructureGrowEvent) {
@@ -80,10 +57,7 @@ class TreesModule : ModuleInterface {
 
     private fun pasteSchematic(block: Block): Boolean {
         val clipboard = schematicCache[block.type]?.randomOrNull()
-        if (clipboard == null) {
-            instance.logger.info("No custom schematic found for ${block.type}.")
-            return false
-        }
+            ?: error("No custom schematic found for ${block.type}.")
         instance.server.scheduler.runTask(instance, Runnable {
             try {
                 WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(block.world))
