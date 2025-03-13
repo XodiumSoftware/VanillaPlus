@@ -11,14 +11,6 @@ import org.bukkit.Material
  * Registry for materials.
  */
 object MaterialRegistry {
-    val AXES = setOf(
-        Material.DIAMOND_AXE,
-        Material.GOLDEN_AXE,
-        Material.IRON_AXE,
-        Material.NETHERITE_AXE,
-        Material.STONE_AXE,
-        Material.WOODEN_AXE
-    )
 
     val BASE_DAMAGE_MAP = mapOf(
         Material.NETHERITE_AXE to 10.0,
@@ -64,15 +56,6 @@ object MaterialRegistry {
         Material.SHEARS
     )
 
-    val HOES = setOf(
-        Material.DIAMOND_HOE,
-        Material.GOLDEN_HOE,
-        Material.IRON_HOE,
-        Material.NETHERITE_HOE,
-        Material.STONE_HOE,
-        Material.WOODEN_HOE
-    )
-
     val INSTA_BREAKABLE_BY_HAND = setOf(
         Material.ALLIUM,
         Material.AZURE_BLUET,
@@ -112,21 +95,37 @@ object MaterialRegistry {
         Material.PINK_TULIP,
         Material.POPPY,
         Material.POTATOES,
+        Material.POTTED_ACACIA_SAPLING,
         Material.POTTED_ALLIUM,
+        Material.POTTED_AZALEA_BUSH,
         Material.POTTED_AZURE_BLUET,
+        Material.POTTED_BAMBOO,
+        Material.POTTED_BIRCH_SAPLING,
         Material.POTTED_BLUE_ORCHID,
+        Material.POTTED_BROWN_MUSHROOM,
+        Material.POTTED_CACTUS,
+        Material.POTTED_CHERRY_SAPLING,
         Material.POTTED_CORNFLOWER,
+        Material.POTTED_CRIMSON_FUNGUS,
+        Material.POTTED_CRIMSON_ROOTS,
         Material.POTTED_DANDELION,
-        Material.POTTED_LILAC,
+        Material.POTTED_DARK_OAK_SAPLING,
+        Material.POTTED_DEAD_BUSH,
+        Material.POTTED_FERN,
+        Material.POTTED_FLOWERING_AZALEA_BUSH,
+        Material.POTTED_JUNGLE_SAPLING,
         Material.POTTED_LILY_OF_THE_VALLEY,
+        Material.POTTED_MANGROVE_PROPAGULE,
+        Material.POTTED_OAK_SAPLING,
         Material.POTTED_ORANGE_TULIP,
         Material.POTTED_OXEYE_DAISY,
-        Material.POTTED_PEONY,
         Material.POTTED_PINK_TULIP,
         Material.POTTED_POPPY,
-        Material.POTTED_ROSE_BUSH,
-        Material.POTTED_SUNFLOWER,
+        Material.POTTED_RED_MUSHROOM,
         Material.POTTED_RED_TULIP,
+        Material.POTTED_SPRUCE_SAPLING,
+        Material.POTTED_WARPED_FUNGUS,
+        Material.POTTED_WARPED_ROOTS,
         Material.POTTED_WHITE_TULIP,
         Material.POTTED_WITHER_ROSE,
         Material.PUMPKIN_STEM,
@@ -158,15 +157,6 @@ object MaterialRegistry {
         Material.WHEAT,
         Material.WHITE_TULIP,
         Material.WITHER_ROSE
-    )
-
-    val PICKAXES = setOf(
-        Material.DIAMOND_PICKAXE,
-        Material.GOLDEN_PICKAXE,
-        Material.IRON_PICKAXE,
-        Material.NETHERITE_PICKAXE,
-        Material.STONE_PICKAXE,
-        Material.WOODEN_PICKAXE
     )
 
     val PROFITS_FROM_FORTUNE = setOf(TODO())
@@ -202,36 +192,6 @@ object MaterialRegistry {
         Material.NETHERITE_HOE,
         Material.NETHERITE_PICKAXE,
         Material.NETHERITE_SHOVEL
-    )
-
-    val SAPLINGS = setOf(
-        Material.ACACIA_SAPLING,
-        Material.BIRCH_SAPLING,
-        Material.CHERRY_SAPLING,
-        Material.DARK_OAK_SAPLING,
-        Material.JUNGLE_SAPLING,
-        Material.MANGROVE_PROPAGULE,
-        Material.OAK_SAPLING,
-        Material.PALE_OAK_SAPLING,
-        Material.SPRUCE_SAPLING,
-    )
-
-    val SHOVELS = setOf(
-        Material.DIAMOND_SHOVEL,
-        Material.GOLDEN_SHOVEL,
-        Material.IRON_SHOVEL,
-        Material.NETHERITE_SHOVEL,
-        Material.STONE_SHOVEL,
-        Material.WOODEN_SHOVEL
-    )
-
-    val SWORDS = setOf(
-        Material.WOODEN_SWORD,
-        Material.STONE_SWORD,
-        Material.IRON_SWORD,
-        Material.GOLDEN_SWORD,
-        Material.DIAMOND_SWORD,
-        Material.NETHERITE_SWORD,
     )
 
     val WEAPONS = setOf(

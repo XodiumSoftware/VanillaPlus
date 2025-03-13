@@ -14,6 +14,7 @@ import com.sk89q.worldedit.function.operation.Operations
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.session.ClipboardHolder
 import org.bukkit.Material
+import org.bukkit.Tag
 import org.bukkit.block.Block
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -22,7 +23,6 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.ConfigData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.registries.BlockTypesRegistry
-import org.xodium.vanillaplus.registries.MaterialRegistry
 import java.net.JarURLConnection
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -73,7 +73,7 @@ class TreesModule : ModuleInterface {
 
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: StructureGrowEvent) {
-        event.location.block.takeIf { MaterialRegistry.SAPLINGS.contains(it.type) }?.let {
+        event.location.block.takeIf { Tag.SAPLINGS.isTagged(it.type) }?.let {
             event.isCancelled = pasteSchematic(it)
         }
     }

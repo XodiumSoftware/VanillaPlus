@@ -16,6 +16,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.title.Title
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
+import org.bukkit.Tag
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -34,7 +35,6 @@ import org.xodium.vanillaplus.data.SkinData
 import org.xodium.vanillaplus.data.SkinData.Companion.getByEntityType
 import org.xodium.vanillaplus.data.SkinData.Companion.getByModel
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.registries.MaterialRegistry
 
 
 class SkinsModule : ModuleInterface {
@@ -55,7 +55,7 @@ class SkinsModule : ModuleInterface {
         } else true
 
     private fun validateItemIsSword(itemStack: ItemStack, audience: Audience): Boolean =
-        if (itemStack.type !in MaterialRegistry.SWORDS) {
+        if (itemStack.type !in Tag.ITEMS_SWORDS.values.toSet()) {
             audience.sendActionBar(
                 Utils.firewatchFormat("This skin can only be applied to swords!").mm()
             ); false
