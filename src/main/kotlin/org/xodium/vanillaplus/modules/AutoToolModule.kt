@@ -27,15 +27,14 @@ import org.bukkit.inventory.meta.Damageable
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.Utils
 import org.xodium.vanillaplus.Utils.mm
-import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.ConfigData
 import org.xodium.vanillaplus.enums.ToolEnum
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.old.AutoToolNotifyEvent
 import org.xodium.vanillaplus.registries.MaterialRegistry
 import java.util.*
 import java.util.function.ToIntFunction
 import java.util.stream.Collectors
+
 
 class AutoToolModule : ModuleInterface {
     override fun enabled(): Boolean = ConfigData.AutoToolModule().enabled
@@ -62,18 +61,12 @@ class AutoToolModule : ModuleInterface {
 
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: BlockBreakEvent) {
-        instance.server.scheduler.runTaskLater(instance, Runnable {
-            instance.server.pluginManager.callEvent(AutoToolNotifyEvent(event.player, event.getBlock()))
-        }, 1)
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    fun on(event: AutoToolNotifyEvent) {
+        val player = event.player
         onPlayerInteractWithBlock(
             PlayerInteractEvent(
-                event.getPlayer(),
+                player,
                 Action.LEFT_CLICK_BLOCK,
-                event.getPlayer().inventory.itemInMainHand,
+                player.inventory.itemInMainHand,
                 event.block,
                 BlockFace.SELF,
                 EquipmentSlot.HAND
@@ -108,7 +101,11 @@ class AutoToolModule : ModuleInterface {
         playerSetting.getBtcache().validate(block.type)
     }
 
-    private fun hasBestToolsEnabled(player: Player): Boolean = TODO()
+    private fun hasBestToolsEnabled(player: Player): Boolean =
+        TODO(
+            "check if autotool is enabled in db, " +
+                    "maybe do it directly in the method inline instead of creating an extra method"
+        )
 
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: PlayerQuitEvent): Unit = TODO("check database if enabled")
@@ -245,8 +242,12 @@ class AutoToolModule : ModuleInterface {
         }
         var list: MutableList<ItemStack?> = ArrayList<ItemStack?>()
         for (itemStack in itemStacks) {
-            // TODO: Check if durability is 1
-            if (isTool(tool, itemStack!!)) {
+            if (itemStack != null && isTool(tool, itemStack) && itemStack.itemMeta is Damageable) {
+                val damageable = itemStack.itemMeta as Damageable
+                if (damageable.damage < itemStack.type.maxDurability - 1) {
+                    if (!trySilkTouch) list.add(itemStack) else if (hasSilkTouch(itemStack)) list.add(itemStack)
+                }
+            } else if (itemStack != null && isTool(tool, itemStack)) {
                 if (!trySilkTouch) list.add(itemStack) else if (hasSilkTouch(itemStack)) list.add(itemStack)
             }
         }
@@ -256,8 +257,9 @@ class AutoToolModule : ModuleInterface {
         list.sortWith(Comparator.comparingInt<ItemStack?>(ToIntFunction { itemStack: ItemStack ->
             Utils.getMultiplier(itemStack)
         }).reversed())
-//        TODO: change to robust Material name
-        if (material.name.endsWith("DIAMOND_ORE")) list = putIronPlusBeforeGoldPickaxes(list)
+        if (material == Material.DIAMOND_ORE || material == Material.DEEPSLATE_DIAMOND_ORE) {
+            list = putIronPlusBeforeGoldPickaxes(list)
+        }
         return list[0]
     }
 
@@ -283,8 +285,16 @@ class AutoToolModule : ModuleInterface {
         useAxe: Boolean
     ): ItemStack? {
         val itemStackArrayList = ArrayList<ItemStack?>()
-        // TODO: Check if durability is 1
-        for (itemStack in itemStacks) if (isRoscoe(itemStack!!, useAxe)) itemStackArrayList.add(itemStack)
+        for (itemStack in itemStacks) {
+            if (itemStack != null && isRoscoe(itemStack, useAxe) && itemStack.itemMeta is Damageable) {
+                val damageable = itemStack.itemMeta as Damageable
+                if (damageable.damage < itemStack.type.maxDurability - 1) {
+                    itemStackArrayList.add(itemStack)
+                }
+            } else if (itemStack != null && isRoscoe(itemStack, useAxe)) {
+                itemStackArrayList.add(itemStack)
+            }
+        }
         if (itemStackArrayList.isEmpty()) return null
         itemStackArrayList.sortWith(Comparator { o1: ItemStack?, o2: ItemStack? ->
             if (Utils.getDamage(o1, entityType) < Utils.getDamage(o2, entityType)) 1 else -1

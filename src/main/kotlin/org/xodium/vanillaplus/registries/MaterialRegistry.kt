@@ -187,13 +187,6 @@ object MaterialRegistry {
         Material.YELLOW_STAINED_GLASS
     )
 
-    val NETHERITE_TOOLS = setOf(
-        Material.NETHERITE_AXE,
-        Material.NETHERITE_HOE,
-        Material.NETHERITE_PICKAXE,
-        Material.NETHERITE_SHOVEL
-    )
-
     val WEAPONS = setOf(
         Material.BOW,
         Material.CROSSBOW,
