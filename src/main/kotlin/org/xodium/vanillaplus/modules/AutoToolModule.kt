@@ -29,6 +29,7 @@ import org.xodium.vanillaplus.Utils
 import org.xodium.vanillaplus.Utils.mm
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.ConfigData
+import org.xodium.vanillaplus.enums.ToolEnum
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.old.AutoToolNotifyEvent
 import org.xodium.vanillaplus.registries.MaterialRegistry
@@ -39,41 +40,11 @@ import java.util.stream.Collectors
 class AutoToolModule : ModuleInterface {
     override fun enabled(): Boolean = ConfigData.AutoToolModule().enabled
 
-    val toolMap: HashMap<Material?, Tool?> = HashMap<Material?, Tool?>()
-
-    val useAxeAsWeapon: Boolean = ConfigData.AutoToolModule().useAxeAsSword
-
-    val pickaxes: ArrayList<Material?> = ArrayList<Material?>()
-
-    val axes: ArrayList<Material?> = ArrayList<Material?>()
-
-    val hoes: ArrayList<Material?> = ArrayList<Material?>()
-
-    val shovels: ArrayList<Material?> = ArrayList<Material?>()
-
-    val swords: ArrayList<Material?> = ArrayList<Material?>()
-
-    val allTools: ArrayList<Material?> = ArrayList<Material?>()
-
-    val instaBreakableByHand: ArrayList<Material?> = ArrayList<Material?>()
-
-    val leaves: EnumSet<Material?> = EnumSet.noneOf<Material?>(Material::class.java)
-
-    val weapons: ArrayList<Material?> = ArrayList<Material?>()
+    val toolMap: MutableMap<Material, ToolEnum> = HashMap()
 
     companion object {
         const val HOTBAR_SIZE = 9
         const val INVENTORY_SIZE = 36
-    }
-
-    enum class Tool {
-        PICKAXE,
-        SHOVEL,
-        SHEARS,
-        AXE,
-        HOE,
-        SWORD,
-        NONE
     }
 
     @EventHandler
@@ -84,10 +55,9 @@ class AutoToolModule : ModuleInterface {
         TODO("check if autotool is enabled in db")
         val entity = event.getEntity()
         if (!(entity is Monster && ConfigData.AutoToolModule().useSwordOnHostileMobs)) return
-        val playerInventory = player.inventory
-        val bestRoscoe = getBestRoscoeFromInventory(entity.type, player, useAxeAsWeapon)
-        if (bestRoscoe == null || bestRoscoe == playerInventory.itemInMainHand) return
-        switchToBestRoscoe(player, bestRoscoe, ConfigData.AutoToolModule().favoriteSlot)
+        val bestRoscoe = getBestRoscoeFromInventory(entity.type, player, ConfigData.AutoToolModule().useAxeAsSword)
+        if (bestRoscoe == null || bestRoscoe == player.inventory.itemInMainHand) return
+        switchToBestRoscoe(player, bestRoscoe)
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -144,43 +114,32 @@ class AutoToolModule : ModuleInterface {
     fun on(event: PlayerQuitEvent): Unit = TODO("check database if enabled")
 
     init {
-        Arrays.stream<Material?>(Material.entries.toTypedArray()).forEach { material: Material? ->
-            if (material!!.name.endsWith("_LEAVES")) leaves.add(material)
-        }
-
-        for ((c, t) in listOf(
-            MaterialRegistry.WEAPONS to weapons,
-            MaterialRegistry.INSTA_BREAKABLE_BY_HAND to instaBreakableByHand,
-            Tag.ITEMS_HOES.values.toSet() to hoes,
-            Tag.ITEMS_PICKAXES.values.toSet() to pickaxes,
-            Tag.ITEMS_AXES.values.toSet() to axes,
-            Tag.ITEMS_SHOVELS.values.toSet() to shovels,
-            Tag.ITEMS_SWORDS.values.toSet() to swords,
-            MaterialRegistry.NETHERITE_TOOLS to allTools,
-            MaterialRegistry.DEFAULT_MATERIALS to allTools
-        )) t.addAll(c)
-
-        tagToMap(Tag.MINEABLE_AXE, Tool.AXE)
-        tagToMap(Tag.MINEABLE_HOE, Tool.HOE)
-        tagToMap(Tag.MINEABLE_PICKAXE, Tool.PICKAXE)
-        tagToMap(Tag.MINEABLE_SHOVEL, Tool.SHOVEL)
+        tagToMap(Tag.MINEABLE_AXE, ToolEnum.AXE)
+        tagToMap(Tag.MINEABLE_HOE, ToolEnum.HOE)
+        tagToMap(Tag.MINEABLE_PICKAXE, ToolEnum.PICKAXE)
+        tagToMap(Tag.MINEABLE_SHOVEL, ToolEnum.SHOVEL)
 
         // NONE SPECIFIC
-        tagToMap(Tag.FLOWERS, Tool.NONE)
+        tagToMap(Tag.FLOWERS, ToolEnum.NONE)
 
         // CUSTOM
-//        addToMap(Material.GLOWSTONE, Tool.PICKAXE) // TODO: Prefer SilkTouch
+//        addToMap(Material.GLOWSTONE, ToolEnum.PICKAXE) // TODO: Prefer SilkTouch
     }
 
-    private fun getFavoriteSlot(player: Player): Int {
-        return if (ConfigData.AutoToolModule().favoriteSlot == -1) {
-            player.inventory.heldItemSlot
+    private fun equipBestItem(playerInventory: PlayerInventory, bestItem: ItemStack?) {
+        if (bestItem == null) {
+            freeSlot(playerInventory.heldItemSlot, playerInventory)
+            return
+        }
+        val positionInInventory = getPositionInInventory(bestItem, playerInventory)
+        if (positionInInventory != -1) {
+            moveToolToSlot(positionInInventory, playerInventory.heldItemSlot, playerInventory)
         } else {
-            ConfigData.AutoToolModule().favoriteSlot
+            freeSlot(playerInventory.heldItemSlot, playerInventory)
         }
     }
 
-    private fun switchToBestRoscoe(player: Player, bestRoscoe: ItemStack?, favoriteSlot: Int) {
+    private fun switchToBestRoscoe(player: Player, bestRoscoe: ItemStack?) {
         var bestRoscoe = bestRoscoe
         val playerInventory = player.inventory
         if (bestRoscoe == null) {
@@ -193,16 +152,7 @@ class AutoToolModule : ModuleInterface {
                     Material.BEDROCK
                 )
         }
-        if (bestRoscoe == null) {
-            freeSlot(favoriteSlot, playerInventory)
-            return
-        }
-        val positionInInventory = getPositionInInventory(bestRoscoe, playerInventory)
-        if (positionInInventory != -1) {
-            moveToolToSlot(positionInInventory, favoriteSlot, playerInventory)
-        } else {
-            freeSlot(favoriteSlot, playerInventory)
-        }
+        equipBestItem(playerInventory, bestRoscoe)
     }
 
     private fun switchToBestTool(player: Player, itemStack: ItemStack?, target: Material?) {
@@ -213,16 +163,7 @@ class AutoToolModule : ModuleInterface {
             if (isDamageable(currentItem)) return
             bestTool = getNonToolItemFromArray(inventoryToArray(player), currentItem, target)
         }
-        if (bestTool == null) {
-            freeSlot(getFavoriteSlot(player), playerInventory)
-            return
-        }
-        val positionInInventory = getPositionInInventory(bestTool, playerInventory)
-        if (positionInInventory != -1) {
-            moveToolToSlot(positionInInventory, getFavoriteSlot(player), playerInventory)
-        } else {
-            freeSlot(getFavoriteSlot(player), playerInventory)
-        }
+        equipBestItem(playerInventory, bestTool)
     }
 
     /**
@@ -230,7 +171,7 @@ class AutoToolModule : ModuleInterface {
      * @param tag The material tag.
      * @param tool The tool type.
      */
-    private fun tagToMap(tag: Tag<Material>, tool: Tool) = tagToMap(tag, tool, null)
+    private fun tagToMap(tag: Tag<Material>, tool: ToolEnum) = tagToMap(tag, tool, null)
 
     /**
      * Adds materials from the given tag to the tool map.
@@ -238,7 +179,7 @@ class AutoToolModule : ModuleInterface {
      * @param tool The tool type.
      * @param filter If not null, only materials whose name contains this filter will be added.
      */
-    private fun tagToMap(tag: Tag<Material>, tool: Tool, filter: String?) {
+    private fun tagToMap(tag: Tag<Material>, tool: ToolEnum, filter: String?) {
         tag.values.forEach { material ->
             if (filter == null || material.name.contains(filter)) {
                 addToMap(material, tool)
@@ -251,16 +192,16 @@ class AutoToolModule : ModuleInterface {
      * @param material The material tag.
      * @param tool The tool type.
      */
-    private fun addToMap(material: Material, tool: Tool) {
+    private fun addToMap(material: Material, tool: ToolEnum) {
         toolMap[material] = tool
     }
 
-    fun isWeapon(itemStack: ItemStack): Boolean = itemStack.type in weapons
+    fun isWeapon(itemStack: ItemStack): Boolean = MaterialRegistry.WEAPONS.contains(itemStack.type)
 
     fun isToolOrRoscoe(itemStack: ItemStack): Boolean =
-        allTools.contains(itemStack.type) || swords.contains(itemStack.type)
+        MaterialRegistry.DEFAULT_MATERIALS.contains(itemStack.type) || MaterialRegistry.WEAPONS.contains(itemStack.type)
 
-    fun getBestToolType(mat: Material): Tool = toolMap[mat] ?: Tool.NONE
+    fun getBestToolType(mat: Material): ToolEnum = toolMap[mat] ?: ToolEnum.NONE
 
     fun hasSilkTouch(itemStack: ItemStack?): Boolean = itemStack?.itemMeta?.hasEnchant(Enchantment.SILK_TOUCH) == true
 
@@ -271,21 +212,21 @@ class AutoToolModule : ModuleInterface {
 
     fun profitsFromFortune(material: Material): Boolean = MaterialRegistry.PROFITS_FROM_FORTUNE.contains(material)
 
-    fun isTool(tool: Tool, itemStack: ItemStack): Boolean {
+    fun isTool(tool: ToolEnum, itemStack: ItemStack): Boolean {
         val material = itemStack.type
         return when (tool) {
-            Tool.PICKAXE -> pickaxes.contains(material)
-            Tool.AXE -> axes.contains(material)
-            Tool.SHOVEL -> shovels.contains(material)
-            Tool.HOE -> hoes.contains(material)
-            Tool.SHEARS -> itemStack.type == Material.SHEARS
-            Tool.NONE -> isDamageable(itemStack)
-            Tool.SWORD -> swords.contains(material)
+            ToolEnum.PICKAXE -> Tag.ITEMS_PICKAXES.isTagged(material)
+            ToolEnum.AXE -> Tag.ITEMS_AXES.isTagged(material)
+            ToolEnum.SHOVEL -> Tag.ITEMS_SHOVELS.isTagged(material)
+            ToolEnum.HOE -> Tag.ITEMS_HOES.isTagged(material)
+            ToolEnum.SHEARS -> material == Material.SHEARS
+            ToolEnum.NONE -> isDamageable(itemStack)
+            ToolEnum.SWORD -> Tag.ITEMS_SWORDS.isTagged(material)
         }
     }
 
     fun getNonToolItemFromArray(items: Array<ItemStack?>, currentItem: ItemStack, target: Material?): ItemStack? {
-        if (instaBreakableByHand.contains(target) && !hoes.contains(currentItem.type) ||
+        if (MaterialRegistry.INSTA_BREAKABLE_BY_HAND.contains(target) && !Tag.ITEMS_HOES.isTagged(currentItem.type) ||
             !isToolOrRoscoe(currentItem)
         ) return currentItem
         for (item in items) if (isDamageable(item)) return item
@@ -293,13 +234,13 @@ class AutoToolModule : ModuleInterface {
     }
 
     fun getBestItemStackFromArray(
-        tool: Tool,
+        tool: ToolEnum,
         itemStacks: Array<ItemStack?>,
         trySilkTouch: Boolean,
         itemStack: ItemStack,
         material: Material
     ): ItemStack? {
-        if (tool == Tool.NONE) {
+        if (tool == ToolEnum.NONE) {
             return getNonToolItemFromArray(itemStacks, itemStack, material)
         }
         var list: MutableList<ItemStack?> = ArrayList<ItemStack?>()
@@ -323,7 +264,7 @@ class AutoToolModule : ModuleInterface {
     private fun putIronPlusBeforeGoldPickaxes(list: MutableList<ItemStack?>?): MutableList<ItemStack?> {
         if (list == null || list.isEmpty()) return list!!
         let {
-            if (it.isTool(Tool.PICKAXE, list[0]!!)) {
+            if (it.isTool(ToolEnum.PICKAXE, list[0]!!)) {
                 val newList = list.stream().filter { itemStack: ItemStack? ->
                     when (itemStack!!.type) {
                         Material.WOODEN_PICKAXE, Material.STONE_PICKAXE, Material.GOLDEN_PICKAXE -> return@filter false
@@ -352,8 +293,8 @@ class AutoToolModule : ModuleInterface {
     }
 
     private fun isRoscoe(itemStack: ItemStack, useAxe: Boolean): Boolean = when {
-        useAxe -> swords.contains(itemStack.type) || axes.contains(itemStack.type)
-        else -> swords.contains(itemStack.type)
+        useAxe -> Tag.ITEMS_SWORDS.isTagged(itemStack.type) || Tag.ITEMS_AXES.isTagged(itemStack.type)
+        else -> Tag.ITEMS_SWORDS.isTagged(itemStack.type)
     }
 
     fun getBestToolFromInventory(
@@ -362,16 +303,16 @@ class AutoToolModule : ModuleInterface {
         itemStack: ItemStack
     ): ItemStack? {
         val items = inventoryToArray(player)
-        val tool: Tool?
+        val tool: ToolEnum?
         if (!Utils.isLeaves(material) && material != Material.COBWEB) {
             tool = getBestToolType(material)
         } else {
             tool = if (Utils.hasShears(player.inventory.storageContents)) {
-                Tool.SHEARS
+                ToolEnum.SHEARS
             } else if (Utils.hasHoe(player.inventory.storageContents)
                 && material != Material.COBWEB
             ) {
-                Tool.HOE
+                ToolEnum.HOE
             } else if (((ConfigData.AutoToolModule().considerSwordsForCobwebs
                         && material == Material.COBWEB) || (material != Material.COBWEB
                         && ConfigData.AutoToolModule().considerSwordsForLeaves))
@@ -379,9 +320,9 @@ class AutoToolModule : ModuleInterface {
                     player.inventory.storageContents
                 )
             ) {
-                Tool.SWORD
+                ToolEnum.SWORD
             } else {
-                Tool.NONE
+                ToolEnum.NONE
             }
         }
         val bestStack = getBestItemStackFromArray(tool, items, profitsFromSilkTouch(material), itemStack, material)

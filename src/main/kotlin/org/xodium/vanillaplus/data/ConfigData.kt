@@ -39,7 +39,6 @@ data class ConfigData(
 
         val defaultEnabledAutoTool: Boolean = true, // Default state of the AutoTool feature for users.
 
-        val favoriteSlot: Int = 8, // The slot where the favorite tool is stored.
         val dontSwitchDuringBattle: Boolean = true, // If the AutoTool feature should not switch tools during battle.
 
         val considerSwordsForLeaves: Boolean = true, // If swords should be considered for breaking leaves.
