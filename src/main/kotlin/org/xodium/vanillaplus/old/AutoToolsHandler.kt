@@ -21,6 +21,21 @@ import java.util.stream.Collectors
 
 
 class AutoToolsHandler {
+    companion object {
+        const val HOTBAR_SIZE = 9
+        const val INVENTORY_SIZE = 36
+    }
+
+    enum class Tool {
+        PICKAXE,
+        SHOVEL,
+        SHEARS,
+        AXE,
+        HOE,
+        SWORD,
+        NONE
+    }
+
     val toolMap: HashMap<Material?, Tool?> = HashMap<Material?, Tool?>()
 
     // TODO: Cache valid tool materials here
@@ -61,7 +76,7 @@ class AutoToolsHandler {
 
     fun profitsFromSilkTouch(material: Material): Boolean = MaterialRegistry.PROFITS_FROM_SILK_TOUCH.contains(material)
 
-    fun profitsFromFortune(material: Material): Boolean = TODO()
+    fun profitsFromFortune(material: Material): Boolean = MaterialRegistry.PROFITS_FROM_FORTUNE.contains(material)
 
     fun isTool(tool: Tool, itemStack: ItemStack): Boolean {
         val material = itemStack.type
@@ -245,20 +260,5 @@ class AutoToolsHandler {
                 playerInventory.heldItemSlot = i
             }
         }
-    }
-
-    enum class Tool {
-        PICKAXE,
-        SHOVEL,
-        SHEARS,
-        AXE,
-        HOE,
-        SWORD,
-        NONE
-    }
-
-    companion object {
-        const val HOTBAR_SIZE = 9
-        const val INVENTORY_SIZE = 36
     }
 }

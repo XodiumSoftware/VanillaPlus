@@ -9,10 +9,8 @@ import org.bukkit.entity.Player
 import org.bukkit.event.HandlerList
 import org.bukkit.event.player.PlayerEvent
 
-class AutoToolNotifyEvent(who: Player, val block: Block?) : PlayerEvent(who) {
-    override fun getHandlers(): HandlerList {
-        return handlerList
-    }
+class AutoToolNotifyEvent(player: Player, val block: Block?) : PlayerEvent(player) {
+    override fun getHandlers(): HandlerList = handlerList
 
     companion object {
         val handlerList: HandlerList = HandlerList()

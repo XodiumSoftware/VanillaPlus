@@ -25,220 +25,33 @@ class AutoToolsUtils {
         "SPRUCE",
         "JUNGLE"
     ) // Crimson and Warped stems are not needed, this is only for old versions
-    val weapons: Array<String> = arrayOf<String>(
-        "BOW",
-        "CROSSBOW",
-        "TRIDENT",
-        "NETHERITE_SWORD",
-        "DIAMOND_SWORD",
-        "GOLDEN_SWORD",
-        "IRON_SWORD",
-        "STONE_SWORD",
-        "WOODEN_SWORD",
-        "MACE"
-    )
-    val instaBreakableByHand: Array<String> = arrayOf<String>(
-        "COMPARATOR",
-        "REPEATER",
-        "REDSTONE_WIRE",
-        "REDSTONE_TORCH",
-        "REDSTONE_WALL_TORCH",
-        "TORCH",
-        "SOUL_TORCH",
-        "WALL_TORCH",
-        "SOUL_WALL_TORCH",
-        "SCAFFOLDING",
-        "SLIME_BLOCK",
-        "HONEY_BLOCK",
-        "TNT",
-        "TRIPWIRE",
-        "TRIPWIRE_HOOK",
-        "GRASS",
-        "SUGAR_CANE",
-        "LILY_PAD",
-        "OAK_SAPLING",
-        "SPRUCE_SAPLING",
-        "BIRCH_SAPLING",
-        "JUNGLE_SAPLING",
-        "ACACIA_SAPLING",
-        "DARK_OAK_SAPLING",
-        "BROWN_MUSHROOM",
-        "RED_MUSHROOM",
-        "CRIMSON_FUNGUS",
-        "WARPED_FUNGUS",
-        "CRIMSON_ROOTS",
-        "WARPED_ROOTS",
-        "WEEPING VINES",
-        "TWISTING_VINES",
-        "DEAD_BUSH",
-        "WHEAT",
-        "CARROTS",
-        "POTATOES",
-        "BEETROOTS",
-        "PUMPKIN_STEM",
-        "MELON_STEM",
-        "NETHER_WART",
-        "FLOWER_POT",
-        "DANDELION",
-        "POPPY",
-        "BLUE_ORCHID",
-        "ALLIUM",
-        "AZURE_BLUET",
-        "RED_TULIP",
-        "ORANGE_TULIP",
-        "WHITE_TULIP",
-        "PINK_TULIP",
-        "OXEYE_DAISY",
-        "CORNFLOWER",
-        "LILY_OF_THE_VALLEY",
-        "WITHER_ROSE",
-        "SUNFLOWER",
-        "LILAC",
-        "ROSE_BUSH",
-        "PEONY",
-        "POTTED_DANDELION",
-        "POTTED_POPPY",
-        "POTTED_BLUE_ORCHID",
-        "POTTED_ALLIUM",
-        "POTTED_AZURE_BLUET",
-        "POTTED_RED_TULIP",
-        "POTTED_ORANGE_TULIP",
-        "POTTED_WHITE_TULIP",
-        "POTTED_PINK_TULIP",
-        "POTTED_OXEYE_DAISY",
-        "POTTED_CORNFLOWER",
-        "POTTED_LILY_OF_THE_VALLEY",
-        "POTTED_WITHER_ROSE",
-        "POTTED_SUNFLOWER",
-        "POTTED_LILAC",
-        "POTTED_ROSE_BUSH",
-        "POTTED_PEONY",
-        "TUBE_CORAL",
-        "BRAIN_CORAL",
-        "BUBBLE_CORAL",
-        "FIRE_CORAL",
-        "HORN_CORAL",
-        "DEAD_TUBE_CORAL",
-        "DEAD_BRAIN_CORAL",
-        "DEAD_BUBBLE_CORAL",
-        "DEAD_FIRE_CORAL",
-        "DEAD_HORN_CORAL"
-    )
 
-    // TODO: Add grass only in 1.13+ instead of always
-    val hoes: Array<String> =
-        arrayOf<String>("NETHERITE_HOE", "DIAMOND_HOE", "GOLDEN_HOE", "IRON_HOE", "STONE_HOE", "WOODEN_HOE")
-    val pickaxes: Array<String> = arrayOf<String>(
-        "NETHERITE_PICKAXE",
-        "DIAMOND_PICKAXE",
-        "GOLDEN_PICKAXE",
-        "IRON_PICKAXE",
-        "STONE_PICKAXE",
-        "WOODEN_PICKAXE"
-    )
-    val axes: Array<String> =
-        arrayOf<String>("NETHERITE_AXE", "DIAMOND_AXE", "GOLDEN_AXE", "IRON_AXE", "STONE_AXE", "WOODEN_AXE")
-
-    val shovels: Array<String> = arrayOf<String>(
-        "NETHERITE_SHOVEL",
-        "DIAMOND_SHOVEL",
-        "GOLDEN_SHOVEL",
-        "IRON_SHOVEL",
-        "STONE_SHOVEL",
-        "WOODEN_SHOVEL"
-    )
-
-    val defaultMats: Array<Material?> = arrayOf<Material?>(
-        Material.DIAMOND_PICKAXE,
-        Material.DIAMOND_AXE,
-        Material.DIAMOND_HOE,
-        Material.DIAMOND_SHOVEL,
-
-        Material.GOLDEN_PICKAXE,
-        Material.GOLDEN_AXE,
-        Material.GOLDEN_HOE,
-        Material.GOLDEN_SHOVEL,
-
-        Material.IRON_PICKAXE,
-        Material.IRON_AXE,
-        Material.IRON_HOE,
-        Material.IRON_SHOVEL,
-
-        Material.STONE_PICKAXE,
-        Material.STONE_AXE,
-        Material.STONE_HOE,
-        Material.STONE_SHOVEL,
-
-        Material.WOODEN_PICKAXE,
-        Material.WOODEN_AXE,
-        Material.WOODEN_HOE,
-        Material.WOODEN_SHOVEL,
-
-        Material.SHEARS
-    )
-    val netheriteTools: Array<String> = arrayOf<String>(
-        "NETHERITE_PICKAXE",
-        "NETHERITE_AXE",
-        "NETHERITE_HOE",
-        "NETHERITE_SHOVEL"
-    )
-
-    // This is called AFTER BestToolsHandler, so the Utils can affect the Handler
     init {
-        Objects.requireNonNull<AutoToolsHandler?>(
-            handler,
-            "BestToolsHandler must be instantiated before BestToolUtils!"
-        )
+        for ((c, t) in listOf(
+            MaterialRegistry.WEAPONS to handler.weapons,
+            MaterialRegistry.INSTA_BREAKABLE_BY_HAND to handler.instaBreakableByHand,
+            MaterialRegistry.HOES to handler.hoes,
+            MaterialRegistry.PICKAXES to handler.pickaxes,
+            MaterialRegistry.AXES to handler.axes,
+            MaterialRegistry.SHOVELS to handler.shovels,
+            MaterialRegistry.SWORDS to handler.swords,
+            MaterialRegistry.NETHERITE_TOOLS to handler.allTools
+        )) t.addAll(c)
 
-        // Register valid weapons
-        for (weapon in weapons) {
-            if (Material.getMaterial(weapon) != null) {
-                handler.weapons.add(Material.getMaterial(weapon))
-            }
-        }
-
-        // Register all InstaBreaksByHand
-        for (s in instaBreakableByHand) addToMap(s, handler.instaBreakableByHand)
-
-        // Hoes
-        for (s in hoes) addToMap(s, handler.hoes)
-
-        // Pickaxes
-        for (s in pickaxes) addToMap(s, handler.pickaxes)
-
-        // Axes
-        for (s in axes) addToMap(s, handler.axes)
-
-        // Shovels
-        for (s in shovels) addToMap(s, handler.shovels)
-
-        // Swords
-        for (s in MaterialRegistry.SWORDS) addToMap(s, handler.swords)
-
-        handler.allTools.addAll(listOf<Material?>(*defaultMats))
-        for (s in netheriteTools) {
-            if (Material.getMaterial(s) != null) {
-                handler.allTools.add(Material.getMaterial(s))
-            }
-        }
+        handler.allTools.addAll(MaterialRegistry.DEFAULT_MATERIALS)
         this.initMap()
-    }
-
-    private fun addToMap(name: String, list: ArrayList<Material?>) {
-        val mat: Material? = Material.getMaterial(name)
-        if (mat != null) list.add(mat)
     }
 
     private fun tagToMap(tag: Tag<Material>, tool: AutoToolsHandler.Tool) {
         tagToMap(
-            Objects.requireNonNull<Tag<Material?>?>(tag, "Tag must not be null"),
+            tag,
             Objects.requireNonNull<AutoToolsHandler.Tool?>(tool, "Tool must not be null"),
             null
         )
     }
 
     private fun tagToMap(tag: Tag<Material>, tool: AutoToolsHandler.Tool, match: String?) {
-        Objects.requireNonNull<Tag<Material?>>(tag, "Tag must not be null")
+        tag
         Objects.requireNonNull<AutoToolsHandler.Tool>(tool, "Tool must not be null")
         for (mat in tag.getValues()) {
             if (match == null) {
@@ -629,18 +442,18 @@ class AutoToolsUtils {
 
         // 1.17
         try {
-            for (mat in Material.entries) {
-                if (mat.name.contains("AMETHYST")) {
-                    addToMap(mat.name, AutoToolsHandler.Tool.PICKAXE)
+            for (material in Material.entries) {
+                if (material.name.contains("AMETHYST")) {
+                    addToMap(material.name, AutoToolsHandler.Tool.PICKAXE)
                 }
-                if (mat.name.endsWith("_ORE")) {
-                    addToMap(mat.name, AutoToolsHandler.Tool.PICKAXE)
+                if (material.name.endsWith("_ORE")) {
+                    addToMap(material.name, AutoToolsHandler.Tool.PICKAXE)
                 }
-                if (mat.name.contains("BASALT")) {
-                    addToMap(mat.name, AutoToolsHandler.Tool.PICKAXE)
+                if (material.name.contains("BASALT")) {
+                    addToMap(material.name, AutoToolsHandler.Tool.PICKAXE)
                 }
-                if (mat.name.contains("DEEPSLATE")) {
-                    addToMap(mat.name, AutoToolsHandler.Tool.PICKAXE)
+                if (material.name.contains("DEEPSLATE")) {
+                    addToMap(material.name, AutoToolsHandler.Tool.PICKAXE)
                 }
             }
 
