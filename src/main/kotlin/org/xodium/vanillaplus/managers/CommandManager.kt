@@ -17,7 +17,6 @@ import org.xodium.vanillaplus.Utils
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.modules.AutoRefillModule
 import org.xodium.vanillaplus.modules.AutoToolModule
-import org.xodium.vanillaplus.modules.DimensionsModule
 
 /**
  * Class for registering GUI commands.
@@ -28,26 +27,7 @@ object CommandManager {
             event.registrar().register(
                 Commands.literal(instance.name.lowercase())
                     .requires { it.sender.hasPermission(Perms.Use.GENERAL) }
-                    .executes(Command { Utils.tryCatch(it) { Gui.faqGUI().open(it.sender as Player) } })
-                    .then(
-                        Commands.literal("faq")
-                            .requires { it.sender.hasPermission(Perms.Gui.FAQ) }
-                            .executes(Command { Utils.tryCatch(it) { Gui.faqGUI().open(it.sender as Player) } })
-                    )
-                    .then(
-                        Commands.literal("dims")
-                            .requires { it.sender.hasPermission(Perms.Gui.DIMS) }
-                            .executes(Command {
-                                Utils.tryCatch(it) {
-                                    val player = it.sender as Player
-                                    DimensionsModule().gui(player).open(player)
-                                }
-                            })
-                    )
-                    .then(
-                        Commands.literal("settings")
-                            .requires { it.sender.hasPermission(Perms.Gui.SETTINGS) }
-                            .executes(Command { Utils.tryCatch(it) { Gui.settingsGUI().open(it.sender as Player) } })
+                    .executes(Command { Utils.tryCatch(it) { Gui.faqGUI().open(it.sender as Player) } }
                     ).then(
                         Commands.literal("autotool")
                             .requires { it.sender.hasPermission(Perms.AutoTool.USE) }

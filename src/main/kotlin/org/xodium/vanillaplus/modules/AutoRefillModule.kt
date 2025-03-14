@@ -5,7 +5,6 @@
 
 package org.xodium.vanillaplus.modules
 
-import dev.triumphteam.gui.paper.builder.item.ItemBuilder
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -18,8 +17,6 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.PlayerInventory
 import org.xodium.vanillaplus.Database
 import org.xodium.vanillaplus.Perms
-import org.xodium.vanillaplus.Utils
-import org.xodium.vanillaplus.Utils.mm
 import org.xodium.vanillaplus.Utils.moveBowlsAndBottles
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.ConfigData
@@ -96,18 +93,6 @@ class AutoRefillModule : ModuleInterface {
             }
         })
     }
-
-    val guiItem = ItemBuilder.from(Material.MILK_BUCKET)
-        .name(Utils.mangoFormat("AutoRefill").mm())
-        .lore(
-            listOf(
-                "<dark_gray>▶ <gray>Click to toggle <dark_gray>◀",
-                "",
-                "<dark_gray>✖ <dark_aqua>Auto refills your items when empty",
-                "   <gray>Shortcut: <gold>/autorefill | /ar"
-            ).mm()
-        )
-        .asGuiItem { player, _ -> toggle(player) }
 
     fun toggle(player: Player) {
         TODO("toggle in database")

@@ -56,8 +56,6 @@ class VanillaPlus : JavaPlugin() {
             else -> {
                 Perms
                 Database
-                Admin
-                Gui
                 ModuleManager
                 CommandManager
             }

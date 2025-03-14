@@ -20,10 +20,6 @@ object Perms {
             Use.GENERAL,
             AutoRefill.USE,
             AutoTool.USE,
-            Gui.FAQ,
-            Gui.DIMS,
-            Gui.SETTINGS,
-            Gui.SKINS
         ).forEach(instance.server.pluginManager::addPermission)
     }
 
@@ -52,20 +48,5 @@ object Perms {
         private val G1 = this::class.simpleName.toString().lowercase()
         val USE: Permission =
             Permission("${G0}.${G1}.use", "Allows use of the autotool command", PermissionDefault.OP)
-    }
-
-    /**
-     * Permissions for Gui commands.
-     */
-    object Gui {
-        private val G1 = this::class.simpleName.toString().lowercase()
-        val FAQ: Permission =
-            Permission("${G0}.${G1}.faq", "Allows viewing the FAQ gui", PermissionDefault.TRUE)
-        val DIMS: Permission =
-            Permission("${G0}.${G1}.dims", "Allows viewing the dimensions gui", PermissionDefault.TRUE)
-        val SETTINGS: Permission =
-            Permission("${G0}.${G1}.settings", "Allows viewing the settings gui", PermissionDefault.TRUE)
-        val SKINS: Permission =
-            Permission("${G0}.${G1}.skins", "Allows viewing the skins gui", PermissionDefault.TRUE)
     }
 }

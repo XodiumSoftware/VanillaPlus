@@ -52,19 +52,11 @@ data class ConfigData(
      */
     @Serializable
     data class DimensionsModule(
-        val enabled: Boolean = true, // Enables or disables the SkinsModule. Set to 'false' to disable.
-
-        val soundUnlockSkin: Sound =
-            Sound.sound(
-                BukkitSound.ENTITY_PLAYER_LEVELUP,
-                Sound.Source.PLAYER,
-                1.0f,
-                1.0f
-            ), // The sound effect used when unlocking a skin.
+        val enabled: Boolean = true, // Enables or disables the DimensionsModule. Set to 'false' to disable.
     )
 
     /**
-     * Configuration settings for the MainModule. This module controls the main features of the plugin.
+     * Configuration settings for the DoorsModule. This module controls the door features of the plugin.
      */
     @Serializable
     data class DoorsModule(

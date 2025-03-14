@@ -22,6 +22,7 @@ object ModuleManager {
         listOf(
             AutoRefillModule(),
             AutoToolModule(),
+            DimensionsModule(),
             DoorsModule(),
             MotdModule(),
             RecipiesModule(),

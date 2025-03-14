@@ -5,7 +5,6 @@
 
 package org.xodium.vanillaplus.modules
 
-import dev.triumphteam.gui.paper.builder.item.ItemBuilder
 import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.block.BlockFace
@@ -27,7 +26,6 @@ import org.bukkit.inventory.meta.Damageable
 import org.xodium.vanillaplus.Database
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.Utils
-import org.xodium.vanillaplus.Utils.mm
 import org.xodium.vanillaplus.data.ConfigData
 import org.xodium.vanillaplus.enums.ToolEnum
 import org.xodium.vanillaplus.interfaces.ModuleInterface
@@ -410,18 +408,6 @@ class AutoToolModule : ModuleInterface {
             }
         }
     }
-
-    val guiItem = ItemBuilder.from(Material.MILK_BUCKET)
-        .name(Utils.mangoFormat("AutoTool").mm())
-        .lore(
-            listOf(
-                "<dark_gray>▶ <gray>Click to toggle <dark_gray>◀",
-                "",
-                "<dark_gray>✖ <dark_aqua>Auto switch to best tool",
-                "   <gray>Shortcut: <gold>/autotool | /at"
-            ).mm()
-        )
-        .asGuiItem { player, _ -> toggle(player) }
 
     fun toggle(player: Player) {
         TODO("toggle in database")
