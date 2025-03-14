@@ -25,7 +25,6 @@ object ModuleManager {
             DoorsModule(),
             MotdModule(),
             RecipiesModule(),
-            SkinsModule(),
             TreesModule(),
         ).filter { it.enabled() }
             .forEach {

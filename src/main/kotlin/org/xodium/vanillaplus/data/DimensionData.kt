@@ -8,7 +8,7 @@ package org.xodium.vanillaplus.data
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
 import org.xodium.vanillaplus.Database
-import org.xodium.vanillaplus.modules.SkinsModule
+import org.xodium.vanillaplus.modules.DimensionsModule
 import java.util.*
 
 /**
@@ -37,9 +37,19 @@ data class DimensionData(
          */
         fun hasUnlocked(uuid: UUID, entities: List<EntityType>?): Boolean =
             entities.isNullOrEmpty() || entities.all {
-                Database.getData(SkinsModule::class, uuid.toString())
+                Database.getData(DimensionsModule::class, uuid.toString())
                     ?.split(",")
                     ?.contains(it.name.lowercase()) == true
             }
+
+        /**
+         * Unlocks the dimension for a player.
+         *
+         * @param uuid The UUID of the player to unlock the dimension for.
+         * @param entities The entity types of the bosses that must be defeated to unlock the dimension.
+         * @return `true` if the dimension was unlocked, `false` otherwise.
+         */
+        fun setUnlocked(uuid: UUID, entities: List<EntityType>) =
+            Database.setData(DimensionsModule::class, uuid.toString(), entities.joinToString(","))
     }
 }

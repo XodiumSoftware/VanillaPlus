@@ -8,7 +8,6 @@ package org.xodium.vanillaplus.data
 import kotlinx.serialization.Serializable
 import net.kyori.adventure.sound.Sound
 import org.bukkit.Material
-import org.bukkit.entity.EntityType
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import org.bukkit.Sound as BukkitSound
@@ -25,7 +24,7 @@ data class ConfigData(
      */
     @Serializable
     data class AutoRefillModule(
-        val enabled: Boolean = true, // Enables or disables the RefillModule. Set to 'false' to disable.
+        val enabled: Boolean = false, // Enables or disables the RefillModule. Set to 'false' to disable.
 
         val defaultEnabledRefill: Boolean = true, // Default state of the Refill feature for users.
     )
@@ -35,7 +34,7 @@ data class ConfigData(
      */
     @Serializable
     data class AutoToolModule(
-        val enabled: Boolean = true, // Enables or disables the AutoToolModule. Set to 'false' to disable.
+        val enabled: Boolean = false, // Enables or disables the AutoToolModule. Set to 'false' to disable.
 
         val defaultEnabledAutoTool: Boolean = true, // Default state of the AutoTool feature for users.
 
@@ -46,6 +45,22 @@ data class ConfigData(
 
         val useSwordOnHostileMobs: Boolean = true, // If swords should be used on hostile mobs.
         val useAxeAsSword: Boolean = true, // If axes should be used as swords.
+    )
+
+    /**
+     * Configuration settings for the DimensionsModule. This module controls the dimensions features of the plugin.
+     */
+    @Serializable
+    data class DimensionsModule(
+        val enabled: Boolean = true, // Enables or disables the SkinsModule. Set to 'false' to disable.
+
+        val soundUnlockSkin: Sound =
+            Sound.sound(
+                BukkitSound.ENTITY_PLAYER_LEVELUP,
+                Sound.Source.PLAYER,
+                1.0f,
+                1.0f
+            ), // The sound effect used when unlocking a skin.
     )
 
     /**
@@ -105,29 +120,6 @@ data class ConfigData(
     @Serializable
     data class RecipiesModule(
         val enabled: Boolean = true, // Enables or disables the SkinsModule. Set to 'false' to disable.
-    )
-
-    /**
-     * Configuration settings for the SkinsModule. This module controls the skin features of the plugin.
-     */
-    @Serializable
-    data class SkinsModule(
-        val enabled: Boolean = true, // Enables or disables the SkinsModule. Set to 'false' to disable.
-
-        val skins: List<SkinData> = listOf(
-            SkinData(EntityType.WITHER, Material.WITHER_SPAWN_EGG),
-            SkinData(EntityType.ELDER_GUARDIAN, Material.ELDER_GUARDIAN_SPAWN_EGG),
-            SkinData(EntityType.WARDEN, Material.WARDEN_SPAWN_EGG),
-            SkinData(EntityType.ENDER_DRAGON, Material.ENDER_DRAGON_SPAWN_EGG)
-        ), // The list of skins available.
-
-        val soundUnlockSkin: Sound =
-            Sound.sound(
-                BukkitSound.ENTITY_PLAYER_LEVELUP,
-                Sound.Source.PLAYER,
-                1.0f,
-                1.0f
-            ), // The sound effect used when unlocking a skin.
     )
 
     /**

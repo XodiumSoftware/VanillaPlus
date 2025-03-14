@@ -17,7 +17,7 @@ import org.xodium.vanillaplus.Utils
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.modules.AutoRefillModule
 import org.xodium.vanillaplus.modules.AutoToolModule
-import org.xodium.vanillaplus.modules.SkinsModule
+import org.xodium.vanillaplus.modules.DimensionsModule
 
 /**
  * Class for registering GUI commands.
@@ -40,7 +40,7 @@ object CommandManager {
                             .executes(Command {
                                 Utils.tryCatch(it) {
                                     val player = it.sender as Player
-                                    Gui.dimsGUI(player).open(player)
+                                    DimensionsModule().gui(player).open(player)
                                 }
                             })
                     )
@@ -48,15 +48,6 @@ object CommandManager {
                         Commands.literal("settings")
                             .requires { it.sender.hasPermission(Perms.Gui.SETTINGS) }
                             .executes(Command { Utils.tryCatch(it) { Gui.settingsGUI().open(it.sender as Player) } })
-                    ).then(
-                        Commands.literal("skins")
-                            .requires { it.sender.hasPermission(Perms.Gui.SKINS) }
-                            .executes(Command {
-                                Utils.tryCatch(it) {
-                                    val player = it.sender as Player
-                                    SkinsModule().gui(player).open(player)
-                                }
-                            })
                     ).then(
                         Commands.literal("autotool")
                             .requires { it.sender.hasPermission(Perms.AutoTool.USE) }
