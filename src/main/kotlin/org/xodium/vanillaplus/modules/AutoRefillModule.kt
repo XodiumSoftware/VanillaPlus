@@ -16,6 +16,7 @@ import org.bukkit.event.player.PlayerItemConsumeEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.PlayerInventory
+import org.xodium.vanillaplus.Database
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.Utils
 import org.xodium.vanillaplus.Utils.mm
@@ -26,6 +27,10 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 
 class AutoRefillModule : ModuleInterface {
     override fun enabled(): Boolean = ConfigData.AutoRefillModule().enabled
+
+    init {
+        Database.createTable(this::class)
+    }
 
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: PlayerItemConsumeEvent) = attemptRefill(event.getPlayer())

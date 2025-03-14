@@ -24,6 +24,7 @@ import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.PlayerInventory
 import org.bukkit.inventory.meta.Damageable
+import org.xodium.vanillaplus.Database
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.Utils
 import org.xodium.vanillaplus.Utils.mm
@@ -44,6 +45,10 @@ class AutoToolModule : ModuleInterface {
     companion object {
         const val HOTBAR_SIZE = 9
         const val INVENTORY_SIZE = 36
+    }
+
+    init {
+        Database.createTable(this::class)
     }
 
     @EventHandler
