@@ -3,8 +3,6 @@
  *  All rights reserved.
  */
 
-@file:Suppress("UnstableApiUsage")
-
 package org.xodium.vanillaplus.modules
 
 import dev.triumphteam.gui.paper.Gui
