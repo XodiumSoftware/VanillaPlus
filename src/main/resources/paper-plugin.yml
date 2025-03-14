@@ -10,19 +10,11 @@ dependencies:
       load: BEFORE
       required: true
       join-classpath: true
-permissions:
-  vanillaplus.use:
-    description: Allows use of the VanillaPlus commands
-    default: true
-  vanillaplus.gui.faq:
-    description: Allows viewing the VanillaPlus FAQ
-    default: true
-  vanillaplus.gui.dims:
-    description: Allows viewing the VanillaPlus dimensions
-    default: true
-  vanillaplus.gui.settings:
-    description: Allows viewing the VanillaPlus settings
-    default: true
-  vanillaplus.gui.skins:
-    description: Allows viewing the VanillaPlus skins
-    default: true
+    CMI:
+      load: BEFORE
+      required: true
+      join-classpath: true
+    CMILib:
+      load: BEFORE
+      required: true
+      join-classpath: true

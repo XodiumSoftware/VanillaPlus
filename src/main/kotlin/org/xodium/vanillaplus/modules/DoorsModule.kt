@@ -5,7 +5,6 @@
 
 package org.xodium.vanillaplus.modules
 
-import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.block.Block
@@ -59,7 +58,7 @@ class DoorsModule : ModuleInterface {
     }
 
     init {
-        Bukkit.getScheduler().runTaskTimer(instance, Runnable {
+        instance.server.scheduler.runTaskTimer(instance, Runnable {
             autoClose.entries.removeIf { (block, time) ->
                 if (System.currentTimeMillis() >= time) {
                     handleAutoClose(block)
@@ -144,7 +143,7 @@ class DoorsModule : ModuleInterface {
 
     private fun toggleOtherDoor(block: Block, block2: Block, open: Boolean) {
         if (block.blockData !is Door || block2.blockData !is Door) return
-        Bukkit.getScheduler().runTaskLater(instance, Runnable {
+        instance.server.scheduler.runTaskLater(instance, Runnable {
             val door = block.blockData as Door
             val door2 = block2.blockData as Door
             if (door.isOpen != door2.isOpen) toggleDoor(block2, door2, open)

@@ -20,10 +20,12 @@ import kotlin.time.measureTime
 object ModuleManager {
     init {
         listOf(
+            AutoRefillModule(),
+            AutoToolModule(),
+            DimensionsModule(),
             DoorsModule(),
             MotdModule(),
             RecipiesModule(),
-            SkinsModule(),
             TreesModule(),
         ).filter { it.enabled() }
             .forEach {

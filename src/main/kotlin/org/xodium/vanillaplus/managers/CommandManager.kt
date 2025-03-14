@@ -10,12 +10,13 @@ package org.xodium.vanillaplus.managers
 import com.mojang.brigadier.Command
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
+import net.kyori.adventure.text.event.ClickEvent
 import org.bukkit.entity.Player
-import org.xodium.vanillaplus.Gui
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.Utils
+import org.xodium.vanillaplus.Utils.mm
+import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.modules.SkinsModule
 
 /**
  * Class for registering GUI commands.
@@ -25,36 +26,23 @@ object CommandManager {
         instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
             event.registrar().register(
                 Commands.literal(instance.name.lowercase())
-                    .requires { it.sender.hasPermission(Perms.VanillaPlus.USE) }
-                    .executes(Command { Utils.tryCatch(it) { Gui.faqGUI().open(it.sender as Player) } })
-                    .then(
-                        Commands.literal("faq")
-                            .requires { it.sender.hasPermission(Perms.GuiModule.FAQ) }
-                            .executes(Command { Utils.tryCatch(it) { Gui.faqGUI().open(it.sender as Player) } })
-                    )
-                    .then(
-                        Commands.literal("dims")
-                            .requires { it.sender.hasPermission(Perms.GuiModule.DIMS) }
-                            .executes(Command {
-                                Utils.tryCatch(it) {
-                                    val player = it.sender as Player
-                                    Gui.dimsGUI(player).open(player)
-                                }
-                            })
-                    )
-                    .then(
-                        Commands.literal("settings")
-                            .requires { it.sender.hasPermission(Perms.GuiModule.SETTINGS) }
-                            .executes(Command { Utils.tryCatch(it) { Gui.settingsGUI().open(it.sender as Player) } })
-                    ).then(
-                        Commands.literal("skins")
-                            .requires { it.sender.hasPermission(Perms.GuiModule.SKINS) }
-                            .executes(Command {
-                                Utils.tryCatch(it) {
-                                    val player = it.sender as Player
-                                    SkinsModule().gui(player).open(player)
-                                }
-                            })
+                    .requires { it.sender.hasPermission(Perms.Use.GENERAL) }
+                    .executes(Command {
+                        Utils.tryCatch(it) {
+                            (it.sender as Player).sendMessage(
+                                "$PREFIX v${instance.pluginMeta.version} | Click on me for more info!".mm()
+                                    .clickEvent(ClickEvent.suggestCommand("/help ${instance.name.lowercase()}"))
+                            )
+                        }
+                    }
+//                    ).then(
+//                        Commands.literal("autotool")
+//                            .requires { it.sender.hasPermission(Perms.AutoTool.USE) }
+//                            .executes(Command { Utils.tryCatch(it) { AutoToolModule().toggle(it.sender as Player) } })
+//                    ).then(
+//                        Commands.literal("autorefill")
+//                            .requires { it.sender.hasPermission(Perms.AutoRefill.USE) }
+//                            .executes(Command { Utils.tryCatch(it) { AutoRefillModule().toggle(it.sender as Player) } })
                     )
                     .build(),
                 "${instance.name} plugin",

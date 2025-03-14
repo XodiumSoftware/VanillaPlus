@@ -7,21 +7,16 @@ import de.undercouch.gradle.tasks.download.Download
 import groovy.json.JsonSlurper
 import java.net.URI
 
-/*
- *  Copyright (c) 2025. Xodium.
- *  All rights reserved.
- */
-
 plugins {
     id("java")
     kotlin("jvm") version "2.1.10"
     kotlin("plugin.serialization") version "2.1.10"
-    id("com.gradleup.shadow") version "9.0.0-beta8"
+    id("com.gradleup.shadow") version "9.0.0-beta10"
     id("de.undercouch.download") version "5.6.0"
 }
 
 group = "org.xodium.vanillaplus"
-version = "1.2.0"
+version = "1.3.0"
 description = "Minecraft plugin that enhances the base gameplay."
 
 var pluginName: String = "VanillaPlus"
@@ -32,18 +27,12 @@ repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://maven.enginehub.org/repo/")
-    maven("https://repo.triumphteam.dev/snapshots")
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.10") //TODO("Move away from WorldEdit")
-    implementation("net.kyori:adventure-api:4.19.0")
     implementation(kotlin("stdlib-jdk8"))
-    implementation("org.jetbrains.kotlin:kotlin-reflect:2.1.10")
-    implementation("dev.triumphteam:triumph-gui-paper-kotlin:4.0.0-SNAPSHOT") {
-        exclude(group = "com.google.guava", module = "guava")
-    }
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
 }
 
@@ -67,7 +56,6 @@ tasks {
         dependsOn(processResources)
         archiveClassifier.set("")
         relocate("kotlin", "org.xodium.vanillaplus.kotlin")
-        relocate("dev.triumphteam.gui", "org.xodium.vanillaplus.gui")
         destinationDirectory.set(file(".server/plugins"))
         minimize()
         doLast {
@@ -107,12 +95,5 @@ tasks {
                 writeText("eula=true\n")
             }.also { println("EULA has been accepted.") }
         }
-    }
-    register<Exec>("runDevServer") {
-        group = "application"
-        description = "RUN: DEV SERVER"
-        workingDir = file(".server")
-        dependsOn("downloadServerJar", "acceptEula", "shadowJar")
-        commandLine = listOf("java", "-jar", "server.jar", "nogui")
     }
 }

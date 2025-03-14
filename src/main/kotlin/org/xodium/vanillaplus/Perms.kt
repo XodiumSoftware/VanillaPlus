@@ -5,24 +5,48 @@
 
 package org.xodium.vanillaplus
 
+import org.bukkit.permissions.Permission
+import org.bukkit.permissions.PermissionDefault
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+
 /**
  * Permissions for the VanillaPlus plugin.
  */
 object Perms {
-    /**
-     * Permissions for General commands.
-     */
-    object VanillaPlus {
-        const val USE = "vanillaplus.use"
+    private val G0 = instance::class.simpleName.toString().lowercase()
+
+    init {
+        listOf<Permission>(
+            Use.GENERAL,
+            AutoRefill.USE,
+            AutoTool.USE,
+        ).forEach(instance.server.pluginManager::addPermission)
     }
 
     /**
-     * Permissions for Gui commands.
+     * Permissions for Usage commands.
      */
-    object GuiModule {
-        const val FAQ = "vanillaplus.gui.faq"
-        const val DIMS = "vanillaplus.gui.dims"
-        const val SETTINGS = "vanillaplus.gui.settings"
-        const val SKINS = "vanillaplus.gui.skins"
+    object Use {
+        private val G1 = this::class.simpleName.toString().lowercase()
+        val GENERAL: Permission =
+            Permission("${G0}.${G1}", "Allows use of the commands", PermissionDefault.TRUE)
+    }
+
+    /**
+     * Permissions for AutoRefill commands.
+     */
+    object AutoRefill {
+        private val G1 = this::class.simpleName.toString().lowercase()
+        val USE: Permission =
+            Permission("${G0}.${G1}.use", "Allows use of the autorefill command", PermissionDefault.OP)
+    }
+
+    /**
+     * Permissions for AutoTool commands.
+     */
+    object AutoTool {
+        private val G1 = this::class.simpleName.toString().lowercase()
+        val USE: Permission =
+            Permission("${G0}.${G1}.use", "Allows use of the autotool command", PermissionDefault.OP)
     }
 }
