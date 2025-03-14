@@ -79,11 +79,11 @@ class AutoToolModule : ModuleInterface {
 
     @EventHandler(priority = EventPriority.MONITOR)
     fun onPlayerInteractWithBlock(event: PlayerInteractEvent) {
-        val playerSetting = main.getPlayerSetting(event.getPlayer()) // FIX
-        if (playerSetting.getBtcache().valid
-            && event.clickedBlock != null && event.clickedBlock!!
-                .type == playerSetting.getBtcache().lastMat
-        ) return
+//        val playerSetting = main.getPlayerSetting(event.getPlayer()) // FIX
+//        if (playerSetting.getBtcache().valid
+//            && event.clickedBlock != null && event.clickedBlock!!
+//                .type == playerSetting.getBtcache().lastMat
+//        ) return
         val player = event.player
         if (!player.hasPermission(Perms.AutoTool.USE)) return
         if (!hasBestToolsEnabled(player)) return
@@ -97,11 +97,11 @@ class AutoToolModule : ModuleInterface {
         if (event.hand != EquipmentSlot.HAND) return
         val bestTool = getBestToolFromInventory(block.type, player, playerInventory.itemInMainHand)
         if (bestTool == null || bestTool == playerInventory.itemInMainHand) {
-            playerSetting.getBtcache().validate(block.type)
+//            playerSetting.getBtcache().validate(block.type)
             return
         }
         switchToBestTool(player, bestTool, block.type)
-        playerSetting.getBtcache().validate(block.type)
+//        playerSetting.getBtcache().validate(block.type)
     }
 
     private fun hasBestToolsEnabled(player: Player): Boolean =

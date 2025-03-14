@@ -10,3 +10,11 @@ dependencies:
       load: BEFORE
       required: true
       join-classpath: true
+    CMI:
+      load: BEFORE
+      required: true
+      join-classpath: true
+    CMILib:
+      load: BEFORE
+      required: true
+      join-classpath: true

@@ -5,6 +5,7 @@
 
 package org.xodium.vanillaplus.modules
 
+import org.bukkit.World
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerPortalEvent
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause
@@ -17,12 +18,19 @@ class DimensionsModule : ModuleInterface {
     @EventHandler
     fun on(event: PlayerPortalEvent) {
         val player = event.player
-        if (event.cause == TeleportCause.NETHER_PORTAL) {
+        val server = player.server
+        val environment = player.world.environment
+        val cause = event.cause
+        val destination = when {
+            cause == TeleportCause.NETHER_PORTAL && environment == World.Environment.NORMAL -> "world_nether"
+            cause == TeleportCause.NETHER_PORTAL && environment == World.Environment.NETHER -> "world"
+            cause == TeleportCause.END_PORTAL && environment == World.Environment.NORMAL -> "world_the_end"
+            cause == TeleportCause.END_PORTAL && environment == World.Environment.THE_END -> "world"
+            else -> null
+        }
+        if (destination != null) {
             event.isCancelled = true
-            player.server.dispatchCommand(player, "cmi rt world_nether")
-        } else if (event.cause == TeleportCause.END_PORTAL) {
-            event.isCancelled = true
-            player.server.dispatchCommand(player, "cmi rt world_the_end")
+            server.dispatchCommand(player, "cmi rt $destination")
         }
     }
 }

@@ -16,7 +16,7 @@ plugins {
 }
 
 group = "org.xodium.vanillaplus"
-version = "1.2.1"
+version = "1.3.0"
 description = "Minecraft plugin that enhances the base gameplay."
 
 var pluginName: String = "VanillaPlus"
@@ -27,16 +27,12 @@ repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://maven.enginehub.org/repo/")
-    maven("https://repo.triumphteam.dev/snapshots")
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.10") //TODO("Move away from WorldEdit")
     implementation(kotlin("stdlib-jdk8"))
-    implementation("dev.triumphteam:triumph-gui-paper-kotlin:4.0.0-SNAPSHOT") {
-        exclude(group = "com.google.guava", module = "guava") //TODO("Remove when fixed")
-    }
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
 }
 
@@ -60,7 +56,6 @@ tasks {
         dependsOn(processResources)
         archiveClassifier.set("")
         relocate("kotlin", "org.xodium.vanillaplus.kotlin")
-        relocate("dev.triumphteam.gui", "org.xodium.vanillaplus.gui")
         destinationDirectory.set(file(".server/plugins"))
         minimize()
         doLast {

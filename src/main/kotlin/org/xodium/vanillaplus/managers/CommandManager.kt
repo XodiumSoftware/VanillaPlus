@@ -11,7 +11,6 @@ import com.mojang.brigadier.Command
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import org.bukkit.entity.Player
-import org.xodium.vanillaplus.Gui
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.Utils
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -27,7 +26,7 @@ object CommandManager {
             event.registrar().register(
                 Commands.literal(instance.name.lowercase())
                     .requires { it.sender.hasPermission(Perms.Use.GENERAL) }
-                    .executes(Command { Utils.tryCatch(it) { Gui.faqGUI().open(it.sender as Player) } }
+                    .executes(Command { Utils.tryCatch(it) { TODO() } }
                     ).then(
                         Commands.literal("autotool")
                             .requires { it.sender.hasPermission(Perms.AutoTool.USE) }
