@@ -133,7 +133,8 @@ data class ConfigData(
             Material.JUNGLE_SAPLING to listOf("trees/jungle"),
             Material.MANGROVE_PROPAGULE to listOf("trees/mangrove"),
             Material.OAK_SAPLING to listOf("trees/oak"),
-            Material.SPRUCE_SAPLING to listOf("trees/spruce")
+            Material.SPRUCE_SAPLING to listOf("trees/spruce"),
+            Material.WARPED_FUNGUS to listOf("trees/warped"),
         ),
     )
 }
