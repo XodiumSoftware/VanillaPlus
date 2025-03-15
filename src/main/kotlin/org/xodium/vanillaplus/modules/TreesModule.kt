@@ -74,10 +74,11 @@ class TreesModule : ModuleInterface {
 
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: StructureGrowEvent) {
-//        TODO: check if Tag.SAPLINGS also works for propagules and nether warped/crimson fungi.
-        event.location.block.takeIf { Tag.SAPLINGS.isTagged(it.type) }?.let {
-            event.isCancelled = pasteSchematic(it)
-        }
+        event.location.block.takeIf {
+            Tag.SAPLINGS.isTagged(it.type)
+//                    || it.type == Material.WARPED_FUNGUS
+//                    || it.type == Material.CRIMSON_FUNGUS
+        }?.let { event.isCancelled = pasteSchematic(it) }
     }
 
     private fun pasteSchematic(block: Block): Boolean {
