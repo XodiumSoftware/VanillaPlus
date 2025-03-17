@@ -122,6 +122,7 @@ data class ConfigData(
         val enabled: Boolean = true, // Enables or disables the TreesModule. Set to 'false' to disable.
 
         val ignoreAirBlocks: Boolean = true, // If it should ignore air blocks.
+        val ignoreStructureVoidBlocks: Boolean = true, // If it should ignore structure void blocks.
 
         // If a sapling type is missing here, no custom schematic will be used and default behavior applies.
         // You can define a file, multiple files or a folder.
@@ -133,7 +134,8 @@ data class ConfigData(
             Material.JUNGLE_SAPLING to listOf("trees/jungle"),
             Material.MANGROVE_PROPAGULE to listOf("trees/mangrove"),
             Material.OAK_SAPLING to listOf("trees/oak"),
-            Material.SPRUCE_SAPLING to listOf("trees/spruce")
+            Material.SPRUCE_SAPLING to listOf("trees/spruce"),
+            Material.WARPED_FUNGUS to listOf("trees/warped"),
         ),
     )
 }
