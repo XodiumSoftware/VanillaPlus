@@ -13,7 +13,6 @@ import com.sk89q.worldedit.function.mask.BlockTypeMask
 import com.sk89q.worldedit.function.operation.Operations
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.session.ClipboardHolder
-import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.block.Block
@@ -24,9 +23,14 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.ConfigData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.registries.BlockTypesRegistry
-import java.net.JarURLConnection
+import java.io.IOException
+import java.nio.channels.Channels
+import java.nio.channels.ReadableByteChannel
+import java.nio.file.FileSystems
 import java.nio.file.Files
-import java.nio.file.Paths
+import java.nio.file.Path
+import java.nio.file.StandardOpenOption
+import java.util.stream.Collectors
 
 
 class TreesModule : ModuleInterface {
@@ -38,56 +42,47 @@ class TreesModule : ModuleInterface {
         }
 
     private fun loadSchematics(resourceDir: String): List<Clipboard> {
-        val url = javaClass.getResource(resourceDir)
-            ?: error("Resource directory not found: $resourceDir")
-        val schematics = mutableListOf<Clipboard>()
-        if (url.protocol == "jar") {
-            (url.openConnection() as JarURLConnection).jarFile.use { jarFile ->
-                jarFile.entries().asSequence().filter { entry ->
-                    !entry.isDirectory && entry.name.startsWith(resourceDir.removePrefix("/"))
-                }.forEach { entry ->
-                    jarFile.getInputStream(entry).use { inputStream ->
-                        schematics.add(
-                            (ClipboardFormats.findByAlias("schem")?.getReader(inputStream)
-                                ?: error("Unsupported schematic format for resource entry: ${entry.name}")).read()
-                        )
+        val url = javaClass.getResource(resourceDir) ?: error("Resource directory not found: $resourceDir")
+        return try {
+            FileSystems.newFileSystem(url.toURI(), mapOf("create" to false)).use { fs ->
+                val dirPath = fs.getPath(resourceDir.removePrefix("/"))
+                Files.walk(dirPath, 1)
+                    .filter { Files.isRegularFile(it) }
+                    .collect(Collectors.toList())
+                    .also { if (it.isEmpty()) error("No schematics found in directory: $resourceDir") }
+                    .map { path ->
+                        Files.newByteChannel(path, StandardOpenOption.READ).use { channel ->
+                            readClipboard(path, channel)
+                        }
                     }
-                }
             }
-        } else {
-            Files.list(Paths.get(url.toURI())).use { paths ->
-                paths.filter { Files.isRegularFile(it) }.forEach { path ->
-                    Files.newInputStream(path).use { inputStream ->
-                        schematics.add(
-                            (ClipboardFormats.findByAlias("schem")?.getReader(inputStream)
-                                ?: error("Unsupported schematic format for file: $path")).read()
-                        )
-                    }
-                }
-            }
+        } catch (e: IOException) {
+            error("Failed to load schematics from $resourceDir: ${e.message}")
         }
-        if (schematics.isEmpty())
-            error("No schematics found in directory: $resourceDir")
-        return schematics
     }
 
+    private fun readClipboard(path: Path, channel: ReadableByteChannel): Clipboard {
+        val format = ClipboardFormats.findByAlias("schem") ?: error("Unsupported schematic format for resource: $path")
+        return try {
+            format.getReader(Channels.newInputStream(channel)).read()
+        } catch (e: Exception) {
+            throw IOException("Failed to read schematic $path: ${e.message}", e)
+        }
+    }
 
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: StructureGrowEvent) {
         event.location.block.takeIf {
             Tag.SAPLINGS.isTagged(it.type)
-//                    || it.type == Material.WARPED_FUNGUS
-//                    || it.type == Material.CRIMSON_FUNGUS
+                    || it.type == Material.WARPED_FUNGUS
+                    || it.type == Material.CRIMSON_FUNGUS
         }?.let { event.isCancelled = pasteSchematic(it) }
     }
 
     private fun pasteSchematic(block: Block): Boolean {
-        val clipboard = schematicCache[block.type]?.randomOrNull()
-        if (clipboard == null) {
-            instance.logger.info("No custom schematic found for ${block.type}.")
-            return false
-        }
-        Bukkit.getScheduler().runTask(instance, Runnable {
+        val clipboards = schematicCache[block.type] ?: return false
+        val clipboard = clipboards.random()
+        instance.server.scheduler.runTask(instance, Runnable {
             try {
                 WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(block.world))
                     .use { editSession ->
@@ -98,6 +93,7 @@ class TreesModule : ModuleInterface {
                                 .createPaste(editSession)
                                 .to(BlockVector3.at(block.x, block.y, block.z))
                                 .ignoreAirBlocks(ConfigData.TreesModule().ignoreAirBlocks)
+                                .ignoreStructureVoidBlocks(ConfigData.TreesModule().ignoreStructureVoidBlocks)
                                 .build()
                         )
                     }
