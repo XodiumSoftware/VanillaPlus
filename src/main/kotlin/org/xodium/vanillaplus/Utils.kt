@@ -30,6 +30,7 @@ object Utils {
     val MM = MiniMessage.miniMessage()
 
     fun String.mm() = MM.deserialize(this)
+    fun fireWatchFormat(text: String) = "<b><gradient:#CB2D3E:#EF473A>$text</b>".mm()
 
     fun EntityType.format(locale: Locale = Locale.ENGLISH, delimiters: String = "_", separator: String = " ") =
         name.lowercase(locale).split(delimiters).joinToString(separator)

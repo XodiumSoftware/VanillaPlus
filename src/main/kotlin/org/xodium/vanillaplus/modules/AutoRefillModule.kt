@@ -23,7 +23,6 @@ import org.bukkit.scheduler.BukkitTask
 import org.xodium.vanillaplus.Database
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.Utils
-import org.xodium.vanillaplus.Utils.mm
 import org.xodium.vanillaplus.Utils.moveBowlsAndBottles
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.ConfigData
@@ -56,6 +55,8 @@ class AutoRefillModule : ModuleInterface {
     private val offHandSlot = 40
 
     private var cleanupTask: BukkitTask? = null
+
+    // TODO: refill toggle doesnt immediately update the player's refill status, maybe todo with the cooldown?
 
     init {
         if (enabled()) {
@@ -237,7 +238,7 @@ class AutoRefillModule : ModuleInterface {
         val newValue = (!currentValue).toString()
         Database.setData(this::class, player.uniqueId.toString(), newValue)
 
-        val status = if (!currentValue) "<green>enabled" else "<red>disabled"
-        player.sendMessage("<gold>AutoRefill has been $status".mm())
+        val status = if (!currentValue) "<green>ON" else "<red>OFF"
+        player.sendActionBar(Utils.fireWatchFormat("AutoRefill: $status"))
     }
 }
