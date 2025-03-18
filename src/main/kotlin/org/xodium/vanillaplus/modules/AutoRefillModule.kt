@@ -5,10 +5,6 @@
 
 package org.xodium.vanillaplus.modules
 
-import com.mojang.brigadier.Command
-import com.mojang.brigadier.builder.LiteralArgumentBuilder
-import io.papermc.paper.command.brigadier.CommandSourceStack
-import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -26,6 +22,7 @@ import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.Utils
 import org.xodium.vanillaplus.Utils.moveBowlsAndBottles
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.data.ConfigData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -57,6 +54,12 @@ class AutoRefillModule : ModuleInterface {
     private var cleanupTask: BukkitTask? = null
 
     // TODO: refill toggle doesnt immediately update the player's refill status, maybe todo with the cooldown?
+
+    private val cooldowns = ConcurrentHashMap<UUID, Long>()
+    private val cooldownMs = 250L
+    private val offHandSlot = 40
+
+    private var cleanupTask: BukkitTask? = null
 
     init {
         if (enabled()) {
