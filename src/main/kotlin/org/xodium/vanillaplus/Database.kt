@@ -44,6 +44,7 @@ object Database {
     fun createTable(table: KClass<*>) {
         conn.createStatement().use { stmt ->
             stmt.execute(
+                // language=SQLite
                 """
                     CREATE TABLE IF NOT EXISTS ${table.simpleName} (
                         k TEXT PRIMARY KEY,
@@ -63,6 +64,7 @@ object Database {
      */
     fun setData(table: KClass<*>, key: String, value: String) {
         conn.prepareStatement(
+            // language=SQLite
             """
             INSERT OR REPLACE INTO ${table.simpleName} (k, v) VALUES (?, ?);
             """.trimIndent()
@@ -82,6 +84,7 @@ object Database {
      */
     fun getData(table: KClass<*>, key: String): String? {
         return conn.prepareStatement(
+            // language=SQLite
             """
             SELECT v FROM ${table.simpleName} WHERE k = ?;
             """.trimIndent()
