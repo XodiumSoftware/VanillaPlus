@@ -5,6 +5,10 @@
 
 package org.xodium.vanillaplus.modules
 
+import com.mojang.brigadier.Command
+import com.mojang.brigadier.builder.LiteralArgumentBuilder
+import io.papermc.paper.command.brigadier.CommandSourceStack
+import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.block.BlockFace
@@ -36,7 +40,20 @@ import java.util.stream.Collectors
 
 
 class AutoToolModule : ModuleInterface {
+    /**
+     * @return true if the module is enabled
+     */
     override fun enabled(): Boolean = ConfigData.AutoToolModule().enabled
+
+    /**
+     * @return the command for the module
+     */
+    @Suppress("UnstableApiUsage")
+    override fun cmd(): LiteralArgumentBuilder<CommandSourceStack> {
+        return Commands.literal("autotool")
+            .requires { it.sender.hasPermission(Perms.AutoTool.USE) }
+            .executes(Command { Utils.tryCatch(it) { toggle(it.sender as Player) } })
+    }
 
     val toolMap: MutableMap<Material, ToolEnum> = HashMap()
 
@@ -46,7 +63,9 @@ class AutoToolModule : ModuleInterface {
     }
 
     init {
-        Database.createTable(this::class)
+        if (enabled()) {
+            Database.createTable(this::class)
+        }
     }
 
     @EventHandler

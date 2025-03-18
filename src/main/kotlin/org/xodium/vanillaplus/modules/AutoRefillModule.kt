@@ -5,6 +5,10 @@
 
 package org.xodium.vanillaplus.modules
 
+import com.mojang.brigadier.Command
+import com.mojang.brigadier.builder.LiteralArgumentBuilder
+import io.papermc.paper.command.brigadier.CommandSourceStack
+import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -18,6 +22,8 @@ import org.bukkit.inventory.PlayerInventory
 import org.bukkit.scheduler.BukkitTask
 import org.xodium.vanillaplus.Database
 import org.xodium.vanillaplus.Perms
+import org.xodium.vanillaplus.Utils
+import org.xodium.vanillaplus.Utils.mm
 import org.xodium.vanillaplus.Utils.moveBowlsAndBottles
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.ConfigData
@@ -35,6 +41,16 @@ class AutoRefillModule : ModuleInterface {
      */
     override fun enabled(): Boolean = ConfigData.AutoRefillModule().enabled
 
+    /**
+     * @return the command for the module
+     */
+    @Suppress("UnstableApiUsage")
+    override fun cmd(): LiteralArgumentBuilder<CommandSourceStack> {
+        return Commands.literal("autorefill")
+            .requires { it.sender.hasPermission(Perms.AutoRefill.USE) }
+            .executes(Command { Utils.tryCatch(it) { toggle(it.sender as Player) } })
+    }
+
     private val cooldowns = ConcurrentHashMap<UUID, Long>()
     private val cooldownMs = 250L
     private val offHandSlot = 40
@@ -42,24 +58,24 @@ class AutoRefillModule : ModuleInterface {
     private var cleanupTask: BukkitTask? = null
 
     init {
-        Database.createTable(this::class)
-        startCleanupTask()
-        Runtime.getRuntime().addShutdownHook(Thread { cleanup() })
+        if (enabled()) {
+            Database.createTable(this::class)
+            startCleanupTask()
+            Runtime.getRuntime().addShutdownHook(Thread { cleanup() })
+        }
     }
 
     /**
      * Starts the cleanup task
      */
     private fun startCleanupTask() {
-        if (enabled()) {
-            cleanupTask = instance.server.scheduler.runTaskTimer(
-                instance,
-                Runnable { cooldowns.entries.removeIf { System.currentTimeMillis() - it.value > cooldownMs * 2 } },
-                1200L,
-                6000L
-            )
-            instance.logger.info("Started AutoRefill cooldown cleanup task")
-        }
+        cleanupTask = instance.server.scheduler.runTaskTimer(
+            instance,
+            Runnable { cooldowns.entries.removeIf { System.currentTimeMillis() - it.value > cooldownMs * 2 } },
+            1200L,
+            6000L
+        )
+        instance.logger.info("Started AutoRefill cooldown cleanup task")
     }
 
     /**
@@ -221,7 +237,7 @@ class AutoRefillModule : ModuleInterface {
         val newValue = (!currentValue).toString()
         Database.setData(this::class, player.uniqueId.toString(), newValue)
 
-        val status = if (!currentValue) "enabled" else "disabled"
-        player.sendMessage("§aAutoRefill has been $status for you.")
+        val status = if (!currentValue) "<green>enabled" else "<red>disabled"
+        player.sendMessage("<gold>AutoRefill has been $status".mm())
     }
 }
