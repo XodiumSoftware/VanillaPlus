@@ -12,9 +12,19 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause
 import org.xodium.vanillaplus.data.ConfigData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 
+/**
+ * Module to handle dimension teleportation
+ */
 class DimensionsModule : ModuleInterface {
+    /**
+     * Returns true if the module is enabled in the plugin's configuration.
+     */
     override fun enabled(): Boolean = ConfigData.DimensionsModule().enabled
 
+    /**
+     * Event handler for the PlayerPortalEvent.
+     * When the event is triggered, it cancels the event and teleports the player to the corresponding dimension.
+     */
     @EventHandler
     fun on(event: PlayerPortalEvent) {
         val player = event.player

@@ -17,9 +17,15 @@ import org.xodium.vanillaplus.Utils
 import org.xodium.vanillaplus.Utils.mm
 import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.modules.AutoRefillModule
 
 /**
- * Class for registering GUI commands.
+ * The `CommandManager` is responsible for managing and initializing commands in the VanillaPlus plugin.
+ * It handles the registration of commands as Bukkit event listeners and ensures only enabled commands
+ * are processed during the server startup phase.
+ *
+ * This object initializes its commands when the server starts and logs the loading time for each
+ * enabled command for monitoring performance.
  */
 object CommandManager {
     init {
@@ -39,10 +45,10 @@ object CommandManager {
 //                        Commands.literal("autotool")
 //                            .requires { it.sender.hasPermission(Perms.AutoTool.USE) }
 //                            .executes(Command { Utils.tryCatch(it) { AutoToolModule().toggle(it.sender as Player) } })
-//                    ).then(
-//                        Commands.literal("autorefill")
-//                            .requires { it.sender.hasPermission(Perms.AutoRefill.USE) }
-//                            .executes(Command { Utils.tryCatch(it) { AutoRefillModule().toggle(it.sender as Player) } })
+                    ).then(
+                        Commands.literal("autorefill")
+                            .requires { it.sender.hasPermission(Perms.AutoRefill.USE) }
+                            .executes(Command { Utils.tryCatch(it) { AutoRefillModule().toggle(it.sender as Player) } })
                     )
                     .build(),
                 "${instance.name} plugin",

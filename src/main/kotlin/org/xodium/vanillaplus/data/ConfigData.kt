@@ -24,7 +24,7 @@ data class ConfigData(
      */
     @Serializable
     data class AutoRefillModule(
-        val enabled: Boolean = false, // Enables or disables the RefillModule. Set to 'false' to disable.
+        val enabled: Boolean = true, // Enables or disables the RefillModule. Set to 'false' to disable.
 
         val defaultEnabledRefill: Boolean = true, // Default state of the Refill feature for users.
     )

@@ -6,7 +6,6 @@
 package org.xodium.vanillaplus
 
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.data.ConfigData
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
@@ -30,7 +29,6 @@ object Database {
             Class.forName(DRIVER)
             databaseFile.parentFile.apply { if (!exists()) mkdirs() }
             conn = DriverManager.getConnection(connUrl)
-            createTable(ConfigData::class)
             instance.logger.info("Opened Database Connection.")
             Runtime.getRuntime().addShutdownHook(Thread { close() })
         } catch (ex: Exception) {
