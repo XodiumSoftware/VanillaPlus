@@ -9,6 +9,7 @@ import net.kyori.adventure.sound.Sound
 import org.bukkit.Material
 import org.xodium.vanillaplus.Utils.fireFmt
 import org.xodium.vanillaplus.Utils.getTps
+import org.xodium.vanillaplus.Utils.getWeather
 import org.xodium.vanillaplus.Utils.mangoFmt
 
 /**
@@ -113,13 +114,8 @@ object Config {
         ) // The header of the tab list.
         var FOOTER: List<String> = listOf(
             "",
-            "${mangoFmt("]|[=]|[=]|[=]|[=]|[=]|[=]|[")}  ${fireFmt("TPS:")} <reset>${getTps()} ${
-                mangoFmt("|")
-            } ${fireFmt("Weather:")} <reset>${
-                TODO("%cmi_user_weather%")
-            }  ${
-                mangoFmt("]|[=]|[=]|[=]|[=]|[=]|[=]|[")
-            }"
+            """${mangoFmt("]|[=]|[=]|[=]|[=]|[=]|[=]|[")}  ${fireFmt("TPS:")} <reset>${getTps()} ${mangoFmt("|")}
+                | ${fireFmt("Weather:")} <reset>${getWeather()}  ${mangoFmt("]|[=]|[=]|[=]|[=]|[=]|[=]|[")}""".trimMargin()
         ) // The footer of the tab list.
     }
 

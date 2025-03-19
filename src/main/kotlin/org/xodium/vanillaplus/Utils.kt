@@ -219,5 +219,39 @@ object Utils {
      *
      * @return The tps of the server.
      */
-    fun getTps(): Double = instance.server.tps[0]
+    fun getTps(): String {
+        val tps = instance.server.tps[0]
+        val clampedTps = tps.coerceIn(0.0, 20.0)
+        val ratio = clampedTps / 20.0
+        val color = getColorForTps(ratio)
+        val formattedTps = String.format("%.1f", tps)
+        return "<color:$color>$formattedTps</color>"
+    }
+
+    /**
+     * Calculate a hex color between red and green based on the provided ratio (0.0 to 1.0)
+     *
+     * @param ratio The ratio to calculate the color for.
+     * @return The hex color for the ratio.
+     */
+    private fun getColorForTps(ratio: Double): String {
+        val r = (255 * (1 - ratio)).toInt()
+        val g = (255 * ratio).toInt()
+        val b = 0
+        return String.format("#%02X%02X%02X", r, g, b)
+    }
+
+    /**
+     * Gets a formatted string representing the current weather in the main world.
+     *
+     * @return A formatted string representing the weather.
+     */
+    fun getWeather(): String {
+        val world = instance.server.worlds.firstOrNull() ?: return "<color:#808080>Unknown</color>"
+        return when {
+            world.isThundering -> "<color:#5555FF>Thunderstorm</color>"
+            world.hasStorm() -> "<color:#3399FF>Rainy</color>"
+            else -> "<color:#FFCC33>Clear</color>"
+        }
+    }
 }
