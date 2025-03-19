@@ -24,10 +24,8 @@ import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Database
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.Utils
-import org.xodium.vanillaplus.Utils.mm
 import org.xodium.vanillaplus.Utils.moveBowlsAndBottles
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.data.ConfigData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -51,12 +49,6 @@ class AutoRefillModule : ModuleInterface {
             .requires { it.sender.hasPermission(Perms.AutoRefill.USE) }
             .executes(Command { Utils.tryCatch(it) { toggle(it.sender as Player) } })
     }
-
-    private val cooldowns = ConcurrentHashMap<UUID, Long>()
-    private val cooldownMs = 250L
-    private val offHandSlot = 40
-
-    private var cleanupTask: BukkitTask? = null
 
     // TODO: refill toggle doesnt immediately update the player's refill status, maybe todo with the cooldown?
 
