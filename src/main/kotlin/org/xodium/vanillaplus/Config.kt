@@ -7,6 +7,8 @@ package org.xodium.vanillaplus
 
 import net.kyori.adventure.sound.Sound
 import org.bukkit.Material
+import org.xodium.vanillaplus.Utils.fireWatchFmt
+import org.xodium.vanillaplus.Utils.getServerTps
 
 /**
  * Configuration settings for the VanillaPlus plugin.
@@ -104,8 +106,14 @@ object Config {
     object TabListModule {
         var ENABLED: Boolean = true // Enables or disables the TabListModule. Set to 'false' to disable.
 
-        var HEADER: List<String> = listOf(TODO(), "")
-        var FOOTER: List<String> = listOf("", TODO())
+        var HEADER: List<String> = listOf(
+            "&6]|[=]|[=]|[=]|[=]|[=]|[=]|[   ${fireWatchFmt("⚡ IllyriaRPG 1.21.4 ⚡")}   &6]|[=]|[=]|[=]|[=]|[=]|[=]|[",
+            ""
+        ) // The header of the tab list.
+        var FOOTER: List<String> = listOf(
+            "",
+            "&6]|[=]|[=]|[=]|[=]|[=]|[=]|[  &3TPS: &r${getServerTps()} &6| &3Weather: &r${TODO("%cmi_user_weather%")}  &6]|[=]|[=]|[=]|[=]|[=]|[=]|["
+        ) // The footer of the tab list.
     }
 
     /**

@@ -31,7 +31,7 @@ object Utils {
 
     fun String.mm() = MM.deserialize(this)
     fun List<String>.mm() = this.map { it.mm() }
-    fun fireWatchFormat(text: String) = "<b><gradient:#CB2D3E:#EF473A>$text</b>".mm()
+    fun fireWatchFmt(text: String) = "<gradient:#CB2D3E:#EF473A>$text".mm()
 
     fun EntityType.format(locale: Locale = Locale.ENGLISH, delimiters: String = "_", separator: String = " ") =
         name.lowercase(locale).split(delimiters).joinToString(separator)
@@ -118,6 +118,13 @@ object Utils {
      */
     fun isBowlOrBottle(material: Material): Boolean = material in setOf(Material.GLASS_BOTTLE, Material.BOWL)
 
+    /**
+     * A function to move bowls and bottles in an inventory.
+     *
+     * @param inv The inventory to move the bowls and bottles in.
+     * @param slot The slot to move the bowls and bottles from.
+     * @return True if the bowls and bottles were moved successfully, false otherwise.
+     */
     fun moveBowlsAndBottles(inv: Inventory, slot: Int): Boolean {
         if (!isBowlOrBottle(Objects.requireNonNull<ItemStack?>(inv.getItem(slot)).type)) return false
         val toBeMoved = inv.getItem(slot)
@@ -146,6 +153,12 @@ object Utils {
         return false
     }
 
+    /**
+     * A function to check if a player has a hoe in their inventory.
+     *
+     * @param inventory The inventory to check.
+     * @return True if the player has a hoe in their inventory, false otherwise.
+     */
     fun hasShears(inventory: Array<ItemStack?>): Boolean {
         for (i in 0..<9) {
             if (inventory[i] == null) continue
@@ -154,6 +167,12 @@ object Utils {
         return false
     }
 
+    /**
+     * A function to check if a player has a hoe in their inventory.
+     *
+     * @param inventory The inventory to check.
+     * @return True if the player has a hoe in their inventory, false otherwise.
+     */
     fun hasSword(inventory: Array<ItemStack?>): Boolean {
         for (i in 0..<9) {
             if (inventory[i] == null) continue
@@ -162,6 +181,12 @@ object Utils {
         return false
     }
 
+    /**
+     * A function to check if a player has a hoe in their hotbar.
+     *
+     * @param inventory The inventory of the player.
+     * @return True if the player has a hoe in their hotbar, false otherwise.
+     */
     fun hasHoe(inventory: Array<ItemStack?>): Boolean {
         for (i in 0..<9) {
             if (inventory[i] == null) continue
@@ -170,6 +195,12 @@ object Utils {
         return false
     }
 
+    /**
+     * A function to get the multiplier of an item stack.
+     *
+     * @param itemStack The item stack to get the multiplier of.
+     * @return The multiplier of the item stack.
+     */
     fun getMultiplier(itemStack: ItemStack): Int {
         val base = getBaseMultiplier(itemStack)
         val itemMeta = itemStack.itemMeta ?: return base
@@ -179,6 +210,12 @@ object Utils {
         return base + (efficiencyLevel * efficiencyLevel) + 1
     }
 
+    /**
+     * A function to get the base multiplier of an item stack.
+     *
+     * @param itemStack The item stack to get the base multiplier of.
+     * @return The base multiplier of the item stack.
+     */
     fun getBaseMultiplier(itemStack: ItemStack): Int {
         val itemName = itemStack.type.name
         return when {
@@ -191,4 +228,11 @@ object Utils {
             else -> 1
         }
     }
+
+    /**
+     * A function to get the server TPS.
+     *
+     * @return The server TPS.
+     */
+    fun getServerTps(): Double = instance.server.tps[0]
 }
