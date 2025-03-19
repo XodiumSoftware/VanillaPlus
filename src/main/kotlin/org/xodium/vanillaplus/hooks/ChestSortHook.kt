@@ -32,8 +32,7 @@ class ChestSortHook {
      */
     fun sort(block: Block) {
         if (!Config.InvUnloadModule.USE_CHESTSORT) return
-        TODO("add Registry")
-        if (!BlockUtils.isChestLikeBlock(block.type)) return
+        if (block.state !is Container) return
         ChestSortAPI.sortInventory((block.state as Container).inventory)
     }
 }

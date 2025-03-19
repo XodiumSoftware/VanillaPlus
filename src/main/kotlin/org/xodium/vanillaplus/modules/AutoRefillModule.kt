@@ -56,8 +56,6 @@ class AutoRefillModule : ModuleInterface {
 
     private var cleanupTask: BukkitTask? = null
 
-    // TODO: refill toggle doesnt immediately update the player's refill status, maybe todo with the cooldown?
-
     init {
         if (enabled()) {
             Database.createTable(this::class)
@@ -237,8 +235,7 @@ class AutoRefillModule : ModuleInterface {
         val currentValue = isEnabledForPlayer(player)
         val newValue = (!currentValue).toString()
         Database.setData(this::class, player.uniqueId.toString(), newValue)
-
-        val status = if (!currentValue) "<green>ON" else "<red>OFF"
-        player.sendActionBar(Utils.fireWatchFormat("AutoRefill: $status"))
+        cooldowns.remove(player.uniqueId)
+        player.sendActionBar(Utils.fireWatchFormat("AutoRefill: ${if (!currentValue) "<green>ON" else "<red>OFF"}"))
     }
 }
