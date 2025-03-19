@@ -30,6 +30,7 @@ object Utils {
     val MM = MiniMessage.miniMessage()
 
     fun String.mm() = MM.deserialize(this)
+    fun fireWatchFormat(text: String) = "<b><gradient:#CB2D3E:#EF473A>$text</b>".mm()
 
     fun EntityType.format(locale: Locale = Locale.ENGLISH, delimiters: String = "_", separator: String = " ") =
         name.lowercase(locale).split(delimiters).joinToString(separator)
@@ -178,13 +179,14 @@ object Utils {
     }
 
     fun getBaseMultiplier(itemStack: ItemStack): Int {
+        val itemName = itemStack.type.name
         return when {
-            itemStack.type.name.startsWith("DIAMOND") -> 8
-            itemStack.type.name.startsWith("IRON") -> 6
-            itemStack.type.name.startsWith("NETHERITE") -> 9
-            itemStack.type.name.startsWith("STONE") -> 4
-            itemStack.type.name.startsWith("WOOD") -> 2
-            itemStack.type.name.startsWith("GOLD") -> 12
+            itemName.startsWith("DIAMOND") -> 8
+            itemName.startsWith("IRON") -> 6
+            itemName.startsWith("NETHERITE") -> 9
+            itemName.startsWith("STONE") -> 4
+            itemName.startsWith("WOOD") -> 2
+            itemName.startsWith("GOLD") -> 12
             else -> 1
         }
     }

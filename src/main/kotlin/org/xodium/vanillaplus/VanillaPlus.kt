@@ -6,7 +6,6 @@
 package org.xodium.vanillaplus
 
 import org.bukkit.plugin.java.JavaPlugin
-import org.xodium.vanillaplus.managers.CommandManager
 import org.xodium.vanillaplus.managers.ModuleManager
 
 
@@ -33,7 +32,6 @@ class VanillaPlus : JavaPlugin() {
                 Perms
                 Database
                 ModuleManager
-                CommandManager
             }
         }
     }

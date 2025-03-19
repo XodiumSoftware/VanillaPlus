@@ -5,6 +5,9 @@
 
 package org.xodium.vanillaplus.enums
 
+/**
+ * Enum class for tools in Minecraft.
+ */
 enum class ToolEnum {
     PICKAXE,
     SHOVEL,

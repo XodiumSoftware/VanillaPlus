@@ -3,8 +3,21 @@
  *  All rights reserved.
  */
 
+@file:Suppress("UnstableApiUsage")
+
 package org.xodium.vanillaplus.managers
 
+import com.mojang.brigadier.Command
+import com.mojang.brigadier.builder.LiteralArgumentBuilder
+import io.papermc.paper.command.brigadier.CommandSourceStack
+import io.papermc.paper.command.brigadier.Commands
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
+import net.kyori.adventure.text.event.ClickEvent
+import org.bukkit.entity.Player
+import org.xodium.vanillaplus.Perms
+import org.xodium.vanillaplus.Utils
+import org.xodium.vanillaplus.Utils.mm
+import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.modules.*
 import kotlin.time.measureTime
@@ -18,25 +31,48 @@ import kotlin.time.measureTime
  * enabled module for monitoring performance.
  */
 object ModuleManager {
+    private val commandBuilders = mutableListOf<LiteralArgumentBuilder<CommandSourceStack>>()
+
     init {
         listOf(
             AutoRefillModule(),
             AutoToolModule(),
             DimensionsModule(),
             DoorsModule(),
+            InvUnloadModule(),
             MotdModule(),
             RecipiesModule(),
             TreesModule(),
         ).filter { it.enabled() }
-            .forEach {
+            .forEach { module ->
                 instance.logger.info(
-                    "Loaded: ${it::class.simpleName} | Took ${
+                    "Loaded: ${module::class.simpleName} | Took ${
                         measureTime {
-                            it
-                            instance.server.pluginManager.registerEvents(it, instance)
+                            instance.server.pluginManager.registerEvents(module, instance)
+                            module.cmd()?.let { commandBuilders.add(it) }
                         }.inWholeMilliseconds
                     }ms"
                 )
             }
+        commandBuilders.takeIf { it.isNotEmpty() }?.let {
+            instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
+                event.registrar().register(
+                    Commands.literal(instance.name.lowercase())
+                        .requires { it.sender.hasPermission(Perms.Use.GENERAL) }
+                        .executes(Command {
+                            Utils.tryCatch(it) {
+                                (it.sender as Player).sendMessage(
+                                    "$PREFIX v${instance.pluginMeta.version} | Click on me for more info!".mm()
+                                        .clickEvent(ClickEvent.suggestCommand("/help ${instance.name.lowercase()}"))
+                                )
+                            }
+                        })
+                        .apply { commandBuilders.forEach(this::then) }
+                        .build(),
+                    "${instance.name} plugin",
+                    mutableListOf("vp")
+                )
+            }
+        }
     }
 }

@@ -10,13 +10,12 @@ import java.net.URI
 plugins {
     id("java")
     kotlin("jvm") version "2.1.10"
-    kotlin("plugin.serialization") version "2.1.10"
-    id("com.gradleup.shadow") version "9.0.0-beta10"
+    id("com.gradleup.shadow") version "9.0.0-beta11"
     id("de.undercouch.download") version "5.6.0"
 }
 
 group = "org.xodium.vanillaplus"
-version = "1.4.0"
+version = "1.5.0"
 description = "Minecraft plugin that enhances the base gameplay."
 
 var pluginName: String = "VanillaPlus"
@@ -27,13 +26,14 @@ repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://maven.enginehub.org/repo/")
+    maven("https://repo.jeff-media.com/public/")
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.10") //TODO("Move away from WorldEdit")
     implementation(kotlin("stdlib-jdk8"))
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
+    implementation("de.jeff_media:ChestSortAPI:12.0.0")
 }
 
 java { toolchain.languageVersion.set(JavaLanguageVersion.of(21)) }
