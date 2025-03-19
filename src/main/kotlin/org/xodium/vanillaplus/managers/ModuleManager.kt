@@ -39,6 +39,7 @@ object ModuleManager {
             AutoToolModule(),
             DimensionsModule(),
             DoorsModule(),
+            InvUnloadModule(),
             MotdModule(),
             RecipiesModule(),
             TreesModule(),

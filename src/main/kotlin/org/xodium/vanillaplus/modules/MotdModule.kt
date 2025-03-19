@@ -8,8 +8,8 @@ package org.xodium.vanillaplus.modules
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.server.ServerListPingEvent
+import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Utils.mm
-import org.xodium.vanillaplus.data.ConfigData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 
 /**
@@ -20,12 +20,12 @@ class MotdModule : ModuleInterface {
     /**
      * Returns true if the module is enabled in the plugin's configuration.
      */
-    override fun enabled(): Boolean = ConfigData.MotdModule().enabled
+    override fun enabled(): Boolean = Config.MotdModule.ENABLED
 
     /**
      * Event handler for the ServerListPingEvent.
      * When the event is triggered, it replaces the default MOTD with a custom message.
      */
     @EventHandler(priority = EventPriority.MONITOR)
-    fun on(event: ServerListPingEvent) = event.motd(ConfigData.MotdModule().motd.joinToString("\n").mm())
+    fun on(event: ServerListPingEvent) = event.motd(Config.MotdModule.MOTD.joinToString("\n").mm())
 }

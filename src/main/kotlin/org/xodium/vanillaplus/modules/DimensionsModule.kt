@@ -9,7 +9,7 @@ import org.bukkit.World
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerPortalEvent
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause
-import org.xodium.vanillaplus.data.ConfigData
+import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 
 /**
@@ -19,7 +19,7 @@ class DimensionsModule : ModuleInterface {
     /**
      * Returns true if the module is enabled in the plugin's configuration.
      */
-    override fun enabled(): Boolean = ConfigData.DimensionsModule().enabled
+    override fun enabled(): Boolean = Config.DimensionsModule.ENABLED
 
     /**
      * Event handler for the PlayerPortalEvent.
