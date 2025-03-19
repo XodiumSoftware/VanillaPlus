@@ -36,7 +36,6 @@ class DoorsModule : ModuleInterface {
     private val autoClose = ConcurrentHashMap<Block, Long>()
 
     companion object {
-        private const val SCHEDULER_PERIOD_TICKS = 1L
         private val POSSIBLE_NEIGHBOURS = listOf(
             AdjacentBlockData(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
             AdjacentBlockData(0, 1, Door.Hinge.LEFT, BlockFace.EAST),
@@ -58,14 +57,19 @@ class DoorsModule : ModuleInterface {
     }
 
     init {
-        instance.server.scheduler.runTaskTimer(instance, Runnable {
-            autoClose.entries.removeIf { (block, time) ->
-                if (System.currentTimeMillis() >= time) {
-                    handleAutoClose(block)
-                    true
-                } else false
-            }
-        }, SCHEDULER_PERIOD_TICKS, SCHEDULER_PERIOD_TICKS)
+        instance.server.scheduler.runTaskTimer(
+            instance,
+            Runnable {
+                autoClose.entries.removeIf { (block, time) ->
+                    if (System.currentTimeMillis() >= time) {
+                        handleAutoClose(block)
+                        true
+                    } else false
+                }
+            },
+            1L,
+            1L
+        )
     }
 
     private fun handleAutoClose(block: Block) {
@@ -143,11 +147,15 @@ class DoorsModule : ModuleInterface {
 
     private fun toggleOtherDoor(block: Block, block2: Block, open: Boolean) {
         if (block.blockData !is Door || block2.blockData !is Door) return
-        instance.server.scheduler.runTaskLater(instance, Runnable {
-            val door = block.blockData as Door
-            val door2 = block2.blockData as Door
-            if (door.isOpen != door2.isOpen) toggleDoor(block2, door2, open)
-        }, 1L)
+        instance.server.scheduler.runTaskLater(
+            instance,
+            Runnable {
+                val door = block.blockData as Door
+                val door2 = block2.blockData as Door
+                if (door.isOpen != door2.isOpen) toggleDoor(block2, door2, open)
+            },
+            1L
+        )
     }
 
     private fun getDoorBottom(door: Door, block: Block): Door? {

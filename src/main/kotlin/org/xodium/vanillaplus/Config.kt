@@ -16,7 +16,7 @@ object Config {
      * Configuration settings for the AutoRefillModule. This module controls the refill features of the plugin.
      */
     object AutoRefillModule {
-        var ENABLED: Boolean = true // Enables or disables the RefillModule. Set to 'false' to disable.
+        var ENABLED: Boolean = true // Enables or disables the AutoRefillModule. Set to 'false' to disable.
     }
 
     /**
@@ -95,7 +95,14 @@ object Config {
      * Configuration settings for the RecipiesModule. This module controls the recipe features of the plugin.
      */
     object RecipiesModule {
-        var ENABLED: Boolean = true // Enables or disables the SkinsModule. Set to 'false' to disable.
+        var ENABLED: Boolean = true // Enables or disables the RecipiesModule. Set to 'false' to disable.
+    }
+
+    /**
+     * Configuration settings for the TabListModule. This module controls the tab list features of the plugin.
+     */
+    object TabListModule {
+        var ENABLED: Boolean = true // Enables or disables the TabListModule. Set to 'false' to disable.
     }
 
     /**

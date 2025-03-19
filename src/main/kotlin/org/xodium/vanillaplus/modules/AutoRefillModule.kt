@@ -19,7 +19,6 @@ import org.bukkit.event.player.PlayerItemConsumeEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.PlayerInventory
-import org.bukkit.scheduler.BukkitTask
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Database
 import org.xodium.vanillaplus.Perms
@@ -54,38 +53,16 @@ class AutoRefillModule : ModuleInterface {
     private val cooldownMs = 250L
     private val offHandSlot = 40
 
-    private var cleanupTask: BukkitTask? = null
-
     init {
         if (enabled()) {
             Database.createTable(this::class)
-            startCleanupTask()
-            Runtime.getRuntime().addShutdownHook(Thread { cleanup() })
-        }
-    }
-
-    /**
-     * Starts the cleanup task
-     */
-    private fun startCleanupTask() {
-        cleanupTask = instance.server.scheduler.runTaskTimer(
-            instance,
-            Runnable { cooldowns.entries.removeIf { System.currentTimeMillis() - it.value > cooldownMs * 2 } },
-            1200L,
-            6000L
-        )
-        instance.logger.info("Started AutoRefill cooldown cleanup task")
-    }
-
-    /**
-     * Cleans up the module resources
-     */
-    private fun cleanup() {
-        synchronized(this) {
-            cleanupTask?.cancel()
-            cleanupTask = null
-            cooldowns.clear()
-            instance.logger.info("Cleaned up AutoRefill module resources")
+            instance.server.scheduler.runTaskTimer(
+                instance,
+                Runnable { cooldowns.entries.removeIf { System.currentTimeMillis() - it.value > cooldownMs * 2 } },
+                1200L,
+                6000L
+            )
+            Runtime.getRuntime().addShutdownHook(Thread { synchronized(this, cooldowns::clear) })
         }
     }
 
