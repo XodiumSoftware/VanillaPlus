@@ -27,6 +27,7 @@ repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://maven.enginehub.org/repo/")
+    maven("https://repo.jeff-media.com/public/")
 }
 
 dependencies {
@@ -34,6 +35,7 @@ dependencies {
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.10") //TODO("Move away from WorldEdit")
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
+    implementation("de.jeff_media:ChestSortAPI:12.0.0")
 }
 
 java { toolchain.languageVersion.set(JavaLanguageVersion.of(21)) }

@@ -94,6 +94,15 @@ data class ConfigData(
     )
 
     /**
+     * Configuration settings for the InvUnloadModule. This module controls the inventory unload features of the plugin.
+     */
+    data class InvUnloadModule(
+        val enabled: Boolean = false, // Enables or disables the InvUnloadModule. Set to 'false' to disable.
+
+        val useChestSort: Boolean = true, // If the ChestSort plugin should be used.
+    )
+
+    /**
      * Configuration settings for the MotdModule. This module controls the MOTD features of the plugin.
      */
     @Serializable
