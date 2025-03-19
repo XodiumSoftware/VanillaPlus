@@ -26,6 +26,7 @@ import org.xodium.vanillaplus.Utils
 import org.xodium.vanillaplus.Utils.moveBowlsAndBottles
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.TimeUtils.minutes
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -59,8 +60,8 @@ class AutoRefillModule : ModuleInterface {
             instance.server.scheduler.runTaskTimer(
                 instance,
                 Runnable { cooldowns.entries.removeIf { System.currentTimeMillis() - it.value > cooldownMs * 2 } },
-                1200L,
-                6000L
+                1.minutes,
+                5.minutes
             )
             Runtime.getRuntime().addShutdownHook(Thread { synchronized(this, cooldowns::clear) })
         }
