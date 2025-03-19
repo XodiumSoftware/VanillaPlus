@@ -5,6 +5,8 @@
 
 package org.xodium.vanillaplus.interfaces
 
+import com.mojang.brigadier.builder.LiteralArgumentBuilder
+import io.papermc.paper.command.brigadier.CommandSourceStack
 import org.bukkit.event.Listener
 
 
@@ -20,4 +22,10 @@ interface ModuleInterface : Listener {
      * @return `true` if the module is enabled, `false` otherwise.
      */
     fun enabled(): Boolean
+
+    /**
+     * Returns the command for this module.
+     */
+    @Suppress("UnstableApiUsage")
+    fun cmd(): LiteralArgumentBuilder<CommandSourceStack>? = null
 }

@@ -6,7 +6,6 @@
 package org.xodium.vanillaplus
 
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.data.ConfigData
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
@@ -30,7 +29,6 @@ object Database {
             Class.forName(DRIVER)
             databaseFile.parentFile.apply { if (!exists()) mkdirs() }
             conn = DriverManager.getConnection(connUrl)
-            createTable(ConfigData::class)
             instance.logger.info("Opened Database Connection.")
             Runtime.getRuntime().addShutdownHook(Thread { close() })
         } catch (ex: Exception) {
@@ -46,6 +44,7 @@ object Database {
     fun createTable(table: KClass<*>) {
         conn.createStatement().use { stmt ->
             stmt.execute(
+                // language=SQLite
                 """
                     CREATE TABLE IF NOT EXISTS ${table.simpleName} (
                         k TEXT PRIMARY KEY,
@@ -65,6 +64,7 @@ object Database {
      */
     fun setData(table: KClass<*>, key: String, value: String) {
         conn.prepareStatement(
+            // language=SQLite
             """
             INSERT OR REPLACE INTO ${table.simpleName} (k, v) VALUES (?, ?);
             """.trimIndent()
@@ -84,6 +84,7 @@ object Database {
      */
     fun getData(table: KClass<*>, key: String): String? {
         return conn.prepareStatement(
+            // language=SQLite
             """
             SELECT v FROM ${table.simpleName} WHERE k = ?;
             """.trimIndent()

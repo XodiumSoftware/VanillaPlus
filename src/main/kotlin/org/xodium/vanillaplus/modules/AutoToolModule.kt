@@ -5,6 +5,10 @@
 
 package org.xodium.vanillaplus.modules
 
+import com.mojang.brigadier.Command
+import com.mojang.brigadier.builder.LiteralArgumentBuilder
+import io.papermc.paper.command.brigadier.CommandSourceStack
+import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.block.BlockFace
@@ -23,10 +27,10 @@ import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.PlayerInventory
 import org.bukkit.inventory.meta.Damageable
+import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Database
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.Utils
-import org.xodium.vanillaplus.data.ConfigData
 import org.xodium.vanillaplus.enums.ToolEnum
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.registries.MaterialRegistry
@@ -36,7 +40,20 @@ import java.util.stream.Collectors
 
 
 class AutoToolModule : ModuleInterface {
-    override fun enabled(): Boolean = ConfigData.AutoToolModule().enabled
+    /**
+     * @return true if the module is enabled
+     */
+    override fun enabled(): Boolean = Config.AutoToolModule.ENABLED
+
+    /**
+     * @return the command for the module
+     */
+    @Suppress("UnstableApiUsage")
+    override fun cmd(): LiteralArgumentBuilder<CommandSourceStack> {
+        return Commands.literal("autotool")
+            .requires { it.sender.hasPermission(Perms.AutoTool.USE) }
+            .executes(Command { Utils.tryCatch(it) { toggle(it.sender as Player) } })
+    }
 
     val toolMap: MutableMap<Material, ToolEnum> = HashMap()
 
@@ -46,7 +63,9 @@ class AutoToolModule : ModuleInterface {
     }
 
     init {
-        Database.createTable(this::class)
+        if (enabled()) {
+            Database.createTable(this::class)
+        }
     }
 
     @EventHandler
@@ -56,8 +75,8 @@ class AutoToolModule : ModuleInterface {
         if (!player.hasPermission(Perms.AutoTool.USE)) return
         TODO("check if autotool is enabled in db")
         val entity = event.getEntity()
-        if (!(entity is Monster && ConfigData.AutoToolModule().useSwordOnHostileMobs)) return
-        val bestRoscoe = getBestRoscoeFromInventory(entity.type, player, ConfigData.AutoToolModule().useAxeAsSword)
+        if (!(entity is Monster && Config.AutoToolModule.USE_SWORD_ON_HOSTILE_MOBS)) return
+        val bestRoscoe = getBestRoscoeFromInventory(entity.type, player, Config.AutoToolModule.USE_AXE_AS_SWORD)
         if (bestRoscoe == null || bestRoscoe == player.inventory.itemInMainHand) return
         switchToBestRoscoe(player, bestRoscoe)
     }
@@ -91,7 +110,7 @@ class AutoToolModule : ModuleInterface {
         if (block == null) return
         if (block.type == Material.AIR) return
         val playerInventory = player.inventory
-        if (ConfigData.AutoToolModule().dontSwitchDuringBattle && isWeapon(playerInventory.itemInMainHand))
+        if (Config.AutoToolModule.DONT_SWITCH_DURING_BATTLE && isWeapon(playerInventory.itemInMainHand))
             return
         if (event.getAction() != Action.LEFT_CLICK_BLOCK) return
         if (event.hand != EquipmentSlot.HAND) return
@@ -326,9 +345,9 @@ class AutoToolModule : ModuleInterface {
                 && material != Material.COBWEB
             ) {
                 ToolEnum.HOE
-            } else if (((ConfigData.AutoToolModule().considerSwordsForCobwebs
+            } else if (((Config.AutoToolModule.CONSIDER_SWORDS_FOR_COBWEBS
                         && material == Material.COBWEB) || (material != Material.COBWEB
-                        && ConfigData.AutoToolModule().considerSwordsForLeaves))
+                        && Config.AutoToolModule.CONSIDER_SWORDS_FOR_LEAVES))
                 && Utils.hasSword(
                     player.inventory.storageContents
                 )

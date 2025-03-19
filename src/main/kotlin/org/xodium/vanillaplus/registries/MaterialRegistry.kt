@@ -11,7 +11,6 @@ import org.bukkit.Material
  * Registry for materials.
  */
 object MaterialRegistry {
-
     val BASE_DAMAGE_MAP = mapOf(
         Material.NETHERITE_AXE to 10.0,
         Material.IRON_AXE to 9.0,
