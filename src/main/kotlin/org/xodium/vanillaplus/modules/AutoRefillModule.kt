@@ -50,8 +50,6 @@ class AutoRefillModule : ModuleInterface {
             .executes(Command { Utils.tryCatch(it) { toggle(it.sender as Player) } })
     }
 
-    // TODO: refill toggle doesnt immediately update the player's refill status, maybe todo with the cooldown?
-
     private val cooldowns = ConcurrentHashMap<UUID, Long>()
     private val cooldownMs = 250L
     private val offHandSlot = 40
@@ -237,8 +235,7 @@ class AutoRefillModule : ModuleInterface {
         val currentValue = isEnabledForPlayer(player)
         val newValue = (!currentValue).toString()
         Database.setData(this::class, player.uniqueId.toString(), newValue)
-
-        val status = if (!currentValue) "<green>ON" else "<red>OFF"
-        player.sendActionBar(Utils.fireWatchFormat("AutoRefill: $status"))
+        cooldowns.remove(player.uniqueId)
+        player.sendActionBar(Utils.fireWatchFormat("AutoRefill: ${if (!currentValue) "<green>ON" else "<red>OFF"}"))
     }
 }
