@@ -103,6 +103,9 @@ object Config {
      */
     object TabListModule {
         var ENABLED: Boolean = true // Enables or disables the TabListModule. Set to 'false' to disable.
+
+        var HEADER: List<String> = listOf(TODO(), "")
+        var FOOTER: List<String> = listOf("", TODO())
     }
 
     /**

@@ -6,10 +6,13 @@
 package org.xodium.vanillaplus.modules
 
 import net.kyori.adventure.audience.Audience
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.JoinConfiguration
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.player.PlayerJoinEvent
 import org.xodium.vanillaplus.Config
+import org.xodium.vanillaplus.Utils.mm
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.TimeUtils.seconds
@@ -47,6 +50,10 @@ class TabListModule : ModuleInterface {
      * @param audience the audience to update the tab list for
      */
     private fun updateTabList(audience: Audience) {
-        audience.sendPlayerListHeaderAndFooter(TODO(), TODO())
+        val joinConfig = JoinConfiguration.separator(Component.newline())
+        audience.sendPlayerListHeaderAndFooter(
+            Component.join(joinConfig, Config.TabListModule.HEADER.mm()),
+            Component.join(joinConfig, Config.TabListModule.FOOTER.mm())
+        )
     }
 }
