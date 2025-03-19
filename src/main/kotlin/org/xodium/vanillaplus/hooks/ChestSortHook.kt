@@ -9,7 +9,7 @@ import de.jeff_media.chestsort.api.ChestSortAPI
 import org.bukkit.block.Block
 import org.bukkit.block.Container
 import org.bukkit.entity.Player
-import org.xodium.vanillaplus.data.ConfigData
+import org.xodium.vanillaplus.Config
 
 
 /**
@@ -23,7 +23,7 @@ class ChestSortHook {
      * @return Boolean
      */
     fun shouldSort(player: Player): Boolean =
-        ConfigData.InvUnloadModule().useChestSort && ChestSortAPI.hasSortingEnabled(player)
+        Config.InvUnloadModule.USE_CHESTSORT && ChestSortAPI.hasSortingEnabled(player)
 
     /**
      * Sort inventory
@@ -31,7 +31,7 @@ class ChestSortHook {
      * @param block Block
      */
     fun sort(block: Block) {
-        if (!ConfigData.InvUnloadModule().useChestSort) return
+        if (!Config.InvUnloadModule.USE_CHESTSORT) return
         TODO("add Registry")
         if (!BlockUtils.isChestLikeBlock(block.type)) return
         ChestSortAPI.sortInventory((block.state as Container).inventory)

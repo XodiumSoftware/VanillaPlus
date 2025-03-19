@@ -22,17 +22,17 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
+import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.AdjacentBlockData
-import org.xodium.vanillaplus.data.ConfigData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import java.util.concurrent.ConcurrentHashMap
 
 
 class DoorsModule : ModuleInterface {
-    override fun enabled(): Boolean = ConfigData.DoorsModule().enabled
+    override fun enabled(): Boolean = Config.DoorsModule.ENABLED
 
-    private val autoCloseDelay = ConfigData.DoorsModule().autoCloseDelay * 1000L
+    private val autoCloseDelay = Config.DoorsModule.AUTO_CLOSE_DELAY * 1000L
     private val autoClose = ConcurrentHashMap<Block, Long>()
 
     companion object {
@@ -82,10 +82,10 @@ class DoorsModule : ModuleInterface {
 
     private fun handleDoorClose(block: Block, door: Door) {
         getOtherPart(door, block)?.let { toggleOtherDoor(block, it, false) }
-        block.world.playSound(ConfigData.DoorsModule().soundDoorClose)
+        block.world.playSound(Config.DoorsModule.SOUND_DOOR_CLOSE)
     }
 
-    private fun handleGateClose(block: Block) = block.world.playSound(ConfigData.DoorsModule().soundGateClose)
+    private fun handleGateClose(block: Block) = block.world.playSound(Config.DoorsModule.SOUND_GATE_CLOSE)
 
     private fun isValidInteraction(event: PlayerInteractEvent): Boolean {
         return event.hand == EquipmentSlot.HAND &&
@@ -95,15 +95,15 @@ class DoorsModule : ModuleInterface {
 
     private fun handleLeftClick(event: PlayerInteractEvent, block: Block) {
         if (canKnock(event, event.player) && isKnockableBlock(block.blockData)) {
-            block.world.playSound(ConfigData.DoorsModule().soundKnock)
+            block.world.playSound(Config.DoorsModule.SOUND_KNOCK)
         }
     }
 
     private fun handleRightClick(block: Block) {
-        if (ConfigData.DoorsModule().allowDoubleDoors && (block.blockData is Door || block.blockData is Gate)) {
+        if (Config.DoorsModule.ALLOW_DOUBLE_DOORS && (block.blockData is Door || block.blockData is Gate)) {
             processDoorOrGateInteraction(block)
         }
-        if (ConfigData.DoorsModule().allowAutoClose) autoClose[block] = System.currentTimeMillis() + autoCloseDelay
+        if (Config.DoorsModule.ALLOW_AUTO_CLOSE) autoClose[block] = System.currentTimeMillis() + autoCloseDelay
     }
 
     private fun processDoorOrGateInteraction(block: Block) {
@@ -112,7 +112,7 @@ class DoorsModule : ModuleInterface {
             if (otherDoorBlock != null && otherDoorBlock.blockData is Door) {
                 val otherDoor = otherDoorBlock.blockData as Door
                 toggleOtherDoor(block, otherDoorBlock, !otherDoor.isOpen)
-                if (ConfigData.DoorsModule().allowAutoClose) {
+                if (Config.DoorsModule.ALLOW_AUTO_CLOSE) {
                     autoClose[otherDoorBlock] = System.currentTimeMillis() + autoCloseDelay
                 }
             }
@@ -129,15 +129,15 @@ class DoorsModule : ModuleInterface {
     }
 
     private fun isKnockingConditionViolated(player: Player): Boolean {
-        return (ConfigData.DoorsModule().knockingRequiresShift && !player.isSneaking) ||
-                (ConfigData.DoorsModule().knockingRequiresEmptyHand &&
+        return (Config.DoorsModule.KNOCKING_REQUIRES_SHIFT && !player.isSneaking) ||
+                (Config.DoorsModule.KNOCKING_REQUIRES_EMPTY_HAND &&
                         player.inventory.itemInMainHand.type != Material.AIR)
     }
 
     private fun isKnockableBlock(data: BlockData): Boolean = when (data) {
-        is Door -> ConfigData.DoorsModule().allowKnockingDoors
-        is Gate -> ConfigData.DoorsModule().allowKnockingGates
-        is TrapDoor -> ConfigData.DoorsModule().allowKnockingTrapdoors
+        is Door -> Config.DoorsModule.ALLOW_KNOCKING_DOORS
+        is Gate -> Config.DoorsModule.ALLOW_KNOCKING_GATES
+        is TrapDoor -> Config.DoorsModule.ALLOW_KNOCKING_TRAPDOORS
         else -> false
     }
 

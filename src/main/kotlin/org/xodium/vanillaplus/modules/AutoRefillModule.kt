@@ -20,12 +20,12 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.PlayerInventory
 import org.bukkit.scheduler.BukkitTask
+import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Database
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.Utils
 import org.xodium.vanillaplus.Utils.moveBowlsAndBottles
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.data.ConfigData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -38,7 +38,7 @@ class AutoRefillModule : ModuleInterface {
     /**
      * @return true if the module is enabled
      */
-    override fun enabled(): Boolean = ConfigData.AutoRefillModule().enabled
+    override fun enabled(): Boolean = Config.AutoRefillModule.ENABLED
 
     /**
      * @return the command for the module
