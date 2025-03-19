@@ -31,7 +31,8 @@ object Utils {
 
     fun String.mm() = MM.deserialize(this)
     fun List<String>.mm() = this.map { it.mm() }
-    fun fireWatchFmt(text: String) = "<gradient:#CB2D3E:#EF473A>$text".mm()
+    fun fireFmt(text: String) = "<gradient:#CB2D3E:#EF473A>$text".mm()
+    fun mangoFmt(text: String) = "<gradient:#FFE259:#FFA751>$text".mm()
 
     fun EntityType.format(locale: Locale = Locale.ENGLISH, delimiters: String = "_", separator: String = " ") =
         name.lowercase(locale).split(delimiters).joinToString(separator)
@@ -66,22 +67,6 @@ object Utils {
     fun getBaseDamage(material: Material): Double = MaterialRegistry.BASE_DAMAGE_MAP[material] ?: 0.0
 
     /**
-     * A function to check if an entity type is an arthropod.
-     *
-     * @param entityType The entity type to check.
-     * @return True if the entity type is an arthropod, false otherwise.
-     */
-    fun isArthropod(entityType: EntityType): Boolean = EntityRegistry.ARTHROPODS.contains(entityType)
-
-    /**
-     * A function to check if an entity type is an undead.
-     *
-     * @param entityType The entity type to check.
-     * @return True if the entity type is an undead, false otherwise.
-     */
-    fun isUndead(entityType: EntityType): Boolean = EntityRegistry.UNDEAD.contains(entityType)
-
-    /**
      * A function to get the damage of an item stack against an entity type.
      *
      * @param itemStack The item stack to get the damage of.
@@ -104,8 +89,8 @@ object Utils {
         itemStack?.itemMeta?.enchants?.entries?.sumOf { (enchantment, level) ->
             when (enchantment) {
                 Enchantment.SHARPNESS -> 0.5 * level + 0.5
-                Enchantment.BANE_OF_ARTHROPODS -> if (isArthropod(entityType)) 2.5 * level else 0.0
-                Enchantment.SMITE -> if (isUndead(entityType)) 2.5 * level else 0.0
+                Enchantment.BANE_OF_ARTHROPODS -> if (EntityRegistry.ARTHROPODS.contains(entityType)) 2.5 * level else 0.0
+                Enchantment.SMITE -> if (EntityRegistry.UNDEAD.contains(entityType)) 2.5 * level else 0.0
                 else -> 0.0
             }
         } ?: 0.0
@@ -230,9 +215,9 @@ object Utils {
     }
 
     /**
-     * A function to get the server TPS.
+     * A function to get the tps of the server.
      *
-     * @return The server TPS.
+     * @return The tps of the server.
      */
-    fun getServerTps(): Double = instance.server.tps[0]
+    fun getTps(): Double = instance.server.tps[0]
 }

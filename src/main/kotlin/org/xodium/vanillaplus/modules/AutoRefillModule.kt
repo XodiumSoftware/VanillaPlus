@@ -214,6 +214,6 @@ class AutoRefillModule : ModuleInterface {
         val newValue = (!currentValue).toString()
         Database.setData(this::class, player.uniqueId.toString(), newValue)
         cooldowns.remove(player.uniqueId)
-        player.sendActionBar(Utils.fireWatchFmt("AutoRefill: ${if (!currentValue) "<green>ON" else "<red>OFF"}"))
+        player.sendActionBar(Utils.fireFmt("AutoRefill: ${if (!currentValue) "<green>ON" else "<red>OFF"}"))
     }
 }

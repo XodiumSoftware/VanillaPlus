@@ -7,8 +7,9 @@ package org.xodium.vanillaplus
 
 import net.kyori.adventure.sound.Sound
 import org.bukkit.Material
-import org.xodium.vanillaplus.Utils.fireWatchFmt
-import org.xodium.vanillaplus.Utils.getServerTps
+import org.xodium.vanillaplus.Utils.fireFmt
+import org.xodium.vanillaplus.Utils.getTps
+import org.xodium.vanillaplus.Utils.mangoFmt
 
 /**
  * Configuration settings for the VanillaPlus plugin.
@@ -107,12 +108,18 @@ object Config {
         var ENABLED: Boolean = true // Enables or disables the TabListModule. Set to 'false' to disable.
 
         var HEADER: List<String> = listOf(
-            "&6]|[=]|[=]|[=]|[=]|[=]|[=]|[   ${fireWatchFmt("⚡ IllyriaRPG 1.21.4 ⚡")}   &6]|[=]|[=]|[=]|[=]|[=]|[=]|[",
+            "${mangoFmt("]|[=]|[=]|[=]|[=]|[=]|[=]|[")}   ${fireFmt("⚡ IllyriaRPG 1.21.4 ⚡")}   ${mangoFmt("]|[=]|[=]|[=]|[=]|[=]|[=]|[")}",
             ""
         ) // The header of the tab list.
         var FOOTER: List<String> = listOf(
             "",
-            "&6]|[=]|[=]|[=]|[=]|[=]|[=]|[  &3TPS: &r${getServerTps()} &6| &3Weather: &r${TODO("%cmi_user_weather%")}  &6]|[=]|[=]|[=]|[=]|[=]|[=]|["
+            "${mangoFmt("]|[=]|[=]|[=]|[=]|[=]|[=]|[")}  ${fireFmt("TPS:")} <reset>${getTps()} ${
+                mangoFmt("|")
+            } ${fireFmt("Weather:")} <reset>${
+                TODO("%cmi_user_weather%")
+            }  ${
+                mangoFmt("]|[=]|[=]|[=]|[=]|[=]|[=]|[")
+            }"
         ) // The footer of the tab list.
     }
 
