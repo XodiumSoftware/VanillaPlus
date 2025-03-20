@@ -7,6 +7,10 @@ package org.xodium.vanillaplus
 
 import net.kyori.adventure.sound.Sound
 import org.bukkit.Material
+import org.xodium.vanillaplus.Utils.fireFmt
+import org.xodium.vanillaplus.Utils.getTps
+import org.xodium.vanillaplus.Utils.getWeather
+import org.xodium.vanillaplus.Utils.mangoFmt
 
 /**
  * Configuration settings for the VanillaPlus plugin.
@@ -16,7 +20,7 @@ object Config {
      * Configuration settings for the AutoRefillModule. This module controls the refill features of the plugin.
      */
     object AutoRefillModule {
-        var ENABLED: Boolean = true // Enables or disables the RefillModule. Set to 'false' to disable.
+        var ENABLED: Boolean = true // Enables or disables the AutoRefillModule. Set to 'false' to disable.
     }
 
     /**
@@ -95,7 +99,29 @@ object Config {
      * Configuration settings for the RecipiesModule. This module controls the recipe features of the plugin.
      */
     object RecipiesModule {
-        var ENABLED: Boolean = true // Enables or disables the SkinsModule. Set to 'false' to disable.
+        var ENABLED: Boolean = true // Enables or disables the RecipiesModule. Set to 'false' to disable.
+    }
+
+    /**
+     * Configuration settings for the TabListModule. This module controls the tab list features of the plugin.
+     */
+    object TabListModule {
+        var ENABLED: Boolean = true // Enables or disables the TabListModule. Set to 'false' to disable.
+
+        var HEADER: List<String> = listOf(
+            "${"]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt()}   ${"⚡ IllyriaRPG 1.21.4 ⚡".fireFmt()}   ${
+                "]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)
+            }",
+            ""
+        ) // The header of the tab list.
+        var FOOTER: List<String> = listOf(
+            "",
+            "${"]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt()}  ${"TPS:".fireFmt()} ${getTps()} ${"|".mangoFmt()} ${
+                "Weather:".fireFmt()
+            } ${getWeather()}  ${
+                "]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)
+            }"
+        ) // The footer of the tab list.
     }
 
     /**

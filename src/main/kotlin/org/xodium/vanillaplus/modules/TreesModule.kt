@@ -82,25 +82,27 @@ class TreesModule : ModuleInterface {
     private fun pasteSchematic(block: Block): Boolean {
         val clipboards = schematicCache[block.type] ?: return false
         val clipboard = clipboards.random()
-        instance.server.scheduler.runTask(instance, Runnable {
-            try {
-                WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(block.world))
-                    .use { editSession ->
-                        block.type = Material.AIR
-                        editSession.mask = BlockTypeMask(editSession, BlockTypesRegistry.TREE_MASK)
-                        Operations.complete(
-                            ClipboardHolder(clipboard)
-                                .createPaste(editSession)
-                                .to(BlockVector3.at(block.x, block.y, block.z))
-                                .ignoreAirBlocks(Config.TreesModule.IGNORE_AIR_BLOCKS)
-                                .ignoreStructureVoidBlocks(Config.TreesModule.IGNORE_STRUCTURE_VOID_BLOCKS)
-                                .build()
-                        )
-                    }
-            } catch (ex: Exception) {
-                instance.logger.severe("Error while pasting schematic: ${ex.message}")
-            }
-        })
+        instance.server.scheduler.runTask(
+            instance,
+            Runnable {
+                try {
+                    WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(block.world))
+                        .use { editSession ->
+                            block.type = Material.AIR
+                            editSession.mask = BlockTypeMask(editSession, BlockTypesRegistry.TREE_MASK)
+                            Operations.complete(
+                                ClipboardHolder(clipboard)
+                                    .createPaste(editSession)
+                                    .to(BlockVector3.at(block.x, block.y, block.z))
+                                    .ignoreAirBlocks(Config.TreesModule.IGNORE_AIR_BLOCKS)
+                                    .ignoreStructureVoidBlocks(Config.TreesModule.IGNORE_STRUCTURE_VOID_BLOCKS)
+                                    .build()
+                            )
+                        }
+                } catch (ex: Exception) {
+                    instance.logger.severe("Error while pasting schematic: ${ex.message}")
+                }
+            })
         return true
     }
 }

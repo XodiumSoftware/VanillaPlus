@@ -42,6 +42,7 @@ object ModuleManager {
             InvUnloadModule(),
             MotdModule(),
             RecipiesModule(),
+            TabListModule(),
             TreesModule(),
         ).filter { it.enabled() }
             .forEach { module ->

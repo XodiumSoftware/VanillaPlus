@@ -19,14 +19,16 @@ import org.bukkit.event.player.PlayerItemConsumeEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.PlayerInventory
-import org.bukkit.scheduler.BukkitTask
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Database
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.Utils
+import org.xodium.vanillaplus.Utils.fireFmt
+import org.xodium.vanillaplus.Utils.mm
 import org.xodium.vanillaplus.Utils.moveBowlsAndBottles
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.TimeUtils.minutes
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -54,38 +56,16 @@ class AutoRefillModule : ModuleInterface {
     private val cooldownMs = 250L
     private val offHandSlot = 40
 
-    private var cleanupTask: BukkitTask? = null
-
     init {
         if (enabled()) {
             Database.createTable(this::class)
-            startCleanupTask()
-            Runtime.getRuntime().addShutdownHook(Thread { cleanup() })
-        }
-    }
-
-    /**
-     * Starts the cleanup task
-     */
-    private fun startCleanupTask() {
-        cleanupTask = instance.server.scheduler.runTaskTimer(
-            instance,
-            Runnable { cooldowns.entries.removeIf { System.currentTimeMillis() - it.value > cooldownMs * 2 } },
-            1200L,
-            6000L
-        )
-        instance.logger.info("Started AutoRefill cooldown cleanup task")
-    }
-
-    /**
-     * Cleans up the module resources
-     */
-    private fun cleanup() {
-        synchronized(this) {
-            cleanupTask?.cancel()
-            cleanupTask = null
-            cooldowns.clear()
-            instance.logger.info("Cleaned up AutoRefill module resources")
+            instance.server.scheduler.runTaskTimer(
+                instance,
+                Runnable { cooldowns.entries.removeIf { System.currentTimeMillis() - it.value > cooldownMs * 2 } },
+                1.minutes,
+                5.minutes
+            )
+            Runtime.getRuntime().addShutdownHook(Thread { synchronized(this, cooldowns::clear) })
         }
     }
 
@@ -236,6 +216,6 @@ class AutoRefillModule : ModuleInterface {
         val newValue = (!currentValue).toString()
         Database.setData(this::class, player.uniqueId.toString(), newValue)
         cooldowns.remove(player.uniqueId)
-        player.sendActionBar(Utils.fireWatchFormat("AutoRefill: ${if (!currentValue) "<green>ON" else "<red>OFF"}"))
+        player.sendActionBar(("${"AutoRefill:".fireFmt()} ${if (!currentValue) "<green>ON" else "<red>OFF"}").mm())
     }
 }
