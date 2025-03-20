@@ -30,7 +30,12 @@ object Utils {
     val MM = MiniMessage.miniMessage()
 
     fun String.mm() = MM.deserialize(this)
-    fun fireWatchFormat(text: String) = "<b><gradient:#CB2D3E:#EF473A>$text</b>".mm()
+    fun List<String>.mm() = this.map { it.mm() }
+    fun String.fireFmt(inverted: Boolean = false): String =
+        "<gradient:${if (inverted) "#EF473A:#CB2D3E" else "#CB2D3E:#EF473A"}>$this<reset>"
+
+    fun String.mangoFmt(inverted: Boolean = false): String =
+        "<gradient:${if (inverted) "#FFA751:#FFE259" else "#FFE259:#FFA751"}>$this<reset>"
 
     fun EntityType.format(locale: Locale = Locale.ENGLISH, delimiters: String = "_", separator: String = " ") =
         name.lowercase(locale).split(delimiters).joinToString(separator)
@@ -65,22 +70,6 @@ object Utils {
     fun getBaseDamage(material: Material): Double = MaterialRegistry.BASE_DAMAGE_MAP[material] ?: 0.0
 
     /**
-     * A function to check if an entity type is an arthropod.
-     *
-     * @param entityType The entity type to check.
-     * @return True if the entity type is an arthropod, false otherwise.
-     */
-    fun isArthropod(entityType: EntityType): Boolean = EntityRegistry.ARTHROPODS.contains(entityType)
-
-    /**
-     * A function to check if an entity type is an undead.
-     *
-     * @param entityType The entity type to check.
-     * @return True if the entity type is an undead, false otherwise.
-     */
-    fun isUndead(entityType: EntityType): Boolean = EntityRegistry.UNDEAD.contains(entityType)
-
-    /**
      * A function to get the damage of an item stack against an entity type.
      *
      * @param itemStack The item stack to get the damage of.
@@ -103,8 +92,8 @@ object Utils {
         itemStack?.itemMeta?.enchants?.entries?.sumOf { (enchantment, level) ->
             when (enchantment) {
                 Enchantment.SHARPNESS -> 0.5 * level + 0.5
-                Enchantment.BANE_OF_ARTHROPODS -> if (isArthropod(entityType)) 2.5 * level else 0.0
-                Enchantment.SMITE -> if (isUndead(entityType)) 2.5 * level else 0.0
+                Enchantment.BANE_OF_ARTHROPODS -> if (EntityRegistry.ARTHROPODS.contains(entityType)) 2.5 * level else 0.0
+                Enchantment.SMITE -> if (EntityRegistry.UNDEAD.contains(entityType)) 2.5 * level else 0.0
                 else -> 0.0
             }
         } ?: 0.0
@@ -117,6 +106,13 @@ object Utils {
      */
     fun isBowlOrBottle(material: Material): Boolean = material in setOf(Material.GLASS_BOTTLE, Material.BOWL)
 
+    /**
+     * A function to move bowls and bottles in an inventory.
+     *
+     * @param inv The inventory to move the bowls and bottles in.
+     * @param slot The slot to move the bowls and bottles from.
+     * @return True if the bowls and bottles were moved successfully, false otherwise.
+     */
     fun moveBowlsAndBottles(inv: Inventory, slot: Int): Boolean {
         if (!isBowlOrBottle(Objects.requireNonNull<ItemStack?>(inv.getItem(slot)).type)) return false
         val toBeMoved = inv.getItem(slot)
@@ -145,6 +141,12 @@ object Utils {
         return false
     }
 
+    /**
+     * A function to check if a player has a hoe in their inventory.
+     *
+     * @param inventory The inventory to check.
+     * @return True if the player has a hoe in their inventory, false otherwise.
+     */
     fun hasShears(inventory: Array<ItemStack?>): Boolean {
         for (i in 0..<9) {
             if (inventory[i] == null) continue
@@ -153,6 +155,12 @@ object Utils {
         return false
     }
 
+    /**
+     * A function to check if a player has a hoe in their inventory.
+     *
+     * @param inventory The inventory to check.
+     * @return True if the player has a hoe in their inventory, false otherwise.
+     */
     fun hasSword(inventory: Array<ItemStack?>): Boolean {
         for (i in 0..<9) {
             if (inventory[i] == null) continue
@@ -161,6 +169,12 @@ object Utils {
         return false
     }
 
+    /**
+     * A function to check if a player has a hoe in their hotbar.
+     *
+     * @param inventory The inventory of the player.
+     * @return True if the player has a hoe in their hotbar, false otherwise.
+     */
     fun hasHoe(inventory: Array<ItemStack?>): Boolean {
         for (i in 0..<9) {
             if (inventory[i] == null) continue
@@ -169,6 +183,12 @@ object Utils {
         return false
     }
 
+    /**
+     * A function to get the multiplier of an item stack.
+     *
+     * @param itemStack The item stack to get the multiplier of.
+     * @return The multiplier of the item stack.
+     */
     fun getMultiplier(itemStack: ItemStack): Int {
         val base = getBaseMultiplier(itemStack)
         val itemMeta = itemStack.itemMeta ?: return base
@@ -178,6 +198,12 @@ object Utils {
         return base + (efficiencyLevel * efficiencyLevel) + 1
     }
 
+    /**
+     * A function to get the base multiplier of an item stack.
+     *
+     * @param itemStack The item stack to get the base multiplier of.
+     * @return The base multiplier of the item stack.
+     */
     fun getBaseMultiplier(itemStack: ItemStack): Int {
         val itemName = itemStack.type.name
         return when {
@@ -188,6 +214,47 @@ object Utils {
             itemName.startsWith("WOOD") -> 2
             itemName.startsWith("GOLD") -> 12
             else -> 1
+        }
+    }
+
+    /**
+     * A function to get the tps of the server.
+     *
+     * @return The tps of the server.
+     */
+    fun getTps(): String {
+        val tps = instance.server.tps[0]
+        val clampedTps = tps.coerceIn(0.0, 20.0)
+        val ratio = clampedTps / 20.0
+        val color = getColorForTps(ratio)
+        val formattedTps = String.format("%.1f", tps)
+        return "<color:$color>$formattedTps</color>"
+    }
+
+    /**
+     * Calculate a hex color between red and green based on the provided ratio (0.0 to 1.0)
+     *
+     * @param ratio The ratio to calculate the color for.
+     * @return The hex color for the ratio.
+     */
+    private fun getColorForTps(ratio: Double): String {
+        val r = (255 * (1 - ratio)).toInt()
+        val g = (255 * ratio).toInt()
+        val b = 0
+        return String.format("#%02X%02X%02X", r, g, b)
+    }
+
+    /**
+     * Gets a formatted string representing the current weather in the main world.
+     *
+     * @return A formatted string representing the weather.
+     */
+    fun getWeather(): String {
+        val world = instance.server.worlds[0]
+        return when {
+            world.isThundering -> "<red>\uD83C\uDF29<reset>"
+            world.hasStorm() -> "<yellow>\uD83C\uDF26<reset>"
+            else -> "<green>\uD83C\uDF24<reset>"
         }
     }
 }

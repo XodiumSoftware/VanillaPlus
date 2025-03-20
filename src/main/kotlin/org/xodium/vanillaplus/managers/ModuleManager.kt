@@ -36,12 +36,14 @@ object ModuleManager {
     init {
         listOf(
             AutoRefillModule(),
+            AutoRestartModule(),
             AutoToolModule(),
             DimensionsModule(),
             DoorsModule(),
             InvUnloadModule(),
             MotdModule(),
             RecipiesModule(),
+            TabListModule(),
             TreesModule(),
         ).filter { it.enabled() }
             .forEach { module ->
