@@ -12,6 +12,7 @@ import org.xodium.vanillaplus.Utils.fireFmt
 import org.xodium.vanillaplus.Utils.getTps
 import org.xodium.vanillaplus.Utils.getWeather
 import org.xodium.vanillaplus.Utils.mangoFmt
+import java.time.LocalTime
 import org.bukkit.Sound as BukkitSound
 
 /**
@@ -40,8 +41,11 @@ object Config {
         /**
          * The times of day when the server should restart.
          */
-        var RESTART_TIMES: MutableList<String> = mutableListOf(
-            "00:00", "06:00", "12:00", "18:00"
+        var RESTART_TIMES: MutableList<LocalTime> = mutableListOf(
+            LocalTime.of(0, 0),
+            LocalTime.of(6, 0),
+            LocalTime.of(12, 0),
+            LocalTime.of(18, 0)
         )
 
         /**
@@ -52,7 +56,7 @@ object Config {
         /**
          * The name of the boss bar.
          */
-        var BOSSBAR_NAME: String = "⚡ RESTARTING in %t ⚡".fireFmt()
+        var BOSSBAR_NAME: String = "⚡ RESTARTING in %t minute(s) ⚡".fireFmt()
 
         /**
          * The progress of the boss bar.
