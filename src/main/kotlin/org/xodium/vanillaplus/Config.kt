@@ -109,13 +109,18 @@ object Config {
         var ENABLED: Boolean = true // Enables or disables the TabListModule. Set to 'false' to disable.
 
         var HEADER: List<String> = listOf(
-            "${mangoFmt("]|[=]|[=]|[=]|[=]|[=]|[=]|[")}   ${fireFmt("⚡ IllyriaRPG 1.21.4 ⚡")}   ${mangoFmt("]|[=]|[=]|[=]|[=]|[=]|[=]|[")}",
+            "${"]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt()}   ${"⚡ IllyriaRPG 1.21.4 ⚡".fireFmt()}   ${
+                "]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)
+            }",
             ""
         ) // The header of the tab list.
         var FOOTER: List<String> = listOf(
             "",
-            """${mangoFmt("]|[=]|[=]|[=]|[=]|[=]|[=]|[")}  ${fireFmt("TPS:")} <reset>${getTps()} ${mangoFmt("|")}
-                | ${fireFmt("Weather:")} <reset>${getWeather()}  ${mangoFmt("]|[=]|[=]|[=]|[=]|[=]|[=]|[")}""".trimMargin()
+            "${"]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt()}  ${"TPS:".fireFmt()} ${getTps()} ${"|".mangoFmt()} ${
+                "Weather:".fireFmt()
+            } ${getWeather()}  ${
+                "]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)
+            }"
         ) // The footer of the tab list.
     }
 

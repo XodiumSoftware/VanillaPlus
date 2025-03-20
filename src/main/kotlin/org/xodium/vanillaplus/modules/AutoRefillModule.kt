@@ -23,6 +23,8 @@ import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Database
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.Utils
+import org.xodium.vanillaplus.Utils.fireFmt
+import org.xodium.vanillaplus.Utils.mm
 import org.xodium.vanillaplus.Utils.moveBowlsAndBottles
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
@@ -214,6 +216,6 @@ class AutoRefillModule : ModuleInterface {
         val newValue = (!currentValue).toString()
         Database.setData(this::class, player.uniqueId.toString(), newValue)
         cooldowns.remove(player.uniqueId)
-        player.sendActionBar(Utils.fireFmt("AutoRefill: ${if (!currentValue) "<green>ON" else "<red>OFF"}"))
+        player.sendActionBar(("${"AutoRefill:".fireFmt()} ${if (!currentValue) "<green>ON" else "<red>OFF"}").mm())
     }
 }

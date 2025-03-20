@@ -31,8 +31,11 @@ object Utils {
 
     fun String.mm() = MM.deserialize(this)
     fun List<String>.mm() = this.map { it.mm() }
-    fun fireFmt(text: String) = "<gradient:#CB2D3E:#EF473A>$text".mm()
-    fun mangoFmt(text: String) = "<gradient:#FFE259:#FFA751>$text".mm()
+    fun String.fireFmt(inverted: Boolean = false): String =
+        "<gradient:${if (inverted) "#EF473A:#CB2D3E" else "#CB2D3E:#EF473A"}>$this<reset>"
+
+    fun String.mangoFmt(inverted: Boolean = false): String =
+        "<gradient:${if (inverted) "#FFA751:#FFE259" else "#FFE259:#FFA751"}>$this<reset>"
 
     fun EntityType.format(locale: Locale = Locale.ENGLISH, delimiters: String = "_", separator: String = " ") =
         name.lowercase(locale).split(delimiters).joinToString(separator)
@@ -247,11 +250,11 @@ object Utils {
      * @return A formatted string representing the weather.
      */
     fun getWeather(): String {
-        val world = instance.server.worlds.firstOrNull() ?: return "<color:#808080>Unknown</color>"
+        val world = instance.server.worlds[0]
         return when {
-            world.isThundering -> "<color:#5555FF>Thunderstorm</color>"
-            world.hasStorm() -> "<color:#3399FF>Rainy</color>"
-            else -> "<color:#FFCC33>Clear</color>"
+            world.isThundering -> "<red>\uD83C\uDF29<reset>"
+            world.hasStorm() -> "<yellow>\uD83C\uDF26<reset>"
+            else -> "<green>\uD83C\uDF24<reset>"
         }
     }
 }
