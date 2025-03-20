@@ -5,6 +5,7 @@
 
 package org.xodium.vanillaplus
 
+import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.sound.Sound
 import org.bukkit.Material
 import org.xodium.vanillaplus.Utils.fireFmt
@@ -49,19 +50,24 @@ object Config {
         var COUNTDOWN_START_MINUTES: Int = 5
 
         /**
-         * At which minutes to announce the countdown
+         * The name of the boss bar.
          */
-        var COUNTDOWN_ANNOUNCE_AT: List<Int> = listOf(5, 4, 3, 2, 1)
+        var BOSSBAR_NAME: String = "⚡ RESTARTING in %t ⚡".fireFmt()
 
         /**
-         * The message to display when the server is restarting in a countdown.
+         * The progress of the boss bar.
          */
-        var MESSAGE_COUNTDOWN: String = "<red>Server will restart in <yellow>%time%</yellow> minutes!</red>"
+        var BOSSBAR_PROGRESS: Float = 1.0f
 
         /**
-         * The message to display when the server is restarting.
+         * The color of the boss bar.
          */
-        var MESSAGE_RESTARTING: String = "<red>Server is restarting now!</red>"
+        var BOSSBAR_COLOR: BossBar.Color = BossBar.Color.RED
+
+        /**
+         * The overlay of the boss bar.
+         */
+        var BOSSBAR_OVERLAY: BossBar.Overlay = BossBar.Overlay.PROGRESS
     }
 
     /**
