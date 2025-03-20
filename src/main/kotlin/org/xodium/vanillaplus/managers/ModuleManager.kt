@@ -36,6 +36,7 @@ object ModuleManager {
     init {
         listOf(
             AutoRefillModule(),
+            AutoRestartModule(),
             AutoToolModule(),
             DimensionsModule(),
             DoorsModule(),
