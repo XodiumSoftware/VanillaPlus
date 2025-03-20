@@ -6,15 +6,19 @@ api-version: ${apiVersion}
 authors: ${authors}
 dependencies:
   server:
-    WorldEdit:
-      load: BEFORE
-      required: true
-      join-classpath: true
     CMI:
       load: BEFORE
       required: true
       join-classpath: true
     CMILib:
+      load: BEFORE
+      required: true
+      join-classpath: true
+    PlaceholderAPI:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    WorldEdit:
       load: BEFORE
       required: true
       join-classpath: true
