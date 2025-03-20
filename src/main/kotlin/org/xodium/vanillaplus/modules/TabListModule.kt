@@ -9,6 +9,7 @@ import me.clip.placeholderapi.PlaceholderAPI
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -61,8 +62,15 @@ class TabListModule : ModuleInterface {
      */
     private fun updatePlayerDisplayName(player: Player) {
         val cmiUserDisplayName = "%cmi_user_display_name%"
-        val displayName = PlaceholderAPI.setPlaceholders(player, cmiUserDisplayName)
-        if (displayName != cmiUserDisplayName) player.playerListName(Component.text(displayName))
+        val legacyDisplayName = PlaceholderAPI.setPlaceholders(player, cmiUserDisplayName)
+        if (legacyDisplayName != cmiUserDisplayName) {
+            val legacySerializer = LegacyComponentSerializer.builder()
+                .character('§')
+                .hexColors()
+                .build()
+            val displayNameComponent = legacySerializer.deserialize(legacyDisplayName)
+            player.playerListName(displayNameComponent)
+        }
     }
 
     /**
