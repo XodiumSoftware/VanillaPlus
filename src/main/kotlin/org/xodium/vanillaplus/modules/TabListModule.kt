@@ -5,9 +5,11 @@
 
 package org.xodium.vanillaplus.modules
 
+import me.clip.placeholderapi.PlaceholderAPI
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.player.PlayerJoinEvent
@@ -31,7 +33,12 @@ class TabListModule : ModuleInterface {
         if (enabled()) {
             instance.server.scheduler.runTaskTimer(
                 instance,
-                Runnable { updateTabList(Audience.audience()) },
+                Runnable {
+                    instance.server.onlinePlayers.forEach { player ->
+                        updateTabList(player)
+                        updatePlayerDisplayName(player)
+                    }
+                },
                 0.ticks,
                 10.seconds
             )
@@ -43,7 +50,20 @@ class TabListModule : ModuleInterface {
      * @param event the player join event
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    fun on(event: PlayerJoinEvent) = updateTabList(event.player)
+    fun on(event: PlayerJoinEvent) {
+        updateTabList(event.player)
+        updatePlayerDisplayName(event.player)
+    }
+
+    /**
+     * Update the player's display name in the tab list
+     * @param player the player to update
+     */
+    private fun updatePlayerDisplayName(player: Player) {
+        val cmiUserDisplayName = "%cmi_user_display_name%"
+        val displayName = PlaceholderAPI.setPlaceholders(player, cmiUserDisplayName)
+        if (displayName != cmiUserDisplayName) player.playerListName(displayName.mm())
+    }
 
     /**
      * Update the tab list for the given audience
