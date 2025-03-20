@@ -62,7 +62,7 @@ class TabListModule : ModuleInterface {
     private fun updatePlayerDisplayName(player: Player) {
         val cmiUserDisplayName = "%cmi_user_display_name%"
         val displayName = PlaceholderAPI.setPlaceholders(player, cmiUserDisplayName)
-        if (displayName != cmiUserDisplayName) player.playerListName(displayName.mm())
+        if (displayName != cmiUserDisplayName) player.playerListName(Component.text(displayName))
     }
 
     /**
