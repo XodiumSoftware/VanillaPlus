@@ -5,15 +5,19 @@
 
 package org.xodium.vanillaplus.modules
 
+import me.clip.placeholderapi.PlaceholderAPI
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.player.PlayerJoinEvent
 import org.xodium.vanillaplus.Config
+import org.xodium.vanillaplus.Utils
 import org.xodium.vanillaplus.Utils.mm
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.hooks.CMIHook
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.TimeUtils.seconds
 import org.xodium.vanillaplus.utils.TimeUtils.ticks
@@ -31,7 +35,12 @@ class TabListModule : ModuleInterface {
         if (enabled()) {
             instance.server.scheduler.runTaskTimer(
                 instance,
-                Runnable { updateTabList(Audience.audience()) },
+                Runnable {
+                    instance.server.onlinePlayers.forEach { player ->
+                        updateTabList(player)
+                        updatePlayerDisplayName(player)
+                    }
+                },
                 0.ticks,
                 10.seconds
             )
@@ -43,7 +52,22 @@ class TabListModule : ModuleInterface {
      * @param event the player join event
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    fun on(event: PlayerJoinEvent) = updateTabList(event.player)
+    fun on(event: PlayerJoinEvent) {
+        updateTabList(event.player)
+        updatePlayerDisplayName(event.player)
+    }
+
+    /**
+     * Update the player's display name in the tab list
+     * @param player the player to update
+     */
+    private fun updatePlayerDisplayName(player: Player) {
+        val displayName = CMIHook.CMI_USER_DISPLAY_NAME
+        val legacyDisplayName = PlaceholderAPI.setPlaceholders(player, displayName)
+        if (legacyDisplayName != displayName) {
+            player.playerListName(Utils.legacyToComponent(legacyDisplayName))
+        }
+    }
 
     /**
      * Update the tab list for the given audience
