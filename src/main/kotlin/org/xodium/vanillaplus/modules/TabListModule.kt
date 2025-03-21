@@ -17,6 +17,7 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Utils.mm
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.hooks.CMIHook
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.TimeUtils.seconds
 import org.xodium.vanillaplus.utils.TimeUtils.ticks
@@ -61,15 +62,16 @@ class TabListModule : ModuleInterface {
      * @param player the player to update
      */
     private fun updatePlayerDisplayName(player: Player) {
-        val cmiUserDisplayName = "%cmi_user_display_name%"
-        val legacyDisplayName = PlaceholderAPI.setPlaceholders(player, cmiUserDisplayName)
-        if (legacyDisplayName != cmiUserDisplayName) {
-            val legacySerializer = LegacyComponentSerializer.builder()
-                .character('§')
-                .hexColors()
-                .build()
-            val displayNameComponent = legacySerializer.deserialize(legacyDisplayName)
-            player.playerListName(displayNameComponent)
+        val displayName = CMIHook.CMI_USER_DISPLAY_NAME
+        val legacyDisplayName = PlaceholderAPI.setPlaceholders(player, displayName)
+        if (legacyDisplayName != displayName) {
+            player.playerListName(
+                LegacyComponentSerializer.builder()
+                    .character('§')
+                    .hexColors()
+                    .build()
+                    .deserialize(legacyDisplayName)
+            )
         }
     }
 
