@@ -120,6 +120,16 @@ object Config {
     }
 
     /**
+     * Configuration settings for the CustomArtModule. This module controls the custom art features of the plugin.
+     */
+    object CustomArtModule {
+        /**
+         * Enables or disables the CustomArtModule.
+         */
+        var ENABLED: Boolean = true
+    }
+
+    /**
      * Configuration settings for the DimensionsModule. This module controls the dimensions features of the plugin.
      */
     object DimensionsModule {
