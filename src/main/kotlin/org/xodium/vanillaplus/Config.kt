@@ -127,6 +127,21 @@ object Config {
          * Enables or disables the CustomArtModule.
          */
         var ENABLED: Boolean = true
+
+        /**
+         * The minimum custom art ID.
+         */
+        var MIN_CMD: Int = 1
+
+        /**
+         * The maximum custom art ID.
+         */
+        var MAX_CMD: Int = 10
+
+        /**
+         * The namespace key for the custom painting ID.
+         */
+        var PDC_NSK: String = "custom-painting-id"
     }
 
     /**

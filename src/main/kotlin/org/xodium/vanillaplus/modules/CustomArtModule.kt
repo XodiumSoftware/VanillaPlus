@@ -21,32 +21,22 @@ import kotlin.random.Random
 class CustomArtModule : ModuleInterface {
     override fun enabled(): Boolean = Config.CustomArtModule.ENABLED
 
-    private var minCMD: Int = 1
-    private var maxCMD: Int = 10
-
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: HangingPlaceEvent) {
-        val entity = event.entity
-        if (entity !is Painting) return
+        val painting = event.entity as? Painting ?: return
         try {
             val artRegistry = RegistryAccess.registryAccess().getRegistry(RegistryKey.PAINTING_VARIANT)
-
             val artList = artRegistry.stream().toList()
             if (artList.isEmpty()) {
                 instance.logger.warning("No painting variants found in registry")
                 return
             }
 
-            val randomArt = artList[Random.nextInt(artList.size)]
-            entity.art = randomArt
-
-            val dataContainer = entity.persistentDataContainer
-            val customPaintingId = Random.nextInt(minCMD, maxCMD + 1)
-
-            dataContainer.set(
-                NamespacedKey(instance, "custom-painting-id"),
+            painting.art = artList[Random.nextInt(artList.size)]
+            painting.persistentDataContainer.set(
+                NamespacedKey(instance, Config.CustomArtModule.PDC_NSK),
                 PersistentDataType.INTEGER,
-                customPaintingId
+                Random.nextInt(Config.CustomArtModule.MIN_CMD, Config.CustomArtModule.MAX_CMD + 1)
             )
         } catch (e: Exception) {
             instance.logger.warning("Error setting random painting: ${e.message}")
