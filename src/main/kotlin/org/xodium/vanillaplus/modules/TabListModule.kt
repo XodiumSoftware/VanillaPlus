@@ -9,12 +9,12 @@ import me.clip.placeholderapi.PlaceholderAPI
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.player.PlayerJoinEvent
 import org.xodium.vanillaplus.Config
+import org.xodium.vanillaplus.Utils
 import org.xodium.vanillaplus.Utils.mm
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.hooks.CMIHook
@@ -65,13 +65,7 @@ class TabListModule : ModuleInterface {
         val displayName = CMIHook.CMI_USER_DISPLAY_NAME
         val legacyDisplayName = PlaceholderAPI.setPlaceholders(player, displayName)
         if (legacyDisplayName != displayName) {
-            player.playerListName(
-                LegacyComponentSerializer.builder()
-                    .character('§')
-                    .hexColors()
-                    .build()
-                    .deserialize(legacyDisplayName)
-            )
+            player.playerListName(Utils.legacyToComponent(legacyDisplayName))
         }
     }
 
