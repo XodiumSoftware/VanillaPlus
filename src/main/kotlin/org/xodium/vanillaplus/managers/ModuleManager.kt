@@ -31,14 +31,20 @@ import kotlin.time.measureTime
  * enabled module for monitoring performance.
  */
 object ModuleManager {
+    /**
+     * A list of command builders for the modules.
+     */
     private val commandBuilders = mutableListOf<LiteralArgumentBuilder<CommandSourceStack>>()
 
+    /**
+     * Initializes the modules in the VanillaPlus plugin.
+     */
     init {
         listOf(
             AutoRefillModule(),
             AutoRestartModule(),
             AutoToolModule(),
-            BookModule(),
+            BooksModule(),
             DimensionsModule(),
             DoorsModule(),
             InvUnloadModule(),

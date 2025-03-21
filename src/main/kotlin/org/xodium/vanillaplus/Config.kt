@@ -110,9 +110,9 @@ object Config {
     }
 
     /**
-     * Configuration settings for the BookModule. This module controls the book features of the plugin.
+     * Configuration settings for the BooksModule. This module controls the book features of the plugin.
      */
-    object BookModule {
+    object BooksModule {
         /**
          * Enables or disables the BookModule.
          */
