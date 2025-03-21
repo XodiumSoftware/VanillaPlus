@@ -25,6 +25,7 @@ interface ModuleInterface : Listener {
 
     /**
      * Returns the command for this module.
+     * If the module does not have a command, this method should return `null`.
      */
     @Suppress("UnstableApiUsage")
     fun cmd(): LiteralArgumentBuilder<CommandSourceStack>? = null
