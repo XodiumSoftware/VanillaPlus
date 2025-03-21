@@ -33,7 +33,6 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 /**
- * AutoRefillModule
  * Automatically refills the player's main hand and off hand slots when they consume an item
  */
 class AutoRefillModule : ModuleInterface {

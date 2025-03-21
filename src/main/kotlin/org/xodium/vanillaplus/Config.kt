@@ -110,6 +110,16 @@ object Config {
     }
 
     /**
+     * Configuration settings for the BookModule. This module controls the book features of the plugin.
+     */
+    object BookModule {
+        /**
+         * Enables or disables the BookModule.
+         */
+        var ENABLED: Boolean = true
+    }
+
+    /**
      * Configuration settings for the DimensionsModule. This module controls the dimensions features of the plugin.
      */
     object DimensionsModule {

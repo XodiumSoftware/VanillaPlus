@@ -39,6 +39,9 @@ import java.util.function.ToIntFunction
 import java.util.stream.Collectors
 
 
+/**
+ * Handles the automatic switching of tools and weapons.
+ */
 class AutoToolModule : ModuleInterface {
     /**
      * @return true if the module is enabled

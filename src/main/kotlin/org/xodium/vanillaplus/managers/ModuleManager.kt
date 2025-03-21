@@ -38,6 +38,7 @@ object ModuleManager {
             AutoRefillModule(),
             AutoRestartModule(),
             AutoToolModule(),
+            BookModule(),
             DimensionsModule(),
             DoorsModule(),
             InvUnloadModule(),

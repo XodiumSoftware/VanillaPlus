@@ -16,6 +16,10 @@ import org.xodium.vanillaplus.utils.TimeUtils.ticks
 import java.time.LocalTime
 import java.time.temporal.ChronoUnit
 
+
+/**
+ * A module that restarts the server at a specific time.
+ */
 class AutoRestartModule : ModuleInterface {
     /**
      * Returns true if the module is enabled in the plugin's configuration.

@@ -13,7 +13,7 @@ import org.xodium.vanillaplus.Utils.mm
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 
 /**
- * Module for customizing the server's Message of the Day (MOTD) that appears in the server list.
+ * Customizes the server's Message of the Day (MOTD) that appears in the server list.
  * When enabled, it replaces the default MOTD with a configured message from the plugin's configuration.
  */
 class MotdModule : ModuleInterface {

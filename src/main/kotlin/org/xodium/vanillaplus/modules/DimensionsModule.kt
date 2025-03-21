@@ -13,7 +13,7 @@ import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 
 /**
- * Module to handle dimension teleportation
+ * Handles dimension teleportation
  */
 class DimensionsModule : ModuleInterface {
     /**

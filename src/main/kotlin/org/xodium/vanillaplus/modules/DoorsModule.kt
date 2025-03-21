@@ -30,7 +30,14 @@ import org.xodium.vanillaplus.utils.TimeUtils.ticks
 import java.util.concurrent.ConcurrentHashMap
 
 
+/**
+ * Customizes the behavior of doors and gates.
+ * When enabled, it allows players to interact with doors and gates in various ways, such as knocking, auto-closing, and more.
+ */
 class DoorsModule : ModuleInterface {
+    /**
+     * Returns true if the module is enabled in the plugin's configuration.
+     */
     override fun enabled(): Boolean = Config.DoorsModule.ENABLED
 
     private val autoCloseDelay = Config.DoorsModule.AUTO_CLOSE_DELAY * 1000L
