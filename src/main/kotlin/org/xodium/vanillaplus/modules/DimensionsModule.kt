@@ -16,9 +16,6 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
  * Handles dimension teleportation
  */
 class DimensionsModule : ModuleInterface {
-    /**
-     * Returns true if the module is enabled in the plugin's configuration.
-     */
     override fun enabled(): Boolean = Config.DimensionsModule.ENABLED
 
     /**

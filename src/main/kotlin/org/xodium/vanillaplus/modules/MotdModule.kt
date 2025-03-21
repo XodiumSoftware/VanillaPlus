@@ -17,9 +17,6 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
  * When enabled, it replaces the default MOTD with a configured message from the plugin's configuration.
  */
 class MotdModule : ModuleInterface {
-    /**
-     * Returns true if the module is enabled in the plugin's configuration.
-     */
     override fun enabled(): Boolean = Config.MotdModule.ENABLED
 
     /**

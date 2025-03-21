@@ -37,9 +37,6 @@ import java.util.stream.Collectors
  * Handles the growth of trees and other plants
  */
 class TreesModule : ModuleInterface {
-    /**
-     * Returns true if the module is enabled in the plugin's configuration.
-     */
     override fun enabled(): Boolean = Config.TreesModule.ENABLED
 
     /**

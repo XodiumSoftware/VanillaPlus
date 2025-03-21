@@ -22,14 +22,8 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
  * TODO: Add description
  */
 class BooksModule : ModuleInterface {
-    /**
-     * Returns true if the module is enabled in the plugin's configuration.
-     */
     override fun enabled(): Boolean = Config.BooksModule.ENABLED
 
-    /**
-     * @return the command for the module
-     */
     @Suppress("UnstableApiUsage")
     override fun cmd(): LiteralArgumentBuilder<CommandSourceStack> {
         return Commands.literal("rules")
@@ -42,9 +36,9 @@ class BooksModule : ModuleInterface {
      */
     private fun book(): Book {
         return Book.book(
-            "Rules".mm(),
-            instance::class.simpleName.toString().mm(),
-            setOf<Component>()
+            "Rules".mm(), //TODO: based on config
+            instance::class.simpleName.toString().mm(), //TODO: based on config?
+            setOf<Component>() //TODO: based on config
         )
     }
 }

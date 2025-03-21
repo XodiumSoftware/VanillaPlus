@@ -36,14 +36,8 @@ import java.util.concurrent.ConcurrentHashMap
  * Automatically refills the player's main hand and off hand slots when they consume an item
  */
 class AutoRefillModule : ModuleInterface {
-    /**
-     * @return true if the module is enabled
-     */
     override fun enabled(): Boolean = Config.AutoRefillModule.ENABLED
 
-    /**
-     * @return the command for the module
-     */
     @Suppress("UnstableApiUsage")
     override fun cmd(): LiteralArgumentBuilder<CommandSourceStack> {
         return Commands.literal("autorefill")

@@ -18,9 +18,6 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
  * When enabled, it allows players to craft any item in the game without needing to unlock the recipe first.
  */
 class RecipiesModule : ModuleInterface {
-    /**
-     * Returns true if the module is enabled in the plugin's configuration.
-     */
     override fun enabled(): Boolean = Config.RecipiesModule.ENABLED
 
     /**

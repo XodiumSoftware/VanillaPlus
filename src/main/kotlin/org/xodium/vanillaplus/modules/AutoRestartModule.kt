@@ -21,11 +21,11 @@ import java.time.temporal.ChronoUnit
  * A module that restarts the server at a specific time.
  */
 class AutoRestartModule : ModuleInterface {
-    /**
-     * Returns true if the module is enabled in the plugin's configuration.
-     */
     override fun enabled(): Boolean = Config.AutoRestartModule.ENABLED
 
+    /**
+     * Initializes the AutoRestartModule.
+     */
     init {
         if (enabled()) {
             // TODO: the following code is very inefficient and should be refactored.
