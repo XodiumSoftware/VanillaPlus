@@ -22,6 +22,7 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.PlayerInventory
@@ -29,6 +30,7 @@ import org.bukkit.inventory.meta.Damageable
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Database
 import org.xodium.vanillaplus.Perms
+import org.xodium.vanillaplus.data.BlockTypeData
 import org.xodium.vanillaplus.enums.ToolEnum
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.registries.MaterialRegistry
@@ -53,7 +55,8 @@ class AutoToolModule : ModuleInterface {
             .executes(Command { Utils.tryCatch(it) { toggle(it.sender as Player) } })
     }
 
-    val toolMap: MutableMap<Material, ToolEnum> = HashMap()
+    private val toolMap: MutableMap<Material, ToolEnum> = HashMap()
+    private val blockTypeCaches = mutableMapOf<UUID, BlockTypeData>()
 
     companion object {
         const val HOTBAR_SIZE = 9
@@ -66,10 +69,11 @@ class AutoToolModule : ModuleInterface {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: EntityDamageByEntityEvent) {
-        if (event.damager !is Player) return
-        val player = event.damager as Player
+        val damager = event.damager
+        if (damager !is Player) return
+        val player = damager
         if (!player.hasPermission(Perms.AutoTool.USE)) return
         if (!isEnabledForPlayer(player)) return
         val entity = event.getEntity()
@@ -79,7 +83,7 @@ class AutoToolModule : ModuleInterface {
         switchToBestRoscoe(player, bestRoscoe)
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: BlockBreakEvent) {
         val player = event.player
         onPlayerInteractWithBlock(
@@ -94,14 +98,11 @@ class AutoToolModule : ModuleInterface {
         )
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onPlayerInteractWithBlock(event: PlayerInteractEvent) {
-//        val playerSetting = main.getPlayerSetting(event.getPlayer()) // FIX
-//        if (playerSetting.getBtcache().valid
-//            && event.clickedBlock != null && event.clickedBlock!!
-//                .type == playerSetting.getBtcache().lastMat
-//        ) return
         val player = event.player
+        val playerCache = getPlayerCache(player)
+        if (playerCache.valid && event.clickedBlock != null && event.clickedBlock!!.type == playerCache.lastMat) return
         if (!player.hasPermission(Perms.AutoTool.USE)) return
         if (!isEnabledForPlayer(player)) return
         val block = event.clickedBlock
@@ -114,11 +115,16 @@ class AutoToolModule : ModuleInterface {
         if (event.hand != EquipmentSlot.HAND) return
         val bestTool = getBestToolFromInventory(block.type, player, playerInventory.itemInMainHand)
         if (bestTool == null || bestTool == playerInventory.itemInMainHand) {
-//            playerSetting.getBtcache().validate(block.type)
+            playerCache.validate(block.type)
             return
         }
         switchToBestTool(player, bestTool, block.type)
-//        playerSetting.getBtcache().validate(block.type)
+        playerCache.validate(block.type)
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun on(event: PlayerQuitEvent) {
+        blockTypeCaches.remove(event.player.uniqueId)
     }
 
     init {
@@ -131,9 +137,23 @@ class AutoToolModule : ModuleInterface {
         tagToMap(Tag.FLOWERS, ToolEnum.NONE)
 
         // CUSTOM
-//        addToMap(Material.GLOWSTONE, ToolEnum.PICKAXE) // TODO: Prefer SilkTouch
+        addToMap(Material.GLOWSTONE, ToolEnum.PICKAXE)
     }
 
+    /**
+     * Gets the player cache for the given player.
+     * @param player The player to get the cache for.
+     * @return The BlockTypeData for the player.
+     */
+    private fun getPlayerCache(player: Player): BlockTypeData {
+        return blockTypeCaches.getOrPut(player.uniqueId) { BlockTypeData() }
+    }
+
+    /**
+     * Equips the best item for the given player and item stack.
+     * @param playerInventory The player's inventory to modify.
+     * @param bestItem The best item stack to equip.
+     */
     private fun equipBestItem(playerInventory: PlayerInventory, bestItem: ItemStack?) {
         if (bestItem == null) {
             freeSlot(playerInventory.heldItemSlot, playerInventory)
@@ -147,6 +167,11 @@ class AutoToolModule : ModuleInterface {
         }
     }
 
+    /**
+     * Switches to the best Roscoe for the given player and item stack.
+     * @param player The player to switch the Roscoe for.
+     * @param bestRoscoe The item stack to switch to.
+     */
     private fun switchToBestRoscoe(player: Player, bestRoscoe: ItemStack?) {
         var bestRoscoe = bestRoscoe
         val playerInventory = player.inventory
@@ -558,7 +583,6 @@ class AutoToolModule : ModuleInterface {
         val currentValue = isEnabledForPlayer(player)
         val newValue = (!currentValue).toString()
         Database.setData(this::class, player.uniqueId.toString(), newValue)
-        cooldowns.remove(player.uniqueId) //TODO: use the correct one.
         player.sendActionBar(("${"AutoTool:".fireFmt()} ${if (!currentValue) "<green>ON" else "<red>OFF"}").mm())
     }
 }
