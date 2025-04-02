@@ -380,6 +380,7 @@ object Config {
             Material.ACACIA_SAPLING to listOf("trees/acacia"),
             Material.BIRCH_SAPLING to listOf("trees/birch"),
             Material.CHERRY_SAPLING to listOf("trees/cherry"),
+            Material.CRIMSON_FUNGUS to listOf("trees/crimson"),
             Material.DARK_OAK_SAPLING to listOf("trees/dark_oak"),
             Material.JUNGLE_SAPLING to listOf("trees/jungle"),
             Material.MANGROVE_PROPAGULE to listOf("trees/mangrove"),
