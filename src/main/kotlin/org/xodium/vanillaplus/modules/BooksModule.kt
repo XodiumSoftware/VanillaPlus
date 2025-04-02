@@ -10,12 +10,11 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import net.kyori.adventure.inventory.Book
-import net.kyori.adventure.text.Component
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.Utils
+import org.xodium.vanillaplus.Utils.fireFmt
 import org.xodium.vanillaplus.Utils.mm
-import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 
 /**
@@ -31,14 +30,19 @@ class BooksModule : ModuleInterface {
             .executes(Command { Utils.tryCatch(it) { book() } })
     }
 
+
     /**
      * @return the book for the module
      */
     private fun book(): Book {
         return Book.book(
-            "Rules".mm(), //TODO: based on config
-            instance::class.simpleName.toString().mm(), //TODO: based on config?
-            setOf<Component>() //TODO: based on config
+            Config.BooksModule.BOOK.title.fireFmt().mm(),
+            Config.BooksModule.BOOK.author.fireFmt().mm(),
+            Config.BooksModule.BOOK.pages.map { it.mm() }.toSet()
         )
     }
 }
+
+
+
+
