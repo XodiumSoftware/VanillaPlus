@@ -10,7 +10,7 @@ import java.net.URI
 plugins {
     id("java")
     kotlin("jvm") version "2.1.20"
-    id("com.gradleup.shadow") version "9.0.0-beta11"
+    id("com.gradleup.shadow") version "9.0.0-beta12"
     id("de.undercouch.download") version "5.6.0"
 }
 
@@ -32,7 +32,7 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
-    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.10") //TODO("Move away from WorldEdit")
+    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.11") //TODO("Move away from WorldEdit")
     compileOnly("me.clip:placeholderapi:2.11.6")
     implementation(kotlin("stdlib-jdk8"))
     implementation("de.jeff_media:ChestSortAPI:12.0.0")
