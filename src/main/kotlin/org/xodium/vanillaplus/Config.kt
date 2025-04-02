@@ -14,6 +14,8 @@ import org.xodium.vanillaplus.Utils.getWeather
 import org.xodium.vanillaplus.Utils.mangoFmt
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.BookData
+import org.xodium.vanillaplus.utils.TimeUtils.minutes
+import org.xodium.vanillaplus.utils.TimeUtils.seconds
 import java.time.LocalTime
 import org.bukkit.Sound as BukkitSound
 
@@ -165,10 +167,26 @@ object Config {
          * The messages to be broadcasted. One will be randomly selected each time.
          */
         var MESSAGES: List<String> = listOf(
-            "",
-            "",
-            ""
+            "<gold>▶ <dark_aqua>01 <dark_gray>| <light_purple>/home <gold>> <dark_gray><italic>Teleport to your home.",
+            "<gold>▶ <dark_aqua>02 <dark_gray>| <light_purple>/skills <gold>> <dark_gray><italic>Opens up the Skills GUI.",
+            "<gold>▶ <dark_aqua>03 <dark_gray>| <light_purple>/rtp <gold>> <dark_gray><italic>To random teleport in the current dimension.",
+            "<gold>▶ <dark_aqua>04 <dark_gray>| <light_purple>/unload <gold>> <dark_gray><italic>Unloads your inventory into nearby chests.",
+            "<gold>▶ <dark_aqua>05 <dark_gray>| <light_purple>/dump <gold>> <dark_gray><italic>Dumps your inventory into nearby chests.",
+            "<gold>▶ <dark_aqua>06 <dark_gray>| <light_purple>/tpa [player] <gold>> <dark_gray><italic>Request to teleport to a player.",
+            "<gold>▶ <dark_aqua>07 <dark_gray>| <light_purple>/condense <gold>> <dark_gray><italic>Condenses resources (if possible) to their highest form (blocks).",
+            "<gold>▶ <dark_aqua>08 <dark_gray>| <light_purple>/uncondense <gold>> <dark_gray><italic>Uncondenses resources (if possible) to their lowest form (items).",
+            "<gold>▶ <dark_aqua>09 <dark_gray>| <light_purple>Enchantment max level <gold>> <dark_gray><italic>has been incremented by <red><bold>x2<dark_gray><italic>."
         )
+
+        /**
+         * The initial delay before the first broadcast.
+         */
+        var INIT_DELAY: Long = 10.seconds
+
+        /**
+         * The interval between broadcasts.
+         */
+        var INTERVAL: Long = 1.minutes
     }
 
     /**
