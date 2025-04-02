@@ -12,6 +12,8 @@ import org.xodium.vanillaplus.Utils.fireFmt
 import org.xodium.vanillaplus.Utils.getTps
 import org.xodium.vanillaplus.Utils.getWeather
 import org.xodium.vanillaplus.Utils.mangoFmt
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.data.BookData
 import java.time.LocalTime
 import org.bukkit.Sound as BukkitSound
 
@@ -107,6 +109,47 @@ object Config {
          * If axes should be used as swords.
          */
         var USE_AXE_AS_SWORD: Boolean = true
+    }
+
+    /**
+     * Configuration settings for the BooksModule. This module controls the book features of the plugin.
+     */
+    object BooksModule {
+        /**
+         * Enables or disables the BookModule.
+         */
+        var ENABLED: Boolean = true
+
+        /**
+         * The book data, including title, author, and pages.
+         */
+        var BOOK: BookData = BookData(
+            title = "Rules",
+            author = instance::class.simpleName.toString(),
+            pages = listOf(
+                "<gold>▶ <dark_aqua>Player Rules:\n" + // Page 1
+                        "<gold>▶ <dark_aqua>01 <dark_gray>| <red>No Griefing.\n" +
+                        "<gold>▶ <dark_aqua>02 <dark_gray>| <red>No Spamming.\n" +
+                        "<gold>▶ <dark_aqua>03 <dark_gray>| <red>No Advertising.\n" +
+                        "<gold>▶ <dark_aqua>04 <dark_gray>| <red>No Cursing/No Constant Cursing.\n" +
+                        "<gold>▶ <dark_aqua>05 <dark_gray>| <red>No Trolling/Flaming.\n" +
+                        "<gold>▶ <dark_aqua>06 <dark_gray>| <red>No Asking for OP, Ranks, or Items.\n" +
+                        "<gold>▶ <dark_aqua>07 <dark_gray>| <red>Respect all Players.",
+
+                "<gold>▶ <dark_aqua>08 <dark_gray>| <red>Obey Staff they are the Law Enforcers.\n" + // Page 2
+                        "<gold>▶ <dark_aqua>09 <dark_gray>| <red>No Racist or Sexist Remarks.\n" +
+                        "<gold>▶ <dark_aqua>10 <dark_gray>| <red>No Mods/Hacks.\n" +
+                        "<gold>▶ <dark_aqua>11 <dark_gray>| <red>No Full Caps Messages.\n" +
+                        "<gold>▶ <dark_aqua>12 <dark_gray>| <red>No 1x1 Towers.\n" +
+                        "<gold>▶ <dark_aqua>13 <dark_gray>| <red>Build in Medieval style.",
+
+                "<gold>▶ <dark_aqua>Mod/Admin Rules:\n" + // Page 3
+                        "<gold>▶ <dark_aqua>01 <dark_gray>| <red>Be Responsible with the power you are given as staff.\n" +
+                        "<gold>▶ <dark_aqua>02 <dark_gray>| <red>Do not spawn blocks or items for other players.\n" +
+                        "<gold>▶ <dark_aqua>03 <dark_gray>| <red>When Trading, only buy and sell legit items.\n" +
+                        "<gold>▶ <dark_aqua>05 <dark_gray>| <red>No Power Abuse."
+            )
+        )
     }
 
     /**

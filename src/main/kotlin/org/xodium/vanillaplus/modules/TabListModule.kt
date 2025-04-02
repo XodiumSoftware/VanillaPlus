@@ -23,12 +23,9 @@ import org.xodium.vanillaplus.utils.TimeUtils.seconds
 import org.xodium.vanillaplus.utils.TimeUtils.ticks
 
 /**
- * Tab list module
+ * Handles the tab list for all players
  */
 class TabListModule : ModuleInterface {
-    /**
-     * @return true if the module is enabled
-     */
     override fun enabled(): Boolean = Config.TabListModule.ENABLED
 
     init {

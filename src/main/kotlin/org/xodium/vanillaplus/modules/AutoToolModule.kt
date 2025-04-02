@@ -39,15 +39,12 @@ import java.util.function.ToIntFunction
 import java.util.stream.Collectors
 
 
+/**
+ * Handles the automatic switching of tools and weapons.
+ */
 class AutoToolModule : ModuleInterface {
-    /**
-     * @return true if the module is enabled
-     */
     override fun enabled(): Boolean = Config.AutoToolModule.ENABLED
 
-    /**
-     * @return the command for the module
-     */
     @Suppress("UnstableApiUsage")
     override fun cmd(): LiteralArgumentBuilder<CommandSourceStack> {
         return Commands.literal("autotool")
