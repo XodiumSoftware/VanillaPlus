@@ -160,6 +160,15 @@ object Config {
          * Enables or disables the BroadcastModule.
          */
         var ENABLED: Boolean = true
+
+        /**
+         * The messages to be broadcasted. One will be randomly selected each time.
+         */
+        var MESSAGES: List<String> = listOf(
+            "",
+            "",
+            ""
+        )
     }
 
     /**
