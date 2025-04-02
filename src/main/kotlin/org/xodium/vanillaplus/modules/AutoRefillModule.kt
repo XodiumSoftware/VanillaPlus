@@ -22,29 +22,22 @@ import org.bukkit.inventory.PlayerInventory
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Database
 import org.xodium.vanillaplus.Perms
-import org.xodium.vanillaplus.Utils
-import org.xodium.vanillaplus.Utils.fireFmt
-import org.xodium.vanillaplus.Utils.mm
-import org.xodium.vanillaplus.Utils.moveBowlsAndBottles
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.TimeUtils.minutes
+import org.xodium.vanillaplus.utils.Utils
+import org.xodium.vanillaplus.utils.Utils.fireFmt
+import org.xodium.vanillaplus.utils.Utils.mm
+import org.xodium.vanillaplus.utils.Utils.moveBowlsAndBottles
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 /**
- * AutoRefillModule
  * Automatically refills the player's main hand and off hand slots when they consume an item
  */
 class AutoRefillModule : ModuleInterface {
-    /**
-     * @return true if the module is enabled
-     */
     override fun enabled(): Boolean = Config.AutoRefillModule.ENABLED
 
-    /**
-     * @return the command for the module
-     */
     @Suppress("UnstableApiUsage")
     override fun cmd(): LiteralArgumentBuilder<CommandSourceStack> {
         return Commands.literal("autorefill")

@@ -15,11 +15,11 @@ import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import net.kyori.adventure.text.event.ClickEvent
 import org.bukkit.entity.Player
 import org.xodium.vanillaplus.Perms
-import org.xodium.vanillaplus.Utils
-import org.xodium.vanillaplus.Utils.mm
 import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.modules.*
+import org.xodium.vanillaplus.utils.Utils
+import org.xodium.vanillaplus.utils.Utils.mm
 import kotlin.time.measureTime
 
 /**
@@ -31,13 +31,21 @@ import kotlin.time.measureTime
  * enabled module for monitoring performance.
  */
 object ModuleManager {
+    /**
+     * A list of command builders for the modules.
+     */
     private val commandBuilders = mutableListOf<LiteralArgumentBuilder<CommandSourceStack>>()
 
+    /**
+     * Initializes the modules in the VanillaPlus plugin.
+     */
     init {
         listOf(
             AutoRefillModule(),
             AutoRestartModule(),
             AutoToolModule(),
+            BooksModule(),
+            BroadcastModule(),
             DimensionsModule(),
             DoorsModule(),
             InvUnloadModule(),

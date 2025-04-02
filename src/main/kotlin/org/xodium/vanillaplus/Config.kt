@@ -8,10 +8,13 @@ package org.xodium.vanillaplus
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.sound.Sound
 import org.bukkit.Material
-import org.xodium.vanillaplus.Utils.fireFmt
-import org.xodium.vanillaplus.Utils.getTps
-import org.xodium.vanillaplus.Utils.getWeather
-import org.xodium.vanillaplus.Utils.mangoFmt
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.data.BookData
+import org.xodium.vanillaplus.utils.TimeUtils.minutes
+import org.xodium.vanillaplus.utils.Utils.fireFmt
+import org.xodium.vanillaplus.utils.Utils.getTps
+import org.xodium.vanillaplus.utils.Utils.getWeather
+import org.xodium.vanillaplus.utils.Utils.mangoFmt
 import java.time.LocalTime
 import org.bukkit.Sound as BukkitSound
 
@@ -107,6 +110,82 @@ object Config {
          * If axes should be used as swords.
          */
         var USE_AXE_AS_SWORD: Boolean = true
+    }
+
+    /**
+     * Configuration settings for the BooksModule. This module controls the book features of the plugin.
+     */
+    object BooksModule {
+        /**
+         * Enables or disables the BookModule.
+         */
+        var ENABLED: Boolean = true
+
+        /**
+         * The book data, including title, author, and pages.
+         */
+        var BOOK: BookData = BookData(
+            title = "Rules",
+            author = instance::class.simpleName.toString(),
+            pages = listOf(
+                "<gold>▶ <dark_aqua>Player Rules:\n" + // Page 1
+                        "<gold>▶ <dark_aqua>01 <dark_gray>| <red>No Griefing.\n" +
+                        "<gold>▶ <dark_aqua>02 <dark_gray>| <red>No Spamming.\n" +
+                        "<gold>▶ <dark_aqua>03 <dark_gray>| <red>No Advertising.\n" +
+                        "<gold>▶ <dark_aqua>04 <dark_gray>| <red>No Cursing/No Constant Cursing.\n" +
+                        "<gold>▶ <dark_aqua>05 <dark_gray>| <red>No Trolling/Flaming.\n" +
+                        "<gold>▶ <dark_aqua>06 <dark_gray>| <red>No Asking for OP, Ranks, or Items.\n" +
+                        "<gold>▶ <dark_aqua>07 <dark_gray>| <red>Respect all Players.",
+
+                "<gold>▶ <dark_aqua>08 <dark_gray>| <red>Obey Staff they are the Law Enforcers.\n" + // Page 2
+                        "<gold>▶ <dark_aqua>09 <dark_gray>| <red>No Racist or Sexist Remarks.\n" +
+                        "<gold>▶ <dark_aqua>10 <dark_gray>| <red>No Mods/Hacks.\n" +
+                        "<gold>▶ <dark_aqua>11 <dark_gray>| <red>No Full Caps Messages.\n" +
+                        "<gold>▶ <dark_aqua>12 <dark_gray>| <red>No 1x1 Towers.\n" +
+                        "<gold>▶ <dark_aqua>13 <dark_gray>| <red>Build in Medieval style.",
+
+                "<gold>▶ <dark_aqua>Mod/Admin Rules:\n" + // Page 3
+                        "<gold>▶ <dark_aqua>01 <dark_gray>| <red>Be Responsible with the power you are given as staff.\n" +
+                        "<gold>▶ <dark_aqua>02 <dark_gray>| <red>Do not spawn blocks or items for other players.\n" +
+                        "<gold>▶ <dark_aqua>03 <dark_gray>| <red>When Trading, only buy and sell legit items.\n" +
+                        "<gold>▶ <dark_aqua>05 <dark_gray>| <red>No Power Abuse."
+            )
+        )
+    }
+
+    /**
+     * Configuration settings for the BroadcastModule. This module controls the broadcast features of the plugin.
+     */
+    object BroadcastModule {
+        /**
+         * Enables or disables the BroadcastModule.
+         */
+        var ENABLED: Boolean = true
+
+        /**
+         * The messages to be broadcasted. One will be randomly selected each time.
+         */
+        var MESSAGES: List<String> = listOf(
+            "<gold>▶ <light_purple>/home <gold>> <white><italic>Teleport to your home.",
+            "<gold>▶ <light_purple>/skills <gold>> <white><italic>Opens up the Skills GUI.",
+            "<gold>▶ <light_purple>/rtp <gold>> <white><italic>To random teleport in the current dimension.",
+            "<gold>▶ <light_purple>/unload <gold>> <white><italic>Unloads your inventory into nearby chests.",
+            "<gold>▶ <light_purple>/dump <gold>> <white><italic>Dumps your inventory into nearby chests.",
+            "<gold>▶ <light_purple>/tpa [player] <gold>> <white><italic>Request to teleport to a player.",
+            "<gold>▶ <light_purple>/condense <gold>> <white><italic>Condenses resources (if possible) to their highest form (blocks).",
+            "<gold>▶ <light_purple>/uncondense <gold>> <white><italic>Uncondenses resources (if possible) to their lowest form (items).",
+            "<gold>▶ <light_purple>Enchantment max level <gold>> <white><italic>has been incremented by <red><bold>x2<dark_gray><italic>."
+        )
+
+        /**
+         * The initial delay before the first broadcast.
+         */
+        var INIT_DELAY: Long = 1.minutes
+
+        /**
+         * The interval between broadcasts.
+         */
+        var INTERVAL: Long = 5.minutes
     }
 
     /**

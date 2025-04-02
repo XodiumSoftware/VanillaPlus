@@ -12,19 +12,16 @@ import org.bukkit.event.entity.EntityPortalEvent
 import org.bukkit.event.player.PlayerPortalEvent
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause
 import org.xodium.vanillaplus.Config
-import org.xodium.vanillaplus.Utils.fireFmt
-import org.xodium.vanillaplus.Utils.mm
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.TimeUtils.ticks
+import org.xodium.vanillaplus.utils.Utils.fireFmt
+import org.xodium.vanillaplus.utils.Utils.mm
 
 /**
- * Module to handle dimension teleportation
+ * Handles dimension teleportation
  */
 class DimensionsModule : ModuleInterface {
-    /**
-     * Returns true if the module is enabled in the plugin's configuration.
-     */
     override fun enabled(): Boolean = Config.DimensionsModule.ENABLED
 
     /**

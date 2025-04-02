@@ -15,6 +15,9 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 object Perms {
     private val G0 = instance::class.simpleName.toString().lowercase()
 
+    /**
+     * Register all permissions.
+     */
     init {
         listOf<Permission>(
             Use.GENERAL,

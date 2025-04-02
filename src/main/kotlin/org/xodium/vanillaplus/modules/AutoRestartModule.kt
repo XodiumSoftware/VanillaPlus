@@ -7,21 +7,25 @@ package org.xodium.vanillaplus.modules
 
 import net.kyori.adventure.bossbar.BossBar
 import org.xodium.vanillaplus.Config
-import org.xodium.vanillaplus.Utils.mm
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.TimeUtils.minutes
 import org.xodium.vanillaplus.utils.TimeUtils.seconds
 import org.xodium.vanillaplus.utils.TimeUtils.ticks
+import org.xodium.vanillaplus.utils.Utils.mm
 import java.time.LocalTime
 import java.time.temporal.ChronoUnit
 
+
+/**
+ * A module that restarts the server at a specific time.
+ */
 class AutoRestartModule : ModuleInterface {
-    /**
-     * Returns true if the module is enabled in the plugin's configuration.
-     */
     override fun enabled(): Boolean = Config.AutoRestartModule.ENABLED
 
+    /**
+     * Initializes the AutoRestartModule.
+     */
     init {
         if (enabled()) {
             // TODO: the following code is very inefficient and should be refactored.
