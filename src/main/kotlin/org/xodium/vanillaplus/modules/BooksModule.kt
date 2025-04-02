@@ -10,6 +10,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import net.kyori.adventure.inventory.Book
+import org.bukkit.entity.Player
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.Utils
@@ -27,7 +28,7 @@ class BooksModule : ModuleInterface {
     override fun cmd(): LiteralArgumentBuilder<CommandSourceStack> {
         return Commands.literal("rules")
             .requires { it.sender.hasPermission(Perms.AutoRefill.USE) }
-            .executes(Command { Utils.tryCatch(it) { book() } })
+            .executes(Command { Utils.tryCatch(it) { (it.sender as Player).openBook(book()) } })
     }
 
 
