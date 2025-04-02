@@ -30,10 +30,10 @@ import org.bukkit.inventory.meta.Damageable
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Database
 import org.xodium.vanillaplus.Perms
-import org.xodium.vanillaplus.Utils
 import org.xodium.vanillaplus.enums.ToolEnum
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.registries.MaterialRegistry
+import org.xodium.vanillaplus.utils.Utils
 import java.util.*
 import java.util.function.ToIntFunction
 import java.util.stream.Collectors

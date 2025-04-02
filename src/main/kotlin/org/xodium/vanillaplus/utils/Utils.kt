@@ -5,7 +5,8 @@
 
 @file:Suppress("UnstableApiUsage")
 
-package org.xodium.vanillaplus
+package org.xodium.vanillaplus.utils
+
 
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.context.CommandContext
@@ -19,11 +20,10 @@ import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
-import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.VanillaPlus
 import org.xodium.vanillaplus.registries.EntityRegistry
 import org.xodium.vanillaplus.registries.MaterialRegistry
 import java.util.*
-
 
 /**
  * Provides utility functions for directory creation and file copying within the plugin.
@@ -56,9 +56,9 @@ object Utils {
         try {
             action(ctx.source)
         } catch (e: Exception) {
-            instance.logger.severe("An Error has occured: ${e.message}")
+            VanillaPlus.Companion.instance.logger.severe("An Error has occured: ${e.message}")
             e.printStackTrace()
-            (ctx.source.sender as Player).sendMessage("${VanillaPlus.PREFIX}<red>An Error has occured. Check server logs for details.".mm())
+            (ctx.source.sender as Player).sendMessage("${VanillaPlus.Companion.PREFIX}<red>An Error has occured. Check server logs for details.".mm())
         }
         return Command.SINGLE_SUCCESS
     }
@@ -225,7 +225,7 @@ object Utils {
      * @return The tps of the server.
      */
     fun getTps(): String {
-        val tps = instance.server.tps[0]
+        val tps = VanillaPlus.Companion.instance.server.tps[0]
         val clampedTps = tps.coerceIn(0.0, 20.0)
         val ratio = clampedTps / 20.0
         val color = getColorForTps(ratio)
@@ -252,7 +252,7 @@ object Utils {
      * @return A formatted string representing the weather.
      */
     fun getWeather(): String {
-        val world = instance.server.worlds[0]
+        val world = VanillaPlus.Companion.instance.server.worlds[0]
         return when {
             world.isThundering -> "<red>\uD83C\uDF29<reset>"
             world.hasStorm() -> "<yellow>\uD83C\uDF26<reset>"
