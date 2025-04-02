@@ -45,6 +45,7 @@ object ModuleManager {
             AutoRestartModule(),
             AutoToolModule(),
             BooksModule(),
+            BroadcastModule(),
             DimensionsModule(),
             DoorsModule(),
             InvUnloadModule(),

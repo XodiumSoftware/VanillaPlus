@@ -153,6 +153,16 @@ object Config {
     }
 
     /**
+     * Configuration settings for the BroadcastModule. This module controls the broadcast features of the plugin.
+     */
+    object BroadcastModule {
+        /**
+         * Enables or disables the BroadcastModule.
+         */
+        var ENABLED: Boolean = true
+    }
+
+    /**
      * Configuration settings for the DimensionsModule. This module controls the dimensions features of the plugin.
      */
     object DimensionsModule {
