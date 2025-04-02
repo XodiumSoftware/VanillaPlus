@@ -13,10 +13,10 @@ import net.kyori.adventure.inventory.Book
 import org.bukkit.entity.Player
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Perms
-import org.xodium.vanillaplus.Utils
-import org.xodium.vanillaplus.Utils.fireFmt
-import org.xodium.vanillaplus.Utils.mm
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.Utils
+import org.xodium.vanillaplus.utils.Utils.fireFmt
+import org.xodium.vanillaplus.utils.Utils.mm
 
 /**
  * TODO: Add description

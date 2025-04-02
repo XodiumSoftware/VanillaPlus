@@ -5,12 +5,10 @@
 
 package org.xodium.vanillaplus.modules
 
-import net.kyori.adventure.audience.Audience
 import org.xodium.vanillaplus.Config
-import org.xodium.vanillaplus.Utils.mm
-import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.Utils.mm
 
 class BroadcastModule : ModuleInterface {
     override fun enabled(): Boolean = Config.BroadcastModule.ENABLED
@@ -19,7 +17,7 @@ class BroadcastModule : ModuleInterface {
         if (enabled()) {
             instance.server.scheduler.scheduleSyncRepeatingTask(
                 instance,
-                { broadcast(Audience.audience()) },
+                { broadcast() },
                 Config.BroadcastModule.INIT_DELAY,
                 Config.BroadcastModule.INTERVAL
             )
@@ -27,11 +25,11 @@ class BroadcastModule : ModuleInterface {
     }
 
     /**
-     * Broadcasts a message to the specified audience.
-     *
-     * @param audience The audience to send the message to.
+     * Broadcasts a random message to all online players.
      */
-    fun broadcast(audience: Audience) {
-        Config.BroadcastModule.MESSAGES.shuffled().forEach { audience.sendMessage("$PREFIX + $it".mm()) }
+    fun broadcast() {
+        instance.server.onlinePlayers.forEach {
+            it.sendMessage("<gold>[<dark_aqua>TIP<gold>] ${Config.BroadcastModule.MESSAGES.random()}".mm())
+        }
     }
 }

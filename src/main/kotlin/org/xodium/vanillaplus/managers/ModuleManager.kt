@@ -15,11 +15,11 @@ import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import net.kyori.adventure.text.event.ClickEvent
 import org.bukkit.entity.Player
 import org.xodium.vanillaplus.Perms
-import org.xodium.vanillaplus.Utils
-import org.xodium.vanillaplus.Utils.mm
 import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.modules.*
+import org.xodium.vanillaplus.utils.Utils
+import org.xodium.vanillaplus.utils.Utils.mm
 import kotlin.time.measureTime
 
 /**

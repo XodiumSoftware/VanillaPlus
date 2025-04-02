@@ -6,8 +6,8 @@
     <option name="ALTERNATIVE_JRE_PATH" />
     <method v="2">
       <option name="RunConfigurationTask" enabled="true" run_configuration_name="VanillaPlus [acceptEula]" run_configuration_type="GradleRunConfiguration" />
-      <option name="RunConfigurationTask" enabled="true" run_configuration_name="VanillaPlus [downloadServerJar]" run_configuration_type="GradleRunConfiguration" />
       <option name="RunConfigurationTask" enabled="true" run_configuration_name="VanillaPlus [shadowJar]" run_configuration_type="GradleRunConfiguration" />
+      <option name="RunConfigurationTask" enabled="true" run_configuration_name="VanillaPlus [downloadServerJar]" run_configuration_type="GradleRunConfiguration" />
     </method>
   </configuration>
 </component>

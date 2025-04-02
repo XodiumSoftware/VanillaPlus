@@ -9,8 +9,8 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.server.ServerListPingEvent
 import org.xodium.vanillaplus.Config
-import org.xodium.vanillaplus.Utils.mm
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.Utils.mm
 
 /**
  * Customizes the server's Message of the Day (MOTD) that appears in the server list.
