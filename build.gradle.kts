@@ -9,13 +9,13 @@ import java.net.URI
 
 plugins {
     id("java")
-    kotlin("jvm") version "2.1.10"
-    id("com.gradleup.shadow") version "9.0.0-beta11"
+    kotlin("jvm") version "2.1.20"
+    id("com.gradleup.shadow") version "9.0.0-beta12"
     id("de.undercouch.download") version "5.6.0"
 }
 
 group = "org.xodium.vanillaplus"
-version = "1.6.0"
+version = "1.6.1"
 description = "Minecraft plugin that enhances the base gameplay."
 
 var pluginName: String = "VanillaPlus"
@@ -27,11 +27,13 @@ repositories {
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://maven.enginehub.org/repo/")
     maven("https://repo.jeff-media.com/public/")
+    maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
-    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.10") //TODO("Move away from WorldEdit")
+    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.11") //TODO("Move away from WorldEdit")
+    compileOnly("me.clip:placeholderapi:2.11.6")
     implementation(kotlin("stdlib-jdk8"))
     implementation("de.jeff_media:ChestSortAPI:12.0.0")
 }

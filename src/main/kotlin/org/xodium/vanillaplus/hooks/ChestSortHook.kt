@@ -15,7 +15,7 @@ import org.xodium.vanillaplus.Config
 /**
  * ChestSortHook
  */
-class ChestSortHook {
+object ChestSortHook {
     /**
      * Check if player should sort inventory
      *
