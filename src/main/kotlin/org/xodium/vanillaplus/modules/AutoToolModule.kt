@@ -82,6 +82,7 @@ class AutoToolModule : ModuleInterface {
     fun on(event: BlockBreakEvent) {
         val player = event.player
         onPlayerInteractWithBlock(
+            @Suppress("UnstableApiUsage")
             PlayerInteractEvent(
                 player,
                 Action.LEFT_CLICK_BLOCK,
@@ -109,7 +110,7 @@ class AutoToolModule : ModuleInterface {
         val playerInventory = player.inventory
         if (Config.AutoToolModule.DONT_SWITCH_DURING_BATTLE && isWeapon(playerInventory.itemInMainHand))
             return
-        if (event.getAction() != Action.LEFT_CLICK_BLOCK) return
+        if (event.action != Action.LEFT_CLICK_BLOCK) return
         if (event.hand != EquipmentSlot.HAND) return
         val bestTool = getBestToolFromInventory(block.type, player, playerInventory.itemInMainHand)
         if (bestTool == null || bestTool == playerInventory.itemInMainHand) {

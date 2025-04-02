@@ -15,11 +15,11 @@ plugins {
 }
 
 group = "org.xodium.vanillaplus"
-version = "1.6.2"
+version = "1.7.0"
 description = "Minecraft plugin that enhances the base gameplay."
 
 var pluginName: String = "VanillaPlus"
-var apiVersion: String = "1.21.4"
+var apiVersion: String = "1.21.5"
 var authors: List<String> = listOf("XodiumSoftware")
 
 repositories {
@@ -31,7 +31,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21.5-R0.1-SNAPSHOT")
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.11") //TODO("Move away from WorldEdit")
     compileOnly("me.clip:placeholderapi:2.11.6")
     implementation(kotlin("stdlib-jdk8"))
