@@ -88,7 +88,7 @@ class DimensionsModule : ModuleInterface {
         if (!hasPortalNearby(overworld, overworldX, overworldY, overworldZ, 128.0)) {
             event.isCancelled = true
             if (event.player != null) {
-                event.player?.sendActionBar("Cannot light a portal with no Overworld counterpart".fireFmt().mm())
+                event.player?.sendActionBar("Cannot create new portal link from the Nether".fireFmt().mm())
             }
         }
     }
