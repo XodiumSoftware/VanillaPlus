@@ -48,6 +48,20 @@ class TreesModule : ModuleInterface {
         }
 
     /**
+     * Handle the StructureGrowEvent
+     *
+     * @param event The StructureGrowEvent
+     */
+    @EventHandler(priority = EventPriority.MONITOR)
+    fun on(event: StructureGrowEvent) {
+        event.location.block.takeIf {
+            Tag.SAPLINGS.isTagged(it.type)
+                    || it.type == Material.WARPED_FUNGUS
+                    || it.type == Material.CRIMSON_FUNGUS
+        }?.let { event.isCancelled = pasteSchematic(it) }
+    }
+
+    /**
      * Load schematics from the specified resource directory
      *
      * @param resourceDir The directory containing the schematics
@@ -87,20 +101,6 @@ class TreesModule : ModuleInterface {
         } catch (e: Exception) {
             throw IOException("Failed to read schematic $path: ${e.message}", e)
         }
-    }
-
-    /**
-     * Handle the StructureGrowEvent
-     *
-     * @param event The StructureGrowEvent
-     */
-    @EventHandler(priority = EventPriority.MONITOR)
-    fun on(event: StructureGrowEvent) {
-        event.location.block.takeIf {
-            Tag.SAPLINGS.isTagged(it.type)
-                    || it.type == Material.WARPED_FUNGUS
-                    || it.type == Material.CRIMSON_FUNGUS
-        }?.let { event.isCancelled = pasteSchematic(it) }
     }
 
     /**
