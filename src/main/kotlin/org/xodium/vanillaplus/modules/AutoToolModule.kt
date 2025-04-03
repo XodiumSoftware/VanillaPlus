@@ -67,6 +67,16 @@ class AutoToolModule : ModuleInterface {
         if (enabled()) {
             Database.createTable(this::class)
         }
+        tagToMap(Tag.MINEABLE_AXE, ToolEnum.AXE)
+        tagToMap(Tag.MINEABLE_HOE, ToolEnum.HOE)
+        tagToMap(Tag.MINEABLE_PICKAXE, ToolEnum.PICKAXE)
+        tagToMap(Tag.MINEABLE_SHOVEL, ToolEnum.SHOVEL)
+
+        // NONE SPECIFIC
+        tagToMap(Tag.FLOWERS, ToolEnum.NONE)
+
+        // CUSTOM
+        addToMap(Material.GLOWSTONE, ToolEnum.PICKAXE)
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -125,19 +135,6 @@ class AutoToolModule : ModuleInterface {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerQuitEvent) {
         blockTypeCaches.remove(event.player.uniqueId)
-    }
-
-    init {
-        tagToMap(Tag.MINEABLE_AXE, ToolEnum.AXE)
-        tagToMap(Tag.MINEABLE_HOE, ToolEnum.HOE)
-        tagToMap(Tag.MINEABLE_PICKAXE, ToolEnum.PICKAXE)
-        tagToMap(Tag.MINEABLE_SHOVEL, ToolEnum.SHOVEL)
-
-        // NONE SPECIFIC
-        tagToMap(Tag.FLOWERS, ToolEnum.NONE)
-
-        // CUSTOM
-        addToMap(Material.GLOWSTONE, ToolEnum.PICKAXE)
     }
 
     /**
