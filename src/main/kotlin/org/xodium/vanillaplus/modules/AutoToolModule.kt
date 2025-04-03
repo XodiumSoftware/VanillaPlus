@@ -237,14 +237,14 @@ class AutoToolModule : ModuleInterface {
      * @param itemStack The item stack to check.
      * @return true if the item stack is a weapon, false otherwise.
      */
-    fun isWeapon(itemStack: ItemStack): Boolean = MaterialRegistry.WEAPONS.contains(itemStack.type)
+    private fun isWeapon(itemStack: ItemStack): Boolean = MaterialRegistry.WEAPONS.contains(itemStack.type)
 
     /**
      * Checks if the given item stack is a tool or a Roscoe.
      * @param itemStack The item stack to check.
      * @return true if the item stack is a tool or a Roscoe, false otherwise.
      */
-    fun isToolOrRoscoe(itemStack: ItemStack): Boolean =
+    private fun isToolOrRoscoe(itemStack: ItemStack): Boolean =
         MaterialRegistry.DEFAULT_MATERIALS.contains(itemStack.type) || MaterialRegistry.WEAPONS.contains(itemStack.type)
 
     /**
@@ -252,21 +252,22 @@ class AutoToolModule : ModuleInterface {
      * @param material The material to check.
      * @return The best tool type for the material.
      */
-    fun getBestToolType(material: Material): ToolEnum = toolMap[material] ?: ToolEnum.NONE
+    private fun getBestToolType(material: Material): ToolEnum = toolMap[material] ?: ToolEnum.NONE
 
     /**
      * Checks if the given item stack has Silk Touch enchantment.
      * @param itemStack The item stack to check.
      * @return true if the item stack has Silk Touch enchantment, false otherwise.
      */
-    fun hasSilkTouch(itemStack: ItemStack?): Boolean = itemStack?.itemMeta?.hasEnchant(Enchantment.SILK_TOUCH) == true
+    private fun hasSilkTouch(itemStack: ItemStack?): Boolean =
+        itemStack?.itemMeta?.hasEnchant(Enchantment.SILK_TOUCH) == true
 
     /**
      * Converts the player's inventory to an array of item stacks.
      * @param player The player whose inventory to convert.
      * @return An array of item stacks representing the player's inventory.
      */
-    fun inventoryToArray(player: Player): Array<ItemStack?> =
+    private fun inventoryToArray(player: Player): Array<ItemStack?> =
         Array(INVENTORY_SIZE) { player.inventory.getItem(it) }
 
     /**
@@ -274,7 +275,8 @@ class AutoToolModule : ModuleInterface {
      * @param material The material to check.
      * @return true if the material profits from Silk Touch, false otherwise.
      */
-    fun profitsFromSilkTouch(material: Material): Boolean = MaterialRegistry.PROFITS_FROM_SILK_TOUCH.contains(material)
+    private fun profitsFromSilkTouch(material: Material): Boolean =
+        MaterialRegistry.PROFITS_FROM_SILK_TOUCH.contains(material)
 
     /**
      * Checks if the given material profits from Fortune.
@@ -282,7 +284,8 @@ class AutoToolModule : ModuleInterface {
      * @return true if the material profits from Fortune, false otherwise.
      */
     @Suppress("unused")
-    fun profitsFromFortune(material: Material): Boolean = MaterialRegistry.PROFITS_FROM_FORTUNE.contains(material)
+    private fun profitsFromFortune(material: Material): Boolean =
+        MaterialRegistry.PROFITS_FROM_FORTUNE.contains(material)
 
     /**
      * Checks if the given item stack is a tool of the specified type.
@@ -290,7 +293,7 @@ class AutoToolModule : ModuleInterface {
      * @param itemStack The item stack to check.
      * @return true if the item stack is a tool of the specified type, false otherwise.
      */
-    fun isTool(toolEnum: ToolEnum, itemStack: ItemStack): Boolean {
+    private fun isTool(toolEnum: ToolEnum, itemStack: ItemStack): Boolean {
         val material = itemStack.type
         return when (toolEnum) {
             ToolEnum.PICKAXE -> Tag.ITEMS_PICKAXES.isTagged(material)
@@ -310,7 +313,11 @@ class AutoToolModule : ModuleInterface {
      * @param material The material to check.
      * @return true if the item stack is a tool of the specified type, false otherwise.
      */
-    fun getNonToolItemFromArray(itemStacks: Array<ItemStack?>, itemStack: ItemStack, material: Material?): ItemStack? {
+    private fun getNonToolItemFromArray(
+        itemStacks: Array<ItemStack?>,
+        itemStack: ItemStack,
+        material: Material?
+    ): ItemStack? {
         if (MaterialRegistry.INSTA_BREAKABLE_BY_HAND.contains(material) && !Tag.ITEMS_HOES.isTagged(itemStack.type) ||
             !isToolOrRoscoe(itemStack)
         ) return itemStack
@@ -327,7 +334,7 @@ class AutoToolModule : ModuleInterface {
      * @param material The material to check.
      * @return The best item stack from the array, or null if none found.
      */
-    fun getBestItemStackFromArray(
+    private fun getBestItemStackFromArray(
         toolEnum: ToolEnum,
         itemStacks: Array<ItemStack?>,
         trySilkTouch: Boolean,
@@ -394,7 +401,7 @@ class AutoToolModule : ModuleInterface {
      * @param useAxe Whether to use an axe as a sword.
      * @return The best Roscoe from the array, or null if none found.
      */
-    fun getBestRoscoeFromArray(
+    private fun getBestRoscoeFromArray(
         itemStacks: Array<ItemStack?>,
         entityType: EntityType,
         useAxe: Boolean
@@ -435,7 +442,7 @@ class AutoToolModule : ModuleInterface {
      * @param itemStack The item stack to check.
      * @return The best tool from the player's inventory, or null if none found.
      */
-    fun getBestToolFromInventory(
+    private fun getBestToolFromInventory(
         material: Material,
         player: Player,
         itemStack: ItemStack
@@ -475,7 +482,7 @@ class AutoToolModule : ModuleInterface {
      * @param useAxe Whether to use an axe as a sword.
      * @return The best Roscoe from the player's inventory, or null if none found.
      */
-    fun getBestRoscoeFromInventory(
+    private fun getBestRoscoeFromInventory(
         entityType: EntityType,
         player: Player,
         useAxe: Boolean
@@ -487,7 +494,7 @@ class AutoToolModule : ModuleInterface {
      * @param playerInventory The player's inventory to check.
      * @return The position of the item stack in the inventory, or -1 if not found.
      */
-    fun getPositionInInventory(itemStack: ItemStack, playerInventory: PlayerInventory): Int {
+    private fun getPositionInInventory(itemStack: ItemStack, playerInventory: PlayerInventory): Int {
         for (i in 0..<Objects.requireNonNull<PlayerInventory>(playerInventory, "Inventory must not be null").size) {
             val currentItem = playerInventory.getItem(i)
             if (currentItem == null) continue
@@ -502,7 +509,7 @@ class AutoToolModule : ModuleInterface {
      * @param dest The destination slot.
      * @param playerInventory The player's inventory to modify.
      */
-    fun moveToolToSlot(source: Int, dest: Int, playerInventory: PlayerInventory) {
+    private fun moveToolToSlot(source: Int, dest: Int, playerInventory: PlayerInventory) {
         playerInventory.heldItemSlot = dest
         if (source == dest) return
         val sourceItem = playerInventory.getItem(source)
@@ -525,7 +532,7 @@ class AutoToolModule : ModuleInterface {
      * @param itemStack The item stack to check.
      * @return true if the item stack is damageable, false otherwise.
      */
-    fun isDamageable(itemStack: ItemStack?): Boolean =
+    private fun isDamageable(itemStack: ItemStack?): Boolean =
         itemStack == null || !itemStack.hasItemMeta() || itemStack.itemMeta !is Damageable
 
     /**
@@ -533,7 +540,7 @@ class AutoToolModule : ModuleInterface {
      * @param source The source slot.
      * @param playerInventory The player's inventory to modify.
      */
-    fun freeSlot(source: Int, playerInventory: PlayerInventory) {
+    private fun freeSlot(source: Int, playerInventory: PlayerInventory) {
         playerInventory.itemInMainHand
 
         if (isDamageable(playerInventory.itemInMainHand)) return
@@ -576,7 +583,7 @@ class AutoToolModule : ModuleInterface {
      *
      * @param player The player to toggle.
      */
-    fun toggle(player: Player) {
+    private fun toggle(player: Player) {
         val currentValue = isEnabledForPlayer(player)
         val newValue = (!currentValue).toString()
         Database.setData(this::class, player.uniqueId.toString(), newValue)
