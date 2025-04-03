@@ -380,10 +380,12 @@ object Config {
             Material.ACACIA_SAPLING to listOf("trees/acacia"),
             Material.BIRCH_SAPLING to listOf("trees/birch"),
             Material.CHERRY_SAPLING to listOf("trees/cherry"),
+            Material.CRIMSON_FUNGUS to listOf("trees/crimson"),
             Material.DARK_OAK_SAPLING to listOf("trees/dark_oak"),
             Material.JUNGLE_SAPLING to listOf("trees/jungle"),
             Material.MANGROVE_PROPAGULE to listOf("trees/mangrove"),
             Material.OAK_SAPLING to listOf("trees/oak"),
+//            Material.PALE_OAK_SAPLING to listOf("trees/pale_oak"), // TODO: add when artist has schematics ready.
             Material.SPRUCE_SAPLING to listOf("trees/spruce"),
             Material.WARPED_FUNGUS to listOf("trees/warped"),
         )
