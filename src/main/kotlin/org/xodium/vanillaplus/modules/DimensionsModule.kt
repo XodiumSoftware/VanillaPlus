@@ -5,12 +5,16 @@
 
 package org.xodium.vanillaplus.modules
 
+import org.bukkit.Material
 import org.bukkit.World
+import org.bukkit.block.Block
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
+import org.bukkit.event.block.BlockIgniteEvent
 import org.bukkit.event.entity.EntityPortalEvent
 import org.bukkit.event.player.PlayerPortalEvent
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause
+import org.bukkit.util.Vector
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
@@ -60,5 +64,83 @@ class DimensionsModule : ModuleInterface {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: EntityPortalEvent) {
         event.canCreatePortal = false
+    }
+
+    /**
+     * Event handler for the BlockIgniteEvent.
+     *
+     * @param event The BlockIgniteEvent that was triggered.
+     */
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun on(event: BlockIgniteEvent) {
+        val block = event.block
+        val world = block.world
+
+        if (world.environment != World.Environment.NETHER) return
+        if (!isPortalFrame(block)) return
+
+        val netherCoords = block.location
+        val overworldX = netherCoords.x * 8
+        val overworldY = netherCoords.y
+        val overworldZ = netherCoords.z * 8
+        val overworld = instance.server.worlds.find { it.environment == World.Environment.NORMAL } ?: return
+
+        if (!hasPortalNearby(overworld, overworldX, overworldY, overworldZ, 128.0)) {
+            event.isCancelled = true
+            if (event.player != null) {
+                event.player?.sendActionBar("Cannot light a portal with no Overworld counterpart".fireFmt().mm())
+            }
+        }
+    }
+
+    /**
+     * Checks if the block is part of a valid nether portal frame.
+     *
+     * @param block The block to check.
+     * @return True if the block is part of a valid portal frame.
+     */
+    private fun isPortalFrame(block: Block): Boolean {
+        val adjacent = listOf(
+            Vector(1, 0, 0), Vector(-1, 0, 0),
+            Vector(0, 1, 0), Vector(0, -1, 0),
+            Vector(0, 0, 1), Vector(0, 0, -1)
+        )
+
+        var obsidianCount = 0
+
+        for (dir in adjacent) {
+            val relative = block.getRelative(dir.blockX, dir.blockY, dir.blockZ)
+            if (relative.type == Material.OBSIDIAN) obsidianCount++
+        }
+        return obsidianCount >= 2
+    }
+
+    /**
+     * Checks if there's a portal near the specified coordinates.
+     *
+     * @param world The world to check in.
+     * @param x The x coordinate.
+     * @param y The y coordinate.
+     * @param z The z coordinate.
+     * @param radius The search radius.
+     * @return True if a portal exists within the radius.
+     */
+    private fun hasPortalNearby(world: World, x: Double, y: Double, z: Double, radius: Double): Boolean {
+        val searchRadius = radius.toInt()
+        val centerX = x.toInt()
+        val centerY = y.toInt()
+        val centerZ = z.toInt()
+
+        for (dx in -searchRadius..searchRadius) {
+            for (dy in -searchRadius..searchRadius) {
+                for (dz in -searchRadius..searchRadius) {
+                    if (dx * dx + dy * dy + dz * dz > searchRadius * searchRadius) continue
+
+                    val block = world.getBlockAt(centerX + dx, centerY + dy, centerZ + dz)
+                    if (block.type == Material.NETHER_PORTAL) return true
+                }
+            }
+        }
+        return false
     }
 }
