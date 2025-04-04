@@ -5,6 +5,7 @@
 
 package org.xodium.vanillaplus.modules
 
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.Block
@@ -18,7 +19,6 @@ import org.bukkit.util.Vector
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.utils.TimeUtils.ticks
 import org.xodium.vanillaplus.utils.Utils.fireFmt
 import org.xodium.vanillaplus.utils.Utils.mm
 
@@ -44,11 +44,11 @@ class DimensionsModule : ModuleInterface {
 
                 World.Environment.NETHER -> {
                     event.canCreatePortal = false
-                    instance.server.scheduler.runTaskLater(instance, Runnable {
-                        if (player.world != event.to.world) {
-                            player.sendActionBar("Cannot create new portal link from the Nether".fireFmt().mm())
-                        }
-                    }, 1.ticks)
+                    if (player.world != event.to.world) {
+                        extinguishPortal(player.location)
+                        //TODO: Message also appears when there is a link and you walk from the nether -> overworld
+                        player.sendActionBar("No link to the portal counterpart in the Overworld".fireFmt().mm())
+                    }
                 }
 
                 else -> return
@@ -88,7 +88,7 @@ class DimensionsModule : ModuleInterface {
         if (!hasPortalNearby(overworld, overworldX, overworldY, overworldZ, 128.0)) {
             event.isCancelled = true
             if (event.player != null) {
-                event.player?.sendActionBar("Cannot create new portal link from the Nether".fireFmt().mm())
+                event.player?.sendActionBar("Cannot create new link to the Overworld from the Nether".fireFmt().mm())
             }
         }
     }
@@ -100,15 +100,12 @@ class DimensionsModule : ModuleInterface {
      * @return True if the block is part of a valid portal frame.
      */
     private fun isPortalFrame(block: Block): Boolean {
-        val adjacent = listOf(
+        var obsidianCount = 0
+        for (dir in listOf(
             Vector(1, 0, 0), Vector(-1, 0, 0),
             Vector(0, 1, 0), Vector(0, -1, 0),
             Vector(0, 0, 1), Vector(0, 0, -1)
-        )
-
-        var obsidianCount = 0
-
-        for (dir in adjacent) {
+        )) {
             val relative = block.getRelative(dir.blockX, dir.blockY, dir.blockZ)
             if (relative.type == Material.OBSIDIAN) obsidianCount++
         }
@@ -126,15 +123,23 @@ class DimensionsModule : ModuleInterface {
      * @return True if a portal exists within the radius.
      */
     private fun hasPortalNearby(world: World, x: Double, y: Double, z: Double, radius: Double): Boolean {
+        val radiusSquared = radius * radius
         val searchRadius = radius.toInt()
         val centerX = x.toInt()
         val centerY = y.toInt()
         val centerZ = z.toInt()
 
-        for (dx in -searchRadius..searchRadius) {
-            for (dy in -searchRadius..searchRadius) {
+        for (dy in -searchRadius..searchRadius) {
+            val distanceYSquared = dy * dy
+            if (distanceYSquared > radiusSquared) continue
+
+            for (dx in -searchRadius..searchRadius) {
+                val distanceXYSquared = distanceYSquared + dx * dx
+                if (distanceXYSquared > radiusSquared) continue
+
                 for (dz in -searchRadius..searchRadius) {
-                    if (dx * dx + dy * dy + dz * dz > searchRadius * searchRadius) continue
+                    val distanceSquared = distanceXYSquared + dz * dz
+                    if (distanceSquared > radiusSquared) continue
 
                     val block = world.getBlockAt(centerX + dx, centerY + dy, centerZ + dz)
                     if (block.type == Material.NETHER_PORTAL) return true
@@ -142,5 +147,41 @@ class DimensionsModule : ModuleInterface {
             }
         }
         return false
+    }
+
+    /**
+     * Extinguishes the Nether portal at the given location.
+     *
+     * @param location The location of the portal.
+     */
+    private fun extinguishPortal(location: Location) {
+        val visited = mutableSetOf<Block>()
+        val queue = ArrayDeque<Block>()
+        for (dir in listOf(
+            Vector(1, 0, 0), Vector(-1, 0, 0),
+            Vector(0, 1, 0), Vector(0, -1, 0),
+            Vector(0, 0, 1), Vector(0, 0, -1)
+        )) {
+            val block = location.block.getRelative(dir.blockX, dir.blockY, dir.blockZ)
+            if (block.type == Material.NETHER_PORTAL) {
+                queue.add(block)
+                visited.add(block)
+            }
+        }
+        while (queue.isNotEmpty()) {
+            val current = queue.removeFirst()
+            current.type = Material.AIR
+            for (dir in listOf(
+                Vector(1, 0, 0), Vector(-1, 0, 0),
+                Vector(0, 1, 0), Vector(0, -1, 0),
+                Vector(0, 0, 1), Vector(0, 0, -1)
+            )) {
+                val neighbor = current.getRelative(dir.blockX, dir.blockY, dir.blockZ)
+                if (neighbor.type == Material.NETHER_PORTAL && neighbor !in visited) {
+                    queue.add(neighbor)
+                    visited.add(neighbor)
+                }
+            }
+        }
     }
 }
