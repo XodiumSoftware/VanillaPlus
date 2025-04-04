@@ -28,6 +28,17 @@ import org.xodium.vanillaplus.utils.Utils.mm
 class DimensionsModule : ModuleInterface {
     override fun enabled(): Boolean = Config.DimensionsModule.ENABLED
 
+    companion object {
+        /**
+         * Represents adjacent block directions: east, west, up, down, south, north
+         */
+        private val ADJACENT_DIRECTIONS = listOf<Vector>(
+            Vector(1, 0, 0), Vector(-1, 0, 0),
+            Vector(0, 1, 0), Vector(0, -1, 0),
+            Vector(0, 0, 1), Vector(0, 0, -1)
+        )
+    }
+
     /**
      * Event handler for the PlayerPortalEvent.
      *
@@ -101,11 +112,7 @@ class DimensionsModule : ModuleInterface {
      */
     private fun isPortalFrame(block: Block): Boolean {
         var obsidianCount = 0
-        for (dir in listOf(
-            Vector(1, 0, 0), Vector(-1, 0, 0),
-            Vector(0, 1, 0), Vector(0, -1, 0),
-            Vector(0, 0, 1), Vector(0, 0, -1)
-        )) {
+        for (dir in ADJACENT_DIRECTIONS) {
             val relative = block.getRelative(dir.blockX, dir.blockY, dir.blockZ)
             if (relative.type == Material.OBSIDIAN) obsidianCount++
         }
@@ -157,11 +164,7 @@ class DimensionsModule : ModuleInterface {
     private fun extinguishPortal(location: Location) {
         val visited = mutableSetOf<Block>()
         val queue = ArrayDeque<Block>()
-        for (dir in listOf(
-            Vector(1, 0, 0), Vector(-1, 0, 0),
-            Vector(0, 1, 0), Vector(0, -1, 0),
-            Vector(0, 0, 1), Vector(0, 0, -1)
-        )) {
+        for (dir in ADJACENT_DIRECTIONS) {
             val block = location.block.getRelative(dir.blockX, dir.blockY, dir.blockZ)
             if (block.type == Material.NETHER_PORTAL) {
                 queue.add(block)
@@ -171,11 +174,7 @@ class DimensionsModule : ModuleInterface {
         while (queue.isNotEmpty()) {
             val current = queue.removeFirst()
             current.type = Material.AIR
-            for (dir in listOf(
-                Vector(1, 0, 0), Vector(-1, 0, 0),
-                Vector(0, 1, 0), Vector(0, -1, 0),
-                Vector(0, 0, 1), Vector(0, 0, -1)
-            )) {
+            for (dir in ADJACENT_DIRECTIONS) {
                 val neighbor = current.getRelative(dir.blockX, dir.blockY, dir.blockZ)
                 if (neighbor.type == Material.NETHER_PORTAL && neighbor !in visited) {
                     queue.add(neighbor)
