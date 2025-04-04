@@ -19,7 +19,7 @@ import org.xodium.vanillaplus.utils.Utils.fireFmt
 import org.xodium.vanillaplus.utils.Utils.mm
 
 /**
- * TODO: Add description
+ * A module that provides a book with rules for players.
  */
 class BooksModule : ModuleInterface {
     override fun enabled(): Boolean = Config.BooksModule.ENABLED

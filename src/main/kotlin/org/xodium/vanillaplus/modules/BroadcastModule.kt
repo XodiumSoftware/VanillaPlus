@@ -10,14 +10,17 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.Utils.mm
 
+/**
+ * A module that broadcasts a random message to all online players at regular intervals.
+ */
 class BroadcastModule : ModuleInterface {
     override fun enabled(): Boolean = Config.BroadcastModule.ENABLED
 
     init {
         if (enabled()) {
-            instance.server.scheduler.scheduleSyncRepeatingTask(
+            instance.server.scheduler.runTaskTimerAsynchronously(
                 instance,
-                { broadcast() },
+                Runnable { broadcast() },
                 Config.BroadcastModule.INIT_DELAY,
                 Config.BroadcastModule.INTERVAL
             )
@@ -27,7 +30,7 @@ class BroadcastModule : ModuleInterface {
     /**
      * Broadcasts a random message to all online players.
      */
-    fun broadcast() {
+    private fun broadcast() {
         instance.server.onlinePlayers.forEach {
             it.sendMessage("<gold>[<dark_aqua>TIP<gold>] ${Config.BroadcastModule.MESSAGES.random()}".mm())
         }

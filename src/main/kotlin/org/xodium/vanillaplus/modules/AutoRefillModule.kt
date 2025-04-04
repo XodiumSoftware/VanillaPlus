@@ -204,7 +204,7 @@ class AutoRefillModule : ModuleInterface {
      * Toggles AutoRefill for the given player
      * @param player the player to toggle
      */
-    fun toggle(player: Player) {
+    private fun toggle(player: Player) {
         val currentValue = isEnabledForPlayer(player)
         val newValue = (!currentValue).toString()
         Database.setData(this::class, player.uniqueId.toString(), newValue)

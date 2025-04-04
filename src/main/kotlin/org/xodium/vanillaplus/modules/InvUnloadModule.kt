@@ -8,6 +8,9 @@ package org.xodium.vanillaplus.modules
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 
+/**
+ * TODO
+ */
 class InvUnloadModule : ModuleInterface {
     override fun enabled(): Boolean = Config.InvUnloadModule.ENABLED
 }

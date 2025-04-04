@@ -158,7 +158,37 @@ object MaterialRegistry {
         Material.WITHER_ROSE
     )
 
-    val PROFITS_FROM_FORTUNE = setOf(TODO())
+    val PROFITS_FROM_FORTUNE = setOf(
+        Material.ANCIENT_DEBRIS,
+        Material.COAL_ORE,
+        Material.COPPER_ORE,
+        Material.DEEPSLATE_COAL_ORE,
+        Material.DEEPSLATE_COPPER_ORE,
+        Material.DEEPSLATE_DIAMOND_ORE,
+        Material.DEEPSLATE_EMERALD_ORE,
+        Material.DEEPSLATE_GOLD_ORE,
+        Material.DEEPSLATE_IRON_ORE,
+        Material.DEEPSLATE_LAPIS_ORE,
+        Material.DEEPSLATE_REDSTONE_ORE,
+        Material.DIAMOND_ORE,
+        Material.EMERALD_ORE,
+        Material.GOLD_ORE,
+        Material.IRON_ORE,
+        Material.LAPIS_ORE,
+        Material.NETHER_GOLD_ORE,
+        Material.REDSTONE_ORE,
+        Material.AMETHYST_CLUSTER,
+        Material.BEETROOTS,
+        Material.CARROTS,
+        Material.CHORUS_FLOWER,
+        Material.GLOWSTONE,
+        Material.MELON,
+        Material.NETHER_WART,
+        Material.POTATOES,
+        Material.PUMPKIN,
+        Material.SEA_LANTERN,
+        Material.WHEAT
+    )
 
     val PROFITS_FROM_SILK_TOUCH = setOf(
         Material.BLACK_STAINED_GLASS,
