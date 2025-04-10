@@ -11,7 +11,6 @@ import org.bukkit.block.Container
 import org.bukkit.entity.Player
 import org.xodium.vanillaplus.Config
 
-
 /**
  * ChestSortHook
  */

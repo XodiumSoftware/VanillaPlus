@@ -7,7 +7,6 @@
 
 package org.xodium.vanillaplus.utils
 
-
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack

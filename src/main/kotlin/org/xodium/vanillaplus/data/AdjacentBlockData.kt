@@ -8,7 +8,6 @@ package org.xodium.vanillaplus.data
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.type.Door.Hinge
 
-
 /**
  * Represents data about a block that is adjacent to a specific block in a Minecraft world.
  * This data class stores information about the block's position relative to another block,

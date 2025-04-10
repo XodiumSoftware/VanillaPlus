@@ -40,7 +40,6 @@ import java.util.*
 import java.util.function.ToIntFunction
 import java.util.stream.Collectors
 
-
 /**
  * Handles the automatic switching of tools and weapons.
  */
