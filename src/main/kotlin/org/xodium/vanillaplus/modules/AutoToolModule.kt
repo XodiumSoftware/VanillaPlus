@@ -33,9 +33,9 @@ import org.xodium.vanillaplus.data.BlockTypeData
 import org.xodium.vanillaplus.enums.ToolEnum
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.registries.MaterialRegistry
+import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
+import org.xodium.vanillaplus.utils.FmtUtils.mm
 import org.xodium.vanillaplus.utils.Utils
-import org.xodium.vanillaplus.utils.Utils.fireFmt
-import org.xodium.vanillaplus.utils.Utils.mm
 import java.util.*
 import java.util.function.ToIntFunction
 import java.util.stream.Collectors

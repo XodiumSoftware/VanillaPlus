@@ -12,7 +12,7 @@ import java.sql.SQLException
 import kotlin.reflect.KClass
 
 /**
- * Represents the database connection.
+ * Handles database connection
  */
 object Database {
     private val databaseFile = instance.dataFolder.resolve("vanillaplus.db")

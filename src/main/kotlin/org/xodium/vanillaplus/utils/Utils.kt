@@ -11,8 +11,6 @@ package org.xodium.vanillaplus.utils
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.EntityType
@@ -22,21 +20,12 @@ import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.VanillaPlus
 import org.xodium.vanillaplus.registries.EntityRegistry
 import org.xodium.vanillaplus.registries.MaterialRegistry
+import org.xodium.vanillaplus.utils.FmtUtils.mm
 
 /**
- * Provides utility functions for directory creation and file copying within the plugin.
+ * General utilities
  */
 object Utils {
-    private val MM: MiniMessage = MiniMessage.miniMessage()
-
-    fun String.mm(): Component = MM.deserialize(this)
-    fun List<String>.mm(): List<Component> = this.map { it.mm() }
-    fun String.fireFmt(inverted: Boolean = false): String =
-        "<gradient:${if (inverted) "#EF473A:#CB2D3E" else "#CB2D3E:#EF473A"}>$this<reset>"
-
-    fun String.mangoFmt(inverted: Boolean = false): String =
-        "<gradient:${if (inverted) "#FFA751:#FFE259" else "#FFE259:#FFA751"}>$this<reset>"
-
     /**
      * A helper function to wrap command execution with standardized error handling.
      *
