@@ -28,6 +28,6 @@ import org.bukkit.block.data.type.Door.Hinge
 data class AdjacentBlockData(
     val offsetX: Int,
     val offsetZ: Int,
-    val hinge: Hinge,
-    val facing: BlockFace
+    private val hinge: Hinge,
+    private val facing: BlockFace
 )

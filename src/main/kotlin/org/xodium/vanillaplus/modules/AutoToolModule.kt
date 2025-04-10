@@ -58,8 +58,8 @@ class AutoToolModule : ModuleInterface {
     private val blockTypeCaches = mutableMapOf<UUID, BlockTypeData>()
 
     companion object {
-        const val HOTBAR_SIZE = 9
-        const val INVENTORY_SIZE = 36
+        const val HOTBAR_SIZE: Int = 9
+        const val INVENTORY_SIZE: Int = 36
     }
 
     init {

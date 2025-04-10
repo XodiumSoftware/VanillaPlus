@@ -11,7 +11,7 @@ import org.bukkit.entity.EntityType
  * Registry for entity types.
  */
 object EntityRegistry {
-    val ARTHROPODS = setOf(
+    val ARTHROPODS: Set<EntityType> = setOf(
         EntityType.BEE,
         EntityType.CAVE_SPIDER,
         EntityType.ENDERMITE,
@@ -19,7 +19,7 @@ object EntityRegistry {
         EntityType.SPIDER,
     )
 
-    val UNDEAD = setOf(
+    val UNDEAD: Set<EntityType> = setOf(
         EntityType.DROWNED,
         EntityType.HUSK,
         EntityType.PHANTOM,

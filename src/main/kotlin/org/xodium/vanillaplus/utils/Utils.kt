@@ -11,6 +11,7 @@ package org.xodium.vanillaplus.utils
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
@@ -26,10 +27,10 @@ import org.xodium.vanillaplus.registries.MaterialRegistry
  * Provides utility functions for directory creation and file copying within the plugin.
  */
 object Utils {
-    val MM = MiniMessage.miniMessage()
+    private val MM: MiniMessage = MiniMessage.miniMessage()
 
-    fun String.mm() = MM.deserialize(this)
-    fun List<String>.mm() = this.map { it.mm() }
+    fun String.mm(): Component = MM.deserialize(this)
+    fun List<String>.mm(): List<Component> = this.map { it.mm() }
     fun String.fireFmt(inverted: Boolean = false): String =
         "<gradient:${if (inverted) "#EF473A:#CB2D3E" else "#CB2D3E:#EF473A"}>$this<reset>"
 
@@ -60,7 +61,7 @@ object Utils {
      * @param material The material to get the base damage of.
      * @return The base damage of the material.
      */
-    fun getBaseDamage(material: Material): Double = MaterialRegistry.BASE_DAMAGE_MAP[material] ?: 0.0
+    private fun getBaseDamage(material: Material): Double = MaterialRegistry.BASE_DAMAGE_MAP[material] ?: 0.0
 
     /**
      * A function to get the damage of an item stack against an entity type.
@@ -81,7 +82,7 @@ object Utils {
      * @param entityType The entity type to get the bonus damage against.
      * @return The bonus damage of the item stack against the entity type.
      */
-    fun getBonus(itemStack: ItemStack?, entityType: EntityType): Double =
+    private fun getBonus(itemStack: ItemStack?, entityType: EntityType): Double =
         itemStack?.itemMeta?.enchants?.entries?.sumOf { (enchantment, level) ->
             when (enchantment) {
                 Enchantment.SHARPNESS -> 0.5 * level + 0.5
@@ -97,7 +98,7 @@ object Utils {
      * @param material The material to check.
      * @return True if the material is a bowl or bottle, false otherwise.
      */
-    fun isBowlOrBottle(material: Material): Boolean = material in setOf(Material.GLASS_BOTTLE, Material.BOWL)
+    private fun isBowlOrBottle(material: Material): Boolean = material in setOf(Material.GLASS_BOTTLE, Material.BOWL)
 
     /**
      * A function to move bowls and bottles in an inventory.
@@ -202,7 +203,7 @@ object Utils {
      * @param itemStack The item stack to get the base multiplier of.
      * @return The base multiplier of the item stack.
      */
-    fun getBaseMultiplier(itemStack: ItemStack): Int {
+    private fun getBaseMultiplier(itemStack: ItemStack): Int {
         val itemName = itemStack.type.name
         return when {
             itemName.startsWith("DIAMOND") -> 8

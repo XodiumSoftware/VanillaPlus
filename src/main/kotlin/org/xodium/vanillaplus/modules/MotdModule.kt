@@ -24,5 +24,5 @@ class MotdModule : ModuleInterface {
      * When the event is triggered, it replaces the default MOTD with a custom message.
      */
     @EventHandler(priority = EventPriority.MONITOR)
-    fun on(event: ServerListPingEvent) = event.motd(Config.MotdModule.MOTD.joinToString("\n").mm())
+    fun on(event: ServerListPingEvent): Unit = event.motd(Config.MotdModule.MOTD.joinToString("\n").mm())
 }

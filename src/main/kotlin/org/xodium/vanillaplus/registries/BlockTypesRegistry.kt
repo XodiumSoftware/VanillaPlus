@@ -5,13 +5,14 @@
 
 package org.xodium.vanillaplus.registries
 
+import com.sk89q.worldedit.world.block.BlockType
 import com.sk89q.worldedit.world.block.BlockTypes
 
 /**
  * Registry for blocktypes.
  */
 object BlockTypesRegistry {
-    val TREE_MASK = setOf(
+    val TREE_MASK: Set<BlockType?> = setOf(
         // General
         BlockTypes.AIR,
         // Greenery

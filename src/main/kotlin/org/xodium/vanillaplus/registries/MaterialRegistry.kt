@@ -11,7 +11,7 @@ import org.bukkit.Material
  * Registry for materials.
  */
 object MaterialRegistry {
-    val BASE_DAMAGE_MAP = mapOf(
+    val BASE_DAMAGE_MAP: Map<Material, Double> = mapOf(
         Material.NETHERITE_AXE to 10.0,
         Material.IRON_AXE to 9.0,
         Material.STONE_AXE to 9.0,
@@ -26,7 +26,7 @@ object MaterialRegistry {
         Material.WOODEN_SWORD to 4.0,
     )
 
-    val DEFAULT_MATERIALS = setOf(
+    val DEFAULT_MATERIALS: Set<Material> = setOf(
         Material.DIAMOND_PICKAXE,
         Material.DIAMOND_AXE,
         Material.DIAMOND_HOE,
@@ -55,7 +55,7 @@ object MaterialRegistry {
         Material.SHEARS
     )
 
-    val INSTA_BREAKABLE_BY_HAND = setOf(
+    val INSTA_BREAKABLE_BY_HAND: Set<Material> = setOf(
         Material.ALLIUM,
         Material.AZURE_BLUET,
         Material.BEETROOTS,
@@ -158,7 +158,7 @@ object MaterialRegistry {
         Material.WITHER_ROSE
     )
 
-    val PROFITS_FROM_FORTUNE = setOf(
+    val PROFITS_FROM_FORTUNE: Set<Material> = setOf(
         Material.ANCIENT_DEBRIS,
         Material.COAL_ORE,
         Material.COPPER_ORE,
@@ -190,7 +190,7 @@ object MaterialRegistry {
         Material.WHEAT
     )
 
-    val PROFITS_FROM_SILK_TOUCH = setOf(
+    val PROFITS_FROM_SILK_TOUCH: Set<Material> = setOf(
         Material.BLACK_STAINED_GLASS,
         Material.BLUE_STAINED_GLASS,
         Material.BROWN_STAINED_GLASS,
@@ -216,7 +216,7 @@ object MaterialRegistry {
         Material.YELLOW_STAINED_GLASS
     )
 
-    val WEAPONS = setOf(
+    val WEAPONS: Set<Material> = setOf(
         Material.BOW,
         Material.CROSSBOW,
         Material.DIAMOND_SWORD,
