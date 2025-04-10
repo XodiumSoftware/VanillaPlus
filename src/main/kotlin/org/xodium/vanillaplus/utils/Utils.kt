@@ -21,7 +21,6 @@ import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.VanillaPlus
 import org.xodium.vanillaplus.registries.EntityRegistry
 import org.xodium.vanillaplus.registries.MaterialRegistry
-import java.util.*
 
 /**
  * Provides utility functions for directory creation and file copying within the plugin.
@@ -36,12 +35,6 @@ object Utils {
 
     fun String.mangoFmt(inverted: Boolean = false): String =
         "<gradient:${if (inverted) "#FFA751:#FFE259" else "#FFE259:#FFA751"}>$this<reset>"
-
-    fun EntityType.format(locale: Locale = Locale.ENGLISH, delimiters: String = "_", separator: String = " ") =
-        name.lowercase(locale).split(delimiters).joinToString(separator)
-        { it.replaceFirstChar { char -> char.uppercaseChar() } }
-
-    fun List<EntityType>.format(separator: String) = this.joinToString(separator) { it.format() }
 
     /**
      * A helper function to wrap command execution with standardized error handling.
@@ -114,27 +107,32 @@ object Utils {
      * @return True if the bowls and bottles were moved successfully, false otherwise.
      */
     fun moveBowlsAndBottles(inv: Inventory, slot: Int): Boolean {
-        if (!isBowlOrBottle(Objects.requireNonNull<ItemStack?>(inv.getItem(slot)).type)) return false
-        val toBeMoved = inv.getItem(slot)
+        val itemStack = inv.getItem(slot) ?: return false
+        if (!isBowlOrBottle(itemStack.type)) return false
+
         inv.clear(slot)
-        val leftovers = inv.addItem(toBeMoved!!)
-        if (inv.getItem(slot) == null || Objects.requireNonNull<ItemStack?>(inv.getItem(slot))
-                .amount == 0 || Objects.requireNonNull<ItemStack?>(inv.getItem(slot)).type == Material.AIR
+
+        val leftovers = inv.addItem(itemStack)
+        if (inv.getItem(slot)?.amount == null ||
+            inv.getItem(slot)?.amount == 0 ||
+            inv.getItem(slot)?.type == Material.AIR
         ) return true
-        if (!leftovers.isEmpty()) {
+
+        if (leftovers.isNotEmpty()) {
+            val holder = inv.holder
+            if (holder !is Player) return false
             for (leftover in leftovers.values) {
-                if (inv.holder !is Player) return false
-                val p = inv.holder as Player?
-                p!!.world.dropItem(p.location, leftover)
+                holder.world.dropItem(holder.location, leftover)
             }
             return false
         }
+
         for (i in 35 downTo 0) {
-            inv.clear(slot)
-            if (inv.getItem(i) == null || Objects.requireNonNull<ItemStack?>(inv.getItem(i))
-                    .amount == 0 || Objects.requireNonNull<ItemStack?>(inv.getItem(i)).type == Material.AIR
+            if (inv.getItem(i)?.amount == null ||
+                inv.getItem(i)?.amount == 0 ||
+                inv.getItem(i)?.type == Material.AIR
             ) {
-                inv.setItem(i, toBeMoved)
+                inv.setItem(i, itemStack)
                 return true
             }
         }
@@ -257,5 +255,4 @@ object Utils {
             else -> "<green>\uD83C\uDF24<reset>"
         }
     }
-
 }
