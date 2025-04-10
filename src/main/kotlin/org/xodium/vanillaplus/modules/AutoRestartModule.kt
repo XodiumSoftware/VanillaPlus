@@ -46,7 +46,7 @@ class AutoRestartModule : ModuleInterface {
      * Starts the countdown to restart the server.
      */
     private fun startCountdown() {
-        var totalMinutes = Config.AutoRestartModule.COUNTDOWN_START_MINUTES
+        val totalMinutes = Config.AutoRestartModule.COUNTDOWN_START_MINUTES
         var remainingSeconds = totalMinutes * 60
         val totalSeconds = remainingSeconds
         val bossBar = bossbar(remainingSeconds)

@@ -5,7 +5,6 @@
 
 package org.xodium.vanillaplus.modules
 
-import com.mojang.brigadier.Command
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
@@ -28,7 +27,7 @@ class BooksModule : ModuleInterface {
     override fun cmd(): LiteralArgumentBuilder<CommandSourceStack> {
         return Commands.literal("rules")
             .requires { it.sender.hasPermission(Perms.AutoRefill.USE) }
-            .executes(Command { Utils.tryCatch(it) { (it.sender as Player).openBook(book()) } })
+            .executes { it -> Utils.tryCatch(it) { (it.sender as Player).openBook(book()) } }
     }
 
 
