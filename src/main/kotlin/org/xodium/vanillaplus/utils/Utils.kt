@@ -11,7 +11,6 @@ package org.xodium.vanillaplus.utils
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
-import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.EntityType
@@ -21,28 +20,12 @@ import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.VanillaPlus
 import org.xodium.vanillaplus.registries.EntityRegistry
 import org.xodium.vanillaplus.registries.MaterialRegistry
-import java.util.*
+import org.xodium.vanillaplus.utils.FmtUtils.mm
 
 /**
- * Provides utility functions for directory creation and file copying within the plugin.
+ * General utilities
  */
 object Utils {
-    val MM = MiniMessage.miniMessage()
-
-    fun String.mm() = MM.deserialize(this)
-    fun List<String>.mm() = this.map { it.mm() }
-    fun String.fireFmt(inverted: Boolean = false): String =
-        "<gradient:${if (inverted) "#EF473A:#CB2D3E" else "#CB2D3E:#EF473A"}>$this<reset>"
-
-    fun String.mangoFmt(inverted: Boolean = false): String =
-        "<gradient:${if (inverted) "#FFA751:#FFE259" else "#FFE259:#FFA751"}>$this<reset>"
-
-    fun EntityType.format(locale: Locale = Locale.ENGLISH, delimiters: String = "_", separator: String = " ") =
-        name.lowercase(locale).split(delimiters).joinToString(separator)
-        { it.replaceFirstChar { char -> char.uppercaseChar() } }
-
-    fun List<EntityType>.format(separator: String) = this.joinToString(separator) { it.format() }
-
     /**
      * A helper function to wrap command execution with standardized error handling.
      *
@@ -67,7 +50,7 @@ object Utils {
      * @param material The material to get the base damage of.
      * @return The base damage of the material.
      */
-    fun getBaseDamage(material: Material): Double = MaterialRegistry.BASE_DAMAGE_MAP[material] ?: 0.0
+    private fun getBaseDamage(material: Material): Double = MaterialRegistry.BASE_DAMAGE_MAP[material] ?: 0.0
 
     /**
      * A function to get the damage of an item stack against an entity type.
@@ -88,7 +71,7 @@ object Utils {
      * @param entityType The entity type to get the bonus damage against.
      * @return The bonus damage of the item stack against the entity type.
      */
-    fun getBonus(itemStack: ItemStack?, entityType: EntityType): Double =
+    private fun getBonus(itemStack: ItemStack?, entityType: EntityType): Double =
         itemStack?.itemMeta?.enchants?.entries?.sumOf { (enchantment, level) ->
             when (enchantment) {
                 Enchantment.SHARPNESS -> 0.5 * level + 0.5
@@ -104,7 +87,7 @@ object Utils {
      * @param material The material to check.
      * @return True if the material is a bowl or bottle, false otherwise.
      */
-    fun isBowlOrBottle(material: Material): Boolean = material in setOf(Material.GLASS_BOTTLE, Material.BOWL)
+    private fun isBowlOrBottle(material: Material): Boolean = material in setOf(Material.GLASS_BOTTLE, Material.BOWL)
 
     /**
      * A function to move bowls and bottles in an inventory.
@@ -114,27 +97,32 @@ object Utils {
      * @return True if the bowls and bottles were moved successfully, false otherwise.
      */
     fun moveBowlsAndBottles(inv: Inventory, slot: Int): Boolean {
-        if (!isBowlOrBottle(Objects.requireNonNull<ItemStack?>(inv.getItem(slot)).type)) return false
-        val toBeMoved = inv.getItem(slot)
+        val itemStack = inv.getItem(slot) ?: return false
+        if (!isBowlOrBottle(itemStack.type)) return false
+
         inv.clear(slot)
-        val leftovers = inv.addItem(toBeMoved!!)
-        if (inv.getItem(slot) == null || Objects.requireNonNull<ItemStack?>(inv.getItem(slot))
-                .amount == 0 || Objects.requireNonNull<ItemStack?>(inv.getItem(slot)).type == Material.AIR
+
+        val leftovers = inv.addItem(itemStack)
+        if (inv.getItem(slot)?.amount == null ||
+            inv.getItem(slot)?.amount == 0 ||
+            inv.getItem(slot)?.type == Material.AIR
         ) return true
-        if (!leftovers.isEmpty()) {
+
+        if (leftovers.isNotEmpty()) {
+            val holder = inv.holder
+            if (holder !is Player) return false
             for (leftover in leftovers.values) {
-                if (inv.holder !is Player) return false
-                val p = inv.holder as Player?
-                p!!.world.dropItem(p.location, leftover)
+                holder.world.dropItem(holder.location, leftover)
             }
             return false
         }
+
         for (i in 35 downTo 0) {
-            inv.clear(slot)
-            if (inv.getItem(i) == null || Objects.requireNonNull<ItemStack?>(inv.getItem(i))
-                    .amount == 0 || Objects.requireNonNull<ItemStack?>(inv.getItem(i)).type == Material.AIR
+            if (inv.getItem(i)?.amount == null ||
+                inv.getItem(i)?.amount == 0 ||
+                inv.getItem(i)?.type == Material.AIR
             ) {
-                inv.setItem(i, toBeMoved)
+                inv.setItem(i, itemStack)
                 return true
             }
         }
@@ -204,7 +192,7 @@ object Utils {
      * @param itemStack The item stack to get the base multiplier of.
      * @return The base multiplier of the item stack.
      */
-    fun getBaseMultiplier(itemStack: ItemStack): Int {
+    private fun getBaseMultiplier(itemStack: ItemStack): Int {
         val itemName = itemStack.type.name
         return when {
             itemName.startsWith("DIAMOND") -> 8
@@ -257,5 +245,4 @@ object Utils {
             else -> "<green>\uD83C\uDF24<reset>"
         }
     }
-
 }

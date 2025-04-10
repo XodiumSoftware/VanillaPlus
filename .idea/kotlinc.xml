@@ -3,6 +3,7 @@
   <component name="Kotlin2JsCompilerArguments">
     <option name="moduleKind" value="plain" />
     <option name="sourceMap" value="true" />
+    <option name="sourceMapEmbedSources" />
   </component>
   <component name="Kotlin2JvmCompilerArguments">
     <option name="jvmTarget" value="21" />

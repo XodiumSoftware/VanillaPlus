@@ -10,11 +10,11 @@ import net.kyori.adventure.sound.Sound
 import org.bukkit.Material
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.BookData
+import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
+import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.TimeUtils.minutes
-import org.xodium.vanillaplus.utils.Utils.fireFmt
 import org.xodium.vanillaplus.utils.Utils.getTps
 import org.xodium.vanillaplus.utils.Utils.getWeather
-import org.xodium.vanillaplus.utils.Utils.mangoFmt
 import java.time.LocalTime
 import org.bukkit.Sound as BukkitSound
 

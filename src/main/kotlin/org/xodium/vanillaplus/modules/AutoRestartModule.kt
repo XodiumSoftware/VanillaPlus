@@ -9,10 +9,10 @@ import net.kyori.adventure.bossbar.BossBar
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.FmtUtils.mm
 import org.xodium.vanillaplus.utils.TimeUtils.minutes
 import org.xodium.vanillaplus.utils.TimeUtils.seconds
 import org.xodium.vanillaplus.utils.TimeUtils.ticks
-import org.xodium.vanillaplus.utils.Utils.mm
 import java.time.LocalTime
 import java.time.temporal.ChronoUnit
 
@@ -46,7 +46,7 @@ class AutoRestartModule : ModuleInterface {
     /**
      * Triggers a countdown for the server restart.
      */
-    private fun startCountdown() {
+    private fun countdown() {
         val totalMinutes = Config.AutoRestartModule.COUNTDOWN_START_MINUTES
         var remainingSeconds = totalMinutes * 60
         val totalSeconds = remainingSeconds

@@ -10,7 +10,7 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.server.ServerListPingEvent
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.utils.Utils.mm
+import org.xodium.vanillaplus.utils.FmtUtils.mm
 
 /**
  * Customizes the server's Message of the Day (MOTD) that appears in the server list.
@@ -24,5 +24,5 @@ class MotdModule : ModuleInterface {
      * When the event is triggered, it replaces the default MOTD with a custom message.
      */
     @EventHandler(priority = EventPriority.MONITOR)
-    fun on(event: ServerListPingEvent) = event.motd(Config.MotdModule.MOTD.joinToString("\n").mm())
+    fun on(event: ServerListPingEvent): Unit = event.motd(Config.MotdModule.MOTD.joinToString("\n").mm())
 }
