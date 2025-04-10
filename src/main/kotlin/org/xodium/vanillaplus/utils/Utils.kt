@@ -11,9 +11,7 @@ package org.xodium.vanillaplus.utils
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
-import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.EntityType
@@ -260,18 +258,4 @@ object Utils {
         }
     }
 
-    /**
-     * Converts a legacy formatted string (with § color codes) to an Adventure Component
-     *
-     * @param text The legacy formatted string
-     * @param char The character to use as the color code character
-     * @return An Adventure Component
-     */
-    fun legacyToComponent(text: String, char: Char = '§'): Component {
-        return LegacyComponentSerializer.builder()
-            .character(char)
-            .hexColors()
-            .build()
-            .deserialize(text)
-    }
 }

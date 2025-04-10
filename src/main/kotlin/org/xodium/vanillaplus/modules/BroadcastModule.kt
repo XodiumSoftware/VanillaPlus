@@ -18,9 +18,9 @@ class BroadcastModule : ModuleInterface {
 
     init {
         if (enabled()) {
-            instance.server.scheduler.scheduleSyncRepeatingTask(
+            instance.server.scheduler.runTaskTimerAsynchronously(
                 instance,
-                { broadcast() },
+                Runnable { broadcast() },
                 Config.BroadcastModule.INIT_DELAY,
                 Config.BroadcastModule.INTERVAL
             )
