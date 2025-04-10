@@ -7,7 +7,6 @@
 
 package org.xodium.vanillaplus.managers
 
-import com.mojang.brigadier.Command
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
@@ -69,14 +68,14 @@ object ModuleManager {
                 event.registrar().register(
                     Commands.literal(instance.name.lowercase())
                         .requires { it.sender.hasPermission(Perms.Use.GENERAL) }
-                        .executes(Command {
+                        .executes { it ->
                             Utils.tryCatch(it) {
                                 (it.sender as Player).sendMessage(
                                     "${PREFIX}v${instance.pluginMeta.version} | Click on me for more info!".mm()
                                         .clickEvent(ClickEvent.suggestCommand("/help ${instance.name.lowercase()}"))
                                 )
                             }
-                        })
+                        }
                         .apply { commandBuilders.forEach(this::then) }
                         .build(),
                     "${instance.name} plugin",

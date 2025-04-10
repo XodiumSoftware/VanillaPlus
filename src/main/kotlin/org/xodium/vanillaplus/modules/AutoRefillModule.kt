@@ -5,7 +5,6 @@
 
 package org.xodium.vanillaplus.modules
 
-import com.mojang.brigadier.Command
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
@@ -42,7 +41,7 @@ class AutoRefillModule : ModuleInterface {
     override fun cmd(): LiteralArgumentBuilder<CommandSourceStack> {
         return Commands.literal("autorefill")
             .requires { it.sender.hasPermission(Perms.AutoRefill.USE) }
-            .executes(Command { Utils.tryCatch(it) { toggle(it.sender as Player) } })
+            .executes { it -> Utils.tryCatch(it) { toggle(it.sender as Player) } }
     }
 
     private val cooldowns = ConcurrentHashMap<UUID, Long>()
@@ -204,7 +203,7 @@ class AutoRefillModule : ModuleInterface {
      * Toggles AutoRefill for the given player
      * @param player the player to toggle
      */
-    fun toggle(player: Player) {
+    private fun toggle(player: Player) {
         val currentValue = isEnabledForPlayer(player)
         val newValue = (!currentValue).toString()
         Database.setData(this::class, player.uniqueId.toString(), newValue)

@@ -28,12 +28,13 @@ class AutoRestartModule : ModuleInterface {
      */
     init {
         if (enabled()) {
-            // TODO: the following code is very inefficient and should be refactored.
-            instance.server.scheduler.runTaskTimer(
+            instance.server.scheduler.runTaskTimerAsynchronously(
                 instance,
                 Runnable {
                     Config.AutoRestartModule.RESTART_TIMES.forEach {
-                        if (isTimeToStartCountdown(it)) startCountdown()
+                        if (isTimeToStartCountdown(it)) {
+                            instance.server.scheduler.runTask(instance, Runnable { countdown() })
+                        }
                     }
                 },
                 0.ticks,
@@ -43,10 +44,10 @@ class AutoRestartModule : ModuleInterface {
     }
 
     /**
-     * Starts the countdown to restart the server.
+     * Triggers a countdown for the server restart.
      */
-    fun startCountdown() {
-        var totalMinutes = Config.AutoRestartModule.COUNTDOWN_START_MINUTES
+    private fun startCountdown() {
+        val totalMinutes = Config.AutoRestartModule.COUNTDOWN_START_MINUTES
         var remainingSeconds = totalMinutes * 60
         val totalSeconds = remainingSeconds
         val bossBar = bossbar(remainingSeconds)
@@ -56,7 +57,8 @@ class AutoRestartModule : ModuleInterface {
             Runnable {
                 if (remainingSeconds > 0) {
                     remainingSeconds--
-                    val displayTime = remainingSeconds / 60
+                    val displayTime =
+                        if (remainingSeconds % 60 > 0) (remainingSeconds / 60) + 1 else remainingSeconds / 60
                     bossBar.name(
                         Config.AutoRestartModule.BOSSBAR_NAME.replace(
                             "%t",
