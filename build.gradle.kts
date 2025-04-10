@@ -87,14 +87,23 @@ tasks {
     register("acceptEula") {
         group = "application"
         description = "Accept EULA before running the server"
-        doLast {
-            file(".server/eula.txt").apply {
-                if (!exists()) {
-                    createNewFile()
-                    println("Created eula.txt file.")
-                }
-                writeText("eula=true\n")
-            }.also { println("EULA has been accepted.") }
-        }
+        doLast { file(".server/eula.txt").writeText("eula=true\n") }
+    }
+    register<Exec>("runDevServer") {
+        group = "application"
+        description = "Run Development Server"
+        dependsOn("shadowJar", "downloadServerJar", "acceptEula")
+        workingDir = file(".server")
+        val javaLauncher: JavaLauncher = project.extensions
+            .getByType(JavaToolchainService::class.java)
+            .launcherFor { languageVersion.set(JavaLanguageVersion.of(21)) }
+            .get()
+        val javaHome: String = javaLauncher.metadata.installationPath.asFile.absolutePath
+        commandLine = listOf(
+            "$javaHome/bin/java",
+            "-jar",
+            "server.jar",
+            "nogui"
+        )
     }
 }
