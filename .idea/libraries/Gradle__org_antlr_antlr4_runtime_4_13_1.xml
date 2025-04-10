@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Gradle: org.antlr:antlr4-runtime:4.13.1" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="org.antlr" artifactId="antlr4-runtime" version="4.13.1" baseVersion="4.13.1" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.antlr/antlr4-runtime/4.13.1/17125bae1d965624e265ef49552f6465a2bfa307/antlr4-runtime-4.13.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

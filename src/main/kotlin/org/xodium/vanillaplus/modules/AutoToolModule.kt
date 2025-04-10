@@ -5,7 +5,6 @@
 
 package org.xodium.vanillaplus.modules
 
-import com.mojang.brigadier.Command
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
@@ -52,7 +51,7 @@ class AutoToolModule : ModuleInterface {
     override fun cmd(): LiteralArgumentBuilder<CommandSourceStack> {
         return Commands.literal("autotool")
             .requires { it.sender.hasPermission(Perms.AutoTool.USE) }
-            .executes(Command { Utils.tryCatch(it) { toggle(it.sender as Player) } })
+            .executes { it -> Utils.tryCatch(it) { toggle(it.sender as Player) } }
     }
 
     private val toolMap: MutableMap<Material, ToolEnum> = HashMap()
@@ -364,7 +363,7 @@ class AutoToolModule : ModuleInterface {
                 material
             ) else null
         }
-        list.sortWith(Comparator.comparingInt<ItemStack?>(ToIntFunction { itemStack: ItemStack ->
+        list.sortWith(Comparator.comparingInt(ToIntFunction { itemStack: ItemStack ->
             Utils.getMultiplier(itemStack)
         }).reversed())
         if (material == Material.DIAMOND_ORE || material == Material.DEEPSLATE_DIAMOND_ORE) {
@@ -495,10 +494,10 @@ class AutoToolModule : ModuleInterface {
      * @return The position of the item stack in the inventory, or -1 if not found.
      */
     private fun getPositionInInventory(itemStack: ItemStack, playerInventory: PlayerInventory): Int {
-        for (i in 0..<Objects.requireNonNull<PlayerInventory>(playerInventory, "Inventory must not be null").size) {
+        for (i in 0..<Objects.requireNonNull(playerInventory, "Inventory must not be null").size) {
             val currentItem = playerInventory.getItem(i)
             if (currentItem == null) continue
-            if (currentItem == Objects.requireNonNull<ItemStack?>(itemStack, "Item must not be null")) return i
+            if (currentItem == Objects.requireNonNull(itemStack, "Item must not be null")) return i
         }
         return -1
     }
