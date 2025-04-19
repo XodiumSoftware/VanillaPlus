@@ -26,9 +26,9 @@ import org.xodium.vanillaplus.utils.FmtUtils.mm
  */
 object Utils {
     /**
-     * A helper function to wrap command execution with standardized error handling.
+     * A helper function to wrap command execution with standardised error handling.
      *
-     * @param ctx The CommandContext used to obtain the CommandSourceStack.
+     * @param ctx The CommandContext used to get the CommandSourceStack.
      * @param action The action to execute, receiving a CommandSourceStack as a parameter.
      * @return Command.SINGLE_SUCCESS after execution.
      */
@@ -219,10 +219,10 @@ object Utils {
     }
 
     /**
-     * Calculate a hex color between red and green based on the provided ratio (0.0 to 1.0)
+     * Calculate a hex colour between red and green based on the provided ratio (0.0 to 1.0)
      *
-     * @param ratio The ratio to calculate the color for.
-     * @return The hex color for the ratio.
+     * @param ratio The ratio to calculate the colour for.
+     * @return The hex colour for the ratio.
      */
     private fun getColorForTps(ratio: Double): String {
         val r = (255 * (1 - ratio)).toInt()

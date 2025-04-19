@@ -31,17 +31,17 @@ import java.util.concurrent.ConcurrentHashMap
 
 /**
  * The `DoorsModule` class is responsible for managing door and gate interactions within the system,
- * adhering to configurable behaviors such as auto-closing, double door synchronization, and knocking functionality.
+ * adhering to configurable behaviours such as auto-closing, double door synchronisation, and knocking functionality.
  * It implements the `ModuleInterface` to integrate as a modular component within the system.
  *
  * Primary Features:
  * - Automatically closes doors and gates after a configurable delay.
- * - Supports synchronized opening and closing of double doors.
+ * - Supports synchronised opening and closing of double doors.
  * - Allows players to "knock" on doors or gates, with configurable restrictions.
- * - Responds to player interactions with doors, gates, and trapdoors, while applying customizable interaction constraints.
+ * - Responds to player interactions with doors, gates, and trapdoors, while applying customisable interaction constraints.
  *
  * This class uses event listeners to handle player interactions and manages a scheduler task
- * for handling automated behaviors such as door auto-closing.
+ * for handling automated behaviours such as door auto-closing.
  */
 class DoorsModule : ModuleInterface {
     override fun enabled(): Boolean = Config.DoorsModule.ENABLED

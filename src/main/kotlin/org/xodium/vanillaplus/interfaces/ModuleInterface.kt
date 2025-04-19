@@ -15,7 +15,7 @@ import org.bukkit.inventory.Recipe
 
 /**
  * Represents a contract for a module within the system.
- * Every implementing module must define initialization logic and state management.
+ * Every implementing module must define initialisation logic and state management.
  * This interface extends the Listener interface, allowing modules to handle events.
  */
 interface ModuleInterface : Listener {

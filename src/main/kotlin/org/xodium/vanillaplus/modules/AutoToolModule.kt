@@ -42,7 +42,7 @@ import java.util.stream.Collectors
 
 /**
  * Represents a module for automatically managing tools and equipment for players in various scenarios.
- * Provides functionality to optimize tool and weapon selection and interacts with events such as block breaking,
+ * Provides functionality to optimise tool and weapon selection and interacts with events such as block breaking,
  * entity damage, and player actions.
  *
  * Fields:

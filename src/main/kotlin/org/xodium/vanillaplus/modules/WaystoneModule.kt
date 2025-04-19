@@ -5,6 +5,8 @@
 
 package org.xodium.vanillaplus.modules
 
+import net.kyori.adventure.resource.ResourcePackInfo
+import net.kyori.adventure.resource.ResourcePackRequest
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
@@ -26,6 +28,8 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mm
+import java.net.URI
+
 
 /**
  * Represents a module handling waystone mechanics within the system.
@@ -41,20 +45,35 @@ import org.xodium.vanillaplus.utils.FmtUtils.mm
 class WaystoneModule : ModuleInterface {
     override fun enabled(): Boolean = Config.WaystoneModule.ENABLED
 
+    private val packInfo = ResourcePackInfo.resourcePackInfo()
+        .uri(URI.create("https://example.com/resourcepack.zip"))
+        .hash("2849ace6aa689a8c610907a41c03537310949294")
+        .build()
+    private val pack = ResourcePackRequest.resourcePackRequest()
+        .packs(packInfo)
+        .required(true)
+        .build()
     private val recipeKey = NamespacedKey(instance, "waystone")
-
-    //TODO: save waystoneLocations in Database.
     private var waystoneLocations: MutableList<Location> = mutableListOf()
 
     init {
         if (enabled()) {
             Database.createTable(this::class)
             instance.server.addRecipe(recipe(recipeKey, waystoneItem()))
+            val allData = Database.getData(this::class)
+            val allKeys = if (allData is Map<*, *>) {
+                @Suppress("UNCHECKED_CAST")
+                allData as Map<String, String?>
+            } else emptyMap()
+            val keys: List<String> = allKeys.keys.toList()
+            val locations: List<Location> = keys.mapNotNull { keyToLocation(it) }
+            waystoneLocations = locations.toMutableList()
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
+        event.player.sendResourcePacks(pack)
         //TODO: make it load a resourcepack, for the waystones.
     }
 
@@ -63,7 +82,7 @@ class WaystoneModule : ModuleInterface {
         val itemMeta = event.itemInHand.itemMeta
         if (itemMeta != null && itemMeta.hasCustomModelData() && itemMeta.customModelData == 1) {
             waystoneLocations.add(event.blockPlaced.location)
-            Database.setData(this::class, "", "") //TODO: finish
+            Database.setData(this::class, locationToKey(event.blockPlaced.location))
             event.player.sendActionBar("Waypoint has been created".fireFmt().mm())
         }
     }
@@ -73,7 +92,7 @@ class WaystoneModule : ModuleInterface {
         val block = event.block
         if (block.type == Material.STONE_BRICKS && waystoneLocations.any { it == block.location }) {
             waystoneLocations.removeIf { it == block.location }
-            Database.deleteData(this::class, "") //TODO: finish
+            Database.deleteData(this::class, locationToKey(event.block.location))
             event.player.sendActionBar("Waypoint has been deleted".fireFmt().mm())
         }
     }
@@ -100,6 +119,19 @@ class WaystoneModule : ModuleInterface {
         ItemStack(Material.ARROW).apply {
             itemMeta = itemMeta.apply { displayName(label.mm()) }
         }
+
+    private fun locationToKey(location: Location) =
+        "waystone:${location.world.name}:${location.blockX}:${location.blockY}:${location.blockZ}"
+
+    private fun keyToLocation(key: String): Location? {
+        val parts = key.split(":")
+        if (parts.size != 5) return null
+        val world = Bukkit.getWorld(parts[1]) ?: return null
+        val x = parts[2].toIntOrNull() ?: return null
+        val y = parts[3].toIntOrNull() ?: return null
+        val z = parts[4].toIntOrNull() ?: return null
+        return Location(world, x.toDouble(), y.toDouble(), z.toDouble())
+    }
 
     override fun recipe(key: NamespacedKey, item: ItemStack): Recipe =
         ShapedRecipe(key, item).apply {

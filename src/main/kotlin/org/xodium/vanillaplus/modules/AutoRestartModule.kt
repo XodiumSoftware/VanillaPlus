@@ -27,7 +27,7 @@ class AutoRestartModule : ModuleInterface {
     override fun enabled(): Boolean = Config.AutoRestartModule.ENABLED
 
     /**
-     * Initializes the AutoRestartModule.
+     * Initialises the AutoRestartModule.
      */
     init {
         if (enabled()) {

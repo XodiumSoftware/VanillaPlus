@@ -67,7 +67,7 @@ object Config {
         var BOSSBAR_PROGRESS: Float = 1.0f
 
         /**
-         * The color of the boss bar.
+         * The colour of the boss bar.
          */
         var BOSSBAR_COLOR: BossBar.Color = BossBar.Color.RED
 
@@ -373,7 +373,7 @@ object Config {
         var IGNORE_STRUCTURE_VOID_BLOCKS: Boolean = true
 
         /**
-         * If a sapling type is missing here, no custom schematic will be used and default behavior applies.
+         * If a sapling type is missing here, no custom schematic will be used and default behaviour applies.
          * You can define a file, multiple files or a folder.
          */
         var SAPLING_LINK: Map<Material, List<String>> = mapOf(

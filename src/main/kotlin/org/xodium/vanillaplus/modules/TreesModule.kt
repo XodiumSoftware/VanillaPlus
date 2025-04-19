@@ -33,7 +33,7 @@ import java.nio.file.StandardOpenOption
 import java.util.stream.Collectors
 
 /**
- * The TreesModule class provides functionality for managing tree-related behavior
+ * The TreesModule class provides functionality for managing tree-related behaviour
  * in the system, including handling events when trees grow and dynamically pasting
  * schematics based on sapling types.
  */
