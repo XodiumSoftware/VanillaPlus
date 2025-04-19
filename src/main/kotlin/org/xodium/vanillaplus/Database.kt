@@ -97,6 +97,24 @@ object Database {
     }
 
     /**
+     * Deletes data from the database.
+     *
+     * @param table The table to delete the data from.
+     * @param key The key of the data to delete.
+     */
+    fun deleteData(table: KClass<*>, key: String) {
+        conn.prepareStatement(
+            // language=SQLite
+            """
+            DELETE FROM ${table.simpleName} WHERE k = ?;
+            """.trimIndent()
+        ).use { stmt ->
+            stmt.setString(1, key)
+            stmt.executeUpdate()
+        }
+    }
+
+    /**
      * Closes the database connection.
      */
     private fun close() {

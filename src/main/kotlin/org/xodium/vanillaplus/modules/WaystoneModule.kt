@@ -12,13 +12,16 @@ import org.bukkit.NamespacedKey
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
+import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.Recipe
 import org.bukkit.inventory.ShapedRecipe
 import org.xodium.vanillaplus.Config
+import org.xodium.vanillaplus.Database
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
@@ -31,12 +34,18 @@ class WaystoneModule : ModuleInterface {
     private val recipeKey = NamespacedKey(instance, "waystone")
 
     //TODO: save waystoneLocations in Database.
-    private val waystoneLocations = mutableListOf<Location>()
+    private var waystoneLocations: MutableList<Location> = mutableListOf()
 
     init {
         if (enabled()) {
+            Database.createTable(this::class)
             instance.server.addRecipe(recipe(recipeKey, waystoneItem()))
         }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun on(event: PlayerJoinEvent) {
+        //TODO: make it load a resourcepack, for the waystones.
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -44,7 +53,18 @@ class WaystoneModule : ModuleInterface {
         val itemMeta = event.itemInHand.itemMeta
         if (itemMeta != null && itemMeta.hasCustomModelData() && itemMeta.customModelData == 1) {
             waystoneLocations.add(event.blockPlaced.location)
-            //TODO: send player message?
+            Database.setData(this::class, "", "") //TODO: finish
+            event.player.sendActionBar("Waypoint has been created".fireFmt().mm())
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun on(event: BlockBreakEvent) {
+        val block = event.block
+        if (block.type == Material.STONE_BRICKS && waystoneLocations.any { it == block.location }) {
+            waystoneLocations.removeIf { it == block.location }
+            Database.deleteData(this::class, "") //TODO: finish
+            event.player.sendActionBar("Waypoint has been deleted".fireFmt().mm())
         }
     }
 
@@ -78,11 +98,12 @@ class WaystoneModule : ModuleInterface {
             setIngredient('B', Material.ENDER_PEARL)
         }
 
-    //    TODO: create also a back button.
-    //    TODO: make sure that where the nav items are that whole row doesnt display waystones.
-    //    TODO: make waystones clickable, which will teleport you to their position.
-    //    TODO: add teleportation effects.
-    //    TODO: add teleportation xp cost.
+    //TODO: create also a back button.
+    //TODO: make sure that where the nav items are that whole row doesnt display waystones.
+    //TODO: make waystones clickable, which will teleport you to their position.
+    //TODO: add teleportation effects.
+    //TODO: add teleportation xp cost.
+    //TODO: Optional, do we add that you have to discover waypoints manually first before being able to use them?
     override fun gui(): Inventory {
         val total = waystoneLocations.size
         val size = ((total + 8) / 9).coerceIn(1, 6) * 9
