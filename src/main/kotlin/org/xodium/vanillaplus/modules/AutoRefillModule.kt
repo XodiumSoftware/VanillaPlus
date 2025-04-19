@@ -32,7 +32,10 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 /**
- * Automatically refills the player's main hand and off hand slots when they consume an item
+ * The AutoRefillModule is responsible for automatically refilling a player's main hand and off-hand slots
+ * when certain in-game events are triggered, such as consuming an item, placing a block, or interacting with an item.
+ * This module ensures a seamless experience by transferring items from the player's inventory to their hands
+ * when the item amount in those slots reaches the configured threshold.
  */
 class AutoRefillModule : ModuleInterface {
     override fun enabled(): Boolean = Config.AutoRefillModule.ENABLED

@@ -18,7 +18,10 @@ import org.xodium.vanillaplus.utils.FmtUtils.mm
 import org.xodium.vanillaplus.utils.Utils
 
 /**
- * A module that provides a book with rules for players.
+ * Handles functionality related to the Books module.
+ * This module provides a command to open a custom-defined book for players with the appropriate permissions.
+ *
+ * Implements the `ModuleInterface` to integrate with the system's modular architecture.
  */
 class BooksModule : ModuleInterface {
     override fun enabled(): Boolean = Config.BooksModule.ENABLED

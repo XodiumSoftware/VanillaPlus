@@ -11,7 +11,13 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.FmtUtils.mm
 
 /**
- * A module that broadcasts a random message to all online players at regular intervals.
+ * Handles functionality related to broadcasting periodic messages to players.
+ *
+ * The `BroadcastModule` is a part of the modular system and broadcasts a random tip or message
+ * to all online players at a configurable interval. The messages and timing are defined
+ * in the plugin's configuration.
+ *
+ * Implements the `ModuleInterface` to support modular integration and event handling.
  */
 class BroadcastModule : ModuleInterface {
     override fun enabled(): Boolean = Config.BroadcastModule.ENABLED

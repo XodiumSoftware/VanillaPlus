@@ -17,7 +17,11 @@ import java.time.LocalTime
 import java.time.temporal.ChronoUnit
 
 /**
- * A module that restarts the server at a specific time.
+ * Represents a module that manages automatic server restarts at configured times.
+ * The module enables scheduling and countdowns for server restarts.
+ * It uses a boss bar to notify players of the remaining time until the restart.
+ *
+ * The auto-restart functionality will only be enabled if specified in the plugin's configuration.
  */
 class AutoRestartModule : ModuleInterface {
     override fun enabled(): Boolean = Config.AutoRestartModule.ENABLED

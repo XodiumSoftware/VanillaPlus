@@ -41,7 +41,13 @@ import java.util.function.ToIntFunction
 import java.util.stream.Collectors
 
 /**
- * Handles the automatic switching of tools and weapons.
+ * Represents a module for automatically managing tools and equipment for players in various scenarios.
+ * Provides functionality to optimize tool and weapon selection and interacts with events such as block breaking,
+ * entity damage, and player actions.
+ *
+ * Fields:
+ * - toolMap: A mapping of tool types and their corresponding materials.
+ * - blockTypeCaches: Caches for storing specific block type data for each player.
  */
 class AutoToolModule : ModuleInterface {
     override fun enabled(): Boolean = Config.AutoToolModule.ENABLED

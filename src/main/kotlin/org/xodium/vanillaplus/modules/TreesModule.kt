@@ -33,7 +33,9 @@ import java.nio.file.StandardOpenOption
 import java.util.stream.Collectors
 
 /**
- * Handles the growth of trees and other plants
+ * The TreesModule class provides functionality for managing tree-related behavior
+ * in the system, including handling events when trees grow and dynamically pasting
+ * schematics based on sapling types.
  */
 class TreesModule : ModuleInterface {
     override fun enabled(): Boolean = Config.TreesModule.ENABLED

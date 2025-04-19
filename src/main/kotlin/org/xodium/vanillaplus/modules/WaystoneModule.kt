@@ -27,7 +27,17 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mm
 
-
+/**
+ * Represents a module handling waystone mechanics within the system.
+ * A waystone allows players to teleport between locations using specific in-game constructs.
+ * The module listens for relevant player and block events and manages waystone functionality accordingly.
+ *
+ * Features:
+ * - Automatically enables if the module is configured as enabled.
+ * - Initializes the required database table and crafting recipe on enabling.
+ * - Provides event handling for player interactions, block placements, and block breaking.
+ * - Manages the GUI for interacting with waystones.
+ */
 class WaystoneModule : ModuleInterface {
     override fun enabled(): Boolean = Config.WaystoneModule.ENABLED
 

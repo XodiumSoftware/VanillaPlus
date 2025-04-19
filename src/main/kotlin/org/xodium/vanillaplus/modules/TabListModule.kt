@@ -20,7 +20,9 @@ import org.xodium.vanillaplus.utils.TimeUtils.seconds
 import org.xodium.vanillaplus.utils.TimeUtils.ticks
 
 /**
- * Handles the tab list for all players
+ * Handles functionality related to the Tab List module.
+ * This module updates the tab list header and footer as well as the display names of players.
+ * It ensures real-time updates to all online players by leveraging scheduled tasks and event handling.
  */
 class TabListModule : ModuleInterface {
     override fun enabled(): Boolean = Config.TabListModule.ENABLED

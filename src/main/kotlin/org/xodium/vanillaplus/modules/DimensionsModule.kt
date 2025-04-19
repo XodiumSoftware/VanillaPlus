@@ -23,7 +23,8 @@ import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mm
 
 /**
- * Handles dimension teleportation
+ * Handles portal-related functionalities and events for the Dimensions system.
+ * Implements the ModuleInterface, enabling integration with the system's module framework.
  */
 class DimensionsModule : ModuleInterface {
     override fun enabled(): Boolean = Config.DimensionsModule.ENABLED

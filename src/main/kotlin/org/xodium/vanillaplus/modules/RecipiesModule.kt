@@ -14,8 +14,8 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 
 /**
- * Unlocks all recipes for players when they join the server.
- * When enabled, it allows players to craft any item in the game without needing to unlock the recipe first.
+ * Handles functionality related to the Recipes module.
+ * This module automatically unlocks all available recipes for players when they join the server.
  */
 class RecipiesModule : ModuleInterface {
     override fun enabled(): Boolean = Config.RecipiesModule.ENABLED
