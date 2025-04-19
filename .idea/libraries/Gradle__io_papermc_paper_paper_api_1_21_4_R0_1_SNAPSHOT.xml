@@ -7,6 +7,7 @@
     <JAVADOC />
     <SOURCES>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.papermc.paper/paper-api/1.21.4-R0.1-SNAPSHOT/d4e796e87bc3a13edc12437976ecdaa172f3d85f/paper-api-1.21.4-R0.1-SNAPSHOT-sources.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.papermc.paper/paper-api/1.21.4-R0.1-SNAPSHOT/3c0fe42d8bc470681ef5eecda502b5fc5b8703f6/paper-api-1.21.4-R0.1-SNAPSHOT-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

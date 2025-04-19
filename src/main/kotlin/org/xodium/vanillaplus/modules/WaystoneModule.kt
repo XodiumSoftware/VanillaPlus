@@ -7,10 +7,8 @@ package org.xodium.vanillaplus.modules
 
 import net.kyori.adventure.resource.ResourcePackInfo
 import net.kyori.adventure.resource.ResourcePackRequest
-import org.bukkit.Bukkit
-import org.bukkit.Location
-import org.bukkit.Material
-import org.bukkit.NamespacedKey
+import net.kyori.adventure.text.Component
+import org.bukkit.*
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -24,12 +22,18 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.Recipe
 import org.bukkit.inventory.ShapedRecipe
+import org.bukkit.scheduler.BukkitRunnable
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Database
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.data.WaystoneData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
+import org.xodium.vanillaplus.utils.FmtUtils.fromGson
+import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mm
+import org.xodium.vanillaplus.utils.FmtUtils.toGson
+import org.xodium.vanillaplus.utils.TimeUtils.seconds
 import java.net.URI
 import java.util.*
 
@@ -56,22 +60,31 @@ class WaystoneModule : ModuleInterface {
         .required(true)
         .build()
     private val recipeKey = NamespacedKey(instance, "waystone")
-    private var waystoneLocations: MutableList<Location> = mutableListOf()
+    private var waystoneEntries: MutableList<WaystoneData> = mutableListOf()
     private val guiTitle = "<b>Waystone Network".fireFmt().mm()
     private val playerGuiOrigin = mutableMapOf<UUID, Location>()
 
     init {
         if (enabled()) {
             Database.createTable(this::class)
-            instance.server.addRecipe(recipe(recipeKey, waystoneItem()))
+            instance.server.addRecipe(recipe(recipeKey, waystoneItem("Waystone".mm())))
             val allData = Database.getData(this::class)
             val allKeys = if (allData is Map<*, *>) {
                 @Suppress("UNCHECKED_CAST")
                 allData as Map<String, String?>
             } else emptyMap()
-            val keys: List<String> = allKeys.keys.toList()
-            val locations: List<Location> = keys.mapNotNull { keyToLocation(it) }
-            waystoneLocations = locations.toMutableList()
+            waystoneEntries = allKeys.mapNotNull { (key, value) ->
+                val loc = keyToLocation(key) ?: return@mapNotNull null
+                val displayNameComponent = value?.let { jsonString ->
+                    try {
+                        jsonString.fromGson()
+                    } catch (e: Exception) {
+                        instance.logger.warning("Failed to parse Waystone display name JSON for key $key: ${e.message}. Using default.")
+                        "Waystone".mm()
+                    }
+                } ?: "Waystone".mm()
+                WaystoneData(loc, displayNameComponent)
+            }.toMutableList()
         }
     }
 
@@ -85,8 +98,9 @@ class WaystoneModule : ModuleInterface {
     fun on(event: BlockPlaceEvent) {
         val itemMeta = event.itemInHand.itemMeta
         if (itemMeta != null && itemMeta.hasCustomModelData() && itemMeta.customModelData == 1) {
-            waystoneLocations.add(event.blockPlaced.location)
-            Database.setData(this::class, locationToKey(event.blockPlaced.location))
+            val displayName = itemMeta.displayName() ?: "Waystone".mm()
+            waystoneEntries.add(WaystoneData(event.blockPlaced.location, displayName))
+            Database.setData(this::class, locationToKey(event.blockPlaced.location), displayName.toGson())
             event.player.sendActionBar("Waypoint has been created".fireFmt().mm())
         }
     }
@@ -94,8 +108,9 @@ class WaystoneModule : ModuleInterface {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: BlockBreakEvent) {
         val block = event.block
-        if (block.type == Material.STONE_BRICKS && waystoneLocations.any { it == block.location }) {
-            waystoneLocations.removeIf { it == block.location }
+        val idx = waystoneEntries.indexOfFirst { it.location == block.location }
+        if (block.type == Material.STONE_BRICKS && idx != -1) {
+            waystoneEntries.removeAt(idx)
             Database.deleteData(this::class, locationToKey(event.block.location))
             event.player.sendActionBar("Waypoint has been deleted".fireFmt().mm())
         }
@@ -105,7 +120,7 @@ class WaystoneModule : ModuleInterface {
     fun on(event: PlayerInteractEvent) {
         if (event.action != Action.RIGHT_CLICK_BLOCK) return
         val block = event.clickedBlock ?: return
-        if (block.type == Material.STONE_BRICKS && waystoneLocations.any { it == block.location }) {
+        if (block.type == Material.STONE_BRICKS && waystoneEntries.any { it.location == block.location }) {
             event.isCancelled = true
             val player = event.player
             playerGuiOrigin[player.uniqueId] = block.location
@@ -119,22 +134,69 @@ class WaystoneModule : ModuleInterface {
         if (event.view.title() != guiTitle) return
         event.isCancelled = true
         val slot = event.rawSlot
-        if (slot !in waystoneLocations.indices) return
-        val targetLoc = waystoneLocations[slot]
+        if (slot !in waystoneEntries.indices) return
+        val targetData = waystoneEntries[slot]
         val originLoc = playerGuiOrigin[player.uniqueId]
-        if (originLoc != null && targetLoc == originLoc) {
+        if (originLoc != null && targetData.location == originLoc) { //TODO: instead hide the clicked waystone in the gui.
             return player.sendActionBar("You cannot teleport to the waystone you are at".fireFmt().mm())
         }
-        player.teleport(targetLoc)
-        player.sendActionBar("Teleported to waystone!".fireFmt().mm())
         player.closeInventory()
-        playerGuiOrigin.remove(player.uniqueId)
+        player.sendActionBar("Teleporting...".mangoFmt().mm())
+
+        val initialLocation = player.location.clone()
+        val delayTicks = 3.seconds
+
+        object : BukkitRunnable() {
+            var ticks = 0
+            override fun run() {
+                if (!player.isOnline || player.isDead) {
+                    cancel()
+                    return
+                }
+                if (player.location.distanceSquared(initialLocation) > 0.5) {
+                    player.sendActionBar("Teleport cancelled (you moved)!".fireFmt().mm())
+                    cancel()
+                    return
+                }
+
+                player.world.spawnParticle(
+                    Particle.PORTAL,
+                    player.location.add(0.0, 1.0, 0.0),
+                    20,
+                    0.5,
+                    1.0,
+                    0.5,
+                    0.1
+                )
+                player.world.playSound(player.location, Sound.BLOCK_NOTE_BLOCK_HAT, 0.2f, 2.0f)
+
+                ticks++
+                if (ticks >= delayTicks) {
+                    teleportEffects(player.location)
+                    player.teleport(targetData.location)
+                    teleportEffects(targetData.location)
+                    player.sendActionBar(
+                        "Teleported to ".fireFmt().mm()
+                            .append(targetData.displayName)
+                            .append("!".fireFmt().mm())
+                    )
+                    playerGuiOrigin.remove(player.uniqueId)
+                    cancel()
+                }
+            }
+        }.runTaskTimer(instance, 0L, 1L)
     }
 
-    private fun waystoneItem(): ItemStack =
+    private fun teleportEffects(location: Location) {
+        location.world?.spawnParticle(Particle.PORTAL, location, 60, 0.5, 1.0, 0.5, 0.2)
+        location.world?.spawnParticle(Particle.END_ROD, location, 20, 0.2, 0.8, 0.2, 0.05)
+        location.world?.playSound(location, Sound.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1.0f, 1.0f)
+    }
+
+    private fun waystoneItem(customName: Component): ItemStack =
         ItemStack(Material.STONE_BRICKS).apply {
             itemMeta = itemMeta.apply {
-                customName("Waystone".mm())
+                customName(customName)
                 setCustomModelData(1)
             }
         }
@@ -167,15 +229,15 @@ class WaystoneModule : ModuleInterface {
 
     //TODO: create also a back button.
     //TODO: make sure that where the nav items are that whole row doesnt display waystones.
-    //TODO: make waystones clickable, which will teleport you to their position.
-    //TODO: add teleportation effects.
-    //TODO: add teleportation xp cost.
+    //TODO: add teleportation xp cost. cost based on distance between waystones.
     //TODO: Optional, do we add that you have to discover waypoints manually first before being able to use them?
     override fun gui(): Inventory {
-        val total = waystoneLocations.size
+        val total = waystoneEntries.size
         val size = ((total + 8) / 9).coerceIn(1, 6) * 9
         val inv = Bukkit.createInventory(null, size, guiTitle)
-        waystoneLocations.take(size).forEachIndexed { i, _ -> inv.setItem(i, waystoneItem()) }
+        waystoneEntries.take(size).forEachIndexed { i, entry ->
+            inv.setItem(i, waystoneItem(entry.displayName))
+        }
         if (total > size) inv.setItem(size - 1, pageNavItem("Next Page"))
         return inv
     }

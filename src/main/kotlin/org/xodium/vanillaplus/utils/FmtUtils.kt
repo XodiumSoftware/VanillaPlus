@@ -7,6 +7,7 @@ package org.xodium.vanillaplus.utils
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 
 /**
  * Formatting utilities
@@ -21,4 +22,7 @@ object FmtUtils {
 
     fun String.mangoFmt(inverted: Boolean = false): String =
         "<gradient:${if (inverted) "#FFA751:#FFE259" else "#FFE259:#FFA751"}>$this<reset>"
+
+    fun Component.toGson(): String = GsonComponentSerializer.gson().serialize(this)
+    fun String.fromGson(): Component = GsonComponentSerializer.gson().deserialize(this)
 }
