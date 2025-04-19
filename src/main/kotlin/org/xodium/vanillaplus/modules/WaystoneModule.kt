@@ -21,6 +21,7 @@ import org.bukkit.inventory.ShapedRecipe
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mm
 
 
@@ -28,6 +29,8 @@ class WaystoneModule : ModuleInterface {
     override fun enabled(): Boolean = Config.WaystoneModule.ENABLED
 
     private val recipeKey = NamespacedKey(instance, "waystone")
+
+    //TODO: save waystoneLocations in Database.
     private val waystoneLocations = mutableListOf<Location>()
 
     init {
@@ -56,11 +59,16 @@ class WaystoneModule : ModuleInterface {
     }
 
     private fun waystoneItem(): ItemStack =
-        ItemStack.of(Material.STONE_BRICKS).apply {
+        ItemStack(Material.STONE_BRICKS).apply {
             itemMeta = itemMeta.apply {
                 customName("Waystone".mm())
                 setCustomModelData(1)
             }
+        }
+
+    private fun pageNavItem(label: String): ItemStack =
+        ItemStack(Material.ARROW).apply {
+            itemMeta = itemMeta.apply { displayName(label.mm()) }
         }
 
     override fun recipe(key: NamespacedKey, item: ItemStack): Recipe =
@@ -70,10 +78,17 @@ class WaystoneModule : ModuleInterface {
             setIngredient('B', Material.ENDER_PEARL)
         }
 
-    override fun gui(): Inventory =
-        Bukkit.createInventory(null, 9, "Waystone".mm()).apply {
-            setItem(4, ItemStack(Material.ENDER_PEARL).apply {
-                itemMeta = itemMeta?.apply { displayName("Teleport".mm()) }
-            })
-        }
+    //    TODO: create also a back button.
+    //    TODO: make sure that where the nav items are that whole row doesnt display waystones.
+    //    TODO: make waystones clickable, which will teleport you to their position.
+    //    TODO: add teleportation effects.
+    //    TODO: add teleportation xp cost.
+    override fun gui(): Inventory {
+        val total = waystoneLocations.size
+        val size = ((total + 8) / 9).coerceIn(1, 6) * 9
+        val inv = Bukkit.createInventory(null, size, "Ancient Teleportation Network".fireFmt().mm())
+        waystoneLocations.take(size).forEachIndexed { i, _ -> inv.setItem(i, waystoneItem()) }
+        if (total > size) inv.setItem(size - 1, pageNavItem("Next Page"))
+        return inv
+    }
 }
