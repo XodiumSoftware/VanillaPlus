@@ -390,4 +390,14 @@ object Config {
             Material.WARPED_FUNGUS to listOf("trees/warped"),
         )
     }
+
+    /**
+     * Configuration settings for the WaystoneModule. This module controls the teleporting features of the plugin.
+     */
+    object WaystoneModule {
+        /**
+         * Enables or disables the TreesModule.
+         */
+        var ENABLED: Boolean = true
+    }
 }
