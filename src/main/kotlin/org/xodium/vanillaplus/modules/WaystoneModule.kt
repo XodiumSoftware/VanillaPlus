@@ -11,11 +11,13 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
+import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.inventory.Inventory
@@ -29,7 +31,7 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mm
 import java.net.URI
-
+import java.util.*
 
 /**
  * Represents a module handling waystone mechanics within the system.
@@ -55,6 +57,8 @@ class WaystoneModule : ModuleInterface {
         .build()
     private val recipeKey = NamespacedKey(instance, "waystone")
     private var waystoneLocations: MutableList<Location> = mutableListOf()
+    private val guiTitle = "<b>Waystone Network".fireFmt().mm()
+    private val playerGuiOrigin = mutableMapOf<UUID, Location>()
 
     init {
         if (enabled()) {
@@ -103,8 +107,28 @@ class WaystoneModule : ModuleInterface {
         val block = event.clickedBlock ?: return
         if (block.type == Material.STONE_BRICKS && waystoneLocations.any { it == block.location }) {
             event.isCancelled = true
-            event.player.openInventory(gui())
+            val player = event.player
+            playerGuiOrigin[player.uniqueId] = block.location
+            player.openInventory(gui())
         }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    fun on(event: InventoryClickEvent) {
+        val player = event.whoClicked as? Player ?: return
+        if (event.view.title() != guiTitle) return
+        event.isCancelled = true
+        val slot = event.rawSlot
+        if (slot !in waystoneLocations.indices) return
+        val targetLoc = waystoneLocations[slot]
+        val originLoc = playerGuiOrigin[player.uniqueId]
+        if (originLoc != null && targetLoc == originLoc) {
+            return player.sendActionBar("You cannot teleport to the waystone you are at".fireFmt().mm())
+        }
+        player.teleport(targetLoc)
+        player.sendActionBar("Teleported to waystone!".fireFmt().mm())
+        player.closeInventory()
+        playerGuiOrigin.remove(player.uniqueId)
     }
 
     private fun waystoneItem(): ItemStack =
@@ -135,9 +159,10 @@ class WaystoneModule : ModuleInterface {
 
     override fun recipe(key: NamespacedKey, item: ItemStack): Recipe =
         ShapedRecipe(key, item).apply {
-            shape(" A ", "ABA", "AAA")
+            shape("   ", "CBC", "AAA")
             setIngredient('A', Material.STONE_BRICKS)
             setIngredient('B', Material.ENDER_PEARL)
+            setIngredient('C', Material.COMPASS)
         }
 
     //TODO: create also a back button.
@@ -149,7 +174,7 @@ class WaystoneModule : ModuleInterface {
     override fun gui(): Inventory {
         val total = waystoneLocations.size
         val size = ((total + 8) / 9).coerceIn(1, 6) * 9
-        val inv = Bukkit.createInventory(null, size, "Ancient Teleportation Network".fireFmt().mm())
+        val inv = Bukkit.createInventory(null, size, guiTitle)
         waystoneLocations.take(size).forEachIndexed { i, _ -> inv.setItem(i, waystoneItem()) }
         if (total > size) inv.setItem(size - 1, pageNavItem("Next Page"))
         return inv
