@@ -200,7 +200,7 @@ class AutoRefillModule : ModuleInterface {
      * @return true if enabled (default), false if explicitly disabled
      */
     private fun isEnabledForPlayer(player: Player): Boolean =
-        Database.getData(this::class, player.uniqueId.toString())?.lowercase() != "false"
+        Database.getData(this::class, player.uniqueId.toString()) != "false"
 
     /**
      * Toggles AutoRefill for the given player
