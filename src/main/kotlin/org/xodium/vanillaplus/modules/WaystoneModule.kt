@@ -22,7 +22,6 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.Recipe
 import org.bukkit.inventory.ShapedRecipe
-import org.bukkit.scheduler.BukkitRunnable
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Database
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -34,6 +33,7 @@ import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.toGson
 import org.xodium.vanillaplus.utils.TimeUtils.seconds
+import org.xodium.vanillaplus.utils.TimeUtils.ticks
 import java.net.URI
 import java.util.*
 
@@ -63,6 +63,11 @@ class WaystoneModule : ModuleInterface {
     private var waystoneEntries: MutableList<WaystoneData> = mutableListOf()
     private val guiTitle = "<b>Waystone Network".fireFmt().mm()
     private val playerGuiOrigin = mutableMapOf<UUID, Location>()
+
+    private val baseXpCost = 5
+    private val distanceMultiplier = 0.05
+    private val dimensionalMultiplier = 50
+
 
     init {
         if (enabled()) {
@@ -146,17 +151,19 @@ class WaystoneModule : ModuleInterface {
         val initialLocation = player.location.clone()
         val delayTicks = 3.seconds
 
-        object : BukkitRunnable() {
-            var ticks = 0
-            override fun run() {
+        var ticks = 0
+
+        instance.server.scheduler.runTaskTimer(
+            instance,
+            { task ->
                 if (!player.isOnline || player.isDead) {
-                    cancel()
-                    return
+                    task.cancel()
+                    return@runTaskTimer
                 }
                 if (player.location.distanceSquared(initialLocation) > 0.5) {
                     player.sendActionBar("Teleport cancelled (you moved)!".fireFmt().mm())
-                    cancel()
-                    return
+                    task.cancel()
+                    return@runTaskTimer
                 }
 
                 player.world.spawnParticle(
@@ -181,10 +188,12 @@ class WaystoneModule : ModuleInterface {
                             .append("!".fireFmt().mm())
                     )
                     playerGuiOrigin.remove(player.uniqueId)
-                    cancel()
+                    task.cancel()
                 }
-            }
-        }.runTaskTimer(instance, 0L, 1L)
+            },
+            0.ticks,
+            1.ticks
+        )
     }
 
     private fun teleportEffects(location: Location) {
