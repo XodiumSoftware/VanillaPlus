@@ -6,15 +6,19 @@
 package org.xodium.vanillaplus
 
 import net.kyori.adventure.bossbar.BossBar
+import net.kyori.adventure.resource.ResourcePackInfo
 import net.kyori.adventure.sound.Sound
+import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.BookData
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
+import org.xodium.vanillaplus.utils.FmtUtils.mm
 import org.xodium.vanillaplus.utils.TimeUtils.minutes
 import org.xodium.vanillaplus.utils.Utils.getTps
 import org.xodium.vanillaplus.utils.Utils.getWeather
+import java.net.URI
 import java.time.LocalTime
 import org.bukkit.Sound as BukkitSound
 
@@ -399,5 +403,29 @@ object Config {
          * Enables or disables the TreesModule.
          */
         var ENABLED: Boolean = true
+
+        /**
+         * Represents the configuration for a resource pack to be used in the application.
+         * The resource pack includes a URI pointing to the resource pack file and a hash
+         * used for validation or versioning purposes.
+         *
+         * This variable provides a default setup for the resource pack, but it can be
+         * modified or replaced as needed to point to a different resource pack or to
+         * update configuration details such as URI or hash.
+         */
+        var RESOURCE_PACK_INFO: ResourcePackInfo = ResourcePackInfo.resourcePackInfo()
+            .uri(URI.create("https://example.com/resourcepack.zip"))
+            .hash("2849ace6aa689a8c610907a41c03537310949294")
+            .build()
+
+        /**
+         * Determines whether the server should enforce the use of a specific resource pack.
+         * When set to true, all players joining the server must accept and use the server's
+         * designated resource pack. If false, players are allowed to reject the resource pack
+         * without being prevented from joining.
+         */
+        var RESOURCE_PACK_FORCE: Boolean = true
+
+        var RESOURCE_PACK_PROMPT: Component = "".mm()
     }
 }

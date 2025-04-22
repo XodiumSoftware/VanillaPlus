@@ -22,4 +22,17 @@ import org.bukkit.Location
 data class WaystoneData(
     val location: Location,
     val displayName: Component
-)
+) {
+    /**
+     * Calculates the XP cost to teleport to this waystone from a given origin location
+     *
+     * @param origin The location from which the player would teleport
+     * @param calculator The function used to calculate teleportation cost
+     * @return The XP cost as an integer
+     */
+    fun calcCost(
+        origin: Location, calculator: (Location, Location) -> Int
+    ): Int {
+        return calculator(origin, location)
+    }
+}

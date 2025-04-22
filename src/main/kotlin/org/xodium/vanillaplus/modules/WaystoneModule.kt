@@ -5,7 +5,6 @@
 
 package org.xodium.vanillaplus.modules
 
-import net.kyori.adventure.resource.ResourcePackInfo
 import net.kyori.adventure.resource.ResourcePackRequest
 import net.kyori.adventure.text.Component
 import org.bukkit.*
@@ -34,7 +33,6 @@ import org.xodium.vanillaplus.utils.FmtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.toGson
 import org.xodium.vanillaplus.utils.TimeUtils.seconds
 import org.xodium.vanillaplus.utils.TimeUtils.ticks
-import java.net.URI
 import java.util.*
 
 /**
@@ -51,14 +49,6 @@ import java.util.*
 class WaystoneModule : ModuleInterface {
     override fun enabled(): Boolean = Config.WaystoneModule.ENABLED
 
-    private val packInfo = ResourcePackInfo.resourcePackInfo()
-        .uri(URI.create("https://example.com/resourcepack.zip"))
-        .hash("2849ace6aa689a8c610907a41c03537310949294")
-        .build()
-    private val pack = ResourcePackRequest.resourcePackRequest()
-        .packs(packInfo)
-        .required(true)
-        .build()
     private val recipeKey = NamespacedKey(instance, "waystone")
     private var waystoneEntries: MutableList<WaystoneData> = mutableListOf()
     private val guiTitle = "<b>Waystone Network".fireFmt().mm()
@@ -67,7 +57,6 @@ class WaystoneModule : ModuleInterface {
     private val baseXpCost = 5
     private val distanceMultiplier = 0.05
     private val dimensionalMultiplier = 50
-
 
     init {
         if (enabled()) {
@@ -95,8 +84,13 @@ class WaystoneModule : ModuleInterface {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
-        event.player.sendResourcePacks(pack)
-        //TODO: make it load a resourcepack, for the waystones.
+        event.player.sendResourcePacks(
+            ResourcePackRequest.resourcePackRequest()
+                .packs(Config.WaystoneModule.RESOURCE_PACK_INFO)
+                .required(Config.WaystoneModule.RESOURCE_PACK_FORCE)
+                .prompt(Config.WaystoneModule.RESOURCE_PACK_PROMPT)
+                .build()
+        )
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -147,10 +141,12 @@ class WaystoneModule : ModuleInterface {
         }
 
         val xpCost = calculateXpCost(originLoc ?: player.location, targetData.location)
-        val playerTotalXp = player.level * 7 + player.exp.toInt()
-        if (playerTotalXp < xpCost) {
-            player.closeInventory()
-            return player.sendActionBar("You need $xpCost XP to teleport to this waystone".fireFmt().mm())
+        if (player.gameMode in listOf(GameMode.SURVIVAL, GameMode.ADVENTURE)) {
+            val playerTotalXp = player.level * 7 + player.exp.toInt()
+            if (playerTotalXp < xpCost) {
+                player.closeInventory()
+                return player.sendActionBar("You need $xpCost XP to teleport to this waystone".fireFmt().mm())
+            }
         }
 
         player.closeInventory()
@@ -187,7 +183,9 @@ class WaystoneModule : ModuleInterface {
 
                 ticks++
                 if (ticks >= delayTicks) {
-                    chargePlayerXp(player, xpCost)
+                    if (player.gameMode in listOf(GameMode.SURVIVAL, GameMode.ADVENTURE)) {
+                        chargePlayerXp(player, xpCost)
+                    }
                     teleportEffects(player.location)
                     player.teleport(targetData.location)
                     teleportEffects(targetData.location)
@@ -259,9 +257,29 @@ class WaystoneModule : ModuleInterface {
     }
 
     /**
-     * Creates a waystone item with a custom name and custom model data.
-     * @param customName The custom name to set for the item.
-     * @return An ItemStack representing the waystone item with the specified customizations.
+     * Creates a waystone item with a custom name and lore showing teleportation cost.
+     * @param waystoneData The waystone data containing location and display name
+     * @param origin The origin location used to calculate teleportation cost
+     * @return An ItemStack representing the waystone with name and cost in lore
+     */
+    private fun waystoneItem(
+        waystoneData: WaystoneData, origin: Location
+    ): ItemStack =
+        ItemStack(Material.STONE_BRICKS).apply {
+            itemMeta = itemMeta.apply {
+                customName(waystoneData.displayName)
+                setCustomModelData(1)
+                val cost = waystoneData.calcCost(origin) { origin, destination ->
+                    calculateXpCost(origin, destination)
+                }
+                lore(listOf("<bold>Cost: $cost XP</bold>".mangoFmt().mm()))
+            }
+        }
+
+    /**
+     * Creates a waystone item with just a custom name (for crafting/placing)
+     * @param customName The custom name to set for the item
+     * @return An ItemStack representing the waystone item with the specified customizations
      */
     private fun waystoneItem(customName: Component): ItemStack =
         ItemStack(Material.STONE_BRICKS).apply {
@@ -317,7 +335,6 @@ class WaystoneModule : ModuleInterface {
             setIngredient('C', Material.COMPASS)
         }
 
-    //TODO: add teleportation xp cost. cost based on distance between waystones.
     //TODO: Optional, do we add that you have to discover waypoints manually first before being able to use them?
     override fun gui(): Inventory {
         val total = waystoneEntries.size
@@ -326,8 +343,11 @@ class WaystoneModule : ModuleInterface {
         val inv = Bukkit.createInventory(null, size, guiTitle)
         val availableSlots = size - 9
 
+        val player = Bukkit.getPlayer(playerGuiOrigin.keys.first()) ?: return inv
+        val originLocation = playerGuiOrigin[player.uniqueId] ?: player.location
+
         waystoneEntries.take(availableSlots).forEachIndexed { i, entry ->
-            inv.setItem(i, waystoneItem(entry.displayName))
+            inv.setItem(i, waystoneItem(entry, originLocation))
         }
 
         val bottomRowStart = size - 9
