@@ -36,27 +36,27 @@ object Utils {
         try {
             action(ctx.source)
         } catch (e: Exception) {
-            VanillaPlus.Companion.instance.logger.severe("An Error has occured: ${e.message}")
+            VanillaPlus.Companion.instance.logger.severe("An Error has occurred: ${e.message}")
             e.printStackTrace()
-            (ctx.source.sender as Player).sendMessage("${VanillaPlus.Companion.PREFIX}<red>An Error has occured. Check server logs for details.".mm())
+            (ctx.source.sender as Player).sendMessage("${VanillaPlus.Companion.PREFIX}<red>An Error has occurred. Check server logs for details.".mm())
         }
         return Command.SINGLE_SUCCESS
     }
 
     /**
-     * A function to get the base damage of a material.
+     * A function to get the base damage to a material.
      *
-     * @param material The material to get the base damage of.
-     * @return The base damage of the material.
+     * @param material The material to get the base damage to.
+     * @return The base damage to the material.
      */
     private fun getBaseDamage(material: Material): Double = MaterialRegistry.BASE_DAMAGE_MAP[material] ?: 0.0
 
     /**
-     * A function to get the damage of an item stack against an entity type.
+     * A function to get the damage to an item stack against an entity type.
      *
-     * @param itemStack The item stack to get the damage of.
+     * @param itemStack The item stack to get the damage to.
      * @param entityType The entity type to get the damage against.
-     * @return The damage of the item stack against the entity type.
+     * @return The damage to the item stack against the entity type.
      */
     fun getDamage(itemStack: ItemStack?, entityType: EntityType): Double {
         val base = getBaseDamage(itemStack?.type ?: Material.AIR)
@@ -64,11 +64,11 @@ object Utils {
     }
 
     /**
-     * A function to get the bonus damage of an item stack against an entity type.
+     * A function to get the bonus damage to an item stack against an entity type.
      *
-     * @param itemStack The item stack to get the bonus damage of.
+     * @param itemStack The item stack to get the bonus damage to.
      * @param entityType The entity type to get the bonus damage against.
-     * @return The bonus damage of the item stack against the entity type.
+     * @return The bonus damage to the item stack against the entity type.
      */
     private fun getBonus(itemStack: ItemStack?, entityType: EntityType): Double =
         itemStack?.itemMeta?.enchants?.entries?.sumOf { (enchantment, level) ->

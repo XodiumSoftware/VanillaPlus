@@ -210,16 +210,9 @@ class AutoToolModule : ModuleInterface {
      * Adds materials from the given tag to the tool map.
      * @param tag The material tag.
      * @param tool The tool type.
-     */
-    private fun tagToMap(tag: Tag<Material>, tool: ToolEnum) = tagToMap(tag, tool, null)
-
-    /**
-     * Adds materials from the given tag to the tool map.
-     * @param tag The material tag.
-     * @param tool The tool type.
      * @param filter If not null, only materials whose name contains this filter will be added.
      */
-    private fun tagToMap(tag: Tag<Material>, tool: ToolEnum, filter: String?) {
+    private fun tagToMap(tag: Tag<Material>, tool: ToolEnum, filter: String? = null) {
         tag.values.forEach { material ->
             if (filter == null || material.name.contains(filter)) {
                 addToMap(material, tool)

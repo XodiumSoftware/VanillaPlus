@@ -38,6 +38,11 @@ class DimensionsModule : ModuleInterface {
             Vector(0, 1, 0), Vector(0, -1, 0),
             Vector(0, 0, 1), Vector(0, 0, -1)
         )
+
+        /**
+         * The radius within which to search for portals in the overworld
+         */
+        private const val PORTAL_SEARCH_RADIUS = 128.0
     }
 
     /**
@@ -97,7 +102,7 @@ class DimensionsModule : ModuleInterface {
         val overworldZ = netherCoords.z * 8
         val overworld = instance.server.worlds.find { it.environment == World.Environment.NORMAL } ?: return
 
-        if (!hasPortalNearby(overworld, overworldX, overworldY, overworldZ, 128.0)) {
+        if (!hasPortalNearby(overworld, overworldX, overworldY, overworldZ)) {
             event.isCancelled = true
             if (event.player != null) {
                 event.player?.sendActionBar("Cannot create new link to the Overworld from the Nether".fireFmt().mm())
@@ -127,12 +132,11 @@ class DimensionsModule : ModuleInterface {
      * @param x The x coordinate.
      * @param y The y coordinate.
      * @param z The z coordinate.
-     * @param radius The search radius.
      * @return True if a portal exists within the radius.
      */
-    private fun hasPortalNearby(world: World, x: Double, y: Double, z: Double, radius: Double): Boolean {
-        val radiusSquared = radius * radius
-        val searchRadius = radius.toInt()
+    private fun hasPortalNearby(world: World, x: Double, y: Double, z: Double): Boolean {
+        val radiusSquared = PORTAL_SEARCH_RADIUS * PORTAL_SEARCH_RADIUS
+        val searchRadius = PORTAL_SEARCH_RADIUS.toInt()
         val centerX = x.toInt()
         val centerY = y.toInt()
         val centerZ = z.toInt()
