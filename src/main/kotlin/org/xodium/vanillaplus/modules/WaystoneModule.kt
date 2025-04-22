@@ -36,6 +36,10 @@ import org.xodium.vanillaplus.utils.TimeUtils.ticks
 import org.xodium.vanillaplus.utils.Utils
 import java.util.*
 
+//TODO: check if we can avoid waystoneItem twice.
+//TODO: instead hide the clicked waystone in the gui.
+//TODO: Optional, do we add that you have to discover waypoints manually first before being able to use them?
+
 /**
  * Represents a module handling waystone mechanics within the system.
  * A waystone allows players to teleport between locations using specific in-game constructs.
@@ -132,7 +136,7 @@ class WaystoneModule : ModuleInterface {
         if (slot !in waystoneEntries.indices) return
         val targetData = waystoneEntries[slot]
         val originLoc = playerGuiOrigin[player.uniqueId]
-        if (originLoc != null && targetData.location == originLoc) { //TODO: instead hide the clicked waystone in the gui.
+        if (originLoc != null && targetData.location == originLoc) {
             return player.sendActionBar("You cannot teleport to the waystone you are at".fireFmt().mm())
         }
 
@@ -262,7 +266,6 @@ class WaystoneModule : ModuleInterface {
         }
     }
 
-    //TODO: Optional, do we add that you have to discover waypoints manually first before being able to use them?
     override fun gui(): Inventory {
         val total = waystoneEntries.size
         val rows = ((total + 8) / 9).coerceIn(2, 6)
