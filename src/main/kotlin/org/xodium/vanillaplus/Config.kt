@@ -8,13 +8,11 @@ package org.xodium.vanillaplus
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.resource.ResourcePackInfo
 import net.kyori.adventure.sound.Sound
-import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.BookData
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
-import org.xodium.vanillaplus.utils.FmtUtils.mm
 import org.xodium.vanillaplus.utils.TimeUtils.minutes
 import org.xodium.vanillaplus.utils.Utils.getTps
 import org.xodium.vanillaplus.utils.Utils.getWeather
@@ -426,6 +424,19 @@ object Config {
          */
         var RESOURCE_PACK_FORCE: Boolean = true
 
-        var RESOURCE_PACK_PROMPT: Component = "".mm()
+        /**
+         * The base cost in experience points (XP) for performing waystone teleportation.
+         */
+        var BASE_XP_COST: Int = 5
+
+        /**
+         * Multiplier applied to distances in waystones.
+         */
+        var DISTANCE_MULTIPLIER: Double = 0.05
+
+        /**
+         * A multiplier used for dimensional scaling or calculations.
+         */
+        var DIMENSIONAL_MULTIPLIER: Int = 50
     }
 }

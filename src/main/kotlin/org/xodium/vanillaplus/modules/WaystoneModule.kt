@@ -33,6 +33,7 @@ import org.xodium.vanillaplus.utils.FmtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.toGson
 import org.xodium.vanillaplus.utils.TimeUtils.seconds
 import org.xodium.vanillaplus.utils.TimeUtils.ticks
+import org.xodium.vanillaplus.utils.Utils
 import java.util.*
 
 /**
@@ -54,10 +55,6 @@ class WaystoneModule : ModuleInterface {
     private val guiTitle = "<b>Waystone Network".fireFmt().mm()
     private val playerGuiOrigin = mutableMapOf<UUID, Location>()
 
-    private val baseXpCost = 5
-    private val distanceMultiplier = 0.05
-    private val dimensionalMultiplier = 50
-
     init {
         if (enabled()) {
             Database.createTable(this::class)
@@ -68,7 +65,7 @@ class WaystoneModule : ModuleInterface {
                 allData as Map<String, String?>
             } else emptyMap()
             waystoneEntries = allKeys.mapNotNull { (key, value) ->
-                val loc = keyToLocation(key) ?: return@mapNotNull null
+                val loc = WaystoneData.deserialize(key) ?: return@mapNotNull null
                 val displayNameComponent = value?.let { jsonString ->
                     try {
                         jsonString.fromGson()
@@ -88,7 +85,6 @@ class WaystoneModule : ModuleInterface {
             ResourcePackRequest.resourcePackRequest()
                 .packs(Config.WaystoneModule.RESOURCE_PACK_INFO)
                 .required(Config.WaystoneModule.RESOURCE_PACK_FORCE)
-                .prompt(Config.WaystoneModule.RESOURCE_PACK_PROMPT)
                 .build()
         )
     }
@@ -99,7 +95,7 @@ class WaystoneModule : ModuleInterface {
         if (itemMeta != null && itemMeta.hasCustomModelData() && itemMeta.customModelData == 1) {
             val displayName = itemMeta.displayName() ?: "Waystone".mm()
             waystoneEntries.add(WaystoneData(event.blockPlaced.location, displayName))
-            Database.setData(this::class, locationToKey(event.blockPlaced.location), displayName.toGson())
+            Database.setData(this::class, WaystoneData.serialize(event.blockPlaced.location), displayName.toGson())
             event.player.sendActionBar("Waypoint has been created".fireFmt().mm())
         }
     }
@@ -110,7 +106,7 @@ class WaystoneModule : ModuleInterface {
         val idx = waystoneEntries.indexOfFirst { it.location == block.location }
         if (block.type == Material.STONE_BRICKS && idx != -1) {
             waystoneEntries.removeAt(idx)
-            Database.deleteData(this::class, locationToKey(event.block.location))
+            Database.deleteData(this::class, WaystoneData.serialize(event.block.location))
             event.player.sendActionBar("Waypoint has been deleted".fireFmt().mm())
         }
     }
@@ -140,7 +136,7 @@ class WaystoneModule : ModuleInterface {
             return player.sendActionBar("You cannot teleport to the waystone you are at".fireFmt().mm())
         }
 
-        val xpCost = calculateXpCost(originLoc ?: player.location, targetData.location)
+        val xpCost = WaystoneData.calculateXpCost(originLoc ?: player.location, targetData.location)
         if (player.gameMode in listOf(GameMode.SURVIVAL, GameMode.ADVENTURE)) {
             val playerTotalXp = player.level * 7 + player.exp.toInt()
             if (playerTotalXp < xpCost) {
@@ -184,7 +180,7 @@ class WaystoneModule : ModuleInterface {
                 ticks++
                 if (ticks >= delayTicks) {
                     if (player.gameMode in listOf(GameMode.SURVIVAL, GameMode.ADVENTURE)) {
-                        chargePlayerXp(player, xpCost)
+                        Utils.chargePlayerXp(player, xpCost)
                     }
                     teleportEffects(player.location)
                     player.teleport(targetData.location)
@@ -201,49 +197,6 @@ class WaystoneModule : ModuleInterface {
             0.ticks,
             1.ticks
         )
-    }
-
-    /**
-     * Calculates the XP cost for teleportation based on distance and dimension
-     * @param origin The origin location
-     * @param destination The destination location
-     * @return The calculated XP cost
-     */
-    private fun calculateXpCost(origin: Location, destination: Location): Int {
-        var cost = baseXpCost
-        if (origin.world == destination.world) {
-            val distance = origin.distance(destination)
-            cost += (distance * distanceMultiplier).toInt()
-        } else {
-            cost += dimensionalMultiplier
-        }
-        return cost
-    }
-
-    /**
-     * Charges the player the specified amount of XP
-     * @param player The player to charge
-     * @param amount The amount of XP to charge
-     */
-    private fun chargePlayerXp(player: Player, amount: Int) {
-        var remainingXp = amount
-        val currentLevelXp = (player.exp * player.expToLevel).toInt()
-        if (currentLevelXp >= remainingXp) {
-            player.exp = (currentLevelXp - remainingXp) / player.expToLevel.toFloat()
-            return
-        }
-
-        remainingXp -= currentLevelXp
-        player.exp = 0f
-
-        while (remainingXp > 0 && player.level > 0) {
-            player.level--
-            if (player.expToLevel >= remainingXp) {
-                player.exp = (player.expToLevel - remainingXp) / player.expToLevel.toFloat()
-                break
-            }
-            remainingXp -= player.expToLevel
-        }
     }
 
     /**
@@ -264,76 +217,50 @@ class WaystoneModule : ModuleInterface {
      */
     private fun waystoneItem(
         waystoneData: WaystoneData, origin: Location
-    ): ItemStack =
-        ItemStack(Material.STONE_BRICKS).apply {
+    ): ItemStack {
+        return ItemStack(Material.STONE_BRICKS).apply {
             itemMeta = itemMeta.apply {
                 customName(waystoneData.displayName)
                 setCustomModelData(1)
-                val cost = waystoneData.calcCost(origin) { origin, destination ->
-                    calculateXpCost(origin, destination)
-                }
+                val cost = WaystoneData.calculateXpCost(origin, waystoneData.location)
                 lore(listOf("<bold>Cost: $cost XP</bold>".mangoFmt().mm()))
             }
         }
+    }
 
     /**
      * Creates a waystone item with just a custom name (for crafting/placing)
      * @param customName The custom name to set for the item
      * @return An ItemStack representing the waystone item with the specified customizations
      */
-    private fun waystoneItem(customName: Component): ItemStack =
-        ItemStack(Material.STONE_BRICKS).apply {
+    private fun waystoneItem(customName: Component): ItemStack {
+        return ItemStack(Material.STONE_BRICKS).apply {
             itemMeta = itemMeta.apply {
                 customName(customName)
                 setCustomModelData(1)
             }
         }
+    }
 
     /**
      * Creates a navigation item for a GUI page, represented by an arrow item with a custom label.
      * @param label The text to display as the item's name, which will be formatted using the `mm` extension function.
      * @return An `ItemStack` representing the navigation item with the specified label.
      */
-    private fun pageNavItem(label: String): ItemStack =
-        ItemStack(Material.ARROW).apply {
+    private fun pageNavItem(label: String): ItemStack {
+        return ItemStack(Material.ARROW).apply {
             itemMeta = itemMeta.apply { displayName(label.mm()) }
         }
-
-    /**
-     * Converts a given `Location` object into a unique string key representation.
-     * This key is composed of the world name and the block coordinates of the location.
-     * @param location The `Location` object to convert into a string key. This location
-     * must include the world, blockX, blockY, and blockZ data.
-     * @return A string key in the format "waystone:<world_name>:<blockX>:<blockY>:<blockZ>".
-     */
-    private fun locationToKey(location: Location) =
-        "waystone:${location.world.name}:${location.blockX}:${location.blockY}:${location.blockZ}"
-
-    /**
-     * Converts a string key representation of a location into a `Location` object.
-     * The key is expected to be in the format "waystone:<world_name>:<x>:<y>:<z>".
-     * If the key is invalid or the world specified cannot be found, this method returns null.
-     *
-     * @param key The string key representing the location. It must follow the expected format with valid values.
-     * @return A `Location` object corresponding to the key, or null if the key is invalid or the world is not found.
-     */
-    private fun keyToLocation(key: String): Location? {
-        val parts = key.split(":")
-        if (parts.size != 5) return null
-        val world = Bukkit.getWorld(parts[1]) ?: return null
-        val x = parts[2].toIntOrNull() ?: return null
-        val y = parts[3].toIntOrNull() ?: return null
-        val z = parts[4].toIntOrNull() ?: return null
-        return Location(world, x.toDouble(), y.toDouble(), z.toDouble())
     }
 
-    override fun recipe(key: NamespacedKey, item: ItemStack): Recipe =
-        ShapedRecipe(key, item).apply {
+    override fun recipe(key: NamespacedKey, item: ItemStack): Recipe {
+        return ShapedRecipe(key, item).apply {
             shape("   ", "CBC", "AAA")
             setIngredient('A', Material.STONE_BRICKS)
             setIngredient('B', Material.ENDER_PEARL)
             setIngredient('C', Material.COMPASS)
         }
+    }
 
     //TODO: Optional, do we add that you have to discover waypoints manually first before being able to use them?
     override fun gui(): Inventory {

@@ -245,4 +245,30 @@ object Utils {
             else -> "<green>\uD83C\uDF24<reset>"
         }
     }
+
+    /**
+     * Charges the player the specified amount of XP
+     * @param player The player to charge
+     * @param amount The amount of XP to charge
+     */
+    fun chargePlayerXp(player: Player, amount: Int) {
+        var remainingXp = amount
+        val currentLevelXp = (player.exp * player.expToLevel).toInt()
+        if (currentLevelXp >= remainingXp) {
+            player.exp = (currentLevelXp - remainingXp) / player.expToLevel.toFloat()
+            return
+        }
+
+        remainingXp -= currentLevelXp
+        player.exp = 0f
+
+        while (remainingXp > 0 && player.level > 0) {
+            player.level--
+            if (player.expToLevel >= remainingXp) {
+                player.exp = (player.expToLevel - remainingXp) / player.expToLevel.toFloat()
+                break
+            }
+            remainingXp -= player.expToLevel
+        }
+    }
 }
