@@ -145,6 +145,14 @@ class WaystoneModule : ModuleInterface {
         if (originLoc != null && targetData.location == originLoc) { //TODO: instead hide the clicked waystone in the gui.
             return player.sendActionBar("You cannot teleport to the waystone you are at".fireFmt().mm())
         }
+
+        val xpCost = calculateXpCost(originLoc ?: player.location, targetData.location)
+        val playerTotalXp = player.level * 7 + player.exp.toInt()
+        if (playerTotalXp < xpCost) {
+            player.closeInventory()
+            return player.sendActionBar("You need $xpCost XP to teleport to this waystone".fireFmt().mm())
+        }
+
         player.closeInventory()
         player.sendActionBar("Teleporting...".mangoFmt().mm())
 
@@ -179,6 +187,7 @@ class WaystoneModule : ModuleInterface {
 
                 ticks++
                 if (ticks >= delayTicks) {
+                    chargePlayerXp(player, xpCost)
                     teleportEffects(player.location)
                     player.teleport(targetData.location)
                     teleportEffects(targetData.location)
@@ -196,12 +205,64 @@ class WaystoneModule : ModuleInterface {
         )
     }
 
+    /**
+     * Calculates the XP cost for teleportation based on distance and dimension
+     * @param origin The origin location
+     * @param destination The destination location
+     * @return The calculated XP cost
+     */
+    private fun calculateXpCost(origin: Location, destination: Location): Int {
+        var cost = baseXpCost
+        if (origin.world == destination.world) {
+            val distance = origin.distance(destination)
+            cost += (distance * distanceMultiplier).toInt()
+        } else {
+            cost += dimensionalMultiplier
+        }
+        return cost
+    }
+
+    /**
+     * Charges the player the specified amount of XP
+     * @param player The player to charge
+     * @param amount The amount of XP to charge
+     */
+    private fun chargePlayerXp(player: Player, amount: Int) {
+        var remainingXp = amount
+        val currentLevelXp = (player.exp * player.expToLevel).toInt()
+        if (currentLevelXp >= remainingXp) {
+            player.exp = (currentLevelXp - remainingXp) / player.expToLevel.toFloat()
+            return
+        }
+
+        remainingXp -= currentLevelXp
+        player.exp = 0f
+
+        while (remainingXp > 0 && player.level > 0) {
+            player.level--
+            if (player.expToLevel >= remainingXp) {
+                player.exp = (player.expToLevel - remainingXp) / player.expToLevel.toFloat()
+                break
+            }
+            remainingXp -= player.expToLevel
+        }
+    }
+
+    /**
+     * Creates visual and auditory effects at the specified location, simulating a teleportation event.
+     * @param location The location where the teleportation effects (particles and sound) will be generated.
+     */
     private fun teleportEffects(location: Location) {
         location.world?.spawnParticle(Particle.PORTAL, location, 60, 0.5, 1.0, 0.5, 0.2)
         location.world?.spawnParticle(Particle.END_ROD, location, 20, 0.2, 0.8, 0.2, 0.05)
         location.world?.playSound(location, Sound.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1.0f, 1.0f)
     }
 
+    /**
+     * Creates a waystone item with a custom name and custom model data.
+     * @param customName The custom name to set for the item.
+     * @return An ItemStack representing the waystone item with the specified customizations.
+     */
     private fun waystoneItem(customName: Component): ItemStack =
         ItemStack(Material.STONE_BRICKS).apply {
             itemMeta = itemMeta.apply {
@@ -210,14 +271,34 @@ class WaystoneModule : ModuleInterface {
             }
         }
 
+    /**
+     * Creates a navigation item for a GUI page, represented by an arrow item with a custom label.
+     * @param label The text to display as the item's name, which will be formatted using the `mm` extension function.
+     * @return An `ItemStack` representing the navigation item with the specified label.
+     */
     private fun pageNavItem(label: String): ItemStack =
         ItemStack(Material.ARROW).apply {
             itemMeta = itemMeta.apply { displayName(label.mm()) }
         }
 
+    /**
+     * Converts a given `Location` object into a unique string key representation.
+     * This key is composed of the world name and the block coordinates of the location.
+     * @param location The `Location` object to convert into a string key. This location
+     * must include the world, blockX, blockY, and blockZ data.
+     * @return A string key in the format "waystone:<world_name>:<blockX>:<blockY>:<blockZ>".
+     */
     private fun locationToKey(location: Location) =
         "waystone:${location.world.name}:${location.blockX}:${location.blockY}:${location.blockZ}"
 
+    /**
+     * Converts a string key representation of a location into a `Location` object.
+     * The key is expected to be in the format "waystone:<world_name>:<x>:<y>:<z>".
+     * If the key is invalid or the world specified cannot be found, this method returns null.
+     *
+     * @param key The string key representing the location. It must follow the expected format with valid values.
+     * @return A `Location` object corresponding to the key, or null if the key is invalid or the world is not found.
+     */
     private fun keyToLocation(key: String): Location? {
         val parts = key.split(":")
         if (parts.size != 5) return null
