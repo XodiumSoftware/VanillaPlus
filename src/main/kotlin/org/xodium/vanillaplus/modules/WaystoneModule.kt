@@ -227,18 +227,23 @@ class WaystoneModule : ModuleInterface {
             setIngredient('C', Material.COMPASS)
         }
 
-    //TODO: create also a back button.
-    //TODO: make sure that where the nav items are that whole row doesn't display waystones.
     //TODO: add teleportation xp cost. cost based on distance between waystones.
     //TODO: Optional, do we add that you have to discover waypoints manually first before being able to use them?
     override fun gui(): Inventory {
         val total = waystoneEntries.size
-        val size = ((total + 8) / 9).coerceIn(1, 6) * 9
+        val rows = ((total + 8) / 9).coerceIn(2, 6)
+        val size = rows * 9
         val inv = Bukkit.createInventory(null, size, guiTitle)
-        waystoneEntries.take(size).forEachIndexed { i, entry ->
+        val availableSlots = size - 9
+
+        waystoneEntries.take(availableSlots).forEachIndexed { i, entry ->
             inv.setItem(i, waystoneItem(entry.displayName))
         }
-        if (total > size) inv.setItem(size - 1, pageNavItem("Next Page"))
+
+        val bottomRowStart = size - 9
+        if (total > availableSlots) inv.setItem(size - 1, pageNavItem("Next Page"))
+
+        inv.setItem(bottomRowStart, pageNavItem("Previous Page"))
         return inv
     }
 }
