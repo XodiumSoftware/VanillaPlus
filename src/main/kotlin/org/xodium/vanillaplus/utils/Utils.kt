@@ -16,7 +16,8 @@ import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
-import org.xodium.vanillaplus.VanillaPlus
+import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.registries.EntityRegistry
 import org.xodium.vanillaplus.registries.MaterialRegistry
 import org.xodium.vanillaplus.utils.FmtUtils.mm
@@ -36,9 +37,9 @@ object Utils {
         try {
             action(ctx.source)
         } catch (e: Exception) {
-            VanillaPlus.Companion.instance.logger.severe("An Error has occurred: ${e.message}")
+            instance.logger.severe("An Error has occurred: ${e.message}")
             e.printStackTrace()
-            (ctx.source.sender as Player).sendMessage("${VanillaPlus.Companion.PREFIX}<red>An Error has occurred. Check server logs for details.".mm())
+            (ctx.source.sender as Player).sendMessage("${PREFIX}<red>An Error has occurred. Check server logs for details.".mm())
         }
         return Command.SINGLE_SUCCESS
     }
@@ -210,7 +211,7 @@ object Utils {
      * @return The tps of the server.
      */
     fun getTps(): String {
-        val tps = VanillaPlus.Companion.instance.server.tps[0]
+        val tps = instance.server.tps[0]
         val clampedTps = tps.coerceIn(0.0, 20.0)
         val ratio = clampedTps / 20.0
         val color = getColorForTps(ratio)
@@ -237,7 +238,7 @@ object Utils {
      * @return A formatted string representing the weather.
      */
     fun getWeather(): String {
-        val world = VanillaPlus.Companion.instance.server.worlds[0]
+        val world = instance.server.worlds[0]
         return when {
             world.isThundering -> "<red>\uD83C\uDF29<reset>"
             world.hasStorm() -> "<yellow>\uD83C\uDF26<reset>"
