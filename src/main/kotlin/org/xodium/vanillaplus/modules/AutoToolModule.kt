@@ -503,24 +503,24 @@ class AutoToolModule : ModuleInterface {
     /**
      * Moves the tool from the source slot to the destination slot in the player's inventory.
      * @param source The source slot.
-     * @param dest The destination slot.
+     * @param destination The destination slot.
      * @param playerInventory The player's inventory to modify.
      */
-    private fun moveToolToSlot(source: Int, dest: Int, playerInventory: PlayerInventory) {
-        playerInventory.heldItemSlot = dest
-        if (source == dest) return
+    private fun moveToolToSlot(source: Int, destination: Int, playerInventory: PlayerInventory) {
+        playerInventory.heldItemSlot = destination
+        if (source == destination) return
         val sourceItem = playerInventory.getItem(source)
-        val destItem = playerInventory.getItem(dest)
+        val destinationItem = playerInventory.getItem(destination)
         if (source < HOTBAR_SIZE) {
             playerInventory.heldItemSlot = source
             return
         }
-        if (destItem == null) {
-            playerInventory.setItem(dest, sourceItem)
+        if (destinationItem == null) {
+            playerInventory.setItem(destination, sourceItem)
             playerInventory.setItem(source, null)
         } else {
-            playerInventory.setItem(source, destItem)
-            playerInventory.setItem(dest, sourceItem)
+            playerInventory.setItem(source, destinationItem)
+            playerInventory.setItem(destination, sourceItem)
         }
     }
 

@@ -228,7 +228,7 @@ class WaystoneModule : ModuleInterface {
         }
 
     //TODO: create also a back button.
-    //TODO: make sure that where the nav items are that whole row doesnt display waystones.
+    //TODO: make sure that where the nav items are that whole row doesn't display waystones.
     //TODO: add teleportation xp cost. cost based on distance between waystones.
     //TODO: Optional, do we add that you have to discover waypoints manually first before being able to use them?
     override fun gui(): Inventory {

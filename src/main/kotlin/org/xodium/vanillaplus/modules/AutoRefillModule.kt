@@ -75,7 +75,7 @@ class AutoRefillModule : ModuleInterface {
     }
 
     /**
-     * Refills the player's main hand and off hand slots when they place a block
+     * Refills the player's main hand and offhand slots when they place a block
      * @param event the BlockPlaceEvent
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -85,7 +85,7 @@ class AutoRefillModule : ModuleInterface {
     }
 
     /**
-     * Handles the PlayerInteractEvent to refill the player's main hand and off hand slots
+     * Handles the PlayerInteractEvent to refill the player's main hand and offhand slots
      * @param event the PlayerInteractEvent
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -112,7 +112,7 @@ class AutoRefillModule : ModuleInterface {
     }
 
     /**
-     * Attempts to refill the player's main hand and off hand slots
+     * Attempts to refill the player's main hand and offhand slots
      * @param player the player to refill
      */
     private fun attemptRefill(player: Player) {
