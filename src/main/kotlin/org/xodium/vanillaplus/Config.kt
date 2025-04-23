@@ -403,6 +403,21 @@ object Config {
         var ENABLED: Boolean = true
 
         /**
+         * The material used for crafting waystones in the VanillaPlus plugin.
+         * Determines the visual and structural representation of waystones.
+         * This value can be configured to use different materials as desired.
+         */
+        var WAYSTONE_MATERIAL: Material = Material.STONE_BRICKS
+
+        /**
+         * Represents the custom model data value associated with Waystones in the VanillaPlus plugin.
+         *
+         * This variable is used to identify and manage the custom model data for Waystones.
+         * It is set to a default value of `1` and can be adjusted based on specific resource pack configurations or requirements.
+         */
+        var WAYSTONE_CUSTOM_MODEL_DATA: Int = 1
+
+        /**
          * Represents the configuration for a resource pack to be used in the application.
          * The resource pack includes a URI pointing to the resource pack file and a hash
          * used for validation or versioning purposes.

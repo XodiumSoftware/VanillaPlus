@@ -6,7 +6,6 @@
 package org.xodium.vanillaplus.modules
 
 import net.kyori.adventure.resource.ResourcePackRequest
-import net.kyori.adventure.text.Component
 import org.bukkit.*
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -17,27 +16,24 @@ import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerJoinEvent
-import org.bukkit.inventory.Inventory
-import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.Recipe
-import org.bukkit.inventory.ShapedRecipe
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Database
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.WaystoneData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
-import org.xodium.vanillaplus.utils.FmtUtils.fromGson
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mm
-import org.xodium.vanillaplus.utils.FmtUtils.toGson
 import org.xodium.vanillaplus.utils.TimeUtils.seconds
 import org.xodium.vanillaplus.utils.TimeUtils.ticks
 import org.xodium.vanillaplus.utils.Utils
 import java.util.*
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 //TODO: Optional, do we add that you have to discover waypoints manually first before being able to use them?
 //TODO: Add waystone custom texture.
+//TODO: Use PDC for WaystoneData. (in progress)
 
 /**
  * Represents a module handling waystone mechanics within the system.
@@ -50,35 +46,16 @@ import java.util.*
  * - Provides event handling for player interactions, block placements, and block breaking.
  * - Manages the GUI for interacting with waystones.
  */
+@OptIn(ExperimentalUuidApi::class)
 class WaystoneModule : ModuleInterface {
     override fun enabled(): Boolean = Config.WaystoneModule.ENABLED
 
-    private val recipeKey = NamespacedKey(instance, "waystone")
-    private var waystoneEntries: MutableList<WaystoneData> = mutableListOf()
-    private val guiTitle = "<b>Waystone Network".fireFmt().mm()
-    private val playerGuiOrigin = mutableMapOf<UUID, Location>()
+    private val waystones = mutableMapOf<Uuid, WaystoneData>()
 
     init {
         if (enabled()) {
             Database.createTable(this::class)
-            instance.server.addRecipe(recipe(recipeKey, waystoneItem("Waystone".mm())))
-            val allData = Database.getData(this::class)
-            val allKeys = if (allData is Map<*, *>) {
-                @Suppress("UNCHECKED_CAST")
-                allData as Map<String, String?>
-            } else emptyMap()
-            waystoneEntries = allKeys.mapNotNull { (key, value) ->
-                val loc = WaystoneData.deserialize(key) ?: return@mapNotNull null
-                val displayNameComponent = value?.let { jsonString ->
-                    try {
-                        jsonString.fromGson()
-                    } catch (e: Exception) {
-                        instance.logger.warning("Failed to parse Waystone display name JSON for key $key: ${e.message}. Using default.")
-                        "Waystone".mm()
-                    }
-                } ?: "Waystone".mm()
-                WaystoneData(loc, displayNameComponent)
-            }.toMutableList()
+            instance.server.addRecipe(WaystoneData.recipe(WaystoneData.item(""))))
         }
     }
 
@@ -95,11 +72,7 @@ class WaystoneModule : ModuleInterface {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: BlockPlaceEvent) {
         val itemMeta = event.itemInHand.itemMeta
-        if (itemMeta != null && itemMeta.hasCustomModelData() && itemMeta.customModelData == 1) {
-            val displayName = itemMeta.displayName() ?: "Waystone".mm()
-            waystoneEntries.add(WaystoneData(event.blockPlaced.location, displayName))
-            Database.setData(this::class, WaystoneData.serialize(event.blockPlaced.location), displayName.toGson())
-            event.player.sendActionBar("Waypoint has been created".fireFmt().mm())
+        if (itemMeta != null && itemMeta.hasCustomModelData() && itemMeta.customModelData == waystoneCustomModelData) {
         }
     }
 
@@ -190,7 +163,7 @@ class WaystoneModule : ModuleInterface {
                     teleportEffects(targetData.location)
                     player.sendActionBar(
                         "Teleported to ".fireFmt().mm()
-                            .append(targetData.displayName)
+                            .append(targetData.displayName.mm())
                             .append("!".fireFmt().mm())
                     )
                     playerGuiOrigin.remove(player.uniqueId)
@@ -210,72 +183,5 @@ class WaystoneModule : ModuleInterface {
         location.world?.spawnParticle(Particle.PORTAL, location, 60, 0.5, 1.0, 0.5, 0.2)
         location.world?.spawnParticle(Particle.END_ROD, location, 20, 0.2, 0.8, 0.2, 0.05)
         location.world?.playSound(location, Sound.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1.0f, 1.0f)
-    }
-
-    /**
-     * Creates a waystone item with customizable properties.
-     * @param customName The custom name to set for the item
-     * @param waystoneData Optional waystone data for setting location-based properties
-     * @param origin Optional origin location used to calculate teleportation cost
-     * @return An ItemStack representing the waystone with the specified customizations
-     */
-    private fun waystoneItem(
-        customName: Component,
-        waystoneData: WaystoneData? = null,
-        origin: Location? = null
-    ): ItemStack {
-        return ItemStack(Material.STONE_BRICKS).apply {
-            itemMeta = itemMeta.apply {
-                customName(customName)
-                setCustomModelData(1)
-                if (waystoneData != null && origin != null) {
-                    val cost = WaystoneData.calculateXpCost(origin, waystoneData.location)
-                    lore(listOf("<bold>Cost: $cost XP</bold>".mangoFmt().mm()))
-                }
-            }
-        }
-    }
-
-    /**
-     * Creates a navigation item for a GUI page, represented by an arrow item with a custom label.
-     * @param label The text to display as the item's name, which will be formatted using the `mm` extension function.
-     * @return An `ItemStack` representing the navigation item with the specified label.
-     */
-    private fun pageNavItem(label: String): ItemStack {
-        return ItemStack(Material.ARROW).apply {
-            itemMeta = itemMeta.apply { displayName(label.mm()) }
-        }
-    }
-
-    override fun recipe(key: NamespacedKey, item: ItemStack): Recipe {
-        return ShapedRecipe(key, item).apply {
-            shape("   ", "CBC", "AAA")
-            setIngredient('A', Material.STONE_BRICKS)
-            setIngredient('B', Material.ENDER_PEARL)
-            setIngredient('C', Material.COMPASS)
-        }
-    }
-
-    override fun gui(): Inventory {
-        val player = Bukkit.getPlayer(playerGuiOrigin.keys.first()) ?: return Bukkit.createInventory(null, 9, guiTitle)
-        val originLocation = playerGuiOrigin[player.uniqueId] ?: player.location
-
-        val filteredWaystones = waystoneEntries.filter { it.location != originLocation }
-
-        val total = filteredWaystones.size
-        val rows = ((total + 8) / 9).coerceIn(2, 6)
-        val size = rows * 9
-        val inv = Bukkit.createInventory(null, size, guiTitle)
-        val availableSlots = size - 9
-
-        filteredWaystones.take(availableSlots).forEachIndexed { i, entry ->
-            inv.setItem(i, waystoneItem(entry.displayName, entry, originLocation))
-        }
-
-        val bottomRowStart = size - 9
-        if (total > availableSlots) inv.setItem(size - 1, pageNavItem("Next Page"))
-
-        inv.setItem(bottomRowStart, pageNavItem("Previous Page"))
-        return inv
     }
 }

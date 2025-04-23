@@ -5,6 +5,8 @@
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.kyori/adventure-text-minimessage/4.20.0/ea52892bb6fbf6124661dc2bd6bd771b6761d07d/adventure-text-minimessage-4.20.0.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.kyori/adventure-text-minimessage/4.20.0/bf4f49b32b5299d7edab9448bed394b18a6d9456/adventure-text-minimessage-4.20.0-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>
