@@ -34,6 +34,7 @@ import kotlin.uuid.Uuid
 //TODO: Optional, do we add that you have to discover waypoints manually first before being able to use them?
 //TODO: Add waystone custom texture.
 //TODO: Use PDC for WaystoneData. (in progress)
+//TODO: Use library for GUI.
 
 /**
  * Represents a module handling waystone mechanics within the system.
@@ -180,8 +181,10 @@ class WaystoneModule : ModuleInterface {
      * @param location The location where the teleportation effects (particles and sound) will be generated.
      */
     private fun teleportEffects(location: Location) {
-        location.world?.spawnParticle(Particle.PORTAL, location, 60, 0.5, 1.0, 0.5, 0.2)
-        location.world?.spawnParticle(Particle.END_ROD, location, 20, 0.2, 0.8, 0.2, 0.05)
-        location.world?.playSound(location, Sound.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1.0f, 1.0f)
+        location.world.spawnParticle(Particle.PORTAL, location, 60, 0.5, 1.0, 0.5, 0.2)
+        location.world.spawnParticle(Particle.END_ROD, location, 20, 0.2, 0.8, 0.2, 0.05)
+        location.world.playSound(location, Sound.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1.0f, 1.0f)
     }
+
+    private fun gui(): Unit = TODO()
 }
