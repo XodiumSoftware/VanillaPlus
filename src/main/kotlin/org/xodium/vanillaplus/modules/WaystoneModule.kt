@@ -22,7 +22,6 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.WaystoneData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
-import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mm
 import org.xodium.vanillaplus.utils.TimeUtils.seconds
 import org.xodium.vanillaplus.utils.TimeUtils.ticks
@@ -56,7 +55,9 @@ class WaystoneModule : ModuleInterface {
     init {
         if (enabled()) {
             Database.createTable(this::class)
-            instance.server.addRecipe(WaystoneData.recipe(WaystoneData.item(""))))
+            Database.getData(TODO("get all data via a key?"))
+            waystones.set(TODO())
+            instance.server.addRecipe(WaystoneData.recipe(WaystoneData.item("")))
         }
     }
 
@@ -73,18 +74,21 @@ class WaystoneModule : ModuleInterface {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: BlockPlaceEvent) {
         val itemMeta = event.itemInHand.itemMeta
-        if (itemMeta != null && itemMeta.hasCustomModelData() && itemMeta.customModelData == waystoneCustomModelData) {
+        if (itemMeta != null && itemMeta.hasCustomModelData() && itemMeta.customModelData == Config.WaystoneModule.WAYSTONE_CUSTOM_MODEL_DATA) {
+            Database.setData(TODO())
+            waystones.set(TODO())
+            waystoneCreateEffect(block.location)
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: BlockBreakEvent) {
         val block = event.block
-        val idx = waystoneEntries.indexOfFirst { it.location == block.location }
+        val idx = waystones.indexOfFirst { it.location == block.location }
         if (block.type == Material.STONE_BRICKS && idx != -1) {
-            waystoneEntries.removeAt(idx)
-            Database.deleteData(this::class, WaystoneData.serialize(event.block.location))
-            event.player.sendActionBar("Waypoint has been deleted".fireFmt().mm())
+            waystones.removeAt(idx)
+            Database.deleteData(TODO())
+            waystoneDeleteEffect(block.location)
         }
     }
 
@@ -92,18 +96,15 @@ class WaystoneModule : ModuleInterface {
     fun on(event: PlayerInteractEvent) {
         if (event.action != Action.RIGHT_CLICK_BLOCK) return
         val block = event.clickedBlock ?: return
-        if (block.type == Material.STONE_BRICKS && waystoneEntries.any { it.location == block.location }) {
+        if (block.type == Material.STONE_BRICKS && waystones.any { it.location == block.location }) {
             event.isCancelled = true
-            val player = event.player
-            playerGuiOrigin[player.uniqueId] = block.location
-            player.openInventory(gui())
+            TODO()
         }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: InventoryClickEvent) {
         val player = event.whoClicked as? Player ?: return
-        if (event.view.title() != guiTitle) return
         event.isCancelled = true
         val slot = event.rawSlot
 
@@ -123,7 +124,6 @@ class WaystoneModule : ModuleInterface {
         }
 
         player.closeInventory()
-        player.sendActionBar("Teleporting...".mangoFmt().mm())
 
         val initialLocation = player.location.clone()
         val delayTicks = 3.seconds
@@ -143,32 +143,17 @@ class WaystoneModule : ModuleInterface {
                     return@runTaskTimer
                 }
 
-                player.world.spawnParticle(
-                    Particle.PORTAL,
-                    player.location.add(0.0, 1.0, 0.0),
-                    20,
-                    0.5,
-                    1.0,
-                    0.5,
-                    0.1
-                )
-                player.world.playSound(player.location, Sound.BLOCK_NOTE_BLOCK_HAT, 0.2f, 2.0f)
-
                 ticks++
                 if (ticks >= delayTicks) {
                     if (player.gameMode in listOf(GameMode.SURVIVAL, GameMode.ADVENTURE)) {
                         Utils.chargePlayerXp(player, xpCost)
                     }
-                    teleportEffects(player.location)
+                    teleportEffect(player.location)
                     player.teleport(targetData.location)
-                    teleportEffects(targetData.location)
-                    player.sendActionBar(
-                        "Teleported to ".fireFmt().mm()
-                            .append(targetData.displayName.mm())
-                            .append("!".fireFmt().mm())
-                    )
-                    playerGuiOrigin.remove(player.uniqueId)
+                    teleportEffect(targetData.location)
                     task.cancel()
+                } else {
+                    teleportInitEffect(player.location)
                 }
             },
             0.ticks,
@@ -177,13 +162,59 @@ class WaystoneModule : ModuleInterface {
     }
 
     /**
+     * Creates an initial visual and auditory effect at the specified location, simulating the start of a teleportation process.
+     *
+     * @param location The location where the teleportation initiation effects (particles and sound) will be generated.
+     */
+    private fun teleportInitEffect(location: Location) {
+        location.world.spawnParticle(Particle.PORTAL, location.add(0.0, 1.0, 0.0), 20, 0.5, 1.0, 0.5, 0.1)
+        location.world.playSound(location, Sound.BLOCK_NOTE_BLOCK_HAT, 0.2f, 2.0f)
+    }
+
+    /**
      * Creates visual and auditory effects at the specified location, simulating a teleportation event.
      * @param location The location where the teleportation effects (particles and sound) will be generated.
      */
-    private fun teleportEffects(location: Location) {
+    private fun teleportEffect(location: Location) {
         location.world.spawnParticle(Particle.PORTAL, location, 60, 0.5, 1.0, 0.5, 0.2)
         location.world.spawnParticle(Particle.END_ROD, location, 20, 0.2, 0.8, 0.2, 0.05)
         location.world.playSound(location, Sound.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1.0f, 1.0f)
+    }
+
+    /**
+     * Creates a visual and auditory effect at the specified location, simulating the activation of a waystone.
+     *
+     * @param location The location where the waystone activation effects (particles and sound) will be generated.
+     */
+    private fun waystoneCreateEffect(location: Location) {
+        val centerLoc = location.clone().add(0.5, 1.0, 0.5)
+        location.world.spawnParticle(Particle.END_ROD, centerLoc, 30, 0.3, 0.8, 0.3, 0.05)
+        location.world.spawnParticle(Particle.PORTAL, centerLoc, 40, 0.3, 0.5, 0.3, 0.1)
+        location.world.playSound(centerLoc, Sound.BLOCK_BEACON_ACTIVATE, SoundCategory.BLOCKS, 1.0f, 1.2f)
+        location.world.players.forEach { player ->
+            if (player.location.distance(centerLoc) <= 30) {
+                player.playSound(player.location, Sound.BLOCK_NOTE_BLOCK_CHIME, SoundCategory.PLAYERS, 0.5f, 1.0f)
+            }
+        }
+    }
+
+    /**
+     * Creates visual and auditory effects at the specified location, simulating the deletion of a waystone.
+     *
+     * @param location The location where the waystone deletion effects (particles and sound) will be generated.
+     */
+    private fun waystoneDeleteEffect(location: Location) {
+        val centerLoc = location.clone().add(0.5, 1.0, 0.5)
+        location.world.spawnParticle(Particle.SMOKE, centerLoc, 50, 0.4, 0.8, 0.4, 0.05)
+        location.world.spawnParticle(Particle.EXPLOSION, centerLoc, 3, 0.2, 0.2, 0.2, 0.0)
+        location.world.spawnParticle(Particle.REVERSE_PORTAL, centerLoc, 30, 0.3, 0.5, 0.3, 0.05)
+        location.world.playSound(centerLoc, Sound.BLOCK_BEACON_DEACTIVATE, SoundCategory.BLOCKS, 1.0f, 0.8f)
+        location.world.playSound(centerLoc, Sound.BLOCK_GLASS_BREAK, SoundCategory.BLOCKS, 0.6f, 0.8f)
+        location.world.players.forEach { player ->
+            if (player.location.distance(centerLoc) <= 30) {
+                player.playSound(player.location, Sound.BLOCK_NOTE_BLOCK_BASS, SoundCategory.PLAYERS, 0.5f, 0.8f)
+            }
+        }
     }
 
     private fun gui(): Unit = TODO()
