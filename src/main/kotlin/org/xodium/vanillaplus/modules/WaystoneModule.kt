@@ -53,8 +53,9 @@ class WaystoneModule : ModuleInterface {
     init {
         if (enabled()) {
             Database.createTable(this::class)
-            val storedWaystones: List<WaystoneData> = Database.getData(this::class) ?: emptyList()
-            storedWaystones.forEach { waystone -> waystones[waystone.id] = waystone }
+            val storedWaystones =
+                (Database.getData(this::class) as? List<*>)?.filterIsInstance<WaystoneData>() ?: emptyList()
+            for (waystone in storedWaystones) waystones[waystone.id] = waystone
             instance.server.addRecipe(WaystoneData.recipe(WaystoneData.item("")))
         }
     }
@@ -77,7 +78,7 @@ class WaystoneModule : ModuleInterface {
                 customName = itemMeta.displayName().toString(),
                 location = event.block.location,
             )
-            Database.setData(this::class, waystone.id, waystone) //TODO
+            Database.setData(this::class, waystone.id, waystone)
             waystones[waystone.id] = waystone
             waystoneCreateEffect(event.block.location)
         }
@@ -88,7 +89,7 @@ class WaystoneModule : ModuleInterface {
         val waystones = this@WaystoneModule.waystones.entries.find { it.value.location == event.block.location }
         if (event.block.type == Material.STONE_BRICKS && waystones != null) {
             this@WaystoneModule.waystones.remove(waystones.key)
-            Database.deleteData(this::class, waystones.value.id) //TODO
+            Database.deleteData(this::class, waystones.value.id)
             waystoneDeleteEffect(event.block.location)
         }
 
@@ -219,5 +220,6 @@ class WaystoneModule : ModuleInterface {
         }
     }
 
+    @Suppress("unused")
     private fun gui(): Unit = TODO("Use library for GUI")
 }
