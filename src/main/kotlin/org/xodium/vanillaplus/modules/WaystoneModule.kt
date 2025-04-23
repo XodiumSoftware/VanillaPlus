@@ -74,11 +74,8 @@ class WaystoneModule : ModuleInterface {
     fun on(event: BlockPlaceEvent) {
         val itemMeta = event.itemInHand.itemMeta
         if (itemMeta != null && itemMeta.hasCustomModelData() && itemMeta.customModelData == Config.WaystoneModule.WAYSTONE_CUSTOM_MODEL_DATA) {
-            val waystone = WaystoneData(
-                customName = itemMeta.displayName().toString(),
-                location = event.block.location,
-            )
-            Database.setData(this::class, waystone.id, waystone)
+            val waystone = WaystoneData(customName = itemMeta.displayName().toString(), location = event.block.location)
+            Database.setData(this::class, waystone.id.toString(), waystone.toString())
             waystones[waystone.id] = waystone
             waystoneCreateEffect(event.block.location)
         }
@@ -89,7 +86,7 @@ class WaystoneModule : ModuleInterface {
         val waystones = this@WaystoneModule.waystones.entries.find { it.value.location == event.block.location }
         if (event.block.type == Material.STONE_BRICKS && waystones != null) {
             this@WaystoneModule.waystones.remove(waystones.key)
-            Database.deleteData(this::class, waystones.value.id)
+            Database.deleteData(this::class, waystones.value.id.toString())
             waystoneDeleteEffect(event.block.location)
         }
 
@@ -99,7 +96,7 @@ class WaystoneModule : ModuleInterface {
     fun on(event: PlayerInteractEvent) {
         if (event.action != Action.RIGHT_CLICK_BLOCK) return
         val block = event.clickedBlock ?: return
-        if (block.type == Material.STONE_BRICKS && waystones.any { it.location == block.location }) {
+        if (block.type == Material.STONE_BRICKS && waystones.any { it.value.location == block.location }) {
             event.isCancelled = true
             TODO()
         }
