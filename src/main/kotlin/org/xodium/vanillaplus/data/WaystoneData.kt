@@ -11,7 +11,6 @@ import org.bukkit.NamespacedKey
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.Recipe
 import org.bukkit.inventory.ShapedRecipe
-import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
@@ -20,20 +19,21 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 /**
- * Represents data related to a waystone in a Minecraft world, encapsulating information such as
- * identifier, display name, dimension, and physical location.
+ * Represents data for a Waystone, a teleportation system with custom properties.
  *
- * This data class provides the structure necessary to uniquely identify and interact with
- * waystones within the game. It supports operations like calculating the cost of teleportation
- * between two locations.
+ * This class encapsulates the unique identifier, custom name, and location of
+ * a Waystone in a Minecraft world. Waystones can be used for fast travel
+ * between specified points in the world.
  *
- * @property id A unique identifier (UUID) associated with the waystone.
- * @property customName The custom name of the waystone, which can be shown to players.
- * @property location The physical location of the waystone within the world.
+ * @property id The unique identifier for the Waystone, represented as a `NamespacedKey`.
+ *              It is generated using a predefined namespace and static instance.
+ * @property customName The custom display name of the Waystone, defaulting to "Waystone".
+ * @property location The location of the Waystone, represented as a `Location` object
+ *                    which encapsulates the world and coordinates.
  */
 @OptIn(ExperimentalUuidApi::class)
 data class WaystoneData(
-    val id: Uuid = Uuid.random(),
+    val id: NamespacedKey = NamespacedKey(instance, "${NS}_${Uuid.random()}"),
     val customName: String = "Waystone",
     val location: Location,
 ) {
@@ -54,34 +54,6 @@ data class WaystoneData(
          */
         fun item(customName: String, origin: WaystoneData? = null, destination: WaystoneData? = null): ItemStack {
             return ItemStack(Config.WaystoneModule.WAYSTONE_MATERIAL).apply {
-                editPersistentDataContainer {
-                    if (origin != null) {
-                        it.set(
-                            NamespacedKey(instance, NS + "_id"),
-                            PersistentDataType.STRING, origin.id.toString()
-                        )
-                        it.set(
-                            NamespacedKey(instance, NS + "_name"),
-                            PersistentDataType.STRING, origin.customName
-                        )
-                        it.set(
-                            NamespacedKey(instance, NS + "_dimension"),
-                            PersistentDataType.STRING, origin.location.world.name
-                        )
-                        it.set(
-                            NamespacedKey(instance, NS + "_x"),
-                            PersistentDataType.DOUBLE, origin.location.x
-                        )
-                        it.set(
-                            NamespacedKey(instance, NS + "_y"),
-                            PersistentDataType.DOUBLE, origin.location.y
-                        )
-                        it.set(
-                            NamespacedKey(instance, NS + "_z"),
-                            PersistentDataType.DOUBLE, origin.location.z
-                        )
-                    }
-                }
                 itemMeta = itemMeta.apply {
                     customName(customName.mm())
                     setCustomModelData(Config.WaystoneModule.WAYSTONE_CUSTOM_MODEL_DATA)

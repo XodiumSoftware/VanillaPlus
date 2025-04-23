@@ -28,10 +28,10 @@ import org.xodium.vanillaplus.utils.TimeUtils.ticks
 import org.xodium.vanillaplus.utils.Utils
 import java.util.*
 import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 //TODO: Optional, do we add that you have to discover waypoints manually first before being able to use them?
 //TODO: Add waystone custom texture.
+//TODO: Check if the Database can handle serialization/deserialization of NamespacedKey.
 
 /**
  * Represents a module handling waystone mechanics within the system.
@@ -48,14 +48,15 @@ import kotlin.uuid.Uuid
 class WaystoneModule : ModuleInterface {
     override fun enabled(): Boolean = Config.WaystoneModule.ENABLED
 
-    private val waystones = mutableMapOf<Uuid, WaystoneData>()
+    private val waystones = mutableMapOf<NamespacedKey, WaystoneData>()
+    private val originWaystone = mutableMapOf<UUID, Location>()
 
     init {
         if (enabled()) {
             Database.createTable(this::class)
-            val storedWaystones =
+            val waystones =
                 (Database.getData(this::class) as? List<*>)?.filterIsInstance<WaystoneData>() ?: emptyList()
-            for (waystone in storedWaystones) waystones[waystone.id] = waystone
+            for (waystone in waystones) this@WaystoneModule.waystones[waystone.id] = waystone
             instance.server.addRecipe(WaystoneData.recipe(WaystoneData.item("")))
         }
     }
@@ -98,7 +99,8 @@ class WaystoneModule : ModuleInterface {
         val block = event.clickedBlock ?: return
         if (block.type == Material.STONE_BRICKS && waystones.any { it.value.location == block.location }) {
             event.isCancelled = true
-            TODO()
+            originWaystone[event.player.uniqueId] = block.location
+            TODO("open gui")
         }
     }
 
@@ -108,8 +110,8 @@ class WaystoneModule : ModuleInterface {
         event.isCancelled = true
         val slot = event.rawSlot
 
-        val originLoc = playerGuiOrigin[player.uniqueId]
-        val filteredWaystones = waystoneEntries.filter { it.location != originLoc }
+        val originLoc = originWaystone[player.uniqueId]
+        val filteredWaystones = waystones.values.filter { it.location != originLoc }.toList()
 
         if (slot !in filteredWaystones.indices) return
         val targetData = filteredWaystones[slot]
