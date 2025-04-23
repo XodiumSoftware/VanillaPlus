@@ -36,8 +36,8 @@ import org.xodium.vanillaplus.utils.TimeUtils.ticks
 import org.xodium.vanillaplus.utils.Utils
 import java.util.*
 
-//TODO: instead hide the clicked waystone in the gui.
 //TODO: Optional, do we add that you have to discover waypoints manually first before being able to use them?
+//TODO: Add waystone custom texture.
 
 /**
  * Represents a module handling waystone mechanics within the system.
@@ -132,12 +132,12 @@ class WaystoneModule : ModuleInterface {
         if (event.view.title() != guiTitle) return
         event.isCancelled = true
         val slot = event.rawSlot
-        if (slot !in waystoneEntries.indices) return
-        val targetData = waystoneEntries[slot]
+
         val originLoc = playerGuiOrigin[player.uniqueId]
-        if (originLoc != null && targetData.location == originLoc) {
-            return player.sendActionBar("You cannot teleport to the waystone you are at".fireFmt().mm())
-        }
+        val filteredWaystones = waystoneEntries.filter { it.location != originLoc }
+
+        if (slot !in filteredWaystones.indices) return
+        val targetData = filteredWaystones[slot]
 
         val xpCost = WaystoneData.calculateXpCost(originLoc ?: player.location, targetData.location)
         if (player.gameMode in listOf(GameMode.SURVIVAL, GameMode.ADVENTURE)) {
@@ -257,17 +257,19 @@ class WaystoneModule : ModuleInterface {
     }
 
     override fun gui(): Inventory {
-        val total = waystoneEntries.size
+        val player = Bukkit.getPlayer(playerGuiOrigin.keys.first()) ?: return Bukkit.createInventory(null, 9, guiTitle)
+        val originLocation = playerGuiOrigin[player.uniqueId] ?: player.location
+
+        val filteredWaystones = waystoneEntries.filter { it.location != originLocation }
+
+        val total = filteredWaystones.size
         val rows = ((total + 8) / 9).coerceIn(2, 6)
         val size = rows * 9
         val inv = Bukkit.createInventory(null, size, guiTitle)
         val availableSlots = size - 9
 
-        val player = Bukkit.getPlayer(playerGuiOrigin.keys.first()) ?: return inv
-        val originLocation = playerGuiOrigin[player.uniqueId] ?: player.location
-
-        waystoneEntries.take(availableSlots).forEachIndexed { i, entry ->
-            inv.setItem(i, waystoneItem(entry.displayName, origin = originLocation))
+        filteredWaystones.take(availableSlots).forEachIndexed { i, entry ->
+            inv.setItem(i, waystoneItem(entry.displayName, entry, originLocation))
         }
 
         val bottomRowStart = size - 9
