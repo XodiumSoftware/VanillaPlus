@@ -32,8 +32,6 @@ import kotlin.uuid.Uuid
 
 //TODO: Optional, do we add that you have to discover waypoints manually first before being able to use them?
 //TODO: Add waystone custom texture.
-//TODO: Use PDC for WaystoneData. (in progress)
-//TODO: Use library for GUI.
 
 /**
  * Represents a module handling waystone mechanics within the system.
@@ -55,8 +53,8 @@ class WaystoneModule : ModuleInterface {
     init {
         if (enabled()) {
             Database.createTable(this::class)
-            Database.getData(TODO("get all data via a key?"))
-            waystones.set(TODO())
+            val storedWaystones: List<WaystoneData> = Database.getData(this::class) ?: emptyList()
+            storedWaystones.forEach { waystone -> waystones[waystone.id] = waystone }
             instance.server.addRecipe(WaystoneData.recipe(WaystoneData.item("")))
         }
     }
@@ -75,21 +73,25 @@ class WaystoneModule : ModuleInterface {
     fun on(event: BlockPlaceEvent) {
         val itemMeta = event.itemInHand.itemMeta
         if (itemMeta != null && itemMeta.hasCustomModelData() && itemMeta.customModelData == Config.WaystoneModule.WAYSTONE_CUSTOM_MODEL_DATA) {
-            Database.setData(TODO())
-            waystones.set(TODO())
-            waystoneCreateEffect(block.location)
+            val waystone = WaystoneData(
+                customName = itemMeta.displayName().toString(),
+                location = event.block.location,
+            )
+            Database.setData(this::class, waystone.id, waystone) //TODO
+            waystones[waystone.id] = waystone
+            waystoneCreateEffect(event.block.location)
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: BlockBreakEvent) {
-        val block = event.block
-        val idx = waystones.indexOfFirst { it.location == block.location }
-        if (block.type == Material.STONE_BRICKS && idx != -1) {
-            waystones.removeAt(idx)
-            Database.deleteData(TODO())
-            waystoneDeleteEffect(block.location)
+        val waystones = this@WaystoneModule.waystones.entries.find { it.value.location == event.block.location }
+        if (event.block.type == Material.STONE_BRICKS && waystones != null) {
+            this@WaystoneModule.waystones.remove(waystones.key)
+            Database.deleteData(this::class, waystones.value.id) //TODO
+            waystoneDeleteEffect(event.block.location)
         }
+
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -217,5 +219,5 @@ class WaystoneModule : ModuleInterface {
         }
     }
 
-    private fun gui(): Unit = TODO()
+    private fun gui(): Unit = TODO("Use library for GUI")
 }
