@@ -36,7 +36,6 @@ import org.xodium.vanillaplus.utils.TimeUtils.ticks
 import org.xodium.vanillaplus.utils.Utils
 import java.util.*
 
-//TODO: check if we can avoid waystoneItem twice.
 //TODO: instead hide the clicked waystone in the gui.
 //TODO: Optional, do we add that you have to discover waypoints manually first before being able to use them?
 
@@ -214,34 +213,25 @@ class WaystoneModule : ModuleInterface {
     }
 
     /**
-     * Creates a waystone item with a custom name and lore showing teleportation cost.
-     * @param waystoneData The waystone data containing location and display name
-     * @param origin The origin location used to calculate teleportation cost
-     * @return An ItemStack representing the waystone with name and cost in lore
+     * Creates a waystone item with customizable properties.
+     * @param customName The custom name to set for the item
+     * @param waystoneData Optional waystone data for setting location-based properties
+     * @param origin Optional origin location used to calculate teleportation cost
+     * @return An ItemStack representing the waystone with the specified customizations
      */
     private fun waystoneItem(
-        waystoneData: WaystoneData, origin: Location
+        customName: Component,
+        waystoneData: WaystoneData? = null,
+        origin: Location? = null
     ): ItemStack {
-        return ItemStack(Material.STONE_BRICKS).apply {
-            itemMeta = itemMeta.apply {
-                customName(waystoneData.displayName)
-                setCustomModelData(1)
-                val cost = WaystoneData.calculateXpCost(origin, waystoneData.location)
-                lore(listOf("<bold>Cost: $cost XP</bold>".mangoFmt().mm()))
-            }
-        }
-    }
-
-    /**
-     * Creates a waystone item with just a custom name (for crafting/placing)
-     * @param customName The custom name to set for the item
-     * @return An ItemStack representing the waystone item with the specified customizations
-     */
-    private fun waystoneItem(customName: Component): ItemStack {
         return ItemStack(Material.STONE_BRICKS).apply {
             itemMeta = itemMeta.apply {
                 customName(customName)
                 setCustomModelData(1)
+                if (waystoneData != null && origin != null) {
+                    val cost = WaystoneData.calculateXpCost(origin, waystoneData.location)
+                    lore(listOf("<bold>Cost: $cost XP</bold>".mangoFmt().mm()))
+                }
             }
         }
     }
@@ -277,7 +267,7 @@ class WaystoneModule : ModuleInterface {
         val originLocation = playerGuiOrigin[player.uniqueId] ?: player.location
 
         waystoneEntries.take(availableSlots).forEachIndexed { i, entry ->
-            inv.setItem(i, waystoneItem(entry, originLocation))
+            inv.setItem(i, waystoneItem(entry.displayName, origin = originLocation))
         }
 
         val bottomRowStart = size - 9
