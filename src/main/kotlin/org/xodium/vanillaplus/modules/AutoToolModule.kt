@@ -27,14 +27,11 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.PlayerInventory
 import org.bukkit.inventory.meta.Damageable
 import org.xodium.vanillaplus.Config
-import org.xodium.vanillaplus.Database
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.data.BlockTypeData
 import org.xodium.vanillaplus.enums.ToolEnum
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.registries.MaterialRegistry
-import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
-import org.xodium.vanillaplus.utils.FmtUtils.mm
 import org.xodium.vanillaplus.utils.Utils
 import java.util.*
 import java.util.function.ToIntFunction
@@ -56,7 +53,7 @@ class AutoToolModule : ModuleInterface {
     override fun cmd(): LiteralArgumentBuilder<CommandSourceStack> {
         return Commands.literal("autotool")
             .requires { it.sender.hasPermission(Perms.AutoTool.USE) }
-            .executes { it -> Utils.tryCatch(it) { toggle(it.sender as Player) } }
+//            .executes { it -> Utils.tryCatch(it) { toggle(it.sender as Player) } }
     }
 
     private val toolMap: MutableMap<Material, ToolEnum> = HashMap()
@@ -68,9 +65,9 @@ class AutoToolModule : ModuleInterface {
     }
 
     init {
-        if (enabled()) {
-            Database.createTable(this::class)
-        }
+//        if (enabled()) {
+////            Database.createTable(this::class)
+//        }
         tagToMap(Tag.MINEABLE_AXE, ToolEnum.AXE)
         tagToMap(Tag.MINEABLE_HOE, ToolEnum.HOE)
         tagToMap(Tag.MINEABLE_PICKAXE, ToolEnum.PICKAXE)
@@ -89,7 +86,7 @@ class AutoToolModule : ModuleInterface {
         if (damager !is Player) return
         val player = damager
         if (!player.hasPermission(Perms.AutoTool.USE)) return
-        if (!isEnabledForPlayer(player)) return
+//        if (!isEnabledForPlayer(player)) return
         val entity = event.getEntity()
         if (!(entity is Monster && Config.AutoToolModule.USE_SWORD_ON_HOSTILE_MOBS)) return
         val bestRoscoe = getBestRoscoeFromInventory(entity.type, player, Config.AutoToolModule.USE_AXE_AS_SWORD)
@@ -118,7 +115,7 @@ class AutoToolModule : ModuleInterface {
         val playerCache = getPlayerCache(player)
         if (playerCache.valid && event.clickedBlock != null && event.clickedBlock!!.type == playerCache.lastMat) return
         if (!player.hasPermission(Perms.AutoTool.USE)) return
-        if (!isEnabledForPlayer(player)) return
+//        if (!isEnabledForPlayer(player)) return
         val block = event.clickedBlock
         if (block == null) return
         if (block.type == Material.AIR) return
@@ -567,23 +564,23 @@ class AutoToolModule : ModuleInterface {
         }
     }
 
-    /**
-     * Checks if the AutoTool is enabled for the player.
-     * @param player The player to check.
-     * @return true if enabled (default), false if explicitly disabled
-     */
-    private fun isEnabledForPlayer(player: Player): Boolean =
-        Database.getData(this::class, player.uniqueId.toString()) != "false"
-
-    /**
-     * Toggles the AutoTool setting for the player.
-     *
-     * @param player The player to toggle.
-     */
-    private fun toggle(player: Player) {
-        val currentValue = isEnabledForPlayer(player)
-        val newValue = (!currentValue).toString()
-        Database.setData(this::class, player.uniqueId.toString(), newValue)
-        player.sendActionBar(("${"AutoTool:".fireFmt()} ${if (!currentValue) "<green>ON" else "<red>OFF"}").mm())
-    }
+//    /**
+//     * Checks if the AutoTool is enabled for the player.
+//     * @param player The player to check.
+//     * @return true if enabled (default), false if explicitly disabled
+//     */
+//    private fun isEnabledForPlayer(player: Player): Boolean =
+//        Database.getData(this::class, player.uniqueId.toString()) != "false"
+//
+//    /**
+//     * Toggles the AutoTool setting for the player.
+//     *
+//     * @param player The player to toggle.
+//     */
+//    private fun toggle(player: Player) {
+//        val currentValue = isEnabledForPlayer(player)
+//        val newValue = (!currentValue).toString()
+//        Database.setData(this::class, player.uniqueId.toString(), newValue)
+//        player.sendActionBar(("${"AutoTool:".fireFmt()} ${if (!currentValue) "<green>ON" else "<red>OFF"}").mm())
+//    }
 }
