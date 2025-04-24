@@ -7,8 +7,6 @@ package org.xodium.vanillaplus.data
 
 import org.xodium.vanillaplus.Database
 
-//TODO: check toggling of autorefill and autotool, testing concluded that toggling one on changes the status of the other,
-
 /**
  * Represents player-specific configuration data.
  * @property id A unique identifier for the player.

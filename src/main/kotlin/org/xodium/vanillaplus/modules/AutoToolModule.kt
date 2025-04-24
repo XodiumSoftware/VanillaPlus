@@ -577,12 +577,24 @@ class AutoToolModule : ModuleInterface {
     }
 
     /**
+     * Retrieves the PlayerData object for the given player.
+     * @param player The player to check.
+     * @return The PlayerData object, or a default object with both fields set to true if not found.
+     */
+    private fun getPlayerData(player: Player): PlayerData {
+        return PlayerData.getData().firstOrNull { it.id == player.uniqueId.toString() }
+            ?: PlayerData(id = player.uniqueId.toString(), autorefill = true, autotool = true)
+    }
+
+    /**
      * Toggles the AutoTool setting for the player.
      *
      * @param player The player to toggle.
      */
     private fun toggle(player: Player) {
-        PlayerData.setData(PlayerData(id = player.uniqueId.toString(), autotool = !isEnabledForPlayer(player)))
+        val playerData = getPlayerData(player)
+        val updatedData = playerData.copy(autotool = !(playerData.autotool ?: false))
+        PlayerData.setData(updatedData)
         player.sendActionBar(("${"AutoTool:".fireFmt()} ${if (isEnabledForPlayer(player)) "<green>ON" else "<red>OFF"}").mm())
     }
 }
