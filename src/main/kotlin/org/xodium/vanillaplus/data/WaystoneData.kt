@@ -17,16 +17,11 @@ import org.xodium.vanillaplus.Database
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mm
-import kotlin.reflect.KClass
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 /**
  * Represents metadata related to a Waystone in the Minecraft world.
- *
- * This data class encapsulates essential properties such as the unique identifier (ID),
- * a custom name for the Waystone, and the location data where the Waystone exists.
- *
  * @property id A unique identifier for the Waystone, prefixed with a namespace (NS) and followed by a random UUID.
  * @property customName The customizable name of the Waystone, defaulting to "Waystone".
  * @property location The location of the Waystone, stored as `LocationData`.
@@ -38,29 +33,40 @@ data class WaystoneData(
     val location: Location,
 ) {
     companion object {
-        private const val NS = "waystone"
+        /**
+         * Namespace identifier for features and configurations related to waystones.
+         */
+        private const val NS = "waystone" //TODO: is this needed?
 
-        fun createTable(table: KClass<*>) {
+        /**
+         * Creates a table in the database for the specified class if it does not already exist.
+         */
+        fun createTable() {
             Database.exec(
                 //language=SQLite
                 """
-                CREATE TABLE IF NOT EXISTS ${table.simpleName} (
+                CREATE TABLE IF NOT EXISTS ${this::class.simpleName} (
                     id TEXT PRIMARY KEY,
                     custom_name TEXT NOT NULL,
                     world TEXT NOT NULL, 
                     x REAL NOT NULL, 
                     y REAL NOT NULL, 
-                    z REAL NOT NULL
-                );
+                    z REAL NOT NULL);
                 """.trimIndent()
             )
         }
 
-        fun setData(table: KClass<*>, waystone: WaystoneData) {
+        /**
+         * Inserts or updates a record in the database table corresponding to the given class,
+         * using the data provided in the WaystoneData object.
+         * @param waystone The WaystoneData object containing information to be stored in the database.
+         *                 It includes the ID, custom name, world, and coordinates (x, y, z) of the waystone.
+         */
+        fun setData(waystone: WaystoneData) {
             //language=SQLite
             Database.exec(
                 """
-                INSERT OR REPLACE INTO ${table.simpleName} (id, custom_name, world, x, y, z)
+                INSERT OR REPLACE INTO ${this::class.simpleName} (id, custom_name, world, x, y, z)
                 VALUES (?, ?, ?, ?, ?, ?);
                 """.trimIndent(),
                 waystone.id,
@@ -72,20 +78,24 @@ data class WaystoneData(
             )
         }
 
-        fun getData(table: KClass<*>): List<WaystoneData> {
+        /**
+         * Retrieves a list of `WaystoneData` objects from the specified database table.
+         * @return a list of `WaystoneData` objects containing the extracted data.
+         */
+        fun getData(): List<WaystoneData> {
             //language=SQLite
             val sql = """
                 SELECT id, custom_name, world, x, y, z
-                FROM ${table.simpleName};
+                FROM ${this::class.simpleName};
             """.trimIndent()
             return Database.query(sql) { resultSet ->
                 val results = mutableListOf<WaystoneData>()
                 while (resultSet.next()) {
                     results.add(
                         WaystoneData(
-                            id = resultSet.getString("id"),
-                            customName = resultSet.getString("custom_name"),
-                            location = Location(
+                            resultSet.getString("id"),
+                            resultSet.getString("custom_name"),
+                            Location(
                                 Bukkit.getWorld(resultSet.getString("world")),
                                 resultSet.getDouble("x"),
                                 resultSet.getDouble("y"),
@@ -98,11 +108,15 @@ data class WaystoneData(
             }
         }
 
-        fun deleteData(table: KClass<*>, id: String) {
+        /**
+         * Deletes data from a specified table based on the given ID.
+         * @param id The unique identifier of the record to be deleted.
+         */
+        fun deleteData(id: String) {
             //language=SQLite
             Database.exec(
                 """
-                DELETE FROM ${table.simpleName}
+                DELETE FROM ${this::class.simpleName}
                 WHERE id = ?;
                 """.trimIndent(), id
             )
@@ -111,11 +125,6 @@ data class WaystoneData(
 
         /**
          * Creates an ItemStack representing a Waystone with specific properties.
-         *
-         * This method generates a custom item with the given name, an optional origin, and
-         * an optional destination. If both origin and destination are provided, the item
-         * includes a lore line displaying the XP cost of traveling between the two locations.
-         *
          * @param customName The custom name to set for the item.
          * @param origin The optional origin WaystoneData, representing the starting point.
          * @param destination The optional destination WaystoneData, representing the endpoint.
@@ -140,17 +149,6 @@ data class WaystoneData(
 
         /**
          * Creates a custom shaped crafting recipe for the given item.
-         *
-         * The recipe is defined with the following shape:
-         * - Row 1: "   " (empty row)
-         * - Row 2: "CBC" (middle row with an Ender Pearl in the center and a Compass on each side)
-         * - Row 3: "AAA" (bottom row filled with Stone Bricks)
-         *
-         * Uses specific ingredients to shape the recipe:
-         * - 'A' corresponds to Stone Bricks.
-         * - 'B' corresponds to an Ender Pearl.
-         * - 'C' corresponds to a Compass.
-         *
          * @param item The resulting item of the crafting recipe.
          * @return A custom `ShapedRecipe` for the provided item using the defined shape and ingredients.
          */

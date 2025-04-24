@@ -58,8 +58,8 @@ object Database {
      */
     fun <T> query(sql: String, handler: (java.sql.ResultSet) -> T): T {
         conn.createStatement().use { stmt ->
-            stmt.executeQuery(sql).use { result ->
-                return handler(result)
+            stmt.executeQuery(sql).use { resultSet ->
+                return handler(resultSet)
             }
         }
     }

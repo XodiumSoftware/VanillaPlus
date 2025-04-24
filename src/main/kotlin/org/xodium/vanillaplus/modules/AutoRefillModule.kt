@@ -21,8 +21,12 @@ import org.bukkit.inventory.PlayerInventory
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.data.PlayerData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
+import org.xodium.vanillaplus.utils.FmtUtils.mm
 import org.xodium.vanillaplus.utils.TimeUtils.minutes
+import org.xodium.vanillaplus.utils.Utils
 import org.xodium.vanillaplus.utils.Utils.moveBowlsAndBottles
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -40,7 +44,7 @@ class AutoRefillModule : ModuleInterface {
     override fun cmd(): LiteralArgumentBuilder<CommandSourceStack> {
         return Commands.literal("autorefill")
             .requires { it.sender.hasPermission(Perms.AutoRefill.USE) }
-//            .executes { it -> Utils.tryCatch(it) { toggle(it.sender as Player) } }
+            .executes { it -> Utils.tryCatch(it) { toggle(it.sender as Player) } }
     }
 
     private val cooldowns = ConcurrentHashMap<UUID, Long>()
@@ -49,7 +53,7 @@ class AutoRefillModule : ModuleInterface {
 
     init {
         if (enabled()) {
-//            Database.createTable(this::class)
+            PlayerData.createTable()
             instance.server.scheduler.runTaskTimer(
                 instance,
                 Runnable { cooldowns.entries.removeIf { System.currentTimeMillis() - it.value > cooldownMs * 2 } },
@@ -97,7 +101,7 @@ class AutoRefillModule : ModuleInterface {
      */
     private fun canAttemptRefill(player: Player): Boolean {
         if (!player.hasPermission(Perms.AutoRefill.USE)) return false
-//        if (!isEnabledForPlayer(player)) return false
+        if (!isEnabledForPlayer(player)) return false
 
         val now = System.currentTimeMillis()
         val lastAttempt = cooldowns.getOrDefault(player.uniqueId, 0L)
@@ -190,23 +194,22 @@ class AutoRefillModule : ModuleInterface {
         })
     }
 
-//    /**
-//     * Checks if AutoRefill is enabled for the given player
-//     * @param player the player to check
-//     * @return true if enabled (default), false if explicitly disabled
-//     */
-//    private fun isEnabledForPlayer(player: Player): Boolean =
-//        Database.getData(this::class, player.uniqueId.toString()) != "false"
+    /**
+     * Checks if AutoRefill is enabled for the given player
+     * @param player the player to check
+     * @return true if enabled (default), false if explicitly disabled
+     */
+    private fun isEnabledForPlayer(player: Player): Boolean {
+        return PlayerData.getData().firstOrNull { it.id == player.uniqueId.toString() }?.autorefill ?: true
+    }
 
-//    /**
-//     * Toggles AutoRefill for the given player
-//     * @param player the player to toggle
-//     */
-//    private fun toggle(player: Player) {
-//        val currentValue = isEnabledForPlayer(player)
-//        val newValue = (!currentValue).toString()
-//        Database.setData(this::class, player.uniqueId.toString(), newValue)
-//        cooldowns.remove(player.uniqueId)
-//        player.sendActionBar(("${"AutoRefill:".fireFmt()} ${if (!currentValue) "<green>ON" else "<red>OFF"}").mm())
-//    }
+    /**
+     * Toggles AutoRefill for the given player
+     * @param player the player to toggle
+     */
+    private fun toggle(player: Player) {
+        PlayerData.setData(PlayerData(id = player.uniqueId.toString(), autorefill = !isEnabledForPlayer(player)))
+        cooldowns.remove(player.uniqueId)
+        player.sendActionBar(("${"AutoRefill:".fireFmt()} ${if (!isEnabledForPlayer(player)) "<green>ON" else "<red>OFF"}").mm())
+    }
 }

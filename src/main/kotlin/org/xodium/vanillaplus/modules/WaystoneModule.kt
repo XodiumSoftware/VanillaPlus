@@ -52,8 +52,8 @@ class WaystoneModule : ModuleInterface {
 
     init {
         if (enabled()) {
-            WaystoneData.createTable(this::class)
-            waystones.addAll(WaystoneData.getData(this::class))
+            WaystoneData.createTable()
+            waystones.addAll(WaystoneData.getData())
             instance.server.addRecipe(WaystoneData.recipe(WaystoneData.item()))
         }
     }
@@ -75,7 +75,7 @@ class WaystoneModule : ModuleInterface {
             val plainText =
                 PlainTextComponentSerializer.plainText().serialize(itemMeta.displayName() ?: "Waystone".mm())
             val waystone = WaystoneData(customName = plainText, location = event.block.location)
-            WaystoneData.setData(this::class, waystone)
+            WaystoneData.setData(waystone)
             waystones.add(waystone)
             waystoneCreateEffect(event.block.location)
         }
@@ -86,7 +86,7 @@ class WaystoneModule : ModuleInterface {
         val waystone = waystones.find { it.location == event.block.location }
         if (event.block.type == Material.STONE_BRICKS && waystone != null) {
             waystones.remove(waystone)
-            WaystoneData.deleteData(this::class, waystone.id)
+            WaystoneData.deleteData(waystone.id)
             waystoneDeleteEffect(event.block.location)
         }
 
