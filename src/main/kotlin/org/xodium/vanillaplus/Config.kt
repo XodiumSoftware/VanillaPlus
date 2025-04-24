@@ -31,7 +31,7 @@ object Config {
         /**
          * Enables or disables the AutoRefillModule.
          */
-        var ENABLED: Boolean = false
+        var ENABLED: Boolean = true
     }
 
     /**
@@ -86,7 +86,7 @@ object Config {
         /**
          * Enables or disables the AutoToolModule.
          */
-        var ENABLED: Boolean = false
+        var ENABLED: Boolean = true
 
         /**
          * If the AutoTool feature should not switch tools during battle.
