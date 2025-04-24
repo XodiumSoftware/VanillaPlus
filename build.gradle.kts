@@ -5,8 +5,6 @@
 
 import de.undercouch.gradle.tasks.download.Download
 import groovy.json.JsonSlurper
-import jdk.tools.jlink.resources.plugins
-import sun.tools.jar.resources.jar
 import java.net.URI
 
 plugins {
