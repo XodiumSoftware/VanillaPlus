@@ -37,6 +37,16 @@ data class WaystoneData(
     val customName: String = "Waystone",
     val location: Location,
 ) {
+    /**
+     * Serializes the WaystoneData object into a string representation.
+     * The serialized format includes the id key, custom name, world name, and coordinates (x, y, z) of the location.
+     *
+     * @return A string representation of the WaystoneData object.
+     */
+    fun serialize(): String {
+        return "${customName}:${location.world.name}:${location.x}:${location.y}:${location.z}"
+    }
+
     companion object {
         private const val NS = "waystone"
 
@@ -101,6 +111,28 @@ data class WaystoneData(
                 destination.world -> (origin.distance(destination) * Config.WaystoneModule.DISTANCE_MULTIPLIER).toInt()
                 else -> Config.WaystoneModule.DIMENSIONAL_MULTIPLIER
             }
+        }
+
+        /**
+         * Deserializes a string representation of a `WaystoneData` object into its respective data class.
+         * The input string must follow a specific format with colon-separated values:
+         * `namespace:key:customName:world:x:y:z`.
+         *
+         * @param str The string to be deserialized. It must match the expected format.
+         * @return A `WaystoneData` object if the string is successfully parsed; otherwise, null.
+         */
+        fun deserialize(key: String, str: String): WaystoneData? {
+            val keyParts = key.split(":")
+            if (keyParts.size < 2) return null
+            val id = NamespacedKey(keyParts[0], keyParts[1])
+            val parts = str.split(":")
+            if (parts.size < 5) return null
+            val customName = parts[0]
+            val world = instance.server.getWorld(parts[1]) ?: return null
+            val x = parts[2].toDoubleOrNull() ?: return null
+            val y = parts[3].toDoubleOrNull() ?: return null
+            val z = parts[4].toDoubleOrNull() ?: return null
+            return WaystoneData(id, customName, Location(world, x, y, z))
         }
     }
 }

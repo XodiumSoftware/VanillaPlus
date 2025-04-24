@@ -6,6 +6,7 @@
 package org.xodium.vanillaplus.modules
 
 import net.kyori.adventure.resource.ResourcePackRequest
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.*
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -31,7 +32,6 @@ import kotlin.uuid.ExperimentalUuidApi
 
 //TODO: Optional, do we add that you have to discover waypoints manually first before being able to use them?
 //TODO: Add waystone custom texture.
-//TODO: Check if the Database can handle serialization/deserialization of NamespacedKey.
 
 /**
  * Represents a module handling waystone mechanics within the system.
@@ -54,9 +54,21 @@ class WaystoneModule : ModuleInterface {
     init {
         if (enabled()) {
             Database.createTable(this::class)
-            val waystones =
-                (Database.getData(this::class) as? List<*>)?.filterIsInstance<WaystoneData>() ?: emptyList()
-            for (waystone in waystones) this@WaystoneModule.waystones[waystone.id] = waystone
+            val data = Database.getData(this::class)
+            if (data is Map<*, *>) {
+                for ((key, value) in data) {
+                    if (key is String && value is String) {
+                        val waystone = WaystoneData.deserialize(key, value)
+                        if (waystone != null) {
+                            waystones[waystone.id] = waystone
+                        } else {
+                            instance.logger.warning("Could not deserialize waystone data for key: $key")
+                        }
+                    }
+                }
+            } else {
+                instance.logger.warning("Database returned unexpected data type for waystone data")
+            }
             instance.server.addRecipe(WaystoneData.recipe(WaystoneData.item("")))
         }
     }
@@ -75,8 +87,10 @@ class WaystoneModule : ModuleInterface {
     fun on(event: BlockPlaceEvent) {
         val itemMeta = event.itemInHand.itemMeta
         if (itemMeta != null && itemMeta.hasCustomModelData() && itemMeta.customModelData == Config.WaystoneModule.WAYSTONE_CUSTOM_MODEL_DATA) {
-            val waystone = WaystoneData(customName = itemMeta.displayName().toString(), location = event.block.location)
-            Database.setData(this::class, waystone.id.toString(), waystone.toString())
+            val plainText =
+                PlainTextComponentSerializer.plainText().serialize(itemMeta.displayName() ?: "Waystone".mm())
+            val waystone = WaystoneData(customName = plainText, location = event.block.location)
+            Database.setData(this::class, waystone.id.toString(), waystone.serialize())
             waystones[waystone.id] = waystone
             waystoneCreateEffect(event.block.location)
         }
@@ -84,10 +98,10 @@ class WaystoneModule : ModuleInterface {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: BlockBreakEvent) {
-        val waystones = this@WaystoneModule.waystones.entries.find { it.value.location == event.block.location }
-        if (event.block.type == Material.STONE_BRICKS && waystones != null) {
-            this@WaystoneModule.waystones.remove(waystones.key)
-            Database.deleteData(this::class, waystones.value.id.toString())
+        val data = waystones.entries.find { it.value.location == event.block.location }
+        if (event.block.type == Material.STONE_BRICKS && data != null) {
+            waystones.remove(data.key)
+            Database.deleteData(this::class, data.value.id.toString())
             waystoneDeleteEffect(event.block.location)
         }
 
@@ -107,7 +121,7 @@ class WaystoneModule : ModuleInterface {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: InventoryClickEvent) {
         val player = event.whoClicked as? Player ?: return
-        event.isCancelled = true
+//        event.isCancelled = true
         val slot = event.rawSlot
 
         val originLoc = originWaystone[player.uniqueId]
