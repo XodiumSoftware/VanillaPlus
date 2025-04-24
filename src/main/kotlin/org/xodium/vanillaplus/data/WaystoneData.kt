@@ -5,8 +5,7 @@
 
 package org.xodium.vanillaplus.data
 
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
@@ -14,9 +13,11 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.Recipe
 import org.bukkit.inventory.ShapedRecipe
 import org.xodium.vanillaplus.Config
+import org.xodium.vanillaplus.Database
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mm
+import kotlin.reflect.KClass
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -31,21 +32,82 @@ import kotlin.uuid.Uuid
  * @property location The location of the Waystone, stored as `LocationData`.
  */
 @OptIn(ExperimentalUuidApi::class)
-@Serializable
 data class WaystoneData(
     val id: String = "${NS}_${Uuid.random()}",
     val customName: String = "Waystone",
-    val location: LocationData,
+    val location: Location,
 ) {
-    /**
-     * Converts this instance of the `WaystoneData` class into its JSON string representation.
-     *
-     * @return A JSON string representing the `WaystoneData` instance, serialized using the appropriate serializer.
-     */
-    fun toJson(): String = Json.encodeToString(this)
-
     companion object {
         private const val NS = "waystone"
+
+        fun createTable(table: KClass<*>) {
+            Database.exec(
+                //language=SQLite
+                """
+                CREATE TABLE IF NOT EXISTS ${table.simpleName} (
+                    id TEXT PRIMARY KEY,
+                    custom_name TEXT NOT NULL,
+                    world TEXT NOT NULL, 
+                    x REAL NOT NULL, 
+                    y REAL NOT NULL, 
+                    z REAL NOT NULL
+                );
+                """.trimIndent()
+            )
+        }
+
+        fun setData(table: KClass<*>, waystone: WaystoneData) {
+            //language=SQLite
+            Database.execWithParams(
+                """
+                INSERT OR REPLACE INTO ${table.simpleName} (id, custom_name, world, x, y, z)
+                VALUES (?, ?, ?, ?, ?, ?);
+                """.trimIndent(),
+                waystone.id,
+                waystone.customName,
+                waystone.location.world.name,
+                waystone.location.x,
+                waystone.location.y,
+                waystone.location.z
+            )
+        }
+
+        fun getData(table: KClass<*>): List<WaystoneData> {
+            //language=SQLite
+            val sql = """
+                SELECT id, custom_name, world, x, y, z
+                FROM ${table.simpleName};
+            """.trimIndent()
+            return Database.query(sql) { resultSet ->
+                val results = mutableListOf<WaystoneData>()
+                while (resultSet.next()) {
+                    results.add(
+                        WaystoneData(
+                            id = resultSet.getString("id"),
+                            customName = resultSet.getString("custom_name"),
+                            location = Location(
+                                Bukkit.getWorld(resultSet.getString("world")),
+                                resultSet.getDouble("x"),
+                                resultSet.getDouble("y"),
+                                resultSet.getDouble("z")
+                            )
+                        )
+                    )
+                }
+                results
+            }
+        }
+
+        fun deleteData(table: KClass<*>, id: String) {
+            //language=SQLite
+            Database.execWithParams(
+                """
+                DELETE FROM ${table.simpleName}
+                WHERE id = ?;
+                """.trimIndent(), id
+            )
+        }
+
 
         /**
          * Creates an ItemStack representing a Waystone with specific properties.
@@ -59,13 +121,17 @@ data class WaystoneData(
          * @param destination The optional destination WaystoneData, representing the endpoint.
          * @return An ItemStack configured with the specified properties.
          */
-        fun item(customName: String, origin: WaystoneData? = null, destination: WaystoneData? = null): ItemStack {
+        fun item(
+            customName: String = "Waystone",
+            origin: WaystoneData? = null,
+            destination: WaystoneData? = null
+        ): ItemStack {
             return ItemStack(Config.WaystoneModule.WAYSTONE_MATERIAL).apply {
                 itemMeta = itemMeta.apply {
                     customName(customName.mm())
                     setCustomModelData(Config.WaystoneModule.WAYSTONE_CUSTOM_MODEL_DATA)
                     if (origin != null && destination != null) {
-                        val cost = calculateXpCost(origin.location.toLocation(), destination.location.toLocation())
+                        val cost = calculateXpCost(origin.location, destination.location)
                         lore(listOf("<bold>Cost: $cost XP</bold>".mangoFmt().mm()))
                     }
                 }
@@ -109,14 +175,6 @@ data class WaystoneData(
                 else -> Config.WaystoneModule.DIMENSIONAL_MULTIPLIER
             }
         }
-
-        /**
-         * Deserializes a JSON string into a `WaystoneData` instance.
-         *
-         * @param json The JSON string to deserialize. It must represent valid `WaystoneData` formatted data.
-         * @return The `WaystoneData` object created from the given JSON string.
-         */
-        fun fromJson(json: String): WaystoneData = Json.decodeFromString(json)
     }
 }
 

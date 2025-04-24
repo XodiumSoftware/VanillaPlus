@@ -5,12 +5,13 @@
 
 import de.undercouch.gradle.tasks.download.Download
 import groovy.json.JsonSlurper
+import jdk.tools.jlink.resources.plugins
+import sun.tools.jar.resources.jar
 import java.net.URI
 
 plugins {
     id("java")
     kotlin("jvm") version "2.1.20"
-    kotlin("plugin.serialization") version "2.1.20"
     id("com.gradleup.shadow") version "9.0.0-beta12"
     id("de.undercouch.download") version "5.6.0"
 }
@@ -35,7 +36,6 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.11") //TODO("Move away from WorldEdit")
     implementation(kotlin("stdlib-jdk8"))
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
     implementation("de.jeff_media:ChestSortAPI:12.0.0")
 }
 

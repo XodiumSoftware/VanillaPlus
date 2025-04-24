@@ -9,8 +9,6 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
-import java.sql.Types
-import kotlin.reflect.KClass
 
 /**
  * Handles database connection
@@ -38,94 +36,35 @@ object Database {
     }
 
     /**
-     * Creates a table in the database.
-     * @param table The table to create.
+     * Executes the given SQL statement.
+     * @param sql the SQL statement to be executed
      */
-    fun createTable(table: KClass<*>) {
+    fun exec(sql: String) {
+        conn.createStatement().use { it.execute(sql) }
+    }
+
+    /**
+     * Executes SQL statements with parameters using prepared statements.
+     * @param sql the SQL statement to be executed
+     * @param params the parameters to bind to the query
+     */
+    fun execWithParams(sql: String, vararg params: Any) {
+        conn.prepareStatement(sql).use { stmt ->
+            params.forEachIndexed { index, param -> stmt.setObject(index + 1, param) }
+            stmt.executeUpdate()
+        }
+    }
+
+    /**
+     * Executes SQL queries that return results.
+     * @param sql the SQL query to be executed
+     * @param handler a lambda to handle the result set
+     */
+    fun <T> query(sql: String, handler: (java.sql.ResultSet) -> T): T {
         conn.createStatement().use { stmt ->
-            stmt.execute(
-                // language=SQLite
-                """
-                    CREATE TABLE IF NOT EXISTS ${table.simpleName} (
-                        k TEXT PRIMARY KEY,
-                        v TEXT
-                    );
-                    """.trimIndent()
-            )
-        }
-    }
-
-    /**
-     * Sets data in the database.
-     * @param table The table to set the data in.
-     * @param key The key to set the data with.
-     * @param value The value to set the data to.
-     */
-    fun setData(table: KClass<*>, key: String, value: String? = null) {
-        conn.prepareStatement(
-            // language=SQLite
-            """
-            INSERT OR REPLACE INTO ${table.simpleName} (k, v) VALUES (?, ?);
-            """.trimIndent()
-        ).use { stmt ->
-            stmt.setString(1, key)
-            if (value == null) {
-                stmt.setNull(2, Types.VARCHAR)
-            } else stmt.setString(2, value)
-            stmt.executeUpdate()
-        }
-    }
-
-    /**
-     * Gets data from the database.
-     * - If a key is supplied, returns the value for that key (or null if not found).
-     * - If no key is supplied (null), returns all keys and values as a Map.
-     *
-     * @param table The table to get the data from.
-     * @param key The key to get the data with, or null to get all.
-     * @return The data retrieved from the database (String?, or Map<String, String?> if key is null).
-     */
-    fun getData(table: KClass<*>, key: String? = null): Any? {
-        return if (key != null) {
-            conn.prepareStatement(
-                // language=SQLite
-                "SELECT v FROM ${table.simpleName} WHERE k = ?;"
-            ).use { stmt ->
-                stmt.setString(1, key)
-                stmt.executeQuery().use { rs ->
-                    if (rs.next()) rs.getString("v") else null
-                }
+            stmt.executeQuery(sql).use { result ->
+                return handler(result)
             }
-        } else {
-            conn.createStatement().use { stmt ->
-                stmt.executeQuery(
-                    // language=SQLite
-                    "SELECT k, v FROM ${table.simpleName};"
-                ).use { rs ->
-                    val result = mutableMapOf<String, String?>()
-                    while (rs.next()) {
-                        result[rs.getString("k")] = rs.getString("v")
-                    }
-                    result
-                }
-            }
-        }
-    }
-
-    /**
-     * Deletes data from the database.
-     * @param table The table to delete the data from.
-     * @param key The key of the data to delete.
-     */
-    fun deleteData(table: KClass<*>, key: String) {
-        conn.prepareStatement(
-            // language=SQLite
-            """
-            DELETE FROM ${table.simpleName} WHERE k = ?;
-            """.trimIndent()
-        ).use { stmt ->
-            stmt.setString(1, key)
-            stmt.executeUpdate()
         }
     }
 
