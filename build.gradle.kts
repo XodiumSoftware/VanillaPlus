@@ -27,7 +27,7 @@ repositories {
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://maven.enginehub.org/repo/")
     maven("https://repo.jeff-media.com/public/")
-    maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
+    maven("https://repo.triumphteam.dev/snapshots")
 }
 
 dependencies {
@@ -35,6 +35,7 @@ dependencies {
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.11") //TODO("Move away from WorldEdit")
     implementation(kotlin("stdlib-jdk8"))
     implementation("de.jeff_media:ChestSortAPI:12.0.0")
+    implementation("dev.triumphteam:triumph-gui-paper-kotlin:4.0.0-SNAPSHOT")
 }
 
 java { toolchain.languageVersion.set(JavaLanguageVersion.of(21)) }
@@ -57,6 +58,7 @@ tasks {
         dependsOn(processResources)
         archiveClassifier.set("")
         relocate("kotlin", "org.xodium.vanillaplus.kotlin")
+        relocate("dev.triumphteam.gui", "org.xodium.vanillaplus.gui")
         destinationDirectory.set(file(".server/plugins"))
         minimize()
         doLast {
