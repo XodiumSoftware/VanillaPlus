@@ -499,7 +499,7 @@
     </routine>
     <schema id="191" parent="1" name="main">
       <Current>1</Current>
-      <LastIntrospectionLocalTimestamp>2025-04-24.11:59:07</LastIntrospectionLocalTimestamp>
+      <LastIntrospectionLocalTimestamp>2025-04-24.18:46:11</LastIntrospectionLocalTimestamp>
     </schema>
     <argument id="192" parent="16">
       <ArgumentDirection>R</ArgumentDirection>
@@ -1601,11 +1601,13 @@
     </column>
     <column id="559" parent="555" name="autorefill">
       <DefaultExpression>false</DefaultExpression>
+      <NotNull>1</NotNull>
       <Position>2</Position>
       <StoredType>BOOLEAN|0s</StoredType>
     </column>
     <column id="560" parent="555" name="autotool">
       <DefaultExpression>false</DefaultExpression>
+      <NotNull>1</NotNull>
       <Position>3</Position>
       <StoredType>BOOLEAN|0s</StoredType>
     </column>

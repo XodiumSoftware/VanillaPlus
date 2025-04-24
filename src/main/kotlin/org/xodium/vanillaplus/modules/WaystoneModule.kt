@@ -9,7 +9,6 @@ import dev.triumphteam.gui.paper.Gui
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder
 import dev.triumphteam.gui.paper.kotlin.builder.buildGui
 import dev.triumphteam.gui.paper.kotlin.builder.chestContainer
-import net.kyori.adventure.resource.ResourcePackRequest
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.*
 import org.bukkit.entity.Player
@@ -19,7 +18,6 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.event.player.PlayerJoinEvent
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.WaystoneData
@@ -33,8 +31,10 @@ import org.xodium.vanillaplus.utils.Utils
 import java.util.*
 import kotlin.uuid.ExperimentalUuidApi
 
-//TODO: Optional, do we add that you have to discover waypoints manually first before being able to use them?
+//TODO: Idea, do we add that you have to discover waypoints manually first before being able to use them?
 //TODO: Idea, do we count extra cost when traveling with a mount?
+//TODO: Check, if CMI interferes with teleporting.
+//TODO: Idea, make it cost xp to place a waystone down, and maybe return xp when destroying waystone, half?.
 //TODO: Add waystone custom texture.
 
 /**
@@ -62,16 +62,6 @@ class WaystoneModule : ModuleInterface {
             waystones.addAll(WaystoneData.getData())
             instance.server.addRecipe(WaystoneData.recipe(WaystoneData.item()))
         }
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    fun on(event: PlayerJoinEvent) {
-        event.player.sendResourcePacks(
-            ResourcePackRequest.resourcePackRequest()
-                .packs(Config.WaystoneModule.RESOURCE_PACK_INFO)
-                .required(Config.WaystoneModule.RESOURCE_PACK_FORCE)
-                .build()
-        )
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -178,10 +168,11 @@ class WaystoneModule : ModuleInterface {
         }
 
         player.closeInventory()
-        teleportInitEffect(player.location)
 
         val initialLocation = player.location.clone()
         val delayTicks = 3.seconds
+
+        var ticks = 0
 
         instance.server.scheduler.runTaskTimer(
             instance,
@@ -191,7 +182,9 @@ class WaystoneModule : ModuleInterface {
                     return@runTaskTimer task.cancel()
                 }
 
-                if (delayTicks <= 0) {
+                //TODO: teleportation is not working in here.
+                ticks++
+                if (ticks >= delayTicks) {
                     if (player.gameMode in listOf(GameMode.SURVIVAL, GameMode.ADVENTURE)) {
                         Utils.chargePlayerXp(player, xpCost)
                     }
@@ -199,6 +192,8 @@ class WaystoneModule : ModuleInterface {
                     player.teleport(targetWaystone.location)
                     teleportEffect(targetWaystone.location)
                     return@runTaskTimer task.cancel()
+                } else {
+                    teleportInitEffect(player.location)
                 }
             },
             0.ticks, 1.ticks
@@ -232,7 +227,6 @@ class WaystoneModule : ModuleInterface {
                                 )
                             } XP".mangoFmt().mm()
                         )
-                        //TODO: teleportation is not working.
                         .asGuiItem { player, _ -> handleTeleportation(player, waystone) }
                 }
             }
