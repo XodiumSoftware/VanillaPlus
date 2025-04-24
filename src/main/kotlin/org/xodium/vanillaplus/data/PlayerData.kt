@@ -17,8 +17,8 @@ import org.xodium.vanillaplus.Database
  */
 data class PlayerData(
     val id: String,
-    val autorefill: Boolean? = true,
-    val autotool: Boolean? = true,
+    val autorefill: Boolean? = false,
+    val autotool: Boolean? = false,
 ) {
     companion object {
         /**
@@ -30,8 +30,8 @@ data class PlayerData(
                 """
                 CREATE TABLE IF NOT EXISTS ${PlayerData::class.simpleName} (
                     id TEXT PRIMARY KEY,
-                    autorefill BOOLEAN DEFAULT false,
-                    autotool BOOLEAN DEFAULT false); 
+                    autorefill BOOLEAN NOT NULL DEFAULT false,
+                    autotool BOOLEAN NOT NULL DEFAULT false); 
                 """.trimIndent()
             )
         }
@@ -39,19 +39,19 @@ data class PlayerData(
         /**
          * Inserts or updates a record in the database table corresponding to the current class
          * with the data provided in the PlayerData object.
-         * @param player The PlayerData object containing information to be stored in the database.
+         * @param data The PlayerData object containing information to be stored in the database.
          *               It includes the ID, autorefill, and autotool attributes of the player.
          */
-        fun setData(player: PlayerData) {
+        fun setData(data: PlayerData) {
             //language=SQLite
             Database.exec(
                 """
                 INSERT OR REPLACE INTO ${PlayerData::class.simpleName} (id, autorefill, autotool)
                 VALUES (?, ?, ?);
                 """.trimIndent(),
-                player.id,
-                player.autorefill,
-                player.autotool
+                data.id,
+                data.autorefill,
+                data.autotool
             )
         }
 
