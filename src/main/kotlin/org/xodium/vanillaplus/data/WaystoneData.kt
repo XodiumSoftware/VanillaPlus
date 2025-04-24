@@ -45,7 +45,7 @@ data class WaystoneData(
             Database.exec(
                 //language=SQLite
                 """
-                CREATE TABLE IF NOT EXISTS ${this::class.simpleName} (
+                CREATE TABLE IF NOT EXISTS ${WaystoneData::class.simpleName} (
                     id TEXT PRIMARY KEY,
                     custom_name TEXT NOT NULL,
                     world TEXT NOT NULL, 
@@ -66,7 +66,7 @@ data class WaystoneData(
             //language=SQLite
             Database.exec(
                 """
-                INSERT OR REPLACE INTO ${this::class.simpleName} (id, custom_name, world, x, y, z)
+                INSERT OR REPLACE INTO ${WaystoneData::class.simpleName} (id, custom_name, world, x, y, z)
                 VALUES (?, ?, ?, ?, ?, ?);
                 """.trimIndent(),
                 waystone.id,
@@ -86,7 +86,7 @@ data class WaystoneData(
             //language=SQLite
             val sql = """
                 SELECT id, custom_name, world, x, y, z
-                FROM ${this::class.simpleName};
+                FROM ${WaystoneData::class.simpleName};
             """.trimIndent()
             return Database.query(sql) { resultSet ->
                 val results = mutableListOf<WaystoneData>()
@@ -116,7 +116,7 @@ data class WaystoneData(
             //language=SQLite
             Database.exec(
                 """
-                DELETE FROM ${this::class.simpleName}
+                DELETE FROM ${WaystoneData::class.simpleName}
                 WHERE id = ?;
                 """.trimIndent(), id
             )

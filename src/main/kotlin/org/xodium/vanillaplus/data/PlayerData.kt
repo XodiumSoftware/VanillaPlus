@@ -26,7 +26,7 @@ data class PlayerData(
             Database.exec(
                 //language=SQLite
                 """
-                CREATE TABLE IF NOT EXISTS ${this::class.simpleName} (
+                CREATE TABLE IF NOT EXISTS ${PlayerData::class.simpleName} (
                     id TEXT PRIMARY KEY,
                     autorefill BOOLEAN DEFAULT false,
                     autotool BOOLEAN DEFAULT false); 
@@ -44,7 +44,7 @@ data class PlayerData(
             //language=SQLite
             Database.exec(
                 """
-                INSERT OR REPLACE INTO ${this::class.simpleName} (id, autorefill, autotool)
+                INSERT OR REPLACE INTO ${PlayerData::class.simpleName} (id, autorefill, autotool)
                 VALUES (?, ?, ?);
                 """.trimIndent(),
                 player.id,
@@ -62,7 +62,7 @@ data class PlayerData(
             //language=SQLite
             val sql = """
                 SELECT id, autorefill, autotool
-                FROM ${this::class.simpleName};
+                FROM ${PlayerData::class.simpleName};
             """.trimIndent()
             return Database.query(sql) { resultSet ->
                 val results = mutableListOf<PlayerData>()
