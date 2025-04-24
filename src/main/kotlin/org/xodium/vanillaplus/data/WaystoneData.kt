@@ -5,6 +5,8 @@
 
 package org.xodium.vanillaplus.data
 
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
@@ -19,33 +21,28 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 /**
- * Represents data for a Waystone, a teleportation system with custom properties.
+ * Represents metadata related to a Waystone in the Minecraft world.
  *
- * This class encapsulates the unique identifier, custom name, and location of
- * a Waystone in a Minecraft world. Waystones can be used for fast travel
- * between specified points in the world.
+ * This data class encapsulates essential properties such as the unique identifier (ID),
+ * a custom name for the Waystone, and the location data where the Waystone exists.
  *
- * @property id The unique identifier for the Waystone, represented as a `NamespacedKey`.
- *              It is generated using a predefined namespace and static instance.
- * @property customName The custom display name of the Waystone, defaulting to "Waystone".
- * @property location The location of the Waystone, represented as a `Location` object
- *                    which encapsulates the world and coordinates.
+ * @property id A unique identifier for the Waystone, prefixed with a namespace (NS) and followed by a random UUID.
+ * @property customName The customizable name of the Waystone, defaulting to "Waystone".
+ * @property location The location of the Waystone, stored as `LocationData`.
  */
 @OptIn(ExperimentalUuidApi::class)
+@Serializable
 data class WaystoneData(
-    val id: NamespacedKey = NamespacedKey(instance, "${NS}_${Uuid.random()}"),
+    val id: String = "${NS}_${Uuid.random()}",
     val customName: String = "Waystone",
-    val location: Location,
+    val location: LocationData,
 ) {
     /**
-     * Serializes the WaystoneData object into a string representation.
-     * The serialized format includes the id key, custom name, world name, and coordinates (x, y, z) of the location.
+     * Converts this instance of the `WaystoneData` class into its JSON string representation.
      *
-     * @return A string representation of the WaystoneData object.
+     * @return A JSON string representing the `WaystoneData` instance, serialized using the appropriate serializer.
      */
-    fun serialize(): String {
-        return "${customName}:${location.world.name}:${location.x}:${location.y}:${location.z}"
-    }
+    fun toJson(): String = Json.encodeToString(this)
 
     companion object {
         private const val NS = "waystone"
@@ -68,7 +65,7 @@ data class WaystoneData(
                     customName(customName.mm())
                     setCustomModelData(Config.WaystoneModule.WAYSTONE_CUSTOM_MODEL_DATA)
                     if (origin != null && destination != null) {
-                        val cost = calculateXpCost(origin.location, destination.location)
+                        val cost = calculateXpCost(origin.location.toLocation(), destination.location.toLocation())
                         lore(listOf("<bold>Cost: $cost XP</bold>".mangoFmt().mm()))
                     }
                 }
@@ -114,26 +111,12 @@ data class WaystoneData(
         }
 
         /**
-         * Deserializes a string representation of a `WaystoneData` object into its respective data class.
-         * The input string must follow a specific format with colon-separated values:
-         * `namespace:key:customName:world:x:y:z`.
+         * Deserializes a JSON string into a `WaystoneData` instance.
          *
-         * @param str The string to be deserialized. It must match the expected format.
-         * @return A `WaystoneData` object if the string is successfully parsed; otherwise, null.
+         * @param json The JSON string to deserialize. It must represent valid `WaystoneData` formatted data.
+         * @return The `WaystoneData` object created from the given JSON string.
          */
-        fun deserialize(key: String, str: String): WaystoneData? {
-            val keyParts = key.split(":")
-            if (keyParts.size < 2) return null
-            val id = NamespacedKey(keyParts[0], keyParts[1])
-            val parts = str.split(":")
-            if (parts.size < 5) return null
-            val customName = parts[0]
-            val world = instance.server.getWorld(parts[1]) ?: return null
-            val x = parts[2].toDoubleOrNull() ?: return null
-            val y = parts[3].toDoubleOrNull() ?: return null
-            val z = parts[4].toDoubleOrNull() ?: return null
-            return WaystoneData(id, customName, Location(world, x, y, z))
-        }
+        fun fromJson(json: String): WaystoneData = Json.decodeFromString(json)
     }
 }
 

@@ -20,6 +20,7 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Database
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.data.LocationData
 import org.xodium.vanillaplus.data.WaystoneData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
@@ -57,12 +58,12 @@ class WaystoneModule : ModuleInterface {
             val data = Database.getData(this::class)
             if (data is Map<*, *>) {
                 for ((key, value) in data) {
-                    if (key is String && value is String) {
-                        val waystone = WaystoneData.deserialize(key, value)
-                        if (waystone != null) {
-                            waystones[waystone.id] = waystone
-                        } else {
-                            instance.logger.warning("Could not deserialize waystone data for key: $key")
+                    if (value is String) {
+                        try {
+                            val waystone = WaystoneData.fromJson(value)
+                            waystones[NamespacedKey.fromString(waystone.id) as NamespacedKey] = waystone
+                        } catch (ex: Exception) {
+                            instance.logger.warning("Could not deserialize waystone data: ${ex.message}")
                         }
                     }
                 }
@@ -89,9 +90,11 @@ class WaystoneModule : ModuleInterface {
         if (itemMeta != null && itemMeta.hasCustomModelData() && itemMeta.customModelData == Config.WaystoneModule.WAYSTONE_CUSTOM_MODEL_DATA) {
             val plainText =
                 PlainTextComponentSerializer.plainText().serialize(itemMeta.displayName() ?: "Waystone".mm())
-            val waystone = WaystoneData(customName = plainText, location = event.block.location)
-            Database.setData(this::class, waystone.id.toString(), waystone.serialize())
-            waystones[waystone.id] = waystone
+            val waystone = WaystoneData(
+                customName = plainText, location = LocationData.fromLocation(event.block.location)
+            )
+            Database.setData(this::class, waystone.id, waystone.toJson())
+            waystones[NamespacedKey.fromString(waystone.id) as NamespacedKey] = waystone
             waystoneCreateEffect(event.block.location)
         }
     }
@@ -101,7 +104,7 @@ class WaystoneModule : ModuleInterface {
         val data = waystones.entries.find { it.value.location == event.block.location }
         if (event.block.type == Material.STONE_BRICKS && data != null) {
             waystones.remove(data.key)
-            Database.deleteData(this::class, data.value.id.toString())
+            Database.deleteData(this::class, data.value.id)
             waystoneDeleteEffect(event.block.location)
         }
 
@@ -130,7 +133,7 @@ class WaystoneModule : ModuleInterface {
         if (slot !in filteredWaystones.indices) return
         val targetData = filteredWaystones[slot]
 
-        val xpCost = WaystoneData.calculateXpCost(originLoc ?: player.location, targetData.location)
+        val xpCost = WaystoneData.calculateXpCost(originLoc ?: player.location, targetData.location.toLocation())
         if (player.gameMode in listOf(GameMode.SURVIVAL, GameMode.ADVENTURE)) {
             val playerTotalXp = player.level * 7 + player.exp.toInt()
             if (playerTotalXp < xpCost) {
@@ -165,8 +168,8 @@ class WaystoneModule : ModuleInterface {
                         Utils.chargePlayerXp(player, xpCost)
                     }
                     teleportEffect(player.location)
-                    player.teleport(targetData.location)
-                    teleportEffect(targetData.location)
+                    player.teleport(targetData.location.toLocation())
+                    teleportEffect(targetData.location.toLocation())
                     task.cancel()
                 } else {
                     teleportInitEffect(player.location)
