@@ -34,6 +34,7 @@ import java.util.*
 import kotlin.uuid.ExperimentalUuidApi
 
 //TODO: Optional, do we add that you have to discover waypoints manually first before being able to use them?
+//TODO: Idea, do we count extra cost when traveling with a mount?
 //TODO: Add waystone custom texture.
 
 /**
@@ -231,6 +232,7 @@ class WaystoneModule : ModuleInterface {
                                 )
                             } XP".mangoFmt().mm()
                         )
+                        //TODO: teleportation is not working.
                         .asGuiItem { player, _ -> handleTeleportation(player, waystone) }
                 }
             }
