@@ -7,6 +7,12 @@ package org.xodium.vanillaplus.data
 
 import org.xodium.vanillaplus.Database
 
+/**
+ * Represents player-specific configuration data.
+ * @property id A unique identifier for the player.
+ * @property autorefill Indicates whether the autorefill feature is enabled for the player.
+ * @property autotool Indicates whether the autotool feature is enabled for the player.
+ */
 data class PlayerData(
     val id: String,
     val autorefill: Boolean? = true,
@@ -28,6 +34,12 @@ data class PlayerData(
             )
         }
 
+        /**
+         * Inserts or updates a record in the database table corresponding to the current class
+         * with the data provided in the PlayerData object.
+         * @param player The PlayerData object containing information to be stored in the database.
+         *               It includes the ID, autorefill, and autotool attributes of the player.
+         */
         fun setData(player: PlayerData) {
             //language=SQLite
             Database.exec(
@@ -41,6 +53,11 @@ data class PlayerData(
             )
         }
 
+        /**
+         * Retrieves a list of `PlayerData` objects from the corresponding database table.
+         * @return a list of `PlayerData` containing the id, autorefill, and autotool fields
+         * extracted from the database.
+         */
         fun getData(): List<PlayerData> {
             //language=SQLite
             val sql = """
