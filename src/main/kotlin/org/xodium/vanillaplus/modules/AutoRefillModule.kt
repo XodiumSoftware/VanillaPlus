@@ -210,6 +210,6 @@ class AutoRefillModule : ModuleInterface {
     private fun toggle(player: Player) {
         PlayerData.setData(PlayerData(id = player.uniqueId.toString(), autorefill = !isEnabledForPlayer(player)))
         cooldowns.remove(player.uniqueId)
-        player.sendActionBar(("${"AutoRefill:".fireFmt()} ${if (!isEnabledForPlayer(player)) "<green>ON" else "<red>OFF"}").mm())
+        player.sendActionBar(("${"AutoRefill:".fireFmt()} ${if (isEnabledForPlayer(player)) "<green>ON" else "<red>OFF"}").mm())
     }
 }

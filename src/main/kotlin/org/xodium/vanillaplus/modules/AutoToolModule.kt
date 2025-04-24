@@ -583,6 +583,6 @@ class AutoToolModule : ModuleInterface {
      */
     private fun toggle(player: Player) {
         PlayerData.setData(PlayerData(id = player.uniqueId.toString(), autotool = !isEnabledForPlayer(player)))
-        player.sendActionBar(("${"AutoTool:".fireFmt()} ${if (!isEnabledForPlayer(player)) "<green>ON" else "<red>OFF"}").mm())
+        player.sendActionBar(("${"AutoTool:".fireFmt()} ${if (isEnabledForPlayer(player)) "<green>ON" else "<red>OFF"}").mm())
     }
 }
