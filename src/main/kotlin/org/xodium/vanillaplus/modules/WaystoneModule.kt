@@ -5,6 +5,10 @@
 
 package org.xodium.vanillaplus.modules
 
+import dev.triumphteam.gui.paper.Gui
+import dev.triumphteam.gui.paper.builder.item.ItemBuilder
+import dev.triumphteam.gui.paper.kotlin.builder.buildGui
+import dev.triumphteam.gui.paper.kotlin.builder.chestContainer
 import net.kyori.adventure.resource.ResourcePackRequest
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.*
@@ -14,7 +18,6 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
-import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.xodium.vanillaplus.Config
@@ -22,6 +25,7 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.WaystoneData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
+import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mm
 import org.xodium.vanillaplus.utils.TimeUtils.seconds
 import org.xodium.vanillaplus.utils.TimeUtils.ticks
@@ -49,6 +53,7 @@ class WaystoneModule : ModuleInterface {
 
     private val waystones = mutableListOf<WaystoneData>()
     private val originWaystone = mutableMapOf<UUID, Location>()
+    private val guiTitle = "Waystones Teleportation Index".fireFmt()
 
     init {
         if (enabled()) {
@@ -99,67 +104,8 @@ class WaystoneModule : ModuleInterface {
         if (block.type == Material.STONE_BRICKS && waystones.any { it.location == block.location }) {
             event.isCancelled = true
             originWaystone[event.player.uniqueId] = block.location
-            TODO("open gui")
+            gui().open(event.player)
         }
-    }
-
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    fun on(event: InventoryClickEvent) {
-        val player = event.whoClicked as? Player ?: return
-//        event.isCancelled = true
-        val slot = event.rawSlot
-
-        val originLoc = originWaystone[player.uniqueId]
-        val filteredWaystones = waystones.filter { it.location != originLoc }.toList()
-
-        if (slot !in filteredWaystones.indices) return
-        val targetData = filteredWaystones[slot]
-
-        val xpCost = WaystoneData.calculateXpCost(originLoc ?: player.location, targetData.location)
-        if (player.gameMode in listOf(GameMode.SURVIVAL, GameMode.ADVENTURE)) {
-            val playerTotalXp = player.level * 7 + player.exp.toInt()
-            if (playerTotalXp < xpCost) {
-                player.closeInventory()
-                return player.sendActionBar("You need $xpCost XP to teleport to this waystone".fireFmt().mm())
-            }
-        }
-
-        player.closeInventory()
-
-        val initialLocation = player.location.clone()
-        val delayTicks = 3.seconds
-
-        var ticks = 0
-
-        instance.server.scheduler.runTaskTimer(
-            instance,
-            { task ->
-                if (!player.isOnline || player.isDead) {
-                    task.cancel()
-                    return@runTaskTimer
-                }
-                if (player.location.distanceSquared(initialLocation) > 0.5) {
-                    player.sendActionBar("Teleport cancelled (you moved)!".fireFmt().mm())
-                    task.cancel()
-                    return@runTaskTimer
-                }
-
-                ticks++
-                if (ticks >= delayTicks) {
-                    if (player.gameMode in listOf(GameMode.SURVIVAL, GameMode.ADVENTURE)) {
-                        Utils.chargePlayerXp(player, xpCost)
-                    }
-                    teleportEffect(player.location)
-                    player.teleport(targetData.location)
-                    teleportEffect(targetData.location)
-                    task.cancel()
-                } else {
-                    teleportInitEffect(player.location)
-                }
-            },
-            0.ticks,
-            1.ticks
-        )
     }
 
     /**
@@ -218,6 +164,76 @@ class WaystoneModule : ModuleInterface {
         }
     }
 
-    @Suppress("unused")
-    private fun gui(): Unit = TODO("Use library for GUI")
+    private fun handleTeleportation(player: Player, targetWaystone: WaystoneData) {
+        val originLoc = originWaystone[player.uniqueId]
+        val xpCost = WaystoneData.calculateXpCost(originLoc ?: player.location, targetWaystone.location)
+
+        if (player.gameMode in listOf(GameMode.SURVIVAL, GameMode.ADVENTURE)) {
+            val playerTotalXp = player.level * 7 + player.exp.toInt()
+            if (playerTotalXp < xpCost) {
+                player.closeInventory()
+                return player.sendActionBar("You need $xpCost XP to teleport to this waystone".fireFmt().mm())
+            }
+        }
+
+        player.closeInventory()
+        teleportInitEffect(player.location)
+
+        val initialLocation = player.location.clone()
+        val delayTicks = 3.seconds
+
+        instance.server.scheduler.runTaskTimer(
+            instance,
+            { task ->
+                if (!player.isOnline || player.isDead || player.location.distanceSquared(initialLocation) > 0.5) {
+                    player.sendActionBar("Teleport cancelled!".fireFmt().mm())
+                    return@runTaskTimer task.cancel()
+                }
+
+                if (delayTicks <= 0) {
+                    if (player.gameMode in listOf(GameMode.SURVIVAL, GameMode.ADVENTURE)) {
+                        Utils.chargePlayerXp(player, xpCost)
+                    }
+                    teleportEffect(player.location)
+                    player.teleport(targetWaystone.location)
+                    teleportEffect(targetWaystone.location)
+                    return@runTaskTimer task.cancel()
+                }
+            },
+            0.ticks, 1.ticks
+        )
+    }
+
+    /**
+     * Creates and returns a GUI with a single-row chest container, a custom title, and a stateless component.
+     * @return The constructed GUI instance.
+     */
+    private fun gui(): Gui {
+        val filteredWaystones = waystones.filter { it.location != originWaystone.values.firstOrNull() }
+        val waystoneCount = filteredWaystones.size
+        val rows = ((waystoneCount + 8) / 9).coerceIn(1, 6)
+        return buildGui {
+            containerType = chestContainer { this.rows = rows }
+            title(guiTitle.mm())
+            statelessComponent { container ->
+                filteredWaystones.forEachIndexed { index, waystone ->
+                    val row = index / 9
+                    val slot = index % 9
+                    //TODO: check if we can use WaystoneData.item() instead?
+                    container[row, slot] = ItemBuilder.from(Material.BIRCH_PLANKS)
+                        .name(waystone.customName.mm())
+                        .lore(
+                            "Click to teleport".fireFmt().mm(),
+                            "Travel Cost: ${
+                                WaystoneData.calculateXpCost(
+                                    originWaystone.values.first(),
+                                    waystone.location
+                                )
+                            } XP".mangoFmt().mm()
+                        )
+                        .asGuiItem { player, _ -> handleTeleportation(player, waystone) }
+                }
+            }
+        }
+    }
 }
