@@ -52,13 +52,6 @@
     <orderEntry type="library" name="Gradle: dev.triumphteam:nova-kotlin:1.0.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Gradle: dev.triumphteam:triumph-gui-core:4.0.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Gradle: dev.triumphteam:nova:1.0.0-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Gradle: com.google.guava:guava:33.4.0-jre" level="project" />
-    <orderEntry type="library" name="Gradle: com.google.guava:failureaccess:1.0.2" level="project" />
-    <orderEntry type="library" name="Gradle: com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava" level="project" />
-    <orderEntry type="library" name="Gradle: com.google.code.findbugs:jsr305:3.0.2" level="project" />
-    <orderEntry type="library" name="Gradle: org.checkerframework:checker-qual:3.43.0" level="project" />
-    <orderEntry type="library" name="Gradle: com.google.errorprone:error_prone_annotations:2.36.0" level="project" />
-    <orderEntry type="library" name="Gradle: com.google.j2objc:j2objc-annotations:3.0.0" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains:annotations:19.0.0" level="project" />
   </component>
   <component name="TestModuleProperties" production-module="VanillaPlus.main" />

@@ -217,8 +217,8 @@ class WaystoneModule : ModuleInterface {
             title(guiTitle.mm())
             statelessComponent { container ->
                 filteredWaystones.forEachIndexed { index, waystone ->
-                    val row = index / 9
-                    val slot = index % 9
+                    val row = (index / 9) + 1
+                    val slot = (index % 9) + 1
                     //TODO: check if we can use WaystoneData.item() instead?
                     container[row, slot] = ItemBuilder.from(Material.BIRCH_PLANKS)
                         .name(waystone.customName.mm())
