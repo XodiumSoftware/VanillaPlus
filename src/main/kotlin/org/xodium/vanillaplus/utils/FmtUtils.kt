@@ -12,7 +12,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage
  * Formatting utilities
  */
 object FmtUtils {
-    val MM: MiniMessage = MiniMessage.miniMessage()
+    private val MM: MiniMessage = MiniMessage.miniMessage()
 
     fun String.mm(): Component = MM.deserialize(this)
     fun List<String>.mm(): List<Component> = this.map { it.mm() }

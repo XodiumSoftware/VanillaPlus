@@ -36,22 +36,18 @@ object Database {
     }
 
     /**
-     * Executes the given SQL statement.
-     * @param sql the SQL statement to be executed
+     * Executes an SQL statement, optionally with parameters.
+     * @param sql The SQL statement to be executed
+     * @param params Optional parameters to bind to the statement
      */
-    fun exec(sql: String) {
-        conn.createStatement().use { it.execute(sql) }
-    }
-
-    /**
-     * Executes SQL statements with parameters using prepared statements.
-     * @param sql the SQL statement to be executed
-     * @param params the parameters to bind to the query
-     */
-    fun execWithParams(sql: String, vararg params: Any) {
-        conn.prepareStatement(sql).use { stmt ->
-            params.forEachIndexed { index, param -> stmt.setObject(index + 1, param) }
-            stmt.executeUpdate()
+    fun exec(sql: String, vararg params: Any?) {
+        if (params.isEmpty()) {
+            conn.createStatement().use { it.execute(sql) }
+        } else {
+            conn.prepareStatement(sql).use { stmt ->
+                params.forEachIndexed { index, param -> stmt.setObject(index + 1, param) }
+                stmt.executeUpdate()
+            }
         }
     }
 

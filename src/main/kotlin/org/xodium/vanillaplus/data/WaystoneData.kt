@@ -58,7 +58,7 @@ data class WaystoneData(
 
         fun setData(table: KClass<*>, waystone: WaystoneData) {
             //language=SQLite
-            Database.execWithParams(
+            Database.exec(
                 """
                 INSERT OR REPLACE INTO ${table.simpleName} (id, custom_name, world, x, y, z)
                 VALUES (?, ?, ?, ?, ?, ?);
@@ -100,7 +100,7 @@ data class WaystoneData(
 
         fun deleteData(table: KClass<*>, id: String) {
             //language=SQLite
-            Database.execWithParams(
+            Database.exec(
                 """
                 DELETE FROM ${table.simpleName}
                 WHERE id = ?;
