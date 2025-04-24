@@ -28,16 +28,11 @@ import kotlin.uuid.Uuid
  */
 @OptIn(ExperimentalUuidApi::class)
 data class WaystoneData(
-    val id: String = "${NS}_${Uuid.random()}",
+    val id: String = "${Uuid.random()}",
     val customName: String = "Waystone",
     val location: Location,
 ) {
     companion object {
-        /**
-         * Namespace identifier for features and configurations related to waystones.
-         */
-        private const val NS = "waystone" //TODO: is this needed?
-
         /**
          * Creates a table in the database for the specified class if it does not already exist.
          */
@@ -153,7 +148,7 @@ data class WaystoneData(
          * @return A custom `ShapedRecipe` for the provided item using the defined shape and ingredients.
          */
         fun recipe(item: ItemStack): Recipe {
-            return ShapedRecipe(NamespacedKey(instance, NS + "_recipe"), item).apply {
+            return ShapedRecipe(NamespacedKey(instance, "waystone_recipe"), item).apply {
                 shape("   ", "CBC", "AAA")
                 setIngredient('A', Material.STONE_BRICKS)
                 setIngredient('B', Material.ENDER_PEARL)
