@@ -177,6 +177,7 @@ class WaystoneModule : ModuleInterface {
         player.closeInventory()
 
         val initialLocation = player.location.clone()
+        val mountedEntity = player.vehicle
         val delayTicks = 3.seconds
 
         var ticks = 0
@@ -184,18 +185,26 @@ class WaystoneModule : ModuleInterface {
         instance.server.scheduler.runTaskTimer(
             instance,
             { task ->
-                if (!player.isOnline || player.isDead || player.location.distanceSquared(initialLocation) > 0.5) {
+                val currentLocation = player.location
+                val mountedLocation = mountedEntity?.location ?: player.location
+                val tooFar = if (mountedEntity != null) {
+                    mountedLocation.distanceSquared(initialLocation) > 4.0
+                } else {
+                    currentLocation.distanceSquared(initialLocation) > 0.5
+                }
+
+                if (!player.isOnline || player.isDead || tooFar) {
                     player.sendActionBar("Teleport cancelled!".fireFmt().mm())
                     return@runTaskTimer task.cancel()
                 }
 
-                //TODO: teleportation is not working in here.
                 ticks++
                 if (ticks >= delayTicks) {
                     if (player.gameMode in listOf(GameMode.SURVIVAL, GameMode.ADVENTURE)) {
                         Utils.chargePlayerXp(player, xpCost)
                     }
                     teleportEffect(player.location)
+                    mountedEntity?.teleport(targetWaystone.location)
                     player.teleport(targetWaystone.location)
                     teleportEffect(targetWaystone.location)
                     return@runTaskTimer task.cancel()
