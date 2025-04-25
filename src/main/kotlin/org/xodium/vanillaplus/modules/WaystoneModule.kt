@@ -23,7 +23,6 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.WaystoneData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
-import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mm
 import org.xodium.vanillaplus.utils.TimeUtils.seconds
 import org.xodium.vanillaplus.utils.TimeUtils.ticks
@@ -228,20 +227,16 @@ class WaystoneModule : ModuleInterface {
                 filteredWaystones.forEachIndexed { index, waystone ->
                     val row = (index / 9) + 1
                     val slot = (index % 9) + 1
-                    //TODO: check if we can use WaystoneData.item() instead?
-                    container[row, slot] = ItemBuilder.from(Material.BIRCH_PLANKS)
-                        .name(waystone.customName.mm())
-                        .lore(
-                            "Click to teleport".fireFmt().mm(),
-                            "Travel Cost: ${
-                                WaystoneData.calculateXpCost(
-                                    originWaystone.values.first(),
-                                    waystone.location,
-                                    player.isInsideVehicle
-                                )
-                            } XP".mangoFmt().mm()
+                    container[row, slot] =
+                        ItemBuilder.from(
+                            WaystoneData.item(
+                                waystone.customName,
+                                originWaystone.values.first(),
+                                waystone,
+                                player
+                            )
                         )
-                        .asGuiItem { player, _ -> handleTeleportation(player, waystone) }
+                            .asGuiItem { player, _ -> handleTeleportation(player, waystone) }
                 }
             }
         }

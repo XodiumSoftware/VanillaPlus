@@ -16,6 +16,7 @@ import org.bukkit.inventory.ShapedRecipe
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Database
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mm
 import kotlin.uuid.ExperimentalUuidApi
@@ -132,7 +133,7 @@ data class WaystoneData(
          */
         fun item(
             customName: String = "Waystone",
-            origin: WaystoneData? = null,
+            origin: Location? = null,
             destination: WaystoneData? = null,
             player: Player? = null,
         ): ItemStack {
@@ -141,9 +142,18 @@ data class WaystoneData(
                     customName(customName.mm())
                     setCustomModelData(Config.WaystoneModule.WAYSTONE_CUSTOM_MODEL_DATA)
                     if (origin != null && destination != null) {
-                        val cost =
-                            calculateXpCost(origin.location, destination.location, player?.isInsideVehicle ?: false)
-                        lore(listOf("<bold>Cost: $cost XP</bold>".mangoFmt().mm()))
+                        lore(
+                            listOf(
+                                "Click to teleport".fireFmt().mm(),
+                                "Travel Cost: ${
+                                    calculateXpCost(
+                                        origin,
+                                        destination.location,
+                                        player?.isInsideVehicle ?: false
+                                    )
+                                } XP".mangoFmt().mm()
+                            )
+                        )
                     }
                 }
             }
