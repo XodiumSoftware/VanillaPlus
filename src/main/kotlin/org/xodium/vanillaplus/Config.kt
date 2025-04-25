@@ -426,8 +426,13 @@ object Config {
         var DISTANCE_MULTIPLIER: Double = 0.05
 
         /**
-         * A multiplier used for dimensional scaling or calculations.
+         * Multiplier used for dimensional scaling or calculations.
          */
         var DIMENSIONAL_MULTIPLIER: Int = 50
+
+        /**
+         * Multiplier applied to the base experience (XP) cost when the player is mounted during travel or teleportation.
+         */
+        var MOUNT_MULTIPLIER: Double = 1.5
     }
 }

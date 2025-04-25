@@ -9,6 +9,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.Recipe
 import org.bukkit.inventory.ShapedRecipe
@@ -119,23 +120,29 @@ data class WaystoneData(
 
 
         /**
-         * Creates an ItemStack representing a Waystone with specific properties.
-         * @param customName The custom name to set for the item.
-         * @param origin The optional origin WaystoneData, representing the starting point.
-         * @param destination The optional destination WaystoneData, representing the endpoint.
-         * @return An ItemStack configured with the specified properties.
+         * Creates an `ItemStack` instance configured as a waystone item, with optional origin and destination data.
+         * If both origin and destination are provided, the item will include a lore displaying the XP cost
+         * required for traveling between the two locations.
+         *
+         * @param customName The custom name of the item. Defaults to "Waystone".
+         * @param origin The origin `WaystoneData` representing the starting location. Null if not needed.
+         * @param destination The destination `WaystoneData` representing the target location. Null if not needed.
+         * @param player The player interacting with the waystone, used to determine if the player is mounted.
+         * @return A configured `ItemStack` representing the waystone with the specified attributes and lore.
          */
         fun item(
             customName: String = "Waystone",
             origin: WaystoneData? = null,
-            destination: WaystoneData? = null
+            destination: WaystoneData? = null,
+            player: Player? = null,
         ): ItemStack {
             return ItemStack(Config.WaystoneModule.WAYSTONE_MATERIAL).apply {
                 itemMeta = itemMeta.apply {
                     customName(customName.mm())
                     setCustomModelData(Config.WaystoneModule.WAYSTONE_CUSTOM_MODEL_DATA)
                     if (origin != null && destination != null) {
-                        val cost = calculateXpCost(origin.location, destination.location)
+                        val cost =
+                            calculateXpCost(origin.location, destination.location, player?.isInsideVehicle ?: false)
                         lore(listOf("<bold>Cost: $cost XP</bold>".mangoFmt().mm()))
                     }
                 }
@@ -157,16 +164,20 @@ data class WaystoneData(
         }
 
         /**
-         * Calculates the experience (XP) cost for traveling or teleporting between two locations.
-         * @param origin The starting location from which the travel begins. Must include world and coordinates.
-         * @param destination The target location to which the travel ends. Must include world and coordinates.
-         * @return The calculated XP cost for traveling between the given origin and destination.
+         * Calculates the experience point (XP) cost for traveling between two locations,
+         * factoring in whether the travel is mounted and whether the destination is in a different dimension.
+         * @param origin The starting location of the player, represented as a `Location` object.
+         * @param destination The destination location of the player, represented as a `Location` object.
+         * @param isMounted A Boolean flag indicating whether the player is mounted (e.g., riding a horse). Default is false.
+         * @return The calculated XP cost as an integer based on the distance, dimension, and whether the player is mounted.
          */
-        fun calculateXpCost(origin: Location, destination: Location): Int {
-            return Config.WaystoneModule.BASE_XP_COST + when (origin.world) {
-                destination.world -> (origin.distance(destination) * Config.WaystoneModule.DISTANCE_MULTIPLIER).toInt()
-                else -> Config.WaystoneModule.DIMENSIONAL_MULTIPLIER
+        fun calculateXpCost(origin: Location, destination: Location, isMounted: Boolean): Int {
+            val config = Config.WaystoneModule
+            val baseCost = config.BASE_XP_COST + when (origin.world) {
+                destination.world -> (origin.distance(destination) * config.DISTANCE_MULTIPLIER).toInt()
+                else -> config.DIMENSIONAL_MULTIPLIER
             }
+            return if (isMounted) (baseCost * config.MOUNT_MULTIPLIER).toInt() else baseCost
         }
     }
 }

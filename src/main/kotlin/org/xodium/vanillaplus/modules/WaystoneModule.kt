@@ -32,7 +32,6 @@ import java.util.*
 import kotlin.uuid.ExperimentalUuidApi
 
 //TODO: Idea, do we add that you have to discover waypoints manually first before being able to use them?
-//TODO: Idea, do we count extra cost when traveling with a mount?
 //TODO: Check, if CMI interferes with teleporting.
 //TODO: Idea, make it cost xp to place a waystone down, and maybe return xp when destroying waystone, half?.
 //TODO: Add waystone custom texture.
@@ -95,7 +94,7 @@ class WaystoneModule : ModuleInterface {
         if (block.type == Material.STONE_BRICKS && waystones.any { it.location == block.location }) {
             event.isCancelled = true
             originWaystone[event.player.uniqueId] = block.location
-            gui().open(event.player)
+            gui(event.player).open(event.player)
         }
     }
 
@@ -155,9 +154,18 @@ class WaystoneModule : ModuleInterface {
         }
     }
 
+    /**
+     * Handles the teleportation process of a player to a target waystone, including XP cost calculation,
+     * teleportation effects, and cancellation conditions.
+     *
+     * @param player The player who is attempting to teleport.
+     * @param targetWaystone The target waystone data containing the destination location for teleportation.
+     */
     private fun handleTeleportation(player: Player, targetWaystone: WaystoneData) {
         val originLoc = originWaystone[player.uniqueId]
-        val xpCost = WaystoneData.calculateXpCost(originLoc ?: player.location, targetWaystone.location)
+        val xpCost = WaystoneData.calculateXpCost(
+            originLoc ?: player.location, targetWaystone.location, player.isInsideVehicle
+        )
 
         if (player.gameMode in listOf(GameMode.SURVIVAL, GameMode.ADVENTURE)) {
             val playerTotalXp = player.level * 7 + player.exp.toInt()
@@ -201,10 +209,15 @@ class WaystoneModule : ModuleInterface {
     }
 
     /**
-     * Creates and returns a GUI with a single-row chest container, a custom title, and a stateless component.
-     * @return The constructed GUI instance.
+     * Creates a graphical user interface (GUI) for the player, allowing them to interact with and teleport to waystones.
+     *
+     * The GUI is dynamically generated based on the filtered list of available waystones, excludes the player's current waystone
+     * (if any), and displays relevant information such as the waystone's name and teleportation cost.
+     *
+     * @param player The player for whom the GUI is being generated.
+     * @return A `Gui` instance representing the graphical user interface for waystone interaction.
      */
-    private fun gui(): Gui {
+    private fun gui(player: Player): Gui {
         val filteredWaystones = waystones.filter { it.location != originWaystone.values.firstOrNull() }
         val waystoneCount = filteredWaystones.size
         val rows = ((waystoneCount + 8) / 9).coerceIn(1, 6)
@@ -223,7 +236,8 @@ class WaystoneModule : ModuleInterface {
                             "Travel Cost: ${
                                 WaystoneData.calculateXpCost(
                                     originWaystone.values.first(),
-                                    waystone.location
+                                    waystone.location,
+                                    player.isInsideVehicle
                                 )
                             } XP".mangoFmt().mm()
                         )
