@@ -31,7 +31,7 @@ import java.util.*
 import kotlin.uuid.ExperimentalUuidApi
 
 //TODO: Idea, do we add that you have to discover waypoints manually first before being able to use them?
-//TODO: Check, if CMI interferes with teleporting.
+//TODO: Teleporting with mount doesn't work without CMI.
 //TODO: Idea, make it cost xp to place a waystone down, and maybe return xp when destroying waystone, half?.
 //TODO: Add waystone custom texture.
 
