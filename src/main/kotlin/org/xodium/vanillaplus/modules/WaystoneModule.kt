@@ -204,9 +204,10 @@ class WaystoneModule : ModuleInterface {
                         Utils.chargePlayerXp(player, xpCost)
                     }
                     teleportEffect(player.location)
-                    mountedEntity?.teleport(targetWaystone.location)
-                    player.teleport(targetWaystone.location)
-                    teleportEffect(targetWaystone.location)
+                    val targetLocation = getTeleportLocationNextTo(targetWaystone.location)
+                    mountedEntity?.teleport(targetLocation)
+                    player.teleport(targetLocation)
+                    teleportEffect(targetLocation)
                     return@runTaskTimer task.cancel()
                 } else {
                     teleportInitEffect(player.location)
@@ -215,6 +216,21 @@ class WaystoneModule : ModuleInterface {
             0.ticks, 1.ticks
         )
     }
+
+    /**
+     * Finds a safe location adjacent to the target location in any horizontal direction.
+     * @param location The original location (waystone center).
+     * @return A safe location 1 block away horizontally, or the original location if no safe spots are found.
+     */
+    private fun getTeleportLocationNextTo(location: Location): Location {
+        val offsets = listOf(Pair(1, 0), Pair(-1, 0), Pair(0, 1), Pair(0, -1))
+        for ((xOffset, zOffset) in offsets) {
+            val adjacentBlock = location.clone().add(xOffset.toDouble(), 0.0, zOffset.toDouble()).block
+            if (adjacentBlock.type == Material.AIR) return adjacentBlock.location.add(0.5, 0.0, 0.5)
+        }
+        return location
+    }
+
 
     /**
      * Creates a graphical user interface (GUI) for the player, allowing them to interact with and teleport to waystones.
