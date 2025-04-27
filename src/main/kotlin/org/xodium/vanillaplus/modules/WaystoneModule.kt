@@ -206,8 +206,15 @@ class WaystoneModule : ModuleInterface {
                     }
                     teleportEffect(player.location)
                     val targetLocation = getTeleportLocationNextTo(targetWaystone.location)
-                    //FIX: teleporting with mount not working.
-                    player.teleportAsync(targetLocation, TeleportCause.PLUGIN, TeleportFlag.EntityState.RETAIN_VEHICLE)
+                    if (mountedEntity != null) {
+                        mountedEntity.teleportAsync(
+                            targetLocation,
+                            TeleportCause.PLUGIN,
+                            TeleportFlag.EntityState.RETAIN_PASSENGERS
+                        )
+                    } else {
+                        player.teleportAsync(targetLocation)
+                    }
                     teleportEffect(targetLocation)
                     return@runTaskTimer task.cancel()
                 } else {
@@ -224,6 +231,7 @@ class WaystoneModule : ModuleInterface {
      * @return A safe location 1 block away horizontally, or the original location if no safe spots are found.
      */
     private fun getTeleportLocationNextTo(location: Location): Location {
+        //TODO: take into account a mount.
         val offsets = listOf(Pair(1, 0), Pair(-1, 0), Pair(0, 1), Pair(0, -1))
         for ((xOffset, zOffset) in offsets) {
             val adjacentBlock = location.clone().add(xOffset.toDouble(), 0.0, zOffset.toDouble()).block

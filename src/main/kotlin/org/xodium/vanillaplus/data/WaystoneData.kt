@@ -5,10 +5,7 @@
 
 package org.xodium.vanillaplus.data
 
-import org.bukkit.Bukkit
-import org.bukkit.Location
-import org.bukkit.Material
-import org.bukkit.NamespacedKey
+import org.bukkit.*
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.Recipe
@@ -141,7 +138,11 @@ data class WaystoneData(
                 itemMeta = itemMeta.apply {
                     customName(customName.mm())
                     setCustomModelData(Config.WaystoneModule.WAYSTONE_CUSTOM_MODEL_DATA)
-                    if (origin != null && destination != null) {
+                    if (origin != null && destination != null && player?.gameMode in listOf(
+                            GameMode.SURVIVAL,
+                            GameMode.ADVENTURE
+                        )
+                    ) {
                         lore(
                             listOf(
                                 "Click to teleport".fireFmt().mm(),
