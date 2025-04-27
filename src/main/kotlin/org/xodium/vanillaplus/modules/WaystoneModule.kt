@@ -205,7 +205,7 @@ class WaystoneModule : ModuleInterface {
                         Utils.chargePlayerXp(player, xpCost)
                     }
                     teleportEffect(player.location)
-                    val targetLocation = getTeleportLocationNextTo(targetWaystone.location)
+                    val targetLocation = getTeleportLocationNextTo(targetWaystone.location, mountedEntity != null)
                     if (mountedEntity != null) {
                         mountedEntity.teleportAsync(
                             targetLocation,
@@ -226,16 +226,27 @@ class WaystoneModule : ModuleInterface {
     }
 
     /**
-     * Finds a safe location adjacent to the target location in any horizontal direction.
-     * @param location The original location (waystone centre).
-     * @return A safe location 1 block away horizontally, or the original location if no safe spots are found.
+     * Determines a valid teleportation location near the given location.
+     * @param location The initial location from which to search for adjacent teleportation spots.
+     * @param withMount A boolean indicating whether the teleportation location should have enough space
+     *                  to accommodate a mount.
+     * @return The determined teleportation location near the given location. If no valid spot is found,
+     *         the original location is returned.
      */
-    private fun getTeleportLocationNextTo(location: Location): Location {
-        //TODO: take into account a mount.
+    private fun getTeleportLocationNextTo(location: Location, withMount: Boolean): Location {
         val offsets = listOf(Pair(1, 0), Pair(-1, 0), Pair(0, 1), Pair(0, -1))
         for ((xOffset, zOffset) in offsets) {
-            val adjacentBlock = location.clone().add(xOffset.toDouble(), 0.0, zOffset.toDouble()).block
-            if (adjacentBlock.type == Material.AIR) return adjacentBlock.location.add(0.5, 0.0, 0.5)
+            val teleportLoc = location.clone().add(xOffset.toDouble(), 0.0, zOffset.toDouble())
+            val block = teleportLoc.block
+            val above = block.getRelative(0, 1, 0)
+            val twoAbove = block.getRelative(0, 2, 0)
+            val spaceClear = if (withMount) {
+                (block.type == Material.AIR) && (above.type == Material.AIR) && (twoAbove.type == Material.AIR)
+            } else {
+                (block.type == Material.AIR) && (above.type == Material.AIR)
+            }
+
+            if (spaceClear) return teleportLoc.add(0.5, 0.0, 0.5)
         }
         return location
     }
