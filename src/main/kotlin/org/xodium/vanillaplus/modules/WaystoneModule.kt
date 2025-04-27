@@ -234,23 +234,36 @@ class WaystoneModule : ModuleInterface {
      *         the original location is returned.
      */
     private fun getTeleportLocationNextTo(location: Location, withMount: Boolean): Location {
-        val offsets = listOf(Pair(1, 0), Pair(-1, 0), Pair(0, 1), Pair(0, -1))
-        for ((xOffset, zOffset) in offsets) {
-            val teleportLoc = location.clone().add(xOffset.toDouble(), 0.0, zOffset.toDouble())
-            val block = teleportLoc.block
-            val above = block.getRelative(0, 1, 0)
-            val twoAbove = block.getRelative(0, 2, 0)
-            val spaceClear = if (withMount) {
-                (block.type == Material.AIR) && (above.type == Material.AIR) && (twoAbove.type == Material.AIR)
-            } else {
-                (block.type == Material.AIR) && (above.type == Material.AIR)
-            }
+        val world = location.world ?: return location
+        val x = location.blockX
+        val y = location.blockY
+        val z = location.blockZ
+        val offsetDist = if (withMount) 2 else 1
+        val offsets = listOf(
+            0 to offsetDist, offsetDist to 0, 0 to -offsetDist, -offsetDist to 0,
+            offsetDist to offsetDist, offsetDist to -offsetDist, -offsetDist to offsetDist, -offsetDist to -offsetDist
+        )
+        val requiredClearance = if (withMount) 3 else 2
+        for ((dx, dz) in offsets) {
+            val tx = x + dx
+            val tz = z + dz
+            val ground = world.getBlockAt(tx, y - 1, tz)
+            if (!ground.type.isSolid || ground.type == Material.BEDROCK) continue
 
-            if (spaceClear) return teleportLoc.add(0.5, 0.0, 0.5)
+            var blocked = false
+            for (dy in 0..<requiredClearance) {
+                val block = world.getBlockAt(tx, y + dy, tz)
+                if (!block.type.isAir && !block.isPassable) {
+                    blocked = true
+                    break
+                }
+            }
+            if (blocked) continue
+
+            return Location(world, tx + 0.5, y.toDouble(), tz + 0.5, location.yaw, location.pitch)
         }
         return location
     }
-
 
     /**
      * Creates a graphical user interface (GUI) for the player, allowing them to interact with and teleport to waystones.
