@@ -25,7 +25,7 @@ import kotlin.uuid.Uuid
 /**
  * Represents metadata related to a Waystone in the Minecraft world.
  * @property id A unique identifier for the Waystone, prefixed with a namespace (NS) and followed by a random UUID.
- * @property customName The customizable name of the Waystone, defaulting to "Waystone".
+ * @property customName The customisable name of the Waystone, defaulting to "Waystone".
  * @property location The location of the Waystone, stored as `LocationData`.
  */
 @OptIn(ExperimentalUuidApi::class)
@@ -123,7 +123,7 @@ data class WaystoneData(
         /**
          * Creates an `ItemStack` instance configured as a waystone item, with optional origin and destination data.
          * If both origin and destination are provided, the item will include a lore displaying the XP cost
-         * required for traveling between the two locations.
+         * required for travelling between the two locations.
          *
          * @param customName The custom name of the item. Defaults to "Waystone".
          * @param origin The origin `WaystoneData` representing the starting location. Null if not needed.
@@ -160,7 +160,7 @@ data class WaystoneData(
         }
 
         /**
-         * Creates a custom shaped crafting recipe for the given item.
+         * Creates a custom-shaped crafting recipe for the given item.
          * @param item The resulting item of the crafting recipe.
          * @return A custom `ShapedRecipe` for the provided item using the defined shape and ingredients.
          */
@@ -174,11 +174,11 @@ data class WaystoneData(
         }
 
         /**
-         * Calculates the experience point (XP) cost for traveling between two locations,
+         * Calculates the experience point (XP) cost for travelling between two locations,
          * factoring in whether the travel is mounted and whether the destination is in a different dimension.
          * @param origin The starting location of the player, represented as a `Location` object.
          * @param destination The destination location of the player, represented as a `Location` object.
-         * @param isMounted A Boolean flag indicating whether the player is mounted (e.g., riding a horse). Default is false.
+         * @param isMounted A Boolean flag indicating whether the player is mounted (e.g. riding a horse). Default is false.
          * @return The calculated XP cost as an integer based on the distance, dimension, and whether the player is mounted.
          */
         fun calculateXpCost(origin: Location, destination: Location, isMounted: Boolean): Int {

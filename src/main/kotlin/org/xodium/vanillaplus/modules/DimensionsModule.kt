@@ -63,7 +63,7 @@ class DimensionsModule : ModuleInterface {
                     event.canCreatePortal = false
                     if (player.world != event.to.world) {
                         extinguishPortal(player.location)
-                        //TODO: Message also appears when there is a link and you walk from the nether -> overworld
+                        //TODO: Message also appears when there is a link, and you walk from the nether -> overworld
                         player.sendActionBar("No link to the portal counterpart in the Overworld".fireFmt().mm())
                     }
                 }

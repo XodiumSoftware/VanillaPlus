@@ -45,7 +45,7 @@ class TabListModule : ModuleInterface {
 
     /**
      * Update the tab list for all players
-     * @param event the player join event
+     * @param event the PlayerJoinEvent
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {

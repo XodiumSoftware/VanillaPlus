@@ -189,7 +189,7 @@ object Config {
     }
 
     /**
-     * Configuration settings for the DimensionsModule. This module controls the dimensions features of the plugin.
+     * Configuration settings for the DimensionsModule. This module controls the dimension features of the plugin.
      */
     object DimensionsModule {
         /**
@@ -374,7 +374,7 @@ object Config {
 
         /**
          * If a sapling type is missing here, no custom schematic will be used and default behaviour applies.
-         * You can define a file, multiple files or a folder.
+         * You can define a file, multiple files, or a folder.
          */
         var SAPLING_LINK: Map<Material, List<String>> = mapOf(
             Material.ACACIA_SAPLING to listOf("trees/acacia"),
