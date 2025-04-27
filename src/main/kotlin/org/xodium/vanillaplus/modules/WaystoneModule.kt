@@ -9,6 +9,7 @@ import dev.triumphteam.gui.paper.Gui
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder
 import dev.triumphteam.gui.paper.kotlin.builder.buildGui
 import dev.triumphteam.gui.paper.kotlin.builder.chestContainer
+import io.papermc.paper.entity.TeleportFlag
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.*
 import org.bukkit.entity.Player
@@ -18,6 +19,7 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.WaystoneData
@@ -31,7 +33,6 @@ import java.util.*
 import kotlin.uuid.ExperimentalUuidApi
 
 //TODO: Idea, do we add that you have to discover waypoints manually first before being able to use them?
-//TODO: Teleporting with mount doesn't work without CMI.
 //TODO: Idea, make it cost xp to place a waystone down, and maybe return xp when destroying waystone, half?.
 //TODO: Add waystone custom texture.
 
@@ -88,7 +89,7 @@ class WaystoneModule : ModuleInterface {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerInteractEvent) {
-        if (event.action != Action.RIGHT_CLICK_BLOCK) return
+        if (event.action != Action.RIGHT_CLICK_BLOCK || event.player.isSneaking) return
         val block = event.clickedBlock ?: return
         if (block.type == Material.STONE_BRICKS && waystones.any { it.location == block.location }) {
             event.isCancelled = true
@@ -205,8 +206,8 @@ class WaystoneModule : ModuleInterface {
                     }
                     teleportEffect(player.location)
                     val targetLocation = getTeleportLocationNextTo(targetWaystone.location)
-                    mountedEntity?.teleport(targetLocation)
-                    player.teleport(targetLocation)
+                    //FIX: teleporting with mount not working.
+                    player.teleportAsync(targetLocation, TeleportCause.PLUGIN, TeleportFlag.EntityState.RETAIN_VEHICLE)
                     teleportEffect(targetLocation)
                     return@runTaskTimer task.cancel()
                 } else {
