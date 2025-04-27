@@ -219,7 +219,7 @@ class WaystoneModule : ModuleInterface {
 
     /**
      * Finds a safe location adjacent to the target location in any horizontal direction.
-     * @param location The original location (waystone center).
+     * @param location The original location (waystone centre).
      * @return A safe location 1 block away horizontally, or the original location if no safe spots are found.
      */
     private fun getTeleportLocationNextTo(location: Location): Location {
