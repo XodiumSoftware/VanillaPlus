@@ -18,9 +18,7 @@ group = "org.xodium.vanillaplus"
 version = "1.8.0"
 description = "Minecraft plugin that enhances the base gameplay."
 
-var pluginName: String = "VanillaPlus"
-var apiVersion: String = "1.21.4"
-var authors: List<String> = listOf("XodiumSoftware")
+var apiVersion: String = "1.21.5"
 
 repositories {
     mavenCentral()
@@ -31,7 +29,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21.5-R0.1-SNAPSHOT")
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.11") //TODO("Move away from WorldEdit")
     implementation(kotlin("stdlib-jdk8"))
     implementation("de.jeff_media:ChestSortAPI:12.0.0")
@@ -43,19 +41,6 @@ dependencies {
 java { toolchain.languageVersion.set(JavaLanguageVersion.of(21)) }
 
 tasks {
-    processResources {
-        filesMatching("paper-plugin.yml") {
-            expand(
-                mapOf(
-                    "version" to version,
-                    "description" to description,
-                    "name" to pluginName,
-                    "apiVersion" to apiVersion,
-                    "authors" to authors.joinToString(", ")
-                )
-            )
-        }
-    }
     shadowJar {
         dependsOn(processResources)
         archiveClassifier.set("")
