@@ -68,7 +68,6 @@ object BlockTypesRegistry {
         BlockTypes.FLOWERING_AZALEA_LEAVES,
         BlockTypes.MANGROVE_PROPAGULE,
         BlockTypes.PINK_PETALS,
-//            BlockTypes.WILDFLOWERS, TODO("Add in 1.21.5")
         BlockTypes.SPORE_BLOSSOM,
     )
 }

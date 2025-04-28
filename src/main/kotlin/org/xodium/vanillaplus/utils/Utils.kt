@@ -3,8 +3,6 @@
  *  All rights reserved.
  */
 
-@file:Suppress("UnstableApiUsage")
-
 package org.xodium.vanillaplus.utils
 
 import com.mojang.brigadier.Command
@@ -33,6 +31,7 @@ object Utils {
      * @param action The action to execute, receiving a CommandSourceStack as a parameter.
      * @return Command.SINGLE_SUCCESS after execution.
      */
+    @Suppress("UnstableApiUsage")
     fun tryCatch(ctx: CommandContext<CommandSourceStack>, action: (CommandSourceStack) -> Unit): Int {
         try {
             action(ctx.source)

@@ -101,6 +101,7 @@ class AutoToolModule : ModuleInterface {
     fun on(event: BlockBreakEvent) {
         val player = event.player
         onPlayerInteractWithBlock(
+            @Suppress("UnstableApiUsage")
             PlayerInteractEvent(
                 player,
                 Action.LEFT_CLICK_BLOCK,

@@ -3,8 +3,6 @@
  *  All rights reserved.
  */
 
-@file:Suppress("UnstableApiUsage")
-
 package org.xodium.vanillaplus.managers
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
@@ -33,6 +31,7 @@ object ModuleManager {
     /**
      * A list of command builders for the modules.
      */
+    @Suppress("UnstableApiUsage")
     private val commandBuilders = mutableListOf<LiteralArgumentBuilder<CommandSourceStack>>()
 
     /**
@@ -65,6 +64,7 @@ object ModuleManager {
                 )
             }
         commandBuilders.takeIf { it.isNotEmpty() }?.let {
+            @Suppress("UnstableApiUsage")
             instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
                 event.registrar().register(
                     Commands.literal(instance.name.lowercase())
