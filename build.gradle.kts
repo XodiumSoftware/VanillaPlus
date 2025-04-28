@@ -66,8 +66,11 @@ tasks {
                 URI("https://api.papermc.io/v2/projects/paper/versions/$apiVersion/builds").toURL()
             ) as? Map<*, *>)?.get("builds")?.let { builds ->
                 (builds as? List<*>)?.mapNotNull { it as? Map<*, *> }
-                    ?.findLast { it["channel"] == "default" }?.get("build")
-            } ?: throw GradleException("No build with channel='default' found.")
+                    ?.findLast { it["channel"] == "default" }
+                    ?: (builds as? List<*>)?.mapNotNull { it as? Map<*, *> }
+                        ?.findLast { it["channel"] == "experimental" }
+            }?.get("build")
+                ?: throw GradleException("No build with channel='default' or 'experimental' found.")
             src("https://api.papermc.io/v2/projects/paper/versions/$apiVersion/builds/$latestBuild/downloads/paper-$apiVersion-$latestBuild.jar")
             dest(file(".server/server.jar"))
             onlyIfModified(true)

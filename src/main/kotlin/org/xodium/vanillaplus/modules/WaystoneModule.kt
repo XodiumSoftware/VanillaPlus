@@ -290,7 +290,7 @@ class WaystoneModule : ModuleInterface {
                             WaystoneData.item(
                                 waystone.customName,
                                 originWaystone.values.first(),
-                                waystone,
+                                waystone.location,
                                 player
                             )
                         )

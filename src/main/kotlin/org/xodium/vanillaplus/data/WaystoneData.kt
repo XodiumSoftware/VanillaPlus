@@ -131,7 +131,7 @@ data class WaystoneData(
         fun item(
             customName: String = "Waystone",
             origin: Location? = null,
-            destination: WaystoneData? = null,
+            destination: Location? = null,
             player: Player? = null,
         ): ItemStack {
             return ItemStack(Config.WaystoneModule.WAYSTONE_MATERIAL).apply {
@@ -149,7 +149,7 @@ data class WaystoneData(
                                 "Travel Cost: ${
                                     calculateXpCost(
                                         origin,
-                                        destination.location,
+                                        destination,
                                         player?.isInsideVehicle ?: false
                                     )
                                 } XP".mangoFmt().mm()
