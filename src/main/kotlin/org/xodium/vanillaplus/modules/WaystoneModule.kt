@@ -13,7 +13,6 @@ import dev.triumphteam.gui.paper.kotlin.builder.chestContainer
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.datacomponent.DataComponentTypes
-import io.papermc.paper.datacomponent.item.CustomModelData
 import io.papermc.paper.entity.TeleportFlag
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.*
@@ -80,20 +79,20 @@ class WaystoneModule : ModuleInterface {
             }
     }
 
+    @Suppress("UnstableApiUsage")
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: BlockPlaceEvent) {
         val item = event.itemInHand
-        @Suppress("UnstableApiUsage")
-        //FIX: waystone not being recognized.
-        if (item.hasData(DataComponentTypes.CUSTOM_MODEL_DATA) && item.getData(DataComponentTypes.CUSTOM_MODEL_DATA) == CustomModelData.customModelData()
-                .addString(Config.WaystoneModule.WAYSTONE_CUSTOM_MODEL_DATA)
-        ) {
-            val customName = item.getData(DataComponentTypes.CUSTOM_NAME) ?: "Waystone".mm()
-            val plainText = PlainTextComponentSerializer.plainText().serialize(customName)
-            val waystone = WaystoneData(customName = plainText, location = event.block.location)
-            WaystoneData.setData(waystone)
-            waystones.add(waystone)
-            waystoneCreateEffect(event.block.location)
+        if (item.hasData(DataComponentTypes.CUSTOM_MODEL_DATA)) {
+            val customModelData = item.getData(DataComponentTypes.CUSTOM_MODEL_DATA)
+            if (customModelData?.strings()?.contains(Config.WaystoneModule.WAYSTONE_CUSTOM_MODEL_DATA) == true) {
+                val customName = item.getData(DataComponentTypes.CUSTOM_NAME) ?: "Waystone".mm()
+                val plainText = PlainTextComponentSerializer.plainText().serialize(customName)
+                val waystone = WaystoneData(customName = plainText, location = event.block.location)
+                WaystoneData.setData(waystone)
+                waystones.add(waystone)
+                waystoneCreateEffect(event.block.location)
+            }
         }
     }
 
