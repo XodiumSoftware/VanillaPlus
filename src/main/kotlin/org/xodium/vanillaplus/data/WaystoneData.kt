@@ -5,6 +5,9 @@
 
 package org.xodium.vanillaplus.data
 
+import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.CustomModelData
+import io.papermc.paper.datacomponent.item.ItemLore
 import org.bukkit.*
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -14,7 +17,6 @@ import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Database
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
-import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mm
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -134,16 +136,21 @@ data class WaystoneData(
             destination: Location? = null,
             player: Player? = null,
         ): ItemStack {
+            @Suppress("UnstableApiUsage")
             return ItemStack(Config.WaystoneModule.WAYSTONE_MATERIAL).apply {
-                itemMeta = itemMeta.apply {
-                    customName(customName.mm())
-                    setCustomModelData(Config.WaystoneModule.WAYSTONE_CUSTOM_MODEL_DATA)
-                    if (origin != null && destination != null && player?.gameMode in listOf(
-                            GameMode.SURVIVAL,
-                            GameMode.ADVENTURE
-                        )
-                    ) {
-                        lore(
+                setData(DataComponentTypes.CUSTOM_NAME, customName.mm())
+                setData(
+                    DataComponentTypes.CUSTOM_MODEL_DATA,
+                    CustomModelData.customModelData().addString(Config.WaystoneModule.WAYSTONE_CUSTOM_MODEL_DATA)
+                )
+                if (origin != null && destination != null && player?.gameMode in listOf(
+                        GameMode.SURVIVAL,
+                        GameMode.ADVENTURE
+                    )
+                ) {
+                    setData(
+                        DataComponentTypes.LORE,
+                        ItemLore.lore().addLines(
                             listOf(
                                 "Click to teleport".fireFmt().mm(),
                                 "Travel Cost: ${
@@ -152,10 +159,10 @@ data class WaystoneData(
                                         destination,
                                         player?.isInsideVehicle ?: false
                                     )
-                                } XP".mangoFmt().mm()
+                                }".mm()
                             )
                         )
-                    }
+                    )
                 }
             }
         }

@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: io.papermc.adventure:adventure-text-serializer-legacy:4.21.0-mc1215-SNAPSHOT" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="io.papermc.adventure" artifactId="adventure-text-serializer-legacy" version="4.21.0-mc1215-SNAPSHOT" baseVersion="4.21.0-mc1215-SNAPSHOT" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.papermc.adventure/adventure-text-serializer-legacy/4.21.0-mc1215-SNAPSHOT/70b59e05fe53468f67280cb5ee16becdfffb067d/adventure-text-serializer-legacy-4.21.0-mc1215-SNAPSHOT.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.papermc.adventure/adventure-text-serializer-legacy/4.21.0-mc1215-SNAPSHOT/82501fc88f4ec8655ae19936975295f9f9bf53fb/adventure-text-serializer-legacy-4.21.0-mc1215-SNAPSHOT-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

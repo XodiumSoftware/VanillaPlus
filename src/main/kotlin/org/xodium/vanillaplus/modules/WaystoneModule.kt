@@ -9,6 +9,8 @@ import dev.triumphteam.gui.paper.Gui
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder
 import dev.triumphteam.gui.paper.kotlin.builder.buildGui
 import dev.triumphteam.gui.paper.kotlin.builder.chestContainer
+import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.CustomModelData
 import io.papermc.paper.entity.TeleportFlag
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.*
@@ -65,10 +67,13 @@ class WaystoneModule : ModuleInterface {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: BlockPlaceEvent) {
-        val itemMeta = event.itemInHand.itemMeta
-        if (itemMeta != null && itemMeta.hasCustomModelData() && itemMeta.customModelData == Config.WaystoneModule.WAYSTONE_CUSTOM_MODEL_DATA) {
-            val plainText =
-                PlainTextComponentSerializer.plainText().serialize(itemMeta.displayName() ?: "Waystone".mm())
+        val item = event.itemInHand
+        @Suppress("UnstableApiUsage")
+        if (item.hasData(DataComponentTypes.CUSTOM_MODEL_DATA) && item.getData(DataComponentTypes.CUSTOM_MODEL_DATA) == CustomModelData.customModelData()
+                .addString(Config.WaystoneModule.WAYSTONE_CUSTOM_MODEL_DATA)
+        ) {
+            val customName = item.getData(DataComponentTypes.CUSTOM_NAME) ?: "Waystone".mm()
+            val plainText = PlainTextComponentSerializer.plainText().serialize(customName)
             val waystone = WaystoneData(customName = plainText, location = event.block.location)
             WaystoneData.setData(waystone)
             waystones.add(waystone)

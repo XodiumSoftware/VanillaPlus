@@ -408,12 +408,13 @@ object Config {
         var WAYSTONE_MATERIAL: Material = Material.STONE_BRICKS
 
         /**
-         * Represents the custom model data value associated with Waystones in the VanillaPlus plugin.
+         * A constant representing the custom model data key for waystone items.
          *
-         * This variable is used to identify and manage the custom model data for Waystones.
-         * It is set to a default value of `1` and can be adjusted based on specific resource pack configurations or requirements.
+         * This value is used to associate custom model data in the context of the plugin's waystone feature.
+         * It serves as an identifier for waystone-related data components when assigning or retrieving
+         * specific attributes, such as custom visuals or metadata, to/from waystone items.
          */
-        var WAYSTONE_CUSTOM_MODEL_DATA: Int = 1
+        var WAYSTONE_CUSTOM_MODEL_DATA: String = "waystone"
 
         /**
          * The base cost in experience points (XP) for performing waystone teleportation.
