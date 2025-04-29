@@ -196,6 +196,11 @@ object Config {
          * Enables or disables the DimensionsModule.
          */
         var ENABLED: Boolean = true
+
+        /**
+         * The radius within which to search for portals in the overworld.
+         */
+        var PORTAL_SEARCH_RADIUS: Double = 128.0
     }
 
     /**

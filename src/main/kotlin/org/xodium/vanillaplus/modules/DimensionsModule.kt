@@ -38,11 +38,6 @@ class DimensionsModule : ModuleInterface {
             Vector(0, 1, 0), Vector(0, -1, 0),
             Vector(0, 0, 1), Vector(0, 0, -1)
         )
-
-        /**
-         * The radius within which to search for portals in the overworld
-         */
-        private const val PORTAL_SEARCH_RADIUS = 128.0
     }
 
     /**
@@ -96,18 +91,25 @@ class DimensionsModule : ModuleInterface {
         if (world.environment != World.Environment.NETHER) return
         if (!isPortalFrame(block)) return
 
-        val netherCoords = block.location
-        val overworldX = netherCoords.x * 8
-        val overworldY = netherCoords.y
-        val overworldZ = netherCoords.z * 8
+        val overworldCoords = convertNetherToOverworldCoords(block.location)
         val overworld = instance.server.worlds.find { it.environment == World.Environment.NORMAL } ?: return
 
-        if (!hasPortalNearby(overworld, overworldX, overworldY, overworldZ)) {
+        if (!hasPortalNearby(overworld, overworldCoords.x, overworldCoords.y, overworldCoords.z)) {
             event.isCancelled = true
             if (event.player != null) {
                 event.player?.sendActionBar("Cannot create new link to the Overworld from the Nether".fireFmt().mm())
             }
         }
+    }
+
+    /**
+     * Converts Nether coordinates to Overworld coordinates.
+     *
+     * @param netherCoords The location in the Nether.
+     * @return A Vector representing the corresponding Overworld coordinates.
+     */
+    private fun convertNetherToOverworldCoords(netherCoords: Location): Vector {
+        return Vector(netherCoords.x * 8, netherCoords.y, netherCoords.z * 8)
     }
 
     /**
@@ -135,8 +137,9 @@ class DimensionsModule : ModuleInterface {
      * @return True if a portal exists within the radius.
      */
     private fun hasPortalNearby(world: World, x: Double, y: Double, z: Double): Boolean {
-        val radiusSquared = PORTAL_SEARCH_RADIUS * PORTAL_SEARCH_RADIUS
-        val searchRadius = PORTAL_SEARCH_RADIUS.toInt()
+        val portalSearchRadius = Config.DimensionsModule.PORTAL_SEARCH_RADIUS
+        val radiusSquared = portalSearchRadius * portalSearchRadius
+        val searchRadius = portalSearchRadius.toInt()
         val centerX = x.toInt()
         val centerY = y.toInt()
         val centerZ = z.toInt()

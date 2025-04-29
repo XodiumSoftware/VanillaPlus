@@ -55,22 +55,22 @@ data class WaystoneData(
         /**
          * Inserts or updates a record in the database table corresponding to the given class,
          * using the data provided in the WaystoneData object.
-         * @param waystone The WaystoneData object containing information to be stored in the database.
+         * @param data The WaystoneData object containing information to be stored in the database.
          *                 It includes the ID, custom name, world, and coordinates (x, y, z) of the waystone.
          */
-        fun setData(waystone: WaystoneData) {
+        fun setData(data: WaystoneData) {
             //language=SQLite
             Database.exec(
                 """
                 INSERT OR REPLACE INTO ${WaystoneData::class.simpleName} (id, custom_name, world, x, y, z)
                 VALUES (?, ?, ?, ?, ?, ?);
                 """.trimIndent(),
-                waystone.id,
-                waystone.customName,
-                waystone.location.world.name,
-                waystone.location.x,
-                waystone.location.y,
-                waystone.location.z
+                data.id,
+                data.customName,
+                data.location.world.name,
+                data.location.x,
+                data.location.y,
+                data.location.z
             )
         }
 
