@@ -5,10 +5,13 @@
 
 package org.xodium.vanillaplus.modules
 
+import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import dev.triumphteam.gui.paper.Gui
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder
 import dev.triumphteam.gui.paper.kotlin.builder.buildGui
 import dev.triumphteam.gui.paper.kotlin.builder.chestContainer
+import io.papermc.paper.command.brigadier.CommandSourceStack
+import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.CustomModelData
 import io.papermc.paper.entity.TeleportFlag
@@ -23,6 +26,7 @@ import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause
 import org.xodium.vanillaplus.Config
+import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.WaystoneData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
@@ -65,10 +69,22 @@ class WaystoneModule : ModuleInterface {
         }
     }
 
+    @Suppress("UnstableApiUsage")
+    override fun cmd(): LiteralArgumentBuilder<CommandSourceStack>? {
+        return Commands.literal("waystone")
+            .requires { it.sender.hasPermission(Perms.Waystone.USE) }
+            .executes { it ->
+                Utils.tryCatch(it) {
+                    (it.sender as Player).inventory.addItem(WaystoneData.item())
+                }
+            }
+    }
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: BlockPlaceEvent) {
         val item = event.itemInHand
         @Suppress("UnstableApiUsage")
+        //FIX: waystone not being recognized.
         if (item.hasData(DataComponentTypes.CUSTOM_MODEL_DATA) && item.getData(DataComponentTypes.CUSTOM_MODEL_DATA) == CustomModelData.customModelData()
                 .addString(Config.WaystoneModule.WAYSTONE_CUSTOM_MODEL_DATA)
         ) {

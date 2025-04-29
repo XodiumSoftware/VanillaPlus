@@ -23,6 +23,7 @@ object Perms {
             Use.GENERAL,
             AutoRefill.USE,
             AutoTool.USE,
+            Waystone.USE
         ).forEach(instance.server.pluginManager::addPermission)
     }
 
@@ -41,7 +42,7 @@ object Perms {
     object AutoRefill {
         private val G1 = this::class.simpleName.toString().lowercase()
         val USE: Permission =
-            Permission("${G0}.${G1}.use", "Allows use of the autorefill command", PermissionDefault.OP)
+            Permission("${G0}.${G1}.use", "Allows use of the autorefill command", PermissionDefault.TRUE)
     }
 
     /**
@@ -50,6 +51,15 @@ object Perms {
     object AutoTool {
         private val G1 = this::class.simpleName.toString().lowercase()
         val USE: Permission =
-            Permission("${G0}.${G1}.use", "Allows use of the autotool command", PermissionDefault.OP)
+            Permission("${G0}.${G1}.use", "Allows use of the autotool command", PermissionDefault.TRUE)
+    }
+
+    /**
+     * Permissions for Waystone commands.
+     */
+    object Waystone {
+        private val G1 = this::class.simpleName.toString().lowercase()
+        val USE: Permission =
+            Permission("${G0}.${G1}.use", "Allows use of the waystone command", PermissionDefault.OP)
     }
 }
