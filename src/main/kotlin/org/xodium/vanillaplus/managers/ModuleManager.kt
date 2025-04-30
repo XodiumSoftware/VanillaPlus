@@ -20,23 +20,19 @@ import org.xodium.vanillaplus.utils.Utils
 import kotlin.time.measureTime
 
 /**
- * The `ModuleManager` is responsible for managing and initialising modules in the VanillaPlus plugin.
+ * The `ModuleManager` is responsible for managing and initialising modules in the VanillaPlus plugin
+ *
  * It handles the registration of modules as Bukkit event listeners and ensures only enabled modules
- * are processed during the server startup phase.
+ * are processed during the server startup phase
  *
  * This object initialises its modules when the server starts and logs the loading time for each
- * enabled module for monitoring performance.
+ * enabled module for monitoring performance
  */
 object ModuleManager {
-    /**
-     * A list of command builders for the modules.
-     */
+    /** A list of command builders for the modules */
     @Suppress("UnstableApiUsage")
     private val commandBuilders = mutableListOf<LiteralArgumentBuilder<CommandSourceStack>>()
 
-    /**
-     * Initialises the modules in the VanillaPlus plugin.
-     */
     init {
         listOf(
             AutoRefillModule(),

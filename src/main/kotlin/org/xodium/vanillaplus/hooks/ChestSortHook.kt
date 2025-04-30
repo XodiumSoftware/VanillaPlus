@@ -17,7 +17,6 @@ import org.xodium.vanillaplus.Config
 object ChestSortHook {
     /**
      * Check if the player should sort inventory
-     *
      * @param player Player
      * @return Boolean
      */
@@ -26,7 +25,6 @@ object ChestSortHook {
 
     /**
      * Sort inventory
-     *
      * @param block Block
      */
     fun sort(block: Block) {

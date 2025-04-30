@@ -17,12 +17,7 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.Utils
 
-/**
- * Handles functionality related to the Books module.
- * This module provides a command to open a custom-defined book for players with the appropriate permissions.
- *
- * Implements the `ModuleInterface` to integrate with the system's modular architecture.
- */
+/** Handles functionality related to the Books module */
 class BooksModule : ModuleInterface {
     override fun enabled(): Boolean = Config.BooksModule.ENABLED
 
@@ -34,9 +29,7 @@ class BooksModule : ModuleInterface {
     }
 
 
-    /**
-     * @return the book for the module
-     */
+    /** @return the book for the module */
     private fun book(): Book {
         return Book.book(
             Config.BooksModule.BOOK.title.fireFmt().mm(),

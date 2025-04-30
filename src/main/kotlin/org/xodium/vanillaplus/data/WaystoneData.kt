@@ -5,9 +5,9 @@
 
 package org.xodium.vanillaplus.data
 
-import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.xodium.vanillaplus.Database
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -82,7 +82,7 @@ data class WaystoneData(
                             resultSet.getString("id"),
                             resultSet.getString("custom_name"),
                             Location(
-                                Bukkit.getWorld(resultSet.getString("world")),
+                                instance.server.getWorld(resultSet.getString("world")),
                                 resultSet.getDouble("x"),
                                 resultSet.getDouble("y"),
                                 resultSet.getDouble("z")

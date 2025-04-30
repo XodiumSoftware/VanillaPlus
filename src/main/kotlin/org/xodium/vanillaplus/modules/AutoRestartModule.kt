@@ -26,9 +26,6 @@ import java.time.temporal.ChronoUnit
 class AutoRestartModule : ModuleInterface {
     override fun enabled(): Boolean = Config.AutoRestartModule.ENABLED
 
-    /**
-     * Initialises the AutoRestartModule.
-     */
     init {
         if (enabled()) {
             instance.server.scheduler.runTaskTimerAsynchronously(
@@ -46,9 +43,7 @@ class AutoRestartModule : ModuleInterface {
         }
     }
 
-    /**
-     * Triggers a countdown for the server restart.
-     */
+    /** Triggers a countdown for the server restart */
     private fun countdown() {
         val totalMinutes = Config.AutoRestartModule.COUNTDOWN_START_MINUTES
         var remainingSeconds = totalMinutes * 60
@@ -87,7 +82,6 @@ class AutoRestartModule : ModuleInterface {
 
     /**
      * Returns true if the current time is equal to the time string in the plugin's configuration.
-     *
      * @param restartTime the time to compare to the current time
      * @return true if the current time is equal to the restart time
      */
@@ -100,7 +94,6 @@ class AutoRestartModule : ModuleInterface {
 
     /**
      * Returns a boss bar with the name and progress set in the plugin's configuration.
-     *
      * @param timePlaceholder the time placeholder to replace in the boss bar name
      * @return a boss bar with the name and progress set in the plugin's configuration
      */

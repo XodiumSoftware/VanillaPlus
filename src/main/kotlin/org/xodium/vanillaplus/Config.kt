@@ -18,9 +18,7 @@ import org.xodium.vanillaplus.utils.Utils.getWeather
 import java.time.LocalTime
 import org.bukkit.Sound as BukkitSound
 
-/**
- * Configuration settings for the VanillaPlus plugin.
- */
+/** Configuration settings */
 object Config {
     /**
      * Configuration settings for the AutoRefillModule. This module controls the refill features of the plugin.
