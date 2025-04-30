@@ -14,7 +14,6 @@ import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.CustomModelData
-import io.papermc.paper.datacomponent.item.ItemLore
 import io.papermc.paper.entity.TeleportFlag
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.*
@@ -37,8 +36,9 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.PlayerData
 import org.xodium.vanillaplus.data.WaystoneData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.ExtUtils.il
+import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
-import org.xodium.vanillaplus.utils.FmtUtils.mm
 import org.xodium.vanillaplus.utils.TimeUtils.seconds
 import org.xodium.vanillaplus.utils.TimeUtils.ticks
 import org.xodium.vanillaplus.utils.Utils
@@ -383,31 +383,30 @@ class WaystoneModule : ModuleInterface {
         destination: Location? = null,
         player: Player? = null,
     ): ItemStack {
+        val loreLines = mutableListOf("Click to teleport".fireFmt())
+        if (origin != null && destination != null && player?.gameMode in listOf(
+                GameMode.SURVIVAL,
+                GameMode.ADVENTURE
+            )
+        ) {
+            loreLines.add(
+                "Travel Cost: ${
+                    calculateXpCost(
+                        origin,
+                        destination,
+                        player?.isInsideVehicle ?: false
+                    )
+                }"
+            )
+        }
         @Suppress("UnstableApiUsage")
-        return ItemStack(config.WAYSTONE_MATERIAL).apply {
-            val loreLines = mutableListOf("Click to teleport".fireFmt().mm())
-            if (origin != null && destination != null && player?.gameMode in listOf(
-                    GameMode.SURVIVAL,
-                    GameMode.ADVENTURE
-                )
-            ) {
-                loreLines.add(
-                    "Travel Cost: ${
-                        calculateXpCost(
-                            origin,
-                            destination,
-                            player?.isInsideVehicle ?: false
-                        )
-                    }".mm()
-                )
-            }
-
+        return ItemStack.of(config.WAYSTONE_MATERIAL).apply {
             setData(DataComponentTypes.CUSTOM_NAME, customName.mm())
             setData(
                 DataComponentTypes.CUSTOM_MODEL_DATA,
                 CustomModelData.customModelData().addString(config.WAYSTONE_CUSTOM_MODEL_DATA)
             )
-            setData(DataComponentTypes.LORE, ItemLore.lore().addLines(loreLines))
+            setData(DataComponentTypes.LORE, loreLines.il())
         }
     }
 
@@ -449,8 +448,7 @@ class WaystoneModule : ModuleInterface {
      * @return A `Gui` instance representing the graphical user interface for waystone interaction.
      */
     private fun gui(player: Player): Gui {
-        val playerData = getPlayerData(player)
-        val discoveredIds = playerData.discoveredWaystones ?: emptyList()
+        val discoveredIds = getPlayerData(player).discoveredWaystones ?: emptyList()
         val currentOrigin = originWaystone[player.uniqueId]
         val filteredWaystones = waystones.filter { waystone ->
             discoveredIds.contains(waystone.id) && waystone.location != currentOrigin

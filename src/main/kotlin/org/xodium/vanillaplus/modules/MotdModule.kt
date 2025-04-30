@@ -10,7 +10,7 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.server.ServerListPingEvent
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.utils.FmtUtils.mm
+import org.xodium.vanillaplus.utils.ExtUtils.mm
 
 /**
  * Handles functionality related to the Message of the Day (MOTD) module.

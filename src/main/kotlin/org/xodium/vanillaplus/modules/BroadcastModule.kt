@@ -8,7 +8,7 @@ package org.xodium.vanillaplus.modules
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.utils.FmtUtils.mm
+import org.xodium.vanillaplus.utils.ExtUtils.mm
 
 /**
  * Handles functionality related to broadcasting periodic messages to players.
