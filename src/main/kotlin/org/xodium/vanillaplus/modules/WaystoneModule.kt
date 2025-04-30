@@ -25,6 +25,8 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.Recipe
@@ -32,6 +34,7 @@ import org.bukkit.inventory.ShapedRecipe
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.data.PlayerData
 import org.xodium.vanillaplus.data.WaystoneData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
@@ -41,29 +44,29 @@ import org.xodium.vanillaplus.utils.TimeUtils.ticks
 import org.xodium.vanillaplus.utils.Utils
 import java.util.*
 
-//TODO: Add that you have to discover waypoints manually first before being able to use them.
+//TODO: Tweak effects.
+//TODO: Refactor.
 
 /**
  * Represents a module handling waystone mechanics within the system.
  * A waystone allows players to teleport between locations using specific in-game constructs.
  * The module listens for relevant player and block events and manages waystone functionality accordingly.
- * Features:
- * - Automatically enables if the module is configured as enabled.
- * - Initializes the required database table and crafting recipe on enabling.
- * - Provides event handling for player interactions, block placements, and block breaking.
- * - Manages the GUI for interacting with waystones.
  */
 class WaystoneModule : ModuleInterface {
-    override fun enabled(): Boolean = Config.WaystoneModule.ENABLED
+    override fun enabled(): Boolean = config.ENABLED
 
+    private val config = Config.WaystoneModule
     private val waystones = mutableListOf<WaystoneData>()
     private val originWaystone = mutableMapOf<UUID, Location>()
+    private val playerDiscoveryData = mutableMapOf<UUID, PlayerData>()
     private val guiTitle = "Waystones Index".fireFmt()
 
     init {
         if (enabled()) {
             WaystoneData.createTable()
+            PlayerData.createTable()
             waystones.addAll(WaystoneData.getData())
+            instance.server.onlinePlayers.forEach { loadPlayerData(it) }
             instance.server.addRecipe(recipe(item()))
         }
     }
@@ -79,42 +82,123 @@ class WaystoneModule : ModuleInterface {
             }
     }
 
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun on(event: PlayerJoinEvent) {
+        if (!enabled()) return
+        loadPlayerData(event.player)
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun on(event: PlayerQuitEvent) {
+        if (!enabled()) return
+        playerDiscoveryData.remove(event.player.uniqueId)
+        originWaystone.remove(event.player.uniqueId)
+    }
+
     @Suppress("UnstableApiUsage")
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: BlockPlaceEvent) {
+        if (!enabled()) return
         val item = event.itemInHand
         if (item.hasData(DataComponentTypes.CUSTOM_MODEL_DATA)) {
             val customModelData = item.getData(DataComponentTypes.CUSTOM_MODEL_DATA)
-            if (customModelData?.strings()?.contains(Config.WaystoneModule.WAYSTONE_CUSTOM_MODEL_DATA) == true) {
+            if (customModelData?.strings()?.contains(config.WAYSTONE_CUSTOM_MODEL_DATA) == true) {
                 val customName = item.getData(DataComponentTypes.CUSTOM_NAME) ?: "Waystone".mm()
                 val plainText = PlainTextComponentSerializer.plainText().serialize(customName)
                 val waystone = WaystoneData(customName = plainText, location = event.block.location)
                 WaystoneData.setData(waystone)
                 waystones.add(waystone)
                 waystoneCreateEffect(event.block.location)
+                discoverWaystone(event.player, waystone)
             }
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: BlockBreakEvent) {
+        if (!enabled()) return
         val waystone = waystones.find { it.location == event.block.location }
-        if (event.block.type == Config.WaystoneModule.WAYSTONE_MATERIAL && waystone != null) {
+        if (event.block.type == config.WAYSTONE_MATERIAL && waystone != null) {
             waystones.remove(waystone)
             WaystoneData.deleteData(waystone.id)
+            playerDiscoveryData.values.forEach { playerData ->
+                if (playerData.discoveredWaystones?.contains(waystone.id) == true) {
+                    val updatedList = playerData.discoveredWaystones.toMutableList().apply { remove(waystone.id) }
+                    val updatedData = playerData.copy(discoveredWaystones = updatedList)
+                    playerDiscoveryData[UUID.fromString(playerData.id)] = updatedData
+                    PlayerData.setData(updatedData)
+                }
+            }
             waystoneDeleteEffect(event.block.location)
         }
-
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerInteractEvent) {
+        if (!enabled()) return
         if (event.action != Action.RIGHT_CLICK_BLOCK || event.player.isSneaking) return
         val block = event.clickedBlock ?: return
-        if (block.type == Config.WaystoneModule.WAYSTONE_MATERIAL && waystones.any { it.location == block.location }) {
+        val waystone = waystones.find { it.location == block.location }
+        if (block.type == config.WAYSTONE_MATERIAL && waystones.any { it.location == block.location }) {
             event.isCancelled = true
+            val player = event.player
+            val playerData = getPlayerData(player)
+            if (playerData.discoveredWaystones?.contains(waystone?.id) == true) {
+                originWaystone[player.uniqueId] = block.location
+                gui(player).open(player)
+            } else {
+                discoverWaystone(player, waystone ?: return)
+            }
             originWaystone[event.player.uniqueId] = block.location
             gui(event.player).open(event.player)
+        }
+    }
+
+    /**
+     * Adds a waystone to the player's discovered list and saves the data.
+     * Notifies the player about the discovery.
+     * @param player The player discovering the waystone.
+     * @param waystone The waystone being discovered.
+     */
+    private fun discoverWaystone(player: Player, waystone: WaystoneData) {
+        val playerData = getPlayerData(player)
+        val discoveredList = playerData.discoveredWaystones?.toMutableList() ?: mutableListOf()
+
+        if (!discoveredList.contains(waystone.id)) {
+            discoveredList.add(waystone.id)
+            val updatedData = playerData.copy(discoveredWaystones = discoveredList)
+            playerDiscoveryData[player.uniqueId] = updatedData
+            PlayerData.setData(updatedData)
+        }
+    }
+
+    /**
+     * Loads player data from the database into the memory map. Creates default data if none exists.
+     * @param player The player whose data needs to be loaded.
+     */
+    private fun loadPlayerData(player: Player) {
+        val uuid = player.uniqueId
+        if (!playerDiscoveryData.containsKey(uuid)) {
+            val existingData = PlayerData.getData().find { it.id == uuid.toString() }
+            if (existingData != null) {
+                playerDiscoveryData[uuid] = existingData
+            } else {
+                val newData = PlayerData(id = uuid.toString(), discoveredWaystones = mutableListOf())
+                playerDiscoveryData[uuid] = newData
+                PlayerData.setData(newData)
+            }
+        }
+    }
+
+    /**
+     * Retrieves PlayerData for a given player from the memory map, loading if necessary.
+     * @param player The player whose data is needed.
+     * @return The PlayerData associated with the player.
+     */
+    private fun getPlayerData(player: Player): PlayerData {
+        return playerDiscoveryData[player.uniqueId] ?: run {
+            loadPlayerData(player)
+            playerDiscoveryData[player.uniqueId]!!
         }
     }
 
@@ -300,7 +384,7 @@ class WaystoneModule : ModuleInterface {
         player: Player? = null,
     ): ItemStack {
         @Suppress("UnstableApiUsage")
-        return ItemStack(Config.WaystoneModule.WAYSTONE_MATERIAL).apply {
+        return ItemStack(config.WAYSTONE_MATERIAL).apply {
             val loreLines = mutableListOf("Click to teleport".fireFmt().mm())
             if (origin != null && destination != null && player?.gameMode in listOf(
                     GameMode.SURVIVAL,
@@ -321,7 +405,7 @@ class WaystoneModule : ModuleInterface {
             setData(DataComponentTypes.CUSTOM_NAME, customName.mm())
             setData(
                 DataComponentTypes.CUSTOM_MODEL_DATA,
-                CustomModelData.customModelData().addString(Config.WaystoneModule.WAYSTONE_CUSTOM_MODEL_DATA)
+                CustomModelData.customModelData().addString(config.WAYSTONE_CUSTOM_MODEL_DATA)
             )
             setData(DataComponentTypes.LORE, ItemLore.lore().addLines(loreLines))
         }
@@ -336,7 +420,6 @@ class WaystoneModule : ModuleInterface {
      * @return The calculated XP cost as an integer based on the distance, dimension, and whether the player is mounted.
      */
     private fun calculateXpCost(origin: Location, destination: Location, isMounted: Boolean): Int {
-        val config = Config.WaystoneModule
         val baseCost = config.BASE_XP_COST + when (origin.world) {
             destination.world -> (origin.distance(destination) * config.DISTANCE_MULTIPLIER).toInt()
             else -> config.DIMENSIONAL_MULTIPLIER
@@ -366,7 +449,12 @@ class WaystoneModule : ModuleInterface {
      * @return A `Gui` instance representing the graphical user interface for waystone interaction.
      */
     private fun gui(player: Player): Gui {
-        val filteredWaystones = waystones.filter { it.location != originWaystone.values.firstOrNull() }
+        val playerData = getPlayerData(player)
+        val discoveredIds = playerData.discoveredWaystones ?: emptyList()
+        val currentOrigin = originWaystone[player.uniqueId]
+        val filteredWaystones = waystones.filter { waystone ->
+            discoveredIds.contains(waystone.id) && waystone.location != currentOrigin
+        }
         val waystoneCount = filteredWaystones.size
         val rows = ((waystoneCount + 8) / 9).coerceIn(1, 6)
         return buildGui {
@@ -375,17 +463,17 @@ class WaystoneModule : ModuleInterface {
             statelessComponent { container ->
                 filteredWaystones.forEachIndexed { index, waystone ->
                     val row = (index / 9) + 1
-                    val slot = (index % 9) + 1
-                    container[row, slot] =
-                        ItemBuilder.from(
+                    val col = (index % 9) + 1
+                    currentOrigin?.let { originLoc ->
+                        container[row, col] = ItemBuilder.from(
                             item(
                                 waystone.customName,
-                                originWaystone.values.first(),
+                                originLoc,
                                 waystone.location,
                                 player
                             )
-                        )
-                            .asGuiItem { player, _ -> handleTeleportation(player, waystone) }
+                        ).asGuiItem { _, _ -> handleTeleportation(player, waystone) }
+                    }
                 }
             }
         }
