@@ -37,8 +37,8 @@ import org.xodium.vanillaplus.utils.Utils
 import java.util.*
 import kotlin.uuid.ExperimentalUuidApi
 
-//TODO: Idea, do we add that you have to discover waypoints manually first before being able to use them?
-//TODO: Idea, make it cost xp to place a waystone down, and maybe return xp when destroying waystone, half?.
+//TODO: Add that you have to discover waypoints manually first before being able to use them.
+//TODO: Adjust effects to be around the waystone instead of player.
 //TODO: Add waystone custom texture.
 
 /**
@@ -58,7 +58,7 @@ class WaystoneModule : ModuleInterface {
 
     private val waystones = mutableListOf<WaystoneData>()
     private val originWaystone = mutableMapOf<UUID, Location>()
-    private val guiTitle = "Waystones Teleportation Index".fireFmt()
+    private val guiTitle = "Waystones Index".fireFmt()
 
     init {
         if (enabled()) {
@@ -111,7 +111,7 @@ class WaystoneModule : ModuleInterface {
     fun on(event: PlayerInteractEvent) {
         if (event.action != Action.RIGHT_CLICK_BLOCK || event.player.isSneaking) return
         val block = event.clickedBlock ?: return
-        if (block.type == Material.STONE_BRICKS && waystones.any { it.location == block.location }) {
+        if (block.type == Material.BEACON && waystones.any { it.location == block.location }) {
             event.isCancelled = true
             originWaystone[event.player.uniqueId] = block.location
             gui(event.player).open(event.player)

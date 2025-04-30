@@ -123,7 +123,6 @@ data class WaystoneData(
          * Creates an `ItemStack` instance configured as a waystone item, with optional origin and destination data.
          * If both origin and destination are provided, the item will include a lore displaying the XP cost
          * required for travelling between the two locations.
-         *
          * @param customName The custom name of the item. Defaults to "Waystone".
          * @param origin The origin `WaystoneData` representing the starting location. Null if not needed.
          * @param destination The destination `WaystoneData` representing the target location. Null if not needed.
@@ -174,10 +173,10 @@ data class WaystoneData(
          */
         fun recipe(item: ItemStack): Recipe {
             return ShapedRecipe(NamespacedKey(instance, "waystone_recipe"), item).apply {
-                shape("   ", "CBC", "AAA")
-                setIngredient('A', Material.STONE_BRICKS)
-                setIngredient('B', Material.ENDER_PEARL)
-                setIngredient('C', Material.COMPASS)
+                shape("CCC", "CBC", "AAA")
+                setIngredient('A', Material.OBSIDIAN)
+                setIngredient('B', Material.ENDER_EYE)
+                setIngredient('C', Material.GLASS)
             }
         }
 

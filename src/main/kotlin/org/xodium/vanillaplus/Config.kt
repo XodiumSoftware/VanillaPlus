@@ -406,18 +406,12 @@ object Config {
         var ENABLED: Boolean = true
 
         /**
-         * The material used for crafting waystones in the VanillaPlus plugin.
-         * Determines the visual and structural representation of waystones.
-         * This value can be configured to use different materials as desired.
+         * The material used for crafting waystones.
          */
-        var WAYSTONE_MATERIAL: Material = Material.STONE_BRICKS
+        var WAYSTONE_MATERIAL: Material = Material.BEACON
 
         /**
          * A constant representing the custom model data key for waystone items.
-         *
-         * This value is used to associate custom model data in the context of the plugin's waystone feature.
-         * It serves as an identifier for waystone-related data components when assigning or retrieving
-         * specific attributes, such as custom visuals or metadata, to/from waystone items.
          */
         var WAYSTONE_CUSTOM_MODEL_DATA: String = "waystone"
 
