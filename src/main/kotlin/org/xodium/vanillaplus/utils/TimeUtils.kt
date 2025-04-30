@@ -7,9 +7,7 @@
 
 package org.xodium.vanillaplus.utils
 
-/**
- * Time utilities
- */
+/** Time utilities */
 object TimeUtils {
     private const val TICKS_PER_SECOND = 20L
     private const val SECONDS_PER_MINUTE = 60L
