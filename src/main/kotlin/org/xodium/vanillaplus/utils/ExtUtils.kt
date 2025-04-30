@@ -13,8 +13,6 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Color
 
-//TODO: FIX.
-
 /** Extension utilities */
 object ExtUtils {
     private val MM: MiniMessage = MiniMessage.miniMessage()
@@ -25,47 +23,55 @@ object ExtUtils {
     fun String.mm(): Component = MM.deserialize(this)
 
     /** Deserializes a list of MiniMessage strings into a list of Components. */
+    @JvmName("mmStringList")
     fun List<String>.mm(): List<Component> = this.map { it.mm() }
 
     /** Serializes a Component into a MiniMessage string. */
     fun Component.mm(): String = MM.serialize(this)
 
     /** Deserializes a list of MiniMessage strings into a list of Components. */
-//    fun List<Component>.mm(): List<String> = this.map { it.mm() }
+    @JvmName("mmComponentList")
+    fun List<Component>.mm(): List<String> = this.map { it.mm() }
 
     /** Creates an ItemLore object from a single MiniMessage string. */
     fun String.il(): ItemLore.Builder = IL.addLine(this.mm())
 
     /** Creates an ItemLore object from a list of MiniMessage strings. */
+    @JvmName("ilStringList")
     fun List<String>.il(): ItemLore.Builder = IL.addLines(this.mm())
 
     /** Creates an ItemLore object from a single Component. */
     fun Component.il(): ItemLore.Builder = IL.addLine(this)
 
     /** Creates an ItemLore object from a list of Components. */
-//    fun List<Component>.il(): ItemLore.Builder = IL.addLines(this)
+    @JvmName("ilComponentList")
+    fun List<Component>.il(): ItemLore.Builder = IL.addLines(this)
 
     /** Creates a CustomModelData object from a single string. */
     fun String.cmd(): CustomModelData.Builder = CMD.addString(this)
 
     /** Creates a CustomModelData object from a list of strings. */
+    @JvmName("cmdStringList")
     fun List<String>.cmd(): CustomModelData.Builder = CMD.addStrings(this)
 
     /** Creates a CustomModelData object from a single float. */
     fun Float.cmd(): CustomModelData.Builder = CMD.addFloat(this)
 
     /** Creates a CustomModelData object from a list of floats. */
-//    fun List<Float>.cmd(): CustomModelData.Builder = CMD.addFloats(this)
+    @JvmName("cmdFloatList")
+    fun List<Float>.cmd(): CustomModelData.Builder = CMD.addFloats(this)
 
     /** Creates a CustomModelData object from a single boolean. */
     fun Boolean.cmd(): CustomModelData.Builder = CMD.addFlag(this)
 
     /** Creates a CustomModelData object from a list of booleans. */
-//    fun List<Boolean>.cmd(): CustomModelData.Builder = CMD.addFlags(this)
+    @JvmName("cmdBooleanList")
+    fun List<Boolean>.cmd(): CustomModelData.Builder = CMD.addFlags(this)
 
     /** Creates a CustomModelData object from a single color. */
     fun Color.cmd(): CustomModelData.Builder = CMD.addColor(this)
 
     /** Creates a CustomModelData object from a list of colors. */
-//    fun List<Color>.cmd(): CustomModelData.Builder = CMD.addColors(this)
+    @JvmName("cmdColorList")
+    fun List<Color>.cmd(): CustomModelData.Builder = CMD.addColors(this)
 }
