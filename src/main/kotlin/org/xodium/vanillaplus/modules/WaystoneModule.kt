@@ -99,7 +99,7 @@ class WaystoneModule : ModuleInterface {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: BlockBreakEvent) {
         val waystone = waystones.find { it.location == event.block.location }
-        if (event.block.type == Material.STONE_BRICKS && waystone != null) {
+        if (event.block.type == Config.WaystoneModule.WAYSTONE_MATERIAL && waystone != null) {
             waystones.remove(waystone)
             WaystoneData.deleteData(waystone.id)
             waystoneDeleteEffect(event.block.location)
@@ -111,7 +111,7 @@ class WaystoneModule : ModuleInterface {
     fun on(event: PlayerInteractEvent) {
         if (event.action != Action.RIGHT_CLICK_BLOCK || event.player.isSneaking) return
         val block = event.clickedBlock ?: return
-        if (block.type == Material.BEACON && waystones.any { it.location == block.location }) {
+        if (block.type == Config.WaystoneModule.WAYSTONE_MATERIAL && waystones.any { it.location == block.location }) {
             event.isCancelled = true
             originWaystone[event.player.uniqueId] = block.location
             gui(event.player).open(event.player)

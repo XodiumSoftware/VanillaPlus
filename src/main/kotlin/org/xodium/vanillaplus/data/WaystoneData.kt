@@ -137,32 +137,29 @@ data class WaystoneData(
         ): ItemStack {
             @Suppress("UnstableApiUsage")
             return ItemStack(Config.WaystoneModule.WAYSTONE_MATERIAL).apply {
-                setData(DataComponentTypes.CUSTOM_NAME, customName.mm())
-                setData(
-                    DataComponentTypes.CUSTOM_MODEL_DATA,
-                    CustomModelData.customModelData().addString(Config.WaystoneModule.WAYSTONE_CUSTOM_MODEL_DATA)
-                )
+                val loreLines = mutableListOf("Click to teleport".fireFmt().mm())
                 if (origin != null && destination != null && player?.gameMode in listOf(
                         GameMode.SURVIVAL,
                         GameMode.ADVENTURE
                     )
                 ) {
-                    setData(
-                        DataComponentTypes.LORE,
-                        ItemLore.lore().addLines(
-                            listOf(
-                                "Click to teleport".fireFmt().mm(),
-                                "Travel Cost: ${
-                                    calculateXpCost(
-                                        origin,
-                                        destination,
-                                        player?.isInsideVehicle ?: false
-                                    )
-                                }".mm()
+                    loreLines.add(
+                        "Travel Cost: ${
+                            calculateXpCost(
+                                origin,
+                                destination,
+                                player?.isInsideVehicle ?: false
                             )
-                        )
+                        }".mm()
                     )
                 }
+
+                setData(DataComponentTypes.CUSTOM_NAME, customName.mm())
+                setData(
+                    DataComponentTypes.CUSTOM_MODEL_DATA,
+                    CustomModelData.customModelData().addString(Config.WaystoneModule.WAYSTONE_CUSTOM_MODEL_DATA)
+                )
+                setData(DataComponentTypes.LORE, ItemLore.lore().addLines(loreLines))
             }
         }
 
