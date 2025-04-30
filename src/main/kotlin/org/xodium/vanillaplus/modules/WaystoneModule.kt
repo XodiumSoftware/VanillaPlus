@@ -13,6 +13,8 @@ import dev.triumphteam.gui.paper.kotlin.builder.chestContainer
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.CustomModelData
+import io.papermc.paper.datacomponent.item.ItemLore
 import io.papermc.paper.entity.TeleportFlag
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.*
@@ -24,6 +26,9 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause
+import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.Recipe
+import org.bukkit.inventory.ShapedRecipe
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -64,7 +69,7 @@ class WaystoneModule : ModuleInterface {
         if (enabled()) {
             WaystoneData.createTable()
             waystones.addAll(WaystoneData.getData())
-            instance.server.addRecipe(WaystoneData.recipe(WaystoneData.item()))
+            instance.server.addRecipe(recipe(item()))
         }
     }
 
@@ -74,7 +79,7 @@ class WaystoneModule : ModuleInterface {
             .requires { it.sender.hasPermission(Perms.Waystone.USE) }
             .executes { it ->
                 Utils.tryCatch(it) {
-                    (it.sender as Player).inventory.addItem(WaystoneData.item())
+                    (it.sender as Player).inventory.addItem(item())
                 }
             }
     }
@@ -183,7 +188,7 @@ class WaystoneModule : ModuleInterface {
      */
     private fun handleTeleportation(player: Player, targetWaystone: WaystoneData) {
         val originLoc = originWaystone[player.uniqueId]
-        val xpCost = WaystoneData.calculateXpCost(
+        val xpCost = calculateXpCost(
             originLoc ?: player.location, targetWaystone.location, player.isInsideVehicle
         )
 
@@ -286,6 +291,81 @@ class WaystoneModule : ModuleInterface {
     }
 
     /**
+     * Creates an `ItemStack` instance configured as a waystone item, with optional origin and destination data.
+     * If both origin and destination are provided, the item will include a lore displaying the XP cost
+     * required for travelling between the two locations.
+     * @param customName The custom name of the item. Defaults to "Waystone".
+     * @param origin The origin `WaystoneData` representing the starting location. Null if not needed.
+     * @param destination The destination `WaystoneData` representing the target location. Null if not needed.
+     * @param player The player interacting with the waystone, used to determine if the player is mounted.
+     * @return A configured `ItemStack` representing the waystone with the specified attributes and lore.
+     */
+    private fun item(
+        customName: String = "Waystone",
+        origin: Location? = null,
+        destination: Location? = null,
+        player: Player? = null,
+    ): ItemStack {
+        @Suppress("UnstableApiUsage")
+        return ItemStack(Config.WaystoneModule.WAYSTONE_MATERIAL).apply {
+            val loreLines = mutableListOf("Click to teleport".fireFmt().mm())
+            if (origin != null && destination != null && player?.gameMode in listOf(
+                    GameMode.SURVIVAL,
+                    GameMode.ADVENTURE
+                )
+            ) {
+                loreLines.add(
+                    "Travel Cost: ${
+                        calculateXpCost(
+                            origin,
+                            destination,
+                            player?.isInsideVehicle ?: false
+                        )
+                    }".mm()
+                )
+            }
+
+            setData(DataComponentTypes.CUSTOM_NAME, customName.mm())
+            setData(
+                DataComponentTypes.CUSTOM_MODEL_DATA,
+                CustomModelData.customModelData().addString(Config.WaystoneModule.WAYSTONE_CUSTOM_MODEL_DATA)
+            )
+            setData(DataComponentTypes.LORE, ItemLore.lore().addLines(loreLines))
+        }
+    }
+
+    /**
+     * Calculates the experience point (XP) cost for travelling between two locations,
+     * factoring in whether the travel is mounted and whether the destination is in a different dimension.
+     * @param origin The starting location of the player, represented as a `Location` object.
+     * @param destination The destination location of the player, represented as a `Location` object.
+     * @param isMounted A Boolean flag indicating whether the player is mounted (e.g. riding a horse). Default is false.
+     * @return The calculated XP cost as an integer based on the distance, dimension, and whether the player is mounted.
+     */
+    private fun calculateXpCost(origin: Location, destination: Location, isMounted: Boolean): Int {
+        val config = Config.WaystoneModule
+        val baseCost = config.BASE_XP_COST + when (origin.world) {
+            destination.world -> (origin.distance(destination) * config.DISTANCE_MULTIPLIER).toInt()
+            else -> config.DIMENSIONAL_MULTIPLIER
+        }
+        return if (isMounted) (baseCost * config.MOUNT_MULTIPLIER).toInt() else baseCost
+    }
+
+    /**
+     * Creates a custom-shaped crafting recipe for the given item.
+     * @param item The resulting item of the crafting recipe.
+     * @return A custom `ShapedRecipe` for the provided item using the defined shape and ingredients.
+     */
+    private fun recipe(item: ItemStack): Recipe {
+        return ShapedRecipe(NamespacedKey(instance, "waystone_recipe"), item).apply {
+            shape("CCC", "CBC", "AAA")
+            setIngredient('A', Material.OBSIDIAN)
+            setIngredient('B', Material.ENDER_EYE)
+            setIngredient('C', Material.GLASS)
+        }
+    }
+
+    /**
      * Creates a graphical user interface (GUI) for the player, allowing them to interact with and teleport to waystones.
      *
      * The GUI is dynamically generated based on the filtered list of available waystones, excludes the player's current waystone
@@ -307,7 +387,7 @@ class WaystoneModule : ModuleInterface {
                     val slot = (index % 9) + 1
                     container[row, slot] =
                         ItemBuilder.from(
-                            WaystoneData.item(
+                            item(
                                 waystone.customName,
                                 originWaystone.values.first(),
                                 waystone.location,
