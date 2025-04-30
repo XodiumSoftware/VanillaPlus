@@ -13,7 +13,6 @@ import dev.triumphteam.gui.paper.kotlin.builder.chestContainer
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.datacomponent.DataComponentTypes
-import io.papermc.paper.datacomponent.item.CustomModelData
 import io.papermc.paper.entity.TeleportFlag
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.*
@@ -36,6 +35,7 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.PlayerData
 import org.xodium.vanillaplus.data.WaystoneData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.ExtUtils.cmd
 import org.xodium.vanillaplus.utils.ExtUtils.il
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
@@ -402,10 +402,7 @@ class WaystoneModule : ModuleInterface {
         @Suppress("UnstableApiUsage")
         return ItemStack.of(config.WAYSTONE_MATERIAL).apply {
             setData(DataComponentTypes.CUSTOM_NAME, customName.mm())
-            setData(
-                DataComponentTypes.CUSTOM_MODEL_DATA,
-                CustomModelData.customModelData().addString(config.WAYSTONE_CUSTOM_MODEL_DATA)
-            )
+            setData(DataComponentTypes.CUSTOM_MODEL_DATA, config.WAYSTONE_CUSTOM_MODEL_DATA.cmd())
             setData(DataComponentTypes.LORE, loreLines.il())
         }
     }
