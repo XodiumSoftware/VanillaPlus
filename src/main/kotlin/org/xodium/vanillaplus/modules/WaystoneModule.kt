@@ -40,7 +40,6 @@ import org.xodium.vanillaplus.utils.TimeUtils.seconds
 import org.xodium.vanillaplus.utils.TimeUtils.ticks
 import org.xodium.vanillaplus.utils.Utils
 import java.util.*
-import kotlin.uuid.ExperimentalUuidApi
 
 //TODO: Add that you have to discover waypoints manually first before being able to use them.
 //TODO: Adjust effects to be around the waystone instead of player.
@@ -57,7 +56,6 @@ import kotlin.uuid.ExperimentalUuidApi
  * - Provides event handling for player interactions, block placements, and block breaking.
  * - Manages the GUI for interacting with waystones.
  */
-@OptIn(ExperimentalUuidApi::class)
 class WaystoneModule : ModuleInterface {
     override fun enabled(): Boolean = Config.WaystoneModule.ENABLED
 
