@@ -29,14 +29,15 @@ import java.util.*
 import kotlin.Array
 import kotlin.Boolean
 import kotlin.Int
-import kotlin.compareTo
 import kotlin.let
+import kotlin.text.compareTo
 import kotlin.text.equals
 import kotlin.text.lowercase
 import kotlin.text.startsWith
 import kotlin.text.toFloat
 import kotlin.text.uppercase
 
+//TODO: convert to new command system.
 class CommandUnload() : CommandExecutor, TabCompleter {
     override fun onCommand(
         sender: CommandSender, command: Command, label: String,

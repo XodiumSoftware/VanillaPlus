@@ -31,6 +31,7 @@ import kotlin.Int
 import kotlin.text.toInt
 import kotlin.text.uppercase
 
+//TODO: convert to new command system.
 class CommandSearchItem : CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, s: String, args: Array<String>): Boolean {
         if (sender !is Player) {

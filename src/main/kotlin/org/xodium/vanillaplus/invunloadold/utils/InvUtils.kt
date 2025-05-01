@@ -6,6 +6,7 @@
 package org.xodium.vanillaplus.invunloadold.utils
 
 import org.bukkit.Material
+import org.bukkit.Tag
 import org.bukkit.block.ShulkerBox
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
@@ -14,8 +15,8 @@ import org.xodium.vanillaplus.invunloadold.UnloadSummary
 
 object InvUtils {
     fun searchItemInContainers(mat: Material, destination: Inventory, summary: UnloadSummary): Boolean {
-        if (BlockUtils.Companion.doesChestContain(destination, ItemStack(mat))) {
-            val amount = BlockUtils.Companion.doesChestContainCount(destination, mat)
+        if (BlockUtils.doesChestContain(destination, ItemStack(mat))) {
+            val amount = BlockUtils.doesChestContainCount(destination, mat)
             summary.protocolUnload(destination.location, mat, amount)
             return true
         }
@@ -44,14 +45,12 @@ object InvUtils {
         for (i in startSlot..endSlot) {
             val item = source.getItem(i)
             if (item == null) continue
-            if (ShulkerUtils.isShulkerBox(item)) {
-                if (destination.holder != null && destination.holder is ShulkerBox) {
-                    continue
-                }
+            if (Tag.SHULKER_BOXES.isTagged(item.type)) {
+                if (destination.holder != null && destination.holder is ShulkerBox) continue
             }
             source.clear(i)
             var amount = item.amount
-            if (!onlyMatchingStuff || BlockUtils.Companion.doesChestContain(destination, item)) {
+            if (!onlyMatchingStuff || BlockUtils.doesChestContain(destination, item)) {
                 for (leftover in destination.addItem(item).values) {
                     amount = amount - leftover.amount
                     source.setItem(i, leftover)

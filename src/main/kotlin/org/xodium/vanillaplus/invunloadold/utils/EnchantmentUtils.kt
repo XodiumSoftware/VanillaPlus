@@ -15,17 +15,11 @@ object EnchantmentUtils {
     fun hasMatchingEnchantments(first: ItemStack, second: ItemStack): Boolean {
         if (!instance.config.getBoolean("match-enchantments") && !instance.config //TODO: use Config
                 .getBoolean("match-enchantments-on-books")
-        ) {
-            return true
-        }
+        ) return true
 
         if (!instance.config.getBoolean("match-enchantments") && instance.config //TODO: use Config
-                .getBoolean("match-enchantments-on-books")
-        ) {
-            if (first.type != Material.ENCHANTED_BOOK) {
-                return true
-            }
-        }
+                .getBoolean("match-enchantments-on-books") && first.type != Material.ENCHANTED_BOOK
+        ) return true
 
         if (!first.hasItemMeta() && !second.hasItemMeta()) return true
         val firstMeta: ItemMeta =

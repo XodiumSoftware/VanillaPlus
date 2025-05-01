@@ -11,6 +11,7 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 
+//TODO: Move to a more generic location.
 object CoolDownUtils {
     private val map = mutableMapOf<Player, Long?>()
 
