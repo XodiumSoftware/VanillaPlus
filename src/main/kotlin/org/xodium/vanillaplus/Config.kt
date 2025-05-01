@@ -215,6 +215,12 @@ object Config {
 
         /** The cooldown to use the mechanic again. */
         var COOLDOWN: Long = 5L * 1000L // 5 seconds
+
+        /** If it should match enchantments. */
+        var MATCH_ENCHANTMENTS: Boolean = true
+
+        /** If it should match enchantments on books. */
+        var MATCH_ENCHANTMENTS_ON_BOOKS: Boolean = true
     }
 
     /** Configuration settings for the MotdModule. */

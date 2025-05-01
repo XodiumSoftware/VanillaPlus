@@ -20,7 +20,6 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.invunloadold.UnloadSummary
 import org.xodium.vanillaplus.invunloadold.Visualizer
 import org.xodium.vanillaplus.invunloadold.utils.BlockUtils
-import org.xodium.vanillaplus.invunloadold.utils.GroupUtils
 import org.xodium.vanillaplus.invunloadold.utils.InvUtils
 import org.xodium.vanillaplus.invunloadold.utils.PlayerUtils
 import java.lang.String
@@ -102,35 +101,31 @@ class CommandSearchItem : CommandExecutor {
             return true
         }
 
-        val affectedChests = ArrayList<Block?>()
+        val affectedChests = ArrayList<Block>()
         val doubleChests: ArrayList<InventoryHolder?> = ArrayList()
         val summary = UnloadSummary()
         for (block in useableChests) {
             val inv: Inventory = (block.state as Container).inventory
-
             if (inv.holder is DoubleChest) {
                 val dc: DoubleChest? = inv.holder as DoubleChest?
                 if (doubleChests.contains(dc?.leftSide)) continue
                 doubleChests.add(dc?.leftSide)
             }
-
             if (InvUtils.searchItemInContainers(mat, inv, summary)) {
                 affectedChests.add(block)
             }
         }
 
         summary.print(UnloadSummary.PrintRecipient.PLAYER, p)
-
         if (affectedChests.isEmpty()) {
             p.sendMessage(String.format("", mat.name))
             return true
         }
 
         for (block in affectedChests) {
-            Visualizer().chestAnimation(block, p)
+            Visualizer.chestAnimation(block, p)
         }
-        Visualizer().play(affectedChests as ArrayList<Block>, p)
-
+        Visualizer.play(affectedChests, p)
         return true
     }
 }

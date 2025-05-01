@@ -14,7 +14,7 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.invunloadold.utils.BlockUtils
 import java.util.*
 
-class Visualizer {
+object Visualizer {
     private val lastUnloads: HashMap<UUID?, ArrayList<Block?>?> =
         HashMap<UUID?, ArrayList<Block?>?>()
     private val lastUnloadPositions: HashMap<UUID?, Location?> =
@@ -67,7 +67,7 @@ class Visualizer {
         }
     }
 
-    private fun play(affectedChests: ArrayList<Block>, p: Player) {
+    fun play(affectedChests: ArrayList<Block>, p: Player) {
         val particle: Particle =
             Particle.valueOf(instance.config.getString("laser-particle", "CRIT")!!.uppercase(Locale.getDefault()))
         val count = instance.config.getInt("laser-count", 1)

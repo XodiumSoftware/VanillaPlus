@@ -8,44 +8,35 @@ package org.xodium.vanillaplus.invunloadold.utils
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.EnchantmentStorageMeta
-import org.bukkit.inventory.meta.ItemMeta
+import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 
 object EnchantmentUtils {
     fun hasMatchingEnchantments(first: ItemStack, second: ItemStack): Boolean {
-        if (!instance.config.getBoolean("match-enchantments") && !instance.config //TODO: use Config
-                .getBoolean("match-enchantments-on-books")
-        ) return true
+        val config = Config.InvUnloadModule
 
-        if (!instance.config.getBoolean("match-enchantments") && instance.config //TODO: use Config
-                .getBoolean("match-enchantments-on-books") && first.type != Material.ENCHANTED_BOOK
-        ) return true
+        if (!config.MATCH_ENCHANTMENTS && !config.MATCH_ENCHANTMENTS_ON_BOOKS) return true
+        if (!config.MATCH_ENCHANTMENTS && first.type != Material.ENCHANTED_BOOK) return true
 
-        if (!first.hasItemMeta() && !second.hasItemMeta()) return true
-        val firstMeta: ItemMeta =
-            if (first.hasItemMeta()) first.itemMeta else instance.server.itemFactory.getItemMeta(first.type)
-        val secondMeta: ItemMeta =
-            if (second.hasItemMeta()) second.itemMeta else instance.server.itemFactory.getItemMeta(second.type)
+        val firstMeta = first.itemMeta ?: instance.server.itemFactory.getItemMeta(first.type)
+        val secondMeta = second.itemMeta ?: instance.server.itemFactory.getItemMeta(second.type)
 
+        if (firstMeta == null && secondMeta == null) return true
         if (firstMeta is EnchantmentStorageMeta && secondMeta is EnchantmentStorageMeta) {
-            val firstStorage: EnchantmentStorageMeta = firstMeta
-            val secondStorage: EnchantmentStorageMeta = secondMeta
-            if (firstStorage.storedEnchants.size != secondStorage.storedEnchants.size) {
-                return false
-            }
-            for (enchantment in firstStorage.storedEnchants.entries) {
-                if (!secondStorage.storedEnchants.containsKey(enchantment.key)) {
-                    return false
-                }
-                if (secondStorage.getStoredEnchantLevel(enchantment.key) != enchantment.value) {
-                    return false
-                }
-            }
-            return true
+            val firstEnchants = firstMeta.storedEnchants
+            val secondEnchants = secondMeta.storedEnchants
+
+            if (firstEnchants.size != secondEnchants.size) return false
+
+            return firstEnchants.all { (enchant, level) -> secondEnchants[enchant] == level }
         }
-        if (!firstMeta.hasEnchants() && !secondMeta.hasEnchants()) return true
-        if (firstMeta.hasEnchants() && !secondMeta.hasEnchants()) return false
-        if (!firstMeta.hasEnchants() && secondMeta.hasEnchants()) return false
-        return firstMeta.enchants == secondMeta.enchants
+
+        val firstHasEnchants = firstMeta?.hasEnchants() == true
+        val secondHasEnchants = secondMeta?.hasEnchants() == true
+
+        if (!firstHasEnchants && !secondHasEnchants) return true
+        if (firstHasEnchants != secondHasEnchants) return false
+
+        return firstMeta?.enchants == secondMeta?.enchants
     }
 }
