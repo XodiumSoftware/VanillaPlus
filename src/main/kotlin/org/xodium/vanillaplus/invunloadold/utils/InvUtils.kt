@@ -17,7 +17,7 @@ object InvUtils {
     fun searchItemInContainers(mat: Material, destination: Inventory, summary: UnloadSummary): Boolean {
         if (BlockUtils.doesChestContain(destination, ItemStack(mat))) {
             val amount = BlockUtils.doesChestContainCount(destination, mat)
-            summary.protocolUnload(destination.location, mat, amount)
+            destination.location?.let { summary.protocolUnload(it, mat, amount) }
             return true
         }
         return false
@@ -55,7 +55,7 @@ object InvUtils {
                     amount = amount - leftover.amount
                     source.setItem(i, leftover)
                 }
-                summary?.protocolUnload(destination.location, item.type, amount)
+                destination.location?.let { summary?.protocolUnload(it, item.type, amount) }
             } else {
                 source.setItem(i, item)
             }

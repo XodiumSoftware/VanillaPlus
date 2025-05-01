@@ -86,11 +86,10 @@ class CommandUnload() : CommandExecutor, TabCompleter {
         for (block in chests) if (PlayerUtils.canPlayerUseChest(block, p)) useableChests.add(block!!)
 
         val affectedChests = ArrayList<Block?>()
-        val summary = UnloadSummary()
 
         for (block in useableChests) {
             val inv: Inventory = (block.state as Container).inventory
-            if (InvUtils.stuffInventoryIntoAnother(p, inv, true, startSlot, endSlot, summary)) {
+            if (InvUtils.stuffInventoryIntoAnother(p, inv, true, startSlot, endSlot, UnloadSummary)) {
                 affectedChests.add(block)
             }
         }
@@ -98,13 +97,13 @@ class CommandUnload() : CommandExecutor, TabCompleter {
         if (!onlyMatchingStuff) {
             for (block in useableChests) {
                 val inv: Inventory = (block.state as Container).inventory
-                if (InvUtils.stuffInventoryIntoAnother(p, inv, false, startSlot, endSlot, summary)) {
+                if (InvUtils.stuffInventoryIntoAnother(p, inv, false, startSlot, endSlot, UnloadSummary)) {
                     affectedChests.add(block)
                 }
             }
         }
         if (instance.config.getBoolean("always-show-summary")) { //TODO: use Config.
-            summary.print(UnloadSummary.PrintRecipient.PLAYER, p)
+            UnloadSummary.print(p)
         }
 
         if (affectedChests.isEmpty()) {
@@ -116,7 +115,7 @@ class CommandUnload() : CommandExecutor, TabCompleter {
             return true
         }
 
-        Visualizer.save(p, affectedChests, summary)
+        Visualizer.save(p, affectedChests, UnloadSummary)
 
         for (block in affectedChests) {
             Visualizer.chestAnimation(block, p)

@@ -13,7 +13,7 @@ import org.bukkit.block.Container
 import org.bukkit.entity.Player
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 
-class UnloadSummary internal constructor() {
+object UnloadSummary {
     private val unloads: MutableMap<Location, MutableMap<Material, Int>> = mutableMapOf()
 
     fun protocolUnload(loc: Location, mat: Material, amount: Int) {
@@ -26,15 +26,12 @@ class UnloadSummary internal constructor() {
         val x = loc.blockX
         val y = loc.blockY
         val z = loc.blockZ
-        var name = loc.block.type.name
         val state = loc.world.getBlockAt(x, y, z).state
-        if (state is Container && state.customName() != null) {
-            name = state.customName().toString()
-        }
+        val name = (state as? Container)?.customName()?.toString() ?: loc.block.type.name
         return """
-            <light_purple><b>$name</b>   
-            <green><b>X:</b></green> <white>$x</white> 
-            <green><b>Y:</b></green> <white>$y</white> 
+            <light_purple><b>$name</b>
+            <green><b>X:</b></green> <white>$x</white>
+            <green><b>Y:</b></green> <white>$y</white>
             <green><b>Z:</b></green> <white>$z</white>
         """.trimIndent().mm()
     }
@@ -45,8 +42,9 @@ class UnloadSummary internal constructor() {
 
     fun print(player: Player) {
         if (unloads.isNotEmpty()) player.sendMessage("<gray><b>Unload Summary:</b></gray>".mm())
+        val separator = "<gray>${"-".repeat(20)}</gray>"
         unloads.forEach { (loc, materials) ->
-            player.sendMessage("<gray>--------------------</gray>".mm())
+            player.sendMessage(separator.mm())
             player.sendMessage(loc2str(loc))
             materials.forEach { (mat, amount) ->
                 player.sendMessage(

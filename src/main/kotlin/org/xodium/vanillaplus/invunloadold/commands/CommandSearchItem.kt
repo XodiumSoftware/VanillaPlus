@@ -16,7 +16,6 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
-import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.invunloadold.UnloadSummary
 import org.xodium.vanillaplus.invunloadold.Visualizer
 import org.xodium.vanillaplus.invunloadold.utils.BlockUtils
@@ -91,7 +90,7 @@ class CommandSearchItem : CommandExecutor {
 
         val useableChests = ArrayList<Block>()
         for (block in chests) {
-            if (PlayerUtils.canPlayerUseChest(block, p, instance)) {
+            if (PlayerUtils.canPlayerUseChest(block, p)) {
                 useableChests.add(block!!)
             }
         }
@@ -103,7 +102,6 @@ class CommandSearchItem : CommandExecutor {
 
         val affectedChests = ArrayList<Block>()
         val doubleChests: ArrayList<InventoryHolder?> = ArrayList()
-        val summary = UnloadSummary()
         for (block in useableChests) {
             val inv: Inventory = (block.state as Container).inventory
             if (inv.holder is DoubleChest) {
@@ -111,20 +109,18 @@ class CommandSearchItem : CommandExecutor {
                 if (doubleChests.contains(dc?.leftSide)) continue
                 doubleChests.add(dc?.leftSide)
             }
-            if (InvUtils.searchItemInContainers(mat, inv, summary)) {
+            if (InvUtils.searchItemInContainers(mat, inv, UnloadSummary)) {
                 affectedChests.add(block)
             }
         }
 
-        summary.print(UnloadSummary.PrintRecipient.PLAYER, p)
+        UnloadSummary.print(p)
         if (affectedChests.isEmpty()) {
             p.sendMessage(String.format("", mat.name))
             return true
         }
 
-        for (block in affectedChests) {
-            Visualizer.chestAnimation(block, p)
-        }
+        for (block in affectedChests) Visualizer.chestAnimation(block, p)
         Visualizer.play(affectedChests, p)
         return true
     }

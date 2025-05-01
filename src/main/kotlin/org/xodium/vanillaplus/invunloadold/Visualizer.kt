@@ -110,12 +110,10 @@ object Visualizer {
         }
     }
 
-    companion object {
-        private fun getDirectionBetweenLocations(
-            start: Location,
-            end: Location
-        ): Vector {
-            return end.toVector().subtract(start.toVector())
-        }
+    private fun getDirectionBetweenLocations(
+        start: Location,
+        end: Location
+    ): Vector {
+        return end.toVector().subtract(start.toVector())
     }
 }
