@@ -32,9 +32,8 @@ class PlayerSetting {
         yaml.set("dumpHotbar", dumpHotbar)
         try {
             yaml.save(file)
-        } catch (e: IOException) {
+        } catch (_: IOException) {
             main.logger.warning("Could not save playerdata file " + file.path)
-            //e.printStackTrace();
         }
     }
 }

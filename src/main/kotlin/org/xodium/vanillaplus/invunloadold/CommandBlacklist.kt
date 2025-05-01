@@ -2,7 +2,7 @@
  *  Copyright (c) 2025. Xodium.
  *  All rights reserved.
  */
-package de.jeff_media.InvUnload
+package org.xodium.vanillaplus.invunloadold
 
 import org.bukkit.Material
 import org.bukkit.command.Command
@@ -11,8 +11,6 @@ import org.bukkit.command.CommandSender
 import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
-import org.xodium.vanillaplus.invunloadold.BlackList
-import org.xodium.vanillaplus.invunloadold.Main
 import java.lang.String
 import java.util.*
 import java.util.stream.Collectors
@@ -68,7 +66,7 @@ class CommandBlacklist internal constructor(val main: Main) : CommandExecutor, T
 
         val option: String?
 
-        if (args.size == 0) {
+        if (args.isEmpty()) {
             option = "show"
         } else {
             option = args[0].lowercase(Locale.getDefault())
@@ -102,7 +100,7 @@ class CommandBlacklist internal constructor(val main: Main) : CommandExecutor, T
                     newArgs[0] = args[0]
                     var i = 1
                     while (i < list.size + 1) {
-                        newArgs[i] = list.get(i - 1)
+                        newArgs[i] = list[i - 1]
                         i++
                     }
                     args = newArgs
@@ -110,7 +108,6 @@ class CommandBlacklist internal constructor(val main: Main) : CommandExecutor, T
 
 
                 for (s in args) {
-                    if (s == null) continue
                     var m = Material.getMaterial(s.uppercase(Locale.getDefault()))
                     if (m == Material.AIR) m = null
                     if (m == null) {
@@ -132,10 +129,10 @@ class CommandBlacklist internal constructor(val main: Main) : CommandExecutor, T
                     }
                 }
 
-                if (errors.size > 0) {
+                if (errors.isNotEmpty()) {
                     p.sendMessage(String.format(main.messages.BL_INVALID, stringlist2string(errors)))
                 }
-                if (successes.size > 0) {
+                if (successes.isNotEmpty()) {
                     val message: kotlin.String
                     if (option == "add") {
                         message = main.messages.BL_ADDED
@@ -166,8 +163,8 @@ class CommandBlacklist internal constructor(val main: Main) : CommandExecutor, T
     ): MutableList<kotlin.String?>? {
         if (commandSender !is Player) return null
 
-        val commands = arrayOf<kotlin.String>("show", "add", "remove", "reset")
-        if (args.size == 0) return Arrays.asList<kotlin.String?>(*commands)
+        val commands = arrayOf("show", "add", "remove", "reset")
+        if (args.isEmpty()) return mutableListOf<kotlin.String?>(*commands)
         val list = ArrayList<kotlin.String?>()
 
         if (args.size == 1) {

@@ -2,37 +2,29 @@
  *  Copyright (c) 2025. Xodium.
  *  All rights reserved.
  */
-package de.jeff_media.InvUnload
+package org.xodium.vanillaplus.invunloadold
 
-import de.jeff_media.InvUnload.API.InvUnloadCheckAccessEvent
 import org.bukkit.block.Block
+import org.bukkit.block.BlockFace
 import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import org.bukkit.event.block.Action
-import org.xodium.vanillaplus.invunloadold.Main
+import org.bukkit.event.player.PlayerInteractEvent
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.invunloadold.api.InvUnloadCheckAccessEvent
 
 object PlayerUtils {
-    // Calls PlayerInteractEvent to see if access is blocked by 3rd party plugins
     fun canPlayerUseChest(block: Block?, player: Player?, main: Main): Boolean {
-        if (main.plotSquaredHook.isBlockedByPlotSquared(block, player)) {
-            return false
-        }
-
-        if (main.getConfig().getBoolean("use-playerinteractevent")) {
+        if (main.config.getBoolean("use-playerinteractevent")) {
             val event: PlayerInteractEvent = InvUnloadCheckAccessEvent(
                 player,
                 Action.RIGHT_CLICK_BLOCK, null, block, BlockFace.UP
             )
-
-            Bukkit.getPluginManager().callEvent(event)
-
-            SpartanHook.cancelSpartanEventCancel(event)
-
+            instance.server.pluginManager.callEvent(event)
             if (event.useInteractedBlock() == Event.Result.DENY) {
                 return false
             }
         }
-
         return true
     }
 }

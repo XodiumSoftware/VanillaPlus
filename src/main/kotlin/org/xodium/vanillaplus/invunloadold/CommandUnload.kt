@@ -2,7 +2,7 @@
  *  Copyright (c) 2025. Xodium.
  *  All rights reserved.
  */
-package de.jeff_media.InvUnload
+package org.xodium.vanillaplus.invunloadold
 
 import net.md_5.bungee.api.ChatColor
 import org.apache.commons.lang.StringUtils
@@ -12,15 +12,11 @@ import org.bukkit.block.Container
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import org.xodium.vanillaplus.invunloadold.Main
 import java.lang.String
 import kotlin.Array
 import kotlin.Boolean
 import kotlin.Int
-import kotlin.collections.contains
-import kotlin.ranges.contains
 import kotlin.text.compareTo
-import kotlin.text.contains
 import kotlin.text.equals
 import kotlin.text.lowercase
 import kotlin.text.startsWith
@@ -42,7 +38,7 @@ class CommandUnload(val main: Main) : CommandExecutor, TabCompleter {
 
         //long startTime = System.nanoTime();
 
-        if (args.size > 0 && args[0].equals("reload", ignoreCase = true)) {
+        if (args.isNotEmpty() && args[0].equals("reload", ignoreCase = true)) {
             if (sender.hasPermission("invunload.reload")) {
                 main.reloadCompleteConfig(true)
                 sender.sendMessage(ChatColor.GREEN.toString() + "InvUnload has been reloaded.")
@@ -63,7 +59,7 @@ class CommandUnload(val main: Main) : CommandExecutor, TabCompleter {
         val p = sender
         val setting: PlayerSetting? = main.getPlayerSetting(p)
 
-        if (args.size > 0 && args[0].equals("hotbar", ignoreCase = true)) {
+        if (args.isNotEmpty() && args[0].equals("hotbar", ignoreCase = true)) {
             if (command.name == "unload") {
                 setting.unloadHotbar = !setting.unloadHotbar
                 if (setting.unloadHotbar) {
@@ -109,7 +105,7 @@ class CommandUnload(val main: Main) : CommandExecutor, TabCompleter {
         var onlyMatchingStuff = false
 
 
-        if (args.size > 0) {
+        if (args.isNotEmpty()) {
             if (!StringUtils.isNumeric(args[0])) {
                 p.sendMessage(main.messages.MSG_NOT_A_NUMBER)
                 return true
@@ -137,7 +133,7 @@ class CommandUnload(val main: Main) : CommandExecutor, TabCompleter {
         }
 
         var chests: MutableList<Block?>? = BlockUtils.findChestsInRadius(p.location, radius)
-        if (chests!!.size == 0) {
+        if (chests!!.isEmpty()) {
             p.sendMessage(main.messages.MSG_NO_CHESTS_NEARBY)
             return true
         }
@@ -171,11 +167,11 @@ class CommandUnload(val main: Main) : CommandExecutor, TabCompleter {
                 }
             }
         }
-        if (main.getConfig().getBoolean("always-show-summary")) {
+        if (main.config.getBoolean("always-show-summary")) {
             summary.print(PrintRecipient.PLAYER, p)
         }
 
-        if (affectedChests.size == 0) {
+        if (affectedChests.isEmpty()) {
             val blackList: BlackList = main.getPlayerSetting(p).getBlacklist()
             // TODO: Fix this. Right now the blacklist message is disabled
             //boolean everythingBlackListed = true;
@@ -195,7 +191,7 @@ class CommandUnload(val main: Main) : CommandExecutor, TabCompleter {
 
         for (block in affectedChests) {
             main.visualizer.chestAnimation(block, p)
-            if (main.getConfig().getBoolean("laser-animation")) {
+            if (main.config.getBoolean("laser-animation")) {
                 main.visualizer.play(p)
             }
             if (main.chestSortHook.shouldSort(p)) {
@@ -203,15 +199,15 @@ class CommandUnload(val main: Main) : CommandExecutor, TabCompleter {
             }
         }
 
-        if (main.getConfig().getBoolean("play-sound")) {
-            if (main.getConfig().getBoolean("error-sound")) {
+        if (main.config.getBoolean("play-sound")) {
+            if (main.config.getBoolean("error-sound")) {
                 main.logger.warning(
-                    "Cannot play sound, because sound effect \"" + main.getConfig()
+                    "Cannot play sound, because sound effect \"" + main.config
                         .getString("sound-effect") + "\" does not exist! Please check your config.yml"
                 )
             } else {
-                val sound = Sound.valueOf(main.getConfig().getString("sound-effect")!!.uppercase(Locale.getDefault()))
-                p.playSound(p.location, sound, main.getConfig().getDouble("sound-volume", 1.0).toFloat(), 1f)
+                val sound = Sound.valueOf(main.config.getString("sound-effect")!!.uppercase(Locale.getDefault()))
+                p.playSound(p.location, sound, main.config.getDouble("sound-volume", 1.0).toFloat(), 1f)
             }
         }
 
@@ -225,9 +221,9 @@ class CommandUnload(val main: Main) : CommandExecutor, TabCompleter {
         strings: Array<kotlin.String>
     ): MutableList<kotlin.String?>? {
         if (strings.size > 1) return null
-        val list: MutableList<kotlin.String?> = ArrayList<kotlin.String?>()
+        val list: MutableList<kotlin.String?> = ArrayList()
         list.add("hotbar")
-        if (strings.size == 0) return list
+        if (strings.isEmpty()) return list
         if ("hotbar".startsWith(strings[0].lowercase(Locale.getDefault()))) return list
         return null
     }

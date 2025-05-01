@@ -2,7 +2,7 @@
  *  Copyright (c) 2025. Xodium.
  *  All rights reserved.
  */
-package de.jeff_media.InvUnload
+package org.xodium.vanillaplus.invunloadold
 
 import org.apache.commons.lang.StringUtils
 import org.bukkit.block.Block
@@ -10,7 +10,6 @@ import org.bukkit.block.Container
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import org.xodium.vanillaplus.invunloadold.Main
 import java.lang.String
 import kotlin.Array
 import kotlin.Boolean
@@ -61,7 +60,7 @@ class CommandSearchitem internal constructor(private val main: Main) : CommandEx
             }
         }
 
-        if (args.size == 0 && p.inventory.itemInMainHand != null) {
+        if (args.isEmpty() && p.inventory.itemInMainHand != null) {
             mat = p.inventory.itemInMainHand.type
             radius = main.groupUtils.getDefaultRadiusPerPlayer(p)
         }
@@ -91,7 +90,7 @@ class CommandSearchitem internal constructor(private val main: Main) : CommandEx
             }
         }
 
-        if (useableChests.size == 0) {
+        if (useableChests.isEmpty()) {
             p.sendMessage(String.format(main.messages.MSG_NOTHING_FOUND, mat.name))
             return true
         }
@@ -117,7 +116,7 @@ class CommandSearchitem internal constructor(private val main: Main) : CommandEx
 
         summary.print(UnloadSummary.PrintRecipient.PLAYER, p)
 
-        if (affectedChests.size == 0) {
+        if (affectedChests.isEmpty()) {
             p.sendMessage(String.format(main.messages.MSG_NOTHING_FOUND, mat.name))
             return true
         }

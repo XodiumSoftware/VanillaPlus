@@ -3,7 +3,7 @@
  *  All rights reserved.
  */
 
-package de.jeff_media.InvUnload
+package org.xodium.vanillaplus.invunloadold
 
 import org.bukkit.Particle
 import org.bukkit.Sound

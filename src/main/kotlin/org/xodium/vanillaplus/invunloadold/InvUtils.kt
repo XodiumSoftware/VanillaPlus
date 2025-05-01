@@ -2,16 +2,13 @@
  *  Copyright (c) 2025. Xodium.
  *  All rights reserved.
  */
-package de.jeff_media.InvUnload
+package org.xodium.vanillaplus.invunloadold
 
 import org.bukkit.Material
 import org.bukkit.block.ShulkerBox
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
-import org.xodium.vanillaplus.invunloadold.BlackList
-import org.xodium.vanillaplus.invunloadold.BlockUtils
-import org.xodium.vanillaplus.invunloadold.Main
 import org.xodium.vanillaplus.invunloadold.utils.ShulkerUtils.isShulkerBox
 
 object InvUtils {
@@ -35,7 +32,7 @@ object InvUtils {
         return sourceItems
     }
 
-    fun countInventoryContents(inv: Inventory): Int {
+    private fun countInventoryContents(inv: Inventory): Int {
         var count = 0
         for (item in inv.contents) {
             if (item == null) continue
@@ -71,8 +68,6 @@ object InvUtils {
         for (i in startSlot..endSlot) {
             val item = source.getItem(i)
             if (item == null) continue
-            if (MinepacksHook.isMinepacksBackpack(item)) continue
-            if (main.inventoryPagesHook.isButton(item)) continue
             if (blackList.contains(item.type)) continue
 
             if (isShulkerBox(item)) {
@@ -84,12 +79,11 @@ object InvUtils {
             source.clear(i)
             var amount = item.amount
             if (!onlyMatchingStuff || BlockUtils.doesChestContain(destination, item)) {
-                main.coreProtectHook.logCoreProtect(p.name, destination)
                 for (leftover in destination.addItem(item).values) {
                     amount = amount - leftover.amount
                     source.setItem(i, leftover)
                 }
-                if (summary != null) summary.protocolUnload(destination.location, item.type, amount)
+                summary?.protocolUnload(destination.location, item.type, amount)
             } else {
                 source.setItem(i, item)
             }

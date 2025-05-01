@@ -19,14 +19,14 @@ class BlockUtils internal constructor(val main: Main?) {
 
         init {
             CONTAINER_TYPES =
-                de.jeff_media.InvUnload.EnumUtils.getEnumsFromRegexList(Material::class.java, CONTAINER_NAMES)
+                EnumUtils.getEnumsFromRegexList(Material::class.java, CONTAINER_NAMES)
         }
 
-        fun findBlocksInRadius(loc: Location, radius: Int): MutableList<Block?> {
+        private fun findBlocksInRadius(loc: Location, radius: Int): MutableList<Block?> {
             val box: BoundingBox = BoundingBox.of(loc, radius.toDouble(), radius.toDouble(), radius.toDouble())
             //List<BlockVector> blocks = de.jeff_media.jefflib.BlockUtils.getBlocks(loc.getWorld(), box, true, blockData -> isChestLikeBlock(blockData.getMaterial()));
-            val chunks: MutableList<Chunk> = com.jeff_media.jefflib.BlockUtils.getChunks(loc.getWorld(), box, true)
-            val blocks: MutableList<Block?> = ArrayList<Block?>()
+            val chunks: MutableList<Chunk> = com.jeff_media.jefflib.BlockUtils.getChunks(loc.world, box, true)
+            val blocks: MutableList<Block?> = ArrayList()
             for (chunk in chunks) {
                 for (state in chunk.tileEntities) {
                     if (state is Container && isChestLikeBlock(state.type)) {
@@ -37,8 +37,8 @@ class BlockUtils internal constructor(val main: Main?) {
                                     .getBoolean("ignore-blocked-chests", false)
                             ) {
                                 val above = state.block.getRelative(BlockFace.UP)
-                                if (state.type == Material.CHEST && above.type.isSolid() && above.type
-                                        .isOccluding()
+                                if (state.type == Material.CHEST && above.type.isSolid && above.type
+                                        .isOccluding
                                 ) {
                                     continue
                                 }
@@ -57,7 +57,7 @@ class BlockUtils internal constructor(val main: Main?) {
             return findBlocksInRadius(loc, radius)
         }
 
-        fun isChestLikeBlock(material: Material?): Boolean {
+        private fun isChestLikeBlock(material: Material?): Boolean {
             return CONTAINER_TYPES.contains(material)
         }
 
