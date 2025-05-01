@@ -183,7 +183,7 @@ object Config {
         /**
          * The interval between broadcasts.
          */
-        var INTERVAL: Long = TimeUtils.seconds(5)
+        var INTERVAL: Long = TimeUtils.minutes(5)
     }
 
     /**
@@ -209,6 +209,16 @@ object Config {
          * Enables or disables the DoorsModule.
          */
         var ENABLED: Boolean = true
+
+        /**
+         * The initial delay before the first autoclose.
+         */
+        var INIT_DELAY: Long = 1L
+
+        /**
+         * The interval between autoclosing.
+         */
+        var INTERVAL: Long = 1L
 
         /**
          * The sound effect used for closing doors.
@@ -276,9 +286,9 @@ object Config {
         var KNOCKING_REQUIRES_SHIFT: Boolean = true
 
         /**
-         * The delay (in seconds) before automatic closure.
+         * The delay (in milliseconds) before automatic closure.
          */
-        var AUTO_CLOSE_DELAY: Int = 6
+        var AUTO_CLOSE_DELAY: Long = 6L * 1000L // 6 seconds
     }
 
     /**
@@ -332,6 +342,16 @@ object Config {
          * Enables or disables the TabListModule.
          */
         var ENABLED: Boolean = true
+
+        /**
+         * The initial delay before the first update.
+         */
+        var INIT_DELAY: Long = 0L
+
+        /**
+         * The interval between updates.
+         */
+        var INTERVAL: Long = TimeUtils.seconds(10)
 
         /**
          * The header of the tab list. Each element is a line.
