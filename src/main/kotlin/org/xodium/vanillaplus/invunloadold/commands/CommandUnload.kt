@@ -51,7 +51,7 @@ class CommandUnload() : CommandExecutor, TabCompleter {
         }
 
         if (sender !is Player) return true
-        if (!CoolDownUtils.check(sender)) return true
+        if (!CoolDownUtils.cooldown(sender)) return true
 
         val p = sender
         val setting: PlayerSetting? = instance.getPlayerSetting(p)

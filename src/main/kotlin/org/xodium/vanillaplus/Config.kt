@@ -212,6 +212,9 @@ object Config {
 
         /** If the ChestSort plugin should be used. */
         var USE_CHESTSORT: Boolean = true
+
+        /** The cooldown to use the mechanic again. */
+        var COOLDOWN: Long = 5L * 1000L // 5 seconds
     }
 
     /** Configuration settings for the MotdModule. */
@@ -286,7 +289,7 @@ object Config {
             Material.JUNGLE_SAPLING to listOf("trees/jungle"),
             Material.MANGROVE_PROPAGULE to listOf("trees/mangrove"),
             Material.OAK_SAPLING to listOf("trees/oak"),
-//            Material.PALE_OAK_SAPLING to listOf("trees/pale_oak"), // TODO: add when artist has schematics ready.
+            //Material.PALE_OAK_SAPLING to listOf("trees/pale_oak"), // TODO: add when artist has schematics ready.
             Material.SPRUCE_SAPLING to listOf("trees/spruce"),
             Material.WARPED_FUNGUS to listOf("trees/warped"),
         )

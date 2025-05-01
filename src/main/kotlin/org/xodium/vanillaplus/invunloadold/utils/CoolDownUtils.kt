@@ -5,29 +5,29 @@
 
 package org.xodium.vanillaplus.invunloadold.utils
 
-import org.bukkit.command.CommandSender
-import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.bukkit.entity.Player
+import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
+import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 
 object CoolDownUtils {
-    private val map = HashMap<CommandSender?, Long?>()
+    private val map = mutableMapOf<Player, Long?>()
 
-    @JvmStatic
-    fun check(sender: CommandSender): Boolean {
-        if (map.containsKey(sender)) {
-            val lastTime: Long = map.get(sender)!!
-            val okayTime = lastTime + (instance.config //TODO: use Config
-                .getDouble("cooldown") * 1000).toLong()
-            val isOkay = System.currentTimeMillis() >= okayTime
-            if (!isOkay) {
-                sender.sendMessage("".mm())
-                return false
+    /**
+     * Checks if the player is on cooldown.
+     * @param player The player to check.
+     * @return true if the player is not on cooldown, false otherwise.
+     */
+    fun cooldown(player: Player): Boolean {
+        return System.currentTimeMillis().let {
+            if (it >= (map[player] ?: 0L) + Config.InvUnloadModule.COOLDOWN) {
+                map[player] = it
+                true
+            } else {
+                player.sendActionBar(("${"InvUnload:".fireFmt()} You must wait before using this again".mangoFmt()).mm())
+                false
             }
-            map.put(sender, System.currentTimeMillis())
-            return true
-        } else {
-            map.put(sender, System.currentTimeMillis())
-            return true
         }
     }
 }
