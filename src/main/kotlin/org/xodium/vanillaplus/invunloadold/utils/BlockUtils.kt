@@ -18,7 +18,7 @@ import org.bukkit.util.Vector
 import org.xodium.vanillaplus.VanillaPlus
 import java.util.*
 
-class BlockUtils {
+object BlockUtils {
     companion object {
         private val CONTAINER_TYPES: EnumSet<Material?>
         private val CONTAINER_NAMES =

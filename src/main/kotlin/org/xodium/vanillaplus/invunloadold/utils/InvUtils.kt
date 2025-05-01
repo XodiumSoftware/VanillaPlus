@@ -49,7 +49,6 @@ object InvUtils {
                     continue
                 }
             }
-
             source.clear(i)
             var amount = item.amount
             if (!onlyMatchingStuff || BlockUtils.Companion.doesChestContain(destination, item)) {

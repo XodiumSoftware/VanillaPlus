@@ -15,12 +15,12 @@ import org.xodium.vanillaplus.invunloadold.utils.BlockUtils
 import java.util.*
 
 class Visualizer {
-    val lastUnloads: HashMap<UUID?, ArrayList<Block?>?> =
+    private val lastUnloads: HashMap<UUID?, ArrayList<Block?>?> =
         HashMap<UUID?, ArrayList<Block?>?>()
     private val lastUnloadPositions: HashMap<UUID?, Location?> =
         HashMap<UUID?, Location?>()
     val activeVisualizations: HashMap<UUID?, Int?> = HashMap<UUID?, Int?>()
-    val unloadSummaries: HashMap<UUID?, UnloadSummary?> = HashMap<UUID?, UnloadSummary?>()
+    private val unloadSummaries: HashMap<UUID?, UnloadSummary?> = HashMap<UUID?, UnloadSummary?>()
 
     fun save(
         p: Player,

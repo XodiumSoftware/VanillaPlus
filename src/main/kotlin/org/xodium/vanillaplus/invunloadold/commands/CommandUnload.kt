@@ -2,6 +2,7 @@
  *  Copyright (c) 2025. Xodium.
  *  All rights reserved.
  */
+
 package org.xodium.vanillaplus.invunloadold.commands
 
 import net.md_5.bungee.api.ChatColor
