@@ -26,7 +26,6 @@ import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.AdjacentBlockData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import java.util.concurrent.ConcurrentHashMap
 
 /**
  * The `DoorsModule` class is responsible for managing door and gate interactions within the system,
@@ -43,7 +42,7 @@ class DoorsModule : ModuleInterface {
     override fun enabled(): Boolean = Config.DoorsModule.ENABLED
 
     private val autoCloseDelay = Config.DoorsModule.AUTO_CLOSE_DELAY * 1000L //FIX: cant use TimeUtils?
-    private val autoClose = ConcurrentHashMap<Block, Long>()
+    private val autoClose = mutableMapOf<Block, Long>()
     private val possibleNeighbours = listOf(
         AdjacentBlockData(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
         AdjacentBlockData(0, 1, Door.Hinge.LEFT, BlockFace.EAST),
@@ -166,11 +165,11 @@ class DoorsModule : ModuleInterface {
      */
     private fun processDoorOrGateInteraction(block: Block) {
         val door = (block.blockData as? Door) ?: return
-        val otherDoorBlock = getOtherPart(getDoorBottom(door, block), block) ?: return
-        val otherDoor = otherDoorBlock.blockData as? Door ?: return
-        toggleOtherDoor(block, otherDoorBlock, !otherDoor.isOpen)
+        val door2Block = getOtherPart(getDoorBottom(door, block), block) ?: return
+        val secondDoor = door2Block.blockData as? Door ?: return
+        toggleOtherDoor(block, door2Block, !secondDoor.isOpen)
         if (Config.DoorsModule.ALLOW_AUTO_CLOSE) {
-            autoClose[otherDoorBlock] = System.currentTimeMillis() + autoCloseDelay
+            autoClose[door2Block] = System.currentTimeMillis() + autoCloseDelay
         }
     }
 
