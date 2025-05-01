@@ -28,8 +28,8 @@ class UnloadSummary internal constructor() {
         val z = loc.blockZ
         var name = loc.block.type.name
         val state = loc.world.getBlockAt(x, y, z).state
-        if (state is Container && state.customName != null) {
-            name = state.customName!!
+        if (state is Container && state.customName() != null) {
+            name = state.customName().toString()
         }
         return """
             <light_purple><b>$name</b>   
