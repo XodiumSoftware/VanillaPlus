@@ -5,7 +5,6 @@
 
 package org.xodium.vanillaplus.invunloadold.commands
 
-import net.md_5.bungee.api.ChatColor
 import org.apache.commons.lang3.StringUtils
 import org.bukkit.Material
 import org.bukkit.Sound
@@ -20,9 +19,10 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.hooks.ChestSortHook
+import org.xodium.vanillaplus.invunloadold.Effects
 import org.xodium.vanillaplus.invunloadold.UnloadSummary
-import org.xodium.vanillaplus.invunloadold.Visualizer
 import org.xodium.vanillaplus.invunloadold.utils.*
+import org.xodium.vanillaplus.utils.ExtUtils.mm
 import java.lang.String
 import java.util.*
 import kotlin.Array
@@ -40,8 +40,8 @@ class CommandUnload() : CommandExecutor, TabCompleter {
         args: Array<String>
     ): Boolean {
         if (args.isNotEmpty() && args[0].equals("reload")) {
-            if (sender.hasPermission("invunload.reload")) {
-                sender.sendMessage(ChatColor.GREEN.toString() + "InvUnload has been reloaded.")
+            if (sender.hasPermission("invunload.reload")) { //TODO: use new permission system.
+                sender.sendMessage("<green>InvUnload has been reloaded.</green>".mm())
             } else {
                 sender.sendMessage(instance.getCommand("unload")!!.permissionMessage!!)
             }
@@ -52,7 +52,7 @@ class CommandUnload() : CommandExecutor, TabCompleter {
         if (!CoolDownUtils.cooldown(sender)) return true
 
         val p = sender
-        var radius: Int = GroupUtils().getDefaultRadiusPerPlayer(p)
+        var radius: Int = GroupUtils().getDefaultRadiusPerPlayer(p) //TODO: remove group system.
         val startSlot = 9
         val endSlot = 35
         val onlyMatchingStuff = false
@@ -85,7 +85,7 @@ class CommandUnload() : CommandExecutor, TabCompleter {
         val useableChests = ArrayList<Block>()
         for (block in chests) if (PlayerUtils.canPlayerUseChest(block, p)) useableChests.add(block!!)
 
-        val affectedChests = ArrayList<Block?>()
+        val affectedChests: List<Block> = ArrayList<Block?>()
 
         for (block in useableChests) {
             val inv: Inventory = (block.state as Container).inventory
@@ -115,12 +115,12 @@ class CommandUnload() : CommandExecutor, TabCompleter {
             return true
         }
 
-        Visualizer.save(p, affectedChests, UnloadSummary)
+        Effects.save(p, affectedChests, UnloadSummary)
 
         for (block in affectedChests) {
-            Visualizer.chestEffect(block, p)
-            if (instance.config.getBoolean("laser-animation")) Visualizer.play(p)
-            if (ChestSortHook.shouldSort(p)) ChestSortHook.sort(block!!)
+            Effects.chestEffect(block, p)
+            if (instance.config.getBoolean("laser-animation")) Effects.play(p)
+            if (ChestSortHook.shouldSort(p)) ChestSortHook.sort(block)
         }
 
         if (instance.config.getBoolean("play-sound")) {

@@ -16,8 +16,8 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
+import org.xodium.vanillaplus.invunloadold.Effects
 import org.xodium.vanillaplus.invunloadold.UnloadSummary
-import org.xodium.vanillaplus.invunloadold.Visualizer
 import org.xodium.vanillaplus.invunloadold.utils.BlockUtils
 import org.xodium.vanillaplus.invunloadold.utils.InvUtils
 import org.xodium.vanillaplus.invunloadold.utils.PlayerUtils
@@ -120,8 +120,8 @@ class CommandSearchItem : CommandExecutor {
             return true
         }
 
-        for (block in affectedChests) Visualizer.chestEffect(block, p)
-        Visualizer.play(affectedChests, p)
+        for (block in affectedChests) Effects.chestEffect(block, p)
+        Effects.play(affectedChests, p)
         return true
     }
 }
