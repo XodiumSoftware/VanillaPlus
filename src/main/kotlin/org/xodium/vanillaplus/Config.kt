@@ -286,9 +286,9 @@ object Config {
         var KNOCKING_REQUIRES_SHIFT: Boolean = true
 
         /**
-         * The delay (in seconds) before automatic closure.
+         * The delay (in milliseconds) before automatic closure.
          */
-        var AUTO_CLOSE_DELAY: Long = 6L
+        var AUTO_CLOSE_DELAY: Long = 6L * 1000L // 6 seconds
     }
 
     /**

@@ -41,7 +41,6 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 class DoorsModule : ModuleInterface {
     override fun enabled(): Boolean = Config.DoorsModule.ENABLED
 
-    private val autoCloseDelay = Config.DoorsModule.AUTO_CLOSE_DELAY * 1000L //FIX: cant use TimeUtils?
     private val autoClose = mutableMapOf<Block, Long>()
     private val possibleNeighbours = listOf(
         AdjacentBlockData(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
@@ -156,7 +155,8 @@ class DoorsModule : ModuleInterface {
         if (Config.DoorsModule.ALLOW_DOUBLE_DOORS && (block.blockData is Door || block.blockData is Gate)) {
             processDoorOrGateInteraction(block)
         }
-        if (Config.DoorsModule.ALLOW_AUTO_CLOSE) autoClose[block] = System.currentTimeMillis() + autoCloseDelay
+        if (Config.DoorsModule.ALLOW_AUTO_CLOSE) autoClose[block] =
+            System.currentTimeMillis() + Config.DoorsModule.AUTO_CLOSE_DELAY
     }
 
     /**
@@ -169,7 +169,7 @@ class DoorsModule : ModuleInterface {
         val secondDoor = door2Block.blockData as? Door ?: return
         toggleOtherDoor(block, door2Block, !secondDoor.isOpen)
         if (Config.DoorsModule.ALLOW_AUTO_CLOSE) {
-            autoClose[door2Block] = System.currentTimeMillis() + autoCloseDelay
+            autoClose[door2Block] = System.currentTimeMillis() + Config.DoorsModule.AUTO_CLOSE_DELAY
         }
     }
 
