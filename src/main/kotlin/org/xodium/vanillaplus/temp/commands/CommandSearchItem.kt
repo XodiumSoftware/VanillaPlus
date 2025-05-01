@@ -3,7 +3,7 @@
  *  All rights reserved.
  */
 
-package org.xodium.vanillaplus.invunloadold.commands
+package org.xodium.vanillaplus.temp.commands
 
 import org.apache.commons.lang3.StringUtils
 import org.bukkit.Material
@@ -16,11 +16,10 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
-import org.xodium.vanillaplus.invunloadold.Effects
-import org.xodium.vanillaplus.invunloadold.UnloadSummary
-import org.xodium.vanillaplus.invunloadold.utils.BlockUtils
-import org.xodium.vanillaplus.invunloadold.utils.InvUtils
-import org.xodium.vanillaplus.invunloadold.utils.PlayerUtils
+import org.xodium.vanillaplus.modules.InvUnloadModule
+import org.xodium.vanillaplus.temp.utils.BlockUtils
+import org.xodium.vanillaplus.temp.utils.InvUtils
+import org.xodium.vanillaplus.temp.utils.PlayerUtils
 import java.lang.String
 import java.util.*
 import kotlin.Array
@@ -109,19 +108,19 @@ class CommandSearchItem : CommandExecutor {
                 if (doubleChests.contains(dc?.leftSide)) continue
                 doubleChests.add(dc?.leftSide)
             }
-            if (InvUtils.searchItemInContainers(mat, inv, UnloadSummary)) {
+            if (InvUtils.searchItemInContainers(mat, inv, InvUnloadModule())) {
                 affectedChests.add(block)
             }
         }
 
-        UnloadSummary.print(p)
+        InvUnloadModule().print(p)
         if (affectedChests.isEmpty()) {
             p.sendMessage(String.format("", mat.name))
             return true
         }
 
-        for (block in affectedChests) Effects.chestEffect(block, p)
-        Effects.play(affectedChests, p)
+        for (block in affectedChests) InvUnloadModule().chestEffect(block, p)
+        InvUnloadModule().play(affectedChests, p)
         return true
     }
 }

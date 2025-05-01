@@ -3,7 +3,7 @@
  *  All rights reserved.
  */
 
-package org.xodium.vanillaplus.invunloadold.commands
+package org.xodium.vanillaplus.temp.commands
 
 import org.apache.commons.lang3.StringUtils
 import org.bukkit.Material
@@ -19,9 +19,8 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.hooks.ChestSortHook
-import org.xodium.vanillaplus.invunloadold.Effects
-import org.xodium.vanillaplus.invunloadold.UnloadSummary
-import org.xodium.vanillaplus.invunloadold.utils.*
+import org.xodium.vanillaplus.modules.InvUnloadModule
+import org.xodium.vanillaplus.temp.utils.*
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import java.lang.String
 import java.util.*
@@ -89,7 +88,7 @@ class CommandUnload() : CommandExecutor, TabCompleter {
 
         for (block in useableChests) {
             val inv: Inventory = (block.state as Container).inventory
-            if (InvUtils.stuffInventoryIntoAnother(p, inv, true, startSlot, endSlot, UnloadSummary)) {
+            if (InvUtils.stuffInventoryIntoAnother(p, inv, true, startSlot, endSlot, InvUnloadModule())) {
                 affectedChests.add(block)
             }
         }
@@ -97,13 +96,13 @@ class CommandUnload() : CommandExecutor, TabCompleter {
         if (!onlyMatchingStuff) {
             for (block in useableChests) {
                 val inv: Inventory = (block.state as Container).inventory
-                if (InvUtils.stuffInventoryIntoAnother(p, inv, false, startSlot, endSlot, UnloadSummary)) {
+                if (InvUtils.stuffInventoryIntoAnother(p, inv, false, startSlot, endSlot, InvUnloadModule())) {
                     affectedChests.add(block)
                 }
             }
         }
         if (instance.config.getBoolean("always-show-summary")) { //TODO: use Config.
-            UnloadSummary.print(p)
+            InvUnloadModule().print(p)
         }
 
         if (affectedChests.isEmpty()) {
@@ -115,11 +114,11 @@ class CommandUnload() : CommandExecutor, TabCompleter {
             return true
         }
 
-        Effects.save(p, affectedChests, UnloadSummary)
+        InvUnloadModule().save(p, affectedChests, InvUnloadModule())
 
         for (block in affectedChests) {
-            Effects.chestEffect(block, p)
-            if (instance.config.getBoolean("laser-animation")) Effects.play(p)
+            InvUnloadModule().chestEffect(block, p)
+            if (instance.config.getBoolean("laser-animation")) InvUnloadModule().play(p)
             if (ChestSortHook.shouldSort(p)) ChestSortHook.sort(block)
         }
 

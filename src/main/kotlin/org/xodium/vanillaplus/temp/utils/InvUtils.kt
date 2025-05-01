@@ -3,7 +3,7 @@
  *  All rights reserved.
  */
 
-package org.xodium.vanillaplus.invunloadold.utils
+package org.xodium.vanillaplus.temp.utils
 
 import org.bukkit.Material
 import org.bukkit.Tag
@@ -11,10 +11,10 @@ import org.bukkit.block.ShulkerBox
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
-import org.xodium.vanillaplus.invunloadold.UnloadSummary
+import org.xodium.vanillaplus.modules.InvUnloadModule
 
 object InvUtils {
-    fun searchItemInContainers(mat: Material, destination: Inventory, summary: UnloadSummary): Boolean {
+    fun searchItemInContainers(mat: Material, destination: Inventory, summary: InvUnloadModule): Boolean {
         if (BlockUtils.doesChestContain(destination, ItemStack(mat))) {
             val amount = BlockUtils.doesChestContainCount(destination, mat)
             destination.location?.let { summary.protocolUnload(it, mat, amount) }
@@ -31,7 +31,7 @@ object InvUtils {
         onlyMatchingStuff: Boolean,
         startSlot: Int,
         endSlot: Int,
-        summary: UnloadSummary?
+        summary: InvUnloadModule?
     ): Boolean {
         val source = p.inventory
         val start = countInventoryContents(source)
