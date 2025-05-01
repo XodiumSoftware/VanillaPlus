@@ -5,80 +5,58 @@
 
 package org.xodium.vanillaplus.invunloadold
 
-import org.bukkit.ChatColor
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.JoinConfiguration
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.Container
 import org.bukkit.entity.Player
-import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import java.util.*
+import org.xodium.vanillaplus.utils.ExtUtils.mm
 
 class UnloadSummary internal constructor() {
-    private val unloads: HashMap<Location?, EnumMap<Material?, Int?>?> = HashMap<Location?, EnumMap<Material?, Int?>?>()
+    private val unloads: MutableMap<Location, MutableMap<Material, Int>> = mutableMapOf()
 
-    fun protocolUnload(loc: Location?, mat: Material?, amount: Int) {
+    fun protocolUnload(loc: Location, mat: Material, amount: Int) {
         if (amount == 0) return
-        if (!unloads.containsKey(loc)) {
-            unloads.put(loc, EnumMap<Material?, Int?>(Material::class.java))
-            unloads.get(loc)!!.put(mat, amount)
-        } else {
-            if (unloads.get(loc)!!.containsKey(mat)) {
-                unloads.get(loc)!!.put(mat, unloads.get(loc)!!.get(mat)!! + amount)
-            } else {
-                unloads.get(loc)!!.put(mat, amount)
-            }
-        }
+        val materialMap = unloads.getOrPut(loc) { mutableMapOf() }
+        materialMap[mat] = materialMap.getOrDefault(mat, 0) + amount
     }
 
-    private fun loc2str(loc: Location): String {
+    private fun loc2str(loc: Location): Component {
         val x = loc.blockX
         val y = loc.blockY
         val z = loc.blockZ
-        var name: String? = loc.block.type.name
+        var name = loc.block.type.name
         val state = loc.world.getBlockAt(x, y, z).state
-        if (state is Container) {
-            val container = state
-            if (container.customName != null) {
-                name = container.customName
-            }
+        if (state is Container && state.customName != null) {
+            name = state.customName!!
         }
-        return String.format(
-            ChatColor.LIGHT_PURPLE.toString() + "§l%s   §r§a§lX: §f%d §a§lY: §f%d §a§lZ: §f%d",
-            name,
-            x,
-            y,
-            z
-        )
+        return """
+            <light_purple><b>$name</b>   
+            <green><b>X:</b></green> <white>$x</white> 
+            <green><b>Y:</b></green> <white>$y</white> 
+            <green><b>Z:</b></green> <white>$z</white>
+        """.trimIndent().mm()
     }
 
-    private fun amount2str(amount: Int): String {
-        return String.format(ChatColor.DARK_PURPLE.toString() + "|§7%5dx  ", amount)
+    private fun amount2str(amount: Int): Component {
+        return "<dark_purple>|</dark_purple><gray>${"%5d".format(amount)}x  </gray>".mm()
     }
 
-    fun print(recipient: PrintRecipient?, p: Player) {
-        if (unloads.isNotEmpty()) printTo(recipient, p, " ")
-        for (entry in unloads.entries) {
-            printTo(recipient, p, " ")
-            printTo(recipient, p, loc2str(entry.key!!))
-            val map: EnumMap<Material?, Int?> = entry.value!!
-            for (entry2 in map.entries) {
-                printTo(
-                    recipient, p,
-                    amount2str(entry2.value!!) + ChatColor.GOLD + entry2.key!!.name
+    fun print(player: Player) {
+        if (unloads.isNotEmpty()) player.sendMessage("<gray><b>Unload Summary:</b></gray>".mm())
+        unloads.forEach { (loc, materials) ->
+            player.sendMessage("<gray>--------------------</gray>".mm())
+            player.sendMessage(loc2str(loc))
+            materials.forEach { (mat, amount) ->
+                player.sendMessage(
+                    Component.join(
+                        JoinConfiguration.noSeparators(),
+                        amount2str(amount),
+                        "<gold>${mat.name}</gold>".mm()
+                    )
                 )
             }
-        }
-    }
-
-    enum class PrintRecipient {
-        PLAYER, CONSOLE
-    }
-
-    private fun printTo(recipient: PrintRecipient?, p: Player, text: String) {
-        if (recipient == PrintRecipient.CONSOLE) {
-            instance.logger.info(text)
-        } else {
-            p.sendMessage(text)
         }
     }
 }
