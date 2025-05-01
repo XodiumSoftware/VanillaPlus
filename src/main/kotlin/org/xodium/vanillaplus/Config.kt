@@ -20,28 +20,18 @@ import org.bukkit.Sound as BukkitSound
 
 /** Configuration settings. */
 object Config {
-    /**
-     * Configuration settings for the AutoRefillModule. This module controls the refill features of the plugin.
-     */
+    /** Configuration settings for the AutoRefillModule. */
     object AutoRefillModule {
-        /**
-         * Enables or disables the AutoRefillModule.
-         */
+        /** Enables or disables the AutoRefillModule. */
         var ENABLED: Boolean = true
     }
 
-    /**
-     * Configuration settings for the AutoRestartModule. This module controls the automatic restart features of the plugin.
-     */
+    /** Configuration settings for the AutoRestartModule. */
     object AutoRestartModule {
-        /**
-         * Enables or disables the AutoRestartModule.
-         */
+        /** Enables or disables the AutoRestartModule. */
         var ENABLED: Boolean = true
 
-        /**
-         * The times of day when the server should restart.
-         */
+        /** The times of day when the server should restart. */
         var RESTART_TIMES: MutableList<LocalTime> = mutableListOf(
             LocalTime.of(0, 0),
             LocalTime.of(6, 0),
@@ -49,79 +39,49 @@ object Config {
             LocalTime.of(18, 0)
         )
 
-        /**
-         * How many minutes before the restart to start countdown.
-         */
+        /** How many minutes before the restart to start countdown. */
         var COUNTDOWN_START_MINUTES: Int = 5
 
-        /**
-         * The name of the boss bar.
-         */
+        /** The name of the boss bar. */
         var BOSSBAR_NAME: String = "⚡ RESTARTING in %t minute(s) ⚡".fireFmt()
 
-        /**
-         * The progress of the boss bar.
-         */
+        /** The progress of the boss bar. */
         var BOSSBAR_PROGRESS: Float = 1.0f
 
-        /**
-         * The colour of the boss bar.
-         */
+        /** The colour of the boss bar. */
         var BOSSBAR_COLOR: BossBar.Color = BossBar.Color.RED
 
-        /**
-         * The overlay of the boss bar.
-         */
+        /** The overlay of the boss bar. */
         var BOSSBAR_OVERLAY: BossBar.Overlay = BossBar.Overlay.PROGRESS
     }
 
-    /**
-     * Configuration settings for the AutoToolModule. This module controls the automatic tool selection features of the plugin.
-     */
+    /** Configuration settings for the AutoToolModule. */
     object AutoToolModule {
-        /**
-         * Enables or disables the AutoToolModule.
-         */
+        /** Enables or disables the AutoToolModule. */
         var ENABLED: Boolean = true
 
-        /**
-         * If the AutoTool feature should not switch tools during battle.
-         */
+        /** If the AutoTool feature should not switch tools during battle. */
         var DONT_SWITCH_DURING_BATTLE: Boolean = true
 
-        /**
-         * If swords should be considered for breaking leaves.
-         */
+        /** If swords should be considered for breaking leaves. */
         var CONSIDER_SWORDS_FOR_LEAVES: Boolean = true
 
-        /**
-         * If swords should be considered for breaking cobwebs.
-         */
+        /** If swords should be considered for breaking cobwebs. */
         var CONSIDER_SWORDS_FOR_COBWEBS: Boolean = true
 
-        /**
-         * If swords should be used on hostile mobs.
-         */
+        /** If swords should be used on hostile mobs. */
         var USE_SWORD_ON_HOSTILE_MOBS: Boolean = true
 
-        /**
-         * If axes should be used as swords.
-         */
+        /** If axes should be used as swords. */
         var USE_AXE_AS_SWORD: Boolean = true
     }
 
-    /**
-     * Configuration settings for the BooksModule. This module controls the book features of the plugin.
-     */
+    /** Configuration settings for the BooksModule. */
     object BooksModule {
-        /**
-         * Enables or disables the BookModule.
-         */
+        /** Enables or disables the BookModule. */
         var ENABLED: Boolean = true
 
-        /**
-         * The book data, including title, author, and pages.
-         */
+        /** The book data, including title, author, and pages. */
         var BOOK: BookData = BookData(
             title = "Rules",
             author = instance::class.simpleName.toString(),
@@ -151,18 +111,12 @@ object Config {
         )
     }
 
-    /**
-     * Configuration settings for the BroadcastModule. This module controls the broadcast features of the plugin.
-     */
+    /** Configuration settings for the BroadcastModule. */
     object BroadcastModule {
-        /**
-         * Enables or disables the BroadcastModule.
-         */
+        /** Enables or disables the BroadcastModule. */
         var ENABLED: Boolean = true
 
-        /**
-         * The messages to be broadcasted. One will be randomly selected each time.
-         */
+        /** The messages to be broadcasted. One will be randomly selected each time. */
         var MESSAGES: List<String> = listOf(
             "<gold>▶ <light_purple>/home <gold>> <white><italic>Teleport to your home.",
             "<gold>▶ <light_purple>/skills <gold>> <white><italic>Opens up the Skills GUI.",
@@ -175,54 +129,34 @@ object Config {
             "<gold>▶ <light_purple>Enchantment max level <gold>> <white><italic>has been incremented by <red><bold>x2<dark_gray><italic>."
         )
 
-        /**
-         * The initial delay before the first broadcast.
-         */
+        /** The initial delay before the first broadcast. */
         var INIT_DELAY: Long = TimeUtils.seconds(1)
 
-        /**
-         * The interval between broadcasts.
-         */
+        /** The interval between broadcasts. */
         var INTERVAL: Long = TimeUtils.minutes(5)
     }
 
-    /**
-     * Configuration settings for the DimensionsModule. This module controls the dimension features of the plugin.
-     */
+    /** Configuration settings for the DimensionsModule. */
     object DimensionsModule {
-        /**
-         * Enables or disables the DimensionsModule.
-         */
+        /** Enables or disables the DimensionsModule. */
         var ENABLED: Boolean = true
 
-        /**
-         * The radius within which to search for portals in the overworld.
-         */
+        /** The radius within which to search for portals in the overworld. */
         var PORTAL_SEARCH_RADIUS: Double = 128.0
     }
 
-    /**
-     * Configuration settings for the DoorsModule. This module controls the door features of the plugin.
-     */
+    /** Configuration settings for the DoorsModule. */
     object DoorsModule {
-        /**
-         * Enables or disables the DoorsModule.
-         */
+        /** Enables or disables the DoorsModule. */
         var ENABLED: Boolean = true
 
-        /**
-         * The initial delay before the first autoclose.
-         */
+        /** The initial delay before the first autoclose. */
         var INIT_DELAY: Long = 1L
 
-        /**
-         * The interval between autoclosing.
-         */
+        /** The interval between autoclosing. */
         var INTERVAL: Long = 1L
 
-        /**
-         * The sound effect used for closing doors.
-         */
+        /** The sound effect used for closing doors. */
         var SOUND_DOOR_CLOSE: Sound = Sound.sound(
             BukkitSound.BLOCK_IRON_DOOR_CLOSE,
             Sound.Source.BLOCK,
@@ -230,9 +164,7 @@ object Config {
             1.0f
         )
 
-        /**
-         * The sound effect used for closing gates.
-         */
+        /** The sound effect used for closing gates. */
         var SOUND_GATE_CLOSE: Sound = Sound.sound(
             BukkitSound.BLOCK_FENCE_GATE_CLOSE,
             Sound.Source.BLOCK,
@@ -240,9 +172,7 @@ object Config {
             1.0f
         )
 
-        /**
-         * The sound effect used for knocking.
-         */
+        /** The sound effect used for knocking. */
         var SOUND_KNOCK: Sound = Sound.sound(
             BukkitSound.ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR,
             Sound.Source.HOSTILE,
@@ -250,112 +180,70 @@ object Config {
             1.0f
         )
 
-        /**
-         * Enables automatic closing of doors after a set delay.
-         */
+        /** Enables automatic closing of doors after a set delay. */
         var ALLOW_AUTO_CLOSE: Boolean = true
 
-        /**
-         * Allows both sides of double doors to open/close simultaneously.
-         */
+        /** Allows both sides of double doors to open/close simultaneously. */
         var ALLOW_DOUBLE_DOORS: Boolean = true
 
-        /**
-         * Enables knocking on doors.
-         */
+        /** Enables knocking on doors. */
         var ALLOW_KNOCKING_DOORS: Boolean = true
 
-        /**
-         * Enables knocking on gates.
-         */
+        /** Enables knocking on gates. */
         var ALLOW_KNOCKING_GATES: Boolean = true
 
-        /**
-         * Enables knocking on trapdoors.
-         */
+        /** Enables knocking on trapdoors. */
         var ALLOW_KNOCKING_TRAPDOORS: Boolean = true
 
-        /**
-         * Knocking requires the player's hand to be empty.
-         */
+        /** Knocking requires the player's hand to be empty. */
         var KNOCKING_REQUIRES_EMPTY_HAND: Boolean = true
 
-        /**
-         * Players must shift (crouch) to knock.
-         */
+        /** Players must shift (crouch) to knock. */
         var KNOCKING_REQUIRES_SHIFT: Boolean = true
 
-        /**
-         * The delay (in milliseconds) before automatic closure.
-         */
+        /** The delay (in milliseconds) before automatic closure. */
         var AUTO_CLOSE_DELAY: Long = 6L * 1000L // 6 seconds
     }
 
-    /**
-     * Configuration settings for the InvUnloadModule. This module controls the inventory unload features of the plugin.
-     */
+    /** Configuration settings for the InvUnloadModule. */
     object InvUnloadModule {
-        /**
-         * Enables or disables the InvUnloadModule.
-         */
+        /** Enables or disables the InvUnloadModule. */
         var ENABLED: Boolean = false
 
-        /**
-         * If the ChestSort plugin should be used.
-         */
+        /** If the ChestSort plugin should be used. */
         var USE_CHESTSORT: Boolean = true
     }
 
-    /**
-     * Configuration settings for the MotdModule. This module controls the MOTD features of the plugin.
-     */
+    /** Configuration settings for the MotdModule. */
     object MotdModule {
-        /**
-         * Enables or disables the MotdModule.
-         */
+        /** Enables or disables the MotdModule. */
         var ENABLED: Boolean = true
 
-        /**
-         * The message of the day, with max 2 lines.
-         */
+        /** The message of the day, with max 2 lines. */
         val MOTD: List<String> = listOf(
             "<b>Ultimate Private SMP</b>".fireFmt(),
             "<b>➤ WELCOME BACK LADS!</b>".mangoFmt()
         )
     }
 
-    /**
-     * Configuration settings for the RecipiesModule. This module controls the recipe features of the plugin.
-     */
+    /** Configuration settings for the RecipiesModule. */
     object RecipiesModule {
-        /**
-         * Enables or disables the RecipiesModule.
-         */
+        /** Enables or disables the RecipiesModule. */
         var ENABLED: Boolean = true
     }
 
-    /**
-     * Configuration settings for the TabListModule. This module controls the tab list features of the plugin.
-     */
+    /** Configuration settings for the TabListModule. */
     object TabListModule {
-        /**
-         * Enables or disables the TabListModule.
-         */
+        /** Enables or disables the TabListModule. */
         var ENABLED: Boolean = true
 
-        /**
-         * The initial delay before the first update.
-         */
+        /** The initial delay before the first update. */
         var INIT_DELAY: Long = 0L
 
-        /**
-         * The interval between updates.
-         */
+        /** The interval between updates. */
         var INTERVAL: Long = TimeUtils.seconds(10)
 
-        /**
-         * The header of the tab list. Each element is a line.
-         */
+        /** The header of the tab list. Each element is a line. */
         var HEADER: List<String> = listOf(
             "${"]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt()}   ${"⚡ IllyriaRPG 1.21.4 ⚡".fireFmt()}   ${
                 "]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)
@@ -363,9 +251,7 @@ object Config {
             ""
         )
 
-        /**
-         * The footer of the tab list. Each element is a line.
-         */
+        /** The footer of the tab list. Each element is a line. */
         var FOOTER: List<String> = listOf(
             "",
             "${"]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt()}  ${"TPS:".fireFmt()} ${getTps()} ${"|".mangoFmt()} ${
@@ -376,23 +262,15 @@ object Config {
         )
     }
 
-    /**
-     * Configuration settings for the TreesModule. This module controls the sapling features of the plugin.
-     */
+    /** Configuration settings for the TreesModule. */
     object TreesModule {
-        /**
-         * Enables or disables the TreesModule.
-         */
+        /** Enables or disables the TreesModule. */
         var ENABLED: Boolean = true
 
-        /**
-         * If it should ignore air blocks.
-         */
+        /** If it should ignore air blocks. */
         var IGNORE_AIR_BLOCKS: Boolean = true
 
-        /**
-         * If it should ignore structure void blocks.
-         */
+        /** If it should ignore structure void blocks. */
         var IGNORE_STRUCTURE_VOID_BLOCKS: Boolean = true
 
         /**
@@ -414,43 +292,27 @@ object Config {
         )
     }
 
-    /**
-     * Configuration settings for the WaystoneModule. This module controls the teleporting features of the plugin.
-     */
+    /** Configuration settings for the WaystoneModule. */
     object WaystoneModule {
-        /**
-         * Enables or disables the TreesModule.
-         */
+        /** Enables or disables the TreesModule. */
         var ENABLED: Boolean = true
 
-        /**
-         * The material used for crafting waystones.
-         */
+        /** The material used for crafting waystones. */
         var WAYSTONE_MATERIAL: Material = Material.BEACON
 
-        /**
-         * A constant representing the custom model data key for waystone items.
-         */
+        /** A constant representing the custom model data key for waystone items. */
         var WAYSTONE_CUSTOM_MODEL_DATA: String = "waystone"
 
-        /**
-         * The base cost in experience points (XP) for performing waystone teleportation.
-         */
+        /** The base cost in experience points (XP) for performing waystone teleportation. */
         var BASE_XP_COST: Int = 5
 
-        /**
-         * Multiplier applied to distances in waystones.
-         */
+        /** Multiplier applied to distances in waystones. */
         var DISTANCE_MULTIPLIER: Double = 0.05
 
-        /**
-         * Multiplier used for dimensional scaling or calculations.
-         */
+        /** Multiplier used for dimensional scaling or calculations. */
         var DIMENSIONAL_MULTIPLIER: Int = 50
 
-        /**
-         * Multiplier applied to the base experience (XP) cost when the player is mounted during travel or teleportation.
-         */
+        /** Multiplier applied to the base experience (XP) cost when the player is mounted during travel or teleportation. */
         var MOUNT_MULTIPLIER: Double = 1.5
     }
 }

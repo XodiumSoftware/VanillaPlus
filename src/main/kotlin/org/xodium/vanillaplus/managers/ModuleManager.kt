@@ -21,7 +21,6 @@ import kotlin.time.measureTime
 
 /** Represents the module handler within the system. */
 object ModuleManager {
-    /** A list of command builders for the modules. */
     @Suppress("UnstableApiUsage")
     private val commandBuilders = mutableListOf<LiteralArgumentBuilder<CommandSourceStack>>()
 

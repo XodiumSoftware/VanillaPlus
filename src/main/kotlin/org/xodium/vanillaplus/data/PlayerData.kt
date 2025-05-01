@@ -21,9 +21,7 @@ data class PlayerData(
     val discoveredWaystones: List<String>? = null
 ) {
     companion object {
-        /**
-         * Creates a table in the database for the provided class type if it does not already exist.
-         */
+        /** Creates a table in the database for the provided class type if it does not already exist. */
         fun createTable() {
             Database.exec(
                 //language=SQLite

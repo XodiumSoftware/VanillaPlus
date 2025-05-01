@@ -24,9 +24,7 @@ data class WaystoneData(
     val location: Location,
 ) {
     companion object {
-        /**
-         * Creates a table in the database for the specified class if it does not already exist.
-         */
+        /** Creates a table in the database for the specified class if it does not already exist. */
         fun createTable() {
             Database.exec(
                 //language=SQLite
