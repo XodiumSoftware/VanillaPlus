@@ -23,14 +23,7 @@ object InvUtils {
         return false
     }
 
-    private fun countInventoryContents(inv: Inventory): Int {
-        var count = 0
-        for (item in inv.contents) {
-            if (item == null) continue
-            count += item.amount
-        }
-        return count
-    }
+    private fun countInventoryContents(inv: Inventory): Int = inv.contents.filterNotNull().sumOf { it.amount }
 
     fun stuffInventoryIntoAnother(
         p: Player,
@@ -40,24 +33,19 @@ object InvUtils {
         endSlot: Int,
         summary: UnloadSummary?
     ): Boolean {
-        val source: Inventory = p.inventory
+        val source = p.inventory
         val start = countInventoryContents(source)
         for (i in startSlot..endSlot) {
-            val item = source.getItem(i)
-            if (item == null) continue
-            if (Tag.SHULKER_BOXES.isTagged(item.type)) {
-                if (destination.holder != null && destination.holder is ShulkerBox) continue
-            }
-            source.clear(i)
-            var amount = item.amount
+            val item = source.getItem(i) ?: continue
+            if (Tag.SHULKER_BOXES.isTagged(item.type) && destination.holder is ShulkerBox) continue
             if (!onlyMatchingStuff || BlockUtils.doesChestContain(destination, item)) {
+                source.clear(i)
+                var amount = item.amount
                 for (leftover in destination.addItem(item).values) {
-                    amount = amount - leftover.amount
+                    amount -= leftover.amount
                     source.setItem(i, leftover)
                 }
                 destination.location?.let { summary?.protocolUnload(it, item.type, amount) }
-            } else {
-                source.setItem(i, item)
             }
         }
         return start != countInventoryContents(source)
