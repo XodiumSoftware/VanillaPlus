@@ -16,6 +16,7 @@ import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.TimeUtils
 
 /**
  * Handles functionality related to the Tab List module.
@@ -36,7 +37,7 @@ class TabListModule : ModuleInterface {
                     }
                 },
                 0L,
-                10L * 20L
+                TimeUtils.seconds(10)
             )
         }
     }

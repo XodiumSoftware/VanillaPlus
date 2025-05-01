@@ -10,6 +10,7 @@ import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.TimeUtils
 import java.time.LocalTime
 import java.time.temporal.ChronoUnit
 
@@ -35,7 +36,7 @@ class AutoRestartModule : ModuleInterface {
                     }
                 },
                 0L,
-                1L * 20L * 60L
+                TimeUtils.minutes(1)
             )
         }
     }
@@ -73,7 +74,7 @@ class AutoRestartModule : ModuleInterface {
                 }
             },
             0L,
-            1L * 20L
+            TimeUtils.seconds(1)
         )
     }
 
