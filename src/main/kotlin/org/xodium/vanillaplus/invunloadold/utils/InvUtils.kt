@@ -10,9 +10,6 @@ import org.bukkit.block.ShulkerBox
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
-import org.xodium.vanillaplus.invunloadold.BlackList
-import org.xodium.vanillaplus.invunloadold.BlockUtils
-import org.xodium.vanillaplus.invunloadold.Main
 import org.xodium.vanillaplus.invunloadold.UnloadSummary
 
 object InvUtils {
@@ -35,7 +32,6 @@ object InvUtils {
     }
 
     fun stuffInventoryIntoAnother(
-        main: Main,
         p: Player,
         destination: Inventory,
         onlyMatchingStuff: Boolean,
@@ -44,14 +40,10 @@ object InvUtils {
         summary: UnloadSummary?
     ): Boolean {
         val source: Inventory = p.inventory
-        val blackList: BlackList = main.getPlayerSetting(p).getBlacklist()
-
         val start = countInventoryContents(source)
         for (i in startSlot..endSlot) {
             val item = source.getItem(i)
             if (item == null) continue
-            if (blackList.contains(item.type)) continue
-
             if (ShulkerUtils.isShulkerBox(item)) {
                 if (destination.holder != null && destination.holder is ShulkerBox) {
                     continue

@@ -2,7 +2,7 @@
  *  Copyright (c) 2025. Xodium.
  *  All rights reserved.
  */
-package org.xodium.vanillaplus.invunloadold
+package org.xodium.vanillaplus.invunloadold.commands
 
 import org.apache.commons.lang3.StringUtils
 import org.bukkit.Material
@@ -15,6 +15,11 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.invunloadold.UnloadSummary
+import org.xodium.vanillaplus.invunloadold.Visualizer
+import org.xodium.vanillaplus.invunloadold.utils.BlockUtils
+import org.xodium.vanillaplus.invunloadold.utils.GroupUtils
 import org.xodium.vanillaplus.invunloadold.utils.InvUtils
 import org.xodium.vanillaplus.invunloadold.utils.PlayerUtils
 import java.lang.String
@@ -25,7 +30,7 @@ import kotlin.Int
 import kotlin.text.toInt
 import kotlin.text.uppercase
 
-class CommandSearchItem internal constructor(private val main: Main) : CommandExecutor {
+class CommandSearchItem : CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, s: String, args: Array<String>): Boolean {
         if (sender !is Player) {
             sender.sendMessage("You must be a player to run this command.")
@@ -61,13 +66,13 @@ class CommandSearchItem internal constructor(private val main: Main) : CommandEx
                 mat = p.inventory.itemInMainHand.type
             } else {
                 mat = Material.getMaterial(args[0].uppercase(Locale.getDefault()))
-                radius = main.groupUtils.getDefaultRadiusPerPlayer(p)
+                radius = GroupUtils().getDefaultRadiusPerPlayer(p)
             }
         }
 
         if (args.isEmpty()) {
             mat = p.inventory.itemInMainHand.type
-            radius = main.groupUtils.getDefaultRadiusPerPlayer(p)
+            radius = GroupUtils().getDefaultRadiusPerPlayer(p)
         }
 
         if (mat == null) {
@@ -75,23 +80,23 @@ class CommandSearchItem internal constructor(private val main: Main) : CommandEx
             return true
         }
 
-        if (radius == null || radius > main.groupUtils.getMaxRadiusPerPlayer(p)) {
-            p.sendMessage(String.format(main.messages?.MSG_RADIUS_TOO_HIGH, main.groupUtils.getMaxRadiusPerPlayer(p)))
+        if (radius == null || radius > GroupUtils().getMaxRadiusPerPlayer(p)) {
+            p.sendMessage(String.format("", GroupUtils().getMaxRadiusPerPlayer(p)))
             return true
         }
 
         val chests: MutableList<Block?>? = BlockUtils.findChestsInRadius(p.location, radius)
-        BlockUtils.sortBlockListByDistance(chests, p.location)
+        BlockUtils.sortBlockListByDistance(chests!!, p.location)
 
         val useableChests = ArrayList<Block>()
-        for (block in chests!!) {
-            if (PlayerUtils.canPlayerUseChest(block, p, main)) {
+        for (block in chests) {
+            if (PlayerUtils.canPlayerUseChest(block, p, instance)) {
                 useableChests.add(block!!)
             }
         }
 
         if (useableChests.isEmpty()) {
-            p.sendMessage(String.format(main.messages.MSG_NOTHING_FOUND, mat.name))
+            p.sendMessage(String.format("", mat.name))
             return true
         }
 
@@ -115,14 +120,14 @@ class CommandSearchItem internal constructor(private val main: Main) : CommandEx
         summary.print(UnloadSummary.PrintRecipient.PLAYER, p)
 
         if (affectedChests.isEmpty()) {
-            p.sendMessage(String.format(main.messages.MSG_NOTHING_FOUND, mat.name))
+            p.sendMessage(String.format("", mat.name))
             return true
         }
 
         for (block in affectedChests) {
             Visualizer().chestAnimation(block, p)
         }
-        Visualizer().play(affectedChests, p)
+        Visualizer().play(affectedChests as ArrayList<Block>, p)
 
         return true
     }

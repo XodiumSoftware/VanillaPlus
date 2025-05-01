@@ -11,6 +11,7 @@ import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.invunloadold.utils.BlockUtils
 import java.util.*
 
 class Visualizer {
@@ -20,10 +21,6 @@ class Visualizer {
         HashMap<UUID?, Location?>()
     val activeVisualizations: HashMap<UUID?, Int?> = HashMap<UUID?, Int?>()
     val unloadSummaries: HashMap<UUID?, UnloadSummary?> = HashMap<UUID?, UnloadSummary?>()
-
-    private fun cancelVisualization(id: Int) {
-        instance.server.scheduler.cancelTask(id)
-    }
 
     fun save(
         p: Player,

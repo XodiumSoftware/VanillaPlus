@@ -13,13 +13,13 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 
 object EnchantmentUtils {
     fun hasMatchingEnchantments(first: ItemStack, second: ItemStack): Boolean {
-        if (!instance.config.getBoolean("match-enchantments") && !instance.config
+        if (!instance.config.getBoolean("match-enchantments") && !instance.config //TODO: use Config
                 .getBoolean("match-enchantments-on-books")
         ) {
             return true
         }
 
-        if (!instance.config.getBoolean("match-enchantments") && instance.config
+        if (!instance.config.getBoolean("match-enchantments") && instance.config //TODO: use Config
                 .getBoolean("match-enchantments-on-books")
         ) {
             if (first.type != Material.ENCHANTED_BOOK) {

@@ -2,7 +2,7 @@
  *  Copyright (c) 2025. Xodium.
  *  All rights reserved.
  */
-package org.xodium.vanillaplus.invunloadold
+package org.xodium.vanillaplus.invunloadold.commands
 
 import net.md_5.bungee.api.ChatColor
 import org.apache.commons.lang3.StringUtils
@@ -17,11 +17,12 @@ import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.hooks.ChestSortHook
-import org.xodium.vanillaplus.invunloadold.utils.CoolDown
-import org.xodium.vanillaplus.invunloadold.utils.GroupUtils
-import org.xodium.vanillaplus.invunloadold.utils.InvUtils
-import org.xodium.vanillaplus.invunloadold.utils.PlayerUtils
+import org.xodium.vanillaplus.invunloadold.PlayerSetting
+import org.xodium.vanillaplus.invunloadold.UnloadSummary
+import org.xodium.vanillaplus.invunloadold.Visualizer
+import org.xodium.vanillaplus.invunloadold.utils.*
 import java.lang.String
 import java.util.*
 import kotlin.Array
@@ -32,9 +33,10 @@ import kotlin.let
 import kotlin.text.equals
 import kotlin.text.lowercase
 import kotlin.text.startsWith
+import kotlin.text.toFloat
 import kotlin.text.uppercase
 
-class CommandUnload(val main: Main) : CommandExecutor, TabCompleter {
+class CommandUnload() : CommandExecutor, TabCompleter {
     override fun onCommand(
         sender: CommandSender, command: Command, label: String,
         args: Array<String>
@@ -43,16 +45,16 @@ class CommandUnload(val main: Main) : CommandExecutor, TabCompleter {
             if (sender.hasPermission("invunload.reload")) {
                 sender.sendMessage(ChatColor.GREEN.toString() + "InvUnload has been reloaded.")
             } else {
-                sender.sendMessage(main.getCommand("unload")!!.permissionMessage!!)
+                sender.sendMessage(instance.getCommand("unload")!!.permissionMessage!!)
             }
             return true
         }
 
         if (sender !is Player) return true
-        if (!CoolDown.check(sender)) return true
+        if (!CoolDownUtils.check(sender)) return true
 
         val p = sender
-        val setting: PlayerSetting? = main.getPlayerSetting(p)
+        val setting: PlayerSetting? = instance.getPlayerSetting(p)
 
         if (args.isNotEmpty() && args[0].equals("hotbar", ignoreCase = true)) {
             if (command.name == "unload") {
@@ -60,14 +62,14 @@ class CommandUnload(val main: Main) : CommandExecutor, TabCompleter {
                 if (setting.unloadHotbar) {
                     p.sendMessage(
                         String.format(
-                            main.messages.MSG_WILL_USE_HOTBAR,
+                            instance.messages.MSG_WILL_USE_HOTBAR,
                             "/" + label.lowercase(Locale.getDefault())
                         )
                     )
                 } else {
                     p.sendMessage(
                         String.format(
-                            main.messages.MSG_WILL_NOT_USE_HOTBAR,
+                            instance.messages.MSG_WILL_NOT_USE_HOTBAR,
                             "/" + label.lowercase(Locale.getDefault())
                         )
                     )

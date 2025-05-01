@@ -2,8 +2,10 @@
  *  Copyright (c) 2025. Xodium.
  *  All rights reserved.
  */
-package org.xodium.vanillaplus.invunloadold
 
+package org.xodium.vanillaplus.invunloadold.utils
+
+import org.apache.commons.lang3.EnumUtils
 import org.bukkit.Chunk
 import org.bukkit.Location
 import org.bukkit.Material
@@ -13,12 +15,10 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.BoundingBox
 import org.bukkit.util.Vector
-import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.invunloadold.utils.EnchantmentUtils
-import org.xodium.vanillaplus.invunloadold.utils.EnumUtils
+import org.xodium.vanillaplus.VanillaPlus
 import java.util.*
 
-class BlockUtils internal constructor(val main: Main?) {
+class BlockUtils {
     companion object {
         private val CONTAINER_TYPES: EnumSet<Material?>
         private val CONTAINER_NAMES =
@@ -37,7 +37,7 @@ class BlockUtils internal constructor(val main: Main?) {
                 for (state in chunk.tileEntities) {
                     if (state is Container && isChestLikeBlock(state.type)) {
                         if (state.location.distanceSquared(loc) <= radius * radius) {
-                            if (instance.config
+                            if (VanillaPlus.Companion.instance.config
                                     .getBoolean("ignore-blocked-chests", false)
                             ) {
                                 val above = state.block.getRelative(BlockFace.UP)

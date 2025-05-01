@@ -13,6 +13,7 @@ class GroupUtils(yamlFile: File) {
     private var yaml: YamlConfiguration?
     private var groups: LinkedHashMap<String?, Group?>
 
+    //TODO: use Config
     init {
         if (!yamlFile.exists()) {
             instance.logger.info("groups.yml does not exist, skipping custom group settings.")

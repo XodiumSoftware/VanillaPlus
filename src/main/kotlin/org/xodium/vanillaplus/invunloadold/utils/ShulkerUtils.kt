@@ -11,6 +11,6 @@ object ShulkerUtils {
     @JvmStatic
     fun isShulkerBox(itemStack: ItemStack?): Boolean {
         if (itemStack == null) return false
-        return itemStack.type.name.contains("SHULKER_BOX")
+        return itemStack.type.name.contains("SHULKER_BOX") //TODO: use Registry/Tag
     }
 }
