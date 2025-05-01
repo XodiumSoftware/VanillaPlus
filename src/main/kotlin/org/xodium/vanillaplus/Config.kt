@@ -16,8 +16,6 @@ import org.xodium.vanillaplus.utils.TimeUtils
 import org.xodium.vanillaplus.utils.Utils.getTps
 import org.xodium.vanillaplus.utils.Utils.getWeather
 import java.time.LocalTime
-import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.DurationUnit
 import org.bukkit.Sound as BukkitSound
 
 /** Configuration settings */
@@ -290,7 +288,7 @@ object Config {
         /**
          * The delay (in milliseconds) before automatic closure.
          */
-        var AUTO_CLOSE_DELAY: Long = 6.milliseconds.toLong(DurationUnit.MILLISECONDS)
+        var AUTO_CLOSE_DELAY: Long = 6L * 1000L // 6 seconds
     }
 
     /**
