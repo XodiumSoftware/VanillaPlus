@@ -43,14 +43,7 @@ import org.xodium.vanillaplus.utils.Utils
 import java.util.*
 import kotlin.time.Duration.Companion.seconds
 
-//TODO: Tweak effects.
-//TODO: Refactor.
-
-/**
- * Represents a module handling waystone mechanics within the system.
- * A waystone allows players to teleport between locations using specific in-game constructs.
- * The module listens for relevant player and block events and manages waystone functionality accordingly.
- */
+/** Represents a module handling waystone mechanics within the system. */
 class WaystoneModule : ModuleInterface {
     override fun enabled(): Boolean = config.ENABLED
 
@@ -258,7 +251,6 @@ class WaystoneModule : ModuleInterface {
     /**
      * Handles the teleportation process of a player to a target waystone, including XP cost calculation,
      * teleportation effects, and cancellation conditions.
-     *
      * @param player The player who is attempting to teleport.
      * @param targetWaystone The target waystone data containing the destination location for teleportation.
      */
@@ -367,6 +359,7 @@ class WaystoneModule : ModuleInterface {
 
     /**
      * Creates an `ItemStack` instance configured as a waystone item, with optional origin and destination data.
+     *
      * If both origin and destination are provided, the item will include a lore displaying the XP cost
      * required for travelling between the two locations.
      * @param customName The custom name of the item. Defaults to "Waystone".
@@ -433,6 +426,7 @@ class WaystoneModule : ModuleInterface {
 
     /**
      * Creates a graphical user interface (GUI) for the player, allowing them to interact with and teleport to waystones.
+     *
      * The GUI is dynamically generated based on the filtered list of available waystones, excludes the player's current waystone
      * (if any), and displays relevant information such as the waystone's name and teleportation cost.
      * @param player The player for whom the GUI is being generated.
