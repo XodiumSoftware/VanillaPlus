@@ -165,15 +165,12 @@ class DoorsModule : ModuleInterface {
      * @param block The block representing the door or gate being interacted with.
      */
     private fun processDoorOrGateInteraction(block: Block) {
-        if (block.blockData is Door) {
-            val otherDoorBlock = getOtherPart(getDoorBottom(block.blockData as Door, block), block)
-            if (otherDoorBlock != null && otherDoorBlock.blockData is Door) {
-                val otherDoor = otherDoorBlock.blockData as Door
-                toggleOtherDoor(block, otherDoorBlock, !otherDoor.isOpen)
-                if (Config.DoorsModule.ALLOW_AUTO_CLOSE) {
-                    autoClose[otherDoorBlock] = System.currentTimeMillis() + autoCloseDelay
-                }
-            }
+        val door = (block.blockData as? Door) ?: return
+        val otherDoorBlock = getOtherPart(getDoorBottom(door, block), block) ?: return
+        val otherDoor = otherDoorBlock.blockData as? Door ?: return
+        toggleOtherDoor(block, otherDoorBlock, !otherDoor.isOpen)
+        if (Config.DoorsModule.ALLOW_AUTO_CLOSE) {
+            autoClose[otherDoorBlock] = System.currentTimeMillis() + autoCloseDelay
         }
     }
 
@@ -208,11 +205,13 @@ class DoorsModule : ModuleInterface {
      * @param data The block data to check.
      * @return True if the block can be knocked on, false otherwise.
      */
-    private fun isKnockableBlock(data: BlockData): Boolean = when (data) {
-        is Door -> Config.DoorsModule.ALLOW_KNOCKING_DOORS
-        is Gate -> Config.DoorsModule.ALLOW_KNOCKING_GATES
-        is TrapDoor -> Config.DoorsModule.ALLOW_KNOCKING_TRAPDOORS
-        else -> false
+    private fun isKnockableBlock(data: BlockData): Boolean {
+        return when (data) {
+            is Door -> Config.DoorsModule.ALLOW_KNOCKING_DOORS
+            is Gate -> Config.DoorsModule.ALLOW_KNOCKING_GATES
+            is TrapDoor -> Config.DoorsModule.ALLOW_KNOCKING_TRAPDOORS
+            else -> false
+        }
     }
 
     /**
@@ -241,8 +240,8 @@ class DoorsModule : ModuleInterface {
      * @return The bottom half of the door if it exists, null otherwise.
      */
     private fun getDoorBottom(door: Door, block: Block): Door? {
-        val bottomHalf = if (door.half == Bisected.Half.BOTTOM) block else block.getRelative(BlockFace.DOWN)
-        return (bottomHalf.blockData as? Door)?.takeIf { bottomHalf.type == block.type }
+        return (if (door.half == Bisected.Half.BOTTOM) block else block.getRelative(BlockFace.DOWN))
+            .blockData as? Door
     }
 
     /**

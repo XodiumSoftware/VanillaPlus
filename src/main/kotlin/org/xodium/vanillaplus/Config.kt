@@ -183,7 +183,7 @@ object Config {
         /**
          * The interval between broadcasts.
          */
-        var INTERVAL: Long = TimeUtils.seconds(5)
+        var INTERVAL: Long = TimeUtils.minutes(5)
     }
 
     /**
