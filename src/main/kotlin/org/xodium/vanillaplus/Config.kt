@@ -288,7 +288,7 @@ object Config {
         /**
          * The delay (in seconds) before automatic closure.
          */
-        var AUTO_CLOSE_DELAY: Int = 6
+        var AUTO_CLOSE_DELAY: Long = 6L
     }
 
     /**

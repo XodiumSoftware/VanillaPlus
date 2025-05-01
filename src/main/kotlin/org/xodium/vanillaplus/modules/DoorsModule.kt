@@ -42,34 +42,28 @@ import java.util.concurrent.ConcurrentHashMap
 class DoorsModule : ModuleInterface {
     override fun enabled(): Boolean = Config.DoorsModule.ENABLED
 
-    private val autoCloseDelay = Config.DoorsModule.AUTO_CLOSE_DELAY * 1000L
+    private val autoCloseDelay = Config.DoorsModule.AUTO_CLOSE_DELAY * 1000L //FIX: cant use TimeUtils?
     private val autoClose = ConcurrentHashMap<Block, Long>()
+    private val possibleNeighbours = listOf(
+        AdjacentBlockData(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
+        AdjacentBlockData(0, 1, Door.Hinge.LEFT, BlockFace.EAST),
 
-    companion object {
-        private val POSSIBLE_NEIGHBOURS = listOf(
-            AdjacentBlockData(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
-            AdjacentBlockData(0, 1, Door.Hinge.LEFT, BlockFace.EAST),
+        AdjacentBlockData(1, 0, Door.Hinge.RIGHT, BlockFace.SOUTH),
+        AdjacentBlockData(-1, 0, Door.Hinge.LEFT, BlockFace.SOUTH),
 
-            AdjacentBlockData(1, 0, Door.Hinge.RIGHT, BlockFace.SOUTH),
-            AdjacentBlockData(-1, 0, Door.Hinge.LEFT, BlockFace.SOUTH),
+        AdjacentBlockData(0, 1, Door.Hinge.RIGHT, BlockFace.WEST),
+        AdjacentBlockData(0, -1, Door.Hinge.LEFT, BlockFace.WEST),
 
-            AdjacentBlockData(0, 1, Door.Hinge.RIGHT, BlockFace.WEST),
-            AdjacentBlockData(0, -1, Door.Hinge.LEFT, BlockFace.WEST),
-
-            AdjacentBlockData(-1, 0, Door.Hinge.RIGHT, BlockFace.NORTH),
-            AdjacentBlockData(1, 0, Door.Hinge.LEFT, BlockFace.NORTH)
-        )
-    }
+        AdjacentBlockData(-1, 0, Door.Hinge.RIGHT, BlockFace.NORTH),
+        AdjacentBlockData(1, 0, Door.Hinge.LEFT, BlockFace.NORTH)
+    )
 
     init {
         instance.server.scheduler.runTaskTimer(
             instance,
             Runnable {
                 autoClose.entries.removeIf { (block, time) ->
-                    if (System.currentTimeMillis() >= time) {
-                        handleAutoClose(block)
-                        true
-                    } else false
+                    System.currentTimeMillis() >= time && handleAutoClose(block)
                 }
             },
             Config.DoorsModule.INIT_DELAY,
@@ -88,42 +82,77 @@ class DoorsModule : ModuleInterface {
         }
     }
 
+    /**
+     * Toggles the state of the door or gate based on the provided block and openable data.
+     * @param block The block representing the door or gate to be toggled.
+     * @param openable The Openable data representing the door or gate.
+     * @param open The desired state (open or closed) for the door or gate.
+     */
     private fun toggleDoor(block: Block, openable: Openable, open: Boolean) {
         openable.isOpen = open
         block.blockData = openable
     }
 
-    private fun handleAutoClose(block: Block) {
-        val data = block.blockData as? Openable ?: return
-        if (!data.isOpen) return
+    /**
+     * Handles the auto-close functionality for doors and gates.
+     * @param block The block representing the door or gate to be closed.
+     * @return True if the block was successfully closed, false otherwise.
+     */
+    private fun handleAutoClose(block: Block): Boolean {
+        val data = block.blockData as? Openable ?: return false
+        if (!data.isOpen) return false
         when (data) {
             is Door -> handleDoorClose(block, data)
             is Gate -> handleGateClose(block)
-            else -> return
+            else -> return false
         }
         data.isOpen = false
         block.blockData = data
+        return true
     }
 
+    /**
+     * Handles the sound effect for closing a door.
+     * @param block The block representing the door being closed.
+     * @param door The door block data.
+     */
     private fun handleDoorClose(block: Block, door: Door) {
         getOtherPart(door, block)?.let { toggleOtherDoor(block, it, false) }
         block.world.playSound(Config.DoorsModule.SOUND_DOOR_CLOSE)
     }
 
+    /**
+     * Handles the sound effect for closing a gate.
+     * @param block The block representing the gate being closed.
+     */
     private fun handleGateClose(block: Block) = block.world.playSound(Config.DoorsModule.SOUND_GATE_CLOSE)
 
+    /**
+     * Checks if the interaction event is valid for processing.
+     * @param event The player interact event.
+     * @return True if the interaction is valid, false otherwise.
+     */
     private fun isValidInteraction(event: PlayerInteractEvent): Boolean {
         return event.hand == EquipmentSlot.HAND &&
                 event.useInteractedBlock() != Event.Result.DENY &&
                 event.useItemInHand() != Event.Result.DENY
     }
 
+    /**
+     * Handles the left-click interaction with doors and gates, playing a knock sound if applicable.
+     * @param event The player interact event.
+     * @param block The block representing the door or gate being interacted with.
+     */
     private fun handleLeftClick(event: PlayerInteractEvent, block: Block) {
         if (canKnock(event, event.player) && isKnockableBlock(block.blockData)) {
             block.world.playSound(Config.DoorsModule.SOUND_KNOCK)
         }
     }
 
+    /**
+     * Handles the right-click interaction with doors and gates, toggling their state and handling auto-close functionality.
+     * @param block The block representing the door or gate being interacted with.
+     */
     private fun handleRightClick(block: Block) {
         if (Config.DoorsModule.ALLOW_DOUBLE_DOORS && (block.blockData is Door || block.blockData is Gate)) {
             processDoorOrGateInteraction(block)
@@ -131,6 +160,10 @@ class DoorsModule : ModuleInterface {
         if (Config.DoorsModule.ALLOW_AUTO_CLOSE) autoClose[block] = System.currentTimeMillis() + autoCloseDelay
     }
 
+    /**
+     * Processes the interaction with doors or gates, toggling their state and handling auto-close functionality.
+     * @param block The block representing the door or gate being interacted with.
+     */
     private fun processDoorOrGateInteraction(block: Block) {
         if (block.blockData is Door) {
             val otherDoorBlock = getOtherPart(getDoorBottom(block.blockData as Door, block), block)
@@ -144,6 +177,12 @@ class DoorsModule : ModuleInterface {
         }
     }
 
+    /**
+     * Checks if the player can knock on the block based on their game mode and interaction conditions.
+     * @param event The player interact event.
+     * @param player The player attempting to knock.
+     * @return True if the player can knock, false otherwise.
+     */
     private fun canKnock(event: PlayerInteractEvent, player: Player): Boolean {
         return when {
             player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR -> false
@@ -153,12 +192,22 @@ class DoorsModule : ModuleInterface {
         }
     }
 
+    /**
+     * Checks if the knocking conditions are violated based on the player's state and configuration.
+     * @param player The player attempting to knock.
+     * @return True if the knocking conditions are violated, false otherwise.
+     */
     private fun isKnockingConditionViolated(player: Player): Boolean {
         return (Config.DoorsModule.KNOCKING_REQUIRES_SHIFT && !player.isSneaking) ||
                 (Config.DoorsModule.KNOCKING_REQUIRES_EMPTY_HAND &&
                         player.inventory.itemInMainHand.type != Material.AIR)
     }
 
+    /**
+     * Checks if the block data is of a type that can be knocked on.
+     * @param data The block data to check.
+     * @return True if the block can be knocked on, false otherwise.
+     */
     private fun isKnockableBlock(data: BlockData): Boolean = when (data) {
         is Door -> Config.DoorsModule.ALLOW_KNOCKING_DOORS
         is Gate -> Config.DoorsModule.ALLOW_KNOCKING_GATES
@@ -166,21 +215,45 @@ class DoorsModule : ModuleInterface {
         else -> false
     }
 
+    /**
+     * Toggles the state of the other door when one door is opened or closed.
+     * @param block The block representing the first door.
+     * @param block2 The block representing the second door.
+     * @param open The desired state (open or closed) for the second door.
+     */
     private fun toggleOtherDoor(block: Block, block2: Block, open: Boolean) {
         if (block.blockData !is Door || block2.blockData !is Door) return
-        val door = block.blockData as Door
-        val door2 = block2.blockData as Door
-        if (door.isOpen != door2.isOpen) toggleDoor(block2, door2, open)
+        instance.server.scheduler.runTaskLater(
+            instance,
+            Runnable {
+                val door = block.blockData as Door
+                val door2 = block2.blockData as Door
+                if (door.isOpen != door2.isOpen) toggleDoor(block2, door2, open)
+            },
+            Config.DoorsModule.INIT_DELAY
+        )
     }
 
+    /**
+     * Retrieves the bottom half of a door if the provided block is the top half.
+     * @param door The door block data.
+     * @param block The block to check.
+     * @return The bottom half of the door if it exists, null otherwise.
+     */
     private fun getDoorBottom(door: Door, block: Block): Door? {
         val bottomHalf = if (door.half == Bisected.Half.BOTTOM) block else block.getRelative(BlockFace.DOWN)
         return (bottomHalf.blockData as? Door)?.takeIf { bottomHalf.type == block.type }
     }
 
+    /**
+     * Retrieves the other part of a door if it exists.
+     * @param door The door block data.
+     * @param block The block to check.
+     * @return The other part of the door if it exists, null otherwise.
+     */
     private fun getOtherPart(door: Door?, block: Block): Block? {
         if (door == null) return null
-        return POSSIBLE_NEIGHBOURS.firstOrNull { neighbour ->
+        return possibleNeighbours.firstOrNull { neighbour ->
             val relative = block.getRelative(neighbour.offsetX, 0, neighbour.offsetZ)
             (relative.blockData as? Door)?.takeIf {
                 it.facing == door.facing &&
