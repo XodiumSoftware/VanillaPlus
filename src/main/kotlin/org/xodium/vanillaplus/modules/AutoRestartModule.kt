@@ -9,10 +9,8 @@ import net.kyori.adventure.bossbar.BossBar
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.utils.FmtUtils.mm
-import org.xodium.vanillaplus.utils.TimeUtils.minutes
-import org.xodium.vanillaplus.utils.TimeUtils.seconds
-import org.xodium.vanillaplus.utils.TimeUtils.ticks
+import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.TimeUtils
 import java.time.LocalTime
 import java.time.temporal.ChronoUnit
 
@@ -26,9 +24,6 @@ import java.time.temporal.ChronoUnit
 class AutoRestartModule : ModuleInterface {
     override fun enabled(): Boolean = Config.AutoRestartModule.ENABLED
 
-    /**
-     * Initialises the AutoRestartModule.
-     */
     init {
         if (enabled()) {
             instance.server.scheduler.runTaskTimerAsynchronously(
@@ -40,15 +35,13 @@ class AutoRestartModule : ModuleInterface {
                         }
                     }
                 },
-                0.ticks,
-                1.minutes
+                0L,
+                TimeUtils.minutes(1)
             )
         }
     }
 
-    /**
-     * Triggers a countdown for the server restart.
-     */
+    /** Triggers a countdown for the server restart */
     private fun countdown() {
         val totalMinutes = Config.AutoRestartModule.COUNTDOWN_START_MINUTES
         var remainingSeconds = totalMinutes * 60
@@ -80,14 +73,13 @@ class AutoRestartModule : ModuleInterface {
                     instance.server.restart()
                 }
             },
-            0.ticks,
-            1.seconds
+            0L,
+            TimeUtils.seconds(1)
         )
     }
 
     /**
      * Returns true if the current time is equal to the time string in the plugin's configuration.
-     *
      * @param restartTime the time to compare to the current time
      * @return true if the current time is equal to the restart time
      */
@@ -100,7 +92,6 @@ class AutoRestartModule : ModuleInterface {
 
     /**
      * Returns a boss bar with the name and progress set in the plugin's configuration.
-     *
      * @param timePlaceholder the time placeholder to replace in the boss bar name
      * @return a boss bar with the name and progress set in the plugin's configuration
      */

@@ -40,9 +40,7 @@ import java.util.stream.Collectors
 class TreesModule : ModuleInterface {
     override fun enabled(): Boolean = Config.TreesModule.ENABLED
 
-    /**
-     * A map of sapling materials to a list of schematics
-     */
+    /** A map of sapling materials to a list of schematics */
     private val schematicCache: Map<Material, List<Clipboard>> =
         Config.TreesModule.SAPLING_LINK.mapValues { (_, dirs) ->
             dirs.flatMap { dir -> loadSchematics("/schematics/$dir") }
@@ -50,7 +48,6 @@ class TreesModule : ModuleInterface {
 
     /**
      * Handle the StructureGrowEvent
-     *
      * @param event The StructureGrowEvent
      */
     @EventHandler(priority = EventPriority.MONITOR)
@@ -64,7 +61,6 @@ class TreesModule : ModuleInterface {
 
     /**
      * Load schematics from the specified resource directory
-     *
      * @param resourceDir The directory containing the schematics
      * @return A list of loaded schematics
      */
@@ -90,7 +86,6 @@ class TreesModule : ModuleInterface {
 
     /**
      * Read a schematic from the specified path
-     *
      * @param path The path to the schematic file
      * @param channel The channel to read the schematic from
      * @return The loaded schematic
@@ -106,7 +101,6 @@ class TreesModule : ModuleInterface {
 
     /**
      * Paste a schematic at the specified block
-     *
      * @param block The block to paste the schematic at
      * @return True if the schematic was pasted successfully
      */

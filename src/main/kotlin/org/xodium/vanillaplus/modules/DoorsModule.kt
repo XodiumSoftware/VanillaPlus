@@ -26,7 +26,6 @@ import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.AdjacentBlockData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.utils.TimeUtils.ticks
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -81,8 +80,8 @@ class DoorsModule : ModuleInterface {
                     } else false
                 }
             },
-            1.ticks,
-            1.ticks
+            1L,
+            1L
         )
     }
 
@@ -179,7 +178,7 @@ class DoorsModule : ModuleInterface {
                 val door2 = block2.blockData as Door
                 if (door.isOpen != door2.isOpen) toggleDoor(block2, door2, open)
             },
-            1.ticks
+            1L
         )
     }
 

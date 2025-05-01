@@ -18,15 +18,12 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.registries.EntityRegistry
 import org.xodium.vanillaplus.registries.MaterialRegistry
-import org.xodium.vanillaplus.utils.FmtUtils.mm
+import org.xodium.vanillaplus.utils.ExtUtils.mm
 
-/**
- * General utilities
- */
+/** General utilities */
 object Utils {
     /**
      * A helper function to wrap command execution with standardised error handling.
-     *
      * @param ctx The CommandContext used to get the CommandSourceStack.
      * @param action The action to execute, receiving a CommandSourceStack as a parameter.
      * @return Command.SINGLE_SUCCESS after execution.
@@ -45,7 +42,6 @@ object Utils {
 
     /**
      * A function to get the base damage to a material.
-     *
      * @param material The material to get the base damage to.
      * @return The base damage to the material.
      */
@@ -53,7 +49,6 @@ object Utils {
 
     /**
      * A function to get the damage to an item stack against an entity type.
-     *
      * @param itemStack The item stack to get the damage to.
      * @param entityType The entity type to get the damage against.
      * @return The damage to the item stack against the entity type.
@@ -65,7 +60,6 @@ object Utils {
 
     /**
      * A function to get the bonus damage to an item stack against an entity type.
-     *
      * @param itemStack The item stack to get the bonus damage to.
      * @param entityType The entity type to get the bonus damage against.
      * @return The bonus damage to the item stack against the entity type.
@@ -82,7 +76,6 @@ object Utils {
 
     /**
      * A function to check if a material is a bowl or bottle.
-     *
      * @param material The material to check.
      * @return True if the material is a bowl or bottle, false otherwise.
      */
@@ -90,7 +83,6 @@ object Utils {
 
     /**
      * A function to move bowls and bottles in an inventory.
-     *
      * @param inv The inventory to move the bowls and bottles in.
      * @param slot The slot to move the bowls and bottles from.
      * @return True if the bowls and bottles were moved successfully, false otherwise.
@@ -130,7 +122,6 @@ object Utils {
 
     /**
      * A function to check if a player has a hoe in their inventory.
-     *
      * @param inventory The inventory to check.
      * @return True if the player has a hoe in their inventory, false otherwise.
      */
@@ -144,7 +135,6 @@ object Utils {
 
     /**
      * A function to check if a player has a hoe in their inventory.
-     *
      * @param inventory The inventory to check.
      * @return True if the player has a hoe in their inventory, false otherwise.
      */
@@ -158,7 +148,6 @@ object Utils {
 
     /**
      * A function to check if a player has a hoe in their hotbar.
-     *
      * @param inventory The inventory of the player.
      * @return True if the player has a hoe in their hotbar, false otherwise.
      */
@@ -172,7 +161,6 @@ object Utils {
 
     /**
      * A function to get the multiplier of an item stack.
-     *
      * @param itemStack The item stack to get the multiplier of.
      * @return The multiplier of the item stack.
      */
@@ -187,7 +175,6 @@ object Utils {
 
     /**
      * A function to get the base multiplier of an item stack.
-     *
      * @param itemStack The item stack to get the base multiplier of.
      * @return The base multiplier of the item stack.
      */
@@ -206,7 +193,6 @@ object Utils {
 
     /**
      * A function to get the tps of the server.
-     *
      * @return The tps of the server.
      */
     fun getTps(): String {
@@ -220,7 +206,6 @@ object Utils {
 
     /**
      * Calculate a hex colour between red and green based on the provided ratio (0.0 to 1.0)
-     *
      * @param ratio The ratio to calculate the colour for.
      * @return The hex colour for the ratio.
      */
@@ -233,7 +218,6 @@ object Utils {
 
     /**
      * Gets a formatted string representing the current weather in the main world.
-     *
      * @return A formatted string representing the weather.
      */
     fun getWeather(): String {

@@ -5,19 +5,9 @@
 
 package org.xodium.vanillaplus.data
 
-import io.papermc.paper.datacomponent.DataComponentTypes
-import io.papermc.paper.datacomponent.item.CustomModelData
-import io.papermc.paper.datacomponent.item.ItemLore
-import org.bukkit.*
-import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.Recipe
-import org.bukkit.inventory.ShapedRecipe
-import org.xodium.vanillaplus.Config
+import org.bukkit.Location
 import org.xodium.vanillaplus.Database
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
-import org.xodium.vanillaplus.utils.FmtUtils.mm
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -92,7 +82,7 @@ data class WaystoneData(
                             resultSet.getString("id"),
                             resultSet.getString("custom_name"),
                             Location(
-                                Bukkit.getWorld(resultSet.getString("world")),
+                                instance.server.getWorld(resultSet.getString("world")),
                                 resultSet.getDouble("x"),
                                 resultSet.getDouble("y"),
                                 resultSet.getDouble("z")
@@ -116,86 +106,6 @@ data class WaystoneData(
                 WHERE id = ?;
                 """.trimIndent(), id
             )
-        }
-
-
-        /**
-         * Creates an `ItemStack` instance configured as a waystone item, with optional origin and destination data.
-         * If both origin and destination are provided, the item will include a lore displaying the XP cost
-         * required for travelling between the two locations.
-         *
-         * @param customName The custom name of the item. Defaults to "Waystone".
-         * @param origin The origin `WaystoneData` representing the starting location. Null if not needed.
-         * @param destination The destination `WaystoneData` representing the target location. Null if not needed.
-         * @param player The player interacting with the waystone, used to determine if the player is mounted.
-         * @return A configured `ItemStack` representing the waystone with the specified attributes and lore.
-         */
-        fun item(
-            customName: String = "Waystone",
-            origin: Location? = null,
-            destination: Location? = null,
-            player: Player? = null,
-        ): ItemStack {
-            @Suppress("UnstableApiUsage")
-            return ItemStack(Config.WaystoneModule.WAYSTONE_MATERIAL).apply {
-                setData(DataComponentTypes.CUSTOM_NAME, customName.mm())
-                setData(
-                    DataComponentTypes.CUSTOM_MODEL_DATA,
-                    CustomModelData.customModelData().addString(Config.WaystoneModule.WAYSTONE_CUSTOM_MODEL_DATA)
-                )
-                if (origin != null && destination != null && player?.gameMode in listOf(
-                        GameMode.SURVIVAL,
-                        GameMode.ADVENTURE
-                    )
-                ) {
-                    setData(
-                        DataComponentTypes.LORE,
-                        ItemLore.lore().addLines(
-                            listOf(
-                                "Click to teleport".fireFmt().mm(),
-                                "Travel Cost: ${
-                                    calculateXpCost(
-                                        origin,
-                                        destination,
-                                        player?.isInsideVehicle ?: false
-                                    )
-                                }".mm()
-                            )
-                        )
-                    )
-                }
-            }
-        }
-
-        /**
-         * Creates a custom-shaped crafting recipe for the given item.
-         * @param item The resulting item of the crafting recipe.
-         * @return A custom `ShapedRecipe` for the provided item using the defined shape and ingredients.
-         */
-        fun recipe(item: ItemStack): Recipe {
-            return ShapedRecipe(NamespacedKey(instance, "waystone_recipe"), item).apply {
-                shape("   ", "CBC", "AAA")
-                setIngredient('A', Material.STONE_BRICKS)
-                setIngredient('B', Material.ENDER_PEARL)
-                setIngredient('C', Material.COMPASS)
-            }
-        }
-
-        /**
-         * Calculates the experience point (XP) cost for travelling between two locations,
-         * factoring in whether the travel is mounted and whether the destination is in a different dimension.
-         * @param origin The starting location of the player, represented as a `Location` object.
-         * @param destination The destination location of the player, represented as a `Location` object.
-         * @param isMounted A Boolean flag indicating whether the player is mounted (e.g. riding a horse). Default is false.
-         * @return The calculated XP cost as an integer based on the distance, dimension, and whether the player is mounted.
-         */
-        fun calculateXpCost(origin: Location, destination: Location, isMounted: Boolean): Int {
-            val config = Config.WaystoneModule
-            val baseCost = config.BASE_XP_COST + when (origin.world) {
-                destination.world -> (origin.distance(destination) * config.DISTANCE_MULTIPLIER).toInt()
-                else -> config.DIMENSIONAL_MULTIPLIER
-            }
-            return if (isMounted) (baseCost * config.MOUNT_MULTIPLIER).toInt() else baseCost
         }
     }
 }

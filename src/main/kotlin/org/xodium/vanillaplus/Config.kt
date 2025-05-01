@@ -12,15 +12,13 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.BookData
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
-import org.xodium.vanillaplus.utils.TimeUtils.minutes
+import org.xodium.vanillaplus.utils.TimeUtils
 import org.xodium.vanillaplus.utils.Utils.getTps
 import org.xodium.vanillaplus.utils.Utils.getWeather
 import java.time.LocalTime
 import org.bukkit.Sound as BukkitSound
 
-/**
- * Configuration settings for the VanillaPlus plugin.
- */
+/** Configuration settings */
 object Config {
     /**
      * Configuration settings for the AutoRefillModule. This module controls the refill features of the plugin.
@@ -180,12 +178,12 @@ object Config {
         /**
          * The initial delay before the first broadcast.
          */
-        var INIT_DELAY: Long = 1.minutes
+        var INIT_DELAY: Long = TimeUtils.seconds(1)
 
         /**
          * The interval between broadcasts.
          */
-        var INTERVAL: Long = 5.minutes
+        var INTERVAL: Long = TimeUtils.seconds(5)
     }
 
     /**
@@ -311,8 +309,8 @@ object Config {
          * The message of the day, with max 2 lines.
          */
         val MOTD: List<String> = listOf(
-            "<b><gradient:#CB2D3E:#EF473A>Ultimate Private SMP</gradient></b>",
-            "<b><gradient:#FFE259:#FFA751>➤ WELCOME BACK LADS!</gradient></b>"
+            "<b>Ultimate Private SMP</b>".fireFmt(),
+            "<b>➤ WELCOME BACK LADS!</b>".mangoFmt()
         )
     }
 
@@ -406,18 +404,12 @@ object Config {
         var ENABLED: Boolean = true
 
         /**
-         * The material used for crafting waystones in the VanillaPlus plugin.
-         * Determines the visual and structural representation of waystones.
-         * This value can be configured to use different materials as desired.
+         * The material used for crafting waystones.
          */
-        var WAYSTONE_MATERIAL: Material = Material.STONE_BRICKS
+        var WAYSTONE_MATERIAL: Material = Material.BEACON
 
         /**
          * A constant representing the custom model data key for waystone items.
-         *
-         * This value is used to associate custom model data in the context of the plugin's waystone feature.
-         * It serves as an identifier for waystone-related data components when assigning or retrieving
-         * specific attributes, such as custom visuals or metadata, to/from waystone items.
          */
         var WAYSTONE_CUSTOM_MODEL_DATA: String = "waystone"
 

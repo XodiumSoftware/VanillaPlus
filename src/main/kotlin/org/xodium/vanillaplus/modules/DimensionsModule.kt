@@ -19,8 +19,8 @@ import org.bukkit.util.Vector
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
-import org.xodium.vanillaplus.utils.FmtUtils.mm
 
 /**
  * Handles portal-related functionalities and events for the Dimensions system.
@@ -40,11 +40,6 @@ class DimensionsModule : ModuleInterface {
         )
     }
 
-    /**
-     * Event handler for the PlayerPortalEvent.
-     *
-     * @param event The PlayerPortalEvent that was triggered.
-     */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerPortalEvent) {
         val player = event.player
@@ -68,21 +63,11 @@ class DimensionsModule : ModuleInterface {
         }
     }
 
-    /**
-     * Event handler for the EntityPortalEvent.
-     *
-     * @param event The EntityPortalEvent that was triggered.
-     */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: EntityPortalEvent) {
         event.canCreatePortal = false
     }
 
-    /**
-     * Event handler for the BlockIgniteEvent.
-     *
-     * @param event The BlockIgniteEvent that was triggered.
-     */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: BlockIgniteEvent) {
         val block = event.block
@@ -104,7 +89,6 @@ class DimensionsModule : ModuleInterface {
 
     /**
      * Converts Nether coordinates to Overworld coordinates.
-     *
      * @param netherCoords The location in the Nether.
      * @return A Vector representing the corresponding Overworld coordinates.
      */
@@ -114,7 +98,6 @@ class DimensionsModule : ModuleInterface {
 
     /**
      * Checks if the block is part of a valid nether portal frame.
-     *
      * @param block The block to check.
      * @return True if the block is part of a valid portal frame.
      */
@@ -129,7 +112,6 @@ class DimensionsModule : ModuleInterface {
 
     /**
      * Checks if there's a portal near the specified coordinates.
-     *
      * @param world The world to check in.
      * @param x The x coordinate.
      * @param y The y coordinate.
@@ -166,7 +148,6 @@ class DimensionsModule : ModuleInterface {
 
     /**
      * Extinguishes the Nether portal at the given location.
-     *
      * @param location The location of the portal.
      */
     private fun extinguishPortal(location: Location) {
