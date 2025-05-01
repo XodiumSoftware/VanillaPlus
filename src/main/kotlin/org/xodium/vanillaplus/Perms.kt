@@ -19,6 +19,7 @@ object Perms {
             Use.GENERAL,
             AutoRefill.USE,
             AutoTool.USE,
+            InvUnload.USE,
             Waystone.USE
         ).forEach(instance.server.pluginManager::addPermission)
     }
@@ -42,6 +43,13 @@ object Perms {
         private val G1 = this::class.simpleName.toString().lowercase()
         val USE: Permission =
             Permission("${G0}.${G1}.use", "Allows use of the autotool command", PermissionDefault.TRUE)
+    }
+
+    /** Permissions for InvUnload commands. */
+    object InvUnload {
+        private val G1 = instance::class.simpleName.toString().lowercase()
+        val USE: Permission =
+            Permission("${G0}.${G1}.use", "Allows use of the invunload command", PermissionDefault.TRUE)
     }
 
     /** Permissions for Waystone commands. */

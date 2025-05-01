@@ -15,6 +15,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.util.BoundingBox
 import org.bukkit.util.Vector
 import org.xodium.vanillaplus.VanillaPlus
+import org.xodium.vanillaplus.utils.invunload.EnchantmentUtils
 import java.util.*
 
 object BlockUtils {

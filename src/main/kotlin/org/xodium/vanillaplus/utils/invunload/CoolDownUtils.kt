@@ -3,7 +3,7 @@
  *  All rights reserved.
  */
 
-package org.xodium.vanillaplus.invunloadold.utils
+package org.xodium.vanillaplus.utils.invunload
 
 import org.bukkit.entity.Player
 import org.xodium.vanillaplus.Config

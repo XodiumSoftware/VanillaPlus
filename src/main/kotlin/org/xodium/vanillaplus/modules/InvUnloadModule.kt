@@ -13,21 +13,28 @@ import net.kyori.adventure.text.JoinConfiguration
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Particle
+import org.bukkit.Sound
 import org.bukkit.block.Block
 import org.bukkit.block.Container
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.player.PlayerQuitEvent
+import org.bukkit.inventory.Inventory
+import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.InvUnloadSummaryData
+import org.xodium.vanillaplus.hooks.ChestSortHook
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.invunloadold.utils.BlockUtils
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.TimeUtils
 import org.xodium.vanillaplus.utils.Utils
+import org.xodium.vanillaplus.utils.invunload.CoolDownUtils
+import org.xodium.vanillaplus.utils.invunload.InvUtils
+import org.xodium.vanillaplus.utils.invunload.PlayerUtils
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -38,8 +45,8 @@ class InvUnloadModule : ModuleInterface {
     @Suppress("UnstableApiUsage")
     override fun cmd(): LiteralArgumentBuilder<CommandSourceStack>? {
         return Commands.literal("invunload")
-            .requires { it.sender.hasPermission(Perms.AutoRefill.USE) }
-            .executes { it -> Utils.tryCatch(it) { TODO("add unload here") } }
+            .requires { it.sender.hasPermission(Perms.InvUnload.USE) }
+            .executes { it -> Utils.tryCatch(it) { unload(it.sender as Player) } }
     }
 
     private val lastUnloads = ConcurrentHashMap<UUID, List<Block>>()
@@ -51,6 +58,73 @@ class InvUnloadModule : ModuleInterface {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerQuitEvent) {
         if (enabled()) cleanup(event.player)
+    }
+
+    private fun unload(player: Player) {
+        if (!CoolDownUtils.cooldown(player)) return
+
+        val startSlot = 9
+        val endSlot = 35
+        val onlyMatchingStuff = false
+
+        val chests: MutableList<Block?>? = BlockUtils.findChestsInRadius(player.location, radius)
+        if (chests!!.isEmpty()) {
+            player.sendMessage("")
+            return
+        }
+        BlockUtils.sortBlockListByDistance(chests, player.location)
+
+        val useableChests = ArrayList<Block>()
+        for (block in chests) if (PlayerUtils.canPlayerUseChest(block, player)) useableChests.add(block!!)
+
+        val affectedChests = listOf<Block>()
+
+        for (block in useableChests) {
+            val inv: Inventory = (block.state as Container).inventory
+            if (InvUtils.stuffInventoryIntoAnother(player, inv, true, startSlot, endSlot, InvUnloadModule())) {
+                affectedChests.add(block)
+            }
+        }
+
+        if (!onlyMatchingStuff) {
+            for (block in useableChests) {
+                val inv: Inventory = (block.state as Container).inventory
+                if (InvUtils.stuffInventoryIntoAnother(player, inv, false, startSlot, endSlot, InvUnloadModule())) {
+                    affectedChests.add(block)
+                }
+            }
+        }
+        if (instance.config.getBoolean("always-show-summary")) { //TODO: use Config.
+            InvUnloadModule().print(player)
+        }
+
+        for (i in startSlot..endSlot) {
+            val item: ItemStack? = player.inventory.getItem(i)
+            if (item == null || item.amount == 0 || item.type == Material.AIR) continue
+        }
+        player.sendMessage("")
+
+        InvUnloadModule().save(player, affectedChests, InvUnloadModule())
+
+        for (block in affectedChests) {
+            InvUnloadModule().chestEffect(block, player)
+            if (instance.config.getBoolean("laser-animation")) InvUnloadModule().play(player)
+            if (ChestSortHook.shouldSort(player)) ChestSortHook.sort(block)
+        }
+
+        if (instance.config.getBoolean("play-sound")) {
+            if (instance.config.getBoolean("error-sound")) {
+                instance.logger.warning(
+                    "Cannot play sound, because sound effect \"" + instance.config
+                        .getString("sound-effect") + "\" does not exist! Please check your config.yml"
+                )
+            } else {
+                val sound = Sound.valueOf(
+                    instance.config.getString("sound-effect")!!.uppercase(Locale.getDefault())
+                ) //TODO: use Config.
+                player.playSound(player.location, sound, instance.config.getDouble("sound-volume", 1.0).toFloat(), 1f)
+            }
+        }
     }
 
     /**
@@ -125,7 +199,7 @@ class InvUnloadModule : ModuleInterface {
      * @param chests The list of chests involved in the unload.
      * @param materials The map of materials and their amounts.
      */
-    fun save(
+    private fun save(
         player: Player,
         chests: List<Block>,
         materials: Map<Material, Int>

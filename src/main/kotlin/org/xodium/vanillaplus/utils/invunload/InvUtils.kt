@@ -3,7 +3,7 @@
  *  All rights reserved.
  */
 
-package org.xodium.vanillaplus.temp.utils
+package org.xodium.vanillaplus.utils.invunload
 
 import org.bukkit.Material
 import org.bukkit.Tag
@@ -11,6 +11,7 @@ import org.bukkit.block.ShulkerBox
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
+import org.xodium.vanillaplus.invunloadold.utils.BlockUtils
 import org.xodium.vanillaplus.modules.InvUnloadModule
 
 object InvUtils {
