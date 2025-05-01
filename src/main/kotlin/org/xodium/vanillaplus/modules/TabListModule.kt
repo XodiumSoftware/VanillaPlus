@@ -16,8 +16,6 @@ import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.TimeUtils.seconds
-import org.xodium.vanillaplus.utils.TimeUtils.ticks
 
 /**
  * Handles functionality related to the Tab List module.
@@ -37,8 +35,8 @@ class TabListModule : ModuleInterface {
                         updatePlayerDisplayName(player)
                     }
                 },
-                0.ticks,
-                10.seconds
+                0L,
+                10L * 20L
             )
         }
     }

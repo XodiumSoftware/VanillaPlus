@@ -12,7 +12,6 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.BookData
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
-import org.xodium.vanillaplus.utils.TimeUtils.minutes
 import org.xodium.vanillaplus.utils.Utils.getTps
 import org.xodium.vanillaplus.utils.Utils.getWeather
 import java.time.LocalTime
@@ -178,12 +177,12 @@ object Config {
         /**
          * The initial delay before the first broadcast.
          */
-        var INIT_DELAY: Long = 1.minutes
+        var INIT_DELAY: Long = 1L * 20L
 
         /**
          * The interval between broadcasts.
          */
-        var INTERVAL: Long = 5.minutes
+        var INTERVAL: Long = 5L * 20L
     }
 
     /**

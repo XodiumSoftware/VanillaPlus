@@ -39,10 +39,9 @@ import org.xodium.vanillaplus.utils.ExtUtils.cmd
 import org.xodium.vanillaplus.utils.ExtUtils.il
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
-import org.xodium.vanillaplus.utils.TimeUtils.seconds
-import org.xodium.vanillaplus.utils.TimeUtils.ticks
 import org.xodium.vanillaplus.utils.Utils
 import java.util.*
+import kotlin.time.Duration.Companion.seconds
 
 //TODO: Tweak effects.
 //TODO: Refactor.
@@ -60,6 +59,7 @@ class WaystoneModule : ModuleInterface {
     private val originWaystone = mutableMapOf<UUID, Location>()
     private val playerDiscoveryData = mutableMapOf<UUID, PlayerData>()
     private val guiTitle = "Waystones Index".fireFmt()
+    private val allowedGameModes = listOf(GameMode.SURVIVAL, GameMode.ADVENTURE)
 
     init {
         if (enabled()) {
@@ -266,7 +266,7 @@ class WaystoneModule : ModuleInterface {
         val originLoc = originWaystone[player.uniqueId] ?: return
         val xpCost = calculateXpCost(originLoc, targetWaystone.location, player.isInsideVehicle)
 
-        if (player.gameMode in listOf(GameMode.SURVIVAL, GameMode.ADVENTURE)) {
+        if (player.gameMode in allowedGameModes) {
             val playerTotalXp = player.level * 7 + player.exp.toInt()
             if (playerTotalXp < xpCost) {
                 player.closeInventory()
@@ -278,7 +278,7 @@ class WaystoneModule : ModuleInterface {
 
         val initialLocation = player.location.clone()
         val mountedEntity = player.vehicle
-        val delayTicks = 3.seconds
+        val delayTicks = 3L * 20L
 
         var ticks = 0
 
@@ -300,9 +300,7 @@ class WaystoneModule : ModuleInterface {
 
                 ticks++
                 if (ticks >= delayTicks) {
-                    if (player.gameMode in listOf(GameMode.SURVIVAL, GameMode.ADVENTURE)) {
-                        Utils.chargePlayerXp(player, xpCost)
-                    }
+                    if (player.gameMode in allowedGameModes) Utils.chargePlayerXp(player, xpCost)
 
                     teleportEffect(player.location)
 
@@ -323,7 +321,7 @@ class WaystoneModule : ModuleInterface {
                     teleportInitEffect(player.location)
                 }
             },
-            0.ticks, 1.ticks
+            0L, 1L
         )
     }
 
@@ -384,11 +382,7 @@ class WaystoneModule : ModuleInterface {
         player: Player? = null,
     ): ItemStack {
         val loreLines = mutableListOf("Click to teleport".fireFmt())
-        if (origin != null && destination != null && player?.gameMode in listOf(
-                GameMode.SURVIVAL,
-                GameMode.ADVENTURE
-            )
-        ) {
+        if (origin != null && destination != null && player?.gameMode in allowedGameModes) {
             loreLines.add(
                 "Travel Cost: ${
                     calculateXpCost(
@@ -454,6 +448,7 @@ class WaystoneModule : ModuleInterface {
         val rows = ((waystoneCount + 8) / 9).coerceIn(1, 6)
         return buildGui {
             containerType = chestContainer { this.rows = rows }
+            spamPreventionDuration = 1.seconds
             title(guiTitle.mm())
             statelessComponent { container ->
                 filteredWaystones.forEachIndexed { index, waystone ->
