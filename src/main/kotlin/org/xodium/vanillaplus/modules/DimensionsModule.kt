@@ -22,17 +22,11 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 
-/**
- * Handles portal-related functionalities and events for the Dimensions system.
- * Implements the ModuleInterface, enabling integration with the system's module framework.
- */
+/** Represents a module handling dimension mechanics within the system. */
 class DimensionsModule : ModuleInterface {
     override fun enabled(): Boolean = Config.DimensionsModule.ENABLED
 
     companion object {
-        /**
-         * Represents adjacent block directions: east, west, up, down, south, north
-         */
         private val ADJACENT_DIRECTIONS = listOf<Vector>(
             Vector(1, 0, 0), Vector(-1, 0, 0),
             Vector(0, 1, 0), Vector(0, -1, 0),

@@ -27,17 +27,7 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.AdjacentBlockData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 
-/**
- * The `DoorsModule` class is responsible for managing door and gate interactions within the system,
- * adhering to configurable behaviours such as auto-closing, double door synchronisation, and knocking functionality.
- * It implements the `ModuleInterface` to integrate as a modular component within the system.
- *
- * Primary Features:
- * - Automatically closes doors and gates after a configurable delay.
- * - Supports synchronised opening and closing of double doors.
- * - Allows players to "knock" on doors or gates, with configurable restrictions.
- * - Responds to player interactions with doors, gates, and trapdoors, while applying customisable interaction constraints.
- */
+/** Represents a module handling door mechanics within the system. */
 class DoorsModule : ModuleInterface {
     override fun enabled(): Boolean = Config.DoorsModule.ENABLED
 

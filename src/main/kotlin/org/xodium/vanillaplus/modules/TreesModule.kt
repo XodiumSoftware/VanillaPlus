@@ -32,23 +32,19 @@ import java.nio.file.Path
 import java.nio.file.StandardOpenOption
 import java.util.stream.Collectors
 
-/**
- * The TreesModule class provides functionality for managing tree-related behaviour
- * in the system, including handling events when trees grow and dynamically pasting
- * schematics based on sapling types.
- */
+/** Represents a module handling tree mechanics within the system. */
 class TreesModule : ModuleInterface {
     override fun enabled(): Boolean = Config.TreesModule.ENABLED
 
-    /** A map of sapling materials to a list of schematics */
+    /** A map of sapling materials to a list of schematics. */
     private val schematicCache: Map<Material, List<Clipboard>> =
         Config.TreesModule.SAPLING_LINK.mapValues { (_, dirs) ->
             dirs.flatMap { dir -> loadSchematics("/schematics/$dir") }
         }
 
     /**
-     * Handle the StructureGrowEvent
-     * @param event The StructureGrowEvent
+     * Handle the StructureGrowEvent.
+     * @param event The StructureGrowEvent.
      */
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: StructureGrowEvent) {
@@ -60,9 +56,9 @@ class TreesModule : ModuleInterface {
     }
 
     /**
-     * Load schematics from the specified resource directory
-     * @param resourceDir The directory containing the schematics
-     * @return A list of loaded schematics
+     * Load schematics from the specified resource directory.
+     * @param resourceDir The directory containing the schematics.
+     * @return A list of loaded schematics.
      */
     private fun loadSchematics(resourceDir: String): List<Clipboard> {
         val url = javaClass.getResource(resourceDir) ?: error("Resource directory not found: $resourceDir")
@@ -85,10 +81,10 @@ class TreesModule : ModuleInterface {
     }
 
     /**
-     * Read a schematic from the specified path
-     * @param path The path to the schematic file
-     * @param channel The channel to read the schematic from
-     * @return The loaded schematic
+     * Read a schematic from the specified path.
+     * @param path The path to the schematic file.
+     * @param channel The channel to read the schematic from.
+     * @return The loaded schematic.
      */
     private fun readClipboard(path: Path, channel: ReadableByteChannel): Clipboard {
         val format = ClipboardFormats.findByAlias("schem") ?: error("Unsupported schematic format for resource: $path")
@@ -100,9 +96,9 @@ class TreesModule : ModuleInterface {
     }
 
     /**
-     * Paste a schematic at the specified block
-     * @param block The block to paste the schematic at
-     * @return True if the schematic was pasted successfully
+     * Paste a schematic at the specified block.
+     * @param block The block to paste the schematic at.
+     * @return True if the schematic was pasted successfully.
      */
     private fun pasteSchematic(block: Block): Boolean {
         val clipboards = schematicCache[block.type] ?: return false

@@ -7,7 +7,7 @@ package org.xodium.vanillaplus.registries
 
 import org.bukkit.Material
 
-/** Registry for materials */
+/** Registry for materials. */
 object MaterialRegistry {
     val BASE_DAMAGE_MAP: Map<Material, Double> = mapOf(
         Material.NETHERITE_AXE to 10.0,

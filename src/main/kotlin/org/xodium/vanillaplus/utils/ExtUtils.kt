@@ -13,7 +13,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Color
 
-/** Extension utilities */
+/** Extension utilities. */
 object ExtUtils {
     private val MM: MiniMessage = MiniMessage.miniMessage()
     private val IL: ItemLore.Builder = ItemLore.lore()

@@ -11,21 +11,19 @@ import org.bukkit.block.Container
 import org.bukkit.entity.Player
 import org.xodium.vanillaplus.Config
 
-/**
- * ChestSortHook
- */
+/** ChestSortHook. */
 object ChestSortHook {
     /**
-     * Check if the player should sort inventory
-     * @param player Player
-     * @return Boolean
+     * Check if the player should sort inventory.
+     * @param player Player.
+     * @return Boolean.
      */
     fun shouldSort(player: Player): Boolean =
         Config.InvUnloadModule.USE_CHESTSORT && ChestSortAPI.hasSortingEnabled(player)
 
     /**
-     * Sort inventory
-     * @param block Block
+     * Sort inventory.
+     * @param block Block.
      */
     fun sort(block: Block) {
         if (!Config.InvUnloadModule.USE_CHESTSORT) return

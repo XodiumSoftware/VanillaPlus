@@ -9,9 +9,7 @@ import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.hooks.ChestSortHook
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 
-/**
- * TODO
- */
+/** Represents a module handling inv-unload mechanics within the system. */
 class InvUnloadModule : ModuleInterface {
     override fun enabled(): Boolean = Config.InvUnloadModule.ENABLED
 

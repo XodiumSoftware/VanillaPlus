@@ -20,7 +20,7 @@ import org.xodium.vanillaplus.registries.EntityRegistry
 import org.xodium.vanillaplus.registries.MaterialRegistry
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 
-/** General utilities */
+/** General utilities. */
 object Utils {
     /**
      * A helper function to wrap command execution with standardised error handling.
@@ -205,7 +205,7 @@ object Utils {
     }
 
     /**
-     * Calculate a hex colour between red and green based on the provided ratio (0.0 to 1.0)
+     * Calculate a hex colour between red and green based on the provided ratio (0.0 to 1.0).
      * @param ratio The ratio to calculate the colour for.
      * @return The hex colour for the ratio.
      */
@@ -230,9 +230,9 @@ object Utils {
     }
 
     /**
-     * Charges the player the specified amount of XP
-     * @param player The player to charge
-     * @param amount The amount of XP to charge
+     * Charges the player the specified amount of XP.
+     * @param player The player to charge.
+     * @param amount The amount of XP to charge.
      */
     fun chargePlayerXp(player: Player, amount: Int): Player {
         return player.apply {

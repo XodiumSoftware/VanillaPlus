@@ -12,17 +12,10 @@ import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 
-/**
- * Handles functionality related to the Message of the Day (MOTD) module.
- * This module allows for the customisation of the server's MOTD displayed during connection attempts.
- */
+/** Represents a module handling MOTD mechanics within the system. */
 class MotdModule : ModuleInterface {
     override fun enabled(): Boolean = Config.MotdModule.ENABLED
 
-    /**
-     * Event handler for the ServerListPingEvent.
-     * When the event is triggered, it replaces the default MOTD with a custom message.
-     */
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: ServerListPingEvent): Unit = event.motd(Config.MotdModule.MOTD.joinToString("\n").mm())
 }

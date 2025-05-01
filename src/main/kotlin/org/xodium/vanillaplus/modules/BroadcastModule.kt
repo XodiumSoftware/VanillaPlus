@@ -10,7 +10,7 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 
-/** Handles functionality related to broadcasting periodic messages to players. */
+/** Represents a module handling broadcast mechanics within the system. */
 class BroadcastModule : ModuleInterface {
     override fun enabled(): Boolean = Config.BroadcastModule.ENABLED
 

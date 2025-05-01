@@ -5,7 +5,7 @@
 
 package org.xodium.vanillaplus.enums
 
-/** Enum class for tools */
+/** Enum class for tools. */
 enum class ToolEnum {
     PICKAXE,
     SHOVEL,

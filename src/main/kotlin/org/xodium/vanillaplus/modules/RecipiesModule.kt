@@ -13,11 +13,7 @@ import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 
-/**
- * Handles functionality related to the Recipes module
- *
- * This module automatically unlocks all available recipes for players when they join the server
- */
+/** Represents a module handling recipe mechanics within the system. */
 class RecipiesModule : ModuleInterface {
     override fun enabled(): Boolean = Config.RecipiesModule.ENABLED
 

@@ -9,11 +9,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import org.bukkit.event.Listener
 
-/**
- * Represents a contract for a module within the system.
- * Every implementing module must define initialisation logic and state management.
- * This interface extends the Listener interface, allowing modules to handle events.
- */
+/** Represents a contract for a module within the system. */
 interface ModuleInterface : Listener {
     /**
      * Determines if this module is currently enabled.

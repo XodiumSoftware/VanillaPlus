@@ -9,7 +9,7 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 
-/** Permissions for the VanillaPlus plugin */
+/** Permissions for the VanillaPlus plugin. */
 object Perms {
     private val G0 = instance::class.simpleName.toString().lowercase()
 

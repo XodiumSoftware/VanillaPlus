@@ -17,7 +17,7 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 
-/** Handles functionality related to the `TabListModule`. */
+/** Represents a module handling tab-list mechanics within the system. */
 class TabListModule : ModuleInterface {
     override fun enabled(): Boolean = Config.TabListModule.ENABLED
 

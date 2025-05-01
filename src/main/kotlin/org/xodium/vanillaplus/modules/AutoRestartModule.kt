@@ -14,13 +14,7 @@ import org.xodium.vanillaplus.utils.TimeUtils
 import java.time.LocalTime
 import java.time.temporal.ChronoUnit
 
-/**
- * Represents a module that manages automatic server restarts at configured times.
- * The module enables scheduling and countdowns for server restarts.
- * It uses a boss bar to notify players of the remaining time until the restart.
- *
- * The auto-restart functionality will only be enabled if specified in the plugin's configuration.
- */
+/** Represents a module handling auto-restart mechanics within the system. */
 class AutoRestartModule : ModuleInterface {
     override fun enabled(): Boolean = Config.AutoRestartModule.ENABLED
 
@@ -41,7 +35,7 @@ class AutoRestartModule : ModuleInterface {
         }
     }
 
-    /** Triggers a countdown for the server restart */
+    /** Triggers a countdown for the server restart. */
     private fun countdown() {
         val totalMinutes = Config.AutoRestartModule.COUNTDOWN_START_MINUTES
         var remainingSeconds = totalMinutes * 60
@@ -80,8 +74,8 @@ class AutoRestartModule : ModuleInterface {
 
     /**
      * Returns true if the current time is equal to the time string in the plugin's configuration.
-     * @param restartTime the time to compare to the current time
-     * @return true if the current time is equal to the restart time
+     * @param restartTime the time to compare to the current time.
+     * @return true if the current time is equal to the restart time.
      */
     private fun isTimeToStartCountdown(restartTime: LocalTime): Boolean {
         return ChronoUnit.MINUTES.between(
@@ -92,8 +86,8 @@ class AutoRestartModule : ModuleInterface {
 
     /**
      * Returns a boss bar with the name and progress set in the plugin's configuration.
-     * @param timePlaceholder the time placeholder to replace in the boss bar name
-     * @return a boss bar with the name and progress set in the plugin's configuration
+     * @param timePlaceholder the time placeholder to replace in the boss bar name.
+     * @return a boss bar with the name and progress set in the plugin's configuration.
      */
     private fun bossbar(timePlaceholder: Int): BossBar {
         return BossBar.bossBar(

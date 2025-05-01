@@ -17,7 +17,7 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.Utils
 
-/** Handles functionality related to the Books module */
+/** Represents a module handling book mechanics within the system. */
 class BooksModule : ModuleInterface {
     override fun enabled(): Boolean = Config.BooksModule.ENABLED
 
@@ -29,7 +29,7 @@ class BooksModule : ModuleInterface {
     }
 
 
-    /** @return the book for the module */
+    /** @return the book for the module. */
     private fun book(): Book {
         return Book.book(
             Config.BooksModule.BOOK.title.fireFmt().mm(),

@@ -30,12 +30,7 @@ import org.xodium.vanillaplus.utils.Utils.moveBowlsAndBottles
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
-/**
- * The AutoRefillModule is responsible for automatically refilling a player's main hand and off-hand slots
- * when certain in-game events are triggered, such as consuming an item, placing a block, or interacting with an item.
- * This module ensures a seamless experience by transferring items from the player's inventory to their hands
- * when the item amount in those slots reaches the configured threshold.
- */
+/** Represents a module handling auto-refill mechanics within the system. */
 class AutoRefillModule : ModuleInterface {
     override fun enabled(): Boolean = Config.AutoRefillModule.ENABLED
 
@@ -64,8 +59,8 @@ class AutoRefillModule : ModuleInterface {
     }
 
     /**
-     * Handles the PlayerItemConsumeEvent
-     * @param event the event to handle
+     * Handles the PlayerItemConsumeEvent.
+     * @param event the event to handle.
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerItemConsumeEvent) {
@@ -74,8 +69,8 @@ class AutoRefillModule : ModuleInterface {
     }
 
     /**
-     * Refills the player's main hand and offhand slots when they place a block
-     * @param event the BlockPlaceEvent
+     * Refills the player's main hand and offhand slots when they place a block.
+     * @param event the BlockPlaceEvent.
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: BlockPlaceEvent) {
@@ -84,8 +79,8 @@ class AutoRefillModule : ModuleInterface {
     }
 
     /**
-     * Handles the PlayerInteractEvent to refill the player's main hand and offhand slots
-     * @param event the PlayerInteractEvent
+     * Handles the PlayerInteractEvent to refill the player's main hand and offhand slots.
+     * @param event the PlayerInteractEvent.
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerInteractEvent) {
@@ -94,9 +89,9 @@ class AutoRefillModule : ModuleInterface {
     }
 
     /**
-     * Checks if the player can attempt to refill
-     * @param player the player to check
-     * @return true if the player can attempt to refill
+     * Checks if the player can attempt to refill.
+     * @param player the player to check.
+     * @return true if the player can attempt to refill.
      */
     private fun canAttemptRefill(player: Player): Boolean {
         if (!player.hasPermission(Perms.AutoRefill.USE)) return false
@@ -111,8 +106,8 @@ class AutoRefillModule : ModuleInterface {
     }
 
     /**
-     * Attempts to refill the player's main hand and offhand slots
-     * @param player the player to refill
+     * Attempts to refill the player's main hand and offhand slots.
+     * @param player the player to refill.
      */
     private fun attemptRefill(player: Player) {
         val inventory = player.inventory
@@ -136,11 +131,11 @@ class AutoRefillModule : ModuleInterface {
     }
 
     /**
-     * Finds the best slot to refill the target slot
-     * @param inventory the player's inventory
-     * @param material the material to refill
-     * @param currentSlot the current slot
-     * @return the best slot to refill from
+     * Finds the best slot to refill the target slot.
+     * @param inventory the player's inventory.
+     * @param material the material to refill.
+     * @param currentSlot the current slot.
+     * @return the best slot to refill from.
      */
     private fun findRefillSource(inventory: PlayerInventory, material: Material, currentSlot: Int): Int {
         var bestSlot = -1
@@ -165,11 +160,11 @@ class AutoRefillModule : ModuleInterface {
     }
 
     /**
-     * Refills the target slot with the source slot
-     * @param inventory the player's inventory
-     * @param source the source slot
-     * @param target the target slot
-     * @param itemStack the item to refill
+     * Refills the target slot with the source slot.
+     * @param inventory the player's inventory.
+     * @param source the source slot.
+     * @param target the target slot.
+     * @param itemStack the item to refill.
      */
     private fun refillStack(inventory: Inventory, source: Int, target: Int, itemStack: ItemStack?) {
         if (itemStack == null) return
@@ -194,9 +189,9 @@ class AutoRefillModule : ModuleInterface {
     }
 
     /**
-     * Checks if AutoRefill is enabled for the given player
-     * @param player the player to check
-     * @return true if enabled (default), false if explicitly disabled
+     * Checks if AutoRefill is enabled for the given player.
+     * @param player the player to check.
+     * @return true if enabled (default), false if explicitly disabled.
      */
     private fun isEnabledForPlayer(player: Player): Boolean {
         return PlayerData.getData().firstOrNull { it.id == player.uniqueId.toString() }?.autorefill ?: true
@@ -213,8 +208,8 @@ class AutoRefillModule : ModuleInterface {
     }
 
     /**
-     * Toggles AutoRefill for the given player
-     * @param player the player to toggle
+     * Toggles AutoRefill for the given player.
+     * @param player the player to toggle.
      */
     private fun toggle(player: Player) {
         val playerData = getPlayerData(player)

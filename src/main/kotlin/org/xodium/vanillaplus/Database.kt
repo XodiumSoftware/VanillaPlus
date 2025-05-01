@@ -10,7 +10,7 @@ import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
 
-/** Handles database connection */
+/** Handles database connection. */
 object Database {
     private val databaseFile = instance.dataFolder.resolve("vanillaplus.db")
     private const val DRIVER = "org.sqlite.JDBC"
@@ -18,7 +18,7 @@ object Database {
     lateinit var conn: Connection
         private set
 
-    /** Initialises the database connection */
+    /** Initialises the database connection. */
     init {
         try {
             Class.forName(DRIVER)
@@ -32,9 +32,9 @@ object Database {
     }
 
     /**
-     * Executes an SQL statement, optionally with parameters
-     * @param sql The SQL statement to be executed
-     * @param params Optional parameters to bind to the statement
+     * Executes an SQL statement, optionally with parameters.
+     * @param sql The SQL statement to be executed.
+     * @param params Optional parameters to bind to the statement.
      */
     fun exec(sql: String, vararg params: Any?) {
         if (params.isEmpty()) {
@@ -48,9 +48,9 @@ object Database {
     }
 
     /**
-     * Executes SQL queries that return results
-     * @param sql the SQL query to be executed
-     * @param handler a lambda to handle the result set
+     * Executes SQL queries that return results.
+     * @param sql the SQL query to be executed.
+     * @param handler a lambda to handle the result set.
      */
     fun <T> query(sql: String, handler: (java.sql.ResultSet) -> T): T {
         conn.createStatement().use { stmt ->
@@ -60,7 +60,7 @@ object Database {
         }
     }
 
-    /** Closes the database connection */
+    /** Closes the database connection. */
     private fun close() {
         if (this::conn.isInitialized && !conn.isClosed) {
             try {
