@@ -118,7 +118,7 @@ class CommandUnload() : CommandExecutor, TabCompleter {
         Visualizer.save(p, affectedChests, UnloadSummary)
 
         for (block in affectedChests) {
-            Visualizer.chestAnimation(block, p)
+            Visualizer.chestEffect(block, p)
             if (instance.config.getBoolean("laser-animation")) Visualizer.play(p)
             if (ChestSortHook.shouldSort(p)) ChestSortHook.sort(block!!)
         }

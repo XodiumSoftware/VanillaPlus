@@ -120,7 +120,7 @@ class CommandSearchItem : CommandExecutor {
             return true
         }
 
-        for (block in affectedChests) Visualizer.chestAnimation(block, p)
+        for (block in affectedChests) Visualizer.chestEffect(block, p)
         Visualizer.play(affectedChests, p)
         return true
     }

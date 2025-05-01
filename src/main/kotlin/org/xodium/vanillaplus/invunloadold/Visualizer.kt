@@ -9,111 +9,82 @@ import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
-import org.bukkit.scheduler.BukkitRunnable
+import org.bukkit.util.Vector
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.invunloadold.utils.BlockUtils
+import org.xodium.vanillaplus.utils.TimeUtils
 import java.util.*
 
 object Visualizer {
-    private val lastUnloads: HashMap<UUID?, ArrayList<Block?>?> =
-        HashMap<UUID?, ArrayList<Block?>?>()
-    private val lastUnloadPositions: HashMap<UUID?, Location?> =
-        HashMap<UUID?, Location?>()
-    val activeVisualizations: HashMap<UUID?, Int?> = HashMap<UUID?, Int?>()
-    private val unloadSummaries: HashMap<UUID?, UnloadSummary?> = HashMap<UUID?, UnloadSummary?>()
+    private val lastUnloads = mutableMapOf<UUID, List<Block>>()
+    private val lastUnloadPositions = mutableMapOf<UUID, Location>()
+    private val activeVisualizations = mutableMapOf<UUID, Int>()
+    private val unloadSummaries = mutableMapOf<UUID, UnloadSummary>()
 
     fun save(
-        p: Player,
-        affectedChests: ArrayList<Block?>?,
+        player: Player,
+        affectedChests: List<Block>,
         summary: UnloadSummary?
     ) {
-        lastUnloads.put(p.uniqueId, affectedChests)
-        lastUnloadPositions.put(p.uniqueId, p.location.add(0.0, 0.75, 0.0))
-        unloadSummaries.put(p.uniqueId, summary)
+        lastUnloads[player.uniqueId] = affectedChests
+        lastUnloadPositions[player.uniqueId] = player.location.clone().add(0.0, 0.75, 0.0)
+        summary?.let { unloadSummaries[player.uniqueId] = it }
     }
 
-    fun play(p: Player) {
-        if (lastUnloads.containsKey(p.uniqueId)) {
-            play(lastUnloads.get(p.uniqueId) as ArrayList<Block>, p)
-        }
-    }
+    fun play(p: Player): Unit? = lastUnloads[p.uniqueId]?.let { play(it as ArrayList<Block>, p) }
 
-    private fun play(
-        destinations: ArrayList<Block>,
-        p: Player,
+    private fun laserEffect(
+        destinations: List<Block>,
+        player: Player,
         interval: Double,
         count: Int,
         particle: Particle,
         speed: Double,
         maxDistance: Int
     ) {
-        for (destination in destinations) {
-            val start = p.location
-            val vec: org.bukkit.util.Vector = getDirectionBetweenLocations(
-                start,
-                BlockUtils.getCenterOfBlock(destination).add(0.0, -0.5, 0.0)
-            )
-            if (start.distance(destination.location) < maxDistance) {
+        destinations.forEach { destination ->
+            val start = player.location.clone()
+            val end = BlockUtils.getCenterOfBlock(destination).add(0.0, -0.5, 0.0)
+            val vec = getDirectionBetweenLocations(start, end)
+            val distance = start.distance(destination.location)
+            if (distance < maxDistance) {
                 var i = 1.0
-                while (i <= start.distance(destination.location)) {
-                    vec.multiply(i)
-                    start.add(vec)
-                    p.spawnParticle(particle, start, count, 0.0, 0.0, 0.0, speed)
-                    start.subtract(vec)
-                    vec.normalize()
+                while (i <= distance) {
+                    val step = vec.clone().normalize().multiply(i)
+                    start.add(step)
+                    player.spawnParticle(particle, start, count, 0.0, 0.0, 0.0, speed)
+                    start.subtract(step)
                     i += interval
                 }
             }
         }
     }
 
-    fun play(affectedChests: ArrayList<Block>, p: Player) {
-        val particle: Particle =
-            Particle.valueOf(instance.config.getString("laser-particle", "CRIT")!!.uppercase(Locale.getDefault()))
-        val count = instance.config.getInt("laser-count", 1)
-        val maxDistance = instance.config.getInt("laser-max-distance", 128)
-        val interval = instance.config.getDouble("laser-interval", 0.3)
-        val speed = instance.config.getDouble("laser-speed", 0.001)
-
-        val task: Int = instance.server.scheduler.scheduleSyncRepeatingTask(
+    fun play(affectedChests: List<Block>, player: Player) {
+        activeVisualizations[player.uniqueId] = instance.server.scheduler.scheduleSyncRepeatingTask(
             instance,
-            { play(affectedChests, p, interval, count, particle, speed, maxDistance) },
-            0,
-            2
+            { laserEffect(affectedChests, player, 0.3, 2, Particle.CRIT, 0.001, 128) },
+            0L,
+            2L
         )
 
-        activeVisualizations.put(p.uniqueId, task)
-
-        object : BukkitRunnable() {
-            override fun run() {
-                instance.server.scheduler.cancelTask(task)
-                activeVisualizations.remove(p.uniqueId)
-            }
-        }.runTaskLater(instance, 100)
+        instance.server.scheduler.runTaskLater(
+            instance,
+            Runnable {
+                activeVisualizations[player.uniqueId]?.let {
+                    instance.server.scheduler.cancelTask(it)
+                    activeVisualizations.remove(player.uniqueId)
+                }
+            },
+            TimeUtils.seconds(5)
+        )
     }
 
-    fun chestAnimation(block: Block?, player: Player) {
-        val loc = BlockUtils.getCenterOfBlock(block!!)
-
-        if (instance.config.getBoolean("spawn-particles")) {
-            if (instance.config.getBoolean("error-particles")) {
-                instance.logger.warning(
-                    "Cannot spawn particles, because particle type \"" + instance.config
-                        .getString("particle-type") + "\" does not exist! Please check your config.yml"
-                )
-            } else {
-                val particleCount = instance.config.getInt("particle-count")
-                val particle: Particle =
-                    Particle.valueOf(instance.config.getString("particle-type")!!.uppercase(Locale.getDefault()))
-                player.spawnParticle(particle, loc, particleCount, 0.0, 0.0, 0.0)
-            }
-        }
+    fun chestEffect(block: Block, player: Player) {
+        player.spawnParticle(Particle.CRIT, BlockUtils.getCenterOfBlock(block), 10, 0.0, 0.0, 0.0)
     }
 
-    private fun getDirectionBetweenLocations(
-        start: Location,
-        end: Location
-    ): Vector {
+    private fun getDirectionBetweenLocations(start: Location, end: Location): Vector {
         return end.toVector().subtract(start.toVector())
     }
 }

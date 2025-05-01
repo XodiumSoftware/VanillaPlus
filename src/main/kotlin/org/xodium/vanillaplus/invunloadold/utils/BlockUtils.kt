@@ -5,7 +5,6 @@
 
 package org.xodium.vanillaplus.invunloadold.utils
 
-import org.apache.commons.lang3.EnumUtils
 import org.bukkit.Chunk
 import org.bukkit.Location
 import org.bukkit.Material
@@ -24,12 +23,14 @@ object BlockUtils {
         mutableListOf<String?>("(.*)BARREL$", "(.*)CHEST$", "^SHULKER_BOX$", "^(.*)_SHULKER_BOX$")
 
     init {
-        CONTAINER_TYPES = EnumUtils.getEnumsFromRegexList(Material::class.java, CONTAINER_NAMES)
+        CONTAINER_TYPES =
+            EnumUtils.getEnumsFromRegexList(Material::class.java, CONTAINER_NAMES) //TODO: replace EnumUtils with own.
     }
 
     private fun findBlocksInRadius(loc: Location, radius: Int): MutableList<Block?> {
         val box: BoundingBox = BoundingBox.of(loc, radius.toDouble(), radius.toDouble(), radius.toDouble())
-        val chunks: MutableList<Chunk> = com.jeff_media.jefflib.BlockUtils.getChunks(loc.world, box, true)
+        val chunks: MutableList<Chunk> =
+            com.jeff_media.jefflib.BlockUtils.getChunks(loc.world, box, true) //TODO: replace jeffs BlockUtils with own.
         val blocks: MutableList<Block?> = ArrayList()
         for (chunk in chunks) {
             for (state in chunk.tileEntities) {
