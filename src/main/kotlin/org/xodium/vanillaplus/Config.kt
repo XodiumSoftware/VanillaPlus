@@ -211,6 +211,16 @@ object Config {
         var ENABLED: Boolean = true
 
         /**
+         * The initial delay before the first autoclose.
+         */
+        var INIT_DELAY: Long = 1L
+
+        /**
+         * The interval between autoclosing.
+         */
+        var INTERVAL: Long = 1L
+
+        /**
          * The sound effect used for closing doors.
          */
         var SOUND_DOOR_CLOSE: Sound = Sound.sound(
@@ -332,6 +342,16 @@ object Config {
          * Enables or disables the TabListModule.
          */
         var ENABLED: Boolean = true
+
+        /**
+         * The initial delay before the first update.
+         */
+        var INIT_DELAY: Long = 0L
+
+        /**
+         * The interval between updates.
+         */
+        var INTERVAL: Long = TimeUtils.seconds(10)
 
         /**
          * The header of the tab list. Each element is a line.

@@ -38,9 +38,6 @@ import java.util.concurrent.ConcurrentHashMap
  * - Supports synchronised opening and closing of double doors.
  * - Allows players to "knock" on doors or gates, with configurable restrictions.
  * - Responds to player interactions with doors, gates, and trapdoors, while applying customisable interaction constraints.
- *
- * This class uses event listeners to handle player interactions and manages a scheduler task
- * for handling automated behaviours such as door auto-closing.
  */
 class DoorsModule : ModuleInterface {
     override fun enabled(): Boolean = Config.DoorsModule.ENABLED
@@ -62,11 +59,6 @@ class DoorsModule : ModuleInterface {
             AdjacentBlockData(-1, 0, Door.Hinge.RIGHT, BlockFace.NORTH),
             AdjacentBlockData(1, 0, Door.Hinge.LEFT, BlockFace.NORTH)
         )
-
-        private fun toggleDoor(block: Block, openable: Openable, open: Boolean) {
-            openable.isOpen = open
-            block.blockData = openable
-        }
     }
 
     init {
@@ -80,8 +72,8 @@ class DoorsModule : ModuleInterface {
                     } else false
                 }
             },
-            1L,
-            1L
+            Config.DoorsModule.INIT_DELAY,
+            Config.DoorsModule.INTERVAL
         )
     }
 
@@ -94,6 +86,11 @@ class DoorsModule : ModuleInterface {
             Action.RIGHT_CLICK_BLOCK -> handleRightClick(clickedBlock)
             else -> return
         }
+    }
+
+    private fun toggleDoor(block: Block, openable: Openable, open: Boolean) {
+        openable.isOpen = open
+        block.blockData = openable
     }
 
     private fun handleAutoClose(block: Block) {
@@ -171,15 +168,9 @@ class DoorsModule : ModuleInterface {
 
     private fun toggleOtherDoor(block: Block, block2: Block, open: Boolean) {
         if (block.blockData !is Door || block2.blockData !is Door) return
-        instance.server.scheduler.runTaskLater(
-            instance,
-            Runnable {
-                val door = block.blockData as Door
-                val door2 = block2.blockData as Door
-                if (door.isOpen != door2.isOpen) toggleDoor(block2, door2, open)
-            },
-            1L
-        )
+        val door = block.blockData as Door
+        val door2 = block2.blockData as Door
+        if (door.isOpen != door2.isOpen) toggleDoor(block2, door2, open)
     }
 
     private fun getDoorBottom(door: Door, block: Block): Door? {
