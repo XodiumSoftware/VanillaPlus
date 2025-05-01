@@ -25,16 +25,6 @@ object InvUtils {
         return false
     }
 
-    fun inventoryToArrayList(source: Inventory): ArrayList<ItemStack?> {
-        val sourceItems = ArrayList<ItemStack?>()
-        for (item in source.contents) {
-            if (item == null) continue
-            sourceItems.add(item)
-        }
-        source.clear()
-        return sourceItems
-    }
-
     private fun countInventoryContents(inv: Inventory): Int {
         var count = 0
         for (item in inv.contents) {
@@ -44,17 +34,6 @@ object InvUtils {
         return count
     }
 
-    /**
-     * Part of API. Puts everything from the player inventory inside the destination inventory.
-     *
-     * @param p                 Player from whom to take the items
-     * @param destination       Destination inventory
-     * @param onlyMatchingStuff When true, only move items that already are inside the destination inventory
-     * @param startSlot         Do not modify player inventory before this slot
-     * @param endSlot           Do not modify player inventory after this slot
-     * @param summary           UnloadSummary object. Can be null
-     * @return
-     */
     fun stuffInventoryIntoAnother(
         main: Main,
         p: Player,

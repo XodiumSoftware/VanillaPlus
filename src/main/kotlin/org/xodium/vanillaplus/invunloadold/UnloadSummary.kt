@@ -10,6 +10,7 @@ import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.Container
 import org.bukkit.entity.Player
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import java.util.*
 
 class UnloadSummary internal constructor() {
@@ -69,13 +70,13 @@ class UnloadSummary internal constructor() {
         }
     }
 
-    internal enum class PrintRecipient {
+    enum class PrintRecipient {
         PLAYER, CONSOLE
     }
 
     private fun printTo(recipient: PrintRecipient?, p: Player, text: String) {
         if (recipient == PrintRecipient.CONSOLE) {
-            println(text)
+            instance.logger.info(text)
         } else {
             p.sendMessage(text)
         }

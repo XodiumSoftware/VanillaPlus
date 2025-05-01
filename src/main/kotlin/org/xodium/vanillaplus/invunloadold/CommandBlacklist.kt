@@ -82,7 +82,7 @@ class CommandBlacklist internal constructor(val main: Main) : CommandExecutor, T
             "add", "remove" -> {
                 if (args.size == 1) {
                     if (currentItem.type == Material.AIR) {
-                        p.sendMessage(main.messages.BL_NOTHINGSPECIFIED)
+                        p.sendMessage(main.messages.BL_NOTHING_SPECIFIED)
                         return true
                     }
                     candidates.add(currentItem.type)

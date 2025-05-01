@@ -21,21 +21,8 @@ class Visualizer {
     val activeVisualizations: HashMap<UUID?, Int?> = HashMap<UUID?, Int?>()
     val unloadSummaries: HashMap<UUID?, UnloadSummary?> = HashMap<UUID?, UnloadSummary?>()
 
-    fun printSummaryToPlayer(p: Player) {
-        val summary = unloadSummaries[p.uniqueId]
-        if (summary == null) return
-        summary.print(UnloadSummary.PrintRecipient.PLAYER, p)
-    }
-
     private fun cancelVisualization(id: Int) {
         instance.server.scheduler.cancelTask(id)
-    }
-
-    fun cancelVisualization(p: Player) {
-        if (activeVisualizations.containsKey(p.uniqueId)) {
-            cancelVisualization(activeVisualizations.get(p.uniqueId)!!)
-        }
-        activeVisualizations.remove(p.uniqueId)
     }
 
     fun save(
