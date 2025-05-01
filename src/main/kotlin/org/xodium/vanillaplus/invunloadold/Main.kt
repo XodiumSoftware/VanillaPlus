@@ -14,10 +14,9 @@ import java.util.*
 class Main : JavaPlugin(), Listener {
     private var useChestSort: Boolean = false
     var messages: Messages? = null
-    private var chestSortHook: ChestSortHook? = null
     private var commandUnload: CommandUnload? = null
     private var commandUnloadInfo: CommandUnloadInfo? = null
-    private var commandSearchItem: CommandSearchitem? = null
+    private var commandSearchItem: CommandSearchItem? = null
     private var commandBlacklist: CommandBlacklist? = null
     var materialTabCompleter: MaterialTabCompleter? = null
     private var playerSettings: HashMap<UUID?, PlayerSetting?>? = null
@@ -33,22 +32,20 @@ class Main : JavaPlugin(), Listener {
             try {
                 Class.forName("de.jeff_media.chestsort.api.ChestSortAPI")
                 useChestSort = true
-                logger.info("Succesfully hooked into ChestSort")
-            } catch (e: ClassNotFoundException) {
+                logger.info("Successfully hooked into ChestSort")
+            } catch (_: ClassNotFoundException) {
                 logger.warning("Your version of ChestSort is too old, disabling ChestSort integration. Please upgrade ChestSort to version 11.0.0 or later.")
             }
         }
-
-        chestSortHook = _root_ide_package_.org.xodium.vanillaplus.hooks.ChestSortHook(this)
         registerCommands()
     }
 
     private fun registerCommands() {
         commandUnload = CommandUnload(this)
         commandUnloadInfo = CommandUnloadInfo(this)
-        commandSearchItem = CommandSearchitem(this)
+        commandSearchItem = CommandSearchItem(this)
         commandBlacklist = CommandBlacklist(this)
-        materialTabCompleter = MaterialTabCompleter(this)
+        materialTabCompleter = MaterialTabCompleter()
         getCommand("unload")!!.setExecutor(commandUnload)
         getCommand("dump")!!.setExecutor(commandUnload)
         getCommand("unloadinfo")!!.setExecutor(commandUnloadInfo)
@@ -77,7 +74,7 @@ class Main : JavaPlugin(), Listener {
 
     private fun saveAllPlayerSettings() {
         for (entry in playerSettings!!.entries) {
-            entry.value.save(getPlayerFile(entry.key!!), this)
+            entry.value?.save(getPlayerFile(entry.key!!), this)
         }
     }
 }

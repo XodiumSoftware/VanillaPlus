@@ -54,7 +54,7 @@ class UnloadSummary internal constructor() {
         return String.format(ChatColor.DARK_PURPLE.toString() + "|§7%5dx  ", amount)
     }
 
-    private fun print(recipient: PrintRecipient?, p: Player) {
+    fun print(recipient: PrintRecipient?, p: Player) {
         if (unloads.isNotEmpty()) printTo(recipient, p, " ")
         for (entry in unloads.entries) {
             printTo(recipient, p, " ")

@@ -5,18 +5,30 @@
 package org.xodium.vanillaplus.invunloadold
 
 import net.md_5.bungee.api.ChatColor
-import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang3.StringUtils
+import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.block.Block
 import org.bukkit.block.Container
 import org.bukkit.command.Command
+import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
+import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
+import org.bukkit.inventory.Inventory
+import org.bukkit.inventory.ItemStack
+import org.xodium.vanillaplus.hooks.ChestSortHook
+import org.xodium.vanillaplus.invunloadold.utils.CoolDown
+import org.xodium.vanillaplus.invunloadold.utils.GroupUtils
+import org.xodium.vanillaplus.invunloadold.utils.InvUtils
+import org.xodium.vanillaplus.invunloadold.utils.PlayerUtils
 import java.lang.String
+import java.util.*
 import kotlin.Array
 import kotlin.Boolean
 import kotlin.Int
-import kotlin.text.compareTo
+import kotlin.compareTo
+import kotlin.let
 import kotlin.text.equals
 import kotlin.text.lowercase
 import kotlin.text.startsWith
@@ -27,20 +39,8 @@ class CommandUnload(val main: Main) : CommandExecutor, TabCompleter {
         sender: CommandSender, command: Command, label: String,
         args: Array<String>
     ): Boolean {
-        /*		if(args.length > 1 && sender.hasPermission("invunload.others")) {
-                    Player player = Bukkit.getPlayer(args[1]);
-                    if(player == null) {
-                        sender.sendMessage("Could not find player " + args[1]);
-                        Bukkit.dispatchCommand(player,command.getName() + " " + args[0]);
-                        return true;
-                    }
-                }*/
-
-        //long startTime = System.nanoTime();
-
         if (args.isNotEmpty() && args[0].equals("reload", ignoreCase = true)) {
             if (sender.hasPermission("invunload.reload")) {
-                main.reloadCompleteConfig(true)
                 sender.sendMessage(ChatColor.GREEN.toString() + "InvUnload has been reloaded.")
             } else {
                 sender.sendMessage(main.getCommand("unload")!!.permissionMessage!!)
@@ -48,20 +48,15 @@ class CommandUnload(val main: Main) : CommandExecutor, TabCompleter {
             return true
         }
 
-        if (sender !is Player) {
-            return true
-        }
-
-        if (!CoolDown.check(sender)) {
-            return true
-        }
+        if (sender !is Player) return true
+        if (!CoolDown.check(sender)) return true
 
         val p = sender
         val setting: PlayerSetting? = main.getPlayerSetting(p)
 
         if (args.isNotEmpty() && args[0].equals("hotbar", ignoreCase = true)) {
             if (command.name == "unload") {
-                setting.unloadHotbar = !setting.unloadHotbar
+                setting?.unloadHotbar = !setting.unloadHotbar
                 if (setting.unloadHotbar) {
                     p.sendMessage(
                         String.format(
@@ -98,24 +93,22 @@ class CommandUnload(val main: Main) : CommandExecutor, TabCompleter {
             return true
         }
 
-
-        var radius: Int = main.groupUtils.getDefaultRadiusPerPlayer(p)
+        var radius: Int = GroupUtils().getDefaultRadiusPerPlayer(p)
         var startSlot = 9
         val endSlot = 35
         var onlyMatchingStuff = false
 
-
         if (args.isNotEmpty()) {
             if (!StringUtils.isNumeric(args[0])) {
-                p.sendMessage(main.messages.MSG_NOT_A_NUMBER)
+                p.sendMessage(Messages.MSG_NOT_A_NUMBER)
                 return true
             }
             val customRadius = args[0].toInt()
-            if (customRadius > main.groupUtils.getMaxRadiusPerPlayer(p)) {
+            if (customRadius > GroupUtils().getMaxRadiusPerPlayer(p)) {
                 p.sendMessage(
                     String.format(
-                        main.messages.MSG_RADIUS_TOO_HIGH,
-                        main.groupUtils.getMaxRadiusPerPlayer(p)
+                        Messages.MSG_RADIUS_TOO_HIGH,
+                        GroupUtils().getMaxRadiusPerPlayer(p)
                     )
                 )
                 return true
@@ -126,15 +119,15 @@ class CommandUnload(val main: Main) : CommandExecutor, TabCompleter {
 
         if (command.name.equals("unload", ignoreCase = true)) {
             onlyMatchingStuff = true
-            startSlot = if (setting.unloadHotbar) 0 else 9
+            setting?.let { startSlot = if (it.unloadHotbar) 0 else 9 }
         } else if (command.name.equals("dump", ignoreCase = true)) {
             onlyMatchingStuff = false
-            startSlot = if (setting.dumpHotbar) 0 else 9
+            setting?.let { startSlot = if (it.dumpHotbar) 0 else 9 }
         }
 
-        var chests: MutableList<Block?>? = BlockUtils.findChestsInRadius(p.location, radius)
+        val chests: MutableList<Block?>? = BlockUtils.findChestsInRadius(p.location, radius)
         if (chests!!.isEmpty()) {
-            p.sendMessage(main.messages.MSG_NO_CHESTS_NEARBY)
+            p.sendMessage(Messages.MSG_NO_CHESTS_NEARBY)
             return true
         }
         BlockUtils.sortBlockListByDistance(chests, p.location)
@@ -145,12 +138,10 @@ class CommandUnload(val main: Main) : CommandExecutor, TabCompleter {
                 useableChests.add(block!!)
             }
         }
-        chests = null
 
         val affectedChests = ArrayList<Block?>()
         val summary = UnloadSummary()
 
-        // Unload
         for (block in useableChests) {
             val inv: Inventory = (block.state as Container).inventory
             if (InvUtils.stuffInventoryIntoAnother(main, p, inv, true, startSlot, endSlot, summary)) {
@@ -158,7 +149,6 @@ class CommandUnload(val main: Main) : CommandExecutor, TabCompleter {
             }
         }
 
-        //Dump
         if (!onlyMatchingStuff) {
             for (block in useableChests) {
                 val inv: Inventory = (block.state as Container).inventory
@@ -168,34 +158,27 @@ class CommandUnload(val main: Main) : CommandExecutor, TabCompleter {
             }
         }
         if (main.config.getBoolean("always-show-summary")) {
-            summary.print(PrintRecipient.PLAYER, p)
+            summary.print(UnloadSummary.PrintRecipient.PLAYER, p)
         }
 
         if (affectedChests.isEmpty()) {
-            val blackList: BlackList = main.getPlayerSetting(p).getBlacklist()
-            // TODO: Fix this. Right now the blacklist message is disabled
-            //boolean everythingBlackListed = true;
-            var everythingBlackListed = false
             for (i in startSlot..endSlot) {
                 val item: ItemStack? = p.inventory.getItem(i)
-                if (item == null || item.getAmount() == 0 || item.getType() == Material.AIR) continue
-                if (!blackList.contains(item.getType())) {
-                    everythingBlackListed = false
-                }
+                if (item == null || item.amount == 0 || item.type == Material.AIR) continue
             }
-            p.sendMessage(if (everythingBlackListed) main.messages.MSG_COULD_NOT_UNLOAD_BLACKLIST else main.messages.MSG_COULD_NOT_UNLOAD)
+            p.sendMessage(main.messages.MSG_COULD_NOT_UNLOAD)
             return true
         }
 
-        main.visualizer.save(p, affectedChests, summary)
+        Visualizer().save(p, affectedChests, summary)
 
         for (block in affectedChests) {
-            main.visualizer.chestAnimation(block, p)
+            Visualizer().chestAnimation(block, p)
             if (main.config.getBoolean("laser-animation")) {
-                main.visualizer.play(p)
+                Visualizer().play(p)
             }
-            if (main.chestSortHook.shouldSort(p)) {
-                main.chestSortHook.sort(block)
+            if (ChestSortHook.shouldSort(p)) {
+                ChestSortHook.sort(block!!)
             }
         }
 

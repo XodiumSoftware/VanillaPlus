@@ -2,20 +2,23 @@
  *  Copyright (c) 2025. Xodium.
  *  All rights reserved.
  */
-package org.xodium.vanillaplus.invunloadold
+
+package org.xodium.vanillaplus.invunloadold.utils
 
 import org.bukkit.Material
 import org.bukkit.block.ShulkerBox
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
-import org.xodium.vanillaplus.invunloadold.utils.ShulkerUtils.isShulkerBox
+import org.xodium.vanillaplus.invunloadold.BlackList
+import org.xodium.vanillaplus.invunloadold.BlockUtils
+import org.xodium.vanillaplus.invunloadold.Main
+import org.xodium.vanillaplus.invunloadold.UnloadSummary
 
 object InvUtils {
     fun searchItemInContainers(mat: Material, destination: Inventory, summary: UnloadSummary): Boolean {
-        if (BlockUtils.doesChestContain(destination, ItemStack(mat))) {
-            val amount = BlockUtils.doesChestContainCount(destination, mat)
-
+        if (BlockUtils.Companion.doesChestContain(destination, ItemStack(mat))) {
+            val amount = BlockUtils.Companion.doesChestContainCount(destination, mat)
             summary.protocolUnload(destination.location, mat, amount)
             return true
         }
@@ -70,7 +73,7 @@ object InvUtils {
             if (item == null) continue
             if (blackList.contains(item.type)) continue
 
-            if (isShulkerBox(item)) {
+            if (ShulkerUtils.isShulkerBox(item)) {
                 if (destination.holder != null && destination.holder is ShulkerBox) {
                     continue
                 }
@@ -78,7 +81,7 @@ object InvUtils {
 
             source.clear(i)
             var amount = item.amount
-            if (!onlyMatchingStuff || BlockUtils.doesChestContain(destination, item)) {
+            if (!onlyMatchingStuff || BlockUtils.Companion.doesChestContain(destination, item)) {
                 for (leftover in destination.addItem(item).values) {
                     amount = amount - leftover.amount
                     source.setItem(i, leftover)

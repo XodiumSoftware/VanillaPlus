@@ -8,9 +8,10 @@ import org.bukkit.Material
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.command.TabCompleter
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import java.util.*
 
-class MaterialTabCompleter internal constructor(val main: Main) : TabCompleter {
+class MaterialTabCompleter : TabCompleter {
     private val mats: ArrayList<String> = ArrayList<String>()
 
     init {
@@ -22,7 +23,6 @@ class MaterialTabCompleter internal constructor(val main: Main) : TabCompleter {
         mats.add("hotbar")
     }
 
-
     override fun onTabComplete(
         commandSender: CommandSender,
         command: Command,
@@ -30,18 +30,15 @@ class MaterialTabCompleter internal constructor(val main: Main) : TabCompleter {
         args: Array<String>
     ): MutableList<String?>? {
         if (args.isEmpty()) return null
-
         val results = ArrayList<String?>()
         val lastArg = args[args.size - 1]
-
         for (mat in mats) {
-            if (main.config.getBoolean("strict-tabcomplete")) {
+            if (instance.config.getBoolean("strict-tabcomplete")) {
                 if (mat.startsWith(lastArg.uppercase(Locale.getDefault()))) results.add(mat)
             } else {
                 if (mat.contains(lastArg.uppercase(Locale.getDefault()))) results.add(mat)
             }
         }
-
         return results
     }
 }

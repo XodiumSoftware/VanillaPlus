@@ -3,7 +3,7 @@
  *  All rights reserved.
  */
 
-package org.xodium.vanillaplus.invunloadold
+package org.xodium.vanillaplus.invunloadold.utils
 
 import org.bukkit.Particle
 import org.bukkit.Sound

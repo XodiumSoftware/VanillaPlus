@@ -4,19 +4,28 @@
  */
 package org.xodium.vanillaplus.invunloadold
 
-import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang3.StringUtils
+import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.Container
+import org.bukkit.block.DoubleChest
 import org.bukkit.command.Command
+import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import org.bukkit.inventory.Inventory
+import org.bukkit.inventory.InventoryHolder
+import org.xodium.vanillaplus.invunloadold.utils.InvUtils
+import org.xodium.vanillaplus.invunloadold.utils.PlayerUtils
 import java.lang.String
+import java.util.*
 import kotlin.Array
 import kotlin.Boolean
 import kotlin.Int
-import kotlin.text.format
+import kotlin.text.toInt
+import kotlin.text.uppercase
 
-class CommandSearchitem internal constructor(private val main: Main) : CommandExecutor {
+class CommandSearchItem internal constructor(private val main: Main) : CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, s: String, args: Array<String>): Boolean {
         if (sender !is Player) {
             sender.sendMessage("You must be a player to run this command.")
@@ -49,18 +58,14 @@ class CommandSearchitem internal constructor(private val main: Main) : CommandEx
         if (args.size == 1) {
             if (StringUtils.isNumeric(args[0])) {
                 radius = args[0].toInt()
-                if (p.inventory.itemInMainHand != null && p.inventory.itemInMainHand
-                        .type != null
-                ) {
-                    mat = p.inventory.itemInMainHand.type
-                }
+                mat = p.inventory.itemInMainHand.type
             } else {
                 mat = Material.getMaterial(args[0].uppercase(Locale.getDefault()))
                 radius = main.groupUtils.getDefaultRadiusPerPlayer(p)
             }
         }
 
-        if (args.isEmpty() && p.inventory.itemInMainHand != null) {
+        if (args.isEmpty()) {
             mat = p.inventory.itemInMainHand.type
             radius = main.groupUtils.getDefaultRadiusPerPlayer(p)
         }
@@ -71,16 +76,11 @@ class CommandSearchitem internal constructor(private val main: Main) : CommandEx
         }
 
         if (radius == null || radius > main.groupUtils.getMaxRadiusPerPlayer(p)) {
-            p.sendMessage(String.format(main.messages.MSG_RADIUS_TOO_HIGH, main.groupUtils.getMaxRadiusPerPlayer(p)))
+            p.sendMessage(String.format(main.messages?.MSG_RADIUS_TOO_HIGH, main.groupUtils.getMaxRadiusPerPlayer(p)))
             return true
         }
 
-        if (mat == null) {
-            p.sendMessage(kotlin.String.format("%s is not a valid material.", args[0]))
-            return true
-        }
-
-        var chests: MutableList<Block?>? = BlockUtils.findChestsInRadius(p.location, radius)
+        val chests: MutableList<Block?>? = BlockUtils.findChestsInRadius(p.location, radius)
         BlockUtils.sortBlockListByDistance(chests, p.location)
 
         val useableChests = ArrayList<Block>()
@@ -95,18 +95,16 @@ class CommandSearchitem internal constructor(private val main: Main) : CommandEx
             return true
         }
 
-        chests = null
-
         val affectedChests = ArrayList<Block?>()
-        val doubleChests: ArrayList<InventoryHolder?> = ArrayList<InventoryHolder?>()
+        val doubleChests: ArrayList<InventoryHolder?> = ArrayList()
         val summary = UnloadSummary()
         for (block in useableChests) {
             val inv: Inventory = (block.state as Container).inventory
 
-            if (inv.getHolder() is DoubleChest) {
-                val dc: DoubleChest? = inv.getHolder() as DoubleChest?
-                if (doubleChests.contains(dc.getLeftSide())) continue
-                doubleChests.add(dc.getLeftSide())
+            if (inv.holder is DoubleChest) {
+                val dc: DoubleChest? = inv.holder as DoubleChest?
+                if (doubleChests.contains(dc?.leftSide)) continue
+                doubleChests.add(dc?.leftSide)
             }
 
             if (InvUtils.searchItemInContainers(mat, inv, summary)) {
@@ -122,9 +120,9 @@ class CommandSearchitem internal constructor(private val main: Main) : CommandEx
         }
 
         for (block in affectedChests) {
-            main.visualizer.chestAnimation(block, p)
+            Visualizer().chestAnimation(block, p)
         }
-        main.visualizer.play(affectedChests, p)
+        Visualizer().play(affectedChests, p)
 
         return true
     }

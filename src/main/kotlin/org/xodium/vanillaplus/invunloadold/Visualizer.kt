@@ -13,8 +13,8 @@ import org.bukkit.scheduler.BukkitRunnable
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import java.util.*
 
-class Visualizer private constructor(private val main: Main) {
-    private val lastUnloads: HashMap<UUID?, ArrayList<Block?>?> =
+class Visualizer {
+    val lastUnloads: HashMap<UUID?, ArrayList<Block?>?> =
         HashMap<UUID?, ArrayList<Block?>?>()
     private val lastUnloadPositions: HashMap<UUID?, Location?> =
         HashMap<UUID?, Location?>()
@@ -67,7 +67,7 @@ class Visualizer private constructor(private val main: Main) {
             val start = p.location
             val vec: org.bukkit.util.Vector = getDirectionBetweenLocations(
                 start,
-                BlockUtils.getCenterOfBlock(destination).add(0, -0.5, 0)
+                BlockUtils.getCenterOfBlock(destination).add(0.0, -0.5, 0.0)
             )
             if (start.distance(destination.location) < maxDistance) {
                 var i = 1.0
@@ -85,14 +85,14 @@ class Visualizer private constructor(private val main: Main) {
 
     private fun play(affectedChests: ArrayList<Block>, p: Player) {
         val particle: Particle =
-            Particle.valueOf(main.config.getString("laser-particle", "CRIT")!!.uppercase(Locale.getDefault()))
-        val count = main.config.getInt("laser-count", 1)
-        val maxDistance = main.config.getInt("laser-max-distance", 128)
-        val interval = main.config.getDouble("laser-interval", 0.3)
-        val speed = main.config.getDouble("laser-speed", 0.001)
+            Particle.valueOf(instance.config.getString("laser-particle", "CRIT")!!.uppercase(Locale.getDefault()))
+        val count = instance.config.getInt("laser-count", 1)
+        val maxDistance = instance.config.getInt("laser-max-distance", 128)
+        val interval = instance.config.getDouble("laser-interval", 0.3)
+        val speed = instance.config.getDouble("laser-speed", 0.001)
 
         val task: Int = instance.server.scheduler.scheduleSyncRepeatingTask(
-            main,
+            instance,
             { play(affectedChests, p, interval, count, particle, speed, maxDistance) },
             0,
             2
@@ -105,22 +105,22 @@ class Visualizer private constructor(private val main: Main) {
                 instance.server.scheduler.cancelTask(task)
                 activeVisualizations.remove(p.uniqueId)
             }
-        }.runTaskLater(main, 100)
+        }.runTaskLater(instance, 100)
     }
 
     fun chestAnimation(block: Block?, player: Player) {
         val loc = BlockUtils.getCenterOfBlock(block!!)
 
-        if (main.config.getBoolean("spawn-particles")) {
-            if (main.config.getBoolean("error-particles")) {
-                main.logger.warning(
-                    "Cannot spawn particles, because particle type \"" + main.config
+        if (instance.config.getBoolean("spawn-particles")) {
+            if (instance.config.getBoolean("error-particles")) {
+                instance.logger.warning(
+                    "Cannot spawn particles, because particle type \"" + instance.config
                         .getString("particle-type") + "\" does not exist! Please check your config.yml"
                 )
             } else {
-                val particleCount = main.config.getInt("particle-count")
+                val particleCount = instance.config.getInt("particle-count")
                 val particle: Particle =
-                    Particle.valueOf(main.config.getString("particle-type")!!.uppercase(Locale.getDefault()))
+                    Particle.valueOf(instance.config.getString("particle-type")!!.uppercase(Locale.getDefault()))
                 player.spawnParticle(particle, loc, particleCount, 0.0, 0.0, 0.0)
             }
         }

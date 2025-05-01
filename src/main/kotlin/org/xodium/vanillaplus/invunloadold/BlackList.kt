@@ -60,15 +60,10 @@ class BlackList {
 
     fun print(p: Player, main: Main) {
         if (mats.isEmpty()) {
-            p.sendMessage(main.messages.BL_EMPTY)
+            main.messages?.let { p.sendMessage(it.BL_EMPTY) }
         }
 
         p.sendMessage(ChatColor.translateAlternateColorCodes('&', main.config.getString("blacklist-title")!!))
-
-        /*p.sendMessage("This list will be nicer in the next version :P");
-        p.sendMessage("Blacklist: ");
-        StringBuilder slist = new StringBuilder();
-        */
         for (mat in mats) {
             val text = TextComponent("")
             val link = createLink("[X] ", "/blacklist remove " + mat.name)
@@ -83,7 +78,6 @@ class BlackList {
     private fun createLink(text: String?, link: String?): TextComponent {
         val tc = TextComponent(text)
         tc.isBold = true
-        // TODO: Make color configurable
         tc.color = net.md_5.bungee.api.ChatColor.DARK_RED
         tc.clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, link)
         return tc

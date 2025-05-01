@@ -37,17 +37,13 @@ class CommandUnloadInfo internal constructor(val main: Main) : CommandExecutor {
         }
 
         val p = sender
-        val affectedChests: ArrayList<Block?>? = Visualizer() lastUnloads [p.uniqueId]
-        if (affectedChests == null || affectedChests.isEmpty()) {
-            return true
-        }
+        val affectedChests: ArrayList<Block?>? = Visualizer().lastUnloads[p.uniqueId]
+        if (affectedChests == null || affectedChests.isEmpty()) return true
         if (Visualizer().unloadSummaries.containsKey(p.uniqueId)) {
             val summary: UnloadSummary? = Visualizer().unloadSummaries[p.uniqueId]
             summary?.print(UnloadSummary.PrintRecipient.PLAYER, p)
         }
-        for (block in affectedChests) {
-            Visualizer().chestAnimation(block, p)
-        }
+        for (block in affectedChests) Visualizer().chestAnimation(block, p)
         Visualizer().play(p)
         return true
     }

@@ -130,14 +130,13 @@ class CommandBlacklist internal constructor(val main: Main) : CommandExecutor, T
                 }
 
                 if (errors.isNotEmpty()) {
-                    p.sendMessage(String.format(main.messages.BL_INVALID, stringlist2string(errors)))
+                    p.sendMessage(String.format(Messages.BL_INVALID, stringlist2string(errors)))
                 }
                 if (successes.isNotEmpty()) {
-                    val message: kotlin.String
-                    if (option == "add") {
-                        message = main.messages.BL_ADDED
+                    val message: kotlin.String = if (option == "add") {
+                        Messages.BL_ADDED
                     } else {
-                        message = main.messages.BL_REMOVED
+                        Messages.BL_REMOVED
                     }
                     p.sendMessage(kotlin.String.format(message, matlist2string(successes)))
                 }
@@ -146,7 +145,7 @@ class CommandBlacklist internal constructor(val main: Main) : CommandExecutor, T
             }
 
             "reset" -> {
-                p.sendMessage(String.format(main.messages.BL_REMOVED, matlist2string(b.mats)))
+                p.sendMessage(String.format(main.messages.BL_REMOVED, matlist2string(b.mats as MutableList<Material?>)))
                 b.mats.clear()
                 return true
             }
