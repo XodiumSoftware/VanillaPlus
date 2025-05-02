@@ -8,12 +8,12 @@ package org.xodium.vanillaplus.modules
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
+import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Particle
-import org.bukkit.Sound
 import org.bukkit.block.Block
 import org.bukkit.block.Container
 import org.bukkit.entity.Player
@@ -37,6 +37,7 @@ import org.xodium.vanillaplus.utils.invunload.InvUtils
 import org.xodium.vanillaplus.utils.invunload.PlayerUtils
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import org.bukkit.Sound as BukkitSound
 
 /** Represents a module handling inv-unload mechanics within the system. */
 class InvUnloadModule : ModuleInterface {
@@ -67,7 +68,7 @@ class InvUnloadModule : ModuleInterface {
         val endSlot = 35
         val onlyMatchingStuff = false
 
-        val chests: MutableList<Block?>? = BlockUtils.findChestsInRadius(player.location, radius)
+        val chests: MutableList<Block?>? = BlockUtils.findChestsInRadius(player.location, 5)
         if (chests!!.isEmpty()) {
             player.sendMessage("")
             return
@@ -77,7 +78,7 @@ class InvUnloadModule : ModuleInterface {
         val useableChests = ArrayList<Block>()
         for (block in chests) if (PlayerUtils.canPlayerUseChest(block, player)) useableChests.add(block!!)
 
-        val affectedChests = listOf<Block>()
+        val affectedChests = mutableListOf<Block>()
 
         for (block in useableChests) {
             val inv: Inventory = (block.state as Container).inventory
@@ -103,8 +104,9 @@ class InvUnloadModule : ModuleInterface {
             if (item == null || item.amount == 0 || item.type == Material.AIR) continue
         }
         player.sendMessage("")
+        val materials = mutableMapOf<Material, Int>()
 
-        InvUnloadModule().save(player, affectedChests, InvUnloadModule())
+        InvUnloadModule().save(player, affectedChests, materials)
 
         for (block in affectedChests) {
             InvUnloadModule().chestEffect(block, player)
@@ -112,19 +114,14 @@ class InvUnloadModule : ModuleInterface {
             if (ChestSortHook.shouldSort(player)) ChestSortHook.sort(block)
         }
 
-        if (instance.config.getBoolean("play-sound")) {
-            if (instance.config.getBoolean("error-sound")) {
-                instance.logger.warning(
-                    "Cannot play sound, because sound effect \"" + instance.config
-                        .getString("sound-effect") + "\" does not exist! Please check your config.yml"
-                )
-            } else {
-                val sound = Sound.valueOf(
-                    instance.config.getString("sound-effect")!!.uppercase(Locale.getDefault())
-                ) //TODO: use Config.
-                player.playSound(player.location, sound, instance.config.getDouble("sound-volume", 1.0).toFloat(), 1f)
-            }
-        }
+        player.playSound(
+            Sound.sound(
+                BukkitSound.BLOCK_FENCE_GATE_CLOSE,
+                Sound.Source.MASTER,
+                1.0f,
+                1.0f
+            )
+        )
     }
 
     /**
@@ -196,7 +193,7 @@ class InvUnloadModule : ModuleInterface {
     /**
      * Saves the unload summary for the specified player.
      * @param player The player to save the unload summary for.
-     * @param chests The list of chests involved in the unload.
+     * @param chests The list of chests involved on unload.
      * @param materials The map of materials and their amounts.
      */
     private fun save(
