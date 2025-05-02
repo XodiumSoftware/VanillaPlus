@@ -3,7 +3,7 @@
  *  All rights reserved.
  */
 
-package org.xodium.vanillaplus.invunloadold.utils
+package org.xodium.vanillaplus.utils.invunload
 
 import org.bukkit.Chunk
 import org.bukkit.Location
@@ -15,7 +15,6 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.util.BoundingBox
 import org.bukkit.util.Vector
 import org.xodium.vanillaplus.VanillaPlus
-import org.xodium.vanillaplus.utils.invunload.EnchantmentUtils
 import java.util.*
 
 object BlockUtils {

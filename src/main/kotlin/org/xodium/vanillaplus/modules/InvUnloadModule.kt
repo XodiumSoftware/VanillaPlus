@@ -21,17 +21,16 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.Inventory
-import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.InvUnloadSummaryData
 import org.xodium.vanillaplus.hooks.ChestSortHook
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.invunloadold.utils.BlockUtils
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.TimeUtils
 import org.xodium.vanillaplus.utils.Utils
+import org.xodium.vanillaplus.utils.invunload.BlockUtils
 import org.xodium.vanillaplus.utils.invunload.CoolDownUtils
 import org.xodium.vanillaplus.utils.invunload.InvUtils
 import org.xodium.vanillaplus.utils.invunload.PlayerUtils
@@ -67,15 +66,14 @@ class InvUnloadModule : ModuleInterface {
         val startSlot = 9
         val endSlot = 35
         val onlyMatchingStuff = false
-
         val chests: MutableList<Block?>? = BlockUtils.findChestsInRadius(player.location, 5)
-        if (chests!!.isEmpty()) {
-            player.sendMessage("")
-            return
-        }
+
+        if (chests!!.isEmpty()) return
+        
         BlockUtils.sortBlockListByDistance(chests, player.location)
 
         val useableChests = ArrayList<Block>()
+
         for (block in chests) if (PlayerUtils.canPlayerUseChest(block, player)) useableChests.add(block!!)
 
         val affectedChests = mutableListOf<Block>()
@@ -95,22 +93,20 @@ class InvUnloadModule : ModuleInterface {
                 }
             }
         }
-        if (instance.config.getBoolean("always-show-summary")) { //TODO: use Config.
-            InvUnloadModule().print(player)
-        }
+        InvUnloadModule().print(player)
 
         for (i in startSlot..endSlot) {
-            val item: ItemStack? = player.inventory.getItem(i)
+            val item = player.inventory.getItem(i)
             if (item == null || item.amount == 0 || item.type == Material.AIR) continue
         }
-        player.sendMessage("")
+
         val materials = mutableMapOf<Material, Int>()
 
         InvUnloadModule().save(player, affectedChests, materials)
 
         for (block in affectedChests) {
             InvUnloadModule().chestEffect(block, player)
-            if (instance.config.getBoolean("laser-animation")) InvUnloadModule().play(player)
+            InvUnloadModule().play(player)
             if (ChestSortHook.shouldSort(player)) ChestSortHook.sort(block)
         }
 

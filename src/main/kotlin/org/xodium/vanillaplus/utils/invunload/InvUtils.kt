@@ -11,7 +11,6 @@ import org.bukkit.block.ShulkerBox
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
-import org.xodium.vanillaplus.invunloadold.utils.BlockUtils
 import org.xodium.vanillaplus.modules.InvUnloadModule
 
 object InvUtils {

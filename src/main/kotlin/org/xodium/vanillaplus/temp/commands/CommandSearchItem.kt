@@ -17,7 +17,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.xodium.vanillaplus.modules.InvUnloadModule
-import org.xodium.vanillaplus.temp.utils.BlockUtils
+import org.xodium.vanillaplus.utils.invunload.BlockUtils
 import org.xodium.vanillaplus.utils.invunload.InvUtils
 import org.xodium.vanillaplus.utils.invunload.PlayerUtils
 import java.lang.String
