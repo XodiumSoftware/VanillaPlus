@@ -24,6 +24,11 @@ object MaterialRegistry {
         Material.WOODEN_SWORD to 4.0,
     )
 
+    val BOWL_OR_BOTTLE: Set<Material> = setOf(
+        Material.BOWL,
+        Material.GLASS_BOTTLE,
+    )
+
     val DEFAULT_MATERIALS: Set<Material> = setOf(
         Material.DIAMOND_PICKAXE,
         Material.DIAMOND_AXE,

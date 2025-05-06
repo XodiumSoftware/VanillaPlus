@@ -9,16 +9,19 @@ import com.mojang.brigadier.Command
 import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import org.bukkit.Material
+import org.bukkit.NamespacedKey
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.registries.EntityRegistry
 import org.xodium.vanillaplus.registries.MaterialRegistry
 import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 
 /** General utilities. */
 object Utils {
@@ -75,13 +78,6 @@ object Utils {
         } ?: 0.0
 
     /**
-     * A function to check if a material is a bowl or bottle.
-     * @param material The material to check.
-     * @return True if the material is a bowl or bottle, false otherwise.
-     */
-    private fun isBowlOrBottle(material: Material): Boolean = material in setOf(Material.GLASS_BOTTLE, Material.BOWL)
-
-    /**
      * A function to move bowls and bottles in an inventory.
      * @param inv The inventory to move the bowls and bottles in.
      * @param slot The slot to move the bowls and bottles from.
@@ -89,7 +85,7 @@ object Utils {
      */
     fun moveBowlsAndBottles(inv: Inventory, slot: Int): Boolean {
         val itemStack = inv.getItem(slot) ?: return false
-        if (!isBowlOrBottle(itemStack.type)) return false
+        if (!MaterialRegistry.BOWL_OR_BOTTLE.contains(itemStack.type)) return false
 
         inv.clear(slot)
 
@@ -241,6 +237,26 @@ object Utils {
             level = 0
             exp = 0f
             if (remainingXp > 0) giveExp(remainingXp)
+        }
+    }
+
+    /**
+     * Checks if the player is on cooldown.
+     * @param player The player to check.
+     * @param cooldownDuration The cooldown duration in milliseconds.
+     * @param key The NamespacedKey to use for the cooldown.
+     * @return true if the player is not on cooldown, false otherwise.
+     */
+    fun cooldown(player: Player, cooldownDuration: Long, key: NamespacedKey): Boolean {
+        val now = System.currentTimeMillis()
+        val container = player.persistentDataContainer
+        val last = container.get(key, PersistentDataType.LONG) ?: 0L
+        return if (now >= last + cooldownDuration) {
+            container.set(key, PersistentDataType.LONG, now)
+            true
+        } else {
+            player.sendActionBar(("You must wait before using this mechanic again".fireFmt()).mm())
+            false
         }
     }
 }

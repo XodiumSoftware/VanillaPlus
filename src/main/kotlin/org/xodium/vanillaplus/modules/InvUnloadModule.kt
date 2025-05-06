@@ -13,6 +13,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
 import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.NamespacedKey
 import org.bukkit.Particle
 import org.bukkit.block.Block
 import org.bukkit.block.Container
@@ -31,7 +32,6 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.TimeUtils
 import org.xodium.vanillaplus.utils.Utils
 import org.xodium.vanillaplus.utils.invunload.BlockUtils
-import org.xodium.vanillaplus.utils.invunload.CoolDownUtils
 import org.xodium.vanillaplus.utils.invunload.InvUtils
 import org.xodium.vanillaplus.utils.invunload.PlayerUtils
 import java.util.*
@@ -65,7 +65,12 @@ class InvUnloadModule : ModuleInterface {
      * @param player The player whose inventory to unload.
      */
     private fun unload(player: Player) {
-        if (!CoolDownUtils.cooldown(player)) return
+        if (!Utils.cooldown(
+                player,
+                Config.InvUnloadModule.COOLDOWN,
+                NamespacedKey(instance, "${InvUnloadModule::class.simpleName}:cooldown")
+            )
+        ) return
 
         val startSlot = 9
         val endSlot = 35

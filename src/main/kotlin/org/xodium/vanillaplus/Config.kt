@@ -209,6 +209,9 @@ object Config {
     object InvSearchModule {
         /** Enables or disables the InvSearchModule. */
         var ENABLED: Boolean = true
+
+        /** The cooldown to use the mechanic again. */
+        var COOLDOWN: Long = 1L * 1000L // 1 second
     }
 
     /** Configuration settings for the InvUnloadModule. */

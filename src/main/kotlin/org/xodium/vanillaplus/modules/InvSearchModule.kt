@@ -13,16 +13,19 @@ import com.mojang.brigadier.suggestion.SuggestionProvider
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.Material
+import org.bukkit.NamespacedKey
 import org.bukkit.block.Container
 import org.bukkit.block.DoubleChest
 import org.bukkit.entity.Player
 import org.bukkit.inventory.InventoryHolder
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Perms
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.roseFmt
+import org.xodium.vanillaplus.utils.Utils
 import org.xodium.vanillaplus.utils.invunload.BlockUtils
 import org.xodium.vanillaplus.utils.invunload.InvUtils
 import org.xodium.vanillaplus.utils.invunload.PlayerUtils
@@ -84,6 +87,13 @@ class InvSearchModule : ModuleInterface {
      * @param material The material to search for in the chests.
      */
     private fun search(player: Player, radius: Int, material: Material) {
+        if (!Utils.cooldown(
+                player,
+                Config.InvSearchModule.COOLDOWN,
+                NamespacedKey(instance, "${InvSearchModule::class.simpleName}:cooldown")
+            )
+        ) return
+
         val chests = BlockUtils.findChestsInRadius(player.location, radius)
             .filter { PlayerUtils.canPlayerUseChest(it, player) }
 
