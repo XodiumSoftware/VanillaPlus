@@ -205,13 +205,28 @@ object Config {
         var AUTO_CLOSE_DELAY: Long = 6L * 1000L // 6 seconds
     }
 
+    /** Configuration settings for the InvSearchModule. */
+    object InvSearchModule {
+        /** Enables or disables the InvSearchModule. */
+        var ENABLED: Boolean = true
+    }
+
     /** Configuration settings for the InvUnloadModule. */
     object InvUnloadModule {
         /** Enables or disables the InvUnloadModule. */
-        var ENABLED: Boolean = false
+        var ENABLED: Boolean = true
 
         /** If the ChestSort plugin should be used. */
         var USE_CHESTSORT: Boolean = true
+
+        /** The cooldown to use the mechanic again. */
+        var COOLDOWN: Long = 5L * 1000L // 5 seconds
+
+        /** If it should match enchantments. */
+        var MATCH_ENCHANTMENTS: Boolean = true
+
+        /** If it should match enchantments on books. */
+        var MATCH_ENCHANTMENTS_ON_BOOKS: Boolean = true
     }
 
     /** Configuration settings for the MotdModule. */
@@ -286,7 +301,7 @@ object Config {
             Material.JUNGLE_SAPLING to listOf("trees/jungle"),
             Material.MANGROVE_PROPAGULE to listOf("trees/mangrove"),
             Material.OAK_SAPLING to listOf("trees/oak"),
-//            Material.PALE_OAK_SAPLING to listOf("trees/pale_oak"), // TODO: add when artist has schematics ready.
+            //Material.PALE_OAK_SAPLING to listOf("trees/pale_oak"), // TODO: add when artist has schematics ready.
             Material.SPRUCE_SAPLING to listOf("trees/spruce"),
             Material.WARPED_FUNGUS to listOf("trees/warped"),
         )

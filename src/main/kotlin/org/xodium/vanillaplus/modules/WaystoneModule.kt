@@ -412,11 +412,11 @@ class WaystoneModule : ModuleInterface {
 
     /**
      * Creates a custom-shaped crafting recipe for the given item.
-     * @param item The resulting item of the crafting recipe.
+     * @param itemStack Representing the item for which the recipe is created.
      * @return A custom `ShapedRecipe` for the provided item using the defined shape and ingredients.
      */
-    private fun recipe(item: ItemStack): Recipe {
-        return ShapedRecipe(NamespacedKey(instance, "waystone_recipe"), item).apply {
+    private fun recipe(itemStack: ItemStack): Recipe {
+        return ShapedRecipe(NamespacedKey(instance, "waystone_recipe"), itemStack).apply {
             shape("CCC", "CBC", "AAA")
             setIngredient('A', Material.OBSIDIAN)
             setIngredient('B', Material.ENDER_EYE)
