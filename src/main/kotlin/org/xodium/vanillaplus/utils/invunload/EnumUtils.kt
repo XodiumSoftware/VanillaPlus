@@ -7,6 +7,7 @@ package org.xodium.vanillaplus.utils.invunload
 
 import java.util.*
 
+//TODO: Move to a more generic location.
 object EnumUtils {
     /**
      * Returns an EnumSet of the enum constants that match the provided regex list.

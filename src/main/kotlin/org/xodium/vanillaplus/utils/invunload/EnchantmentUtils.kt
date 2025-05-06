@@ -11,7 +11,14 @@ import org.bukkit.inventory.meta.EnchantmentStorageMeta
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 
+//TODO: Move to a more generic location.
 object EnchantmentUtils {
+    /**
+     * Checks if two ItemStacks have matching enchantments.
+     * @param first The first ItemStack.
+     * @param second The second ItemStack.
+     * @return True if the enchantments match, false otherwise.
+     */
     fun hasMatchingEnchantments(first: ItemStack, second: ItemStack): Boolean {
         val config = Config.InvUnloadModule
 
