@@ -44,20 +44,13 @@ object Utils {
     }
 
     /**
-     * A function to get the base damage to a material.
-     * @param material The material to get the base damage to.
-     * @return The base damage to the material.
-     */
-    private fun getBaseDamage(material: Material): Double = MaterialRegistry.BASE_DAMAGE_MAP[material] ?: 0.0
-
-    /**
      * A function to get the damage to an item stack against an entity type.
      * @param itemStack The item stack to get the damage to.
      * @param entityType The entity type to get the damage against.
      * @return The damage to the item stack against the entity type.
      */
     fun getDamage(itemStack: ItemStack?, entityType: EntityType): Double {
-        val base = getBaseDamage(itemStack?.type ?: Material.AIR)
+        val base = MaterialRegistry.BASE_DAMAGE_MAP[itemStack?.type ?: Material.AIR] ?: 0.0
         return if (base == 0.0) 0.0 else base + getBonus(itemStack, entityType)
     }
 
