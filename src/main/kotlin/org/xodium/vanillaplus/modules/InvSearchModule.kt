@@ -28,7 +28,6 @@ import org.xodium.vanillaplus.utils.FmtUtils.roseFmt
 import org.xodium.vanillaplus.utils.Utils
 import org.xodium.vanillaplus.utils.invunload.BlockUtils
 import org.xodium.vanillaplus.utils.invunload.InvUtils
-import org.xodium.vanillaplus.utils.invunload.PlayerUtils
 import java.util.concurrent.CompletableFuture
 
 /** Represents a module handling inv-search mechanics within the system. */
@@ -95,7 +94,7 @@ class InvSearchModule : ModuleInterface {
         ) return
 
         val chests = BlockUtils.findChestsInRadius(player.location, radius)
-            .filter { PlayerUtils.canPlayerUseChest(it, player) }
+            .filter { Utils.canPlayerUseChest(it, player) }
 
         if (chests.isEmpty()) {
             player.sendActionBar("No usable chests found for ${"$material".roseFmt()}".fireFmt().mm())

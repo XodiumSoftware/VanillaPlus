@@ -10,9 +10,13 @@ import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
+import org.bukkit.block.Block
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
+import org.bukkit.event.EventHandler
+import org.bukkit.event.block.Action
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.EnchantmentStorageMeta
@@ -28,6 +32,8 @@ import java.util.*
 
 /** General utilities. */
 object Utils {
+    private val chestDenyKey = NamespacedKey(instance, "denied_chests")
+
     /**
      * A helper function to wrap command execution with standardised error handling.
      * @param ctx The CommandContext used to get the CommandSourceStack.
@@ -296,5 +302,62 @@ object Utils {
         if (firstMeta.hasEnchants() != secondMeta.hasEnchants()) return false
 
         return firstMeta.enchants == secondMeta.enchants
+    }
+
+    @EventHandler
+    fun on(event: PlayerInteractEvent) {
+        val block = event.clickedBlock
+        val player = event.player
+        if (event.action == Action.RIGHT_CLICK_BLOCK && block != null) {
+            if (block.type.name.contains("CHEST")) {
+                denyChestAccess(player, block)
+            } else {
+                allowChestAccess(player, block)
+            }
+        }
+    }
+
+    /**
+     * Allows the player access to the chest at the given block.
+     * @param player The player to allow access.
+     * @param block The block to allow access to.
+     */
+    private fun allowChestAccess(player: Player, block: Block) {
+        val container = player.persistentDataContainer
+        val locString = block.location.serialize().toString()
+        val denied = container.get(chestDenyKey, PersistentDataType.STRING) ?: return
+        val updated = denied.split(";").filter { it != locString }.joinToString(";")
+        if (updated.isEmpty()) {
+            container.remove(chestDenyKey)
+        } else {
+            container.set(chestDenyKey, PersistentDataType.STRING, updated)
+        }
+    }
+
+    /**
+     * Denies the player access to the chest at the given block.
+     * @param player The player to deny access.
+     * @param block The block to deny access to.
+     */
+    private fun denyChestAccess(player: Player, block: Block) {
+        val container = player.persistentDataContainer
+        val locString = block.location.serialize().toString()
+        val denied = container.get(chestDenyKey, PersistentDataType.STRING) ?: ""
+        val updated = if (denied.isEmpty()) locString else "$denied;$locString"
+        container.set(chestDenyKey, PersistentDataType.STRING, updated)
+    }
+
+    /**
+     * Checks if the player can use the chest at the given block.
+     * @param block The block to check.
+     * @param player The player to check.
+     * @return True if the player can use the chest, false otherwise.
+     */
+    fun canPlayerUseChest(block: Block?, player: Player?): Boolean {
+        if (block == null || player == null) return false
+        val container = player.persistentDataContainer
+        val denied = container.get(chestDenyKey, PersistentDataType.STRING) ?: ""
+        val locString = block.location.serialize().toString()
+        return !denied.split(";").contains(locString)
     }
 }

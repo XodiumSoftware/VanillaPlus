@@ -33,7 +33,6 @@ import org.xodium.vanillaplus.utils.TimeUtils
 import org.xodium.vanillaplus.utils.Utils
 import org.xodium.vanillaplus.utils.invunload.BlockUtils
 import org.xodium.vanillaplus.utils.invunload.InvUtils
-import org.xodium.vanillaplus.utils.invunload.PlayerUtils
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import org.bukkit.Sound as BukkitSound
@@ -83,7 +82,7 @@ class InvUnloadModule : ModuleInterface {
 
         val useableChests = ArrayList<Block>()
 
-        for (block in chests) if (PlayerUtils.canPlayerUseChest(block, player)) useableChests.add(block)
+        for (block in chests) if (Utils.canPlayerUseChest(block, player)) useableChests.add(block)
 
         val affectedChests = mutableListOf<Block>()
 
