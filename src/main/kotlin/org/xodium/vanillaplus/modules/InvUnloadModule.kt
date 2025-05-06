@@ -42,24 +42,28 @@ import org.bukkit.Sound as BukkitSound
 class InvUnloadModule : ModuleInterface {
     override fun enabled(): Boolean = Config.InvUnloadModule.ENABLED
 
-    @Suppress("UnstableApiUsage")
-    override fun cmd(): LiteralArgumentBuilder<CommandSourceStack>? {
-        return Commands.literal("invunload")
-            .requires { it.sender.hasPermission(Perms.InvUnload.USE) }
-            .executes { it -> Utils.tryCatch(it) { unload(it.sender as Player) } }
-    }
-
     private val lastUnloads = ConcurrentHashMap<UUID, List<Block>>()
     private val lastUnloadPositions = ConcurrentHashMap<UUID, Location>()
     private val activeVisualizations = ConcurrentHashMap<UUID, Int>()
     private val unloadSummaries = ConcurrentHashMap<UUID, InvUnloadSummaryData>()
     private val unloads = ConcurrentHashMap<Location, MutableMap<Material, Int>>()
 
+    @Suppress("UnstableApiUsage")
+    override fun cmd(): LiteralArgumentBuilder<CommandSourceStack>? {
+        return Commands.literal("invunload")
+            .requires { it.sender.hasPermission(Perms.InvUnload.USE) }
+            .executes { it -> Utils.tryCatch(it) { unload(it.sender as Player) } }
+    }
+    
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerQuitEvent) {
         if (enabled()) cleanup(event.player)
     }
 
+    /**
+     * Unloads the inventory of the specified player.
+     * @param player The player whose inventory to unload.
+     */
     private fun unload(player: Player) {
         if (!CoolDownUtils.cooldown(player)) return
 
