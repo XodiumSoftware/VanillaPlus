@@ -1,0 +1,24 @@
+name: Xodium CI/CD - Check Branches
+run-name: "Xodium CI/CD - Check Branches"
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - edited
+
+concurrency: { group: "${{ github.workflow }}-${{ github.ref }}", cancel-in-progress: true }
+
+jobs:
+  check-branches:
+    runs-on: ubuntu-latest
+    steps:
+      - id: check_branches
+        name: Check Branches
+        run: |
+          if [ ${{ github.head_ref }} != "dev" ] && [ ${{ github.base_ref }} == "main" ]; then
+            echo "Merge requests to main branch are only allowed from dev branch."
+            exit 1
+          fi
