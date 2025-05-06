@@ -67,7 +67,7 @@ class InvSearchModule : ModuleInterface {
 
         val useableChests = ArrayList<Block>()
         for (block in chests) {
-            if (block != null && PlayerUtils.canPlayerUseChest(block, player)) {
+            if (PlayerUtils.canPlayerUseChest(block, player)) {
                 useableChests.add(block)
             }
         }
