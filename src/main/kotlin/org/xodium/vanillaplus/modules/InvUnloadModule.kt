@@ -69,7 +69,7 @@ class InvUnloadModule : ModuleInterface {
         val chests: MutableList<Block?>? = BlockUtils.findChestsInRadius(player.location, 5)
 
         if (chests!!.isEmpty()) return
-        
+
         BlockUtils.sortBlockListByDistance(chests, player.location)
 
         val useableChests = ArrayList<Block>()
@@ -128,8 +128,7 @@ class InvUnloadModule : ModuleInterface {
      */
     fun protocolUnload(loc: Location, mat: Material, amount: Int) {
         if (amount == 0) return
-        unloads.computeIfAbsent(loc) { mutableMapOf() }
-            .merge(mat, amount, Int::plus)
+        unloads.computeIfAbsent(loc) { mutableMapOf() }.merge(mat, amount, Int::plus)
     }
 
     /**
