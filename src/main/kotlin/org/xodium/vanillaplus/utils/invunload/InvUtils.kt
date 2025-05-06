@@ -57,20 +57,23 @@ object InvUtils {
         summary: InvUnloadModule?
     ): Boolean {
         val source = player.inventory
-        val start = countInventoryContents(source)
+        val initialCount = countInventoryContents(source)
+        var moved = false
+
         for (i in startSlot..endSlot) {
             val item = source.getItem(i) ?: continue
             if (Tag.SHULKER_BOXES.isTagged(item.type) && destination.holder is ShulkerBox) continue
-            if (!onlyMatchingStuff || BlockUtils.doesChestContain(destination, item)) {
+            if (onlyMatchingStuff && !BlockUtils.doesChestContain(destination, item)) continue
+
+            val leftovers = destination.addItem(item)
+            val movedAmount = item.amount - leftovers.values.sumOf { it.amount }
+            if (movedAmount > 0) {
+                moved = true
                 source.clear(i)
-                var amount = item.amount
-                for (leftover in destination.addItem(item).values) {
-                    amount -= leftover.amount
-                    source.setItem(i, leftover)
-                }
-                destination.location?.let { summary?.protocolUnload(it, item.type, amount) }
+                leftovers.values.firstOrNull()?.let { source.setItem(i, it) }
+                destination.location?.let { summary?.protocolUnload(it, item.type, movedAmount) }
             }
         }
-        return start != countInventoryContents(source)
+        return moved && initialCount != countInventoryContents(source)
     }
 }

@@ -78,7 +78,7 @@ object BlockUtils {
         return inv.contents.any { otherItem ->
             otherItem != null
                     && otherItem.type == item.type
-                    && EnchantmentUtils.hasMatchingEnchantments(item, otherItem)
+                    && Utils.hasMatchingEnchantments(item, otherItem)
         }
     }
 

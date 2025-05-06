@@ -15,7 +15,9 @@ import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.EnchantmentStorageMeta
 import org.bukkit.persistence.PersistentDataType
+import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.registries.EntityRegistry
@@ -267,5 +269,32 @@ object Utils {
             ?.filter { constant -> regexList.any { it.matches(constant.name) } }
             ?.toCollection(EnumSet.noneOf(enumClass))
             ?: EnumSet.noneOf(enumClass)
+    }
+
+    /**
+     * Checks if two ItemStacks have matching enchantments.
+     * @param first The first ItemStack.
+     * @param second The second ItemStack.
+     * @return True if the enchantments match, false otherwise.
+     */
+    fun hasMatchingEnchantments(first: ItemStack, second: ItemStack): Boolean {
+        val config = Config.InvUnloadModule
+
+        if (!config.MATCH_ENCHANTMENTS && (!config.MATCH_ENCHANTMENTS_ON_BOOKS || first.type != Material.ENCHANTED_BOOK)) return true
+
+        val firstMeta = first.itemMeta
+        val secondMeta = second.itemMeta
+
+        if (firstMeta == null && secondMeta == null) return true
+        if (firstMeta == null || secondMeta == null) return false
+
+        if (firstMeta is EnchantmentStorageMeta && secondMeta is EnchantmentStorageMeta) {
+            return firstMeta.storedEnchants == secondMeta.storedEnchants
+        }
+
+        if (!firstMeta.hasEnchants() && !secondMeta.hasEnchants()) return true
+        if (firstMeta.hasEnchants() != secondMeta.hasEnchants()) return false
+
+        return firstMeta.enchants == secondMeta.enchants
     }
 }
