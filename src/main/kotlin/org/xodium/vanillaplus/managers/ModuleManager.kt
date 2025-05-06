@@ -33,6 +33,7 @@ object ModuleManager {
             BroadcastModule(),
             DimensionsModule(),
             DoorsModule(),
+            InvSearchModule(),
             InvUnloadModule(),
             MotdModule(),
             RecipiesModule(),

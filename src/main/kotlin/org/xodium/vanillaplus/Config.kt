@@ -205,6 +205,12 @@ object Config {
         var AUTO_CLOSE_DELAY: Long = 6L * 1000L // 6 seconds
     }
 
+    /** Configuration settings for the InvSearchModule. */
+    object InvSearchModule {
+        /** Enables or disables the InvSearchModule. */
+        var ENABLED: Boolean = true
+    }
+
     /** Configuration settings for the InvUnloadModule. */
     object InvUnloadModule {
         /** Enables or disables the InvUnloadModule. */
