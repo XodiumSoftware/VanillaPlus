@@ -214,7 +214,7 @@ object Config {
     /** Configuration settings for the InvUnloadModule. */
     object InvUnloadModule {
         /** Enables or disables the InvUnloadModule. */
-        var ENABLED: Boolean = false
+        var ENABLED: Boolean = true
 
         /** If the ChestSort plugin should be used. */
         var USE_CHESTSORT: Boolean = true
