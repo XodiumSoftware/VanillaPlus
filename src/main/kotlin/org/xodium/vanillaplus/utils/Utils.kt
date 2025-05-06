@@ -22,6 +22,7 @@ import org.xodium.vanillaplus.registries.EntityRegistry
 import org.xodium.vanillaplus.registries.MaterialRegistry
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
+import java.util.*
 
 /** General utilities. */
 object Utils {
@@ -110,43 +111,45 @@ object Utils {
     }
 
     /**
-     * A function to check if a player has a hoe in their inventory.
+     * A function to check if the inventory contains a specific item.
      * @param inventory The inventory to check.
-     * @return True if the player has a hoe in their inventory, false otherwise.
+     * @param predicate The predicate to check against the item type.
+     * @return True if the inventory contains the item, false otherwise.
      */
-    fun hasShears(inventory: Array<ItemStack?>): Boolean {
+    private fun inventoryContains(
+        inventory: Array<ItemStack?>,
+        predicate: (Material) -> Boolean
+    ): Boolean {
         for (i in 0..<9) {
-            if (inventory[i] == null) continue
-            if (inventory[i]!!.type == Material.SHEARS) return true
+            val item = inventory[i] ?: continue
+            if (predicate(item.type)) return true
         }
         return false
     }
 
     /**
-     * A function to check if a player has a hoe in their inventory.
+     * A function to check if the inventory contains shears.
      * @param inventory The inventory to check.
-     * @return True if the player has a hoe in their inventory, false otherwise.
+     * @return True if the inventory contains shears, false otherwise.
      */
-    fun hasSword(inventory: Array<ItemStack?>): Boolean {
-        for (i in 0..<9) {
-            if (inventory[i] == null) continue
-            if (inventory[i]!!.type.name.endsWith("_SWORD")) return true
-        }
-        return false
-    }
+    fun hasShears(inventory: Array<ItemStack?>): Boolean =
+        inventoryContains(inventory) { it == Material.SHEARS }
 
     /**
-     * A function to check if a player has a hoe in their hotbar.
-     * @param inventory The inventory of the player.
-     * @return True if the player has a hoe in their hotbar, false otherwise.
+     * A function to check if the inventory contains a sword.
+     * @param inventory The inventory to check.
+     * @return True if the inventory contains a sword, false otherwise.
      */
-    fun hasHoe(inventory: Array<ItemStack?>): Boolean {
-        for (i in 0..<9) {
-            if (inventory[i] == null) continue
-            if (inventory[i]!!.type.name.endsWith("_HOE")) return true
-        }
-        return false
-    }
+    fun hasSword(inventory: Array<ItemStack?>): Boolean =
+        inventoryContains(inventory) { it.name.endsWith("_SWORD") }
+
+    /**
+     * A function to check if the inventory contains a hoe.
+     * @param inventory The inventory to check.
+     * @return True if the inventory contains a hoe, false otherwise.
+     */
+    fun hasHoe(inventory: Array<ItemStack?>): Boolean =
+        inventoryContains(inventory) { it.name.endsWith("_HOE") }
 
     /**
      * A function to get the multiplier of an item stack.
@@ -251,5 +254,18 @@ object Utils {
             player.sendActionBar(("You must wait before using this mechanic again".fireFmt()).mm())
             false
         }
+    }
+
+    /**
+     * Returns an EnumSet of the enum constants that match the provided regex list.
+     * @param enumClass The class of the enum to search.
+     * @param regexList A list of regex patterns to match against the enum constant names.
+     * @return An EnumSet containing the matching enum constants.
+     */
+    fun <E : Enum<E>> getEnumsFromRegexList(enumClass: Class<E>, regexList: List<Regex>): EnumSet<E> {
+        return enumClass.enumConstants
+            ?.filter { constant -> regexList.any { it.matches(constant.name) } }
+            ?.toCollection(EnumSet.noneOf(enumClass))
+            ?: EnumSet.noneOf(enumClass)
     }
 }

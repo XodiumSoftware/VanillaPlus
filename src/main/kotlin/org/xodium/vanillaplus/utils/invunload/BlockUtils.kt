@@ -14,6 +14,7 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.BoundingBox
 import org.bukkit.util.Vector
+import org.xodium.vanillaplus.utils.Utils
 import java.util.*
 
 //TODO: Move to a more generic location.
@@ -27,7 +28,7 @@ object BlockUtils {
     )
 
     init {
-        CONTAINER_TYPES = EnumUtils.getEnumsFromRegexList(Material::class.java, CONTAINER_NAME_PATTERNS)
+        CONTAINER_TYPES = Utils.getEnumsFromRegexList(Material::class.java, CONTAINER_NAME_PATTERNS)
     }
 
     /**
