@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module external.linked.project.id="VanillaPlus:main" external.linked.project.path="$MODULE_DIR$/../.." external.root.project.path="$MODULE_DIR$/../.." external.system.id="GRADLE" external.system.module.group="org.xodium.vanillaplus" external.system.module.type="sourceSet" external.system.module.version="1.7.0" type="JAVA_MODULE" version="4">
+<module external.linked.project.id="VanillaPlus:main" external.linked.project.path="$MODULE_DIR$/../.." external.root.project.path="$MODULE_DIR$/../.." external.system.id="GRADLE" external.system.module.group="org.xodium.vanillaplus" external.system.module.type="sourceSet" external.system.module.version="1.8.0" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet type="minecraft" name="Minecraft">
       <configuration>
@@ -49,37 +49,35 @@
       <sourceFolder url="file://$MODULE_DIR$/../../src/main/kotlin" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../src/main/resources" type="java-resource" />
     </content>
-    <content url="file://$MODULE_DIR$/../../src/main">
-      <sourceFolder url="file://$MODULE_DIR$/../../src/main/kotlin" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/../../src/main/resources" type="java-resource" />
-    </content>
-    <orderEntry type="jdk" jdkName="azul-21" jdkType="JavaSDK" />
+    <orderEntry type="jdk" jdkName="corretto-21" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" scope="PROVIDED" name="Gradle: io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: io.papermc.paper:paper-api:1.21.5-R0.1-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: com.sk89q.worldedit:worldedit-bukkit:7.3.11" level="project" />
+    <orderEntry type="library" name="Gradle: dev.triumphteam:triumph-gui-paper-kotlin:4.0.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.1.20" level="project" />
     <orderEntry type="library" name="Gradle: de.jeff_media:ChestSortAPI:12.0.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: com.google.guava:guava:33.3.1-jre" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Gradle: net.md-5:bungeecord-chat:1.20-R0.2-deprecated+build.19" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Gradle: net.kyori:adventure-text-logger-slf4j:4.20.0" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Gradle: net.kyori:adventure-text-minimessage:4.20.0" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Gradle: net.kyori:adventure-text-serializer-legacy:4.20.0" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Gradle: net.kyori:adventure-text-serializer-plain:4.20.0" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Gradle: net.kyori:adventure-api:4.20.0" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Gradle: net.kyori:adventure-text-serializer-gson:4.20.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: net.md-5:bungeecord-chat:1.21-R0.2-deprecated+build.21" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: io.papermc.adventure:adventure-text-logger-slf4j:4.21.0-mc1215-SNAPSHOT" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: io.papermc.adventure:adventure-text-minimessage:4.21.0-mc1215-SNAPSHOT" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: io.papermc.adventure:adventure-text-serializer-legacy:4.21.0-mc1215-SNAPSHOT" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: io.papermc.adventure:adventure-text-serializer-plain:4.21.0-mc1215-SNAPSHOT" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: io.papermc.adventure:adventure-api:4.21.0-mc1215-SNAPSHOT" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: io.papermc.adventure:adventure-text-serializer-gson:4.21.0-mc1215-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: com.google.code.gson:gson:2.11.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: org.yaml:snakeyaml:2.2" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: org.joml:joml:1.10.8" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.googlecode.json-simple:json-simple:1.1.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: it.unimi.dsi:fastutil:8.5.15" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: org.apache.logging.log4j:log4j-api:2.24.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: org.apache.maven:maven-resolver-provider:3.9.6" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.slf4j:slf4j-api:2.0.9" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.slf4j:slf4j-api:2.0.16" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: com.mojang:brigadier:1.3.10" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: org.jspecify:jspecify:1.0.0" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.checkerframework:checker-qual:3.43.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.checkerframework:checker-qual:3.49.2" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: com.sk89q.worldedit:worldedit-core:7.3.11" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: com.sk89q.worldedit.worldedit-libs:bukkit:7.3.11" level="project" />
+    <orderEntry type="library" name="Gradle: dev.triumphteam:triumph-gui-kotlin:4.0.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Gradle: dev.triumphteam:triumph-gui-paper:4.0.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.1.20" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:2.1.20" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: org.jetbrains:annotations:26.0.2" level="project" />
@@ -88,10 +86,10 @@
     <orderEntry type="library" scope="PROVIDED" name="Gradle: com.google.code.findbugs:jsr305:3.0.2" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: com.google.errorprone:error_prone_annotations:2.28.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: com.google.j2objc:j2objc-annotations:3.0.0" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Gradle: net.kyori:adventure-key:4.20.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: io.papermc.adventure:adventure-key:4.21.0-mc1215-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: net.kyori:examination-string:1.3.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: net.kyori:examination-api:1.3.0" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Gradle: net.kyori:adventure-text-serializer-json:4.20.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: io.papermc.adventure:adventure-text-serializer-json:4.21.0-mc1215-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: com.google.auto.service:auto-service-annotations:1.1.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: org.apache.maven.resolver:maven-resolver-impl:1.9.18" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: org.apache.maven:maven-model-builder:3.9.6" level="project" />
@@ -104,6 +102,8 @@
     <orderEntry type="library" scope="PROVIDED" name="Gradle: javax.inject:javax.inject:1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: com.sk89q.worldedit.worldedit-libs:core:7.3.11" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: org.antlr:antlr4:4.13.1" level="project" />
+    <orderEntry type="library" name="Gradle: dev.triumphteam:nova-kotlin:1.0.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Gradle: dev.triumphteam:triumph-gui-core:4.0.0-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: net.kyori:option:1.1.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: org.apache.maven.resolver:maven-resolver-named-locks:1.9.18" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: org.apache.maven:maven-artifact:3.9.6" level="project" />
@@ -115,6 +115,7 @@
     <orderEntry type="library" scope="PROVIDED" name="Gradle: org.antlr:antlr-runtime:3.5.3" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: org.abego.treelayout:org.abego.treelayout.core:1.0.3" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: com.ibm.icu:icu4j:72.1" level="project" />
+    <orderEntry type="library" name="Gradle: dev.triumphteam:nova:1.0.0-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: org.apache.commons:commons-lang3:3.12.0" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains:annotations:19.0.0" level="project" />
   </component>

@@ -15,13 +15,9 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.utils.FmtUtils.mm
-import org.xodium.vanillaplus.utils.TimeUtils.seconds
-import org.xodium.vanillaplus.utils.TimeUtils.ticks
+import org.xodium.vanillaplus.utils.ExtUtils.mm
 
-/**
- * Handles the tab list for all players
- */
+/** Represents a module handling tab-list mechanics within the system. */
 class TabListModule : ModuleInterface {
     override fun enabled(): Boolean = Config.TabListModule.ENABLED
 
@@ -30,20 +26,20 @@ class TabListModule : ModuleInterface {
             instance.server.scheduler.runTaskTimer(
                 instance,
                 Runnable {
-                    instance.server.onlinePlayers.forEach { player ->
-                        updateTabList(player)
-                        updatePlayerDisplayName(player)
+                    instance.server.onlinePlayers.forEach {
+                        updateTabList(it)
+                        updatePlayerDisplayName(it)
                     }
                 },
-                0.ticks,
-                10.seconds
+                Config.TabListModule.INIT_DELAY,
+                Config.TabListModule.INTERVAL
             )
         }
     }
 
     /**
-     * Update the tab list for all players
-     * @param event the player join event
+     * Update the tab list for all players.
+     * @param event the PlayerJoinEvent.
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
@@ -52,14 +48,14 @@ class TabListModule : ModuleInterface {
     }
 
     /**
-     * Update the player's display name in the tab list
-     * @param player the player to update
+     * Update the player's display name in the tab list.
+     * @param player the player to update.
      */
     private fun updatePlayerDisplayName(player: Player) = player.playerListName(player.displayName())
 
     /**
-     * Update the tab list for the given audience
-     * @param audience the audience to update the tab list for
+     * Update the tab list for the given audience.
+     * @param audience the audience to update the tab list for.
      */
     private fun updateTabList(audience: Audience) {
         val joinConfig = JoinConfiguration.separator(Component.newline())

@@ -13,13 +13,11 @@ import org.bukkit.entity.Player
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
-import org.xodium.vanillaplus.utils.FmtUtils.mm
 import org.xodium.vanillaplus.utils.Utils
 
-/**
- * A module that provides a book with rules for players.
- */
+/** Represents a module handling book mechanics within the system. */
 class BooksModule : ModuleInterface {
     override fun enabled(): Boolean = Config.BooksModule.ENABLED
 
@@ -31,9 +29,7 @@ class BooksModule : ModuleInterface {
     }
 
 
-    /**
-     * @return the book for the module
-     */
+    /** @return the book for the module. */
     private fun book(): Book {
         return Book.book(
             Config.BooksModule.BOOK.title.fireFmt().mm(),

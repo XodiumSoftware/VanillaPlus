@@ -8,9 +8,7 @@ package org.xodium.vanillaplus.registries
 import com.sk89q.worldedit.world.block.BlockType
 import com.sk89q.worldedit.world.block.BlockTypes
 
-/**
- * Registry for blocktypes.
- */
+/** Registry for blocktypes. */
 object BlockTypesRegistry {
     val TREE_MASK: Set<BlockType?> = setOf(
         // General
@@ -68,7 +66,6 @@ object BlockTypesRegistry {
         BlockTypes.FLOWERING_AZALEA_LEAVES,
         BlockTypes.MANGROVE_PROPAGULE,
         BlockTypes.PINK_PETALS,
-//            BlockTypes.WILDFLOWERS, TODO("Add in 1.21.5")
         BlockTypes.SPORE_BLOSSOM,
     )
 }

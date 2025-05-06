@@ -5,6 +5,8 @@
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.antlr/antlr4/4.13.1/71b8e3e31b0821480a5db1486012caa89e673f41/antlr4-4.13.1.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.antlr/antlr4/4.13.1/35f88553646b79512b126ab5f884d12d82ef5772/antlr4-4.13.1-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>

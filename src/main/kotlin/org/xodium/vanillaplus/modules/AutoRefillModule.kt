@@ -19,21 +19,18 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.PlayerInventory
 import org.xodium.vanillaplus.Config
-import org.xodium.vanillaplus.Database
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.data.PlayerData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
-import org.xodium.vanillaplus.utils.FmtUtils.mm
-import org.xodium.vanillaplus.utils.TimeUtils.minutes
 import org.xodium.vanillaplus.utils.Utils
 import org.xodium.vanillaplus.utils.Utils.moveBowlsAndBottles
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
-/**
- * Automatically refills the player's main hand and off hand slots when they consume an item
- */
+/** Represents a module handling auto-refill mechanics within the system. */
 class AutoRefillModule : ModuleInterface {
     override fun enabled(): Boolean = Config.AutoRefillModule.ENABLED
 
@@ -50,20 +47,20 @@ class AutoRefillModule : ModuleInterface {
 
     init {
         if (enabled()) {
-            Database.createTable(this::class)
+            PlayerData.createTable()
             instance.server.scheduler.runTaskTimer(
                 instance,
                 Runnable { cooldowns.entries.removeIf { System.currentTimeMillis() - it.value > cooldownMs * 2 } },
-                1.minutes,
-                5.minutes
+                1L * 20L * 60L,
+                5L * 20L * 60L
             )
             Runtime.getRuntime().addShutdownHook(Thread { synchronized(this, cooldowns::clear) })
         }
     }
 
     /**
-     * Handles the PlayerItemConsumeEvent
-     * @param event the event to handle
+     * Handles the PlayerItemConsumeEvent.
+     * @param event the event to handle.
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerItemConsumeEvent) {
@@ -72,8 +69,8 @@ class AutoRefillModule : ModuleInterface {
     }
 
     /**
-     * Refills the player's main hand and off hand slots when they place a block
-     * @param event the BlockPlaceEvent
+     * Refills the player's main hand and offhand slots when they place a block.
+     * @param event the BlockPlaceEvent.
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: BlockPlaceEvent) {
@@ -82,8 +79,8 @@ class AutoRefillModule : ModuleInterface {
     }
 
     /**
-     * Handles the PlayerInteractEvent to refill the player's main hand and off hand slots
-     * @param event the PlayerInteractEvent
+     * Handles the PlayerInteractEvent to refill the player's main hand and offhand slots.
+     * @param event the PlayerInteractEvent.
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerInteractEvent) {
@@ -92,9 +89,9 @@ class AutoRefillModule : ModuleInterface {
     }
 
     /**
-     * Checks if the player can attempt to refill
-     * @param player the player to check
-     * @return true if the player can attempt to refill
+     * Checks if the player can attempt to refill.
+     * @param player the player to check.
+     * @return true if the player can attempt to refill.
      */
     private fun canAttemptRefill(player: Player): Boolean {
         if (!player.hasPermission(Perms.AutoRefill.USE)) return false
@@ -109,8 +106,8 @@ class AutoRefillModule : ModuleInterface {
     }
 
     /**
-     * Attempts to refill the player's main hand and off hand slots
-     * @param player the player to refill
+     * Attempts to refill the player's main hand and offhand slots.
+     * @param player the player to refill.
      */
     private fun attemptRefill(player: Player) {
         val inventory = player.inventory
@@ -134,11 +131,11 @@ class AutoRefillModule : ModuleInterface {
     }
 
     /**
-     * Finds the best slot to refill the target slot
-     * @param inventory the player's inventory
-     * @param material the material to refill
-     * @param currentSlot the current slot
-     * @return the best slot to refill from
+     * Finds the best slot to refill the target slot.
+     * @param inventory the player's inventory.
+     * @param material the material to refill.
+     * @param currentSlot the current slot.
+     * @return the best slot to refill from.
      */
     private fun findRefillSource(inventory: PlayerInventory, material: Material, currentSlot: Int): Int {
         var bestSlot = -1
@@ -163,11 +160,11 @@ class AutoRefillModule : ModuleInterface {
     }
 
     /**
-     * Refills the target slot with the source slot
-     * @param inventory the player's inventory
-     * @param source the source slot
-     * @param target the target slot
-     * @param itemStack the item to refill
+     * Refills the target slot with the source slot.
+     * @param inventory the player's inventory.
+     * @param source the source slot.
+     * @param target the target slot.
+     * @param itemStack the item to refill.
      */
     private fun refillStack(inventory: Inventory, source: Int, target: Int, itemStack: ItemStack?) {
         if (itemStack == null) return
@@ -192,22 +189,33 @@ class AutoRefillModule : ModuleInterface {
     }
 
     /**
-     * Checks if AutoRefill is enabled for the given player
-     * @param player the player to check
-     * @return true if enabled (default), false if explicitly disabled
+     * Checks if AutoRefill is enabled for the given player.
+     * @param player the player to check.
+     * @return true if enabled (default), false if explicitly disabled.
      */
-    private fun isEnabledForPlayer(player: Player): Boolean =
-        Database.getData(this::class, player.uniqueId.toString())?.lowercase() != "false"
+    private fun isEnabledForPlayer(player: Player): Boolean {
+        return PlayerData.getData().firstOrNull { it.id == player.uniqueId.toString() }?.autorefill ?: true
+    }
 
     /**
-     * Toggles AutoRefill for the given player
-     * @param player the player to toggle
+     * Retrieves the PlayerData object for the given player.
+     * @param player The player to check.
+     * @return The PlayerData object, or a default object with both fields set to true if not found.
+     */
+    private fun getPlayerData(player: Player): PlayerData {
+        return PlayerData.getData().firstOrNull { it.id == player.uniqueId.toString() }
+            ?: PlayerData(id = player.uniqueId.toString(), autorefill = true, autotool = true)
+    }
+
+    /**
+     * Toggles AutoRefill for the given player.
+     * @param player the player to toggle.
      */
     private fun toggle(player: Player) {
-        val currentValue = isEnabledForPlayer(player)
-        val newValue = (!currentValue).toString()
-        Database.setData(this::class, player.uniqueId.toString(), newValue)
+        val playerData = getPlayerData(player)
+        val updatedData = playerData.copy(autorefill = !(playerData.autorefill ?: false))
+        PlayerData.setData(updatedData)
         cooldowns.remove(player.uniqueId)
-        player.sendActionBar(("${"AutoRefill:".fireFmt()} ${if (!currentValue) "<green>ON" else "<red>OFF"}").mm())
+        player.sendActionBar(("${"AutoRefill:".fireFmt()} ${if (isEnabledForPlayer(player)) "<green>ON" else "<red>OFF"}").mm())
     }
 }

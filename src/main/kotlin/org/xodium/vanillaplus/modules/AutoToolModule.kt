@@ -27,23 +27,20 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.PlayerInventory
 import org.bukkit.inventory.meta.Damageable
 import org.xodium.vanillaplus.Config
-import org.xodium.vanillaplus.Database
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.data.BlockTypeData
+import org.xodium.vanillaplus.data.PlayerData
 import org.xodium.vanillaplus.enums.ToolEnum
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.registries.MaterialRegistry
+import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
-import org.xodium.vanillaplus.utils.FmtUtils.mm
 import org.xodium.vanillaplus.utils.Utils
 import java.util.*
 import java.util.function.ToIntFunction
 import java.util.stream.Collectors
 
-
-/**
- * Handles the automatic switching of tools and weapons.
- */
+/** Represents a module handling auto-tool mechanics within the system. */
 class AutoToolModule : ModuleInterface {
     override fun enabled(): Boolean = Config.AutoToolModule.ENABLED
 
@@ -64,7 +61,7 @@ class AutoToolModule : ModuleInterface {
 
     init {
         if (enabled()) {
-            Database.createTable(this::class)
+            PlayerData.createTable()
         }
         tagToMap(Tag.MINEABLE_AXE, ToolEnum.AXE)
         tagToMap(Tag.MINEABLE_HOE, ToolEnum.HOE)
@@ -96,6 +93,7 @@ class AutoToolModule : ModuleInterface {
     fun on(event: BlockBreakEvent) {
         val player = event.player
         onPlayerInteractWithBlock(
+            @Suppress("UnstableApiUsage")
             PlayerInteractEvent(
                 player,
                 Action.LEFT_CLICK_BLOCK,
@@ -120,7 +118,7 @@ class AutoToolModule : ModuleInterface {
         val playerInventory = player.inventory
         if (Config.AutoToolModule.DONT_SWITCH_DURING_BATTLE && isWeapon(playerInventory.itemInMainHand))
             return
-        if (event.getAction() != Action.LEFT_CLICK_BLOCK) return
+        if (event.action != Action.LEFT_CLICK_BLOCK) return
         if (event.hand != EquipmentSlot.HAND) return
         val bestTool = getBestToolFromInventory(block.type, player, playerInventory.itemInMainHand)
         if (bestTool == null || bestTool == playerInventory.itemInMainHand) {
@@ -205,16 +203,9 @@ class AutoToolModule : ModuleInterface {
      * Adds materials from the given tag to the tool map.
      * @param tag The material tag.
      * @param tool The tool type.
-     */
-    private fun tagToMap(tag: Tag<Material>, tool: ToolEnum) = tagToMap(tag, tool, null)
-
-    /**
-     * Adds materials from the given tag to the tool map.
-     * @param tag The material tag.
-     * @param tool The tool type.
      * @param filter If not null, only materials whose name contains this filter will be added.
      */
-    private fun tagToMap(tag: Tag<Material>, tool: ToolEnum, filter: String?) {
+    private fun tagToMap(tag: Tag<Material>, tool: ToolEnum, filter: String? = null) {
         tag.values.forEach { material ->
             if (filter == null || material.name.contains(filter)) {
                 addToMap(material, tool)
@@ -505,24 +496,24 @@ class AutoToolModule : ModuleInterface {
     /**
      * Moves the tool from the source slot to the destination slot in the player's inventory.
      * @param source The source slot.
-     * @param dest The destination slot.
+     * @param destination The destination slot.
      * @param playerInventory The player's inventory to modify.
      */
-    private fun moveToolToSlot(source: Int, dest: Int, playerInventory: PlayerInventory) {
-        playerInventory.heldItemSlot = dest
-        if (source == dest) return
+    private fun moveToolToSlot(source: Int, destination: Int, playerInventory: PlayerInventory) {
+        playerInventory.heldItemSlot = destination
+        if (source == destination) return
         val sourceItem = playerInventory.getItem(source)
-        val destItem = playerInventory.getItem(dest)
+        val destinationItem = playerInventory.getItem(destination)
         if (source < HOTBAR_SIZE) {
             playerInventory.heldItemSlot = source
             return
         }
-        if (destItem == null) {
-            playerInventory.setItem(dest, sourceItem)
+        if (destinationItem == null) {
+            playerInventory.setItem(destination, sourceItem)
             playerInventory.setItem(source, null)
         } else {
-            playerInventory.setItem(source, destItem)
-            playerInventory.setItem(dest, sourceItem)
+            playerInventory.setItem(source, destinationItem)
+            playerInventory.setItem(destination, sourceItem)
         }
     }
 
@@ -574,8 +565,19 @@ class AutoToolModule : ModuleInterface {
      * @param player The player to check.
      * @return true if enabled (default), false if explicitly disabled
      */
-    private fun isEnabledForPlayer(player: Player): Boolean =
-        Database.getData(this::class, player.uniqueId.toString())?.lowercase() != "false"
+    private fun isEnabledForPlayer(player: Player): Boolean {
+        return PlayerData.getData().firstOrNull { it.id == player.uniqueId.toString() }?.autotool ?: true
+    }
+
+    /**
+     * Retrieves the PlayerData object for the given player.
+     * @param player The player to check.
+     * @return The PlayerData object, or a default object with both fields set to true if not found.
+     */
+    private fun getPlayerData(player: Player): PlayerData {
+        return PlayerData.getData().firstOrNull { it.id == player.uniqueId.toString() }
+            ?: PlayerData(id = player.uniqueId.toString(), autorefill = true, autotool = true)
+    }
 
     /**
      * Toggles the AutoTool setting for the player.
@@ -583,9 +585,9 @@ class AutoToolModule : ModuleInterface {
      * @param player The player to toggle.
      */
     private fun toggle(player: Player) {
-        val currentValue = isEnabledForPlayer(player)
-        val newValue = (!currentValue).toString()
-        Database.setData(this::class, player.uniqueId.toString(), newValue)
-        player.sendActionBar(("${"AutoTool:".fireFmt()} ${if (!currentValue) "<green>ON" else "<red>OFF"}").mm())
+        val playerData = getPlayerData(player)
+        val updatedData = playerData.copy(autotool = !(playerData.autotool ?: false))
+        PlayerData.setData(updatedData)
+        player.sendActionBar(("${"AutoTool:".fireFmt()} ${if (isEnabledForPlayer(player)) "<green>ON" else "<red>OFF"}").mm())
     }
 }

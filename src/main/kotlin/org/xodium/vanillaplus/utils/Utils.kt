@@ -3,10 +3,7 @@
  *  All rights reserved.
  */
 
-@file:Suppress("UnstableApiUsage")
-
 package org.xodium.vanillaplus.utils
-
 
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.context.CommandContext
@@ -17,47 +14,44 @@ import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
-import org.xodium.vanillaplus.VanillaPlus
+import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.registries.EntityRegistry
 import org.xodium.vanillaplus.registries.MaterialRegistry
-import org.xodium.vanillaplus.utils.FmtUtils.mm
+import org.xodium.vanillaplus.utils.ExtUtils.mm
 
-/**
- * General utilities
- */
+/** General utilities. */
 object Utils {
     /**
-     * A helper function to wrap command execution with standardized error handling.
-     *
-     * @param ctx The CommandContext used to obtain the CommandSourceStack.
+     * A helper function to wrap command execution with standardised error handling.
+     * @param ctx The CommandContext used to get the CommandSourceStack.
      * @param action The action to execute, receiving a CommandSourceStack as a parameter.
      * @return Command.SINGLE_SUCCESS after execution.
      */
+    @Suppress("UnstableApiUsage")
     fun tryCatch(ctx: CommandContext<CommandSourceStack>, action: (CommandSourceStack) -> Unit): Int {
         try {
             action(ctx.source)
         } catch (e: Exception) {
-            VanillaPlus.Companion.instance.logger.severe("An Error has occured: ${e.message}")
+            instance.logger.severe("An Error has occurred: ${e.message}")
             e.printStackTrace()
-            (ctx.source.sender as Player).sendMessage("${VanillaPlus.Companion.PREFIX}<red>An Error has occured. Check server logs for details.".mm())
+            (ctx.source.sender as Player).sendMessage("${PREFIX}<red>An Error has occurred. Check server logs for details.".mm())
         }
         return Command.SINGLE_SUCCESS
     }
 
     /**
-     * A function to get the base damage of a material.
-     *
-     * @param material The material to get the base damage of.
-     * @return The base damage of the material.
+     * A function to get the base damage to a material.
+     * @param material The material to get the base damage to.
+     * @return The base damage to the material.
      */
     private fun getBaseDamage(material: Material): Double = MaterialRegistry.BASE_DAMAGE_MAP[material] ?: 0.0
 
     /**
-     * A function to get the damage of an item stack against an entity type.
-     *
-     * @param itemStack The item stack to get the damage of.
+     * A function to get the damage to an item stack against an entity type.
+     * @param itemStack The item stack to get the damage to.
      * @param entityType The entity type to get the damage against.
-     * @return The damage of the item stack against the entity type.
+     * @return The damage to the item stack against the entity type.
      */
     fun getDamage(itemStack: ItemStack?, entityType: EntityType): Double {
         val base = getBaseDamage(itemStack?.type ?: Material.AIR)
@@ -65,11 +59,10 @@ object Utils {
     }
 
     /**
-     * A function to get the bonus damage of an item stack against an entity type.
-     *
-     * @param itemStack The item stack to get the bonus damage of.
+     * A function to get the bonus damage to an item stack against an entity type.
+     * @param itemStack The item stack to get the bonus damage to.
      * @param entityType The entity type to get the bonus damage against.
-     * @return The bonus damage of the item stack against the entity type.
+     * @return The bonus damage to the item stack against the entity type.
      */
     private fun getBonus(itemStack: ItemStack?, entityType: EntityType): Double =
         itemStack?.itemMeta?.enchants?.entries?.sumOf { (enchantment, level) ->
@@ -83,7 +76,6 @@ object Utils {
 
     /**
      * A function to check if a material is a bowl or bottle.
-     *
      * @param material The material to check.
      * @return True if the material is a bowl or bottle, false otherwise.
      */
@@ -91,7 +83,6 @@ object Utils {
 
     /**
      * A function to move bowls and bottles in an inventory.
-     *
      * @param inv The inventory to move the bowls and bottles in.
      * @param slot The slot to move the bowls and bottles from.
      * @return True if the bowls and bottles were moved successfully, false otherwise.
@@ -131,7 +122,6 @@ object Utils {
 
     /**
      * A function to check if a player has a hoe in their inventory.
-     *
      * @param inventory The inventory to check.
      * @return True if the player has a hoe in their inventory, false otherwise.
      */
@@ -145,7 +135,6 @@ object Utils {
 
     /**
      * A function to check if a player has a hoe in their inventory.
-     *
      * @param inventory The inventory to check.
      * @return True if the player has a hoe in their inventory, false otherwise.
      */
@@ -159,7 +148,6 @@ object Utils {
 
     /**
      * A function to check if a player has a hoe in their hotbar.
-     *
      * @param inventory The inventory of the player.
      * @return True if the player has a hoe in their hotbar, false otherwise.
      */
@@ -173,7 +161,6 @@ object Utils {
 
     /**
      * A function to get the multiplier of an item stack.
-     *
      * @param itemStack The item stack to get the multiplier of.
      * @return The multiplier of the item stack.
      */
@@ -188,7 +175,6 @@ object Utils {
 
     /**
      * A function to get the base multiplier of an item stack.
-     *
      * @param itemStack The item stack to get the base multiplier of.
      * @return The base multiplier of the item stack.
      */
@@ -207,11 +193,10 @@ object Utils {
 
     /**
      * A function to get the tps of the server.
-     *
      * @return The tps of the server.
      */
     fun getTps(): String {
-        val tps = VanillaPlus.Companion.instance.server.tps[0]
+        val tps = instance.server.tps[0]
         val clampedTps = tps.coerceIn(0.0, 20.0)
         val ratio = clampedTps / 20.0
         val color = getColorForTps(ratio)
@@ -220,10 +205,9 @@ object Utils {
     }
 
     /**
-     * Calculate a hex color between red and green based on the provided ratio (0.0 to 1.0)
-     *
-     * @param ratio The ratio to calculate the color for.
-     * @return The hex color for the ratio.
+     * Calculate a hex colour between red and green based on the provided ratio (0.0 to 1.0).
+     * @param ratio The ratio to calculate the colour for.
+     * @return The hex colour for the ratio.
      */
     private fun getColorForTps(ratio: Double): String {
         val r = (255 * (1 - ratio)).toInt()
@@ -234,15 +218,29 @@ object Utils {
 
     /**
      * Gets a formatted string representing the current weather in the main world.
-     *
      * @return A formatted string representing the weather.
      */
     fun getWeather(): String {
-        val world = VanillaPlus.Companion.instance.server.worlds[0]
+        val world = instance.server.worlds[0]
         return when {
             world.isThundering -> "<red>\uD83C\uDF29<reset>"
             world.hasStorm() -> "<yellow>\uD83C\uDF26<reset>"
             else -> "<green>\uD83C\uDF24<reset>"
+        }
+    }
+
+    /**
+     * Charges the player the specified amount of XP.
+     * @param player The player to charge.
+     * @param amount The amount of XP to charge.
+     */
+    fun chargePlayerXp(player: Player, amount: Int): Player {
+        return player.apply {
+            val remainingXp = maxOf(0, totalExperience - amount)
+            totalExperience = 0
+            level = 0
+            exp = 0f
+            if (remainingXp > 0) giveExp(remainingXp)
         }
     }
 }

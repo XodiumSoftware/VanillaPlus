@@ -19,19 +19,14 @@ import org.bukkit.util.Vector
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
-import org.xodium.vanillaplus.utils.FmtUtils.mm
 
-/**
- * Handles dimension teleportation
- */
+/** Represents a module handling dimension mechanics within the system. */
 class DimensionsModule : ModuleInterface {
     override fun enabled(): Boolean = Config.DimensionsModule.ENABLED
 
     companion object {
-        /**
-         * Represents adjacent block directions: east, west, up, down, south, north
-         */
         private val ADJACENT_DIRECTIONS = listOf<Vector>(
             Vector(1, 0, 0), Vector(-1, 0, 0),
             Vector(0, 1, 0), Vector(0, -1, 0),
@@ -39,11 +34,6 @@ class DimensionsModule : ModuleInterface {
         )
     }
 
-    /**
-     * Event handler for the PlayerPortalEvent.
-     *
-     * @param event The PlayerPortalEvent that was triggered.
-     */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerPortalEvent) {
         val player = event.player
@@ -57,7 +47,7 @@ class DimensionsModule : ModuleInterface {
                     event.canCreatePortal = false
                     if (player.world != event.to.world) {
                         extinguishPortal(player.location)
-                        //TODO: Message also appears when there is a link and you walk from the nether -> overworld
+                        //TODO: Message also appears when there is a link, and you walk from the nether -> overworld
                         player.sendActionBar("No link to the portal counterpart in the Overworld".fireFmt().mm())
                     }
                 }
@@ -67,21 +57,11 @@ class DimensionsModule : ModuleInterface {
         }
     }
 
-    /**
-     * Event handler for the EntityPortalEvent.
-     *
-     * @param event The EntityPortalEvent that was triggered.
-     */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: EntityPortalEvent) {
         event.canCreatePortal = false
     }
 
-    /**
-     * Event handler for the BlockIgniteEvent.
-     *
-     * @param event The BlockIgniteEvent that was triggered.
-     */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: BlockIgniteEvent) {
         val block = event.block
@@ -90,13 +70,10 @@ class DimensionsModule : ModuleInterface {
         if (world.environment != World.Environment.NETHER) return
         if (!isPortalFrame(block)) return
 
-        val netherCoords = block.location
-        val overworldX = netherCoords.x * 8
-        val overworldY = netherCoords.y
-        val overworldZ = netherCoords.z * 8
+        val overworldCoords = convertNetherToOverworldCoords(block.location)
         val overworld = instance.server.worlds.find { it.environment == World.Environment.NORMAL } ?: return
 
-        if (!hasPortalNearby(overworld, overworldX, overworldY, overworldZ, 128.0)) {
+        if (!hasPortalNearby(overworld, overworldCoords.x, overworldCoords.y, overworldCoords.z)) {
             event.isCancelled = true
             if (event.player != null) {
                 event.player?.sendActionBar("Cannot create new link to the Overworld from the Nether".fireFmt().mm())
@@ -105,8 +82,16 @@ class DimensionsModule : ModuleInterface {
     }
 
     /**
+     * Converts Nether coordinates to Overworld coordinates.
+     * @param netherCoords The location in the Nether.
+     * @return A Vector representing the corresponding Overworld coordinates.
+     */
+    private fun convertNetherToOverworldCoords(netherCoords: Location): Vector {
+        return Vector(netherCoords.x * 8, netherCoords.y, netherCoords.z * 8)
+    }
+
+    /**
      * Checks if the block is part of a valid nether portal frame.
-     *
      * @param block The block to check.
      * @return True if the block is part of a valid portal frame.
      */
@@ -121,17 +106,16 @@ class DimensionsModule : ModuleInterface {
 
     /**
      * Checks if there's a portal near the specified coordinates.
-     *
      * @param world The world to check in.
      * @param x The x coordinate.
      * @param y The y coordinate.
      * @param z The z coordinate.
-     * @param radius The search radius.
      * @return True if a portal exists within the radius.
      */
-    private fun hasPortalNearby(world: World, x: Double, y: Double, z: Double, radius: Double): Boolean {
-        val radiusSquared = radius * radius
-        val searchRadius = radius.toInt()
+    private fun hasPortalNearby(world: World, x: Double, y: Double, z: Double): Boolean {
+        val portalSearchRadius = Config.DimensionsModule.PORTAL_SEARCH_RADIUS
+        val radiusSquared = portalSearchRadius * portalSearchRadius
+        val searchRadius = portalSearchRadius.toInt()
         val centerX = x.toInt()
         val centerY = y.toInt()
         val centerZ = z.toInt()
@@ -158,7 +142,6 @@ class DimensionsModule : ModuleInterface {
 
     /**
      * Extinguishes the Nether portal at the given location.
-     *
      * @param location The location of the portal.
      */
     private fun extinguishPortal(location: Location) {

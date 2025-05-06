@@ -1,23 +1,12 @@
-name: ${name}
-version: ${version}
+name: VanillaPlus
+version: 1.8.0
 main: org.xodium.vanillaplus.VanillaPlus
-description: ${description}
-api-version: ${apiVersion}
-authors: ${authors}
+description: Minecraft plugin that enhances the base gameplay
+api-version: 1.21.5
+authors:
+  - XodiumSoftware
 dependencies:
   server:
-    CMI:
-      load: BEFORE
-      required: true
-      join-classpath: true
-    CMILib:
-      load: BEFORE
-      required: true
-      join-classpath: true
-    PlaceholderAPI:
-      load: BEFORE
-      required: false
-      join-classpath: true
     WorldEdit:
       load: BEFORE
       required: true

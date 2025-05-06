@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: io.papermc.adventure:adventure-key:4.21.0-mc1215-SNAPSHOT" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="io.papermc.adventure" artifactId="adventure-key" version="4.21.0-mc1215-SNAPSHOT" baseVersion="4.21.0-mc1215-SNAPSHOT" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.papermc.adventure/adventure-key/4.21.0-mc1215-SNAPSHOT/ca342dcb6e2f3bad48b7acbfa818190dbb2b08d9/adventure-key-4.21.0-mc1215-SNAPSHOT.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.papermc.adventure/adventure-key/4.21.0-mc1215-SNAPSHOT/c39ed581704884262c8bc9d463abbec38176adb3/adventure-key-4.21.0-mc1215-SNAPSHOT-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -5,6 +5,8 @@
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.sk89q.worldedit/worldedit-core/7.3.11/f59acff8b52347aae55d9cec284a602cc81816b2/worldedit-core-7.3.11.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.sk89q.worldedit/worldedit-core/7.3.11/da3e72d8291e900cfaaf5129299da97beaae9380/worldedit-core-7.3.11-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>

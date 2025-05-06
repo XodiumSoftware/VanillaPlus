@@ -9,7 +9,6 @@ import org.bukkit.Material
 
 /**
  * Data class to hold information about block types.
- *
  * @property lastMat The last material used.
  * @property valid Indicates if the material is valid.
  */

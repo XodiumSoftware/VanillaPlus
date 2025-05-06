@@ -9,11 +9,8 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
-import kotlin.reflect.KClass
 
-/**
- * Handles database connection
- */
+/** Handles database connection. */
 object Database {
     private val databaseFile = instance.dataFolder.resolve("vanillaplus.db")
     private const val DRIVER = "org.sqlite.JDBC"
@@ -21,9 +18,7 @@ object Database {
     lateinit var conn: Connection
         private set
 
-    /**
-     * Initializes the database connection.
-     */
+    /** Initialises the database connection. */
     init {
         try {
             Class.forName(DRIVER)
@@ -37,68 +32,35 @@ object Database {
     }
 
     /**
-     * Creates a table in the database.
-     *
-     * @param table The table to create.
+     * Executes an SQL statement, optionally with parameters.
+     * @param sql The SQL statement to be executed.
+     * @param params Optional parameters to bind to the statement.
      */
-    fun createTable(table: KClass<*>) {
-        conn.createStatement().use { stmt ->
-            stmt.execute(
-                // language=SQLite
-                """
-                    CREATE TABLE IF NOT EXISTS ${table.simpleName} (
-                        k TEXT PRIMARY KEY,
-                        v TEXT
-                    );
-                    """.trimIndent()
-            )
-        }
-    }
-
-    /**
-     * Sets data in the database.
-     *
-     * @param table The table to set the data in.
-     * @param key The key to set the data with.
-     * @param value The value to set the data with.
-     */
-    fun setData(table: KClass<*>, key: String, value: String) {
-        conn.prepareStatement(
-            // language=SQLite
-            """
-            INSERT OR REPLACE INTO ${table.simpleName} (k, v) VALUES (?, ?);
-            """.trimIndent()
-        ).use { stmt ->
-            stmt.setString(1, key)
-            stmt.setString(2, value)
-            stmt.executeUpdate()
-        }
-    }
-
-    /**
-     * Gets data from the database.
-     *
-     * @param table The table to get the data from.
-     * @param key The key to get the data with.
-     * @return The data retrieved from the database.
-     */
-    fun getData(table: KClass<*>, key: String): String? {
-        return conn.prepareStatement(
-            // language=SQLite
-            """
-            SELECT v FROM ${table.simpleName} WHERE k = ?;
-            """.trimIndent()
-        ).use { stmt ->
-            stmt.setString(1, key)
-            stmt.executeQuery().use { rs ->
-                if (rs.next()) rs.getString("v") else null
+    fun exec(sql: String, vararg params: Any?) {
+        if (params.isEmpty()) {
+            conn.createStatement().use { it.execute(sql) }
+        } else {
+            conn.prepareStatement(sql).use { stmt ->
+                params.forEachIndexed { index, param -> stmt.setObject(index + 1, param) }
+                stmt.executeUpdate()
             }
         }
     }
 
     /**
-     * Closes the database connection.
+     * Executes SQL queries that return results.
+     * @param sql the SQL query to be executed.
+     * @param handler a lambda to handle the result set.
      */
+    fun <T> query(sql: String, handler: (java.sql.ResultSet) -> T): T {
+        conn.createStatement().use { stmt ->
+            stmt.executeQuery(sql).use { resultSet ->
+                return handler(resultSet)
+            }
+        }
+    }
+
+    /** Closes the database connection. */
     private fun close() {
         if (this::conn.isInitialized && !conn.isClosed) {
             try {
