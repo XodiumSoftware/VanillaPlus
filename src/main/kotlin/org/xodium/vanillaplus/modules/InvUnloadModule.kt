@@ -54,7 +54,7 @@ class InvUnloadModule : ModuleInterface {
             .requires { it.sender.hasPermission(Perms.InvUnload.USE) }
             .executes { it -> Utils.tryCatch(it) { unload(it.sender as Player) } }
     }
-    
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerQuitEvent) {
         if (enabled()) cleanup(event.player)
@@ -116,7 +116,7 @@ class InvUnloadModule : ModuleInterface {
 
         player.playSound(
             Sound.sound(
-                BukkitSound.BLOCK_FENCE_GATE_CLOSE,
+                BukkitSound.BLOCK_FENCE_GATE_CLOSE, //TODO change sound.
                 Sound.Source.MASTER,
                 1.0f,
                 1.0f
