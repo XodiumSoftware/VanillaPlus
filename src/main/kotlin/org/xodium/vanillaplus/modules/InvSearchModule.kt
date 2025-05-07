@@ -62,6 +62,11 @@ class InvSearchModule : ModuleInterface {
             .executes { ctx -> handleSearch(ctx) }
     }
 
+    /**
+     * Handles the search command execution.
+     * @param ctx The command context containing the command source and arguments.
+     * @return An integer indicating the result of the command execution.
+     */
     @Suppress("UnstableApiUsage")
     private fun handleSearch(ctx: CommandContext<CommandSourceStack>): Int {
         val player = ctx.source.sender as? Player ?: return 0
