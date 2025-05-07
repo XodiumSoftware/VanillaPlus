@@ -93,7 +93,7 @@ class InvSearchModule : ModuleInterface {
             )
         ) return
 
-        val chests = BlockUtils.findChestsInRadius(player.location, radius)
+        val chests = BlockUtils.findBlocksInRadius(player.location, radius)
             .filter { Utils.canPlayerUseChest(it, player) }
 
         if (chests.isEmpty()) {

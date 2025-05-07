@@ -14,37 +14,25 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.BoundingBox
 import org.bukkit.util.Vector
+import org.xodium.vanillaplus.registries.MaterialRegistry
 import org.xodium.vanillaplus.utils.Utils
-import java.util.*
 
 //TODO: Move to a more generic location.
 object BlockUtils {
-    private val CONTAINER_TYPES: EnumSet<Material>
-    private val CONTAINER_NAME_PATTERNS = listOf(
-        Regex("(.*)BARREL$"),
-        Regex("(.*)CHEST$"),
-        Regex("^SHULKER_BOX$"),
-        Regex("^(.*)_SHULKER_BOX$")
-    )
-
-    init {
-        CONTAINER_TYPES = Utils.getEnumsFromRegexList(Material::class.java, CONTAINER_NAME_PATTERNS)
-    }
-
     /**
      * Find all blocks in a given radius from a location.
      * @param loc The location to search from.
      * @param radius The radius to search within.
      * @return A list of blocks found within the radius.
      */
-    private fun findBlocksInRadius(loc: Location, radius: Int): MutableList<Block> {
+    fun findBlocksInRadius(loc: Location, radius: Int): MutableList<Block> {
         val box = BoundingBox.of(loc, radius.toDouble(), radius.toDouble(), radius.toDouble())
         val chunks = getChunksInBox(loc.world, box)
         val radiusSq = radius * radius
         return chunks.flatMap { chunk ->
             chunk.tileEntities.filter { state ->
                 state is Container &&
-                        isChestLikeBlock(state.type) &&
+                        MaterialRegistry.CONTAINER_TYPES.contains(state.type) &&
                         state.location.distanceSquared(loc) <= radiusSq &&
                         (state.type != Material.CHEST ||
                                 !(state.block.getRelative(BlockFace.UP).type.isSolid &&
@@ -52,21 +40,6 @@ object BlockUtils {
             }.map { (it as Container).block }
         }.toMutableList()
     }
-
-    /**
-     * Find all chests in a given radius from a location.
-     * @param loc The location to search from.
-     * @param radius The radius to search within.
-     * @return A list of blocks representing the chests found.
-     */
-    fun findChestsInRadius(loc: Location, radius: Int): MutableList<Block> = findBlocksInRadius(loc, radius)
-
-    /**
-     * Check if a material is a container type.
-     * @param material The material to check.
-     * @return True if the material is a container type, false otherwise.
-     */
-    private fun isChestLikeBlock(material: Material?): Boolean = CONTAINER_TYPES.contains(material)
 
     /**
      * Check if a chest contains an item with matching enchantments.

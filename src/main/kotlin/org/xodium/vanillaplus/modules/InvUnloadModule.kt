@@ -74,7 +74,7 @@ class InvUnloadModule : ModuleInterface {
         val startSlot = 9
         val endSlot = 35
         val onlyMatchingStuff = false
-        val chests: MutableList<Block>? = BlockUtils.findChestsInRadius(player.location, 5)
+        val chests: MutableList<Block>? = BlockUtils.findBlocksInRadius(player.location, 5)
 
         if (chests!!.isEmpty()) return
 
