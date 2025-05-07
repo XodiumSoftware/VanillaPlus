@@ -8,6 +8,8 @@ package org.xodium.vanillaplus.utils
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.JoinConfiguration
 import org.bukkit.*
 import org.bukkit.block.*
 import org.bukkit.enchantments.Enchantment
@@ -25,17 +27,24 @@ import org.bukkit.util.Vector
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.modules.InvUnloadModule
+import org.xodium.vanillaplus.data.InvUnloadSummaryData
 import org.xodium.vanillaplus.registries.EntityRegistry
 import org.xodium.vanillaplus.registries.MaterialRegistry
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.roundToInt
 
 /** General utilities. */
 object Utils {
     private val chestDenyKey = NamespacedKey(instance, "denied_chests")
+    val unloadSummaries: ConcurrentHashMap<UUID, InvUnloadSummaryData> = ConcurrentHashMap()
+    val lastUnloads: ConcurrentHashMap<UUID, List<Block>> = ConcurrentHashMap()
+    val activeVisualizations: ConcurrentHashMap<UUID, Int> = ConcurrentHashMap()
+    val lastUnloadPositions: ConcurrentHashMap<UUID, Location> = ConcurrentHashMap()
+    private val unloads = ConcurrentHashMap<Location, MutableMap<Material, Int>>()
+
 
     /**
      * A helper function to wrap command execution with standardised error handling.
@@ -405,7 +414,7 @@ object Utils {
      * @param block The block to get the center of.
      * @return The center location of the block.
      */
-    fun getCenterOfBlock(block: Block): Location {
+    private fun getCenterOfBlock(block: Block): Location {
         val baseLoc = block.location.clone()
         val state = block.state
         val centerLoc = if (state is Chest && state.inventory.holder is DoubleChest) {
@@ -460,13 +469,12 @@ object Utils {
      * Searches for a specific item in the given inventory and its containers.
      * @param material The material to search for.
      * @param destination The inventory to search in.
-     * @param summary The InvUnloadModule instance for protocol unloading.
      * @return True if the item was found in the inventory or its containers, false otherwise.
      */
-    fun searchItemInContainers(material: Material, destination: Inventory, summary: InvUnloadModule): Boolean {
+    fun searchItemInContainers(material: Material, destination: Inventory): Boolean {
         if (doesChestContain(destination, ItemStack(material))) {
             val amount = doesChestContainCount(destination, material)
-            destination.location?.let { summary.protocolUnload(it, material, amount) }
+            destination.location?.let { protocolUnload(it, material, amount) }
             return true
         }
         return false
@@ -486,7 +494,6 @@ object Utils {
      * @param onlyMatchingStuff If true, only moves items that match the destination's contents.
      * @param startSlot The starting slot in the player's inventory to move items from.
      * @param endSlot The ending slot in the player's inventory to move items from.
-     * @param summary The InvUnloadModule instance for protocol unloading.
      * @return True if items were moved, false otherwise.
      */
     fun stuffInventoryIntoAnother(
@@ -495,7 +502,6 @@ object Utils {
         onlyMatchingStuff: Boolean,
         startSlot: Int,
         endSlot: Int,
-        summary: InvUnloadModule?
     ): Boolean {
         val source = player.inventory
         val initialCount = countInventoryContents(source)
@@ -512,9 +518,145 @@ object Utils {
                 moved = true
                 source.clear(i)
                 leftovers.values.firstOrNull()?.let { source.setItem(i, it) }
-                destination.location?.let { summary?.protocolUnload(it, item.type, movedAmount) }
+                destination.location?.let { protocolUnload(it, item.type, movedAmount) }
             }
         }
         return moved && initialCount != countInventoryContents(source)
+    }
+
+    /**
+     * Converts a location to a string representation.
+     * @param loc The location to convert.
+     * @return A string representation of the location.
+     */
+    private fun loc2str(loc: Location): Component {
+        val x = loc.blockX
+        val y = loc.blockY
+        val z = loc.blockZ
+        val world = loc.world
+        val name = if (world != null) {
+            val state = world.getBlockAt(x, y, z).state
+            (state as? Container)?.customName()?.toString() ?: state.type.name
+        } else {
+            "Unknown"
+        }
+        return """
+            <light_purple><b>$name</b>
+            <green><b>X:</b></green> <white>$x</white>
+            <green><b>Y:</b></green> <white>$y</white>
+            <green><b>Z:</b></green> <white>$z</white>
+        """.trimIndent().mm()
+    }
+
+    /**
+     * Converts an amount to a string representation.
+     * @param amount The amount to convert.
+     * @return A string representation of the amount.
+     */
+    private fun amount2str(amount: Int): Component {
+        return "<dark_purple>|</dark_purple><gray>${"%5d".format(amount)}x  </gray>".mm()
+    }
+
+    /**
+     * Prints the unload summary for the specified player.
+     * @param player The player to print the unload summary for.
+     */
+    fun print(player: Player) { //TODO: make it print correctly the actual items.
+        val summary = unloadSummaries[player.uniqueId] ?: return
+        player.sendMessage("<gray><b>Unload Summary:</b></gray>".mm())
+        val separator = "<gray>${"-".repeat(20)}</gray>"
+        player.sendMessage(separator.mm())
+        player.sendMessage(loc2str(summary.playerLocation))
+        summary.materials.forEach { (mat, amount) ->
+            player.sendMessage(
+                Component.join(
+                    JoinConfiguration.noSeparators(),
+                    amount2str(amount),
+                    "<gold>${mat.name}</gold>".mm()
+                )
+            )
+        }
+    }
+
+    /**
+     * Plays the unload effect for the specified player.
+     * @param player The player to play the effect for.
+     * @param affectedChests The list of chests to affect. If null, uses the last unloaded chests.
+     */
+    fun play(player: Player, affectedChests: List<Block>? = null) {
+        val chests = affectedChests ?: lastUnloads[player.uniqueId] ?: return
+
+        activeVisualizations[player.uniqueId] = instance.server.scheduler.scheduleSyncRepeatingTask(
+            instance,
+            { laserEffect(chests, player, 0.3, 2, Particle.CRIT, 0.001, 128) },
+            0L,
+            2L
+        )
+
+        instance.server.scheduler.runTaskLater(
+            instance,
+            Runnable {
+                activeVisualizations[player.uniqueId]?.let {
+                    instance.server.scheduler.cancelTask(it)
+                    activeVisualizations.remove(player.uniqueId)
+                }
+            },
+            TimeUtils.seconds(5)
+        )
+    }
+
+    /**
+     * Creates a chest effect for the specified block and player.
+     * @param block The block to create the laser effect towards.
+     * @param player The player to create the laser effect for.
+     */
+    fun chestEffect(block: Block, player: Player) {
+        player.spawnParticle(Particle.CRIT, getCenterOfBlock(block), 10, 0.0, 0.0, 0.0)
+    }
+
+    /**
+     * Creates a laser effect between the player and the specified blocks.
+     * @param destinations The list of blocks to create the laser effect towards.
+     * @param player The player to create the laser effect for.
+     * @param interval The interval between each particle spawn.
+     * @param count The number of particles to spawn at each location.
+     * @param particle The type of particle to spawn.
+     * @param speed The speed of the particles.
+     * @param maxDistance The maximum distance for the laser effect.
+     */
+    private fun laserEffect(
+        destinations: List<Block>,
+        player: Player,
+        interval: Double,
+        count: Int,
+        particle: Particle,
+        speed: Double,
+        maxDistance: Int
+    ) {
+        destinations.forEach { destination ->
+            val start = player.location.clone()
+            val end = getCenterOfBlock(destination).add(0.0, -0.5, 0.0)
+            val direction = end.toVector().subtract(start.toVector()).normalize()
+            val distance = start.distance(destination.location)
+            if (distance < maxDistance) {
+                var i = 1.0
+                while (i <= distance) {
+                    val point = start.clone().add(direction.clone().multiply(i))
+                    player.spawnParticle(particle, point, count, 0.0, 0.0, 0.0, speed)
+                    i += interval
+                }
+            }
+        }
+    }
+
+    /**
+     * Unloads the specified amount of material from the given location.
+     * @param loc The location to unload from.
+     * @param mat The material to unload.
+     * @param amount The amount of material to unload.
+     */
+    private fun protocolUnload(loc: Location, mat: Material, amount: Int) {
+        if (amount == 0) return
+        unloads.computeIfAbsent(loc) { mutableMapOf() }.merge(mat, amount, Int::plus)
     }
 }

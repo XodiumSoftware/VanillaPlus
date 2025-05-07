@@ -99,7 +99,6 @@ class InvSearchModule : ModuleInterface {
             return
         }
 
-        val invUnloadModule = InvUnloadModule()
         val seenDoubleChests = mutableSetOf<InventoryHolder?>()
         val affectedChests = chests.filter { block ->
             val inventory = (block.state as Container).inventory
@@ -108,16 +107,16 @@ class InvSearchModule : ModuleInterface {
                 val left = holder.leftSide
                 if (!seenDoubleChests.add(left)) return@filter false
             }
-            Utils.searchItemInContainers(material, inventory, invUnloadModule)
+            Utils.searchItemInContainers(material, inventory)
         }
 
-        invUnloadModule.print(player)
+        Utils.print(player)
         if (affectedChests.isEmpty()) {
             player.sendActionBar("No chests contain ${"$material".roseFmt()}".fireFmt().mm())
             return
         }
 
-        affectedChests.forEach { invUnloadModule.chestEffect(it, player) }
-        invUnloadModule.play(player, affectedChests)
+        affectedChests.forEach { Utils.chestEffect(it, player) }
+        Utils.play(player, affectedChests)
     }
 }
