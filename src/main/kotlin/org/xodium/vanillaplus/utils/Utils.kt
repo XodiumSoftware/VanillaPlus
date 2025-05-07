@@ -31,6 +31,7 @@ import org.xodium.vanillaplus.registries.MaterialRegistry
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import java.util.*
+import kotlin.math.roundToInt
 
 /** General utilities. */
 object Utils {
@@ -212,10 +213,10 @@ object Utils {
      * @return The hex colour for the ratio.
      */
     private fun getColorForTps(ratio: Double): String {
-        val r = (255 * (1 - ratio)).toInt()
-        val g = (255 * ratio).toInt()
-        val b = 0
-        return String.format("#%02X%02X%02X", r, g, b)
+        val clamped = ratio.coerceIn(0.0, 1.0)
+        val r = (255 * (1 - clamped)).roundToInt()
+        val g = (255 * clamped).roundToInt()
+        return String.format("#%02X%02X%02X", r, g, 0)
     }
 
     /**
