@@ -31,8 +31,6 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.TimeUtils
 import org.xodium.vanillaplus.utils.Utils
-import org.xodium.vanillaplus.utils.invunload.BlockUtils
-import org.xodium.vanillaplus.utils.invunload.InvUtils
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import org.bukkit.Sound as BukkitSound
@@ -74,11 +72,11 @@ class InvUnloadModule : ModuleInterface {
         val startSlot = 9
         val endSlot = 35
         val onlyMatchingStuff = false
-        val chests: MutableList<Block>? = BlockUtils.findBlocksInRadius(player.location, 5)
+        val chests: MutableList<Block>? = Utils.findBlocksInRadius(player.location, 5)
 
         if (chests!!.isEmpty()) return
 
-        BlockUtils.sortBlockListByDistance(chests, player.location)
+        chests.sortBy { it.location.distance(player.location) }
 
         val useableChests = ArrayList<Block>()
 
@@ -88,7 +86,7 @@ class InvUnloadModule : ModuleInterface {
 
         for (block in useableChests) {
             val inv: Inventory = (block.state as Container).inventory
-            if (InvUtils.stuffInventoryIntoAnother(player, inv, true, startSlot, endSlot, InvUnloadModule())) {
+            if (Utils.stuffInventoryIntoAnother(player, inv, true, startSlot, endSlot, InvUnloadModule())) {
                 affectedChests.add(block)
             }
         }
@@ -96,7 +94,7 @@ class InvUnloadModule : ModuleInterface {
         if (!onlyMatchingStuff) {
             for (block in useableChests) {
                 val inv: Inventory = (block.state as Container).inventory
-                if (InvUtils.stuffInventoryIntoAnother(player, inv, false, startSlot, endSlot, InvUnloadModule())) {
+                if (Utils.stuffInventoryIntoAnother(player, inv, false, startSlot, endSlot, InvUnloadModule())) {
                     affectedChests.add(block)
                 }
             }
@@ -246,7 +244,7 @@ class InvUnloadModule : ModuleInterface {
      * @param player The player to create the laser effect for.
      */
     fun chestEffect(block: Block, player: Player) {
-        player.spawnParticle(Particle.CRIT, BlockUtils.getCenterOfBlock(block), 10, 0.0, 0.0, 0.0)
+        player.spawnParticle(Particle.CRIT, Utils.getCenterOfBlock(block), 10, 0.0, 0.0, 0.0)
     }
 
     /**
@@ -270,7 +268,7 @@ class InvUnloadModule : ModuleInterface {
     ) {
         destinations.forEach { destination ->
             val start = player.location.clone()
-            val end = BlockUtils.getCenterOfBlock(destination).add(0.0, -0.5, 0.0)
+            val end = Utils.getCenterOfBlock(destination).add(0.0, -0.5, 0.0)
             val direction = end.toVector().subtract(start.toVector()).normalize()
             val distance = start.distance(destination.location)
             if (distance < maxDistance) {

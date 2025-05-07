@@ -26,8 +26,6 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.roseFmt
 import org.xodium.vanillaplus.utils.Utils
-import org.xodium.vanillaplus.utils.invunload.BlockUtils
-import org.xodium.vanillaplus.utils.invunload.InvUtils
 import java.util.concurrent.CompletableFuture
 
 /** Represents a module handling inv-search mechanics within the system. */
@@ -93,7 +91,7 @@ class InvSearchModule : ModuleInterface {
             )
         ) return
 
-        val chests = BlockUtils.findBlocksInRadius(player.location, radius)
+        val chests = Utils.findBlocksInRadius(player.location, radius)
             .filter { Utils.canPlayerUseChest(it, player) }
 
         if (chests.isEmpty()) {
@@ -110,7 +108,7 @@ class InvSearchModule : ModuleInterface {
                 val left = holder.leftSide
                 if (!seenDoubleChests.add(left)) return@filter false
             }
-            InvUtils.searchItemInContainers(material, inventory, invUnloadModule)
+            Utils.searchItemInContainers(material, inventory, invUnloadModule)
         }
 
         invUnloadModule.print(player)

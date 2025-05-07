@@ -8,9 +8,8 @@ package org.xodium.vanillaplus.utils
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
-import org.bukkit.Material
-import org.bukkit.NamespacedKey
-import org.bukkit.block.Block
+import org.bukkit.*
+import org.bukkit.block.*
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
@@ -21,9 +20,12 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.EnchantmentStorageMeta
 import org.bukkit.persistence.PersistentDataType
+import org.bukkit.util.BoundingBox
+import org.bukkit.util.Vector
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.modules.InvUnloadModule
 import org.xodium.vanillaplus.registries.EntityRegistry
 import org.xodium.vanillaplus.registries.MaterialRegistry
 import org.xodium.vanillaplus.utils.ExtUtils.mm
@@ -283,7 +285,7 @@ object Utils {
      * @param second The second ItemStack.
      * @return True if the enchantments match, false otherwise.
      */
-    fun hasMatchingEnchantments(first: ItemStack, second: ItemStack): Boolean {
+    private fun hasMatchingEnchantments(first: ItemStack, second: ItemStack): Boolean {
         val config = Config.InvUnloadModule
 
         if (!config.MATCH_ENCHANTMENTS && (!config.MATCH_ENCHANTMENTS_ON_BOOKS || first.type != Material.ENCHANTED_BOOK)) return true
@@ -359,5 +361,159 @@ object Utils {
         val denied = container.get(chestDenyKey, PersistentDataType.STRING) ?: ""
         val locString = block.location.serialize().toString()
         return !denied.split(";").contains(locString)
+    }
+
+    /**
+     * Find all blocks in a given radius from a location.
+     * @param loc The location to search from.
+     * @param radius The radius to search within.
+     * @return A list of blocks found within the radius.
+     */
+    fun findBlocksInRadius(loc: Location, radius: Int): MutableList<Block> {
+        val box = BoundingBox.of(loc, radius.toDouble(), radius.toDouble(), radius.toDouble())
+        val chunks = getChunksInBox(loc.world, box)
+        val radiusSq = radius * radius
+        return chunks.flatMap { chunk ->
+            chunk.tileEntities.filter { state ->
+                state is Container &&
+                        MaterialRegistry.CONTAINER_TYPES.contains(state.type) &&
+                        state.location.distanceSquared(loc) <= radiusSq &&
+                        (state.type != Material.CHEST ||
+                                !(state.block.getRelative(BlockFace.UP).type.isSolid &&
+                                        state.block.getRelative(BlockFace.UP).type.isOccluding))
+            }.map { (it as Container).block }
+        }.toMutableList()
+    }
+
+    /**
+     * Check if a chest contains an item with matching enchantments.
+     * @param inv The inventory to check.
+     * @param item The item to check for.
+     * @return True if the chest contains the item, false otherwise.
+     */
+    private fun doesChestContain(inv: Inventory, item: ItemStack): Boolean {
+        return inv.contents.any { otherItem ->
+            otherItem != null
+                    && otherItem.type == item.type
+                    && hasMatchingEnchantments(item, otherItem)
+        }
+    }
+
+    /**
+     * Get the center of a block.
+     * @param block The block to get the center of.
+     * @return The center location of the block.
+     */
+    fun getCenterOfBlock(block: Block): Location {
+        val baseLoc = block.location.clone()
+        val state = block.state
+        val centerLoc = if (state is Chest && state.inventory.holder is DoubleChest) {
+            val doubleChest = state.inventory.holder as? DoubleChest
+            val left = (doubleChest?.leftSide as? Chest)?.block?.location
+            val right = (doubleChest?.rightSide as? Chest)?.block?.location
+            if (left != null && right != null) {
+                left.clone().add(right).multiply(0.5)
+            } else {
+                baseLoc
+            }
+        } else {
+            baseLoc
+        }
+        centerLoc.add(Vector(0.5, 1.0, 0.5))
+        return centerLoc
+    }
+
+    /**
+     * Get the amount of a specific material in a chest.
+     * @param inventory The inventory to check.
+     * @param material The material to count.
+     * @return The amount of the material in the chest.
+     */
+    private fun doesChestContainCount(inventory: Inventory, material: Material): Int {
+        return inventory.contents.filter { it?.type == material }.sumOf { it?.amount ?: 0 }
+    }
+
+    /**
+     * Get all chunks in a bounding box.
+     * @param world The world to get chunks from.
+     * @param box The bounding box to get chunks from.
+     * @return A list of chunks in the bounding box.
+     */
+    private fun getChunksInBox(world: World, box: BoundingBox): List<Chunk> {
+        val minChunkX = Math.floorDiv(box.minX.toInt(), 16)
+        val maxChunkX = Math.floorDiv(box.maxX.toInt(), 16)
+        val minChunkZ = Math.floorDiv(box.minZ.toInt(), 16)
+        val maxChunkZ = Math.floorDiv(box.maxZ.toInt(), 16)
+        return mutableListOf<Chunk>().apply {
+            for (x in minChunkX..maxChunkX) {
+                for (z in minChunkZ..maxChunkZ) {
+                    if (world.isChunkLoaded(x, z)) {
+                        add(world.getChunkAt(x, z))
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Searches for a specific item in the given inventory and its containers.
+     * @param material The material to search for.
+     * @param destination The inventory to search in.
+     * @param summary The InvUnloadModule instance for protocol unloading.
+     * @return True if the item was found in the inventory or its containers, false otherwise.
+     */
+    fun searchItemInContainers(material: Material, destination: Inventory, summary: InvUnloadModule): Boolean {
+        if (doesChestContain(destination, ItemStack(material))) {
+            val amount = doesChestContainCount(destination, material)
+            destination.location?.let { summary.protocolUnload(it, material, amount) }
+            return true
+        }
+        return false
+    }
+
+    /**
+     * Counts the total number of items in the given inventory.
+     * @param inv The inventory to count items in.
+     * @return The total number of items in the inventory.
+     */
+    private fun countInventoryContents(inv: Inventory): Int = inv.contents.filterNotNull().sumOf { it.amount }
+
+    /**
+     * Moves items from the player's inventory to another inventory.
+     * @param player The player whose inventory is being moved.
+     * @param destination The destination inventory to move items into.
+     * @param onlyMatchingStuff If true, only moves items that match the destination's contents.
+     * @param startSlot The starting slot in the player's inventory to move items from.
+     * @param endSlot The ending slot in the player's inventory to move items from.
+     * @param summary The InvUnloadModule instance for protocol unloading.
+     * @return True if items were moved, false otherwise.
+     */
+    fun stuffInventoryIntoAnother(
+        player: Player,
+        destination: Inventory,
+        onlyMatchingStuff: Boolean,
+        startSlot: Int,
+        endSlot: Int,
+        summary: InvUnloadModule?
+    ): Boolean {
+        val source = player.inventory
+        val initialCount = countInventoryContents(source)
+        var moved = false
+
+        for (i in startSlot..endSlot) {
+            val item = source.getItem(i) ?: continue
+            if (Tag.SHULKER_BOXES.isTagged(item.type) && destination.holder is ShulkerBox) continue
+            if (onlyMatchingStuff && !doesChestContain(destination, item)) continue
+
+            val leftovers = destination.addItem(item)
+            val movedAmount = item.amount - leftovers.values.sumOf { it.amount }
+            if (movedAmount > 0) {
+                moved = true
+                source.clear(i)
+                leftovers.values.firstOrNull()?.let { source.setItem(i, it) }
+                destination.location?.let { summary?.protocolUnload(it, item.type, movedAmount) }
+            }
+        }
+        return moved && initialCount != countInventoryContents(source)
     }
 }
