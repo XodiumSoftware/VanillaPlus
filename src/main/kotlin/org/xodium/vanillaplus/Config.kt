@@ -223,7 +223,7 @@ object Config {
         var USE_CHESTSORT: Boolean = true
 
         /** The cooldown to use the mechanic again. */
-        var COOLDOWN: Long = 5L * 1000L // 5 seconds
+        var COOLDOWN: Long = 1L * 1000L // 1 seconds
 
         /** If it should match enchantments. */
         var MATCH_ENCHANTMENTS: Boolean = true

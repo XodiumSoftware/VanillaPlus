@@ -65,7 +65,7 @@ class InvUnloadModule : ModuleInterface {
         if (!Utils.cooldown(
                 player,
                 Config.InvUnloadModule.COOLDOWN,
-                NamespacedKey(instance, "${InvUnloadModule::class.simpleName}:cooldown")
+                NamespacedKey(instance, "${InvUnloadModule::class.simpleName?.lowercase()}_cooldown")
             )
         ) return
 
@@ -99,7 +99,7 @@ class InvUnloadModule : ModuleInterface {
                 }
             }
         }
-        InvUnloadModule().print(player)
+        print(player)
 
         for (i in startSlot..endSlot) {
             val item = player.inventory.getItem(i)
@@ -108,11 +108,11 @@ class InvUnloadModule : ModuleInterface {
 
         val materials = mutableMapOf<Material, Int>()
 
-        InvUnloadModule().save(player, affectedChests, materials)
+        save(player, affectedChests, materials)
 
         for (block in affectedChests) {
-            InvUnloadModule().chestEffect(block, player)
-            InvUnloadModule().play(player)
+            chestEffect(block, player)
+            play(player)
             if (ChestSortHook.shouldSort(player)) ChestSortHook.sort(block)
         }
 

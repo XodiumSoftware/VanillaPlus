@@ -87,7 +87,7 @@ class InvSearchModule : ModuleInterface {
         if (!Utils.cooldown(
                 player,
                 Config.InvSearchModule.COOLDOWN,
-                NamespacedKey(instance, "${InvSearchModule::class.simpleName}:cooldown")
+                NamespacedKey(instance, "${InvSearchModule::class.simpleName?.lowercase()}_cooldown")
             )
         ) return
 
