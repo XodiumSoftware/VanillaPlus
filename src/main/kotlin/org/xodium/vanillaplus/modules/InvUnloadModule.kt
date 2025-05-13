@@ -9,7 +9,6 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import net.kyori.adventure.sound.Sound
-import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.block.Block
 import org.bukkit.block.Container
@@ -40,7 +39,11 @@ class InvUnloadModule : ModuleInterface {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerQuitEvent) {
-        if (enabled()) cleanup(event.player)
+        if (enabled()) {
+            val uuid = event.player.uniqueId
+            Utils.lastUnloads.remove(uuid)
+            Utils.activeVisualizations.remove(uuid)
+        }
     }
 
     /**
@@ -57,35 +60,23 @@ class InvUnloadModule : ModuleInterface {
 
         val startSlot = 9
         val endSlot = 35
-        val onlyMatchingStuff = false
         val chests = Utils.findBlocksInRadius(player.location, 5)
-
         if (chests.isEmpty()) {
             player.sendActionBar("No chests found nearby".fireFmt().mm())
             return
         }
 
-        chests.sortBy { it.location.distance(player.location) }
-
-        val useableChests = ArrayList<Block>()
-
-        for (block in chests) if (Utils.canPlayerUseChest(block, player)) useableChests.add(block)
+        val useableChests = chests.filter { Utils.canPlayerUseChest(it, player) }
+        if (useableChests.isEmpty()) {
+            player.sendActionBar("No usable chests found nearby".fireFmt().mm())
+            return
+        }
 
         val affectedChests = mutableListOf<Block>()
-
         for (block in useableChests) {
             val inv = (block.state as Container).inventory
             if (Utils.stuffInventoryIntoAnother(player, inv, true, startSlot, endSlot)) {
                 affectedChests.add(block)
-            }
-        }
-
-        if (!onlyMatchingStuff) {
-            for (block in useableChests) {
-                val inv = (block.state as Container).inventory
-                if (Utils.stuffInventoryIntoAnother(player, inv, false, startSlot, endSlot)) {
-                    affectedChests.add(block)
-                }
             }
         }
 
@@ -95,12 +86,6 @@ class InvUnloadModule : ModuleInterface {
         }
 
         player.sendActionBar("Inventory unloaded".mangoFmt().mm())
-
-        for (i in startSlot..endSlot) {
-            val item = player.inventory.getItem(i)
-            if (item == null || item.amount == 0 || item.type == Material.AIR) continue
-        }
-
         Utils.lastUnloads[player.uniqueId] = affectedChests
 
         for (block in affectedChests) {
@@ -110,15 +95,5 @@ class InvUnloadModule : ModuleInterface {
         }
 
         player.playSound(Config.InvUnloadModule.SOUND_ON_UNLOAD, Sound.Emitter.self())
-    }
-
-    /**
-     * Cleans up the unload data for the specified player.
-     * @param player The player to clean up the unload data for.
-     */
-    private fun cleanup(player: Player) {
-        val uuid = player.uniqueId
-        Utils.lastUnloads.remove(uuid)
-        Utils.activeVisualizations.remove(uuid)
     }
 }
