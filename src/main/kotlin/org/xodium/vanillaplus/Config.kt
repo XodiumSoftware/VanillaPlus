@@ -230,6 +230,14 @@ object Config {
 
         /** If it should match enchantments on books. */
         var MATCH_ENCHANTMENTS_ON_BOOKS: Boolean = true
+
+        /** The sound effect used for unloading. */
+        var SOUND_ON_UNLOAD: Sound = Sound.sound(
+            BukkitSound.ENTITY_PLAYER_LEVELUP,
+            Sound.Source.PLAYER,
+            1.0f,
+            1.0f
+        )
     }
 
     /** Configuration settings for the MotdModule. */

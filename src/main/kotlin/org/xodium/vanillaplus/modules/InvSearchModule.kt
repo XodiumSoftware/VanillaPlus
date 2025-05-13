@@ -115,13 +115,12 @@ class InvSearchModule : ModuleInterface {
             Utils.searchItemInContainers(material, inventory)
         }
 
-        Utils.print(player)
         if (affectedChests.isEmpty()) {
             player.sendActionBar("No chests contain ${"$material".roseFmt()}".fireFmt().mm())
             return
         }
 
-        affectedChests.forEach { Utils.chestEffect(it, player) }
-        Utils.play(player, affectedChests)
+        affectedChests.forEach { Utils.chestEffect(player, it) }
+        Utils.laserEffect(player, affectedChests)
     }
 }

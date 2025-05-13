@@ -20,13 +20,12 @@ import org.bukkit.event.player.PlayerQuitEvent
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.data.InvUnloadSummaryData
 import org.xodium.vanillaplus.hooks.ChestSortHook
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
+import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.Utils
-import org.bukkit.Sound as BukkitSound
 
 /** Represents a module handling inv-unload mechanics within the system. */
 class InvUnloadModule : ModuleInterface {
@@ -95,51 +94,35 @@ class InvUnloadModule : ModuleInterface {
             return
         }
 
-        Utils.print(player)
+        player.sendActionBar("Inventory unloaded".mangoFmt().mm())
 
         for (i in startSlot..endSlot) {
             val item = player.inventory.getItem(i)
             if (item == null || item.amount == 0 || item.type == Material.AIR) continue
         }
 
-        val materials = mutableMapOf<Material, Int>()
-
-        save(player, affectedChests, materials)
+        save(player, affectedChests)
 
         for (block in affectedChests) {
-            Utils.chestEffect(block, player)
-            Utils.play(player)
+            Utils.chestEffect(player, block)
+            Utils.laserEffect(player)
             if (ChestSortHook.shouldSort(player)) ChestSortHook.sort(block)
         }
 
-        player.playSound(
-            Sound.sound(
-                BukkitSound.BLOCK_CHEST_CLOSE,
-                Sound.Source.MASTER,
-                1.0f,
-                1.0f
-            )
-        )
+        player.playSound(Config.InvUnloadModule.SOUND_ON_UNLOAD, Sound.Emitter.self())
     }
 
     /**
      * Saves the unload summary for the specified player.
      * @param player The player to save the unload summary for.
      * @param chests The list of chests involved on unload.
-     * @param materials The map of materials and their amounts.
      */
     private fun save(
         player: Player,
         chests: List<Block>,
-        materials: Map<Material, Int>
     ) {
         Utils.lastUnloads[player.uniqueId] = chests
         Utils.lastUnloadPositions[player.uniqueId] = player.location.clone().add(0.0, 0.75, 0.0)
-        Utils.unloadSummaries[player.uniqueId] = InvUnloadSummaryData(
-            chests = chests,
-            materials = materials,
-            playerLocation = player.location.clone()
-        )
     }
 
     /**
@@ -151,6 +134,5 @@ class InvUnloadModule : ModuleInterface {
         Utils.lastUnloads.remove(uuid)
         Utils.lastUnloadPositions.remove(uuid)
         Utils.activeVisualizations.remove(uuid)
-        Utils.unloadSummaries.remove(uuid)
     }
 }

@@ -8,8 +8,6 @@ package org.xodium.vanillaplus.utils
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.JoinConfiguration
 import org.bukkit.*
 import org.bukkit.block.*
 import org.bukkit.enchantments.Enchantment
@@ -27,7 +25,6 @@ import org.bukkit.util.Vector
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.data.InvUnloadSummaryData
 import org.xodium.vanillaplus.registries.EntityRegistry
 import org.xodium.vanillaplus.registries.MaterialRegistry
 import org.xodium.vanillaplus.utils.ExtUtils.mm
@@ -39,7 +36,6 @@ import kotlin.math.roundToInt
 /** General utilities. */
 object Utils {
     private val chestDenyKey = NamespacedKey(instance, "denied_chests")
-    val unloadSummaries: ConcurrentHashMap<UUID, InvUnloadSummaryData> = ConcurrentHashMap()
     val lastUnloads: ConcurrentHashMap<UUID, List<Block>> = ConcurrentHashMap()
     val activeVisualizations: ConcurrentHashMap<UUID, Int> = ConcurrentHashMap()
     val lastUnloadPositions: ConcurrentHashMap<UUID, Location> = ConcurrentHashMap()
@@ -525,65 +521,11 @@ object Utils {
     }
 
     /**
-     * Converts a location to a string representation.
-     * @param loc The location to convert.
-     * @return A string representation of the location.
-     */
-    private fun loc2str(loc: Location): Component {
-        val x = loc.blockX
-        val y = loc.blockY
-        val z = loc.blockZ
-        val world = loc.world
-        val name = if (world != null) {
-            val state = world.getBlockAt(x, y, z).state
-            (state as? Container)?.customName()?.toString() ?: state.type.name
-        } else {
-            "Unknown"
-        }
-        return """
-            <light_purple><b>$name</b>
-            <green><b>X:</b></green> <white>$x</white>
-            <green><b>Y:</b></green> <white>$y</white>
-            <green><b>Z:</b></green> <white>$z</white>
-        """.trimIndent().mm()
-    }
-
-    /**
-     * Converts an amount to a string representation.
-     * @param amount The amount to convert.
-     * @return A string representation of the amount.
-     */
-    private fun amount2str(amount: Int): Component {
-        return "<dark_purple>|</dark_purple><gray>${"%5d".format(amount)}x  </gray>".mm()
-    }
-
-    /**
-     * Prints the unload summary for the specified player.
-     * @param player The player to print the unload summary for.
-     */
-    fun print(player: Player) { //TODO: make it print correctly the actual items.
-        val summary = unloadSummaries[player.uniqueId] ?: return
-        player.sendMessage("<gray><b>Unload Summary:</b></gray>".mm())
-        val separator = "<gray>${"-".repeat(20)}</gray>"
-        player.sendMessage(separator.mm())
-        player.sendMessage(loc2str(summary.playerLocation))
-        summary.materials.forEach { (mat, amount) ->
-            player.sendMessage(
-                Component.join(
-                    JoinConfiguration.noSeparators(),
-                    amount2str(amount),
-                    "<gold>${mat.name}</gold>".mm()
-                )
-            )
-        }
-    }
-
-    /**
-     * Plays the unload effect for the specified player.
+     * Creates a laser effect for the specified player and chests.
      * @param player The player to play the effect for.
      * @param affectedChests The list of chests to affect. If null, uses the last unloaded chests.
      */
-    fun play(player: Player, affectedChests: List<Block>? = null) {
+    fun laserEffect(player: Player, affectedChests: List<Block>? = null) {
         val chests = affectedChests ?: lastUnloads[player.uniqueId] ?: return
 
         activeVisualizations[player.uniqueId] = instance.server.scheduler.scheduleSyncRepeatingTask(
@@ -607,10 +549,10 @@ object Utils {
 
     /**
      * Creates a chest effect for the specified block and player.
-     * @param block The block to create the laser effect towards.
      * @param player The player to create the laser effect for.
+     * @param block The block to create the laser effect towards.
      */
-    fun chestEffect(block: Block, player: Player) {
+    fun chestEffect(player: Player, block: Block) {
         player.spawnParticle(Particle.CRIT, getCenterOfBlock(block), 10, 0.0, 0.0, 0.0)
     }
 
