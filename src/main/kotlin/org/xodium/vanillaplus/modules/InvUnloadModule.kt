@@ -57,7 +57,7 @@ class InvUnloadModule : ModuleInterface {
         if (!Utils.cooldown(
                 player,
                 Config.InvUnloadModule.COOLDOWN,
-                NamespacedKey(instance, "${InvUnloadModule::class.simpleName?.lowercase()}_cooldown")
+                NamespacedKey(instance, "invunload_cooldown")
             )
         ) return
 

@@ -82,14 +82,6 @@ class InvSearchModule : ModuleInterface {
             player.sendActionBar("You must specify a valid material or hold something in your hand".fireFmt().mm())
             return 0
         }
-
-        if (!Utils.cooldown(
-                player,
-                Config.InvSearchModule.COOLDOWN,
-                NamespacedKey(instance, "${InvSearchModule::class.simpleName?.lowercase()}_cooldown")
-            )
-        ) return 0
-
         instance.server.scheduler.runTaskAsynchronously(
             instance,
             Runnable { search(player, radius, material) }
@@ -104,6 +96,13 @@ class InvSearchModule : ModuleInterface {
      * @param material The material to search for in the chests.
      */
     private fun search(player: Player, radius: Int, material: Material) {
+        if (!Utils.cooldown(
+                player,
+                Config.InvSearchModule.COOLDOWN,
+                NamespacedKey(instance, "invsearch_cooldown")
+            )
+        ) return
+
         val chests = Utils.findBlocksInRadius(player.location, radius)
             .filter { Utils.canPlayerUseChest(it, player) }
         if (chests.isEmpty()) {

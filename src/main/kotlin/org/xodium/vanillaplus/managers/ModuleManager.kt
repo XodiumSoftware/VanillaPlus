@@ -19,7 +19,7 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.Utils
 import kotlin.time.measureTime
 
-/** Represents the module handler within the system. */
+/** Represents the module manager within the system. */
 object ModuleManager {
     @Suppress("UnstableApiUsage")
     private val commandBuilders = mutableListOf<LiteralArgumentBuilder<CommandSourceStack>>()
