@@ -82,10 +82,7 @@ class InvSearchModule : ModuleInterface {
             player.sendActionBar("You must specify a valid material or hold something in your hand".fireFmt().mm())
             return 0
         }
-        instance.server.scheduler.runTaskAsynchronously(
-            instance,
-            Runnable { search(player, radius, material) }
-        )
+        search(player, radius, material)
         return 1
     }
 
