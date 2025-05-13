@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <bytecodeTargetLevel>
-      <module name="VanillaPlus" target="21" />
+    <bytecodeTargetLevel target="21">
       <module name="vanillaplus" target="21" />
-      <module name="VanillaPlus.main" target="21" />
       <module name="vanillaplus.main" target="21" />
       <module name="vanillaplus.test" target="21" />
-      <module name="VanillaPlus.test" target="21" />
     </bytecodeTargetLevel>
   </component>
 </project>

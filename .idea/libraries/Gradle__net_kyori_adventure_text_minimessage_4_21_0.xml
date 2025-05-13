@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: net.kyori:adventure-text-minimessage:4.21.0" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="net.kyori" artifactId="adventure-text-minimessage" version="4.21.0" baseVersion="4.21.0" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.kyori/adventure-text-minimessage/4.21.0/bbc5e054062001328aee0ab2761cf5e53881f69c/adventure-text-minimessage-4.21.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.kyori/adventure-text-minimessage/4.21.0/524be0d5cc48e0232f157460c4370feb7d624e60/adventure-text-minimessage-4.21.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

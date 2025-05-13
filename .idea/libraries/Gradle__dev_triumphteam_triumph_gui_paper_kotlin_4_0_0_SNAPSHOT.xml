@@ -2,11 +2,11 @@
   <library name="Gradle: dev.triumphteam:triumph-gui-paper-kotlin:4.0.0-SNAPSHOT" type="java-imported" external-system-id="GRADLE">
     <properties groupId="dev.triumphteam" artifactId="triumph-gui-paper-kotlin" version="4.0.0-SNAPSHOT" baseVersion="4.0.0-SNAPSHOT" />
     <CLASSES>
-      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/dev.triumphteam/triumph-gui-paper-kotlin/4.0.0-SNAPSHOT/7c01f373b65143a3b6ea923ad418cbf6e6a0511f/triumph-gui-paper-kotlin-4.0.0-SNAPSHOT.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/dev.triumphteam/triumph-gui-paper-kotlin/4.0.0-SNAPSHOT/f65ffc89cea1a87a4b9f1a1b8cdd7e828d284bf5/triumph-gui-paper-kotlin-4.0.0-SNAPSHOT.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
-      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/dev.triumphteam/triumph-gui-paper-kotlin/4.0.0-SNAPSHOT/232b06f7e80eb7932f4501a549d7ce890c0ab8a0/triumph-gui-paper-kotlin-4.0.0-SNAPSHOT-sources.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/dev.triumphteam/triumph-gui-paper-kotlin/4.0.0-SNAPSHOT/3157af1cca5ae46bf886dad447f69ec705665322/triumph-gui-paper-kotlin-4.0.0-SNAPSHOT-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

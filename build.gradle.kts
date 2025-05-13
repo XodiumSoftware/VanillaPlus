@@ -41,6 +41,16 @@ dependencies {
 java { toolchain.languageVersion.set(JavaLanguageVersion.of(21)) }
 
 tasks {
+    processResources {
+        filesMatching("paper-plugin.yml") {
+            expand(
+                mapOf(
+                    "version" to version,
+                    "description" to description,
+                )
+            )
+        }
+    }
     shadowJar {
         dependsOn(processResources)
         archiveClassifier.set("")
