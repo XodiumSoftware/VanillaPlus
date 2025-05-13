@@ -70,7 +70,7 @@ class InvSearchModule : ModuleInterface {
     @Suppress("UnstableApiUsage")
     private fun handleSearch(ctx: CommandContext<CommandSourceStack>): Int {
         val player = ctx.source.sender as? Player ?: return 0
-        val radius = runCatching { IntegerArgumentType.getInteger(ctx, "radius") }.getOrNull()
+        val radius = runCatching { IntegerArgumentType.getInteger(ctx, "radius") }.getOrNull() ?: 5
         val materialName = runCatching { StringArgumentType.getString(ctx, "material") }.getOrNull()
         val material =
             materialName?.let { Material.getMaterial(it.uppercase()) } ?: player.inventory.itemInMainHand.type
@@ -78,7 +78,18 @@ class InvSearchModule : ModuleInterface {
             player.sendActionBar("You must specify a valid material or hold something in your hand".fireFmt().mm())
             return 0
         }
-        search(player, radius ?: 5, material)
+
+        if (!Utils.cooldown(
+                player,
+                Config.InvSearchModule.COOLDOWN,
+                NamespacedKey(instance, "${InvSearchModule::class.simpleName?.lowercase()}_cooldown")
+            )
+        ) return 0
+
+        instance.server.scheduler.runTaskAsynchronously(
+            instance,
+            Runnable { search(player, radius, material) }
+        )
         return 1
     }
 
@@ -89,16 +100,8 @@ class InvSearchModule : ModuleInterface {
      * @param material The material to search for in the chests.
      */
     private fun search(player: Player, radius: Int, material: Material) {
-        if (!Utils.cooldown(
-                player,
-                Config.InvSearchModule.COOLDOWN,
-                NamespacedKey(instance, "${InvSearchModule::class.simpleName?.lowercase()}_cooldown")
-            )
-        ) return
-
         val chests = Utils.findBlocksInRadius(player.location, radius)
             .filter { Utils.canPlayerUseChest(it, player) }
-
         if (chests.isEmpty()) {
             player.sendActionBar("No usable chests found for ${"$material".roseFmt()}".fireFmt().mm())
             return
@@ -114,7 +117,6 @@ class InvSearchModule : ModuleInterface {
             }
             Utils.searchItemInContainers(material, inventory)
         }
-
         if (affectedChests.isEmpty()) {
             player.sendActionBar("No chests contain ${"$material".roseFmt()}".fireFmt().mm())
             return
