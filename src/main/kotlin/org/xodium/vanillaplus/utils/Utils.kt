@@ -37,7 +37,6 @@ object Utils {
     val activeVisualizations: ConcurrentHashMap<UUID, Int> = ConcurrentHashMap()
     private val unloads = ConcurrentHashMap<Location, MutableMap<Material, Int>>()
 
-
     /**
      * A helper function to wrap command execution with standardised error handling.
      * @param ctx The CommandContext used to get the CommandSourceStack.
@@ -272,16 +271,6 @@ object Utils {
     }
 
     /**
-     * Get the amount of a specific material in a chest.
-     * @param inventory The inventory to check.
-     * @param material The material to count.
-     * @return The amount of the material in the chest.
-     */
-    private fun doesChestContainCount(inventory: Inventory, material: Material): Int {
-        return inventory.contents.filter { it?.type == material }.sumOf { it?.amount ?: 0 }
-    }
-
-    /**
      * Get all chunks in a bounding box.
      * @param world The world to get chunks from.
      * @param box The bounding box to get chunks from.
@@ -301,21 +290,6 @@ object Utils {
                 }
             }
         }
-    }
-
-    /**
-     * Searches for a specific item in the given inventory and its containers.
-     * @param material The material to search for.
-     * @param destination The inventory to search in.
-     * @return True if the item was found in the inventory or its containers, false otherwise.
-     */
-    fun searchItemInContainers(material: Material, destination: Inventory): Boolean {
-        if (doesChestContain(destination, ItemStack(material))) {
-            val amount = doesChestContainCount(destination, material)
-            destination.location?.let { protocolUnload(it, material, amount) }
-            return true
-        }
-        return false
     }
 
     //TODO: merge the 2 laser effect functions.

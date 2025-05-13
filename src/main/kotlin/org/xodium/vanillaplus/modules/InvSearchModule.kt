@@ -17,7 +17,9 @@ import org.bukkit.NamespacedKey
 import org.bukkit.block.Container
 import org.bukkit.block.DoubleChest
 import org.bukkit.entity.Player
+import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
+import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -26,6 +28,8 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.roseFmt
 import org.xodium.vanillaplus.utils.Utils
+import org.xodium.vanillaplus.utils.Utils.doesChestContain
+import org.xodium.vanillaplus.utils.Utils.protocolUnload
 import java.util.concurrent.CompletableFuture
 
 /** Represents a module handling inv-search mechanics within the system. */
@@ -114,7 +118,7 @@ class InvSearchModule : ModuleInterface {
             if (holder is DoubleChest) {
                 if (!seenDoubleChests.add(holder.leftSide)) return@filter false
             }
-            Utils.searchItemInContainers(material, inventory)
+            searchItemInContainers(material, inventory)
         }
         if (affectedChests.isEmpty()) {
             player.sendActionBar("No chests contain ${"$material".roseFmt()}".fireFmt().mm())
@@ -123,5 +127,30 @@ class InvSearchModule : ModuleInterface {
 
         affectedChests.forEach { Utils.chestEffect(player, it) }
         Utils.laserEffect(player, affectedChests)
+    }
+
+    /**
+     * Searches for a specific item in the given inventory and its containers.
+     * @param material The material to search for.
+     * @param destination The inventory to search in.
+     * @return True if the item was found in the inventory or its containers, false otherwise.
+     */
+    private fun searchItemInContainers(material: Material, destination: Inventory): Boolean {
+        if (doesChestContain(destination, ItemStack(material))) {
+            val amount = doesChestContainCount(destination, material)
+            destination.location?.let { protocolUnload(it, material, amount) }
+            return true
+        }
+        return false
+    }
+
+    /**
+     * Get the amount of a specific material in a chest.
+     * @param inventory The inventory to check.
+     * @param material The material to count.
+     * @return The amount of the material in the chest.
+     */
+    private fun doesChestContainCount(inventory: Inventory, material: Material): Int {
+        return inventory.contents.filter { it?.type == material }.sumOf { it?.amount ?: 0 }
     }
 }
