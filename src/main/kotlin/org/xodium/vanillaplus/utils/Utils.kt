@@ -38,7 +38,6 @@ object Utils {
     private val chestDenyKey = NamespacedKey(instance, "denied_chests")
     val lastUnloads: ConcurrentHashMap<UUID, List<Block>> = ConcurrentHashMap()
     val activeVisualizations: ConcurrentHashMap<UUID, Int> = ConcurrentHashMap()
-    val lastUnloadPositions: ConcurrentHashMap<UUID, Location> = ConcurrentHashMap()
     private val unloads = ConcurrentHashMap<Location, MutableMap<Material, Int>>()
 
 

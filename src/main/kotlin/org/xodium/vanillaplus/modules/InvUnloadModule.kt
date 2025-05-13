@@ -101,7 +101,7 @@ class InvUnloadModule : ModuleInterface {
             if (item == null || item.amount == 0 || item.type == Material.AIR) continue
         }
 
-        save(player, affectedChests)
+        Utils.lastUnloads[player.uniqueId] = affectedChests
 
         for (block in affectedChests) {
             Utils.chestEffect(player, block)
@@ -113,26 +113,12 @@ class InvUnloadModule : ModuleInterface {
     }
 
     /**
-     * Saves the unload summary for the specified player.
-     * @param player The player to save the unload summary for.
-     * @param chests The list of chests involved on unload.
-     */
-    private fun save(
-        player: Player,
-        chests: List<Block>,
-    ) {
-        Utils.lastUnloads[player.uniqueId] = chests
-        Utils.lastUnloadPositions[player.uniqueId] = player.location.clone().add(0.0, 0.75, 0.0)
-    }
-
-    /**
      * Cleans up the unload data for the specified player.
      * @param player The player to clean up the unload data for.
      */
     private fun cleanup(player: Player) {
         val uuid = player.uniqueId
         Utils.lastUnloads.remove(uuid)
-        Utils.lastUnloadPositions.remove(uuid)
         Utils.activeVisualizations.remove(uuid)
     }
 }
