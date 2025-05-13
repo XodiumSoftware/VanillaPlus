@@ -45,10 +45,13 @@ class DimensionsModule : ModuleInterface {
 
                 World.Environment.NETHER -> {
                     event.canCreatePortal = false
-                    if (player.world != event.to.world) {
-                        extinguishPortal(player.location)
-                        //TODO: Message also appears when there is a link, and you walk from the nether -> overworld
-                        player.sendActionBar("No link to the portal counterpart in the Overworld".fireFmt().mm())
+                    val overworld = instance.server.worlds.find { it.environment == World.Environment.NORMAL }
+                    if (overworld != null) {
+                        val overworldCoords = convertNetherToOverworldCoords(player.location)
+                        if (!hasPortalNearby(overworld, overworldCoords.x, overworldCoords.y, overworldCoords.z)) {
+                            extinguishPortal(player.location)
+                            player.sendActionBar("No link to the portal counterpart in the Overworld".fireFmt().mm())
+                        }
                     }
                 }
 
