@@ -212,6 +212,9 @@ object Config {
 
         /** The cooldown to use the mechanic again. */
         var COOLDOWN: Long = 1L * 1000L // 1 second
+
+        /** The radius used for searching. */
+        var SEARCH_RADIUS: Int = 5
     }
 
     /** Configuration settings for the InvUnloadModule. */

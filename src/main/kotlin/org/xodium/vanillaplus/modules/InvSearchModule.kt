@@ -5,7 +5,6 @@
 
 package org.xodium.vanillaplus.modules
 
-import com.mojang.brigadier.arguments.IntegerArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
@@ -50,15 +49,6 @@ class InvSearchModule : ModuleInterface {
         return Commands.literal("invsearch")
             .requires { it.sender.hasPermission(Perms.InvUnload.USE) }
             .then(
-                Commands.argument("radius", IntegerArgumentType.integer(1))
-                    .then(
-                        Commands.argument("material", StringArgumentType.word())
-                            .suggests(materialSuggestionProvider)
-                            .executes { ctx -> handleSearch(ctx) }
-                    )
-                    .executes { ctx -> handleSearch(ctx) }
-            )
-            .then(
                 Commands.argument("material", StringArgumentType.word())
                     .suggests(materialSuggestionProvider)
                     .executes { ctx -> handleSearch(ctx) }
@@ -74,7 +64,6 @@ class InvSearchModule : ModuleInterface {
     @Suppress("UnstableApiUsage")
     private fun handleSearch(ctx: CommandContext<CommandSourceStack>): Int {
         val player = ctx.source.sender as? Player ?: return 0
-        val radius = runCatching { IntegerArgumentType.getInteger(ctx, "radius") }.getOrNull() ?: 5
         val materialName = runCatching { StringArgumentType.getString(ctx, "material") }.getOrNull()
         val material =
             materialName?.let { Material.getMaterial(it.uppercase()) } ?: player.inventory.itemInMainHand.type
@@ -82,17 +71,17 @@ class InvSearchModule : ModuleInterface {
             player.sendActionBar("You must specify a valid material or hold something in your hand".fireFmt().mm())
             return 0
         }
-        search(player, radius, material)
+
+        search(player, material)
         return 1
     }
 
     /**
      * Searches for chests within the specified radius of the player that contain the specified material.
      * @param player The player who initiated the search.
-     * @param radius The radius within which to search for chests.
      * @param material The material to search for in the chests.
      */
-    private fun search(player: Player, radius: Int, material: Material) {
+    private fun search(player: Player, material: Material) {
         if (!Utils.cooldown(
                 player,
                 Config.InvSearchModule.COOLDOWN,
@@ -100,7 +89,7 @@ class InvSearchModule : ModuleInterface {
             )
         ) return
 
-        val chests = Utils.findBlocksInRadius(player.location, radius)
+        val chests = Utils.findBlocksInRadius(player.location, Config.InvSearchModule.SEARCH_RADIUS)
             .filter { Utils.canPlayerUseChest(it, player) }
         if (chests.isEmpty()) {
             player.sendActionBar("No usable chests found for ${"$material".roseFmt()}".fireFmt().mm())
