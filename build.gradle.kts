@@ -15,7 +15,7 @@ plugins {
 }
 
 group = "org.xodium.vanillaplus"
-version = "1.8.0"
+version = "1.8.1"
 description = "Minecraft plugin that enhances the base gameplay."
 
 var apiVersion: String = "1.21.5"
