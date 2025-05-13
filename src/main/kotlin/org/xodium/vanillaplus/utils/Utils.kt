@@ -10,8 +10,6 @@ import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import org.bukkit.*
 import org.bukkit.block.*
-import org.bukkit.enchantments.Enchantment
-import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.block.Action
@@ -25,7 +23,6 @@ import org.bukkit.util.Vector
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.registries.EntityRegistry
 import org.xodium.vanillaplus.registries.MaterialRegistry
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
@@ -57,145 +54,6 @@ object Utils {
             (ctx.source.sender as Player).sendMessage("${PREFIX}<red>An Error has occurred. Check server logs for details.".mm())
         }
         return Command.SINGLE_SUCCESS
-    }
-
-    /**
-     * A function to get the damage to an item stack against an entity type.
-     * @param itemStack The item stack to get the damage to.
-     * @param entityType The entity type to get the damage against.
-     * @return The damage to the item stack against the entity type.
-     */
-    fun getDamage(itemStack: ItemStack?, entityType: EntityType): Double {
-        val base = MaterialRegistry.BASE_DAMAGE_MAP[itemStack?.type ?: Material.AIR] ?: 0.0
-        return if (base == 0.0) 0.0 else base + getBonus(itemStack, entityType)
-    }
-
-    /**
-     * A function to get the bonus damage to an item stack against an entity type.
-     * @param itemStack The item stack to get the bonus damage to.
-     * @param entityType The entity type to get the bonus damage against.
-     * @return The bonus damage to the item stack against the entity type.
-     */
-    private fun getBonus(itemStack: ItemStack?, entityType: EntityType): Double =
-        itemStack?.itemMeta?.enchants?.entries?.sumOf { (enchantment, level) ->
-            when (enchantment) {
-                Enchantment.SHARPNESS -> 0.5 * level + 0.5
-                Enchantment.BANE_OF_ARTHROPODS -> if (EntityRegistry.ARTHROPODS.contains(entityType)) 2.5 * level else 0.0
-                Enchantment.SMITE -> if (EntityRegistry.UNDEAD.contains(entityType)) 2.5 * level else 0.0
-                else -> 0.0
-            }
-        } ?: 0.0
-
-    /**
-     * A function to move bowls and bottles in an inventory.
-     * @param inv The inventory to move the bowls and bottles in.
-     * @param slot The slot to move the bowls and bottles from.
-     * @return True if the bowls and bottles were moved successfully, false otherwise.
-     */
-    fun moveBowlsAndBottles(inv: Inventory, slot: Int): Boolean {
-        val itemStack = inv.getItem(slot) ?: return false
-        if (!MaterialRegistry.BOWL_OR_BOTTLE.contains(itemStack.type)) return false
-
-        inv.clear(slot)
-
-        val leftovers = inv.addItem(itemStack)
-        if (inv.getItem(slot)?.amount == null ||
-            inv.getItem(slot)?.amount == 0 ||
-            inv.getItem(slot)?.type == Material.AIR
-        ) return true
-
-        if (leftovers.isNotEmpty()) {
-            val holder = inv.holder
-            if (holder !is Player) return false
-            for (leftover in leftovers.values) {
-                holder.world.dropItem(holder.location, leftover)
-            }
-            return false
-        }
-
-        for (i in 35 downTo 0) {
-            if (inv.getItem(i)?.amount == null ||
-                inv.getItem(i)?.amount == 0 ||
-                inv.getItem(i)?.type == Material.AIR
-            ) {
-                inv.setItem(i, itemStack)
-                return true
-            }
-        }
-        return false
-    }
-
-    /**
-     * A function to check if the inventory contains a specific item.
-     * @param inventory The inventory to check.
-     * @param predicate The predicate to check against the item type.
-     * @return True if the inventory contains the item, false otherwise.
-     */
-    private fun inventoryContains(
-        inventory: Array<ItemStack?>,
-        predicate: (Material) -> Boolean
-    ): Boolean {
-        for (i in 0..<9) {
-            val item = inventory[i] ?: continue
-            if (predicate(item.type)) return true
-        }
-        return false
-    }
-
-    /**
-     * A function to check if the inventory contains shears.
-     * @param inventory The inventory to check.
-     * @return True if the inventory contains shears, false otherwise.
-     */
-    fun hasShears(inventory: Array<ItemStack?>): Boolean =
-        inventoryContains(inventory) { it == Material.SHEARS }
-
-    /**
-     * A function to check if the inventory contains a sword.
-     * @param inventory The inventory to check.
-     * @return True if the inventory contains a sword, false otherwise.
-     */
-    fun hasSword(inventory: Array<ItemStack?>): Boolean =
-        inventoryContains(inventory) { it.name.endsWith("_SWORD") }
-
-    /**
-     * A function to check if the inventory contains a hoe.
-     * @param inventory The inventory to check.
-     * @return True if the inventory contains a hoe, false otherwise.
-     */
-    fun hasHoe(inventory: Array<ItemStack?>): Boolean =
-        inventoryContains(inventory) { it.name.endsWith("_HOE") }
-
-    /**
-     * A function to get the multiplier of an item stack.
-     * @param itemStack The item stack to get the multiplier of.
-     * @return The multiplier of the item stack.
-     */
-    fun getMultiplier(itemStack: ItemStack): Int {
-        val base = getBaseMultiplier(itemStack)
-        val itemMeta = itemStack.itemMeta ?: return base
-        val efficiency = Enchantment.EFFICIENCY ?: return base
-        if (!itemMeta.hasEnchant(efficiency)) return base
-        val efficiencyLevel = itemMeta.getEnchantLevel(efficiency)
-        return base + (efficiencyLevel * efficiencyLevel) + 1
-    }
-
-    /**
-     * A function to get the base multiplier of an item stack.
-     * @param itemStack The item stack to get the base multiplier of.
-     * @return The base multiplier of the item stack.
-     */
-    private fun getBaseMultiplier(itemStack: ItemStack): Int {
-        val itemName = itemStack.type.name
-        return when {
-            itemName.startsWith("DIAMOND") -> 8
-            itemName.startsWith("IRON") -> 6
-            itemName.startsWith("NETHERITE") -> 9
-            itemName.startsWith("STONE") -> 4
-            itemName.startsWith("WOOD") -> 2
-            itemName.startsWith("GOLD") -> 12
-            else -> 1
-        }
     }
 
     /**
@@ -237,21 +95,6 @@ object Utils {
     }
 
     /**
-     * Charges the player the specified amount of XP.
-     * @param player The player to charge.
-     * @param amount The amount of XP to charge.
-     */
-    fun chargePlayerXp(player: Player, amount: Int): Player {
-        return player.apply {
-            val remainingXp = maxOf(0, totalExperience - amount)
-            totalExperience = 0
-            level = 0
-            exp = 0f
-            if (remainingXp > 0) giveExp(remainingXp)
-        }
-    }
-
-    /**
      * Checks if the player is on cooldown.
      * @param player The player to check.
      * @param cooldownDuration The cooldown duration in milliseconds.
@@ -266,7 +109,7 @@ object Utils {
             container.set(key, PersistentDataType.LONG, now)
             true
         } else {
-            player.sendActionBar(("You must wait before using this mechanic again".fireFmt()).mm())
+            player.sendActionBar("You must wait before using this mechanic again".fireFmt().mm())
             false
         }
     }
@@ -396,7 +239,7 @@ object Utils {
      * @param item The item to check for.
      * @return True if the chest contains the item, false otherwise.
      */
-    private fun doesChestContain(inv: Inventory, item: ItemStack): Boolean {
+    fun doesChestContain(inv: Inventory, item: ItemStack): Boolean {
         return inv.contents.any { otherItem ->
             otherItem != null
                     && otherItem.type == item.type
@@ -475,50 +318,7 @@ object Utils {
         return false
     }
 
-    /**
-     * Counts the total number of items in the given inventory.
-     * @param inv The inventory to count items in.
-     * @return The total number of items in the inventory.
-     */
-    private fun countInventoryContents(inv: Inventory): Int = inv.contents.filterNotNull().sumOf { it.amount }
-
-    /**
-     * Moves items from the player's inventory to another inventory.
-     * @param player The player whose inventory is being moved.
-     * @param destination The destination inventory to move items into.
-     * @param onlyMatchingStuff If true, only moves items that match the destination's contents.
-     * @param startSlot The starting slot in the player's inventory to move items from.
-     * @param endSlot The ending slot in the player's inventory to move items from.
-     * @return True if items were moved, false otherwise.
-     */
-    fun stuffInventoryIntoAnother(
-        player: Player,
-        destination: Inventory,
-        onlyMatchingStuff: Boolean,
-        startSlot: Int,
-        endSlot: Int,
-    ): Boolean {
-        val source = player.inventory
-        val initialCount = countInventoryContents(source)
-        var moved = false
-
-        for (i in startSlot..endSlot) {
-            val item = source.getItem(i) ?: continue
-            if (Tag.SHULKER_BOXES.isTagged(item.type) && destination.holder is ShulkerBox) continue
-            if (onlyMatchingStuff && !doesChestContain(destination, item)) continue
-
-            val leftovers = destination.addItem(item)
-            val movedAmount = item.amount - leftovers.values.sumOf { it.amount }
-            if (movedAmount > 0) {
-                moved = true
-                source.clear(i)
-                leftovers.values.firstOrNull()?.let { source.setItem(i, it) }
-                destination.location?.let { protocolUnload(it, item.type, movedAmount) }
-            }
-        }
-        return moved && initialCount != countInventoryContents(source)
-    }
-
+    //TODO: merge the 2 laser effect functions.
     /**
      * Creates a laser effect for the specified player and chests.
      * @param player The player to play the effect for.
@@ -544,15 +344,6 @@ object Utils {
             },
             TimeUtils.seconds(5)
         )
-    }
-
-    /**
-     * Creates a chest effect for the specified block and player.
-     * @param player The player to create the laser effect for.
-     * @param block The block to create the laser effect towards.
-     */
-    fun chestEffect(player: Player, block: Block) {
-        player.spawnParticle(Particle.CRIT, getCenterOfBlock(block), 10, 0.0, 0.0, 0.0)
     }
 
     /**
@@ -591,12 +382,21 @@ object Utils {
     }
 
     /**
+     * Creates a chest effect for the specified block and player.
+     * @param player The player to create the laser effect for.
+     * @param block The block to create the laser effect towards.
+     */
+    fun chestEffect(player: Player, block: Block) {
+        player.spawnParticle(Particle.CRIT, getCenterOfBlock(block), 10, 0.0, 0.0, 0.0)
+    }
+
+    /**
      * Unloads the specified amount of material from the given location.
      * @param loc The location to unload from.
      * @param mat The material to unload.
      * @param amount The amount of material to unload.
      */
-    private fun protocolUnload(loc: Location, mat: Material, amount: Int) {
+    fun protocolUnload(loc: Location, mat: Material, amount: Int) {
         if (amount == 0) return
         unloads.computeIfAbsent(loc) { mutableMapOf() }.merge(mat, amount, Int::plus)
     }

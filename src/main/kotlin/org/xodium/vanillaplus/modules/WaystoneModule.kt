@@ -292,7 +292,7 @@ class WaystoneModule : ModuleInterface {
 
                 ticks++
                 if (ticks >= delayTicks) {
-                    if (player.gameMode in allowedGameModes) Utils.chargePlayerXp(player, xpCost)
+                    if (player.gameMode in allowedGameModes) chargePlayerXp(player, xpCost)
 
                     teleportEffect(player.location)
 
@@ -315,6 +315,21 @@ class WaystoneModule : ModuleInterface {
             },
             0L, 1L
         )
+    }
+
+    /**
+     * Charges the player the specified amount of XP.
+     * @param player The player to charge.
+     * @param amount The amount of XP to charge.
+     */
+    private fun chargePlayerXp(player: Player, amount: Int): Player {
+        return player.apply {
+            val remainingXp = maxOf(0, totalExperience - amount)
+            totalExperience = 0
+            level = 0
+            exp = 0f
+            if (remainingXp > 0) giveExp(remainingXp)
+        }
     }
 
     /**

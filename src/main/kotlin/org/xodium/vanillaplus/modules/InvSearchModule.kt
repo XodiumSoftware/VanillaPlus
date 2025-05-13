@@ -112,8 +112,7 @@ class InvSearchModule : ModuleInterface {
             val inventory = (block.state as Container).inventory
             val holder = inventory.holder
             if (holder is DoubleChest) {
-                val left = holder.leftSide
-                if (!seenDoubleChests.add(left)) return@filter false
+                if (!seenDoubleChests.add(holder.leftSide)) return@filter false
             }
             Utils.searchItemInContainers(material, inventory)
         }
