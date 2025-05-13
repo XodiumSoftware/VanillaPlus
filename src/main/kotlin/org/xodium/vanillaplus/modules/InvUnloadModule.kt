@@ -93,7 +93,6 @@ class InvUnloadModule : ModuleInterface {
 
         for (block in affectedChests) {
             Utils.chestEffect(player, block)
-            Utils.laserEffect(player)
             if (ChestSortHook.shouldSort(player)) ChestSortHook.sort(block)
         }
 
