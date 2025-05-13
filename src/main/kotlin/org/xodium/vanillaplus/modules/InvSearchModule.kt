@@ -82,6 +82,7 @@ class InvSearchModule : ModuleInterface {
      * @param material The material to search for in the chests.
      */
     private fun search(player: Player, material: Material) {
+        //TODO: fix cooldown not working when executing with material and without.
         if (!Utils.cooldown(
                 player,
                 Config.InvSearchModule.COOLDOWN,
