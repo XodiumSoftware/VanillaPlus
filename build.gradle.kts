@@ -99,7 +99,7 @@ tasks {
         val javaExec = project.extensions.getByType(JavaToolchainService::class.java)
             .launcherFor { languageVersion.set(JavaLanguageVersion.of(21)) }
             .get().executablePath.asFile.absolutePath
-        val hotswapAgentPath = file(".hotswap/hotswap-agent.jar").absolutePath
+        val hotswapAgentPath = file(".hotswap/hotswap-agent-core.jar").absolutePath
         commandLine = listOf(
             javaExec,
             "-javaagent:$hotswapAgentPath",
