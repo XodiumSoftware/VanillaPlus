@@ -26,7 +26,10 @@ class BloodMoonModule : ModuleInterface {
     private var bloodMoonState = BloodMoonData()
 
     init {
-        if (enabled()) schedule()
+        if (enabled()) {
+            BloodMoonData.createTable()
+            schedule()
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -43,6 +46,10 @@ class BloodMoonModule : ModuleInterface {
         }
     }
 
+    /**
+     * Schedules the blood moon event to run every 10 seconds.
+     * It checks the world time and activates or deactivates the blood moon accordingly.
+     */
     private fun schedule() {
         instance.server.scheduler.runTaskTimer(
             instance,
@@ -60,7 +67,7 @@ class BloodMoonModule : ModuleInterface {
      */
     private fun bloodMoon() {
         val world = instance.server.worlds.firstOrNull() ?: return
-        
+
         // Check for Blood Moon activation
         if (world.time in WorldTimeUtils.NIGHT && !bloodMoonState.isActive) {
             if (Random().nextInt(10) == 0) {
@@ -68,7 +75,7 @@ class BloodMoonModule : ModuleInterface {
                 instance.server.broadcast("The Blood Moon Rises! Mobs grow stronger...".fireFmt().mm())
             }
         }
-        
+
         // Check for Blood Moon deactivation
         if (world.time < WorldTimeUtils.NIGHT.first && bloodMoonState.isActive) {
             bloodMoonState.isActive = false
