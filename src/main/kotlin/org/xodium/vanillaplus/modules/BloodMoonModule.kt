@@ -11,6 +11,7 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.CreatureSpawnEvent
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.data.BloodMoonData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
@@ -22,7 +23,7 @@ import java.util.*
 class BloodMoonModule : ModuleInterface {
     override fun enabled(): Boolean = Config.BloodMoonModule.ENABLED
 
-    private var isBloodMoon = false
+    private var bloodMoonState = BloodMoonData()
 
     init {
         if (enabled()) schedule()
@@ -30,7 +31,7 @@ class BloodMoonModule : ModuleInterface {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: CreatureSpawnEvent) {
-        if (!isBloodMoon && !enabled()) return
+        if (!bloodMoonState.isActive && !enabled()) return
         val entity = event.entity
         Config.BloodMoonModule.MOB_ATTRIBUTE_ADJUSTMENTS.forEach { (attribute, adjust) ->
             entity.getAttribute(attribute)?.let { attr ->
@@ -59,12 +60,12 @@ class BloodMoonModule : ModuleInterface {
      */
     private fun bloodMoon() {
         val world = instance.server.worlds.firstOrNull() ?: return
-        if (world.time in WorldTimeUtils.NIGHT && !isBloodMoon) {
+        if (world.time in WorldTimeUtils.NIGHT && !bloodMoonState.isActive) {
             if (Random().nextInt(10) == 0) {
-                isBloodMoon = true
+                bloodMoonState.isActive = true
                 instance.server.broadcast("The Blood Moon Rises! Mobs grow stronger...".fireFmt().mm())
-            } else if (world.time < WorldTimeUtils.NIGHT.first && isBloodMoon) {
-                isBloodMoon = false
+            } else if (world.time < WorldTimeUtils.NIGHT.first && bloodMoonState.isActive) {
+                bloodMoonState.isActive = false
                 instance.server.broadcast("The Blood Moon Sets! Mobs return to normal...".fireFmt().mm())
             }
         }
