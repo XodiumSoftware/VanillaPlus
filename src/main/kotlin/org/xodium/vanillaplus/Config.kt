@@ -274,7 +274,7 @@ object Config {
 
         /** The header of the tab list. Each element is a line. */
         var HEADER: List<String> = listOf(
-            "${"]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt()}   ${"⚡ IllyriaRPG 1.21.4 ⚡".fireFmt()}   ${
+            "${"]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt()}   ${"⚡ IllyriaRPG 1.21.5 ⚡".fireFmt()}   ${
                 "]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)
             }",
             ""
