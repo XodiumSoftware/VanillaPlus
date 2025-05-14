@@ -60,14 +60,19 @@ class BloodMoonModule : ModuleInterface {
      */
     private fun bloodMoon() {
         val world = instance.server.worlds.firstOrNull() ?: return
+        
+        // Check for Blood Moon activation
         if (world.time in WorldTimeUtils.NIGHT && !bloodMoonState.isActive) {
             if (Random().nextInt(10) == 0) {
                 bloodMoonState.isActive = true
                 instance.server.broadcast("The Blood Moon Rises! Mobs grow stronger...".fireFmt().mm())
-            } else if (world.time < WorldTimeUtils.NIGHT.first && bloodMoonState.isActive) {
-                bloodMoonState.isActive = false
-                instance.server.broadcast("The Blood Moon Sets! Mobs return to normal...".fireFmt().mm())
             }
+        }
+        
+        // Check for Blood Moon deactivation
+        if (world.time < WorldTimeUtils.NIGHT.first && bloodMoonState.isActive) {
+            bloodMoonState.isActive = false
+            instance.server.broadcast("The Blood Moon Sets! Mobs return to normal...".fireFmt().mm())
         }
     }
 }
