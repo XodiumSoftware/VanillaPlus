@@ -95,17 +95,16 @@ tasks {
         group = "application"
         description = "Run Development Server"
         dependsOn("shadowJar", "downloadServerJar", "acceptEula")
-        workingDir = file(".server")
-        val javaLauncher: JavaLauncher = project.extensions
-            .getByType(JavaToolchainService::class.java)
+        workingDir = file(".server/")
+        val javaExec = project.extensions.getByType(JavaToolchainService::class.java)
             .launcherFor { languageVersion.set(JavaLanguageVersion.of(21)) }
-            .get()
-        val javaHome: String = javaLauncher.metadata.installationPath.asFile.absolutePath
+            .get().executablePath.asFile.absolutePath
+        val hotswapAgentPath = file(".hotswap/hotswap-agent.jar").absolutePath
         commandLine = listOf(
-            "$javaHome/bin/java",
-            "-jar",
-            "server.jar",
-            "nogui"
+            javaExec,
+            "-javaagent:$hotswapAgentPath",
+            "-XX:+AllowEnhancedClassRedefinition",
+            "-jar", "server.jar", "nogui"
         )
     }
 }
