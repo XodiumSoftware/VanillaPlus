@@ -5,9 +5,65 @@
 
 package org.xodium.vanillaplus.modules
 
+import org.bukkit.attribute.Attribute
+import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
+import org.bukkit.event.entity.CreatureSpawnEvent
 import org.xodium.vanillaplus.Config
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
+import org.xodium.vanillaplus.utils.TimeUtils
+import java.util.*
 
+/** Represents a module handling blood-moon mechanics within the system. */
 class BloodMoonModule : ModuleInterface {
     override fun enabled(): Boolean = Config.BloodMoonModule.ENABLED
+
+    private var isBloodMoon = false
+
+    init {
+        if (enabled()) bloodMoon()
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun on(event: CreatureSpawnEvent) {
+        if (!isBloodMoon && !enabled()) return
+        val entity = event.entity
+        Config.BloodMoonModule.MOB_ATTRIBUTE_ADJUSTMENTS.forEach { (attribute, adjust) ->
+            entity.getAttribute(attribute)?.let { attr ->
+                attr.baseValue = adjust(attr.baseValue)
+                if (attribute == Attribute.MAX_HEALTH) {
+                    entity.health = attr.baseValue
+                }
+            }
+        }
+    }
+
+    /**
+     * Blood Moon event
+     * Every 10 seconds, check if the world time is between 13000 and 23000
+     * If it is, set isBloodMoon to true and broadcast a message
+     * If it is not, set isBloodMoon to false and broadcast a message
+     */
+    private fun bloodMoon() {
+        instance.server.scheduler.runTaskTimer(
+            instance,
+            Runnable {
+                val world = instance.server.worlds.firstOrNull() ?: return@Runnable
+                if (world.time in 13000..23000 && !isBloodMoon) {
+                    if (Random().nextInt(10) == 0) {
+                        isBloodMoon = true
+                        instance.server.broadcast("The Blood Moon Rises! Mobs grow stronger...".fireFmt().mm())
+                    } else if (world.time < 13000 && isBloodMoon) {
+                        isBloodMoon = false
+                        instance.server.broadcast("The Blood Moon Sets! Mobs return to normal...".fireFmt().mm())
+                    }
+                }
+            },
+            0,
+            TimeUtils.seconds(10)
+        )
+    }
 }

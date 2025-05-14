@@ -8,6 +8,7 @@ package org.xodium.vanillaplus
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.sound.Sound
 import org.bukkit.Material
+import org.bukkit.attribute.Attribute
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.BookData
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
@@ -80,6 +81,15 @@ object Config {
     object BloodMoonModule {
         /** Enables or disables the BloodMoonModule. */
         var ENABLED: Boolean = true
+
+        /**
+         * Map of attribute adjustments for mobs during a blood moon.
+         * `it` is the current value of the attribute aka base value.
+         */
+        var MOB_ATTRIBUTE_ADJUSTMENTS: Map<Attribute, (Double) -> Double> = mapOf(
+            Attribute.ATTACK_DAMAGE to { it * 1.5 },
+            Attribute.MAX_HEALTH to { it * 2.0 }
+        )
     }
 
     /** Configuration settings for the BooksModule. */
