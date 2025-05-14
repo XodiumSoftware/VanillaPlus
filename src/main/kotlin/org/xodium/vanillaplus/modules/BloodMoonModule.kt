@@ -25,6 +25,8 @@ class BloodMoonModule : ModuleInterface {
 
     private var bloodMoonState = BloodMoonData()
 
+    //TODO: add resourcepack fun via API.
+
     init {
         if (enabled()) schedule()
     }
@@ -33,6 +35,7 @@ class BloodMoonModule : ModuleInterface {
     fun on(event: CreatureSpawnEvent) {
         if (!bloodMoonState.isActive && !enabled()) return
         val entity = event.entity
+        //TODO: check adjustments if its enough buff.
         Config.BloodMoonModule.MOB_ATTRIBUTE_ADJUSTMENTS.forEach { (attribute, adjust) ->
             entity.getAttribute(attribute)?.let { attr ->
                 attr.baseValue = adjust(attr.baseValue)
@@ -64,18 +67,15 @@ class BloodMoonModule : ModuleInterface {
      */
     private fun bloodMoon() {
         val world = instance.server.worlds.firstOrNull() ?: return
-
-        // Check for Blood Moon activation
         if (world.time in WorldTimeUtils.NIGHT && !bloodMoonState.isActive) {
             if (Random().nextInt(10) == 0) {
                 bloodMoonState.isActive = true
+                //TODO: Perhaps use bossbar instead of broadcast?
                 instance.server.broadcast("The Blood Moon Rises! Mobs grow stronger...".fireFmt().mm())
             }
-        }
-
-        // Check for Blood Moon deactivation
-        if (world.time < WorldTimeUtils.NIGHT.first && bloodMoonState.isActive) {
+        } else if (world.time < WorldTimeUtils.NIGHT.first && bloodMoonState.isActive) {
             bloodMoonState.isActive = false
+            //TODO: Perhaps use bossbar instead of broadcast?
             instance.server.broadcast("The Blood Moon Sets! Mobs return to normal...".fireFmt().mm())
         }
     }

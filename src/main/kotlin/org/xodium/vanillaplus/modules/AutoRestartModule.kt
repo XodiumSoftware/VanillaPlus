@@ -17,11 +17,14 @@ import java.time.temporal.ChronoUnit
 class AutoRestartModule : ModuleInterface {
     override fun enabled(): Boolean = Config.AutoRestartModule.ENABLED
 
+    //TODO: look into sh-script-restart / cron job.
     init {
         if (enabled()) {
+            //TODO: move to fun schedule.
             instance.server.scheduler.runTaskTimerAsynchronously(
                 instance,
                 Runnable {
+                    //TODO: move to its own function for better organization.
                     Config.AutoRestartModule.RESTART_TIMES.forEach {
                         if (isTimeToStartCountdown(it)) {
                             instance.server.scheduler.runTask(instance, Runnable { countdown() })
@@ -63,7 +66,7 @@ class AutoRestartModule : ModuleInterface {
                     }
                 } else {
                     instance.server.onlinePlayers.forEach { player -> player.hideBossBar(bossBar) }
-                    instance.server.restart()
+                    instance.server.restart() //TODO: replace with sh-script / cron job.
                 }
             },
             0L,
