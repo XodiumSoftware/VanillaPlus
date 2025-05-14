@@ -26,10 +26,7 @@ class BloodMoonModule : ModuleInterface {
     private var bloodMoonState = BloodMoonData()
 
     init {
-        if (enabled()) {
-            BloodMoonData.createTable()
-            schedule()
-        }
+        if (enabled()) schedule()
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
