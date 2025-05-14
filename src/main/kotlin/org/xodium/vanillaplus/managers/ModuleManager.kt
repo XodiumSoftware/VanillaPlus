@@ -29,6 +29,7 @@ object ModuleManager {
             AutoRefillModule(),
             AutoRestartModule(),
             AutoToolModule(),
+            BloodMoonModule(),
             BooksModule(),
             BroadcastModule(),
             DimensionsModule(),

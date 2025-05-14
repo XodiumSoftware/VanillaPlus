@@ -76,6 +76,12 @@ object Config {
         var USE_AXE_AS_SWORD: Boolean = true
     }
 
+    /** Configuration settings for the BloodMoonModule. */
+    object BloodMoonModule {
+        /** Enables or disables the BloodMoonModule. */
+        var ENABLED: Boolean = true
+    }
+
     /** Configuration settings for the BooksModule. */
     object BooksModule {
         /** Enables or disables the BookModule. */
