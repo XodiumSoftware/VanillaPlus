@@ -5,7 +5,6 @@
 
 package org.xodium.vanillaplus.modules
 
-import net.kyori.adventure.bossbar.BossBar
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
@@ -40,7 +39,7 @@ class AutoRestartModule : ModuleInterface {
         val totalMinutes = Config.AutoRestartModule.COUNTDOWN_START_MINUTES
         var remainingSeconds = totalMinutes * 60
         val totalSeconds = remainingSeconds
-        val bossBar = bossbar(remainingSeconds)
+        val bossBar = Config.AutoRestartModule.BOSSBAR
         instance.server.onlinePlayers.forEach { player -> player.showBossBar(bossBar) }
         instance.server.scheduler.runTaskTimer(
             instance,
@@ -82,19 +81,5 @@ class AutoRestartModule : ModuleInterface {
             LocalTime.now().truncatedTo(ChronoUnit.MINUTES),
             restartTime
         ) == Config.AutoRestartModule.COUNTDOWN_START_MINUTES.toLong()
-    }
-
-    /**
-     * Returns a boss bar with the name and progress set in the plugin's configuration.
-     * @param timePlaceholder the time placeholder to replace in the boss bar name.
-     * @return a boss bar with the name and progress set in the plugin's configuration.
-     */
-    private fun bossbar(timePlaceholder: Int): BossBar {
-        return BossBar.bossBar(
-            Config.AutoRestartModule.BOSSBAR_NAME.replace("%t", timePlaceholder.toString()).mm(),
-            Config.AutoRestartModule.BOSSBAR_PROGRESS,
-            Config.AutoRestartModule.BOSSBAR_COLOR,
-            Config.AutoRestartModule.BOSSBAR_OVERLAY
-        )
     }
 }

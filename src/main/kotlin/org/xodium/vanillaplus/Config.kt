@@ -11,6 +11,7 @@ import org.bukkit.Material
 import org.bukkit.attribute.Attribute
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.BookData
+import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.TimeUtils
@@ -43,17 +44,16 @@ object Config {
         /** How many minutes before the restart to start countdown. */
         var COUNTDOWN_START_MINUTES: Int = 5
 
-        /** The name of the boss bar. */
-        var BOSSBAR_NAME: String = "⚡ RESTARTING in %t minute(s) ⚡".fireFmt()
+        /** The placeholder for the countdown time. */
+        var BOSSBAR_NAME: String = "⚡ RESTARTING in %t minute(s) ⚡"
 
-        /** The progress of the boss bar. */
-        var BOSSBAR_PROGRESS: Float = 1.0f
-
-        /** The colour of the boss bar. */
-        var BOSSBAR_COLOR: BossBar.Color = BossBar.Color.RED
-
-        /** The overlay of the boss bar. */
-        var BOSSBAR_OVERLAY: BossBar.Overlay = BossBar.Overlay.PROGRESS
+        /** Bossbar for the auto-restart. */
+        var BOSSBAR: BossBar = BossBar.bossBar(
+            BOSSBAR_NAME.fireFmt().mm(),
+            1.0f,
+            BossBar.Color.RED,
+            BossBar.Overlay.PROGRESS
+        )
     }
 
     /** Configuration settings for the AutoToolModule. */
