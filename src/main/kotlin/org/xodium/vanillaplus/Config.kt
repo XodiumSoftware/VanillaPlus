@@ -235,6 +235,15 @@ object Config {
             BossBar.Overlay.PROGRESS,
         )
 
+        //TODO: replace sound with a custom sound from resourcepack.
+        /** The sound effect used for the horde. */
+        var HORDE_SOUND: Sound = Sound.sound(
+            BukkitSound.ENTITY_WITHER_SPAWN,
+            Sound.Source.HOSTILE,
+            1.0f,
+            1.0f
+        )
+
         /** The initial delay before the first blood moon. */
         var INIT_DELAY: Long = TimeUtils.seconds(0)
 

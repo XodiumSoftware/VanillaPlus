@@ -128,7 +128,10 @@ class HordeModule : ModuleInterface {
     private fun activateHorde(world: World) {
         hordeState.isActive = true
         hordeState.hasTriggeredThisNewMoon = true
-        instance.server.onlinePlayers.forEach { it.showBossBar(Config.HordeModule.BOSSBAR) }
+        instance.server.onlinePlayers.forEach {
+            it.showBossBar(Config.HordeModule.BOSSBAR)
+            it.playSound(Config.HordeModule.HORDE_SOUND)
+        }
         world.setStorm(true)
         world.isThundering = true
     }
