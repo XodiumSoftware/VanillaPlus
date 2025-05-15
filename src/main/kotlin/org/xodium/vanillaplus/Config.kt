@@ -131,7 +131,8 @@ object Config {
             "${"▶".mangoFmt()} ${"/tpa [player]".roseFmt()} ${">".mangoFmt()} <white><italic>Request to teleport to a player.",
             "${"▶".mangoFmt()} ${"/condense".roseFmt()} ${">".mangoFmt()} <white><italic>Condenses resources (if possible) to their highest form (blocks).",
             "${"▶".mangoFmt()} ${"/uncondense".roseFmt()} ${">".mangoFmt()} <white><italic>Uncondenses resources (if possible) to their lowest form (items).",
-            "${"▶".mangoFmt()} ${"Enchantment max level".roseFmt()} ${">".mangoFmt()} <white><italic>has been incremented by <red><bold>x2<dark_gray><italic>."
+            "${"▶".mangoFmt()} ${"Enchantment max level".roseFmt()} ${">".mangoFmt()} <white><italic>has been incremented by <red><bold>x2<dark_gray><italic>.",
+            "${"▶".mangoFmt()} ${"During a Horde".roseFmt()} ${">".mangoFmt()} <white><italic>the mob attack damage, max health & follow range increases by <red><bold>x2<dark_gray><italic>.",
         )
 
         /** The initial delay before the first broadcast. */
@@ -221,8 +222,9 @@ object Config {
          * `it` is the current value of the attribute aka base value.
          */
         var MOB_ATTRIBUTE_ADJUSTMENTS: Map<Attribute, (Double) -> Double> = mapOf(
-            Attribute.ATTACK_DAMAGE to { it * 1.5 },
-            Attribute.MAX_HEALTH to { it * 2.0 }
+            Attribute.ATTACK_DAMAGE to { it * 2.0 },
+            Attribute.MAX_HEALTH to { it * 2.0 },
+            Attribute.FOLLOW_RANGE to { it * 2.0 },
         )
 
         /** The bossbar for the horde. */
