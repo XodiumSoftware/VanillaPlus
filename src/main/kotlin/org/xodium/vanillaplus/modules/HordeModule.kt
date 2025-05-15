@@ -8,6 +8,7 @@ package org.xodium.vanillaplus.modules
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
+import org.bukkit.Difficulty
 import org.bukkit.World
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
@@ -42,14 +43,31 @@ class HordeModule : ModuleInterface {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: CreatureSpawnEvent) {
-        if (!hordeState.isActive && !enabled()) return
         val entity = event.entity
+        val world = entity.world
+
+        if (!hordeState.isActive && !enabled()) return
+        if (world.environment != World.Environment.NORMAL) return
+        if (world.difficulty != Difficulty.HARD) return
+
         Config.HordeModule.MOB_ATTRIBUTE_ADJUSTMENTS.forEach { (attribute, adjust) ->
             entity.getAttribute(attribute)?.let { attr ->
                 attr.baseValue = adjust(attr.baseValue)
                 if (attribute == Attribute.MAX_HEALTH) {
                     entity.health = attr.baseValue
                 }
+            }
+        }
+
+        if (hordeState.isActive && event.spawnReason == CreatureSpawnEvent.SpawnReason.NATURAL) {
+            repeat(10) {
+                entity.world.spawnEntity(
+                    entity.location.clone().add(
+                        (-5..5).random().toDouble(),
+                        0.0,
+                        (-5..5).random().toDouble()
+                    ), entity.type
+                )
             }
         }
     }
