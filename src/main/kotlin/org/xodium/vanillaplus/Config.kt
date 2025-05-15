@@ -6,11 +6,11 @@
 package org.xodium.vanillaplus
 
 import net.kyori.adventure.bossbar.BossBar
+import net.kyori.adventure.inventory.Book
 import net.kyori.adventure.sound.Sound
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.data.BookData
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
@@ -83,11 +83,11 @@ object Config {
         /** Enables or disables the BookModule. */
         var ENABLED: Boolean = true
 
-        /** The book data, including title, author, and pages. */
-        var BOOK: BookData = BookData(
-            title = "Rules",
-            author = instance::class.simpleName.toString(),
-            pages = listOf(
+        /** The Rules book. */
+        var RULES_BOOK: Book = Book.book(
+            "Rules".fireFmt().mm(),
+            instance::class.simpleName.toString().fireFmt().mm(),
+            listOf(
                 "<gold>▶ <dark_aqua>Player Rules:\n" + // Page 1
                         "<gold>▶ <dark_aqua>01 <dark_gray>| <red>No Griefing.\n" +
                         "<gold>▶ <dark_aqua>02 <dark_gray>| <red>No Spamming.\n" +
@@ -109,7 +109,7 @@ object Config {
                         "<gold>▶ <dark_aqua>02 <dark_gray>| <red>Do not spawn blocks or items for other players.\n" +
                         "<gold>▶ <dark_aqua>03 <dark_gray>| <red>When Trading, only buy and sell legit items.\n" +
                         "<gold>▶ <dark_aqua>05 <dark_gray>| <red>No Power Abuse."
-            )
+            ).mm()
         )
     }
 

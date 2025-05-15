@@ -34,10 +34,11 @@ class InvUnloadModule : ModuleInterface {
     override fun enabled(): Boolean = Config.InvUnloadModule.ENABLED
 
     @Suppress("UnstableApiUsage")
-    override fun cmd(): LiteralArgumentBuilder<CommandSourceStack>? {
-        return Commands.literal("invunload")
-            .requires { it.sender.hasPermission(Perms.InvUnload.USE) }
-            .executes { it -> Utils.tryCatch(it) { unload(it.sender as Player) } }
+    override fun cmd(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
+        return listOf(
+            Commands.literal("invunload")
+                .requires { it.sender.hasPermission(Perms.InvUnload.USE) }
+                .executes { it -> Utils.tryCatch(it) { unload(it.sender as Player) } })
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

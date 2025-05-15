@@ -29,10 +29,11 @@ class EclipseModule : ModuleInterface {
     override fun enabled(): Boolean = Config.EclipseModule.ENABLED
 
     @Suppress("UnstableApiUsage")
-    override fun cmd(): LiteralArgumentBuilder<CommandSourceStack>? {
-        return Commands.literal("newmoon")
-            .requires { it.sender.hasPermission(Perms.Eclipse.ECLIPSE) }
-            .executes { it -> Utils.tryCatch(it) { skipToNewMoon(it.sender as Player) } }
+    override fun cmd(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
+        return listOf(
+            Commands.literal("eclipse")
+                .requires { it.sender.hasPermission(Perms.Eclipse.ECLIPSE) }
+                .executes { it -> Utils.tryCatch(it) { skipToEclipse(it.sender as Player) } })
     }
 
     private var hordeState = EclipseData()
@@ -162,7 +163,7 @@ class EclipseModule : ModuleInterface {
      * Skips to the next new moon by adjusting the world time.
      * @param player The player who executed the command.
      */
-    private fun skipToNewMoon(player: Player) {
+    private fun skipToEclipse(player: Player) {
         val world = player.world
         val currentDay = world.fullTime / 24000
         val currentPhase = getMoonPhase(world)

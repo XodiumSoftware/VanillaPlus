@@ -45,15 +45,16 @@ class InvSearchModule : ModuleInterface {
     }
 
     @Suppress("UnstableApiUsage")
-    override fun cmd(): LiteralArgumentBuilder<CommandSourceStack>? {
-        return Commands.literal("invsearch")
-            .requires { it.sender.hasPermission(Perms.InvSearch.USE) }
-            .then(
-                Commands.argument("material", StringArgumentType.word())
-                    .suggests(materialSuggestionProvider)
-                    .executes { ctx -> handleSearch(ctx) }
-            )
-            .executes { ctx -> handleSearch(ctx) }
+    override fun cmd(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
+        return listOf(
+            Commands.literal("invsearch")
+                .requires { it.sender.hasPermission(Perms.InvSearch.USE) }
+                .then(
+                    Commands.argument("material", StringArgumentType.word())
+                        .suggests(materialSuggestionProvider)
+                        .executes { ctx -> handleSearch(ctx) }
+                )
+                .executes { ctx -> handleSearch(ctx) })
     }
 
     /**

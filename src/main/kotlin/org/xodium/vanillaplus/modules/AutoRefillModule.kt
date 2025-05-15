@@ -35,10 +35,11 @@ class AutoRefillModule : ModuleInterface {
     override fun enabled(): Boolean = Config.AutoRefillModule.ENABLED
 
     @Suppress("UnstableApiUsage")
-    override fun cmd(): LiteralArgumentBuilder<CommandSourceStack> {
-        return Commands.literal("autorefill")
-            .requires { it.sender.hasPermission(Perms.AutoRefill.USE) }
-            .executes { it -> Utils.tryCatch(it) { toggle(it.sender as Player) } }
+    override fun cmd(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
+        return listOf(
+            Commands.literal("autorefill")
+                .requires { it.sender.hasPermission(Perms.AutoRefill.USE) }
+                .executes { it -> Utils.tryCatch(it) { toggle(it.sender as Player) } })
     }
 
     private val cooldowns = ConcurrentHashMap<UUID, Long>()

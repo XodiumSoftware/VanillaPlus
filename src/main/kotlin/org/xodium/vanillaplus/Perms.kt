@@ -19,6 +19,7 @@ object Perms {
             Use.GENERAL,
             AutoRefill.USE,
             AutoTool.USE,
+            Book.RULES,
             Eclipse.ECLIPSE,
             InvSearch.USE,
             InvUnload.USE,
@@ -44,6 +45,13 @@ object Perms {
         private val G1 = this::class.simpleName.toString().lowercase()
         val USE: Permission =
             Permission("${G0}.${G1}.use", "Allows use of the autotool command", PermissionDefault.TRUE)
+    }
+
+    /** Permissions for Book commands. */
+    object Book {
+        private val G1 = this::class.simpleName.toString().lowercase()
+        val RULES: Permission =
+            Permission("${G0}.${G1}.rules", "Allows use of the rules command", PermissionDefault.TRUE)
     }
 
     /** Permissions for Eclipse commands. */
