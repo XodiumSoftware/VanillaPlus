@@ -24,7 +24,7 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.Utils
 
-/** Represents a module handling horde mechanics within the system. */
+/** Represents a module handling eclipse mechanics within the system. */
 class EclipseModule : ModuleInterface {
     override fun enabled(): Boolean = Config.EclipseModule.ENABLED
 
@@ -76,22 +76,22 @@ class EclipseModule : ModuleInterface {
     private fun schedule() {
         instance.server.scheduler.runTaskTimer(
             instance,
-            Runnable { horde() },
+            Runnable { eclipse() },
             Config.EclipseModule.INIT_DELAY,
             Config.EclipseModule.INTERVAL
         )
     }
 
-    /** Handles the horde mechanics. */
-    private fun horde() {
+    /** Handles the eclipse mechanics. */
+    private fun eclipse() {
         val world = instance.server.worlds.firstOrNull() ?: return
         val isNewMoon = getMoonPhase(world) == 4
         val isNight = !world.isDayTime
 
-        if (shouldActivateHorde(isNight, isNewMoon)) {
-            activateHorde(world)
-        } else if (shouldDeactivateHorde(isNight, isNewMoon)) {
-            deactivateHorde(world)
+        if (shouldActivateEclipse(isNight, isNewMoon)) {
+            activateEclipse(world)
+        } else if (shouldDeactivateEclipse(isNight, isNewMoon)) {
+            deactivateEclipse(world)
         }
 
         if (world.time < 1000 && hordeState.hasTriggeredThisEclipse) {
@@ -100,32 +100,32 @@ class EclipseModule : ModuleInterface {
     }
 
     /**
-     * Determines if the horde should be activated based on the current time and state.
+     * Determines if the eclipse should be activated based on the current time and state.
      * @param isNight Indicates if it's currently night.
-     * @param isNewMoon Indicates if it's currently a new moon.
+     * @param isEclipse Indicates if it's currently an eclipse.
      */
-    private fun shouldActivateHorde(isNight: Boolean, isNewMoon: Boolean): Boolean {
+    private fun shouldActivateEclipse(isNight: Boolean, isEclipse: Boolean): Boolean {
         return isNight &&
-                isNewMoon &&
+                isEclipse &&
                 !hordeState.isActive &&
                 !hordeState.hasTriggeredThisEclipse
     }
 
     /**
-     * Determines if the horde should be deactivated based on the current time and state.
+     * Determines if the eclipse should be deactivated based on the current time and state.
      * @param isNight Indicates if it's currently night.
-     * @param isNewMoon Indicates if it's currently a new moon.
+     * @param isEclipse Indicates if it's currently an eclipse.
      */
-    private fun shouldDeactivateHorde(isNight: Boolean, isNewMoon: Boolean): Boolean {
-        return (!isNight || !isNewMoon) && hordeState.isActive
+    private fun shouldDeactivateEclipse(isNight: Boolean, isEclipse: Boolean): Boolean {
+        return (!isNight || !isEclipse) && hordeState.isActive
     }
 
     /**
-     * Activates the horde by setting its state to active and showing the boss bar to all players.
+     * Activates the eclipse by setting its state to active and showing the boss bar to all players.
      * Also sets the world to stormy and thundering.
-     * @param world The world in which the horde is activated.
+     * @param world The world in which the eclipse is activated.
      */
-    private fun activateHorde(world: World) {
+    private fun activateEclipse(world: World) {
         hordeState.isActive = true
         hordeState.hasTriggeredThisEclipse = true
         instance.server.onlinePlayers.forEach {
@@ -137,11 +137,11 @@ class EclipseModule : ModuleInterface {
     }
 
     /**
-     * Deactivates the horde by setting its state to inactive and hiding the boss bar from all players.
+     * Deactivates the eclipse by setting its state to inactive and hiding the boss bar from all players.
      * Also sets the world to clear weather.
-     * @param world The world in which the horde is deactivated.
+     * @param world The world in which the eclipse is deactivated.
      */
-    private fun deactivateHorde(world: World) {
+    private fun deactivateEclipse(world: World) {
         hordeState.isActive = false
         instance.server.onlinePlayers.forEach {
             it.sendActionBar(Config.EclipseModule.ECLIPSE_END_MSG.mm())
