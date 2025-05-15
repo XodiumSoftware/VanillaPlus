@@ -14,6 +14,7 @@ import org.xodium.vanillaplus.data.BookData
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
+import org.xodium.vanillaplus.utils.FmtUtils.roseFmt
 import org.xodium.vanillaplus.utils.TimeUtils
 import org.xodium.vanillaplus.utils.Utils.getTps
 import org.xodium.vanillaplus.utils.Utils.getWeather
@@ -90,6 +91,12 @@ object Config {
             Attribute.ATTACK_DAMAGE to { it * 1.5 },
             Attribute.MAX_HEALTH to { it * 2.0 }
         )
+
+        /** The initial delay before the first blood moon. */
+        var INIT_DELAY: Long = TimeUtils.seconds(0)
+
+        /** The interval between blood moons. */
+        var INTERVAL: Long = TimeUtils.seconds(10)
     }
 
     /** Configuration settings for the BooksModule. */
@@ -132,17 +139,20 @@ object Config {
         /** Enables or disables the BroadcastModule. */
         var ENABLED: Boolean = true
 
-        /** The messages to be broadcasted. One will be randomly selected each time. */
+        /** The broadcast message prefix. */
+        var MESSAGE_PREFIX: String = "<gold>[<dark_aqua>TIP<gold>]"
+
+        /** The messages to be broadcasted. */
         var MESSAGES: List<String> = listOf(
-            "<gold>▶ <light_purple>/home <gold>> <white><italic>Teleport to your home.",
-            "<gold>▶ <light_purple>/skills <gold>> <white><italic>Opens up the Skills GUI.",
-            "<gold>▶ <light_purple>/rtp <gold>> <white><italic>To random teleport in the current dimension.",
-            "<gold>▶ <light_purple>/unload <gold>> <white><italic>Unloads your inventory into nearby chests.",
-            "<gold>▶ <light_purple>/dump <gold>> <white><italic>Dumps your inventory into nearby chests.",
-            "<gold>▶ <light_purple>/tpa [player] <gold>> <white><italic>Request to teleport to a player.",
-            "<gold>▶ <light_purple>/condense <gold>> <white><italic>Condenses resources (if possible) to their highest form (blocks).",
-            "<gold>▶ <light_purple>/uncondense <gold>> <white><italic>Uncondenses resources (if possible) to their lowest form (items).",
-            "<gold>▶ <light_purple>Enchantment max level <gold>> <white><italic>has been incremented by <red><bold>x2<dark_gray><italic>."
+            "${"▶".mangoFmt()} ${"/home".roseFmt()} ${">".mangoFmt()} <white><italic>Teleport to your home.",
+            "${"▶".mangoFmt()} ${"/skills".roseFmt()} ${">".mangoFmt()} <white><italic>Opens up the Skills GUI.",
+            "${"▶".mangoFmt()} ${"/rtp".roseFmt()} ${">".mangoFmt()} <white><italic>To random teleport in the current dimension.",
+            "${"▶".mangoFmt()} ${"/unload".roseFmt()} ${">".mangoFmt()} <white><italic>Unloads your inventory into nearby chests.",
+            "${"▶".mangoFmt()} ${"/dump".roseFmt()} ${">".mangoFmt()} <white><italic>Dumps your inventory into nearby chests.",
+            "${"▶".mangoFmt()} ${"/tpa [player]".roseFmt()} ${">".mangoFmt()} <white><italic>Request to teleport to a player.",
+            "${"▶".mangoFmt()} ${"/condense".roseFmt()} ${">".mangoFmt()} <white><italic>Condenses resources (if possible) to their highest form (blocks).",
+            "${"▶".mangoFmt()} ${"/uncondense".roseFmt()} ${">".mangoFmt()} <white><italic>Uncondenses resources (if possible) to their lowest form (items).",
+            "${"▶".mangoFmt()} ${"Enchantment max level".roseFmt()} ${">".mangoFmt()} <white><italic>has been incremented by <red><bold>x2<dark_gray><italic>."
         )
 
         /** The initial delay before the first broadcast. */

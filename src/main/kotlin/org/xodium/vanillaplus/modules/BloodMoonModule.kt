@@ -15,7 +15,6 @@ import org.xodium.vanillaplus.data.BloodMoonData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
-import org.xodium.vanillaplus.utils.TimeUtils
 import org.xodium.vanillaplus.utils.WorldTimeUtils
 import java.util.*
 
@@ -49,8 +48,8 @@ class BloodMoonModule : ModuleInterface {
         instance.server.scheduler.runTaskTimer(
             instance,
             Runnable { bloodMoon() },
-            0,
-            TimeUtils.seconds(10)
+            Config.BloodMoonModule.INIT_DELAY,
+            Config.BloodMoonModule.INTERVAL
         )
     }
 
