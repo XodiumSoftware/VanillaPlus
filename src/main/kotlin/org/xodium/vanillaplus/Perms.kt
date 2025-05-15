@@ -13,19 +13,22 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 object Perms {
     private val G0 = instance::class.simpleName.toString().lowercase()
 
-    //TODO: see if we can register the permissions automatically.
     /** Register all permissions. */
     init {
-        listOf<Permission>(
-            Use.GENERAL,
-            AutoRefill.USE,
-            AutoTool.USE,
-            Book.GUIDE,
-            Book.RULES,
-            Eclipse.ECLIPSE,
-            InvSearch.USE,
-            InvUnload.USE,
-        ).forEach(instance.server.pluginManager::addPermission)
+        val permissions = mutableListOf<Permission>()
+        fun collectPermissions(obj: Any) {
+            obj::class.java.declaredFields.forEach { field ->
+                field.isAccessible = true
+                val value = field.get(obj)
+                if (value is Permission) {
+                    permissions.add(value)
+                } else if (value != null && value::class.java.isMemberClass) {
+                    collectPermissions(value)
+                }
+            }
+        }
+        collectPermissions(this)
+        permissions.forEach(instance.server.pluginManager::addPermission)
     }
 
     /** Permissions for Usage commands. */

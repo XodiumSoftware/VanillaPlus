@@ -230,7 +230,6 @@ object Config {
         /** The message displayed when the eclipse is inactive. */
         var ECLIPSE_END_MSG: String = "⚡ An Eclipse is setting! ⚡".fireFmt()
 
-        //TODO: replace sound with a custom sound from resource-pack.
         /** The sound effect used for when the eclipse is active. */
         var ECLIPSE_START_SOUND: Sound = Sound.sound(
             BukkitSound.ENTITY_WITHER_SPAWN,
@@ -239,7 +238,6 @@ object Config {
             1.0f
         )
 
-        //TODO: replace sound with a custom sound from resource-pack.
         /** The sound effect used for when the eclipse is inactive. */
         var ECLIPSE_END_SOUND: Sound = Sound.sound(
             BukkitSound.ENTITY_WITHER_DEATH,
