@@ -89,18 +89,19 @@ object Config {
             listOf(
                 // Page 1
                 "<b><u><dark_aqua>Tips & Tricks:<reset>\n\n" +
-                        "<gold>▶ ${"/home".fireFmt()}\n<dark_gray>Teleport to your home.\n" +
-                        "<gold>▶ ${"/skills".fireFmt()}\n<dark_gray>Opens up the Skills GUI.\n" +
-                        "<gold>▶ ${"/rtp".fireFmt()}\n<dark_gray>To random teleport in the current dimension.\n" +
-                        "<gold>▶ ${"/unload".fireFmt()}\n<dark_gray>Unloads your inventory into nearby chests.\n",
+                        "<gold>▶ ${"/home".fireFmt()}\n<dark_gray>Teleport to your home.\n\n" +
+                        "<gold>▶ ${"/skills".fireFmt()}\n<dark_gray>Opens up the Skills GUI.\n\n" +
+                        "<gold>▶ ${"/rtp".fireFmt()}\n<dark_gray>Random teleport in the current dimension.",
                 // Page 2
-                "<gold>▶ ${"/search".fireFmt()}\n<dark_gray>Search into nearby chests for an item." +
-                        "<gold>▶ ${"/tpa [player]".fireFmt()}\n<dark_gray>Request to teleport to a player.\n" +
-                        "<gold>▶ ${"/condense".fireFmt()}\n<dark_gray>Condenses resources (if possible) to their highest form (blocks).\n" +
-                        "<gold>▶ ${"/uncondense".fireFmt()}\n<dark_gray>Uncondenses resources (if possible) to their lowest form (items).\n",
+                "<gold>▶ ${"/unload".fireFmt()}\n<dark_gray>Unloads your inventory into nearby chests.\n\n" +
+                        "<gold>▶ ${"/search".fireFmt()}\n<dark_gray>Search into nearby chests for an item.\n\n" +
+                        "<gold>▶ ${"/tpa [player]".fireFmt()}\n<dark_gray>Request to teleport to a player.",
                 // Page 3
-                "<gold>▶ ${"Enchantment max level".fireFmt()}\n<dark_gray>has been incremented by <red><b>x2<reset><dark_gray>.\n" +
-                        "<gold>▶ ${"During a Horde".fireFmt()}\n<dark_gray>the mob attack damage, max health & follow range increases by <red><b>x2<reset><dark_gray>."
+                "<gold>▶ ${"/condense".fireFmt()}\n<dark_gray>Condenses resources (if possible) to their highest form (blocks).\n\n" +
+                        "<gold>▶ ${"/uncondense".fireFmt()}\n<dark_gray>Uncondenses resources (if possible) to their lowest form (items).",
+                // Page 4
+                "<gold>▶ ${"Enchantment max level".fireFmt()}\n<dark_gray>has been incremented by <red><b>x2<reset><dark_gray>.\n\n" +
+                        "<gold>▶ ${"During an Eclipse".fireFmt()}\n<dark_gray>the mob attack damage, max health & follow range increases by <red><b>x2<reset><dark_gray>."
             ).mm()
         )
 
@@ -110,7 +111,7 @@ object Config {
             instance::class.simpleName.toString().fireFmt().mm(),
             listOf(
                 // Page 1
-                "<b><u><dark_aqua>Player Rules:<reset>\n" +
+                "<b><u><dark_aqua>Player Rules:<reset>\n\n" +
                         "<gold>▶ <dark_aqua>01 <dark_gray>| <red>No Griefing.\n" +
                         "<gold>▶ <dark_aqua>02 <dark_gray>| <red>No Spamming.\n" +
                         "<gold>▶ <dark_aqua>03 <dark_gray>| <red>No Advertising.\n" +
@@ -126,7 +127,7 @@ object Config {
                         "<gold>▶ <dark_aqua>12 <dark_gray>| <red>No 1x1 Towers.\n" +
                         "<gold>▶ <dark_aqua>13 <dark_gray>| <red>Build in Medieval style.",
                 // Page 3
-                "<b><u><dark_aqua>Mod/Admin Rules:<reset>\n" +
+                "<b><u><dark_aqua>Mod/Admin Rules:<reset>\n\n" +
                         "<gold>▶ <dark_aqua>01 <dark_gray>| <red>Be Responsible with the power you are given as staff.\n" +
                         "<gold>▶ <dark_aqua>02 <dark_gray>| <red>Do not spawn blocks or items for other players.\n" +
                         "<gold>▶ <dark_aqua>03 <dark_gray>| <red>When Trading, only buy and sell legit items.\n" +
