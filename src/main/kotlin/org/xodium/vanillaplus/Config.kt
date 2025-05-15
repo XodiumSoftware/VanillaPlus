@@ -14,7 +14,6 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
-import org.xodium.vanillaplus.utils.FmtUtils.roseFmt
 import org.xodium.vanillaplus.utils.TimeUtils
 import org.xodium.vanillaplus.utils.Utils.getTps
 import org.xodium.vanillaplus.utils.Utils.getWeather
@@ -87,18 +86,21 @@ object Config {
         var GUIDE_BOOK: Book = Book.book(
             "Guide".fireFmt().mm(),
             instance::class.simpleName.toString().fireFmt().mm(),
-            //TODO: fix new lining.
             listOf(
-                "${"▶".mangoFmt()} ${"/home".roseFmt()} ${">".mangoFmt()} <white>Teleport to your home.",
-                "${"▶".mangoFmt()} ${"/skills".roseFmt()} ${">".mangoFmt()} <white>Opens up the Skills GUI.",
-                "${"▶".mangoFmt()} ${"/rtp".roseFmt()} ${">".mangoFmt()} <white>To random teleport in the current dimension.",
-                "${"▶".mangoFmt()} ${"/unload".roseFmt()} ${">".mangoFmt()} <white>Unloads your inventory into nearby chests.",
-                "${"▶".mangoFmt()} ${"/dump".roseFmt()} ${">".mangoFmt()} <white>Dumps your inventory into nearby chests.",
-                "${"▶".mangoFmt()} ${"/tpa [player]".roseFmt()} ${">".mangoFmt()} <white>Request to teleport to a player.",
-                "${"▶".mangoFmt()} ${"/condense".roseFmt()} ${">".mangoFmt()} <white>Condenses resources (if possible) to their highest form (blocks).",
-                "${"▶".mangoFmt()} ${"/uncondense".roseFmt()} ${">".mangoFmt()} <white>Uncondenses resources (if possible) to their lowest form (items).",
-                "${"▶".mangoFmt()} ${"Enchantment max level".roseFmt()} ${">".mangoFmt()} <white>has been incremented by <red><bold>x2<dark_gray>.",
-                "${"▶".mangoFmt()} ${"During a Horde".roseFmt()} ${">".mangoFmt()} <white>the mob attack damage, max health & follow range increases by <red><bold>x2<dark_gray>."
+                // Page 1
+                "<b><u><dark_aqua>Tips & Tricks:<reset>\n\n" +
+                        "<gold>▶ ${"/home".fireFmt()}\n<dark_gray>Teleport to your home.\n" +
+                        "<gold>▶ ${"/skills".fireFmt()}\n<dark_gray>Opens up the Skills GUI.\n" +
+                        "<gold>▶ ${"/rtp".fireFmt()}\n<dark_gray>To random teleport in the current dimension.\n" +
+                        "<gold>▶ ${"/unload".fireFmt()}\n<dark_gray>Unloads your inventory into nearby chests.\n",
+                // Page 2
+                "<gold>▶ ${"/search".fireFmt()}\n<dark_gray>Search into nearby chests for an item." +
+                        "<gold>▶ ${"/tpa [player]".fireFmt()}\n<dark_gray>Request to teleport to a player.\n" +
+                        "<gold>▶ ${"/condense".fireFmt()}\n<dark_gray>Condenses resources (if possible) to their highest form (blocks).\n" +
+                        "<gold>▶ ${"/uncondense".fireFmt()}\n<dark_gray>Uncondenses resources (if possible) to their lowest form (items).\n",
+                // Page 3
+                "<gold>▶ ${"Enchantment max level".fireFmt()}\n<dark_gray>has been incremented by <red><b>x2<reset><dark_gray>.\n" +
+                        "<gold>▶ ${"During a Horde".fireFmt()}\n<dark_gray>the mob attack damage, max health & follow range increases by <red><b>x2<reset><dark_gray>."
             ).mm()
         )
 
@@ -107,7 +109,8 @@ object Config {
             "Rules".fireFmt().mm(),
             instance::class.simpleName.toString().fireFmt().mm(),
             listOf(
-                "<gold>▶ <dark_aqua>Player Rules:\n" + // Page 1
+                // Page 1
+                "<b><u><dark_aqua>Player Rules:<reset>\n" +
                         "<gold>▶ <dark_aqua>01 <dark_gray>| <red>No Griefing.\n" +
                         "<gold>▶ <dark_aqua>02 <dark_gray>| <red>No Spamming.\n" +
                         "<gold>▶ <dark_aqua>03 <dark_gray>| <red>No Advertising.\n" +
@@ -115,15 +118,15 @@ object Config {
                         "<gold>▶ <dark_aqua>05 <dark_gray>| <red>No Trolling/Flaming.\n" +
                         "<gold>▶ <dark_aqua>06 <dark_gray>| <red>No Asking for OP, Ranks, or Items.\n" +
                         "<gold>▶ <dark_aqua>07 <dark_gray>| <red>Respect all Players.",
-
-                "<gold>▶ <dark_aqua>08 <dark_gray>| <red>Obey Staff they are the Law Enforcers.\n" + // Page 2
+                // Page 2
+                "<gold>▶ <dark_aqua>08 <dark_gray>| <red>Obey Staff they are the Law Enforcers.\n" +
                         "<gold>▶ <dark_aqua>09 <dark_gray>| <red>No Racist or Sexist Remarks.\n" +
                         "<gold>▶ <dark_aqua>10 <dark_gray>| <red>No Mods/Hacks.\n" +
                         "<gold>▶ <dark_aqua>11 <dark_gray>| <red>No Full Caps Messages.\n" +
                         "<gold>▶ <dark_aqua>12 <dark_gray>| <red>No 1x1 Towers.\n" +
                         "<gold>▶ <dark_aqua>13 <dark_gray>| <red>Build in Medieval style.",
-
-                "<gold>▶ <dark_aqua>Mod/Admin Rules:\n" + // Page 3
+                // Page 3
+                "<b><u><dark_aqua>Mod/Admin Rules:<reset>\n" +
                         "<gold>▶ <dark_aqua>01 <dark_gray>| <red>Be Responsible with the power you are given as staff.\n" +
                         "<gold>▶ <dark_aqua>02 <dark_gray>| <red>Do not spawn blocks or items for other players.\n" +
                         "<gold>▶ <dark_aqua>03 <dark_gray>| <red>When Trading, only buy and sell legit items.\n" +
