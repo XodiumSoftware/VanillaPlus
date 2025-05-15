@@ -14,7 +14,6 @@ import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.HordeData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.utils.WorldTimeUtils
 import kotlin.random.Random
 
 /** Represents a module handling horde mechanics within the system. */
@@ -60,19 +59,24 @@ class HordeModule : ModuleInterface {
     private fun horde() {
         val world = instance.server.worlds.firstOrNull() ?: return
         val isNewMoon = getMoonPhase(world) == NEW_MOON_PHASE
-        val isNight = world.time in WorldTimeUtils.NIGHT
+        val isNight = !world.isDayTime
 
         if (shouldActivateHorde(isNight, isNewMoon)) {
-            activateHorde()
-        } else if (shouldDeactivateHorde(world.time)) {
-            deactivateHorde()
+            hordeState.isActive = true
+            hordeState.hasTriggeredThisNewMoon = true
+            instance.server.onlinePlayers.forEach { it.showBossBar(Config.HordeModule.BOSSBAR) }
+        } else if (shouldDeactivateHorde(isNight, isNewMoon)) {
+            hordeState.isActive = false
+            instance.server.onlinePlayers.forEach { it.hideBossBar(Config.HordeModule.BOSSBAR) }
         }
 
-        resetTriggerFlagIfNeeded(world.time)
+        if (world.time < 1000 && hordeState.hasTriggeredThisNewMoon) {
+            hordeState.hasTriggeredThisNewMoon = false
+        }
     }
 
     /** Returns the current moon phase based on the world time. */
-    private fun getMoonPhase(world: World): Int = ((world.fullTime / 24000) % 8).toInt()
+    private fun getMoonPhase(world: World): Int = ((world.time / 24000) % 8).toInt()
 
     /**
      * Determines if the horde should be activated based on the current time and state.
@@ -88,33 +92,11 @@ class HordeModule : ModuleInterface {
     }
 
     /**
-     * Determines if the horde should be deactivated based on the current time.
-     * @param time The current world time.
+     * Determines if the horde should be deactivated based on the current time and state.
+     * @param isNight Indicates if it's currently night.
+     * @param isNewMoon Indicates if it's currently a new moon.
      */
-    private fun shouldDeactivateHorde(time: Long): Boolean {
-        return time < WorldTimeUtils.NIGHT.first && hordeState.isActive
-    }
-
-    /**
-     * Resets the trigger flag if the time is less than 1000 and the horde has already been triggered.
-     * @param time The current world time.
-     */
-    private fun resetTriggerFlagIfNeeded(time: Long) {
-        if (time < 1000 && hordeState.hasTriggeredThisNewMoon) {
-            hordeState.hasTriggeredThisNewMoon = false
-        }
-    }
-
-    /** Activates the horde, making it visible to players. */
-    private fun activateHorde() {
-        hordeState.isActive = true
-        hordeState.hasTriggeredThisNewMoon = true
-        instance.server.onlinePlayers.forEach { it.showBossBar(Config.HordeModule.BOSSBAR) }
-    }
-
-    /** Deactivates the horde, hiding it from players. */
-    private fun deactivateHorde() {
-        hordeState.isActive = false
-        instance.server.onlinePlayers.forEach { it.hideBossBar(Config.HordeModule.BOSSBAR) }
+    private fun shouldDeactivateHorde(isNight: Boolean, isNewMoon: Boolean): Boolean {
+        return (!isNight || !isNewMoon) && hordeState.isActive
     }
 }
