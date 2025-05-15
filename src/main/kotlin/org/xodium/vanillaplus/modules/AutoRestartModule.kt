@@ -18,6 +18,7 @@ class AutoRestartModule : ModuleInterface {
     override fun enabled(): Boolean = Config.AutoRestartModule.ENABLED
 
     //TODO: look into sh-script-restart / cron job.
+    //TODO: refactor to use schedule better and to use config for init delay and interval.
     init {
         if (enabled()) schedule()
     }

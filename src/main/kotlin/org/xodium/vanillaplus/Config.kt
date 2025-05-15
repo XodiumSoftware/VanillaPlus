@@ -83,6 +83,7 @@ object Config {
         /** Enables or disables the BloodMoonModule. */
         var ENABLED: Boolean = true
 
+        //TODO: check adjustments if its enough buff.
         /**
          * Map of attribute adjustments for mobs during a blood moon.
          * `it` is the current value of the attribute aka base value.
@@ -90,6 +91,15 @@ object Config {
         var MOB_ATTRIBUTE_ADJUSTMENTS: Map<Attribute, (Double) -> Double> = mapOf(
             Attribute.ATTACK_DAMAGE to { it * 1.5 },
             Attribute.MAX_HEALTH to { it * 2.0 }
+        )
+
+        /** The bossbar for the blood moon. */
+        var BOSSBAR: BossBar = BossBar.bossBar(
+            "Bloodmoon".fireFmt().mm(),
+            1.0f,
+            BossBar.Color.RED,
+            BossBar.Overlay.PROGRESS,
+            setOf(BossBar.Flag.PLAY_BOSS_MUSIC)
         )
 
         /** The initial delay before the first blood moon. */
