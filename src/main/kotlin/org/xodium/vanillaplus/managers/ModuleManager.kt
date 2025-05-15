@@ -39,7 +39,6 @@ object ModuleManager {
             RecipiesModule(),
             TabListModule(),
             TreesModule(),
-            WaystoneModule()
         ).filter { it.enabled() }
             .forEach { module ->
                 instance.logger.info(

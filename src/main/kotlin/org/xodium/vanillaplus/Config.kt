@@ -320,28 +320,4 @@ object Config {
             Material.WARPED_FUNGUS to listOf("trees/warped"),
         )
     }
-
-    /** Configuration settings for the WaystoneModule. */
-    object WaystoneModule {
-        /** Enables or disables the TreesModule. */
-        var ENABLED: Boolean = true
-
-        /** The material used for crafting waystones. */
-        var WAYSTONE_MATERIAL: Material = Material.BEACON
-
-        /** A constant representing the custom model data key for waystone items. */
-        var WAYSTONE_CUSTOM_MODEL_DATA: String = "waystone"
-
-        /** The base cost in experience points (XP) for performing waystone teleportation. */
-        var BASE_XP_COST: Int = 5
-
-        /** Multiplier applied to distances in waystones. */
-        var DISTANCE_MULTIPLIER: Double = 0.05
-
-        /** Multiplier used for dimensional scaling or calculations. */
-        var DIMENSIONAL_MULTIPLIER: Int = 50
-
-        /** Multiplier applied to the base experience (XP) cost when the player is mounted during travel or teleportation. */
-        var MOUNT_MULTIPLIER: Double = 1.5
-    }
 }
