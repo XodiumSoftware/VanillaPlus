@@ -124,8 +124,7 @@ class InvSearchModule : ModuleInterface {
      */
     private fun searchItemInContainers(material: Material, destination: Inventory): Boolean {
         if (doesChestContain(destination, ItemStack(material))) {
-            val amount = doesChestContainCount(destination, material)
-            destination.location?.let { protocolUnload(it, material, amount) }
+            destination.location?.let { protocolUnload(it, material, doesChestContainCount(destination, material)) }
             return true
         }
         return false
