@@ -19,6 +19,8 @@ import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.HordeData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.Utils
 
 /** Represents a module handling horde mechanics within the system. */
@@ -30,16 +32,6 @@ class HordeModule : ModuleInterface {
         return Commands.literal("newmoon")
             .requires { it.sender.hasPermission(Perms.Horde.NEW_MOON) }
             .executes { it -> Utils.tryCatch(it) { skipToNewMoon(it.sender as Player) } }
-    }
-
-    private fun skipToNewMoon(player: Player) {
-        val world = player.world
-        val currentDay = world.fullTime / 24000
-        val currentPhase = (currentDay % 8).toInt()
-        val daysToNewMoon = (4 - currentPhase + 8) % 8
-        val newMoonDay = currentDay + daysToNewMoon
-        world.fullTime = newMoonDay * 24000 + 13000
-        player.sendMessage("§aSkipped to the next new moon night!")
     }
 
     private var hordeState = HordeData()
@@ -89,10 +81,6 @@ class HordeModule : ModuleInterface {
         }
     }
 
-    //TODO: check if this works.
-    /** Returns the current moon phase based on the world time. */
-    private fun getMoonPhase(world: World): Int = ((world.fullTime / 24000) % 8).toInt()
-
     /**
      * Determines if the horde should be activated based on the current time and state.
      * @param isNight Indicates if it's currently night.
@@ -137,5 +125,26 @@ class HordeModule : ModuleInterface {
         instance.server.onlinePlayers.forEach { it.hideBossBar(Config.HordeModule.BOSSBAR) }
         world.setStorm(false)
         world.isThundering = false
+    }
+
+    /**
+     * Gets the current moon phase based on the world time.
+     * @param world The world from which to get the moon phase.
+     * @return The current moon phase.
+     */
+    private fun getMoonPhase(world: World): Int = ((world.fullTime / 24000) % 8).toInt()
+
+    /**
+     * Skips to the next new moon by adjusting the world time.
+     * @param player The player who executed the command.
+     */
+    private fun skipToNewMoon(player: Player) {
+        val world = player.world
+        val currentDay = world.fullTime / 24000
+        val currentPhase = getMoonPhase(world)
+        val daysToNewMoon = (4 - currentPhase + 8) % 8
+        val newMoonDay = currentDay + daysToNewMoon
+        world.fullTime = newMoonDay * 24000 + 13000
+        player.sendMessage("Skipped to the next new moon night!".fireFmt().mm())
     }
 }
