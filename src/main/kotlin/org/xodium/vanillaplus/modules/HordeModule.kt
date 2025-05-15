@@ -15,14 +15,18 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.HordeData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.WorldTimeUtils
-import java.util.*
+import kotlin.random.Random
 
 /** Represents a module handling horde mechanics within the system. */
 class HordeModule : ModuleInterface {
     override fun enabled(): Boolean = Config.HordeModule.ENABLED
 
+    private companion object {
+        const val NEW_MOON_PHASE = 4
+        const val HORDE_CHANCE = 10
+    }
+
     private var hordeState = HordeData()
-    private var hasTriggeredThisFullMoon = false
 
     init {
         if (enabled()) schedule()
@@ -42,10 +46,6 @@ class HordeModule : ModuleInterface {
         }
     }
 
-    private fun getMoonPhase(world: World): Int {
-        return ((world.fullTime / 24000) % 8).toInt()
-    }
-
     /** Holds all the schedules for this module. */
     private fun schedule() {
         instance.server.scheduler.runTaskTimer(
@@ -59,22 +59,62 @@ class HordeModule : ModuleInterface {
     /** Handles the horde mechanics. */
     private fun horde() {
         val world = instance.server.worlds.firstOrNull() ?: return
-        val isFullMoon = getMoonPhase(world) == 0
+        val isNewMoon = getMoonPhase(world) == NEW_MOON_PHASE
         val isNight = world.time in WorldTimeUtils.NIGHT
 
-        if (isNight && isFullMoon && !hordeState.isActive && !hasTriggeredThisFullMoon) {
-            if (Random().nextInt(10) == 0) {
-                hordeState.isActive = true
-                hasTriggeredThisFullMoon = true
-                instance.server.onlinePlayers.forEach { it.showBossBar(Config.HordeModule.BOSSBAR) }
-            }
-        } else if (world.time < WorldTimeUtils.NIGHT.first && hordeState.isActive) {
-            hordeState.isActive = false
-            instance.server.onlinePlayers.forEach { it.hideBossBar(Config.HordeModule.BOSSBAR) }
+        if (shouldActivateHorde(isNight, isNewMoon)) {
+            activateHorde()
+        } else if (shouldDeactivateHorde(world.time)) {
+            deactivateHorde()
         }
 
-        if (world.time < 1000 && hasTriggeredThisFullMoon) {
-            hasTriggeredThisFullMoon = false
+        resetTriggerFlagIfNeeded(world.time)
+    }
+
+    /** Returns the current moon phase based on the world time. */
+    private fun getMoonPhase(world: World): Int = ((world.fullTime / 24000) % 8).toInt()
+
+    /**
+     * Determines if the horde should be activated based on the current time and state.
+     * @param isNight Indicates if it's currently night.
+     * @param isNewMoon Indicates if it's currently a new moon.
+     */
+    private fun shouldActivateHorde(isNight: Boolean, isNewMoon: Boolean): Boolean {
+        return isNight &&
+                isNewMoon &&
+                !hordeState.isActive &&
+                !hordeState.hasTriggeredThisNewMoon &&
+                Random.Default.nextInt(HORDE_CHANCE) == 0
+    }
+
+    /**
+     * Determines if the horde should be deactivated based on the current time.
+     * @param time The current world time.
+     */
+    private fun shouldDeactivateHorde(time: Long): Boolean {
+        return time < WorldTimeUtils.NIGHT.first && hordeState.isActive
+    }
+
+    /**
+     * Resets the trigger flag if the time is less than 1000 and the horde has already been triggered.
+     * @param time The current world time.
+     */
+    private fun resetTriggerFlagIfNeeded(time: Long) {
+        if (time < 1000 && hordeState.hasTriggeredThisNewMoon) {
+            hordeState.hasTriggeredThisNewMoon = false
         }
+    }
+
+    /** Activates the horde, making it visible to players. */
+    private fun activateHorde() {
+        hordeState.isActive = true
+        hordeState.hasTriggeredThisNewMoon = true
+        instance.server.onlinePlayers.forEach { it.showBossBar(Config.HordeModule.BOSSBAR) }
+    }
+
+    /** Deactivates the horde, hiding it from players. */
+    private fun deactivateHorde() {
+        hordeState.isActive = false
+        instance.server.onlinePlayers.forEach { it.hideBossBar(Config.HordeModule.BOSSBAR) }
     }
 }
