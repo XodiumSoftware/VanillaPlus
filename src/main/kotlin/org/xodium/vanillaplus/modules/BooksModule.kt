@@ -21,6 +21,9 @@ class BooksModule : ModuleInterface {
     @Suppress("UnstableApiUsage")
     override fun cmd(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
         return listOf(
+            Commands.literal("guide")
+                .requires { it.sender.hasPermission(Perms.Book.GUIDE) }
+                .executes { it -> Utils.tryCatch(it) { (it.sender as Player).openBook(Config.BooksModule.GUIDE_BOOK) } },
             Commands.literal("rules")
                 .requires { it.sender.hasPermission(Perms.Book.RULES) }
                 .executes { it -> Utils.tryCatch(it) { (it.sender as Player).openBook(Config.BooksModule.RULES_BOOK) } })

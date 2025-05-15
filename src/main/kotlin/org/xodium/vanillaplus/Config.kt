@@ -83,6 +83,25 @@ object Config {
         /** Enables or disables the BookModule. */
         var ENABLED: Boolean = true
 
+        /** The Guide book. */
+        var GUIDE_BOOK: Book = Book.book(
+            "Guide".fireFmt().mm(),
+            instance::class.simpleName.toString().fireFmt().mm(),
+            //TODO: fix new lining.
+            listOf(
+                "${"▶".mangoFmt()} ${"/home".roseFmt()} ${">".mangoFmt()} <white><italic>Teleport to your home.",
+                "${"▶".mangoFmt()} ${"/skills".roseFmt()} ${">".mangoFmt()} <white><italic>Opens up the Skills GUI.",
+                "${"▶".mangoFmt()} ${"/rtp".roseFmt()} ${">".mangoFmt()} <white><italic>To random teleport in the current dimension.",
+                "${"▶".mangoFmt()} ${"/unload".roseFmt()} ${">".mangoFmt()} <white><italic>Unloads your inventory into nearby chests.",
+                "${"▶".mangoFmt()} ${"/dump".roseFmt()} ${">".mangoFmt()} <white><italic>Dumps your inventory into nearby chests.",
+                "${"▶".mangoFmt()} ${"/tpa [player]".roseFmt()} ${">".mangoFmt()} <white><italic>Request to teleport to a player.",
+                "${"▶".mangoFmt()} ${"/condense".roseFmt()} ${">".mangoFmt()} <white><italic>Condenses resources (if possible) to their highest form (blocks).",
+                "${"▶".mangoFmt()} ${"/uncondense".roseFmt()} ${">".mangoFmt()} <white><italic>Uncondenses resources (if possible) to their lowest form (items).",
+                "${"▶".mangoFmt()} ${"Enchantment max level".roseFmt()} ${">".mangoFmt()} <white><italic>has been incremented by <red><bold>x2<dark_gray><italic>.",
+                "${"▶".mangoFmt()} ${"During a Horde".roseFmt()} ${">".mangoFmt()} <white><italic>the mob attack damage, max health & follow range increases by <red><bold>x2<dark_gray><italic>."
+            ).mm()
+        )
+
         /** The Rules book. */
         var RULES_BOOK: Book = Book.book(
             "Rules".fireFmt().mm(),
@@ -111,35 +130,6 @@ object Config {
                         "<gold>▶ <dark_aqua>05 <dark_gray>| <red>No Power Abuse."
             ).mm()
         )
-    }
-
-    /** Configuration settings for the BroadcastModule. */
-    object BroadcastModule {
-        /** Enables or disables the BroadcastModule. */
-        var ENABLED: Boolean = true
-
-        /** The broadcast message prefix. */
-        var MESSAGE_PREFIX: String = "<gold>[<dark_aqua>TIP<gold>]"
-
-        /** The messages to be broadcasted. */
-        var MESSAGES: List<String> = listOf(
-            "${"▶".mangoFmt()} ${"/home".roseFmt()} ${">".mangoFmt()} <white><italic>Teleport to your home.",
-            "${"▶".mangoFmt()} ${"/skills".roseFmt()} ${">".mangoFmt()} <white><italic>Opens up the Skills GUI.",
-            "${"▶".mangoFmt()} ${"/rtp".roseFmt()} ${">".mangoFmt()} <white><italic>To random teleport in the current dimension.",
-            "${"▶".mangoFmt()} ${"/unload".roseFmt()} ${">".mangoFmt()} <white><italic>Unloads your inventory into nearby chests.",
-            "${"▶".mangoFmt()} ${"/dump".roseFmt()} ${">".mangoFmt()} <white><italic>Dumps your inventory into nearby chests.",
-            "${"▶".mangoFmt()} ${"/tpa [player]".roseFmt()} ${">".mangoFmt()} <white><italic>Request to teleport to a player.",
-            "${"▶".mangoFmt()} ${"/condense".roseFmt()} ${">".mangoFmt()} <white><italic>Condenses resources (if possible) to their highest form (blocks).",
-            "${"▶".mangoFmt()} ${"/uncondense".roseFmt()} ${">".mangoFmt()} <white><italic>Uncondenses resources (if possible) to their lowest form (items).",
-            "${"▶".mangoFmt()} ${"Enchantment max level".roseFmt()} ${">".mangoFmt()} <white><italic>has been incremented by <red><bold>x2<dark_gray><italic>.",
-            "${"▶".mangoFmt()} ${"During a Horde".roseFmt()} ${">".mangoFmt()} <white><italic>the mob attack damage, max health & follow range increases by <red><bold>x2<dark_gray><italic>.",
-        )
-
-        /** The initial delay before the first broadcast. */
-        var INIT_DELAY: Long = TimeUtils.seconds(1)
-
-        /** The interval between broadcasts. */
-        var INTERVAL: Long = TimeUtils.minutes(5)
     }
 
     /** Configuration settings for the DimensionsModule. */

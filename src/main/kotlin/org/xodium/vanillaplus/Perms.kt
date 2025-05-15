@@ -13,12 +13,14 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 object Perms {
     private val G0 = instance::class.simpleName.toString().lowercase()
 
+    //TODO: see if we can register the permissions automatically.
     /** Register all permissions. */
     init {
         listOf<Permission>(
             Use.GENERAL,
             AutoRefill.USE,
             AutoTool.USE,
+            Book.GUIDE,
             Book.RULES,
             Eclipse.ECLIPSE,
             InvSearch.USE,
@@ -50,6 +52,8 @@ object Perms {
     /** Permissions for Book commands. */
     object Book {
         private val G1 = this::class.simpleName.toString().lowercase()
+        val GUIDE: Permission =
+            Permission("${G0}.${G1}.guide", "Allows use of the guide command", PermissionDefault.TRUE)
         val RULES: Permission =
             Permission("${G0}.${G1}.rules", "Allows use of the rules command", PermissionDefault.TRUE)
     }
