@@ -8,11 +8,13 @@ package org.xodium.vanillaplus
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.sound.Sound
 import org.bukkit.Material
+import org.bukkit.attribute.Attribute
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.BookData
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
+import org.xodium.vanillaplus.utils.FmtUtils.roseFmt
 import org.xodium.vanillaplus.utils.TimeUtils
 import org.xodium.vanillaplus.utils.Utils.getTps
 import org.xodium.vanillaplus.utils.Utils.getWeather
@@ -116,17 +118,21 @@ object Config {
         /** Enables or disables the BroadcastModule. */
         var ENABLED: Boolean = true
 
-        /** The messages to be broadcasted. One will be randomly selected each time. */
+        /** The broadcast message prefix. */
+        var MESSAGE_PREFIX: String = "<gold>[<dark_aqua>TIP<gold>]"
+
+        /** The messages to be broadcasted. */
         var MESSAGES: List<String> = listOf(
-            "<gold>▶ <light_purple>/home <gold>> <white><italic>Teleport to your home.",
-            "<gold>▶ <light_purple>/skills <gold>> <white><italic>Opens up the Skills GUI.",
-            "<gold>▶ <light_purple>/rtp <gold>> <white><italic>To random teleport in the current dimension.",
-            "<gold>▶ <light_purple>/unload <gold>> <white><italic>Unloads your inventory into nearby chests.",
-            "<gold>▶ <light_purple>/dump <gold>> <white><italic>Dumps your inventory into nearby chests.",
-            "<gold>▶ <light_purple>/tpa [player] <gold>> <white><italic>Request to teleport to a player.",
-            "<gold>▶ <light_purple>/condense <gold>> <white><italic>Condenses resources (if possible) to their highest form (blocks).",
-            "<gold>▶ <light_purple>/uncondense <gold>> <white><italic>Uncondenses resources (if possible) to their lowest form (items).",
-            "<gold>▶ <light_purple>Enchantment max level <gold>> <white><italic>has been incremented by <red><bold>x2<dark_gray><italic>."
+            "${"▶".mangoFmt()} ${"/home".roseFmt()} ${">".mangoFmt()} <white><italic>Teleport to your home.",
+            "${"▶".mangoFmt()} ${"/skills".roseFmt()} ${">".mangoFmt()} <white><italic>Opens up the Skills GUI.",
+            "${"▶".mangoFmt()} ${"/rtp".roseFmt()} ${">".mangoFmt()} <white><italic>To random teleport in the current dimension.",
+            "${"▶".mangoFmt()} ${"/unload".roseFmt()} ${">".mangoFmt()} <white><italic>Unloads your inventory into nearby chests.",
+            "${"▶".mangoFmt()} ${"/dump".roseFmt()} ${">".mangoFmt()} <white><italic>Dumps your inventory into nearby chests.",
+            "${"▶".mangoFmt()} ${"/tpa [player]".roseFmt()} ${">".mangoFmt()} <white><italic>Request to teleport to a player.",
+            "${"▶".mangoFmt()} ${"/condense".roseFmt()} ${">".mangoFmt()} <white><italic>Condenses resources (if possible) to their highest form (blocks).",
+            "${"▶".mangoFmt()} ${"/uncondense".roseFmt()} ${">".mangoFmt()} <white><italic>Uncondenses resources (if possible) to their lowest form (items).",
+            "${"▶".mangoFmt()} ${"Enchantment max level".roseFmt()} ${">".mangoFmt()} <white><italic>has been incremented by <red><bold>x2<dark_gray><italic>.",
+            "${"▶".mangoFmt()} ${"During a Horde".roseFmt()} ${">".mangoFmt()} <white><italic>the mob attack damage, max health & follow range increases by <red><bold>x2<dark_gray><italic>.",
         )
 
         /** The initial delay before the first broadcast. */
@@ -203,6 +209,53 @@ object Config {
 
         /** The delay (in milliseconds) before automatic closure. */
         var AUTO_CLOSE_DELAY: Long = 6L * 1000L // 6 seconds
+    }
+
+    /** Configuration settings for the eclipseModule. */
+    object EclipseModule {
+        /** Enables or disables the eclipseModule. */
+        var ENABLED: Boolean = true
+
+        //TODO: check adjustments if its enough buff.
+        /**
+         * Map of attribute adjustments for mobs during an eclipse.
+         * `it` is the current value of the attribute aka base value.
+         */
+        var MOB_ATTRIBUTE_ADJUSTMENTS: Map<Attribute, (Double) -> Double> = mapOf(
+            Attribute.ATTACK_DAMAGE to { it * 2.0 },
+            Attribute.MAX_HEALTH to { it * 2.0 },
+            Attribute.FOLLOW_RANGE to { it * 2.0 },
+        )
+
+        /** The message displayed when the eclipse is active. */
+        var ECLIPSE_START_MSG: String = "⚡ An Eclipse is rising! ⚡".fireFmt()
+
+        /** The message displayed when the eclipse is inactive. */
+        var ECLIPSE_END_MSG: String = "⚡ An Eclipse is setting! ⚡".fireFmt()
+
+        //TODO: replace sound with a custom sound from resource-pack.
+        /** The sound effect used for when the eclipse is active. */
+        var ECLIPSE_START_SOUND: Sound = Sound.sound(
+            BukkitSound.ENTITY_WITHER_SPAWN,
+            Sound.Source.HOSTILE,
+            1.0f,
+            1.0f
+        )
+
+        //TODO: replace sound with a custom sound from resource-pack.
+        /** The sound effect used for when the eclipse is inactive. */
+        var ECLIPSE_END_SOUND: Sound = Sound.sound(
+            BukkitSound.ENTITY_WITHER_DEATH,
+            Sound.Source.HOSTILE,
+            1.0f,
+            1.0f
+        )
+
+        /** The initial delay before the first eclipse. */
+        var INIT_DELAY: Long = TimeUtils.seconds(0)
+
+        /** The interval between eclipses. */
+        var INTERVAL: Long = TimeUtils.seconds(10)
     }
 
     /** Configuration settings for the InvSearchModule. */

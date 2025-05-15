@@ -15,20 +15,23 @@ class BroadcastModule : ModuleInterface {
     override fun enabled(): Boolean = Config.BroadcastModule.ENABLED
 
     init {
-        if (enabled()) {
-            instance.server.scheduler.runTaskTimerAsynchronously(
-                instance,
-                Runnable { broadcast() },
-                Config.BroadcastModule.INIT_DELAY,
-                Config.BroadcastModule.INTERVAL
-            )
-        }
+        if (enabled()) schedule()
     }
 
-    /** Broadcasts a random message to all online players. */
+    /** Holds all the schedules for this module. */
+    private fun schedule() {
+        instance.server.scheduler.runTaskTimerAsynchronously(
+            instance,
+            Runnable { broadcast() },
+            Config.BroadcastModule.INIT_DELAY,
+            Config.BroadcastModule.INTERVAL
+        )
+    }
+
+    /** Handles the broadcast mechanics. */
     private fun broadcast() {
         instance.server.onlinePlayers.forEach {
-            it.sendMessage("<gold>[<dark_aqua>TIP<gold>] ${Config.BroadcastModule.MESSAGES.random()}".mm())
+            it.sendMessage("${Config.BroadcastModule.MESSAGE_PREFIX} ${Config.BroadcastModule.MESSAGES.random()}".mm())
         }
     }
 }

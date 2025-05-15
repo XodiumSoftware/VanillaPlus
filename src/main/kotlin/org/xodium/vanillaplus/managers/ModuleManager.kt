@@ -33,6 +33,7 @@ object ModuleManager {
             BroadcastModule(),
             DimensionsModule(),
             DoorsModule(),
+            EclipseModule(),
             InvSearchModule(),
             InvUnloadModule(),
             MotdModule(),
