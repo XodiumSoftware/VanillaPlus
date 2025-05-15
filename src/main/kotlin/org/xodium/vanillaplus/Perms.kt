@@ -19,7 +19,7 @@ object Perms {
             Use.GENERAL,
             AutoRefill.USE,
             AutoTool.USE,
-            Horde.NEW_MOON,
+            Eclipse.ECLIPSE,
             InvSearch.USE,
             InvUnload.USE,
         ).forEach(instance.server.pluginManager::addPermission)
@@ -46,11 +46,11 @@ object Perms {
             Permission("${G0}.${G1}.use", "Allows use of the autotool command", PermissionDefault.TRUE)
     }
 
-    /** Permissions for Horde commands. */
-    object Horde {
+    /** Permissions for Eclipse commands. */
+    object Eclipse {
         private val G1 = this::class.simpleName.toString().lowercase()
-        val NEW_MOON: Permission =
-            Permission("${G0}.${G1}.newmoon", "Allows use of the newmoon command", PermissionDefault.OP)
+        val ECLIPSE: Permission =
+            Permission("${G0}.${G1}.eclipse", "Allows use of the eclipse command", PermissionDefault.OP)
     }
 
     /** Permissions for InvSearch commands. */

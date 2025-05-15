@@ -211,14 +211,14 @@ object Config {
         var AUTO_CLOSE_DELAY: Long = 6L * 1000L // 6 seconds
     }
 
-    /** Configuration settings for the HordeModule. */
-    object HordeModule {
-        /** Enables or disables the HordeModule. */
+    /** Configuration settings for the eclipseModule. */
+    object EclipseModule {
+        /** Enables or disables the eclipseModule. */
         var ENABLED: Boolean = true
 
         //TODO: check adjustments if its enough buff.
         /**
-         * Map of attribute adjustments for mobs during a horde.
+         * Map of attribute adjustments for mobs during an eclipse.
          * `it` is the current value of the attribute aka base value.
          */
         var MOB_ATTRIBUTE_ADJUSTMENTS: Map<Attribute, (Double) -> Double> = mapOf(
@@ -227,27 +227,34 @@ object Config {
             Attribute.FOLLOW_RANGE to { it * 2.0 },
         )
 
-        /** The bossbar for the horde. */
-        var BOSSBAR: BossBar = BossBar.bossBar(
-            "Horde".fireFmt().mm(),
-            1.0f,
-            BossBar.Color.RED,
-            BossBar.Overlay.PROGRESS,
-        )
+        /** The message displayed when the eclipse is active. */
+        var ECLIPSE_START_MSG: String = "⚡ An Eclipse is rising! ⚡".fireFmt()
 
-        //TODO: replace sound with a custom sound from resourcepack.
-        /** The sound effect used for the horde. */
-        var HORDE_SOUND: Sound = Sound.sound(
+        /** The message displayed when the eclipse is inactive. */
+        var ECLIPSE_END_MSG: String = "⚡ An Eclipse is setting! ⚡".fireFmt()
+
+        //TODO: replace sound with a custom sound from resource-pack.
+        /** The sound effect used for when the eclipse is active. */
+        var ECLIPSE_START_SOUND: Sound = Sound.sound(
             BukkitSound.ENTITY_WITHER_SPAWN,
             Sound.Source.HOSTILE,
             1.0f,
             1.0f
         )
 
-        /** The initial delay before the first blood moon. */
+        //TODO: replace sound with a custom sound from resource-pack.
+        /** The sound effect used for when the eclipse is inactive. */
+        var ECLIPSE_END_SOUND: Sound = Sound.sound(
+            BukkitSound.ENTITY_WITHER_DEATH,
+            Sound.Source.HOSTILE,
+            1.0f,
+            1.0f
+        )
+
+        /** The initial delay before the first eclipse. */
         var INIT_DELAY: Long = TimeUtils.seconds(0)
 
-        /** The interval between blood moons. */
+        /** The interval between eclipses. */
         var INTERVAL: Long = TimeUtils.seconds(10)
     }
 

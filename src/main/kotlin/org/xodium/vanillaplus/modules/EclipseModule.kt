@@ -18,24 +18,24 @@ import org.bukkit.event.entity.CreatureSpawnEvent
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.data.HordeData
+import org.xodium.vanillaplus.data.EclipseData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.Utils
 
 /** Represents a module handling horde mechanics within the system. */
-class HordeModule : ModuleInterface {
-    override fun enabled(): Boolean = Config.HordeModule.ENABLED
+class EclipseModule : ModuleInterface {
+    override fun enabled(): Boolean = Config.EclipseModule.ENABLED
 
     @Suppress("UnstableApiUsage")
     override fun cmd(): LiteralArgumentBuilder<CommandSourceStack>? {
         return Commands.literal("newmoon")
-            .requires { it.sender.hasPermission(Perms.Horde.NEW_MOON) }
+            .requires { it.sender.hasPermission(Perms.Eclipse.ECLIPSE) }
             .executes { it -> Utils.tryCatch(it) { skipToNewMoon(it.sender as Player) } }
     }
 
-    private var hordeState = HordeData()
+    private var hordeState = EclipseData()
 
     init {
         if (enabled()) schedule()
@@ -50,7 +50,7 @@ class HordeModule : ModuleInterface {
         if (world.environment != World.Environment.NORMAL) return
         if (world.difficulty != Difficulty.HARD) return
 
-        Config.HordeModule.MOB_ATTRIBUTE_ADJUSTMENTS.forEach { (attribute, adjust) ->
+        Config.EclipseModule.MOB_ATTRIBUTE_ADJUSTMENTS.forEach { (attribute, adjust) ->
             entity.getAttribute(attribute)?.let { attr ->
                 attr.baseValue = adjust(attr.baseValue)
                 if (attribute == Attribute.MAX_HEALTH) {
@@ -77,8 +77,8 @@ class HordeModule : ModuleInterface {
         instance.server.scheduler.runTaskTimer(
             instance,
             Runnable { horde() },
-            Config.HordeModule.INIT_DELAY,
-            Config.HordeModule.INTERVAL
+            Config.EclipseModule.INIT_DELAY,
+            Config.EclipseModule.INTERVAL
         )
     }
 
@@ -94,8 +94,8 @@ class HordeModule : ModuleInterface {
             deactivateHorde(world)
         }
 
-        if (world.time < 1000 && hordeState.hasTriggeredThisNewMoon) {
-            hordeState.hasTriggeredThisNewMoon = false
+        if (world.time < 1000 && hordeState.hasTriggeredThisEclipse) {
+            hordeState.hasTriggeredThisEclipse = false
         }
     }
 
@@ -108,7 +108,7 @@ class HordeModule : ModuleInterface {
         return isNight &&
                 isNewMoon &&
                 !hordeState.isActive &&
-                !hordeState.hasTriggeredThisNewMoon
+                !hordeState.hasTriggeredThisEclipse
     }
 
     /**
@@ -127,10 +127,10 @@ class HordeModule : ModuleInterface {
      */
     private fun activateHorde(world: World) {
         hordeState.isActive = true
-        hordeState.hasTriggeredThisNewMoon = true
+        hordeState.hasTriggeredThisEclipse = true
         instance.server.onlinePlayers.forEach {
-            it.showBossBar(Config.HordeModule.BOSSBAR)
-            it.playSound(Config.HordeModule.HORDE_SOUND)
+            it.sendActionBar(Config.EclipseModule.ECLIPSE_START_MSG.mm())
+            it.playSound(Config.EclipseModule.ECLIPSE_START_SOUND)
         }
         world.setStorm(true)
         world.isThundering = true
@@ -143,7 +143,10 @@ class HordeModule : ModuleInterface {
      */
     private fun deactivateHorde(world: World) {
         hordeState.isActive = false
-        instance.server.onlinePlayers.forEach { it.hideBossBar(Config.HordeModule.BOSSBAR) }
+        instance.server.onlinePlayers.forEach {
+            it.sendActionBar(Config.EclipseModule.ECLIPSE_END_MSG.mm())
+            it.playSound(Config.EclipseModule.ECLIPSE_END_SOUND)
+        }
         world.setStorm(false)
         world.isThundering = false
     }
