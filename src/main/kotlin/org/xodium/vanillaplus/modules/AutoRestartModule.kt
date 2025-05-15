@@ -19,22 +19,22 @@ class AutoRestartModule : ModuleInterface {
 
     //TODO: look into sh-script-restart / cron job.
     init {
-        if (enabled()) {
-            //TODO: move to fun schedule.
-            instance.server.scheduler.runTaskTimerAsynchronously(
-                instance,
-                Runnable {
-                    //TODO: move to its own function for better organization.
-                    Config.AutoRestartModule.RESTART_TIMES.forEach {
-                        if (isTimeToStartCountdown(it)) {
-                            instance.server.scheduler.runTask(instance, Runnable { countdown() })
-                        }
+        if (enabled()) schedule()
+    }
+
+    private fun schedule() {
+        instance.server.scheduler.runTaskTimerAsynchronously(
+            instance,
+            Runnable {
+                Config.AutoRestartModule.RESTART_TIMES.forEach {
+                    if (isTimeToStartCountdown(it)) {
+                        instance.server.scheduler.runTask(instance, Runnable { countdown() })
                     }
-                },
-                0L,
-                TimeUtils.minutes(1)
-            )
-        }
+                }
+            },
+            0L,
+            TimeUtils.minutes(1)
+        )
     }
 
     /** Triggers a countdown for the server restart. */
