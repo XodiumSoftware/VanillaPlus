@@ -47,7 +47,7 @@ class InvSearchModule : ModuleInterface {
     @Suppress("UnstableApiUsage")
     override fun cmd(): LiteralArgumentBuilder<CommandSourceStack>? {
         return Commands.literal("invsearch")
-            .requires { it.sender.hasPermission(Perms.InvUnload.USE) }
+            .requires { it.sender.hasPermission(Perms.InvSearch.USE) }
             .then(
                 Commands.argument("material", StringArgumentType.word())
                     .suggests(materialSuggestionProvider)

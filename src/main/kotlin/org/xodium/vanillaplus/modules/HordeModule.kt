@@ -5,19 +5,42 @@
 
 package org.xodium.vanillaplus.modules
 
+import com.mojang.brigadier.builder.LiteralArgumentBuilder
+import io.papermc.paper.command.brigadier.CommandSourceStack
+import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.World
 import org.bukkit.attribute.Attribute
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.CreatureSpawnEvent
 import org.xodium.vanillaplus.Config
+import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.HordeData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.Utils
 
 /** Represents a module handling horde mechanics within the system. */
 class HordeModule : ModuleInterface {
     override fun enabled(): Boolean = Config.HordeModule.ENABLED
+
+    @Suppress("UnstableApiUsage")
+    override fun cmd(): LiteralArgumentBuilder<CommandSourceStack>? {
+        return Commands.literal("newmoon")
+            .requires { it.sender.hasPermission(Perms.Horde.NEW_MOON) }
+            .executes { it -> Utils.tryCatch(it) { skipToNewMoon(it.sender as Player) } }
+    }
+
+    private fun skipToNewMoon(player: Player) {
+        val world = player.world
+        val currentDay = world.fullTime / 24000
+        val currentPhase = (currentDay % 8).toInt()
+        val daysToNewMoon = (4 - currentPhase + 8) % 8
+        val newMoonDay = currentDay + daysToNewMoon
+        world.fullTime = newMoonDay * 24000 + 13000
+        player.sendMessage("§aSkipped to the next new moon night!")
+    }
 
     private var hordeState = HordeData()
 
@@ -68,7 +91,7 @@ class HordeModule : ModuleInterface {
 
     //TODO: check if this works.
     /** Returns the current moon phase based on the world time. */
-    private fun getMoonPhase(world: World): Int = ((world.time / 24000) % 8).toInt()
+    private fun getMoonPhase(world: World): Int = ((world.fullTime / 24000) % 8).toInt()
 
     /**
      * Determines if the horde should be activated based on the current time and state.

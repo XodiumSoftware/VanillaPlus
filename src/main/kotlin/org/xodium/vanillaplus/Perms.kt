@@ -19,8 +19,9 @@ object Perms {
             Use.GENERAL,
             AutoRefill.USE,
             AutoTool.USE,
+            Horde.NEW_MOON,
+            InvSearch.USE,
             InvUnload.USE,
-            Waystone.USE
         ).forEach(instance.server.pluginManager::addPermission)
     }
 
@@ -45,17 +46,24 @@ object Perms {
             Permission("${G0}.${G1}.use", "Allows use of the autotool command", PermissionDefault.TRUE)
     }
 
+    /** Permissions for Horde commands. */
+    object Horde {
+        private val G1 = instance::class.simpleName.toString().lowercase()
+        val NEW_MOON: Permission =
+            Permission("${G0}.${G1}.newmoon", "Allows use of the newmoon command", PermissionDefault.OP)
+    }
+
+    /** Permissions for InvSearch commands. */
+    object InvSearch {
+        private val G1 = instance::class.simpleName.toString().lowercase()
+        val USE: Permission =
+            Permission("${G0}.${G1}.use", "Allows use of the invsearch command", PermissionDefault.TRUE)
+    }
+
     /** Permissions for InvUnload commands. */
     object InvUnload {
         private val G1 = instance::class.simpleName.toString().lowercase()
         val USE: Permission =
             Permission("${G0}.${G1}.use", "Allows use of the invunload command", PermissionDefault.TRUE)
-    }
-
-    /** Permissions for Waystone commands. */
-    object Waystone {
-        private val G1 = this::class.simpleName.toString().lowercase()
-        val USE: Permission =
-            Permission("${G0}.${G1}.use", "Allows use of the waystone command", PermissionDefault.OP)
     }
 }

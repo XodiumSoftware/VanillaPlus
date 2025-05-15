@@ -231,7 +231,6 @@ object Config {
             1.0f,
             BossBar.Color.RED,
             BossBar.Overlay.PROGRESS,
-            setOf(BossBar.Flag.PLAY_BOSS_MUSIC)
         )
 
         /** The initial delay before the first blood moon. */
