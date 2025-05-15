@@ -5,6 +5,7 @@
 
 package org.xodium.vanillaplus.modules
 
+import org.bukkit.World
 import org.bukkit.attribute.Attribute
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -16,11 +17,12 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.WorldTimeUtils
 import java.util.*
 
-/** Represents a module handling blood-moon mechanics within the system. */
-class BloodMoonModule : ModuleInterface {
-    override fun enabled(): Boolean = Config.BloodMoonModule.ENABLED
+/** Represents a module handling horde mechanics within the system. */
+class HordeModule : ModuleInterface {
+    override fun enabled(): Boolean = Config.HordeModule.ENABLED
 
     private var bloodMoonState = BloodMoonData()
+    private var hasTriggeredThisFullMoon = false
 
     init {
         if (enabled()) schedule()
@@ -30,7 +32,7 @@ class BloodMoonModule : ModuleInterface {
     fun on(event: CreatureSpawnEvent) {
         if (!bloodMoonState.isActive && !enabled()) return
         val entity = event.entity
-        Config.BloodMoonModule.MOB_ATTRIBUTE_ADJUSTMENTS.forEach { (attribute, adjust) ->
+        Config.HordeModule.MOB_ATTRIBUTE_ADJUSTMENTS.forEach { (attribute, adjust) ->
             entity.getAttribute(attribute)?.let { attr ->
                 attr.baseValue = adjust(attr.baseValue)
                 if (attribute == Attribute.MAX_HEALTH) {
@@ -40,27 +42,39 @@ class BloodMoonModule : ModuleInterface {
         }
     }
 
+    private fun getMoonPhase(world: World): Int {
+        return ((world.fullTime / 24000) % 8).toInt()
+    }
+
     /** Holds all the schedules for this module. */
     private fun schedule() {
         instance.server.scheduler.runTaskTimer(
             instance,
-            Runnable { bloodMoon() },
-            Config.BloodMoonModule.INIT_DELAY,
-            Config.BloodMoonModule.INTERVAL
+            Runnable { horde() },
+            Config.HordeModule.INIT_DELAY,
+            Config.HordeModule.INTERVAL
         )
     }
 
-    /** Handles the blood-moon mechanics. */
-    private fun bloodMoon() {
+    /** Handles the horde mechanics. */
+    private fun horde() {
         val world = instance.server.worlds.firstOrNull() ?: return
-        if (world.time in WorldTimeUtils.NIGHT && !bloodMoonState.isActive) {
+        val isFullMoon = getMoonPhase(world) == 0
+        val isNight = world.time in WorldTimeUtils.NIGHT
+
+        if (isNight && isFullMoon && !bloodMoonState.isActive && !hasTriggeredThisFullMoon) {
             if (Random().nextInt(10) == 0) {
                 bloodMoonState.isActive = true
-                instance.server.onlinePlayers.forEach { it.showBossBar(Config.BloodMoonModule.BOSSBAR) }
+                hasTriggeredThisFullMoon = true
+                instance.server.onlinePlayers.forEach { it.showBossBar(Config.HordeModule.BOSSBAR) }
             }
         } else if (world.time < WorldTimeUtils.NIGHT.first && bloodMoonState.isActive) {
             bloodMoonState.isActive = false
-            instance.server.onlinePlayers.forEach { it.hideBossBar(Config.BloodMoonModule.BOSSBAR) }
+            instance.server.onlinePlayers.forEach { it.hideBossBar(Config.HordeModule.BOSSBAR) }
+        }
+
+        if (world.time < 1000 && hasTriggeredThisFullMoon) {
+            hasTriggeredThisFullMoon = false
         }
     }
 }
