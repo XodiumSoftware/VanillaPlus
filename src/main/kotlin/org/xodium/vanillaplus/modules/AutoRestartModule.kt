@@ -22,6 +22,7 @@ class AutoRestartModule : ModuleInterface {
         if (enabled()) schedule()
     }
 
+    /** Holds all the schedules for this module. */
     private fun schedule() {
         instance.server.scheduler.runTaskTimerAsynchronously(
             instance,

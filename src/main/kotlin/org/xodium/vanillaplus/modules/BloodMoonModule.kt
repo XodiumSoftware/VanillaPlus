@@ -25,8 +25,6 @@ class BloodMoonModule : ModuleInterface {
 
     private var bloodMoonState = BloodMoonData()
 
-    //TODO: add resourcepack fun via API.
-
     init {
         if (enabled()) schedule()
     }
@@ -46,10 +44,7 @@ class BloodMoonModule : ModuleInterface {
         }
     }
 
-    /**
-     * Schedules the blood moon event to run every 10 seconds.
-     * It checks the world time and activates or deactivates the blood moon accordingly.
-     */
+    /** Holds all the schedules for this module. */
     private fun schedule() {
         instance.server.scheduler.runTaskTimer(
             instance,
@@ -59,12 +54,7 @@ class BloodMoonModule : ModuleInterface {
         )
     }
 
-    /**
-     * Blood Moon event
-     * Every 10 seconds, check if the world time is between 13000 and 23000
-     * If it is, set isBloodMoon to true and broadcast a message
-     * If it is not, set isBloodMoon to false and broadcast a message
-     */
+    /** Handles the blood-moon mechanics. */
     private fun bloodMoon() {
         val world = instance.server.worlds.firstOrNull() ?: return
         if (world.time in WorldTimeUtils.NIGHT && !bloodMoonState.isActive) {
