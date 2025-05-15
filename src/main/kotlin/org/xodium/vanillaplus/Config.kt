@@ -89,16 +89,16 @@ object Config {
             instance::class.simpleName.toString().fireFmt().mm(),
             //TODO: fix new lining.
             listOf(
-                "${"▶".mangoFmt()} ${"/home".roseFmt()} ${">".mangoFmt()} <white><italic>Teleport to your home.",
-                "${"▶".mangoFmt()} ${"/skills".roseFmt()} ${">".mangoFmt()} <white><italic>Opens up the Skills GUI.",
-                "${"▶".mangoFmt()} ${"/rtp".roseFmt()} ${">".mangoFmt()} <white><italic>To random teleport in the current dimension.",
-                "${"▶".mangoFmt()} ${"/unload".roseFmt()} ${">".mangoFmt()} <white><italic>Unloads your inventory into nearby chests.",
-                "${"▶".mangoFmt()} ${"/dump".roseFmt()} ${">".mangoFmt()} <white><italic>Dumps your inventory into nearby chests.",
-                "${"▶".mangoFmt()} ${"/tpa [player]".roseFmt()} ${">".mangoFmt()} <white><italic>Request to teleport to a player.",
-                "${"▶".mangoFmt()} ${"/condense".roseFmt()} ${">".mangoFmt()} <white><italic>Condenses resources (if possible) to their highest form (blocks).",
-                "${"▶".mangoFmt()} ${"/uncondense".roseFmt()} ${">".mangoFmt()} <white><italic>Uncondenses resources (if possible) to their lowest form (items).",
-                "${"▶".mangoFmt()} ${"Enchantment max level".roseFmt()} ${">".mangoFmt()} <white><italic>has been incremented by <red><bold>x2<dark_gray><italic>.",
-                "${"▶".mangoFmt()} ${"During a Horde".roseFmt()} ${">".mangoFmt()} <white><italic>the mob attack damage, max health & follow range increases by <red><bold>x2<dark_gray><italic>."
+                "${"▶".mangoFmt()} ${"/home".roseFmt()} ${">".mangoFmt()} <white>Teleport to your home.",
+                "${"▶".mangoFmt()} ${"/skills".roseFmt()} ${">".mangoFmt()} <white>Opens up the Skills GUI.",
+                "${"▶".mangoFmt()} ${"/rtp".roseFmt()} ${">".mangoFmt()} <white>To random teleport in the current dimension.",
+                "${"▶".mangoFmt()} ${"/unload".roseFmt()} ${">".mangoFmt()} <white>Unloads your inventory into nearby chests.",
+                "${"▶".mangoFmt()} ${"/dump".roseFmt()} ${">".mangoFmt()} <white>Dumps your inventory into nearby chests.",
+                "${"▶".mangoFmt()} ${"/tpa [player]".roseFmt()} ${">".mangoFmt()} <white>Request to teleport to a player.",
+                "${"▶".mangoFmt()} ${"/condense".roseFmt()} ${">".mangoFmt()} <white>Condenses resources (if possible) to their highest form (blocks).",
+                "${"▶".mangoFmt()} ${"/uncondense".roseFmt()} ${">".mangoFmt()} <white>Uncondenses resources (if possible) to their lowest form (items).",
+                "${"▶".mangoFmt()} ${"Enchantment max level".roseFmt()} ${">".mangoFmt()} <white>has been incremented by <red><bold>x2<dark_gray>.",
+                "${"▶".mangoFmt()} ${"During a Horde".roseFmt()} ${">".mangoFmt()} <white>the mob attack damage, max health & follow range increases by <red><bold>x2<dark_gray>."
             ).mm()
         )
 
