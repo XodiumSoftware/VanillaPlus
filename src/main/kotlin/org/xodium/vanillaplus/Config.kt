@@ -210,6 +210,9 @@ object Config {
         /** Enables or disables the eclipseModule. */
         var ENABLED: Boolean = true
 
+        /** The spawn rate of mobs during an eclipse. */
+        var SPAWN_RATE: Int = 10
+
         //TODO: check adjustments if its enough buff.
         /**
          * Map of attribute adjustments for mobs during an eclipse.

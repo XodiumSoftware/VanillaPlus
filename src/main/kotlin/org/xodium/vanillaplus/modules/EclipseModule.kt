@@ -61,7 +61,7 @@ class EclipseModule : ModuleInterface {
         }
 
         if (hordeState.isActive && event.spawnReason == CreatureSpawnEvent.SpawnReason.NATURAL) {
-            repeat(10) {
+            repeat(Config.EclipseModule.SPAWN_RATE) {
                 entity.world.spawnEntity(
                     entity.location.clone().add(
                         (-5..5).random().toDouble(),
