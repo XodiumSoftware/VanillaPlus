@@ -14,16 +14,10 @@ import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.HordeData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import kotlin.random.Random
 
 /** Represents a module handling horde mechanics within the system. */
 class HordeModule : ModuleInterface {
     override fun enabled(): Boolean = Config.HordeModule.ENABLED
-
-    private companion object {
-        const val NEW_MOON_PHASE = 4
-        const val HORDE_CHANCE = 10
-    }
 
     private var hordeState = HordeData()
 
@@ -58,16 +52,13 @@ class HordeModule : ModuleInterface {
     /** Handles the horde mechanics. */
     private fun horde() {
         val world = instance.server.worlds.firstOrNull() ?: return
-        val isNewMoon = getMoonPhase(world) == NEW_MOON_PHASE
+        val isNewMoon = getMoonPhase(world) == 4
         val isNight = !world.isDayTime
 
         if (shouldActivateHorde(isNight, isNewMoon)) {
-            hordeState.isActive = true
-            hordeState.hasTriggeredThisNewMoon = true
-            instance.server.onlinePlayers.forEach { it.showBossBar(Config.HordeModule.BOSSBAR) }
+            activateHorde(world)
         } else if (shouldDeactivateHorde(isNight, isNewMoon)) {
-            hordeState.isActive = false
-            instance.server.onlinePlayers.forEach { it.hideBossBar(Config.HordeModule.BOSSBAR) }
+            deactivateHorde(world)
         }
 
         if (world.time < 1000 && hordeState.hasTriggeredThisNewMoon) {
@@ -75,6 +66,7 @@ class HordeModule : ModuleInterface {
         }
     }
 
+    //TODO: check if this works.
     /** Returns the current moon phase based on the world time. */
     private fun getMoonPhase(world: World): Int = ((world.time / 24000) % 8).toInt()
 
@@ -87,8 +79,7 @@ class HordeModule : ModuleInterface {
         return isNight &&
                 isNewMoon &&
                 !hordeState.isActive &&
-                !hordeState.hasTriggeredThisNewMoon &&
-                Random.Default.nextInt(HORDE_CHANCE) == 0
+                !hordeState.hasTriggeredThisNewMoon
     }
 
     /**
@@ -98,5 +89,30 @@ class HordeModule : ModuleInterface {
      */
     private fun shouldDeactivateHorde(isNight: Boolean, isNewMoon: Boolean): Boolean {
         return (!isNight || !isNewMoon) && hordeState.isActive
+    }
+
+    /**
+     * Activates the horde by setting its state to active and showing the boss bar to all players.
+     * Also sets the world to stormy and thundering.
+     * @param world The world in which the horde is activated.
+     */
+    private fun activateHorde(world: World) {
+        hordeState.isActive = true
+        hordeState.hasTriggeredThisNewMoon = true
+        instance.server.onlinePlayers.forEach { it.showBossBar(Config.HordeModule.BOSSBAR) }
+        world.setStorm(true)
+        world.isThundering = true
+    }
+
+    /**
+     * Deactivates the horde by setting its state to inactive and hiding the boss bar from all players.
+     * Also sets the world to clear weather.
+     * @param world The world in which the horde is deactivated.
+     */
+    private fun deactivateHorde(world: World) {
+        hordeState.isActive = false
+        instance.server.onlinePlayers.forEach { it.hideBossBar(Config.HordeModule.BOSSBAR) }
+        world.setStorm(false)
+        world.isThundering = false
     }
 }
