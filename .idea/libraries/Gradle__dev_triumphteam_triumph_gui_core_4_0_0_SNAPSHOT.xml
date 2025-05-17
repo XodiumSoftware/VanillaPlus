@@ -2,11 +2,11 @@
   <library name="Gradle: dev.triumphteam:triumph-gui-core:4.0.0-SNAPSHOT" type="java-imported" external-system-id="GRADLE">
     <properties groupId="dev.triumphteam" artifactId="triumph-gui-core" version="4.0.0-SNAPSHOT" baseVersion="4.0.0-SNAPSHOT" />
     <CLASSES>
-      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/dev.triumphteam/triumph-gui-core/4.0.0-SNAPSHOT/16f9cd54c6bccfbc40ff9e48ec0acd92af843ef0/triumph-gui-core-4.0.0-SNAPSHOT.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/dev.triumphteam/triumph-gui-core/4.0.0-SNAPSHOT/64378938c5211cdd2c0638f1ceec29da5cb9b5ca/triumph-gui-core-4.0.0-SNAPSHOT.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
-      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/dev.triumphteam/triumph-gui-core/4.0.0-SNAPSHOT/e9ff7feffedd923be72763331c513ca428c2701a/triumph-gui-core-4.0.0-SNAPSHOT-sources.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/dev.triumphteam/triumph-gui-core/4.0.0-SNAPSHOT/ac862388dcc7d1e4430ba723fb62e5935af39a89/triumph-gui-core-4.0.0-SNAPSHOT-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

@@ -23,10 +23,10 @@ import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.PlayerData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.registries.MaterialRegistry
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.Utils
-import org.xodium.vanillaplus.utils.Utils.moveBowlsAndBottles
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -35,10 +35,11 @@ class AutoRefillModule : ModuleInterface {
     override fun enabled(): Boolean = Config.AutoRefillModule.ENABLED
 
     @Suppress("UnstableApiUsage")
-    override fun cmd(): LiteralArgumentBuilder<CommandSourceStack> {
-        return Commands.literal("autorefill")
-            .requires { it.sender.hasPermission(Perms.AutoRefill.USE) }
-            .executes { it -> Utils.tryCatch(it) { toggle(it.sender as Player) } }
+    override fun cmd(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
+        return listOf(
+            Commands.literal("autorefill")
+                .requires { it.sender.hasPermission(Perms.AutoRefill.USE) }
+                .executes { it -> Utils.tryCatch(it) { toggle(it.sender as Player) } })
     }
 
     private val cooldowns = ConcurrentHashMap<UUID, Long>()
@@ -186,6 +187,45 @@ class AutoRefillModule : ModuleInterface {
                 instance.logger.warning("Error during item refill: ${e.message}")
             }
         })
+    }
+
+    /**
+     * A function to move bowls and bottles in an inventory.
+     * @param inv The inventory to move the bowls and bottles in.
+     * @param slot The slot to move the bowls and bottles from.
+     * @return True if the bowls and bottles were moved successfully, false otherwise.
+     */
+    private fun moveBowlsAndBottles(inv: Inventory, slot: Int): Boolean {
+        val itemStack = inv.getItem(slot) ?: return false
+        if (!MaterialRegistry.BOWL_OR_BOTTLE.contains(itemStack.type)) return false
+
+        inv.clear(slot)
+
+        val leftovers = inv.addItem(itemStack)
+        if (inv.getItem(slot)?.amount == null ||
+            inv.getItem(slot)?.amount == 0 ||
+            inv.getItem(slot)?.type == Material.AIR
+        ) return true
+
+        if (leftovers.isNotEmpty()) {
+            val holder = inv.holder
+            if (holder !is Player) return false
+            for (leftover in leftovers.values) {
+                holder.world.dropItem(holder.location, leftover)
+            }
+            return false
+        }
+
+        for (i in 35 downTo 0) {
+            if (inv.getItem(i)?.amount == null ||
+                inv.getItem(i)?.amount == 0 ||
+                inv.getItem(i)?.type == Material.AIR
+            ) {
+                inv.setItem(i, itemStack)
+                return true
+            }
+        }
+        return false
     }
 
     /**

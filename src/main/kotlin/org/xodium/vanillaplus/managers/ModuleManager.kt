@@ -19,7 +19,7 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.Utils
 import kotlin.time.measureTime
 
-/** Represents the module handler within the system. */
+/** Represents the module manager within the system. */
 object ModuleManager {
     @Suppress("UnstableApiUsage")
     private val commandBuilders = mutableListOf<LiteralArgumentBuilder<CommandSourceStack>>()
@@ -30,23 +30,22 @@ object ModuleManager {
             AutoRestartModule(),
             AutoToolModule(),
             BooksModule(),
-            BroadcastModule(),
             DimensionsModule(),
             DoorsModule(),
+            EclipseModule(),
             InvSearchModule(),
             InvUnloadModule(),
             MotdModule(),
             RecipiesModule(),
             TabListModule(),
             TreesModule(),
-            WaystoneModule()
         ).filter { it.enabled() }
             .forEach { module ->
                 instance.logger.info(
                     "Loaded: ${module::class.simpleName} | Took ${
                         measureTime {
                             instance.server.pluginManager.registerEvents(module, instance)
-                            module.cmd()?.let { commandBuilders.add(it) }
+                            module.cmd()?.let { commandBuilders.addAll(it) }
                         }.inWholeMilliseconds
                     }ms"
                 )

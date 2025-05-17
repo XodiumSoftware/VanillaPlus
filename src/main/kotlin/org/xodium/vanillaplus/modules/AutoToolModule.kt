@@ -32,6 +32,7 @@ import org.xodium.vanillaplus.data.BlockTypeData
 import org.xodium.vanillaplus.data.PlayerData
 import org.xodium.vanillaplus.enums.ToolEnum
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.registries.EntityRegistry
 import org.xodium.vanillaplus.registries.MaterialRegistry
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
@@ -45,10 +46,11 @@ class AutoToolModule : ModuleInterface {
     override fun enabled(): Boolean = Config.AutoToolModule.ENABLED
 
     @Suppress("UnstableApiUsage")
-    override fun cmd(): LiteralArgumentBuilder<CommandSourceStack> {
-        return Commands.literal("autotool")
-            .requires { it.sender.hasPermission(Perms.AutoTool.USE) }
-            .executes { it -> Utils.tryCatch(it) { toggle(it.sender as Player) } }
+    override fun cmd(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
+        return listOf(
+            Commands.literal("autotool")
+                .requires { it.sender.hasPermission(Perms.AutoTool.USE) }
+                .executes { it -> Utils.tryCatch(it) { toggle(it.sender as Player) } })
     }
 
     private val toolMap: MutableMap<Material, ToolEnum> = HashMap()
@@ -355,7 +357,7 @@ class AutoToolModule : ModuleInterface {
             ) else null
         }
         list.sortWith(Comparator.comparingInt(ToIntFunction { itemStack: ItemStack ->
-            Utils.getMultiplier(itemStack)
+            getMultiplier(itemStack)
         }).reversed())
         if (material == Material.DIAMOND_ORE || material == Material.DEEPSLATE_DIAMOND_ORE) {
             list = putIronPlusBeforeGoldPickaxes(list)
@@ -409,7 +411,7 @@ class AutoToolModule : ModuleInterface {
         }
         if (itemStackArrayList.isEmpty()) return null
         itemStackArrayList.sortWith(Comparator { o1: ItemStack?, o2: ItemStack? ->
-            if (Utils.getDamage(o1, entityType) < Utils.getDamage(o2, entityType)) 1 else -1
+            if (getDamage(o1, entityType) < getDamage(o2, entityType)) 1 else -1
         })
         return itemStackArrayList[0]
     }
@@ -442,16 +444,16 @@ class AutoToolModule : ModuleInterface {
         if (!Tag.LEAVES.isTagged(material) && material != Material.COBWEB) {
             tool = getBestToolType(material)
         } else {
-            tool = if (Utils.hasShears(player.inventory.storageContents)) {
+            tool = if (hasShears(player.inventory.storageContents)) {
                 ToolEnum.SHEARS
-            } else if (Utils.hasHoe(player.inventory.storageContents)
+            } else if (hasHoe(player.inventory.storageContents)
                 && material != Material.COBWEB
             ) {
                 ToolEnum.HOE
             } else if (((Config.AutoToolModule.CONSIDER_SWORDS_FOR_COBWEBS
                         && material == Material.COBWEB) || (material != Material.COBWEB
                         && Config.AutoToolModule.CONSIDER_SWORDS_FOR_LEAVES))
-                && Utils.hasSword(
+                && hasSword(
                     player.inventory.storageContents
                 )
             ) {
@@ -557,6 +559,106 @@ class AutoToolModule : ModuleInterface {
             if (playerInventory.getItem(i) == null || isDamageable(playerInventory.getItem(i))) {
                 playerInventory.heldItemSlot = i
             }
+        }
+    }
+
+    /**
+     * A function to get the damage to an item stack against an entity type.
+     * @param itemStack The item stack to get the damage to.
+     * @param entityType The entity type to get the damage against.
+     * @return The damage to the item stack against the entity type.
+     */
+    private fun getDamage(itemStack: ItemStack?, entityType: EntityType): Double {
+        val base = MaterialRegistry.BASE_DAMAGE_MAP[itemStack?.type ?: Material.AIR] ?: 0.0
+        return if (base == 0.0) 0.0 else base + getBonus(itemStack, entityType)
+    }
+
+    /**
+     * A function to get the bonus damage to an item stack against an entity type.
+     * @param itemStack The item stack to get the bonus damage to.
+     * @param entityType The entity type to get the bonus damage against.
+     * @return The bonus damage to the item stack against the entity type.
+     */
+    private fun getBonus(itemStack: ItemStack?, entityType: EntityType): Double =
+        itemStack?.itemMeta?.enchants?.entries?.sumOf { (enchantment, level) ->
+            when (enchantment) {
+                Enchantment.SHARPNESS -> 0.5 * level + 0.5
+                Enchantment.BANE_OF_ARTHROPODS -> if (EntityRegistry.ARTHROPODS.contains(entityType)) 2.5 * level else 0.0
+                Enchantment.SMITE -> if (EntityRegistry.UNDEAD.contains(entityType)) 2.5 * level else 0.0
+                else -> 0.0
+            }
+        } ?: 0.0
+
+    /**
+     * A function to check if the inventory contains a specific item.
+     * @param inventory The inventory to check.
+     * @param predicate The predicate to check against the item type.
+     * @return True if the inventory contains the item, false otherwise.
+     */
+    private fun inventoryContains(
+        inventory: Array<ItemStack?>,
+        predicate: (Material) -> Boolean
+    ): Boolean {
+        for (i in 0..<9) {
+            val item = inventory[i] ?: continue
+            if (predicate(item.type)) return true
+        }
+        return false
+    }
+
+    /**
+     * A function to check if the inventory contains shears.
+     * @param inventory The inventory to check.
+     * @return True if the inventory contains shears, false otherwise.
+     */
+    private fun hasShears(inventory: Array<ItemStack?>): Boolean =
+        inventoryContains(inventory) { it == Material.SHEARS }
+
+    /**
+     * A function to check if the inventory contains a sword.
+     * @param inventory The inventory to check.
+     * @return True if the inventory contains a sword, false otherwise.
+     */
+    private fun hasSword(inventory: Array<ItemStack?>): Boolean =
+        inventoryContains(inventory) { it.name.endsWith("_SWORD") }
+
+    /**
+     * A function to check if the inventory contains a hoe.
+     * @param inventory The inventory to check.
+     * @return True if the inventory contains a hoe, false otherwise.
+     */
+    private fun hasHoe(inventory: Array<ItemStack?>): Boolean =
+        inventoryContains(inventory) { it.name.endsWith("_HOE") }
+
+    /**
+     * A function to get the multiplier of an item stack.
+     * @param itemStack The item stack to get the multiplier of.
+     * @return The multiplier of the item stack.
+     */
+    private fun getMultiplier(itemStack: ItemStack): Int {
+        val base = getBaseMultiplier(itemStack)
+        val itemMeta = itemStack.itemMeta ?: return base
+        val efficiency = Enchantment.EFFICIENCY ?: return base
+        if (!itemMeta.hasEnchant(efficiency)) return base
+        val efficiencyLevel = itemMeta.getEnchantLevel(efficiency)
+        return base + (efficiencyLevel * efficiencyLevel) + 1
+    }
+
+    /**
+     * A function to get the base multiplier of an item stack.
+     * @param itemStack The item stack to get the base multiplier of.
+     * @return The base multiplier of the item stack.
+     */
+    private fun getBaseMultiplier(itemStack: ItemStack): Int {
+        val itemName = itemStack.type.name
+        return when {
+            itemName.startsWith("DIAMOND") -> 8
+            itemName.startsWith("IRON") -> 6
+            itemName.startsWith("NETHERITE") -> 9
+            itemName.startsWith("STONE") -> 4
+            itemName.startsWith("WOOD") -> 2
+            itemName.startsWith("GOLD") -> 12
+            else -> 1
         }
     }
 

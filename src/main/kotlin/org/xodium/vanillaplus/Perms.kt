@@ -15,13 +15,20 @@ object Perms {
 
     /** Register all permissions. */
     init {
-        listOf<Permission>(
-            Use.GENERAL,
-            AutoRefill.USE,
-            AutoTool.USE,
-            InvUnload.USE,
-            Waystone.USE
-        ).forEach(instance.server.pluginManager::addPermission)
+        val permissions = mutableListOf<Permission>()
+        fun collectPermissions(obj: Any) {
+            obj::class.java.declaredFields.forEach { field ->
+                field.isAccessible = true
+                val value = field.get(obj)
+                if (value is Permission) {
+                    permissions.add(value)
+                } else if (value != null && value::class.java.isMemberClass) {
+                    collectPermissions(value)
+                }
+            }
+        }
+        collectPermissions(this)
+        permissions.forEach(instance.server.pluginManager::addPermission)
     }
 
     /** Permissions for Usage commands. */
@@ -45,17 +52,33 @@ object Perms {
             Permission("${G0}.${G1}.use", "Allows use of the autotool command", PermissionDefault.TRUE)
     }
 
-    /** Permissions for InvUnload commands. */
-    object InvUnload {
-        private val G1 = instance::class.simpleName.toString().lowercase()
-        val USE: Permission =
-            Permission("${G0}.${G1}.use", "Allows use of the invunload command", PermissionDefault.TRUE)
+    /** Permissions for Book commands. */
+    object Book {
+        private val G1 = this::class.simpleName.toString().lowercase()
+        val GUIDE: Permission =
+            Permission("${G0}.${G1}.guide", "Allows use of the guide command", PermissionDefault.TRUE)
+        val RULES: Permission =
+            Permission("${G0}.${G1}.rules", "Allows use of the rules command", PermissionDefault.TRUE)
     }
 
-    /** Permissions for Waystone commands. */
-    object Waystone {
+    /** Permissions for Eclipse commands. */
+    object Eclipse {
+        private val G1 = this::class.simpleName.toString().lowercase()
+        val ECLIPSE: Permission =
+            Permission("${G0}.${G1}.eclipse", "Allows use of the eclipse command", PermissionDefault.OP)
+    }
+
+    /** Permissions for InvSearch commands. */
+    object InvSearch {
         private val G1 = this::class.simpleName.toString().lowercase()
         val USE: Permission =
-            Permission("${G0}.${G1}.use", "Allows use of the waystone command", PermissionDefault.OP)
+            Permission("${G0}.${G1}.use", "Allows use of the invsearch command", PermissionDefault.TRUE)
+    }
+
+    /** Permissions for InvUnload commands. */
+    object InvUnload {
+        private val G1 = this::class.simpleName.toString().lowercase()
+        val USE: Permission =
+            Permission("${G0}.${G1}.use", "Allows use of the invunload command", PermissionDefault.TRUE)
     }
 }

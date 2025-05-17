@@ -6,6 +6,8 @@
 package org.xodium.vanillaplus.registries
 
 import org.bukkit.Material
+import org.xodium.vanillaplus.utils.Utils
+import java.util.*
 
 /** Registry for materials. */
 object MaterialRegistry {
@@ -22,6 +24,20 @@ object MaterialRegistry {
         Material.STONE_SWORD to 5.0,
         Material.GOLDEN_SWORD to 4.0,
         Material.WOODEN_SWORD to 4.0,
+    )
+
+    val BOWL_OR_BOTTLE: Set<Material> = setOf(
+        Material.BOWL,
+        Material.GLASS_BOTTLE,
+    )
+
+    val CONTAINER_TYPES: EnumSet<Material> = Utils.getEnumsFromRegexList(
+        Material::class.java, listOf(
+            Regex("(.*)BARREL$"),
+            Regex("(.*)CHEST$"),
+            Regex("^SHULKER_BOX$"),
+            Regex("^(.*)_SHULKER_BOX$")
+        )
     )
 
     val DEFAULT_MATERIALS: Set<Material> = setOf(

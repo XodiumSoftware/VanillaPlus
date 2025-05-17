@@ -18,9 +18,9 @@ interface ModuleInterface : Listener {
     fun enabled(): Boolean
 
     /**
-     * Constructs and returns a literal argument builder for the current command source stack.
-     * @return A LiteralArgumentBuilder instance representing the command structure, or `null` if not applicable.
+     * Constructs and returns a collection of literal argument builders for the current command source stack.
+     * @return A collection of LiteralArgumentBuilder instances representing the command structures, or `null` if not applicable.
      */
     @Suppress("UnstableApiUsage")
-    fun cmd(): LiteralArgumentBuilder<CommandSourceStack>? = null
+    fun cmd(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? = null
 }

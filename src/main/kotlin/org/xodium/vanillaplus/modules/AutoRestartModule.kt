@@ -5,7 +5,6 @@
 
 package org.xodium.vanillaplus.modules
 
-import net.kyori.adventure.bossbar.BossBar
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
@@ -18,21 +17,26 @@ import java.time.temporal.ChronoUnit
 class AutoRestartModule : ModuleInterface {
     override fun enabled(): Boolean = Config.AutoRestartModule.ENABLED
 
+    //TODO: look into sh-script-restart / cron job.
+    //TODO: refactor to use schedule better and to use config for init delay and interval.
     init {
-        if (enabled()) {
-            instance.server.scheduler.runTaskTimerAsynchronously(
-                instance,
-                Runnable {
-                    Config.AutoRestartModule.RESTART_TIMES.forEach {
-                        if (isTimeToStartCountdown(it)) {
-                            instance.server.scheduler.runTask(instance, Runnable { countdown() })
-                        }
+        if (enabled()) schedule()
+    }
+
+    /** Holds all the schedules for this module. */
+    private fun schedule() {
+        instance.server.scheduler.runTaskTimerAsynchronously(
+            instance,
+            Runnable {
+                Config.AutoRestartModule.RESTART_TIMES.forEach {
+                    if (isTimeToStartCountdown(it)) {
+                        instance.server.scheduler.runTask(instance, Runnable { countdown() })
                     }
-                },
-                0L,
-                TimeUtils.minutes(1)
-            )
-        }
+                }
+            },
+            0L,
+            TimeUtils.minutes(1)
+        )
     }
 
     /** Triggers a countdown for the server restart. */
@@ -40,7 +44,7 @@ class AutoRestartModule : ModuleInterface {
         val totalMinutes = Config.AutoRestartModule.COUNTDOWN_START_MINUTES
         var remainingSeconds = totalMinutes * 60
         val totalSeconds = remainingSeconds
-        val bossBar = bossbar(remainingSeconds)
+        val bossBar = Config.AutoRestartModule.BOSSBAR
         instance.server.onlinePlayers.forEach { player -> player.showBossBar(bossBar) }
         instance.server.scheduler.runTaskTimer(
             instance,
@@ -64,7 +68,7 @@ class AutoRestartModule : ModuleInterface {
                     }
                 } else {
                     instance.server.onlinePlayers.forEach { player -> player.hideBossBar(bossBar) }
-                    instance.server.restart()
+                    instance.server.restart() //TODO: replace with sh-script / cron job.
                 }
             },
             0L,
@@ -82,19 +86,5 @@ class AutoRestartModule : ModuleInterface {
             LocalTime.now().truncatedTo(ChronoUnit.MINUTES),
             restartTime
         ) == Config.AutoRestartModule.COUNTDOWN_START_MINUTES.toLong()
-    }
-
-    /**
-     * Returns a boss bar with the name and progress set in the plugin's configuration.
-     * @param timePlaceholder the time placeholder to replace in the boss bar name.
-     * @return a boss bar with the name and progress set in the plugin's configuration.
-     */
-    private fun bossbar(timePlaceholder: Int): BossBar {
-        return BossBar.bossBar(
-            Config.AutoRestartModule.BOSSBAR_NAME.replace("%t", timePlaceholder.toString()).mm(),
-            Config.AutoRestartModule.BOSSBAR_PROGRESS,
-            Config.AutoRestartModule.BOSSBAR_COLOR,
-            Config.AutoRestartModule.BOSSBAR_OVERLAY
-        )
     }
 }

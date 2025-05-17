@@ -6,10 +6,12 @@
 package org.xodium.vanillaplus
 
 import net.kyori.adventure.bossbar.BossBar
+import net.kyori.adventure.inventory.Book
 import net.kyori.adventure.sound.Sound
 import org.bukkit.Material
+import org.bukkit.attribute.Attribute
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.data.BookData
+import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.TimeUtils
@@ -42,17 +44,16 @@ object Config {
         /** How many minutes before the restart to start countdown. */
         var COUNTDOWN_START_MINUTES: Int = 5
 
-        /** The name of the boss bar. */
-        var BOSSBAR_NAME: String = "⚡ RESTARTING in %t minute(s) ⚡".fireFmt()
+        /** The placeholder for the countdown time. */
+        var BOSSBAR_NAME: String = "⚡ RESTARTING in %t minute(s) ⚡"
 
-        /** The progress of the boss bar. */
-        var BOSSBAR_PROGRESS: Float = 1.0f
-
-        /** The colour of the boss bar. */
-        var BOSSBAR_COLOR: BossBar.Color = BossBar.Color.RED
-
-        /** The overlay of the boss bar. */
-        var BOSSBAR_OVERLAY: BossBar.Overlay = BossBar.Overlay.PROGRESS
+        /** Bossbar for the auto-restart. */
+        var BOSSBAR: BossBar = BossBar.bossBar(
+            BOSSBAR_NAME.fireFmt().mm(),
+            1.0f,
+            BossBar.Color.RED,
+            BossBar.Overlay.PROGRESS
+        )
     }
 
     /** Configuration settings for the AutoToolModule. */
@@ -81,59 +82,58 @@ object Config {
         /** Enables or disables the BookModule. */
         var ENABLED: Boolean = true
 
-        /** The book data, including title, author, and pages. */
-        var BOOK: BookData = BookData(
-            title = "Rules",
-            author = instance::class.simpleName.toString(),
-            pages = listOf(
-                "<gold>▶ <dark_aqua>Player Rules:\n" + // Page 1
-                        "<gold>▶ <dark_aqua>01 <dark_gray>| <red>No Griefing.\n" +
-                        "<gold>▶ <dark_aqua>02 <dark_gray>| <red>No Spamming.\n" +
-                        "<gold>▶ <dark_aqua>03 <dark_gray>| <red>No Advertising.\n" +
-                        "<gold>▶ <dark_aqua>04 <dark_gray>| <red>No Cursing/No Constant Cursing.\n" +
-                        "<gold>▶ <dark_aqua>05 <dark_gray>| <red>No Trolling/Flaming.\n" +
-                        "<gold>▶ <dark_aqua>06 <dark_gray>| <red>No Asking for OP, Ranks, or Items.\n" +
-                        "<gold>▶ <dark_aqua>07 <dark_gray>| <red>Respect all Players.",
-
-                "<gold>▶ <dark_aqua>08 <dark_gray>| <red>Obey Staff they are the Law Enforcers.\n" + // Page 2
-                        "<gold>▶ <dark_aqua>09 <dark_gray>| <red>No Racist or Sexist Remarks.\n" +
-                        "<gold>▶ <dark_aqua>10 <dark_gray>| <red>No Mods/Hacks.\n" +
-                        "<gold>▶ <dark_aqua>11 <dark_gray>| <red>No Full Caps Messages.\n" +
-                        "<gold>▶ <dark_aqua>12 <dark_gray>| <red>No 1x1 Towers.\n" +
-                        "<gold>▶ <dark_aqua>13 <dark_gray>| <red>Build in Medieval style.",
-
-                "<gold>▶ <dark_aqua>Mod/Admin Rules:\n" + // Page 3
-                        "<gold>▶ <dark_aqua>01 <dark_gray>| <red>Be Responsible with the power you are given as staff.\n" +
-                        "<gold>▶ <dark_aqua>02 <dark_gray>| <red>Do not spawn blocks or items for other players.\n" +
-                        "<gold>▶ <dark_aqua>03 <dark_gray>| <red>When Trading, only buy and sell legit items.\n" +
-                        "<gold>▶ <dark_aqua>05 <dark_gray>| <red>No Power Abuse."
-            )
-        )
-    }
-
-    /** Configuration settings for the BroadcastModule. */
-    object BroadcastModule {
-        /** Enables or disables the BroadcastModule. */
-        var ENABLED: Boolean = true
-
-        /** The messages to be broadcasted. One will be randomly selected each time. */
-        var MESSAGES: List<String> = listOf(
-            "<gold>▶ <light_purple>/home <gold>> <white><italic>Teleport to your home.",
-            "<gold>▶ <light_purple>/skills <gold>> <white><italic>Opens up the Skills GUI.",
-            "<gold>▶ <light_purple>/rtp <gold>> <white><italic>To random teleport in the current dimension.",
-            "<gold>▶ <light_purple>/unload <gold>> <white><italic>Unloads your inventory into nearby chests.",
-            "<gold>▶ <light_purple>/dump <gold>> <white><italic>Dumps your inventory into nearby chests.",
-            "<gold>▶ <light_purple>/tpa [player] <gold>> <white><italic>Request to teleport to a player.",
-            "<gold>▶ <light_purple>/condense <gold>> <white><italic>Condenses resources (if possible) to their highest form (blocks).",
-            "<gold>▶ <light_purple>/uncondense <gold>> <white><italic>Uncondenses resources (if possible) to their lowest form (items).",
-            "<gold>▶ <light_purple>Enchantment max level <gold>> <white><italic>has been incremented by <red><bold>x2<dark_gray><italic>."
+        /** The Guide book. */
+        var GUIDE_BOOK: Book = Book.book(
+            "Guide".fireFmt().mm(),
+            instance::class.simpleName.toString().fireFmt().mm(),
+            listOf(
+                // Page 1
+                "<b><u><dark_aqua>Tips & Tricks:<reset>\n\n" +
+                        "<gold>▶ ${"/home".fireFmt()}\n<dark_gray>Teleport to your home\n\n" +
+                        "<gold>▶ ${"/skills".fireFmt()}\n<dark_gray>Opens up the Skills GUI\n\n" +
+                        "<gold>▶ ${"/rtp".fireFmt()}\n<dark_gray>Random teleport in the current dimension",
+                // Page 2
+                "<gold>▶ ${"/unload".fireFmt()}\n<dark_gray>Unloads your inventory into nearby chests\n\n" +
+                        "<gold>▶ ${"/search".fireFmt()}\n<dark_gray>Search into nearby chests for an item\n\n" +
+                        "<gold>▶ ${"/tpa [player]".fireFmt()}\n<dark_gray>Request to teleport to a player",
+                // Page 3
+                "<gold>▶ ${"/condense".fireFmt()}\n<dark_gray>Condenses resources (if possible) to their highest form (blocks)\n\n" +
+                        "<gold>▶ ${"/uncondense".fireFmt()}\n<dark_gray>Uncondenses resources (if possible) to their lowest form (items)",
+                // Page 4
+                "<gold>▶ ${"Enchantment max level".fireFmt()}\n<dark_gray>has been incremented by <red><b>x2<reset>\n\n" +
+                        "<gold>▶ ${"During an Eclipse".fireFmt()}\n<dark_gray>the mob attack damage, max health & follow range increases by <red><b>x2<reset>"
+            ).mm()
         )
 
-        /** The initial delay before the first broadcast. */
-        var INIT_DELAY: Long = TimeUtils.seconds(1)
-
-        /** The interval between broadcasts. */
-        var INTERVAL: Long = TimeUtils.minutes(5)
+        /** The Rules book. */
+        var RULES_BOOK: Book = Book.book(
+            "Rules".fireFmt().mm(),
+            instance::class.simpleName.toString().fireFmt().mm(),
+            listOf(
+                // Page 1
+                "<b><u><dark_aqua>Player Rules:<reset>\n\n" +
+                        "<gold>▶ <dark_aqua>01 <dark_gray>| <red>No Griefing\n" +
+                        "<gold>▶ <dark_aqua>02 <dark_gray>| <red>No Spamming\n" +
+                        "<gold>▶ <dark_aqua>03 <dark_gray>| <red>No Advertising\n" +
+                        "<gold>▶ <dark_aqua>04 <dark_gray>| <red>No Cursing/No Constant Cursing\n" +
+                        "<gold>▶ <dark_aqua>05 <dark_gray>| <red>No Trolling/Flaming\n" +
+                        "<gold>▶ <dark_aqua>06 <dark_gray>| <red>No Asking for OP, Ranks, or Items\n" +
+                        "<gold>▶ <dark_aqua>07 <dark_gray>| <red>Respect all Players",
+                // Page 2
+                "<gold>▶ <dark_aqua>08 <dark_gray>| <red>Obey Staff they are the Law Enforcers\n" +
+                        "<gold>▶ <dark_aqua>09 <dark_gray>| <red>No Racist or Sexist Remarks\n" +
+                        "<gold>▶ <dark_aqua>10 <dark_gray>| <red>No Mods/Hacks\n" +
+                        "<gold>▶ <dark_aqua>11 <dark_gray>| <red>No Full Caps Messages\n" +
+                        "<gold>▶ <dark_aqua>12 <dark_gray>| <red>No 1x1 Towers\n" +
+                        "<gold>▶ <dark_aqua>13 <dark_gray>| <red>Build in (Fantasy)Medieval style",
+                // Page 3
+                "<b><u><dark_aqua>Mod/Admin Rules:<reset>\n\n" +
+                        "<gold>▶ <dark_aqua>01 <dark_gray>| <red>Be Responsible with the power you are given as staff\n" +
+                        "<gold>▶ <dark_aqua>02 <dark_gray>| <red>Do not spawn blocks or items for other players\n" +
+                        "<gold>▶ <dark_aqua>03 <dark_gray>| <red>When Trading, only buy and sell legit items\n" +
+                        "<gold>▶ <dark_aqua>05 <dark_gray>| <red>No Power Abuse"
+            ).mm()
+        )
     }
 
     /** Configuration settings for the DimensionsModule. */
@@ -205,10 +205,64 @@ object Config {
         var AUTO_CLOSE_DELAY: Long = 6L * 1000L // 6 seconds
     }
 
+    /** Configuration settings for the eclipseModule. */
+    object EclipseModule {
+        /** Enables or disables the eclipseModule. */
+        var ENABLED: Boolean = true
+
+        /** The spawn rate of mobs during an eclipse. */
+        var SPAWN_RATE: Int = 10
+
+        //TODO: check adjustments if its enough buff.
+        /**
+         * Map of attribute adjustments for mobs during an eclipse.
+         * `it` is the current value of the attribute aka base value.
+         */
+        var MOB_ATTRIBUTE_ADJUSTMENTS: Map<Attribute, (Double) -> Double> = mapOf(
+            Attribute.ATTACK_DAMAGE to { it * 2.0 },
+            Attribute.MAX_HEALTH to { it * 2.0 },
+            Attribute.FOLLOW_RANGE to { it * 2.0 },
+        )
+
+        /** The message displayed when the eclipse is active. */
+        var ECLIPSE_START_MSG: String = "⚡ An Eclipse is rising! ⚡".fireFmt()
+
+        /** The message displayed when the eclipse is inactive. */
+        var ECLIPSE_END_MSG: String = "⚡ An Eclipse is setting! ⚡".fireFmt()
+
+        /** The sound effect used for when the eclipse is active. */
+        var ECLIPSE_START_SOUND: Sound = Sound.sound(
+            BukkitSound.ENTITY_WITHER_SPAWN,
+            Sound.Source.HOSTILE,
+            1.0f,
+            1.0f
+        )
+
+        /** The sound effect used for when the eclipse is inactive. */
+        var ECLIPSE_END_SOUND: Sound = Sound.sound(
+            BukkitSound.ENTITY_WITHER_DEATH,
+            Sound.Source.HOSTILE,
+            1.0f,
+            1.0f
+        )
+
+        /** The initial delay before the first eclipse. */
+        var INIT_DELAY: Long = TimeUtils.seconds(0)
+
+        /** The interval between eclipses. */
+        var INTERVAL: Long = TimeUtils.seconds(10)
+    }
+
     /** Configuration settings for the InvSearchModule. */
     object InvSearchModule {
         /** Enables or disables the InvSearchModule. */
         var ENABLED: Boolean = true
+
+        /** The cooldown to use the mechanic again. */
+        var COOLDOWN: Long = 1L * 1000L // 1 second
+
+        /** The radius used for searching. */
+        var SEARCH_RADIUS: Int = 5
     }
 
     /** Configuration settings for the InvUnloadModule. */
@@ -220,13 +274,21 @@ object Config {
         var USE_CHESTSORT: Boolean = true
 
         /** The cooldown to use the mechanic again. */
-        var COOLDOWN: Long = 5L * 1000L // 5 seconds
+        var COOLDOWN: Long = 1L * 1000L // 1 second
 
         /** If it should match enchantments. */
         var MATCH_ENCHANTMENTS: Boolean = true
 
         /** If it should match enchantments on books. */
         var MATCH_ENCHANTMENTS_ON_BOOKS: Boolean = true
+
+        /** The sound effect used for unloading. */
+        var SOUND_ON_UNLOAD: Sound = Sound.sound(
+            BukkitSound.ENTITY_PLAYER_LEVELUP,
+            Sound.Source.PLAYER,
+            1.0f,
+            1.0f
+        )
     }
 
     /** Configuration settings for the MotdModule. */
@@ -260,7 +322,7 @@ object Config {
 
         /** The header of the tab list. Each element is a line. */
         var HEADER: List<String> = listOf(
-            "${"]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt()}   ${"⚡ IllyriaRPG 1.21.4 ⚡".fireFmt()}   ${
+            "${"]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt()}   ${"⚡ IllyriaRPG 1.21.5 ⚡".fireFmt()}   ${
                 "]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)
             }",
             ""
@@ -305,29 +367,5 @@ object Config {
             Material.SPRUCE_SAPLING to listOf("trees/spruce"),
             Material.WARPED_FUNGUS to listOf("trees/warped"),
         )
-    }
-
-    /** Configuration settings for the WaystoneModule. */
-    object WaystoneModule {
-        /** Enables or disables the TreesModule. */
-        var ENABLED: Boolean = true
-
-        /** The material used for crafting waystones. */
-        var WAYSTONE_MATERIAL: Material = Material.BEACON
-
-        /** A constant representing the custom model data key for waystone items. */
-        var WAYSTONE_CUSTOM_MODEL_DATA: String = "waystone"
-
-        /** The base cost in experience points (XP) for performing waystone teleportation. */
-        var BASE_XP_COST: Int = 5
-
-        /** Multiplier applied to distances in waystones. */
-        var DISTANCE_MULTIPLIER: Double = 0.05
-
-        /** Multiplier used for dimensional scaling or calculations. */
-        var DIMENSIONAL_MULTIPLIER: Int = 50
-
-        /** Multiplier applied to the base experience (XP) cost when the player is mounted during travel or teleportation. */
-        var MOUNT_MULTIPLIER: Double = 1.5
     }
 }

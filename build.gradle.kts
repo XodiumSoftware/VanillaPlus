@@ -9,13 +9,13 @@ import java.net.URI
 
 plugins {
     id("java")
-    kotlin("jvm") version "2.1.20"
+    kotlin("jvm") version "2.1.21"
     id("com.gradleup.shadow") version "9.0.0-beta13"
     id("de.undercouch.download") version "5.6.0"
 }
 
 group = "org.xodium.vanillaplus"
-version = "1.8.0"
+version = "1.8.1"
 description = "Minecraft plugin that enhances the base gameplay."
 
 var apiVersion: String = "1.21.5"
@@ -41,6 +41,16 @@ dependencies {
 java { toolchain.languageVersion.set(JavaLanguageVersion.of(21)) }
 
 tasks {
+    processResources {
+        filesMatching("paper-plugin.yml") {
+            expand(
+                mapOf(
+                    "version" to version,
+                    "description" to description,
+                )
+            )
+        }
+    }
     shadowJar {
         dependsOn(processResources)
         archiveClassifier.set("")
@@ -85,17 +95,16 @@ tasks {
         group = "application"
         description = "Run Development Server"
         dependsOn("shadowJar", "downloadServerJar", "acceptEula")
-        workingDir = file(".server")
-        val javaLauncher: JavaLauncher = project.extensions
-            .getByType(JavaToolchainService::class.java)
+        workingDir = file(".server/")
+        val javaExec = project.extensions.getByType(JavaToolchainService::class.java)
             .launcherFor { languageVersion.set(JavaLanguageVersion.of(21)) }
-            .get()
-        val javaHome: String = javaLauncher.metadata.installationPath.asFile.absolutePath
+            .get().executablePath.asFile.absolutePath
+        val hotswapAgentPath = file(".hotswap/hotswap-agent-core.jar").absolutePath
         commandLine = listOf(
-            "$javaHome/bin/java",
-            "-jar",
-            "server.jar",
-            "nogui"
+            javaExec,
+            "-javaagent:$hotswapAgentPath",
+            "-XX:+AllowEnhancedClassRedefinition",
+            "-jar", "server.jar", "nogui"
         )
     }
 }
