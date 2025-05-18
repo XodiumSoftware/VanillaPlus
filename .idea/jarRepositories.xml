@@ -41,5 +41,10 @@
       <option name="name" value="maven4" />
       <option name="url" value="https://repo.triumphteam.dev/snapshots" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven5" />
+      <option name="name" value="maven5" />
+      <option name="url" value="https://repo.essentialsx.net/releases" />
+    </remote-repository>
   </component>
 </project>

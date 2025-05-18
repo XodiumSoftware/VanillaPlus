@@ -41,6 +41,18 @@ object Config {
             LocalTime.of(18, 0)
         )
 
+        /** The initial delay before the first schedule. */
+        var SCHEDULE_INIT_DELAY: Long = TimeUtils.seconds(0)
+
+        /** The interval between schedule. */
+        var SCHEDULE_INTERVAL: Long = TimeUtils.minutes(1)
+
+        /** The initial delay before the first countdown. */
+        var COUNTDOWN_INIT_DELAY: Long = TimeUtils.seconds(0)
+
+        /** The interval between countdown. */
+        var COUNTDOWN_INTERVAL: Long = TimeUtils.seconds(1)
+
         /** How many minutes before the restart to start countdown. */
         var COUNTDOWN_START_MINUTES: Int = 5
 

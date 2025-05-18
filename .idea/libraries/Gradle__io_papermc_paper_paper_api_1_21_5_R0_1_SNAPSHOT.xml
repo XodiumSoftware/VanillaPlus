@@ -2,11 +2,11 @@
   <library name="Gradle: io.papermc.paper:paper-api:1.21.5-R0.1-SNAPSHOT" type="java-imported" external-system-id="GRADLE">
     <properties groupId="io.papermc.paper" artifactId="paper-api" version="1.21.5-R0.1-SNAPSHOT" baseVersion="1.21.5-R0.1-SNAPSHOT" />
     <CLASSES>
-      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.papermc.paper/paper-api/1.21.5-R0.1-SNAPSHOT/e0c07db4a384b7e6d1f4727d700198aae4ce9bbc/paper-api-1.21.5-R0.1-SNAPSHOT.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.papermc.paper/paper-api/1.21.5-R0.1-SNAPSHOT/1bf0d2449d0f9191f8839de4f03b71b4d284ed55/paper-api-1.21.5-R0.1-SNAPSHOT.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
-      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.papermc.paper/paper-api/1.21.5-R0.1-SNAPSHOT/d7fde2dce7894e26834c2942323afe1c7244f99c/paper-api-1.21.5-R0.1-SNAPSHOT-sources.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.papermc.paper/paper-api/1.21.5-R0.1-SNAPSHOT/c541c799a045b461f02c31f8c18edbb75daf6f19/paper-api-1.21.5-R0.1-SNAPSHOT-sources.jar!/" />
     </SOURCES>
   </library>
 </component>
