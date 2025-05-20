@@ -113,7 +113,7 @@ object Config {
                         "<gold>▶ ${"/uncondense".fireFmt()}\n<dark_gray>Uncondenses resources (if possible) to their lowest form (items)",
                 // Page 4
                 "<gold>▶ ${"Enchantment max level".fireFmt()}\n<dark_gray>has been incremented by <red><b>x2<reset>\n\n" +
-                        "<gold>▶ ${"During an Eclipse".fireFmt()}\n<dark_gray>the mob attack damage, max health & follow range increases by <red><b>x2<reset>"
+                        "<gold>▶ ${"During an Eclipse".fireFmt()}\n<dark_gray>the mob attack damage, max health, follow range & speed increases by <red><b>x2<reset>"
             ).mm()
         )
 
@@ -234,6 +234,7 @@ object Config {
             Attribute.ATTACK_DAMAGE to { it * 2.0 },
             Attribute.MAX_HEALTH to { it * 2.0 },
             Attribute.FOLLOW_RANGE to { it * 2.0 },
+            Attribute.SPEED to { it * 2.0 }
         )
 
         /** The message displayed when the eclipse is active. */
