@@ -227,10 +227,6 @@ object Config {
         /** Enables or disables the eclipseModule. */
         var ENABLED: Boolean = true
 
-        /**
-         * TODO: spawnRate for spider is not overridden for some reason,
-         * TODO: its taking the 10.0 from the default list and not the 1.5 from the custom list.
-         */
         /** The list of attributes for mobs during an eclipse. */
         var MOB_ATTRIBUTE: List<MobAttributeData> = listOf(
             MobAttributeData(
