@@ -21,6 +21,7 @@ import org.xodium.vanillaplus.utils.TimeUtils
 import org.xodium.vanillaplus.utils.Utils.getTps
 import org.xodium.vanillaplus.utils.Utils.getWeather
 import java.time.LocalTime
+import kotlin.random.Random
 import org.bukkit.Sound as BukkitSound
 
 /** Configuration settings. */
@@ -249,7 +250,7 @@ object Config {
             EquipmentSlot.LEGS to ItemStack(Material.NETHERITE_LEGGINGS),
             EquipmentSlot.FEET to ItemStack(Material.NETHERITE_BOOTS),
             EquipmentSlot.HAND to ItemStack(
-                when (mm.nextInt(3)) {
+                when (Random.nextInt(3)) {
                     0 -> Material.NETHERITE_SWORD
                     1 -> Material.NETHERITE_AXE
                     else -> Material.BOW
