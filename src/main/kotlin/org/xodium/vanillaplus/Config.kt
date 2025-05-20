@@ -357,6 +357,12 @@ object Config {
         /** Enables or disables the TreesModule. */
         var ENABLED: Boolean = true
 
+        /** If it should copy the biomes. */
+        var COPY_BIOMES: Boolean = false
+
+        /** If it should copy the entities. */
+        var COPY_ENTITIES: Boolean = false
+
         /** If it should ignore air blocks. */
         var IGNORE_AIR_BLOCKS: Boolean = true
 
