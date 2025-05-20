@@ -219,6 +219,6 @@ class EclipseModule : ModuleInterface {
         val daysToNewMoon = (4 - currentPhase + 8) % 8
         val newMoonDay = currentDay + daysToNewMoon
         world.fullTime = newMoonDay * 24000 + 13000
-        player.sendMessage("${PREFIX}Skipped to the next new moon night!".fireFmt().mm())
+        player.sendMessage("${PREFIX}${"Skipped to the next new moon night!".fireFmt()}".mm())
     }
 }
