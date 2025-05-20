@@ -10,6 +10,7 @@ import net.kyori.adventure.inventory.Book
 import net.kyori.adventure.sound.Sound
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
+import org.bukkit.entity.EntityType
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
@@ -113,7 +114,7 @@ object Config {
                         "<gold>▶ ${"/uncondense".fireFmt()}\n<dark_gray>Uncondenses resources (if possible) to their lowest form (items)",
                 // Page 4
                 "<gold>▶ ${"Enchantment max level".fireFmt()}\n<dark_gray>has been incremented by <red><b>x2<reset>\n\n" +
-                        "<gold>▶ ${"During an Eclipse".fireFmt()}\n<dark_gray>the mob attack damage, max health, follow range & speed increases by <red><b>x2<reset>"
+                        "<gold>▶ ${"During an Eclipse".fireFmt()}\n<dark_gray>A horde will spawn where the mobs are stronger than usual"
             ).mm()
         )
 
@@ -225,7 +226,6 @@ object Config {
         /** The spawn rate of mobs during an eclipse. */
         var SPAWN_RATE: Int = 10
 
-        //TODO: check adjustments if its enough buff.
         /**
          * Map of attribute adjustments for mobs during an eclipse.
          * `it` is the current value of the attribute aka base value.
@@ -234,8 +234,14 @@ object Config {
             Attribute.ATTACK_DAMAGE to { it * 2.0 },
             Attribute.MAX_HEALTH to { it * 2.0 },
             Attribute.FOLLOW_RANGE to { it * 2.0 },
-            Attribute.MOVEMENT_SPEED to { it * 2.0 }
+            Attribute.MOVEMENT_SPEED to { it * 2.0 },
+            Attribute.MOVEMENT_EFFICIENCY to { it * 2.0 },
+            Attribute.WATER_MOVEMENT_EFFICIENCY to { it * 2.0 },
+            Attribute.SPAWN_REINFORCEMENTS to { it * 2.0 },
         )
+
+        /** The list of mobs that are excluded from the eclipse buff. */
+        var EXCLUDED_MOBS: Set<EntityType> = setOf(EntityType.ENDERMAN)
 
         /** The message displayed when the eclipse is active. */
         var ECLIPSE_START_MSG: String = "⚡ An Eclipse is rising! ⚡".fireFmt()

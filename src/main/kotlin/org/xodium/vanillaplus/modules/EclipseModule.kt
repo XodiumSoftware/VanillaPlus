@@ -9,20 +9,26 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.Difficulty
+import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.attribute.Attribute
+import org.bukkit.entity.Creeper
+import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.CreatureSpawnEvent
+import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Perms
+import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.EclipseData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.Utils
+import kotlin.random.Random
 
 /** Represents a module handling eclipse mechanics within the system. */
 class EclipseModule : ModuleInterface {
@@ -50,6 +56,7 @@ class EclipseModule : ModuleInterface {
         if (!hordeState.isActive && !enabled()) return
         if (world.environment != World.Environment.NORMAL) return
         if (world.difficulty != Difficulty.HARD) return
+        if (entity.type in Config.EclipseModule.EXCLUDED_MOBS) return
 
         Config.EclipseModule.MOB_ATTRIBUTE_ADJUSTMENTS.forEach { (attribute, adjust) ->
             entity.getAttribute(attribute)?.let { attr ->
@@ -60,6 +67,27 @@ class EclipseModule : ModuleInterface {
             }
         }
 
+        val equipment = entity.equipment ?: return
+
+        equipment.helmet = ItemStack(Material.NETHERITE_HELMET)
+        equipment.chestplate = ItemStack(Material.NETHERITE_CHESTPLATE)
+        equipment.leggings = ItemStack(Material.NETHERITE_LEGGINGS)
+        equipment.boots = ItemStack(Material.NETHERITE_BOOTS)
+
+        equipment.setItemInMainHand(
+            ItemStack(
+                when (Random.nextInt(3)) {
+                    0 -> Material.NETHERITE_SWORD
+                    1 -> Material.NETHERITE_AXE
+                    else -> Material.BOW
+                }
+            )
+        )
+        equipment.setItemInOffHand(ItemStack(Material.SHIELD))
+
+        if (entity.type == EntityType.CREEPER && Random.nextBoolean()) {
+            (entity as Creeper).isPowered = true
+        }
         if (hordeState.isActive && event.spawnReason == CreatureSpawnEvent.SpawnReason.NATURAL) {
             repeat(Config.EclipseModule.SPAWN_RATE) {
                 entity.world.spawnEntity(
@@ -170,6 +198,6 @@ class EclipseModule : ModuleInterface {
         val daysToNewMoon = (4 - currentPhase + 8) % 8
         val newMoonDay = currentDay + daysToNewMoon
         world.fullTime = newMoonDay * 24000 + 13000
-        player.sendMessage("Skipped to the next new moon night!".fireFmt().mm())
+        player.sendMessage("${PREFIX}Skipped to the next new moon night!".fireFmt().mm())
     }
 }
