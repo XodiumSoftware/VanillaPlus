@@ -11,6 +11,8 @@ import net.kyori.adventure.sound.Sound
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
+import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
@@ -240,8 +242,27 @@ object Config {
             Attribute.SPAWN_REINFORCEMENTS to { it * 2.0 },
         )
 
+        /** The map of equipment to be given to mobs during an eclipse. */
+        var MOB_EQUIPMENT: Map<EquipmentSlot, ItemStack> = mapOf(
+            EquipmentSlot.HEAD to ItemStack(Material.NETHERITE_HELMET),
+            EquipmentSlot.CHEST to ItemStack(Material.NETHERITE_CHESTPLATE),
+            EquipmentSlot.LEGS to ItemStack(Material.NETHERITE_LEGGINGS),
+            EquipmentSlot.FEET to ItemStack(Material.NETHERITE_BOOTS),
+            EquipmentSlot.HAND to ItemStack(
+                when (mm.nextInt(3)) {
+                    0 -> Material.NETHERITE_SWORD
+                    1 -> Material.NETHERITE_AXE
+                    else -> Material.BOW
+                }
+            ),
+            EquipmentSlot.OFF_HAND to ItemStack(Material.SHIELD)
+        )
+
         /** The list of mobs that are excluded from the eclipse buff. */
         var EXCLUDED_MOBS: Set<EntityType> = setOf(EntityType.ENDERMAN)
+
+        /** If creepers should be randomly powered. */
+        var RANDOM_POWERED_CREEPERS: Boolean = true
 
         /** The message displayed when the eclipse is active. */
         var ECLIPSE_START_MSG: String = "⚡ An Eclipse is rising! ⚡".fireFmt()

@@ -9,7 +9,6 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.Difficulty
-import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Creeper
@@ -18,7 +17,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.CreatureSpawnEvent
-import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.EquipmentSlot
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
@@ -69,24 +68,22 @@ class EclipseModule : ModuleInterface {
 
         val equipment = entity.equipment ?: return
 
-        equipment.helmet = ItemStack(Material.NETHERITE_HELMET)
-        equipment.chestplate = ItemStack(Material.NETHERITE_CHESTPLATE)
-        equipment.leggings = ItemStack(Material.NETHERITE_LEGGINGS)
-        equipment.boots = ItemStack(Material.NETHERITE_BOOTS)
-
-        equipment.setItemInMainHand(
-            ItemStack(
-                when (Random.nextInt(3)) {
-                    0 -> Material.NETHERITE_SWORD
-                    1 -> Material.NETHERITE_AXE
-                    else -> Material.BOW
+        if (Config.EclipseModule.MOB_EQUIPMENT.isNotEmpty()) {
+            Config.EclipseModule.MOB_EQUIPMENT.forEach { (slot, item) ->
+                when (slot) {
+                    EquipmentSlot.HEAD -> equipment.helmet = item.clone()
+                    EquipmentSlot.CHEST -> equipment.chestplate = item.clone()
+                    EquipmentSlot.LEGS -> equipment.leggings = item.clone()
+                    EquipmentSlot.FEET -> equipment.boots = item.clone()
+                    EquipmentSlot.HAND -> equipment.setItemInMainHand(item.clone())
+                    EquipmentSlot.OFF_HAND -> equipment.setItemInOffHand(item.clone())
+                    else -> {}
                 }
-            )
-        )
-        equipment.setItemInOffHand(ItemStack(Material.SHIELD))
+            }
+        }
 
         if (entity.type == EntityType.CREEPER && Random.nextBoolean()) {
-            (entity as Creeper).isPowered = true
+            (entity as Creeper).isPowered = Config.EclipseModule.RANDOM_POWERED_CREEPERS
         }
         if (hordeState.isActive && event.spawnReason == CreatureSpawnEvent.SpawnReason.NATURAL) {
             repeat(Config.EclipseModule.SPAWN_RATE) {
