@@ -14,6 +14,7 @@ import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.SkinUtils.faceToMM
 
 /** Represents a module handling join/quit mechanics within the system. */
 class JoinQuitModule : ModuleInterface {
@@ -28,8 +29,19 @@ class JoinQuitModule : ModuleInterface {
             .filter { it.uniqueId != player.uniqueId }
             .forEach { it.sendMessage("<gold>[<green>+<gold>]<reset> ${player.displayName()}".mm()) }
 
+        val faceLines = player.faceToMM().lines()
+        var imageIndex = 1
+        val welcomeText = Regex("<image>").replace(Config.JoinQuitModule.WELCOME_TEXT) {
+            "<image${imageIndex++}>"
+        }
+        val imageResolvers = faceLines.mapIndexed { i, line ->
+            Placeholder.component("image${i + 1}", line.mm())
+        }
         player.sendMessage(
-            Config.JoinQuitModule.WELCOME_TEXT.mm(Placeholder.component("player", player.displayName()))
+            welcomeText.mm(
+                Placeholder.component("player", player.displayName()),
+                *imageResolvers.toTypedArray()
+            )
         )
     }
 

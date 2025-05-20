@@ -22,18 +22,21 @@ object ExtUtils {
 
     /**
      * Deserializes a MiniMessage string into a Component.
-     * @param resolver Optional tag resolver for custom tags.
+     * @param resolvers Optional tag resolvers for custom tags.
      * @return The deserialized Component.
      */
-    fun String.mm(resolver: TagResolver = TagResolver.empty()): Component = MM.deserialize(this, resolver)
+    fun String.mm(vararg resolvers: TagResolver): Component =
+        if (resolvers.isEmpty()) MM.deserialize(this)
+        else MM.deserialize(this, TagResolver.resolver(*resolvers))
 
     /**
      * Deserializes a list of MiniMessage strings into a list of Components.
-     * @param resolver Optional tag resolver for custom tags.
+     * @param resolvers Optional tag resolvers for custom tags.
      * @return The list of deserialized Components.
      */
     @JvmName("mmStringList")
-    fun List<String>.mm(resolver: TagResolver = TagResolver.empty()): List<Component> = this.map { it.mm(resolver) }
+    fun List<String>.mm(vararg resolvers: TagResolver): List<Component> =
+        this.map { it.mm(*resolvers) }
 
     /** Serializes a Component into a MiniMessage string. */
     fun Component.mm(): String = MM.serialize(this)

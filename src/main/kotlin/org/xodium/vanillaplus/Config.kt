@@ -394,16 +394,16 @@ object Config {
         var WELCOME_TEXT: String =
             """
             ${"]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)}
-            ${"⯈".mangoFmt(true)}
-            ${"⯈".mangoFmt(true)}
-            ${"⯈".mangoFmt(true)} ${"Welcome".fireFmt()} <player>
-            ${"⯈".mangoFmt(true)}
-            ${"⯈".mangoFmt(true)}
-            ${"⯈".mangoFmt(true)} ${"Check out".fireFmt()}<gray>: ${
+            <image>${"⯈".mangoFmt(true)}
+            <image>${"⯈".mangoFmt(true)}
+            <image>${"⯈".mangoFmt(true)} ${"Welcome".fireFmt()} <player>
+            <image>${"⯈".mangoFmt(true)}
+            <image>${"⯈".mangoFmt(true)}
+            <image>${"⯈".mangoFmt(true)} ${"Check out".fireFmt()}<gray>: ${
                 "/rules".asMMCmd(Utils.cmdHover).skylineFmt()
             } <gray>🟅 ${"/guide".asMMCmd(Utils.cmdHover).skylineFmt()}
-            ${"⯈".mangoFmt(true)}
-            ${"⯈".mangoFmt(true)}
+            <image>${"⯈".mangoFmt(true)}
+            <image>${"⯈".mangoFmt(true)}
             ${"]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)}
             """.trimIndent()
     }
