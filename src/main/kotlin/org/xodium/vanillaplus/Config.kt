@@ -20,8 +20,8 @@ import org.xodium.vanillaplus.utils.ExtUtils.asMMCmd
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
-import org.xodium.vanillaplus.utils.FmtUtils.roseFmt
 import org.xodium.vanillaplus.utils.TimeUtils
+import org.xodium.vanillaplus.utils.Utils
 import org.xodium.vanillaplus.utils.Utils.getTps
 import org.xodium.vanillaplus.utils.Utils.getWeather
 import java.time.LocalTime
@@ -101,8 +101,6 @@ object Config {
         /** Enables or disables the BookModule. */
         var ENABLED: Boolean = true
 
-        private val cmdHover = "Click Me!".roseFmt()
-
         /** The Guide book. */
         var GUIDE_BOOK: Book = Book.book(
             "Guide".fireFmt().mm(),
@@ -112,22 +110,22 @@ object Config {
                 """
                 <b><u><dark_aqua>Tips & Tricks:<reset>
                 
-                <gold>▶ ${"/home".asMMCmd(cmdHover).fireFmt()}
+                <gold>▶ ${"/home".asMMCmd(Utils.cmdHover).fireFmt()}
                 <dark_gray>Teleport to your home
                 
-                <gold>▶ ${"/skills".asMMCmd(cmdHover).fireFmt()}
+                <gold>▶ ${"/skills".asMMCmd(Utils.cmdHover).fireFmt()}
                 <dark_gray>Opens up the Skills GUI
                 
-                <gold>▶ ${"/rtp".asMMCmd(cmdHover).fireFmt()}
+                <gold>▶ ${"/rtp".asMMCmd(Utils.cmdHover).fireFmt()}
                 <dark_gray>Random teleport in the current dimension
                 """.trimIndent(),
 
                 // Page 2
                 """
-                <gold>▶ ${"/unload".asMMCmd(cmdHover).fireFmt()}
+                <gold>▶ ${"/unload".asMMCmd(Utils.cmdHover).fireFmt()}
                 <dark_gray>Unloads your inventory into nearby chests
                 
-                <gold>▶ ${"/search".asMMCmd(cmdHover).fireFmt()}
+                <gold>▶ ${"/search".asMMCmd(Utils.cmdHover).fireFmt()}
                 <dark_gray>Search into nearby chests for an item
                 
                 <gold>▶ ${"/tpa [player]".asMMCmd().fireFmt()}
@@ -136,10 +134,10 @@ object Config {
 
                 // Page 3
                 """
-                <gold>▶ ${"/condense".asMMCmd(cmdHover).fireFmt()}
+                <gold>▶ ${"/condense".asMMCmd(Utils.cmdHover).fireFmt()}
                 <dark_gray>Condenses resources (if possible) to their highest form (blocks)
                 
-                <gold>▶ ${"/uncondense".asMMCmd(cmdHover).fireFmt()}
+                <gold>▶ ${"/uncondense".asMMCmd(Utils.cmdHover).fireFmt()}
                 <dark_gray>Uncondenses resources (if possible) to their lowest form (items)
                 """.trimIndent(),
 
@@ -390,6 +388,23 @@ object Config {
     object JoinQuitModule {
         /** Enables or disables the MotdModule. */
         var ENABLED: Boolean = true
+
+        /** The message displayed when a player joins. */
+        var WELCOME_TEXT: String =
+            """
+            ${"]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)}
+            ${"⯈".mangoFmt(true)}
+            ${"⯈".mangoFmt(true)}
+            ${"⯈".mangoFmt(true)} ${"Welcome".fireFmt()} <player>
+            ${"⯈".mangoFmt(true)}
+            ${"⯈".mangoFmt(true)}
+            ${"⯈".mangoFmt(true)} ${"Check out".fireFmt()}<gray>: ${
+                "/rules".asMMCmd(Utils.cmdHover).fireFmt()
+            } <gray>🟅 ${"/guide".asMMCmd(Utils.cmdHover).fireFmt()}
+            ${"⯈".mangoFmt(true)}
+            ${"⯈".mangoFmt(true)}
+            ${"]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)}
+            """.trimIndent()
     }
 
     /** Configuration settings for the MotdModule. */

@@ -11,6 +11,7 @@ import io.papermc.paper.datacomponent.item.CustomModelData
 import io.papermc.paper.datacomponent.item.ItemLore
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import org.bukkit.Color
 
 /** Extension utilities. */
@@ -19,12 +20,20 @@ object ExtUtils {
     private val IL: ItemLore.Builder = ItemLore.lore()
     private val CMD: CustomModelData.Builder = CustomModelData.customModelData()
 
-    /** Deserializes a MiniMessage string into a Component. */
-    fun String.mm(): Component = MM.deserialize(this)
+    /**
+     * Deserializes a MiniMessage string into a Component.
+     * @param resolver Optional tag resolver for custom tags.
+     * @return The deserialized Component.
+     */
+    fun String.mm(resolver: TagResolver = TagResolver.empty()): Component = MM.deserialize(this, resolver)
 
-    /** Deserializes a list of MiniMessage strings into a list of Components. */
+    /**
+     * Deserializes a list of MiniMessage strings into a list of Components.
+     * @param resolver Optional tag resolver for custom tags.
+     * @return The list of deserialized Components.
+     */
     @JvmName("mmStringList")
-    fun List<String>.mm(): List<Component> = this.map { it.mm() }
+    fun List<String>.mm(resolver: TagResolver = TagResolver.empty()): List<Component> = this.map { it.mm(resolver) }
 
     /** Serializes a Component into a MiniMessage string. */
     fun Component.mm(): String = MM.serialize(this)

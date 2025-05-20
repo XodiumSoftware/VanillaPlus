@@ -5,6 +5,7 @@
 
 package org.xodium.vanillaplus.modules
 
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.player.PlayerJoinEvent
@@ -21,16 +22,24 @@ class JoinQuitModule : ModuleInterface {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
         if (!enabled()) return
+
+        val player = event.player
         instance.server.onlinePlayers
-            .filter { it.uniqueId != event.player.uniqueId }
-            .forEach { it.sendMessage("<gold>[<green>+<gold>]<reset> ${event.player.displayName()}".mm()) }
+            .filter { it.uniqueId != player.uniqueId }
+            .forEach { it.sendMessage("<gold>[<green>+<gold>]<reset> ${player.displayName()}".mm()) }
+
+        player.sendMessage(
+            Config.JoinQuitModule.WELCOME_TEXT.mm(Placeholder.component("player", player.displayName()))
+        )
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerQuitEvent) {
         if (!enabled()) return
+
+        val player = event.player
         instance.server.onlinePlayers
-            .filter { it.uniqueId != event.player.uniqueId }
-            .forEach { it.sendMessage("<gold>[<red>-<gold>]<reset> ${event.player.displayName()}".mm()) }
+            .filter { it.uniqueId != player.uniqueId }
+            .forEach { it.sendMessage("<gold>[<red>-<gold>]<reset> ${player.displayName()}".mm()) }
     }
 }

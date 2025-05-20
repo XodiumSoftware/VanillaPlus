@@ -26,6 +26,7 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.registries.MaterialRegistry
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
+import org.xodium.vanillaplus.utils.FmtUtils.roseFmt
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.roundToInt
@@ -33,9 +34,10 @@ import kotlin.math.roundToInt
 /** General utilities. */
 object Utils {
     private val chestDenyKey = NamespacedKey(instance, "denied_chests")
+    private val unloads = ConcurrentHashMap<Location, MutableMap<Material, Int>>()
     val lastUnloads: ConcurrentHashMap<UUID, List<Block>> = ConcurrentHashMap()
     val activeVisualizations: ConcurrentHashMap<UUID, Int> = ConcurrentHashMap()
-    private val unloads = ConcurrentHashMap<Location, MutableMap<Material, Int>>()
+    val cmdHover: String = "Click Me!".roseFmt()
 
     /**
      * A helper function to wrap command execution with standardised error handling.
