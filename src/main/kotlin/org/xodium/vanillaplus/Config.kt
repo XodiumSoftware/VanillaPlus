@@ -20,6 +20,7 @@ import org.xodium.vanillaplus.utils.ExtUtils.asMMCmd
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
+import org.xodium.vanillaplus.utils.FmtUtils.skylineFmt
 import org.xodium.vanillaplus.utils.TimeUtils
 import org.xodium.vanillaplus.utils.Utils
 import org.xodium.vanillaplus.utils.Utils.getTps
@@ -108,45 +109,45 @@ object Config {
             listOf(
                 // Page 1
                 """
-                <b><u><dark_aqua>Tips & Tricks:<reset>
+                <b><u>${"Tips & Tricks".fireFmt()}
                 
-                <gold>▶ ${"/home".asMMCmd(Utils.cmdHover).fireFmt()}
+                <gold>▶ ${"/home".asMMCmd(Utils.cmdHover).skylineFmt()}
                 <dark_gray>Teleport to your home
                 
-                <gold>▶ ${"/skills".asMMCmd(Utils.cmdHover).fireFmt()}
+                <gold>▶ ${"/skills".asMMCmd(Utils.cmdHover).skylineFmt()}
                 <dark_gray>Opens up the Skills GUI
                 
-                <gold>▶ ${"/rtp".asMMCmd(Utils.cmdHover).fireFmt()}
+                <gold>▶ ${"/rtp".asMMCmd(Utils.cmdHover).skylineFmt()}
                 <dark_gray>Random teleport in the current dimension
                 """.trimIndent(),
 
                 // Page 2
                 """
-                <gold>▶ ${"/unload".asMMCmd(Utils.cmdHover).fireFmt()}
+                <gold>▶ ${"/unload".asMMCmd(Utils.cmdHover).skylineFmt()}
                 <dark_gray>Unloads your inventory into nearby chests
                 
-                <gold>▶ ${"/search".asMMCmd(Utils.cmdHover).fireFmt()}
+                <gold>▶ ${"/search".asMMCmd(Utils.cmdHover).skylineFmt()}
                 <dark_gray>Search into nearby chests for an item
                 
-                <gold>▶ ${"/tpa [player]".asMMCmd().fireFmt()}
+                <gold>▶ ${"/tpa [player]".asMMCmd().skylineFmt()}
                 <dark_gray>Request to teleport to a player
                 """.trimIndent(),
 
                 // Page 3
                 """
-                <gold>▶ ${"/condense".asMMCmd(Utils.cmdHover).fireFmt()}
+                <gold>▶ ${"/condense".asMMCmd(Utils.cmdHover).skylineFmt()}
                 <dark_gray>Condenses resources (if possible) to their highest form (blocks)
                 
-                <gold>▶ ${"/uncondense".asMMCmd(Utils.cmdHover).fireFmt()}
+                <gold>▶ ${"/uncondense".asMMCmd(Utils.cmdHover).skylineFmt()}
                 <dark_gray>Uncondenses resources (if possible) to their lowest form (items)
                 """.trimIndent(),
 
                 // Page 4
                 """
-                <gold>▶ ${"Enchantment max level".fireFmt()}
+                <gold>▶ ${"Enchantment max level".skylineFmt()}
                 <dark_gray>has been incremented by <red><b>x2<reset>
                 
-                <gold>▶ ${"During an Eclipse".fireFmt()}
+                <gold>▶ ${"During an Eclipse".skylineFmt()}
                 <dark_gray>A horde will spawn where the mobs are stronger than usual
                 """.trimIndent()
             ).mm()
@@ -399,8 +400,8 @@ object Config {
             ${"⯈".mangoFmt(true)}
             ${"⯈".mangoFmt(true)}
             ${"⯈".mangoFmt(true)} ${"Check out".fireFmt()}<gray>: ${
-                "/rules".asMMCmd(Utils.cmdHover).fireFmt()
-            } <gray>🟅 ${"/guide".asMMCmd(Utils.cmdHover).fireFmt()}
+                "/rules".asMMCmd(Utils.cmdHover).skylineFmt()
+            } <gray>🟅 ${"/guide".asMMCmd(Utils.cmdHover).skylineFmt()}
             ${"⯈".mangoFmt(true)}
             ${"⯈".mangoFmt(true)}
             ${"]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)}
