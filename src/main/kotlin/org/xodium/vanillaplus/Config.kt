@@ -14,6 +14,7 @@ import org.bukkit.entity.EntityType
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.data.MobAttributeData
 import org.xodium.vanillaplus.data.MobEquipmentData
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
@@ -226,21 +227,28 @@ object Config {
         /** Enables or disables the eclipseModule. */
         var ENABLED: Boolean = true
 
-        /** The spawn rate of mobs during an eclipse. */
-        var SPAWN_RATE: Int = 10
-
-        /**
-         * Map of attribute adjustments for mobs during an eclipse.
-         * `it` is the current value of the attribute aka base value.
-         */
-        var MOB_ATTRIBUTE_ADJUSTMENTS: Map<Attribute, (Double) -> Double> = mapOf(
-            Attribute.ATTACK_DAMAGE to { it * 2.0 },
-            Attribute.MAX_HEALTH to { it * 2.0 },
-            Attribute.FOLLOW_RANGE to { it * 2.0 },
-            Attribute.MOVEMENT_SPEED to { it * 2.0 },
-            Attribute.MOVEMENT_EFFICIENCY to { it * 2.0 },
-            Attribute.WATER_MOVEMENT_EFFICIENCY to { it * 2.0 },
-            Attribute.SPAWN_REINFORCEMENTS to { it * 2.0 },
+        /** The list of attributes for mobs during an eclipse. */
+        var MOB_ATTRIBUTE: List<MobAttributeData> = listOf(
+            MobAttributeData(
+                EntityType.entries,
+                mapOf(
+                    Attribute.ATTACK_DAMAGE to { it * 2.0 },
+                    Attribute.MAX_HEALTH to { it * 2.0 },
+                    Attribute.FOLLOW_RANGE to { it * 2.0 },
+                    Attribute.MOVEMENT_SPEED to { it * 2.0 },
+                    Attribute.MOVEMENT_EFFICIENCY to { it * 2.0 },
+                    Attribute.WATER_MOVEMENT_EFFICIENCY to { it * 2.0 },
+                    Attribute.SPAWN_REINFORCEMENTS to { it * 2.0 },
+                ),
+                10.0
+            ),
+            MobAttributeData(
+                listOf(EntityType.SPIDER),
+                mapOf(
+                    Attribute.SCALE to { it * 2.0 },
+                ),
+                1.5
+            )
         )
 
         /** The list of equipment for mobs during an eclipse. */

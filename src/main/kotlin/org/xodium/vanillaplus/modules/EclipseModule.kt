@@ -57,14 +57,18 @@ class EclipseModule : ModuleInterface {
         if (world.difficulty != Difficulty.HARD) return
         if (entity.type in Config.EclipseModule.EXCLUDED_MOBS) return
 
-        Config.EclipseModule.MOB_ATTRIBUTE_ADJUSTMENTS.forEach { (attribute, adjust) ->
-            entity.getAttribute(attribute)?.let { attr ->
-                attr.baseValue = adjust(attr.baseValue)
-                if (attribute == Attribute.MAX_HEALTH) {
-                    entity.health = attr.baseValue
+        Config.EclipseModule.MOB_ATTRIBUTE
+            .filter { it.type.contains(entity.type) }
+            .forEach { mobAttr ->
+                mobAttr.attributes.forEach { (attribute, adjust) ->
+                    entity.getAttribute(attribute)?.let { attr ->
+                        attr.baseValue = adjust(attr.baseValue)
+                        if (attribute == Attribute.MAX_HEALTH) {
+                            entity.health = attr.baseValue
+                        }
+                    }
                 }
             }
-        }
 
         val equipment = entity.equipment ?: return
 
@@ -109,8 +113,13 @@ class EclipseModule : ModuleInterface {
         if (entity.type == EntityType.CREEPER && Random.nextBoolean()) {
             (entity as Creeper).isPowered = Config.EclipseModule.RANDOM_POWERED_CREEPERS
         }
+
         if (hordeState.isActive && event.spawnReason == CreatureSpawnEvent.SpawnReason.NATURAL) {
-            repeat(Config.EclipseModule.SPAWN_RATE) {
+            val matchingData = Config.EclipseModule.MOB_ATTRIBUTE
+                .filter { it.type.contains(entity.type) || it.type.containsAll(EntityType.entries) }
+            val spawnRate = matchingData.maxOfOrNull { it.spawnRate }?.toInt() ?: 1
+
+            repeat(spawnRate - 1) {
                 entity.world.spawnEntity(
                     entity.location.clone().add(
                         (-5..5).random().toDouble(),
