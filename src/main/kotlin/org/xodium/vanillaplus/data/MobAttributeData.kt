@@ -10,13 +10,13 @@ import org.bukkit.entity.EntityType
 
 /**
  * Data class to hold information about mob attributes.
- * @property type A list of entity types that this mob attribute data applies to.
+ * @property types A list of entity types that this mob attribute data applies to.
  * @property attributes A map of attributes and their corresponding adjustment functions,
  *                      'it' is the original value of the attribute.
  * @property spawnRate The spawn rate of the mob.
  */
 data class MobAttributeData(
-    val type: List<EntityType>,
+    val types: List<EntityType>,
     val attributes: Map<Attribute, (Double) -> Double>,
     val spawnRate: Double
 )

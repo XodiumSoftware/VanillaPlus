@@ -58,7 +58,7 @@ class EclipseModule : ModuleInterface {
         if (entity.type in Config.EclipseModule.EXCLUDED_MOBS) return
 
         Config.EclipseModule.MOB_ATTRIBUTE
-            .filter { it.type.contains(entity.type) }
+            .filter { it.types.contains(entity.type) }
             .forEach { mobAttr ->
                 mobAttr.attributes.forEach { (attribute, adjust) ->
                     entity.getAttribute(attribute)?.let { attr ->
@@ -115,9 +115,11 @@ class EclipseModule : ModuleInterface {
         }
 
         if (hordeState.isActive && event.spawnReason == CreatureSpawnEvent.SpawnReason.NATURAL) {
-            val matchingData = Config.EclipseModule.MOB_ATTRIBUTE
-                .filter { it.type.contains(entity.type) || it.type.containsAll(EntityType.entries) }
-            val spawnRate = matchingData.maxOfOrNull { it.spawnRate }?.toInt() ?: 1
+            val specific = Config.EclipseModule.MOB_ATTRIBUTE
+                .firstOrNull { it.types.size == 1 && it.types.contains(entity.type) }
+            val general = Config.EclipseModule.MOB_ATTRIBUTE
+                .firstOrNull { it.types.containsAll(EntityType.entries) }
+            val spawnRate = (specific ?: general)?.spawnRate?.toInt() ?: 1
 
             repeat(spawnRate - 1) {
                 entity.world.spawnEntity(
