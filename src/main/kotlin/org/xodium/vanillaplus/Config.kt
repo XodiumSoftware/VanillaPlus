@@ -386,6 +386,12 @@ object Config {
         )
     }
 
+    /** Configuration settings for the JoinQuitModule. */
+    object JoinQuitModule {
+        /** Enables or disables the MotdModule. */
+        var ENABLED: Boolean = true
+    }
+
     /** Configuration settings for the MotdModule. */
     object MotdModule {
         /** Enables or disables the MotdModule. */

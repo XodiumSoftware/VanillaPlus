@@ -35,6 +35,7 @@ object ModuleManager {
             EclipseModule(),
             InvSearchModule(),
             InvUnloadModule(),
+            JoinQuitModule(),
             MotdModule(),
             RecipiesModule(),
             TabListModule(),
