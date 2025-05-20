@@ -69,14 +69,38 @@ class EclipseModule : ModuleInterface {
         val equipment = entity.equipment ?: return
 
         if (Config.EclipseModule.MOB_EQUIPMENT.isNotEmpty()) {
-            Config.EclipseModule.MOB_EQUIPMENT.forEach { (slot, item) ->
-                when (slot) {
-                    EquipmentSlot.HEAD -> equipment.helmet = item.clone()
-                    EquipmentSlot.CHEST -> equipment.chestplate = item.clone()
-                    EquipmentSlot.LEGS -> equipment.leggings = item.clone()
-                    EquipmentSlot.FEET -> equipment.boots = item.clone()
-                    EquipmentSlot.HAND -> equipment.setItemInMainHand(item.clone())
-                    EquipmentSlot.OFF_HAND -> equipment.setItemInOffHand(item.clone())
+            Config.EclipseModule.MOB_EQUIPMENT.forEach { config ->
+                when (config.slot) {
+                    EquipmentSlot.HEAD -> {
+                        equipment.helmet = config.item.clone()
+                        equipment.helmetDropChance = config.dropChance
+                    }
+
+                    EquipmentSlot.CHEST -> {
+                        equipment.chestplate = config.item.clone()
+                        equipment.chestplateDropChance = config.dropChance
+                    }
+
+                    EquipmentSlot.LEGS -> {
+                        equipment.leggings = config.item.clone()
+                        equipment.leggingsDropChance = config.dropChance
+                    }
+
+                    EquipmentSlot.FEET -> {
+                        equipment.boots = config.item.clone()
+                        equipment.bootsDropChance = config.dropChance
+                    }
+
+                    EquipmentSlot.HAND -> {
+                        equipment.setItemInMainHand(config.item.clone())
+                        equipment.itemInMainHandDropChance = config.dropChance
+                    }
+
+                    EquipmentSlot.OFF_HAND -> {
+                        equipment.setItemInOffHand(config.item.clone())
+                        equipment.itemInOffHandDropChance = config.dropChance
+                    }
+
                     else -> {}
                 }
             }

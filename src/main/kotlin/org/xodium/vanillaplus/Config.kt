@@ -14,6 +14,7 @@ import org.bukkit.entity.EntityType
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.data.MobEquipmentData
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
@@ -21,7 +22,6 @@ import org.xodium.vanillaplus.utils.TimeUtils
 import org.xodium.vanillaplus.utils.Utils.getTps
 import org.xodium.vanillaplus.utils.Utils.getWeather
 import java.time.LocalTime
-import kotlin.random.Random
 import org.bukkit.Sound as BukkitSound
 
 /** Configuration settings. */
@@ -243,20 +243,24 @@ object Config {
             Attribute.SPAWN_REINFORCEMENTS to { it * 2.0 },
         )
 
-        /** The map of equipment to be given to mobs during an eclipse. */
-        var MOB_EQUIPMENT: Map<EquipmentSlot, ItemStack> = mapOf(
-            EquipmentSlot.HEAD to ItemStack(Material.NETHERITE_HELMET),
-            EquipmentSlot.CHEST to ItemStack(Material.NETHERITE_CHESTPLATE),
-            EquipmentSlot.LEGS to ItemStack(Material.NETHERITE_LEGGINGS),
-            EquipmentSlot.FEET to ItemStack(Material.NETHERITE_BOOTS),
-            EquipmentSlot.HAND to ItemStack(
-                when (Random.nextInt(3)) {
-                    0 -> Material.NETHERITE_SWORD
-                    1 -> Material.NETHERITE_AXE
-                    else -> Material.BOW
-                }
+        /** The list of equipment for mobs during an eclipse. */
+        var MOB_EQUIPMENT: List<MobEquipmentData> = listOf(
+            MobEquipmentData(EquipmentSlot.HEAD, ItemStack(Material.NETHERITE_HELMET), 0.0f),
+            MobEquipmentData(EquipmentSlot.CHEST, ItemStack(Material.NETHERITE_CHESTPLATE), 0.0f),
+            MobEquipmentData(EquipmentSlot.LEGS, ItemStack(Material.NETHERITE_LEGGINGS), 0.0f),
+            MobEquipmentData(EquipmentSlot.FEET, ItemStack(Material.NETHERITE_BOOTS), 0.0f),
+            MobEquipmentData(
+                EquipmentSlot.HAND,
+                ItemStack(
+                    listOf(
+                        Material.NETHERITE_SWORD,
+                        Material.NETHERITE_AXE,
+                        Material.BOW
+                    ).random()
+                ),
+                0.0f
             ),
-            EquipmentSlot.OFF_HAND to ItemStack(Material.SHIELD)
+            MobEquipmentData(EquipmentSlot.OFF_HAND, ItemStack(Material.SHIELD), 0.0f)
         )
 
         /** The list of mobs that are excluded from the eclipse buff. */
