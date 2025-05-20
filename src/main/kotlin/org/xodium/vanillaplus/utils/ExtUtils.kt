@@ -74,4 +74,17 @@ object ExtUtils {
     /** Creates a CustomModelData object from a list of colors. */
     @JvmName("cmdColorList")
     fun List<Color>.cmd(): CustomModelData.Builder = CMD.addColors(this)
+
+    /**
+     * Performs a command as a player from a string.
+     * @param hover Optional hover text for the command.
+     * @return The formatted string with the command.
+     */
+    fun String.asMMCmd(hover: String? = null): String {
+        return if (hover != null) {
+            "<hover:show_text:'$hover'><click:run_command:'$this'>$this</click></hover>"
+        } else {
+            "<click:run_command:'$this'>$this</click>"
+        }
+    }
 }

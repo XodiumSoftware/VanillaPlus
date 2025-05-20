@@ -16,9 +16,11 @@ import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.MobAttributeData
 import org.xodium.vanillaplus.data.MobEquipmentData
+import org.xodium.vanillaplus.utils.ExtUtils.asMMCmd
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
+import org.xodium.vanillaplus.utils.FmtUtils.roseFmt
 import org.xodium.vanillaplus.utils.TimeUtils
 import org.xodium.vanillaplus.utils.Utils.getTps
 import org.xodium.vanillaplus.utils.Utils.getWeather
@@ -99,26 +101,56 @@ object Config {
         /** Enables or disables the BookModule. */
         var ENABLED: Boolean = true
 
+        private val cmdHover = "Click Me!".roseFmt()
+
         /** The Guide book. */
         var GUIDE_BOOK: Book = Book.book(
             "Guide".fireFmt().mm(),
             instance::class.simpleName.toString().fireFmt().mm(),
             listOf(
                 // Page 1
-                "<b><u><dark_aqua>Tips & Tricks:<reset>\n\n" +
-                        "<gold>▶ ${"/home".fireFmt()}\n<dark_gray>Teleport to your home\n\n" +
-                        "<gold>▶ ${"/skills".fireFmt()}\n<dark_gray>Opens up the Skills GUI\n\n" +
-                        "<gold>▶ ${"/rtp".fireFmt()}\n<dark_gray>Random teleport in the current dimension",
+                """
+                <b><u><dark_aqua>Tips & Tricks:<reset>
+                
+                <gold>▶ ${"/home".asMMCmd(cmdHover).fireFmt()}
+                <dark_gray>Teleport to your home
+                
+                <gold>▶ ${"/skills".asMMCmd(cmdHover).fireFmt()}
+                <dark_gray>Opens up the Skills GUI
+                
+                <gold>▶ ${"/rtp".asMMCmd(cmdHover).fireFmt()}
+                <dark_gray>Random teleport in the current dimension
+                """.trimIndent(),
+
                 // Page 2
-                "<gold>▶ ${"/unload".fireFmt()}\n<dark_gray>Unloads your inventory into nearby chests\n\n" +
-                        "<gold>▶ ${"/search".fireFmt()}\n<dark_gray>Search into nearby chests for an item\n\n" +
-                        "<gold>▶ ${"/tpa [player]".fireFmt()}\n<dark_gray>Request to teleport to a player",
+                """
+                <gold>▶ ${"/unload".asMMCmd(cmdHover).fireFmt()}
+                <dark_gray>Unloads your inventory into nearby chests
+                
+                <gold>▶ ${"/search".asMMCmd(cmdHover).fireFmt()}
+                <dark_gray>Search into nearby chests for an item
+                
+                <gold>▶ ${"/tpa [player]".asMMCmd().fireFmt()}
+                <dark_gray>Request to teleport to a player
+                """.trimIndent(),
+
                 // Page 3
-                "<gold>▶ ${"/condense".fireFmt()}\n<dark_gray>Condenses resources (if possible) to their highest form (blocks)\n\n" +
-                        "<gold>▶ ${"/uncondense".fireFmt()}\n<dark_gray>Uncondenses resources (if possible) to their lowest form (items)",
+                """
+                <gold>▶ ${"/condense".asMMCmd(cmdHover).fireFmt()}
+                <dark_gray>Condenses resources (if possible) to their highest form (blocks)
+                
+                <gold>▶ ${"/uncondense".asMMCmd(cmdHover).fireFmt()}
+                <dark_gray>Uncondenses resources (if possible) to their lowest form (items)
+                """.trimIndent(),
+        
                 // Page 4
-                "<gold>▶ ${"Enchantment max level".fireFmt()}\n<dark_gray>has been incremented by <red><b>x2<reset>\n\n" +
-                        "<gold>▶ ${"During an Eclipse".fireFmt()}\n<dark_gray>A horde will spawn where the mobs are stronger than usual"
+                """
+                <gold>▶ ${"Enchantment max level".fireFmt()}
+                <dark_gray>has been incremented by <red><b>x2<reset>
+                
+                <gold>▶ ${"During an Eclipse".fireFmt()}
+                <dark_gray>A horde will spawn where the mobs are stronger than usual
+                """.trimIndent()
             ).mm()
         )
 
