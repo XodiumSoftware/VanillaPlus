@@ -46,7 +46,7 @@ object ModuleManager {
                     "Loaded: ${module::class.simpleName} | Took ${
                         measureTime {
                             instance.server.pluginManager.registerEvents(module, instance)
-                            module.cmd()?.let { commandBuilders.addAll(it) }
+                            module.cmds()?.let { commandBuilders.addAll(it) }
                         }.inWholeMilliseconds
                     }ms"
                 )

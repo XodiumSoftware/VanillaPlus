@@ -46,7 +46,7 @@ class AutoToolModule : ModuleInterface {
     override fun enabled(): Boolean = Config.AutoToolModule.ENABLED
 
     @Suppress("UnstableApiUsage")
-    override fun cmd(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
+    override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
         return listOf(
             Commands.literal("autotool")
                 .requires { it.sender.hasPermission(Perms.AutoTool.USE) }

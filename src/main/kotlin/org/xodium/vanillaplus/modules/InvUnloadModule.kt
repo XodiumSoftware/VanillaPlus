@@ -34,7 +34,7 @@ class InvUnloadModule : ModuleInterface {
     override fun enabled(): Boolean = Config.InvUnloadModule.ENABLED
 
     @Suppress("UnstableApiUsage")
-    override fun cmd(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
+    override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
         return listOf(
             Commands.literal("invunload")
                 .requires { it.sender.hasPermission(Perms.InvUnload.USE) }

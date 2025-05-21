@@ -35,7 +35,7 @@ class AutoRefillModule : ModuleInterface {
     override fun enabled(): Boolean = Config.AutoRefillModule.ENABLED
 
     @Suppress("UnstableApiUsage")
-    override fun cmd(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
+    override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
         return listOf(
             Commands.literal("autorefill")
                 .requires { it.sender.hasPermission(Perms.AutoRefill.USE) }

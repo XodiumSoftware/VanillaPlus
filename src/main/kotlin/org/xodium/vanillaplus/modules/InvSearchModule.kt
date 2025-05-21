@@ -45,7 +45,7 @@ class InvSearchModule : ModuleInterface {
     }
 
     @Suppress("UnstableApiUsage")
-    override fun cmd(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
+    override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
         return listOf(
             Commands.literal("invsearch")
                 .requires { it.sender.hasPermission(Perms.InvSearch.USE) }

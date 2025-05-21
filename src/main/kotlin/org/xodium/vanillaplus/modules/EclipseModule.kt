@@ -34,7 +34,7 @@ class EclipseModule : ModuleInterface {
     override fun enabled(): Boolean = Config.EclipseModule.ENABLED
 
     @Suppress("UnstableApiUsage")
-    override fun cmd(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
+    override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
         return listOf(
             Commands.literal("eclipse")
                 .requires { it.sender.hasPermission(Perms.Eclipse.ECLIPSE) }
@@ -44,7 +44,14 @@ class EclipseModule : ModuleInterface {
     private var hordeState = EclipseData()
 
     init {
-        if (enabled()) schedule()
+        if (enabled()) {
+            instance.server.scheduler.runTaskTimer(
+                instance,
+                Runnable { eclipse() },
+                Config.EclipseModule.INIT_DELAY,
+                Config.EclipseModule.INTERVAL
+            )
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -131,16 +138,6 @@ class EclipseModule : ModuleInterface {
                 )
             }
         }
-    }
-
-    /** Holds all the schedules for this module. */
-    private fun schedule() {
-        instance.server.scheduler.runTaskTimer(
-            instance,
-            Runnable { eclipse() },
-            Config.EclipseModule.INIT_DELAY,
-            Config.EclipseModule.INTERVAL
-        )
     }
 
     /** Handles the eclipse mechanics. */

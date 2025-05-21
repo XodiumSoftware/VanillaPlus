@@ -22,5 +22,5 @@ interface ModuleInterface : Listener {
      * @return A collection of LiteralArgumentBuilder instances representing the command structures, or `null` if not applicable.
      */
     @Suppress("UnstableApiUsage")
-    fun cmd(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? = null
+    fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? = null
 }

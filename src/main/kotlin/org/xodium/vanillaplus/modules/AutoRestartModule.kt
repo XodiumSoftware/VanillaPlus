@@ -17,23 +17,20 @@ class AutoRestartModule : ModuleInterface {
     override fun enabled(): Boolean = Config.AutoRestartModule.ENABLED
 
     init {
-        if (enabled()) schedule()
-    }
-
-    /** Holds all the schedules for this module. */
-    private fun schedule() {
-        instance.server.scheduler.runTaskTimerAsynchronously(
-            instance,
-            Runnable {
-                Config.AutoRestartModule.RESTART_TIMES.forEach {
-                    if (isTimeToStartCountdown(it)) {
-                        instance.server.scheduler.runTask(instance, Runnable { countdown() })
+        if (enabled()) {
+            instance.server.scheduler.runTaskTimerAsynchronously(
+                instance,
+                Runnable {
+                    Config.AutoRestartModule.RESTART_TIMES.forEach {
+                        if (isTimeToStartCountdown(it)) {
+                            instance.server.scheduler.runTask(instance, Runnable { countdown() })
+                        }
                     }
-                }
-            },
-            Config.AutoRestartModule.SCHEDULE_INIT_DELAY,
-            Config.AutoRestartModule.SCHEDULE_INTERVAL
-        )
+                },
+                Config.AutoRestartModule.SCHEDULE_INIT_DELAY,
+                Config.AutoRestartModule.SCHEDULE_INTERVAL
+            )
+        }
     }
 
     /** Triggers a countdown for the server restart. */
