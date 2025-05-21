@@ -30,6 +30,7 @@ object ModuleManager {
             AutoRestartModule(),
             AutoToolModule(),
             BooksModule(),
+            ChiselModule(),
             DimensionsModule(),
             DoorsModule(),
             EclipseModule(),

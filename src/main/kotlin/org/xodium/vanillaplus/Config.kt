@@ -194,6 +194,12 @@ object Config {
         )
     }
 
+    /** Configuration settings for the ChiselModule. */
+    object ChiselModule {
+        /** Enables or disables the ChiselModule. */
+        var ENABLED: Boolean = true
+    }
+
     /** Configuration settings for the DimensionsModule. */
     object DimensionsModule {
         /** Enables or disables the DimensionsModule. */
