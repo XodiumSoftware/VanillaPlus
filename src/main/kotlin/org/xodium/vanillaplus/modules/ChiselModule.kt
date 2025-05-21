@@ -30,6 +30,8 @@ class ChiselModule : ModuleInterface {
     override fun enabled(): Boolean = Config.ChiselModule.ENABLED
 
     private val chiselKey = NamespacedKey(instance, "chisel")
+
+    //TODO: save to database?
     private val playerModes = mutableMapOf<UUID, ChiselMode>()
 
     init {
