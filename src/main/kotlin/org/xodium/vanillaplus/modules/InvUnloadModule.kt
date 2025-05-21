@@ -25,6 +25,7 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.hooks.ChestSortHook
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.ChestAccessManager
+import org.xodium.vanillaplus.managers.CooldownManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
@@ -56,12 +57,13 @@ class InvUnloadModule : ModuleInterface {
      * @param player The player whose inventory to unload.
      */
     private fun unload(player: Player) {
-        if (!Utils.cooldown(
-                player,
-                Config.InvUnloadModule.COOLDOWN,
-                NamespacedKey(instance, "invunload_cooldown")
-            )
-        ) return
+        val cooldownKey = NamespacedKey(instance, "invunload_cooldown")
+        val cooldownDuration = Config.InvUnloadModule.COOLDOWN
+        if (CooldownManager.isOnCooldown(player, cooldownKey, cooldownDuration)) {
+            player.sendActionBar("You must wait before using this again.".fireFmt().mm())
+            return
+        }
+        CooldownManager.setCooldown(player, cooldownKey, System.currentTimeMillis())
 
         val startSlot = 9
         val endSlot = 35
@@ -71,7 +73,8 @@ class InvUnloadModule : ModuleInterface {
             return
         }
 
-        val useableChests = chests.filter { ChestAccessManager.isAllowed(player, it) }
+        val deniedChestKey = NamespacedKey(instance, "denied_chest")
+        val useableChests = chests.filter { ChestAccessManager.isAllowed(player, deniedChestKey, it) }
         if (useableChests.isEmpty()) {
             player.sendActionBar("No usable chests found nearby".fireFmt().mm())
             return

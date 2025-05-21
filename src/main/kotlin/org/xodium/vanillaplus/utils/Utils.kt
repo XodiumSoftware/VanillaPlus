@@ -17,7 +17,6 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.EnchantmentStorageMeta
-import org.bukkit.persistence.PersistentDataType
 import org.bukkit.util.BoundingBox
 import org.bukkit.util.Vector
 import org.xodium.vanillaplus.Config
@@ -95,26 +94,6 @@ object Utils {
     }
 
     /**
-     * Checks if the player is on cooldown.
-     * @param player The player to check.
-     * @param cooldownDuration The cooldown duration in milliseconds.
-     * @param key The NamespacedKey to use for the cooldown.
-     * @return true if the player is not on cooldown, false otherwise.
-     */
-    fun cooldown(player: Player, cooldownDuration: Long, key: NamespacedKey): Boolean {
-        val now = System.currentTimeMillis()
-        val container = player.persistentDataContainer
-        val last = container.get(key, PersistentDataType.LONG) ?: 0L
-        return if (now >= last + cooldownDuration) {
-            container.set(key, PersistentDataType.LONG, now)
-            true
-        } else {
-            player.sendActionBar("You must wait before using this mechanic again".fireFmt().mm())
-            false
-        }
-    }
-
-    /**
      * Returns an EnumSet of the enum constants that match the provided regex list.
      * @param enumClass The class of the enum to search.
      * @param regexList A list of regex patterns to match against the enum constant names.
@@ -159,10 +138,11 @@ object Utils {
         val block = event.clickedBlock
         val player = event.player
         if (event.action == Action.RIGHT_CLICK_BLOCK && block != null) {
+            val key = NamespacedKey(instance, "denied_chest")
             if (block.type.name.contains("CHEST")) {
-                ChestAccessManager.deny(player, block)
+                ChestAccessManager.deny(player, key, block)
             } else {
-                ChestAccessManager.allow(player, block)
+                ChestAccessManager.allow(player, key, block)
             }
         }
     }

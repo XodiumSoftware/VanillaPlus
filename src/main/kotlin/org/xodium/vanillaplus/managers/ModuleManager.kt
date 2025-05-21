@@ -51,7 +51,6 @@ object ModuleManager {
                     }ms"
                 )
             }
-        commandBuilders.addAll(ChestAccessManager.cmds() ?: emptyList())
         commandBuilders.takeIf { it.isNotEmpty() }?.let {
             @Suppress("UnstableApiUsage")
             instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
