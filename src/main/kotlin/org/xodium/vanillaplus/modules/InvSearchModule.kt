@@ -13,6 +13,8 @@ import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
+import org.bukkit.Particle
+import org.bukkit.block.Block
 import org.bukkit.block.Container
 import org.bukkit.block.DoubleChest
 import org.bukkit.entity.Player
@@ -26,9 +28,8 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.roseFmt
+import org.xodium.vanillaplus.utils.TimeUtils
 import org.xodium.vanillaplus.utils.Utils
-import org.xodium.vanillaplus.utils.Utils.doesChestContain
-import org.xodium.vanillaplus.utils.Utils.protocolUnload
 import java.util.concurrent.CompletableFuture
 
 /** Represents a module handling inv-search mechanics within the system. */
@@ -113,7 +114,7 @@ class InvSearchModule : ModuleInterface {
         }
 
         affectedChests.forEach { Utils.chestEffect(player, it) }
-        Utils.laserEffectSchedule(player, affectedChests)
+        laserEffectSchedule(player, affectedChests)
     }
 
     /**
@@ -123,8 +124,14 @@ class InvSearchModule : ModuleInterface {
      * @return True if the item was found in the inventory or its containers, false otherwise.
      */
     private fun searchItemInContainers(material: Material, destination: Inventory): Boolean {
-        if (doesChestContain(destination, ItemStack(material))) {
-            destination.location?.let { protocolUnload(it, material, doesChestContainCount(destination, material)) }
+        if (Utils.doesChestContain(destination, ItemStack(material))) {
+            destination.location?.let {
+                Utils.protocolUnload(
+                    it,
+                    material,
+                    doesChestContainCount(destination, material)
+                )
+            }
             return true
         }
         return false
@@ -138,5 +145,67 @@ class InvSearchModule : ModuleInterface {
      */
     private fun doesChestContainCount(inventory: Inventory, material: Material): Int {
         return inventory.contents.filter { it?.type == material }.sumOf { it?.amount ?: 0 }
+    }
+
+    /**
+     * Creates a laser effect for the specified player and chests.
+     * @param player The player to play the effect for.
+     * @param affectedChests The list of chests to affect. If null, uses the last unloaded chests.
+     */
+    private fun laserEffectSchedule(player: Player, affectedChests: List<Block>? = null) {
+        val chests = affectedChests ?: Utils.lastUnloads[player.uniqueId] ?: return
+
+        Utils.activeVisualizations[player.uniqueId] = instance.server.scheduler.scheduleSyncRepeatingTask(
+            instance,
+            { laserEffect(chests, player, 0.3, 2, Particle.CRIT, 0.001, 128) },
+            0L,
+            2L
+        )
+
+        instance.server.scheduler.runTaskLater(
+            instance,
+            Runnable {
+                Utils.activeVisualizations[player.uniqueId]?.let {
+                    instance.server.scheduler.cancelTask(it)
+                    Utils.activeVisualizations.remove(player.uniqueId)
+                }
+            },
+            TimeUtils.seconds(5)
+        )
+    }
+
+    /**
+     * Creates a laser effect between the player and the specified blocks.
+     * @param destinations The list of blocks to create the laser effect towards.
+     * @param player The player to create the laser effect for.
+     * @param interval The interval between each particle spawn.
+     * @param count The number of particles to spawn at each location.
+     * @param particle The type of particle to spawn.
+     * @param speed The speed of the particles.
+     * @param maxDistance The maximum distance for the laser effect.
+     */
+    private fun laserEffect(
+        destinations: List<Block>,
+        player: Player,
+        interval: Double,
+        count: Int,
+        particle: Particle,
+        speed: Double,
+        maxDistance: Int
+    ) {
+        destinations.forEach { destination ->
+            val start = player.location.clone()
+            val end = Utils.getCenterOfBlock(destination).add(0.0, -0.5, 0.0)
+            val direction = end.toVector().subtract(start.toVector()).normalize()
+            val distance = start.distance(destination.location)
+            if (distance < maxDistance) {
+                var i = 1.0
+                while (i <= distance) {
+                    val point = start.clone().add(direction.clone().multiply(i))
+                    player.spawnParticle(particle, point, count, 0.0, 0.0, 0.0, speed)
+                    i += interval
+                }
+            }
+        }
     }
 }
