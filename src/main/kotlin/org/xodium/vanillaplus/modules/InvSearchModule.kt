@@ -25,6 +25,7 @@ import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.managers.ChestAccessManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.roseFmt
@@ -88,7 +89,7 @@ class InvSearchModule : ModuleInterface {
         if (!Utils.cooldown(player, Config.InvSearchModule.COOLDOWN, cooldownKey)) return
 
         val chests = Utils.findBlocksInRadius(player.location, Config.InvSearchModule.SEARCH_RADIUS)
-            .filter { Utils.canPlayerUseChest(it, player) }
+            .filter { ChestAccessManager.isAllowed(player, it) }
         if (chests.isEmpty()) {
             player.sendActionBar("No usable chests found for ${"$material".roseFmt()}".fireFmt().mm())
             return

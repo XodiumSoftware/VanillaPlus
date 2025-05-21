@@ -24,6 +24,7 @@ import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.hooks.ChestSortHook
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.managers.ChestAccessManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
@@ -70,7 +71,7 @@ class InvUnloadModule : ModuleInterface {
             return
         }
 
-        val useableChests = chests.filter { Utils.canPlayerUseChest(it, player) }
+        val useableChests = chests.filter { ChestAccessManager.isAllowed(player, it) }
         if (useableChests.isEmpty()) {
             player.sendActionBar("No usable chests found nearby".fireFmt().mm())
             return

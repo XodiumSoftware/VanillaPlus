@@ -23,6 +23,7 @@ import org.bukkit.util.Vector
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.managers.ChestAccessManager
 import org.xodium.vanillaplus.registries.MaterialRegistry
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
@@ -32,7 +33,6 @@ import kotlin.math.roundToInt
 
 /** General utilities. */
 object Utils {
-    private val chestDenyKey = NamespacedKey(instance, "denied_chests")
     private val unloads = ConcurrentHashMap<Location, MutableMap<Material, Int>>()
     val lastUnloads: ConcurrentHashMap<UUID, List<Block>> = ConcurrentHashMap()
     val activeVisualizations: ConcurrentHashMap<UUID, Int> = ConcurrentHashMap()
@@ -160,55 +160,11 @@ object Utils {
         val player = event.player
         if (event.action == Action.RIGHT_CLICK_BLOCK && block != null) {
             if (block.type.name.contains("CHEST")) {
-                denyChestAccess(player, block)
+                ChestAccessManager.deny(player, block)
             } else {
-                allowChestAccess(player, block)
+                ChestAccessManager.allow(player, block)
             }
         }
-    }
-
-    /**
-     * Allows the player access to the chest at the given block.
-     * @param player The player to allow access.
-     * @param block The block to allow access to.
-     */
-    private fun allowChestAccess(player: Player, block: Block) {
-        val container = player.persistentDataContainer
-        val locString = block.location.serialize().toString()
-        val denied = container.get(chestDenyKey, PersistentDataType.STRING) ?: return
-        val updated = denied.split(";").filter { it != locString }.joinToString(";")
-        if (updated.isEmpty()) {
-            container.remove(chestDenyKey)
-        } else {
-            container.set(chestDenyKey, PersistentDataType.STRING, updated)
-        }
-    }
-
-    /**
-     * Denies the player access to the chest at the given block.
-     * @param player The player to deny access.
-     * @param block The block to deny access to.
-     */
-    private fun denyChestAccess(player: Player, block: Block) {
-        val container = player.persistentDataContainer
-        val locString = block.location.serialize().toString()
-        val denied = container.get(chestDenyKey, PersistentDataType.STRING) ?: ""
-        val updated = if (denied.isEmpty()) locString else "$denied;$locString"
-        container.set(chestDenyKey, PersistentDataType.STRING, updated)
-    }
-
-    /**
-     * Checks if the player can use the chest at the given block.
-     * @param block The block to check.
-     * @param player The player to check.
-     * @return True if the player can use the chest, false otherwise.
-     */
-    fun canPlayerUseChest(block: Block?, player: Player?): Boolean {
-        if (block == null || player == null) return false
-        val container = player.persistentDataContainer
-        val denied = container.get(chestDenyKey, PersistentDataType.STRING) ?: ""
-        val locString = block.location.serialize().toString()
-        return !denied.split(";").contains(locString)
     }
 
     /**
