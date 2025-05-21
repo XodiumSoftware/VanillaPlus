@@ -32,6 +32,7 @@ import kotlin.math.roundToInt
 
 /** General utilities. */
 object Utils {
+    private val unloads = ConcurrentHashMap<Location, MutableMap<Material, Int>>()
     val lastUnloads: ConcurrentHashMap<UUID, List<Block>> = ConcurrentHashMap()
     val activeVisualizations: ConcurrentHashMap<UUID, Int> = ConcurrentHashMap()
     val cmdHover: String = "Click Me!".fireFmt()
@@ -232,6 +233,6 @@ object Utils {
      */
     fun protocolUnload(loc: Location, mat: Material, amount: Int) {
         if (amount == 0) return
-        mutableMapOf<Material, Int>().merge(mat, amount, Int::plus)
+        unloads.computeIfAbsent(loc) { mutableMapOf() }.merge(mat, amount, Int::plus)
     }
 }
