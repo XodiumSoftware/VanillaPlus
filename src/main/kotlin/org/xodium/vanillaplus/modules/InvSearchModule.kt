@@ -84,13 +84,8 @@ class InvSearchModule : ModuleInterface {
      * @param material The material to search for in the chests.
      */
     private fun search(player: Player, material: Material) {
-        //TODO: fix cooldown not working when executing with material and without.
-        if (!Utils.cooldown(
-                player,
-                Config.InvSearchModule.COOLDOWN,
-                NamespacedKey(instance, "invsearch_cooldown")
-            )
-        ) return
+        val cooldownKey = NamespacedKey(instance, "invsearch_cooldown")
+        if (!Utils.cooldown(player, Config.InvSearchModule.COOLDOWN, cooldownKey)) return
 
         val chests = Utils.findBlocksInRadius(player.location, Config.InvSearchModule.SEARCH_RADIUS)
             .filter { Utils.canPlayerUseChest(it, player) }
