@@ -8,7 +8,7 @@ package org.xodium.vanillaplus.modules
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.block.data.Directional
-import org.bukkit.block.data.type.Stairs
+import org.bukkit.block.data.type.Slab
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.player.PlayerInteractEvent
@@ -18,14 +18,19 @@ import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.utils.BlockUtils.rotateY
+import org.xodium.vanillaplus.utils.BlockUtils.iterate
 import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.FmtUtils.skylineFmt
+import java.util.*
+
+enum class ChiselMode { ROTATE, FLIP }
 
 /** Represents a module handling chisel mechanics within the system. */
 class ChiselModule : ModuleInterface {
     override fun enabled(): Boolean = Config.ChiselModule.ENABLED
 
     private val chiselKey = NamespacedKey(instance, "chisel")
+    private val playerModes = mutableMapOf<UUID, ChiselMode>()
 
     init {
         if (enabled()) instance.server.addRecipe(recipe())
@@ -41,20 +46,43 @@ class ChiselModule : ModuleInterface {
 
         if (!isChisel(item)) return
 
-        if (block.blockData is Stairs) {
-            val blockData = block.blockData as Stairs
-            val nextFacing = blockData.facing.rotateY()
-            blockData.facing = nextFacing
-            block.blockData = blockData
+        if (event.action.isRightClick && player.isSneaking) {
+            val newMode = when (playerModes[player.uniqueId]) {
+                ChiselMode.ROTATE -> ChiselMode.FLIP
+                else -> ChiselMode.ROTATE
+            }
+            playerModes[player.uniqueId] = newMode
+            player.sendActionBar("Chisel mode set to $newMode".skylineFmt().mm())
             event.isCancelled = true
+            return
         }
 
-        if (block.blockData is Directional) {
-            val blockData = block.blockData as Directional
-            val nextFacing = blockData.facing.rotateY()
-            blockData.facing = nextFacing
-            block.blockData = blockData
-            event.isCancelled = true
+        val iterateClockwise = when {
+            event.action.isLeftClick -> true
+            event.action.isRightClick -> false
+            else -> return
+        }
+
+        when (playerModes[player.uniqueId]) {
+            ChiselMode.ROTATE -> {
+                val data = block.blockData
+                if (data is Directional) {
+                    data.facing = data.facing.iterate(iterateClockwise)
+                    block.blockData = data
+                    event.isCancelled = true
+                }
+            }
+
+            ChiselMode.FLIP -> {
+                val data = block.blockData
+                if (data is Slab && data.type != Slab.Type.DOUBLE) {
+                    data.type = data.type.iterate(iterateClockwise)
+                    block.blockData = data
+                    event.isCancelled = true
+                }
+            }
+
+            else -> return
         }
     }
 

@@ -8,45 +8,51 @@
 package org.xodium.vanillaplus.utils
 
 import org.bukkit.block.BlockFace
+import org.bukkit.block.data.type.Slab
 
 /** Block utilities. */
 object BlockUtils {
+    private val blockFaces = listOf(
+        BlockFace.UP,
+        BlockFace.NORTH,
+        BlockFace.EAST,
+        BlockFace.SOUTH,
+        BlockFace.WEST,
+        BlockFace.DOWN,
+    )
+
+    private val slabTypes = listOf(
+        Slab.Type.BOTTOM,
+        Slab.Type.TOP,
+    )
+
     /**
-     * Rotates the given [BlockFace] 90 degrees clockwise around the Y-axis.
-     * @param clockwise If true, rotates clockwise; otherwise, rotates counter-clockwise.
-     * @return The rotated [BlockFace].
+     * Iterates the given [Enum] to the next face in the list.
+     * @param list The list of [Enum] to iterate through.
+     * @param value The current [Enum] value.
+     * @param clockwise If true, iterates clockwise; otherwise, iterates counter-clockwise.
+     * @return The iterated [Enum].
      */
-    fun BlockFace.rotateY(clockwise: Boolean = true): BlockFace = when (this) {
-        BlockFace.NORTH -> if (clockwise) BlockFace.EAST else BlockFace.WEST
-        BlockFace.EAST -> if (clockwise) BlockFace.SOUTH else BlockFace.NORTH
-        BlockFace.SOUTH -> if (clockwise) BlockFace.WEST else BlockFace.EAST
-        BlockFace.WEST -> if (clockwise) BlockFace.NORTH else BlockFace.SOUTH
-        else -> this
+    private fun <T> iterateEnum(list: List<T>, value: T, clockwise: Boolean): T {
+        val idx = list.indexOf(value)
+        if (idx == -1) return value
+        val next = if (clockwise) (idx + 1) % list.size else (idx - 1 + list.size) % list.size
+        return list[next]
     }
 
     /**
-     * Rotates the given [BlockFace] 90 degrees clockwise around the X-axis.
-     * @param clockwise If true, rotates clockwise; otherwise, rotates counter-clockwise.
-     * @return The rotated [BlockFace].
+     * Iterates the given [BlockFace] to the next face in the list.
+     * @param clockwise If true, iterates clockwise; otherwise, iterates counter-clockwise.
+     * @return The iterated [BlockFace].
      */
-    fun BlockFace.rotateX(clockwise: Boolean = true): BlockFace = when (this) {
-        BlockFace.UP -> if (clockwise) BlockFace.NORTH else BlockFace.SOUTH
-        BlockFace.NORTH -> if (clockwise) BlockFace.DOWN else BlockFace.UP
-        BlockFace.DOWN -> if (clockwise) BlockFace.SOUTH else BlockFace.NORTH
-        BlockFace.SOUTH -> if (clockwise) BlockFace.UP else BlockFace.DOWN
-        else -> this
-    }
+    fun BlockFace.iterate(clockwise: Boolean = true): BlockFace = iterateEnum(blockFaces, this, clockwise)
+
 
     /**
-     * Rotates the given [BlockFace] 90 degrees clockwise around the Z-axis.
-     * @param clockwise If true, rotates clockwise; otherwise, rotates counter-clockwise.
-     * @return The rotated [BlockFace].
+     * Iterates the given [Slab.Type] to the next type in the list.
+     * @param clockwise If true, iterates clockwise; otherwise, iterates counter-clockwise.
+     * @return The iterated [Slab.Type].
      */
-    fun BlockFace.rotateZ(clockwise: Boolean = true): BlockFace = when (this) {
-        BlockFace.UP -> if (clockwise) BlockFace.EAST else BlockFace.WEST
-        BlockFace.EAST -> if (clockwise) BlockFace.DOWN else BlockFace.UP
-        BlockFace.DOWN -> if (clockwise) BlockFace.WEST else BlockFace.EAST
-        BlockFace.WEST -> if (clockwise) BlockFace.UP else BlockFace.DOWN
-        else -> this
-    }
+    fun Slab.Type.iterate(clockwise: Boolean = true): Slab.Type = iterateEnum(slabTypes, this, clockwise)
+
 }
