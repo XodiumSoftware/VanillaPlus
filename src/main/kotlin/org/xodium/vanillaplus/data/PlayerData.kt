@@ -27,7 +27,7 @@ data class PlayerData(
                 CREATE TABLE IF NOT EXISTS ${PlayerData::class.simpleName} (
                     id TEXT PRIMARY KEY,
                     autorefill BOOLEAN NOT NULL DEFAULT false,
-                    autotool BOOLEAN NOT NULL DEFAULT false
+                    autotool BOOLEAN NOT NULL DEFAULT false)
                 """.trimIndent()
             )
         }
