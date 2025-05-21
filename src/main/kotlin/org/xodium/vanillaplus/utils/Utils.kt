@@ -293,13 +293,12 @@ object Utils {
         }
     }
 
-    //TODO: merge the 2 laser effect functions.
     /**
      * Creates a laser effect for the specified player and chests.
      * @param player The player to play the effect for.
      * @param affectedChests The list of chests to affect. If null, uses the last unloaded chests.
      */
-    fun laserEffect(player: Player, affectedChests: List<Block>? = null) {
+    fun laserEffectSchedule(player: Player, affectedChests: List<Block>? = null) {
         val chests = affectedChests ?: lastUnloads[player.uniqueId] ?: return
 
         activeVisualizations[player.uniqueId] = instance.server.scheduler.scheduleSyncRepeatingTask(

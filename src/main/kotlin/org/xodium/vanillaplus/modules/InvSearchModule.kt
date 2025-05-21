@@ -113,7 +113,7 @@ class InvSearchModule : ModuleInterface {
         }
 
         affectedChests.forEach { Utils.chestEffect(player, it) }
-        Utils.laserEffect(player, affectedChests)
+        Utils.laserEffectSchedule(player, affectedChests)
     }
 
     /**
