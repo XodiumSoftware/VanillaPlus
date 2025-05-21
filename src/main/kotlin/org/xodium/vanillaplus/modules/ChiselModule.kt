@@ -20,6 +20,7 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.BlockUtils.iterate
 import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.skylineFmt
 import java.util.*
 
@@ -106,7 +107,14 @@ class ChiselModule : ModuleInterface {
         return ItemStack(Material.BRUSH).apply {
             itemMeta = itemMeta.apply {
                 displayName("Chisel".mm())
-                lore(listOf("").mm())
+                lore(
+                    listOf(
+                        "Usage:".fireFmt(),
+                        "${"[Sneak + Right-click]".skylineFmt()} <white>Switch Mode",
+                        "${"[Right-click]".skylineFmt()} <white>Iterate Block Faces Clockwise",
+                        "${"[Left-click]".skylineFmt()} <white>Iterate Block Faces Anti-Clockwise",
+                    ).mm()
+                )
                 persistentDataContainer.set(chiselKey, PersistentDataType.BYTE, 1)
             }
         }
