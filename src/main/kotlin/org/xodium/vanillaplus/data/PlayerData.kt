@@ -12,13 +12,11 @@ import org.xodium.vanillaplus.Database
  * @property id A unique identifier for the player.
  * @property autorefill Indicates whether the autorefill feature is enabled for the player.
  * @property autotool Indicates whether the autotool feature is enabled for the player.
- * @property discoveredWaystones A list of discovered Waystone IDs. Null if none discovered.
  */
 data class PlayerData(
     val id: String,
     val autorefill: Boolean? = false,
     val autotool: Boolean? = false,
-    val discoveredWaystones: List<String>? = null
 ) {
     companion object {
         /** Creates a table in the database for the provided class type if it does not already exist. */
@@ -30,7 +28,6 @@ data class PlayerData(
                     id TEXT PRIMARY KEY,
                     autorefill BOOLEAN NOT NULL DEFAULT false,
                     autotool BOOLEAN NOT NULL DEFAULT false,
-                    discovered_waystones TEXT); 
                 """.trimIndent()
             )
         }
@@ -45,13 +42,12 @@ data class PlayerData(
             Database.exec(
                 //language=SQLite
                 """
-                INSERT OR REPLACE INTO ${PlayerData::class.simpleName} (id, autorefill, autotool, discovered_waystones)
-                VALUES (?, ?, ?, ?);
+                INSERT OR REPLACE INTO ${PlayerData::class.simpleName} (id, autorefill, autotool)
+                VALUES (?, ?, ?);
                 """.trimIndent(),
                 data.id,
                 data.autorefill,
                 data.autotool,
-                data.discoveredWaystones?.joinToString(",")
             )
         }
 
@@ -61,26 +57,20 @@ data class PlayerData(
          * extracted from the database.
          */
         fun getData(): List<PlayerData> {
-            //language=SQLite
-            val sql = """
-                SELECT id, autorefill, autotool, discovered_waystones
+            return Database.query(
+                //language=SQLite
+                """
+                SELECT id, autorefill, autotool
                 FROM ${PlayerData::class.simpleName};
-            """.trimIndent()
-            return Database.query(sql) { resultSet ->
-                val results = mutableListOf<PlayerData>()
-                while (resultSet.next()) {
-                    val discoveredString = resultSet.getString("discovered_waystones")
-                    val discoveredList = discoveredString?.split(',')?.filter { it.isNotEmpty() }?.toList()
-                    results.add(
-                        PlayerData(
-                            resultSet.getString("id"),
-                            resultSet.getBoolean("autorefill"),
-                            resultSet.getBoolean("autotool"),
-                            discoveredList
-                        )
-                    )
-                }
-                results
+                """.trimIndent()
+            ) { rs ->
+                generateSequence {
+                    if (rs.next()) PlayerData(
+                        rs.getString("id"),
+                        rs.getBoolean("autorefill"),
+                        rs.getBoolean("autotool")
+                    ) else null
+                }.toList()
             }
         }
     }
