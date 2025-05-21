@@ -48,6 +48,7 @@ class ChiselModule : ModuleInterface {
 
         if (!isChisel(item)) return
 
+        //TODO: switching modes should be done in the PlayerClickEvent.
         if (event.action.isRightClick && player.isSneaking) {
             val newMode = when (playerModes[player.uniqueId]) {
                 ChiselMode.ROTATE -> ChiselMode.FLIP
@@ -65,6 +66,7 @@ class ChiselModule : ModuleInterface {
             else -> return
         }
 
+        //TODO: using should make durability decrease.
         when (playerModes[player.uniqueId]) {
             ChiselMode.ROTATE -> {
                 val data = block.blockData
