@@ -499,7 +499,7 @@
     </routine>
     <schema id="191" parent="1" name="main">
       <Current>1</Current>
-      <LastIntrospectionLocalTimestamp>2025-05-22.08:47:35</LastIntrospectionLocalTimestamp>
+      <LastIntrospectionLocalTimestamp>2025-05-22.10:09:42</LastIntrospectionLocalTimestamp>
     </schema>
     <argument id="192" parent="16">
       <ArgumentDirection>R</ArgumentDirection>
@@ -1595,17 +1595,18 @@
       <System>1</System>
     </table>
     <column id="557" parent="555" name="id">
+      <NotNull>1</NotNull>
       <Position>1</Position>
-      <StoredType>TEXT|0s</StoredType>
+      <StoredType>VARCHAR(36)|0s</StoredType>
     </column>
     <column id="558" parent="555" name="autorefill">
-      <DefaultExpression>false</DefaultExpression>
+      <DefaultExpression>0</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StoredType>BOOLEAN|0s</StoredType>
     </column>
     <column id="559" parent="555" name="autotool">
-      <DefaultExpression>false</DefaultExpression>
+      <DefaultExpression>0</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>3</Position>
       <StoredType>BOOLEAN|0s</StoredType>
@@ -1614,7 +1615,7 @@
       <DefaultExpression>&apos;ROTATE&apos;</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>4</Position>
-      <StoredType>TEXT|0s</StoredType>
+      <StoredType>VARCHAR(16)|0s</StoredType>
     </column>
     <index id="561" parent="555" name="sqlite_autoindex_PlayerData_1">
       <ColNames>id</ColNames>
