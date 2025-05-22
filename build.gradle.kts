@@ -58,7 +58,6 @@ tasks {
     shadowJar {
         dependsOn(processResources)
         archiveClassifier.set("")
-        relocate("kotlin", "org.xodium.vanillaplus.kotlin")
         relocate("dev.triumphteam.gui", "org.xodium.vanillaplus.gui")
         mergeServiceFiles()
         destinationDirectory.set(file(".server/plugins/update"))

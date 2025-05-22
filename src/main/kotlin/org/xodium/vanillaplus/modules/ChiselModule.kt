@@ -13,6 +13,7 @@ import org.bukkit.block.data.type.Slab
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
+import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.ShapedRecipe
@@ -50,7 +51,8 @@ class ChiselModule : ModuleInterface {
         val playerId = player.uniqueId.toString()
         val playerData = PlayerData.getData().find { it.id == playerId } ?: PlayerData(playerId)
 
-        if (event.action.isRightClick && player.isSneaking && event.clickedBlock == null) {
+        //TODO: switching doesn't work.
+        if (event.action == Action.RIGHT_CLICK_AIR && player.isSneaking) {
             switchChiselMode(player, playerData)
             event.isCancelled = true
             return
