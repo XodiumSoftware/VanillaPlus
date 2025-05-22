@@ -161,7 +161,6 @@ class ChiselModule : ModuleInterface {
         return ItemStack.of(Material.BRUSH).apply {
             editPersistentDataContainer { it.set(chiselKey, PersistentDataType.BYTE, 1) }
             setData(DataComponentTypes.ITEM_MODEL, Key.key("chisel"))
-            //TODO: add custom REPAIR_COST?
             setData(DataComponentTypes.CUSTOM_NAME, "Chisel".mm())
             setData(
                 DataComponentTypes.LORE, ItemLore.lore(
