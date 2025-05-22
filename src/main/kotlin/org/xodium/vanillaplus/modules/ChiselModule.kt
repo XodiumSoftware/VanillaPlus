@@ -6,8 +6,8 @@
 package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.datacomponent.DataComponentTypes
-import io.papermc.paper.datacomponent.item.CustomModelData
 import io.papermc.paper.datacomponent.item.ItemLore
+import net.kyori.adventure.key.Key
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.block.Block
@@ -160,7 +160,8 @@ class ChiselModule : ModuleInterface {
         @Suppress("UnstableApiUsage")
         return ItemStack.of(Material.BRUSH).apply {
             editPersistentDataContainer { it.set(chiselKey, PersistentDataType.BYTE, 1) }
-            setData(DataComponentTypes.CUSTOM_MODEL_DATA, CustomModelData.customModelData().addString("chisel").build())
+            setData(DataComponentTypes.ITEM_MODEL, Key.key("chisel"))
+            //TODO: add custom REPAIR_COST?
             setData(DataComponentTypes.CUSTOM_NAME, "Chisel".mm())
             setData(
                 DataComponentTypes.LORE, ItemLore.lore(
