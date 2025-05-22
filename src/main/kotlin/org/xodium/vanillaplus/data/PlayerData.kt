@@ -14,7 +14,7 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.xodium.vanillaplus.enums.ChiselMode
 
-object PlayerDatas : IdTable<String>(PlayerData::class.simpleName.toString()) {
+object PlayerDataSchema : IdTable<String>(PlayerData::class.simpleName.toString()) {
     override val id: Column<EntityID<String>> = varchar("id", 36).entityId()
     val autorefill: Column<Boolean> = bool("autorefill").default(false)
     val autotool: Column<Boolean> = bool("autotool").default(false)
@@ -23,11 +23,11 @@ object PlayerDatas : IdTable<String>(PlayerData::class.simpleName.toString()) {
 }
 
 class PlayerDataEntity(id: EntityID<String>) : Entity<String>(id) {
-    companion object : EntityClass<String, PlayerDataEntity>(PlayerDatas)
+    companion object : EntityClass<String, PlayerDataEntity>(PlayerDataSchema)
 
-    var autorefill: Boolean by PlayerDatas.autorefill
-    var autotool: Boolean by PlayerDatas.autotool
-    var chiselMode: String by PlayerDatas.chiselMode
+    var autorefill: Boolean by PlayerDataSchema.autorefill
+    var autotool: Boolean by PlayerDataSchema.autotool
+    var chiselMode: String by PlayerDataSchema.chiselMode
 }
 
 /**
@@ -45,7 +45,7 @@ data class PlayerData(
     companion object {
         /** Creates a table in the database for the provided class type if it does not already exist. */
         fun createTable() {
-            transaction { SchemaUtils.create(PlayerDatas) }
+            transaction { SchemaUtils.create(PlayerDataSchema) }
         }
 
         fun setData(data: PlayerData): PlayerDataEntity = transaction {
