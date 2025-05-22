@@ -33,7 +33,7 @@ dependencies {
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.12") //TODO("Move away from WorldEdit")
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.exposed:exposed-core:0.50.1")
-    implementation("org.jetbrains.exposed:exposed-dao:0.50.1")
+    implementation("org.jetbrains.exposed:exposed-dao:0.61.0")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.50.1")
     implementation("org.xerial:sqlite-jdbc:3.45.3.0")
     implementation("de.jeff_media:ChestSortAPI:12.0.0")
