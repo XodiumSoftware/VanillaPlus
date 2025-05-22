@@ -10,6 +10,7 @@
       <w>clearchestaccess</w>
       <w>cmds</w>
       <w>coords</w>
+      <w>datas</w>
       <w>invsearch</w>
       <w>invunload</w>
       <w>netherite</w>
@@ -20,6 +21,7 @@
       <w>vanillaplus</w>
       <w>waystone</w>
       <w>waystones</w>
+      <w>xerial</w>
       <w>xodium</w>
     </words>
   </dictionary>

@@ -5,8 +5,30 @@
 
 package org.xodium.vanillaplus.data
 
-import org.xodium.vanillaplus.Database
+import org.jetbrains.exposed.dao.Entity
+import org.jetbrains.exposed.dao.EntityClass
+import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.dao.id.IdTable
+import org.jetbrains.exposed.sql.Column
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.xodium.vanillaplus.enums.ChiselMode
+
+object PlayerDatas : IdTable<String>(PlayerData::class.simpleName.toString()) {
+    override val id: Column<EntityID<String>> = varchar("id", 36).entityId()
+    val autorefill: Column<Boolean> = bool("autorefill").default(false)
+    val autotool: Column<Boolean> = bool("autotool").default(false)
+    val chiselMode: Column<String> = varchar("chiselMode", 16).default("ROTATE")
+    override val primaryKey: PrimaryKey = PrimaryKey(id)
+}
+
+class PlayerDataEntity(id: EntityID<String>) : Entity<String>(id) {
+    companion object : EntityClass<String, PlayerDataEntity>(PlayerDatas)
+
+    var autorefill: Boolean by PlayerDatas.autorefill
+    var autotool: Boolean by PlayerDatas.autotool
+    var chiselMode: String by PlayerDatas.chiselMode
+}
 
 /**
  * Represents player-specific configuration data.
@@ -23,58 +45,29 @@ data class PlayerData(
     companion object {
         /** Creates a table in the database for the provided class type if it does not already exist. */
         fun createTable() {
-            Database.exec(
-                //language=SQLite
-                """
-                CREATE TABLE IF NOT EXISTS ${PlayerData::class.simpleName} (
-                    id TEXT PRIMARY KEY,
-                    autorefill BOOLEAN NOT NULL DEFAULT false,
-                    autotool BOOLEAN NOT NULL DEFAULT false,
-                    chiselMode TEXT NOT NULL DEFAULT 'ROTATE'
+            transaction { SchemaUtils.create(PlayerDatas) }
+        }
+
+        fun setData(data: PlayerData): PlayerDataEntity = transaction {
+            PlayerDataEntity.findById(data.id)?.apply {
+                autorefill = data.autorefill
+                autotool = data.autotool
+                chiselMode = data.chiselMode.name
+            } ?: PlayerDataEntity.new(data.id) {
+                autorefill = data.autorefill
+                autotool = data.autotool
+                chiselMode = data.chiselMode.name
+            }
+        }
+
+        fun getData(): List<PlayerData> = transaction {
+            PlayerDataEntity.all().map {
+                PlayerData(
+                    it.id.value,
+                    it.autorefill,
+                    it.autotool,
+                    ChiselMode.valueOf(it.chiselMode)
                 )
-                """.trimIndent()
-            )
-        }
-
-        /**
-         * Inserts or updates a record in the database table corresponding to the current class
-         * with the data provided in the [PlayerData] object.
-         * @param data The [PlayerData] object containing information to be stored in the database.
-         */
-        fun setData(data: PlayerData) {
-            Database.exec(
-                //language=SQLite
-                """
-                INSERT OR REPLACE INTO ${PlayerData::class.simpleName} (id, autorefill, autotool, chiselMode)
-                VALUES (?, ?, ?, ?);
-                """.trimIndent(),
-                data.id,
-                data.autorefill,
-                data.autotool,
-                data.chiselMode.name,
-            )
-        }
-
-        /**
-         * Retrieves a list of [PlayerData] objects from the corresponding database table.
-         * @return a list of [PlayerData] extracted from the database.
-         */
-        fun getData(): List<PlayerData> {
-            return Database.query(
-                //language=SQLite
-                """
-                SELECT id, autorefill, autotool, chiselMode
-                FROM ${PlayerData::class.simpleName};
-                """.trimIndent()
-            ) { rs ->
-                generateSequence {
-                    if (rs.next()) PlayerData(
-                        rs.getString("id"),
-                        rs.getBoolean("autorefill"),
-                        rs.getBoolean("autotool"),
-                        ChiselMode.valueOf(rs.getString("chiselMode"))
-                    ) else null
-                }.toList()
             }
         }
     }
