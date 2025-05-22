@@ -28,6 +28,13 @@ class PlayerDataEntity(id: EntityID<String>) : Entity<String>(id) {
     var autorefill: Boolean by PlayerDataSchema.autorefill
     var autotool: Boolean by PlayerDataSchema.autotool
     var chiselMode: String by PlayerDataSchema.chiselMode
+
+    fun toData(): PlayerData = PlayerData(
+        id.value,
+        autorefill,
+        autotool,
+        ChiselMode.valueOf(chiselMode)
+    )
 }
 
 /**
@@ -44,10 +51,13 @@ data class PlayerData(
 ) {
     companion object {
         /** Creates a table in the database for the provided class type if it does not already exist. */
-        fun createTable() {
-            transaction { SchemaUtils.create(PlayerDataSchema) }
-        }
+        fun createTable(): Unit = transaction { SchemaUtils.create(PlayerDataSchema) }
 
+        /**
+         * Sets the [PlayerData] in the database.
+         * @param data The [PlayerData] to set.
+         * @return The updated or newly created [PlayerDataEntity].
+         */
         fun setData(data: PlayerData): PlayerDataEntity = transaction {
             PlayerDataEntity.findById(data.id)?.apply {
                 autorefill = data.autorefill
@@ -60,15 +70,10 @@ data class PlayerData(
             }
         }
 
-        fun getData(): List<PlayerData> = transaction {
-            PlayerDataEntity.all().map {
-                PlayerData(
-                    it.id.value,
-                    it.autorefill,
-                    it.autotool,
-                    ChiselMode.valueOf(it.chiselMode)
-                )
-            }
-        }
+        /**
+         * Retrieves all [PlayerData] records from the database.
+         * @return A list of [PlayerData] objects representing the configuration data for all players.
+         */
+        fun getData(): List<PlayerData> = transaction { PlayerDataEntity.all().map { it.toData() } }
     }
 }
