@@ -159,6 +159,7 @@ class ChiselModule : ModuleInterface {
     private fun chisel(): ItemStack {
         @Suppress("UnstableApiUsage")
         return ItemStack.of(Material.BRUSH).apply {
+            editPersistentDataContainer { it.set(chiselKey, PersistentDataType.BYTE, 1) }
             setData(DataComponentTypes.CUSTOM_MODEL_DATA, CustomModelData.customModelData().addString("chisel").build())
             setData(DataComponentTypes.CUSTOM_NAME, "Chisel".mm())
             setData(
@@ -171,7 +172,6 @@ class ChiselModule : ModuleInterface {
                     ).mm()
                 )
             )
-            editPersistentDataContainer { it.set(chiselKey, PersistentDataType.BYTE, 1) }
         }
     }
 
@@ -181,6 +181,6 @@ class ChiselModule : ModuleInterface {
      * @return True if the [ItemStack] is a chisel, false otherwise.
      */
     private fun isChisel(item: ItemStack): Boolean {
-        return item.itemMeta?.persistentDataContainer?.has(chiselKey, PersistentDataType.BYTE) == true
+        return item.persistentDataContainer.has(chiselKey, PersistentDataType.BYTE)
     }
 }
