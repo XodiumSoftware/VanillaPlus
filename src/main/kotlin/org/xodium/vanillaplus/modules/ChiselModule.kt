@@ -7,32 +7,32 @@ package org.xodium.vanillaplus.modules
 
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
+import org.bukkit.block.Block
 import org.bukkit.block.data.Directional
 import org.bukkit.block.data.type.Slab
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.ShapedRecipe
+import org.bukkit.inventory.meta.Damageable
 import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.data.PlayerData
 import org.xodium.vanillaplus.enums.ChiselMode
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.BlockUtils.iterate
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.skylineFmt
-import java.util.*
 
 /** Represents a module handling chisel mechanics within the system. */
 class ChiselModule : ModuleInterface {
     override fun enabled(): Boolean = Config.ChiselModule.ENABLED
 
     private val chiselKey = NamespacedKey(instance, "chisel")
-
-    //TODO: save to database?
-    private val playerModes = mutableMapOf<UUID, ChiselMode>()
 
     init {
         if (enabled()) instance.server.addRecipe(recipe())
@@ -44,21 +44,19 @@ class ChiselModule : ModuleInterface {
 
         val player = event.player
         val item = player.inventory.itemInMainHand
-        val block = event.clickedBlock ?: return
 
         if (!isChisel(item)) return
 
-        //TODO: switching modes should be done in the PlayerClickEvent.
-        if (event.action.isRightClick && player.isSneaking) {
-            val newMode = when (playerModes[player.uniqueId]) {
-                ChiselMode.ROTATE -> ChiselMode.FLIP
-                else -> ChiselMode.ROTATE
-            }
-            playerModes[player.uniqueId] = newMode
-            player.sendActionBar("Chisel mode set to $newMode".skylineFmt().mm())
+        val playerId = player.uniqueId.toString()
+        val playerData = PlayerData.getData().find { it.id == playerId } ?: PlayerData(playerId)
+
+        if (event.action.isRightClick && player.isSneaking && event.clickedBlock == null) {
+            switchChiselMode(player, playerData)
             event.isCancelled = true
             return
         }
+
+        val block = event.clickedBlock ?: return
 
         val iterateClockwise = when {
             event.action.isLeftClick -> true
@@ -66,14 +64,49 @@ class ChiselModule : ModuleInterface {
             else -> return
         }
 
-        //TODO: using should make durability decrease.
-        when (playerModes[player.uniqueId]) {
+        handleChiselAction(block, playerData, iterateClockwise, event)
+    }
+
+    /**
+     * Switches the [ChiselMode].
+     * @param player The [Player] who is using the chisel.
+     * @param playerData The [PlayerData] containing the current [ChiselMode].
+     */
+    private fun switchChiselMode(player: Player, playerData: PlayerData) {
+        val newMode = when (playerData.chiselMode) {
+            ChiselMode.ROTATE -> ChiselMode.FLIP
+            else -> ChiselMode.ROTATE
+        }
+        PlayerData.setData(playerData.copy(chiselMode = newMode))
+        player.sendActionBar("Chisel mode set to $newMode".skylineFmt().mm())
+    }
+
+    /**
+     * Handles the chisel action based on the [ChiselMode].
+     * @param block The [Block] being interacted with.
+     * @param playerData The [PlayerData] containing the current [ChiselMode].
+     * @param iterateClockwise True if iterating clockwise, false otherwise.
+     * @param event The [PlayerInteractEvent] triggered by the [Player].
+     */
+    private fun handleChiselAction(
+        block: Block,
+        playerData: PlayerData,
+        iterateClockwise: Boolean,
+        event: PlayerInteractEvent
+    ) {
+        val player = event.player
+        val item = player.inventory.itemInMainHand
+
+        var used = false
+
+        when (playerData.chiselMode) {
             ChiselMode.ROTATE -> {
                 val data = block.blockData
                 if (data is Directional) {
                     data.facing = data.facing.iterate(iterateClockwise)
                     block.blockData = data
                     event.isCancelled = true
+                    used = true
                 }
             }
 
@@ -83,16 +116,28 @@ class ChiselModule : ModuleInterface {
                     data.type = data.type.iterate(iterateClockwise)
                     block.blockData = data
                     event.isCancelled = true
+                    used = true
                 }
             }
+        }
 
-            else -> return
+        if (used) {
+            val meta = item.itemMeta
+            if (meta is Damageable) {
+                meta.damage = meta.damage + 1
+                if (meta.damage >= item.type.maxDurability) {
+                    player.inventory.setItemInMainHand(null)
+                    player.playSound(Config.ChiselModule.CHISEL_DURABILITY_DECREASE_SOUND)
+                } else {
+                    item.itemMeta = meta
+                }
+            }
         }
     }
 
     /**
-     * Creates a recipe for the chisel item.
-     * @return The chisel recipe.
+     * Creates a [ShapedRecipe] for the chisel item.
+     * @return The chisel [ShapedRecipe].
      */
     private fun recipe(): ShapedRecipe {
         return ShapedRecipe(chiselKey, chisel()).apply {
@@ -103,8 +148,8 @@ class ChiselModule : ModuleInterface {
     }
 
     /**
-     * Creates a chisel item stack.
-     * @return The chisel item stack.
+     * Creates a chisel [ItemStack].
+     * @return The chisel [ItemStack].
      */
     private fun chisel(): ItemStack {
         return ItemStack(Material.BRUSH).apply {
@@ -124,9 +169,9 @@ class ChiselModule : ModuleInterface {
     }
 
     /**
-     * Checks if the given item stack is a chisel.
-     * @param item The item stack to check.
-     * @return True if the item stack is a chisel, false otherwise.
+     * Checks if the given [ItemStack] is a chisel.
+     * @param item The [ItemStack] to check.
+     * @return True if the [ItemStack] is a chisel, false otherwise.
      */
     private fun isChisel(item: ItemStack): Boolean {
         return item.itemMeta?.persistentDataContainer?.has(chiselKey, PersistentDataType.BYTE) == true

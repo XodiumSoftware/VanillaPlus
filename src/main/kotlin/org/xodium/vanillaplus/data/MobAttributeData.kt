@@ -10,8 +10,8 @@ import org.bukkit.entity.EntityType
 
 /**
  * Data class to hold information about mob attributes.
- * @property types A list of entity types that this mob attribute data applies to.
- * @property attributes A map of attributes and their corresponding adjustment functions,
+ * @property types A list of [EntityType]s that this mob attribute data applies to.
+ * @property attributes A map of [Attribute]s and their corresponding adjustment functions,
  *                      'it' is the original value of the attribute.
  * @property spawnRate The spawn rate of the mob.
  */

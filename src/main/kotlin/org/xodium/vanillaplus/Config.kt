@@ -198,6 +198,14 @@ object Config {
     object ChiselModule {
         /** Enables or disables the ChiselModule. */
         var ENABLED: Boolean = true
+
+        /** The sound effect used for chisel durability decrease. */
+        var CHISEL_DURABILITY_DECREASE_SOUND: Sound = Sound.sound(
+            BukkitSound.ENTITY_ITEM_BREAK,
+            Sound.Source.PLAYER,
+            1.0f,
+            1.0f
+        )
     }
 
     /** Configuration settings for the DimensionsModule. */

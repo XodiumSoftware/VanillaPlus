@@ -688,7 +688,7 @@ class AutoToolModule : ModuleInterface {
      */
     private fun toggle(player: Player) {
         val playerData = getPlayerData(player)
-        val updatedData = playerData.copy(autotool = !(playerData.autotool ?: false))
+        val updatedData = playerData.copy(autotool = !playerData.autotool)
         PlayerData.setData(updatedData)
         player.sendActionBar(("${"AutoTool:".fireFmt()} ${if (isEnabledForPlayer(player)) "<green>ON" else "<red>OFF"}").mm())
     }

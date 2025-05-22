@@ -10,8 +10,8 @@ import org.bukkit.inventory.ItemStack
 
 /**
  * Data class to hold information about mob equipment.
- * @property slot The equipment slot of the item.
- * @property item The item stack representing the equipment.
+ * @property slot The [EquipmentSlot] of the item.
+ * @property item The [ItemStack] representing the equipment.
  * @property dropChance The chance of the item dropping.
  */
 data class MobEquipmentData(
