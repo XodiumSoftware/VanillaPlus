@@ -17,6 +17,6 @@ object Database {
     init {
         databaseFile.parentFile.apply { if (!exists()) mkdirs() }
         ExposedDatabase.connect(connUrl, driver = DRIVER)
-        instance.logger.info("Opened Exposed Database Connection.")
+        instance.logger.info("Opened: Exposed Database Connection.")
     }
 }
