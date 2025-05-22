@@ -16,7 +16,6 @@ import org.bukkit.block.data.type.Slab
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
-import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.ShapedRecipe
@@ -44,18 +43,25 @@ class ChiselModule : ModuleInterface {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerInteractEvent) {
+        println("PlayerInteractEvent fired: action=${event.action}, sneaking=${event.player.isSneaking}")
         if (!enabled()) return
 
         val player = event.player
         val item = player.inventory.itemInMainHand
 
-        if (!isChisel(item)) return
+        if (!isChisel(item)) {
+            println("Not a chisel: ${item.type}")
+            return
+        }
 
         val playerId = player.uniqueId.toString()
         val playerData = PlayerData.getData().find { it.id == playerId } ?: PlayerData(playerId)
 
+        println("Action: ${event.action}, Sneaking: ${player.isSneaking}, Mode: ${playerData.chiselMode}")
+
         //TODO: switching doesn't work.
-        if (event.action == Action.RIGHT_CLICK_AIR && player.isSneaking) {
+        if (event.action.isLeftClick && player.isSneaking) {
+            println("Attempting to switch chisel mode for player $playerId")
             switchChiselMode(player, playerData)
             event.isCancelled = true
             return
@@ -82,6 +88,7 @@ class ChiselModule : ModuleInterface {
             ChiselMode.ROTATE -> ChiselMode.FLIP
             else -> ChiselMode.ROTATE
         }
+        println("Switching mode from ${playerData.chiselMode} to $newMode for player ${playerData.id}")
         PlayerData.setData(playerData.copy(chiselMode = newMode))
         player.sendActionBar("Chisel mode set to $newMode".skylineFmt().mm())
     }
@@ -164,6 +171,7 @@ class ChiselModule : ModuleInterface {
             setData(DataComponentTypes.CUSTOM_NAME, "Chisel".mm())
             setData(
                 DataComponentTypes.LORE, ItemLore.lore(
+                    //TODO: dont forget to adjust lore based on what solution you have for the mode switching issue.
                     listOf(
                         "Usage:".fireFmt(),
                         "${"[Sneak + Right-click]".skylineFmt()} <white>Switch Mode",
