@@ -5,6 +5,9 @@
 
 package org.xodium.vanillaplus.modules
 
+import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.CustomModelData
+import io.papermc.paper.datacomponent.item.ItemLore
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.block.Block
@@ -154,10 +157,12 @@ class ChiselModule : ModuleInterface {
      * @return The chisel [ItemStack].
      */
     private fun chisel(): ItemStack {
-        return ItemStack(Material.BRUSH).apply {
-            itemMeta = itemMeta.apply {
-                displayName("Chisel".mm())
-                lore(
+        @Suppress("UnstableApiUsage")
+        return ItemStack.of(Material.BRUSH).apply {
+            setData(DataComponentTypes.CUSTOM_MODEL_DATA, CustomModelData.customModelData().addString("chisel").build())
+            setData(DataComponentTypes.CUSTOM_NAME, "Chisel".mm())
+            setData(
+                DataComponentTypes.LORE, ItemLore.lore(
                     listOf(
                         "Usage:".fireFmt(),
                         "${"[Sneak + Right-click]".skylineFmt()} <white>Switch Mode",
@@ -165,8 +170,8 @@ class ChiselModule : ModuleInterface {
                         "${"[Left-click]".skylineFmt()} <white>Iterate Block Faces Anti-Clockwise",
                     ).mm()
                 )
-                persistentDataContainer.set(chiselKey, PersistentDataType.BYTE, 1)
-            }
+            )
+            editPersistentDataContainer { it.set(chiselKey, PersistentDataType.BYTE, 1) }
         }
     }
 
