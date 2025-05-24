@@ -115,6 +115,8 @@ class TreesModule : ModuleInterface {
                                 ClipboardHolder(clipboard)
                                     .createPaste(editSession)
                                     .to(BlockVector3.at(block.x, block.y, block.z))
+                                    .copyBiomes(Config.TreesModule.COPY_BIOMES)
+                                    .copyEntities(Config.TreesModule.COPY_ENTITIES)
                                     .ignoreAirBlocks(Config.TreesModule.IGNORE_AIR_BLOCKS)
                                     .ignoreStructureVoidBlocks(Config.TreesModule.IGNORE_STRUCTURE_VOID_BLOCKS)
                                     .build()

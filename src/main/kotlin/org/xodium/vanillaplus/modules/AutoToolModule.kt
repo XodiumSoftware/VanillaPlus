@@ -46,7 +46,7 @@ class AutoToolModule : ModuleInterface {
     override fun enabled(): Boolean = Config.AutoToolModule.ENABLED
 
     @Suppress("UnstableApiUsage")
-    override fun cmd(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
+    override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
         return listOf(
             Commands.literal("autotool")
                 .requires { it.sender.hasPermission(Perms.AutoTool.USE) }
@@ -688,7 +688,7 @@ class AutoToolModule : ModuleInterface {
      */
     private fun toggle(player: Player) {
         val playerData = getPlayerData(player)
-        val updatedData = playerData.copy(autotool = !(playerData.autotool ?: false))
+        val updatedData = playerData.copy(autotool = !playerData.autotool)
         PlayerData.setData(updatedData)
         player.sendActionBar(("${"AutoTool:".fireFmt()} ${if (isEnabledForPlayer(player)) "<green>ON" else "<red>OFF"}").mm())
     }

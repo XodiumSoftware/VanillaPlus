@@ -19,7 +19,7 @@ class BooksModule : ModuleInterface {
     override fun enabled(): Boolean = Config.BooksModule.ENABLED
 
     @Suppress("UnstableApiUsage")
-    override fun cmd(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
+    override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
         return listOf(
             Commands.literal("guide")
                 .requires { it.sender.hasPermission(Perms.Book.GUIDE) }

@@ -35,7 +35,7 @@ class AutoRefillModule : ModuleInterface {
     override fun enabled(): Boolean = Config.AutoRefillModule.ENABLED
 
     @Suppress("UnstableApiUsage")
-    override fun cmd(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
+    override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
         return listOf(
             Commands.literal("autorefill")
                 .requires { it.sender.hasPermission(Perms.AutoRefill.USE) }
@@ -253,7 +253,7 @@ class AutoRefillModule : ModuleInterface {
      */
     private fun toggle(player: Player) {
         val playerData = getPlayerData(player)
-        val updatedData = playerData.copy(autorefill = !(playerData.autorefill ?: false))
+        val updatedData = playerData.copy(autorefill = !playerData.autorefill)
         PlayerData.setData(updatedData)
         cooldowns.remove(player.uniqueId)
         player.sendActionBar(("${"AutoRefill:".fireFmt()} ${if (isEnabledForPlayer(player)) "<green>ON" else "<red>OFF"}").mm())

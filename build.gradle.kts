@@ -15,7 +15,7 @@ plugins {
 }
 
 group = "org.xodium.vanillaplus"
-version = "1.8.1"
+version = "1.9.0"
 description = "Minecraft plugin that enhances the base gameplay."
 
 var apiVersion: String = "1.21.5"
@@ -30,8 +30,12 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.5-R0.1-SNAPSHOT")
-    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.11") //TODO("Move away from WorldEdit")
+    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.13") //TODO("Move away from WorldEdit")
     implementation(kotlin("stdlib-jdk8"))
+    implementation("org.jetbrains.exposed:exposed-core:0.61.0")
+    implementation("org.jetbrains.exposed:exposed-dao:0.61.0")
+    implementation("org.jetbrains.exposed:exposed-jdbc:0.61.0")
+    implementation("org.xerial:sqlite-jdbc:3.49.1.0")
     implementation("de.jeff_media:ChestSortAPI:12.0.0")
     implementation("dev.triumphteam:triumph-gui-paper-kotlin:4.0.0-SNAPSHOT") {
         exclude(group = "com.google.guava", module = "guava")
@@ -54,10 +58,9 @@ tasks {
     shadowJar {
         dependsOn(processResources)
         archiveClassifier.set("")
-        relocate("kotlin", "org.xodium.vanillaplus.kotlin")
         relocate("dev.triumphteam.gui", "org.xodium.vanillaplus.gui")
-        destinationDirectory.set(file(".server/plugins"))
-        minimize()
+        mergeServiceFiles()
+        destinationDirectory.set(file(".server/plugins/update"))
         doLast {
             copy {
                 from(archiveFile)

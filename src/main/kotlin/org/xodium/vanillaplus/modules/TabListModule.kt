@@ -21,6 +21,8 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 class TabListModule : ModuleInterface {
     override fun enabled(): Boolean = Config.TabListModule.ENABLED
 
+    //TODO: weather not updating correctly, TPS might have the same issue.
+
     init {
         if (enabled()) {
             instance.server.scheduler.runTaskTimer(

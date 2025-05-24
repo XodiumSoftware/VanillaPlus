@@ -9,7 +9,6 @@ import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.TimeUtils
 import java.time.LocalTime
 import java.time.temporal.ChronoUnit
 
@@ -17,26 +16,21 @@ import java.time.temporal.ChronoUnit
 class AutoRestartModule : ModuleInterface {
     override fun enabled(): Boolean = Config.AutoRestartModule.ENABLED
 
-    //TODO: look into sh-script-restart / cron job.
-    //TODO: refactor to use schedule better and to use config for init delay and interval.
     init {
-        if (enabled()) schedule()
-    }
-
-    /** Holds all the schedules for this module. */
-    private fun schedule() {
-        instance.server.scheduler.runTaskTimerAsynchronously(
-            instance,
-            Runnable {
-                Config.AutoRestartModule.RESTART_TIMES.forEach {
-                    if (isTimeToStartCountdown(it)) {
-                        instance.server.scheduler.runTask(instance, Runnable { countdown() })
+        if (enabled()) {
+            instance.server.scheduler.runTaskTimerAsynchronously(
+                instance,
+                Runnable {
+                    Config.AutoRestartModule.RESTART_TIMES.forEach {
+                        if (isTimeToStartCountdown(it)) {
+                            instance.server.scheduler.runTask(instance, Runnable { countdown() })
+                        }
                     }
-                }
-            },
-            0L,
-            TimeUtils.minutes(1)
-        )
+                },
+                Config.AutoRestartModule.SCHEDULE_INIT_DELAY,
+                Config.AutoRestartModule.SCHEDULE_INTERVAL
+            )
+        }
     }
 
     /** Triggers a countdown for the server restart. */
@@ -68,11 +62,11 @@ class AutoRestartModule : ModuleInterface {
                     }
                 } else {
                     instance.server.onlinePlayers.forEach { player -> player.hideBossBar(bossBar) }
-                    instance.server.restart() //TODO: replace with sh-script / cron job.
+                    instance.server.restart()
                 }
             },
-            0L,
-            TimeUtils.seconds(1)
+            Config.AutoRestartModule.COUNTDOWN_INIT_DELAY,
+            Config.AutoRestartModule.COUNTDOWN_INTERVAL
         )
     }
 

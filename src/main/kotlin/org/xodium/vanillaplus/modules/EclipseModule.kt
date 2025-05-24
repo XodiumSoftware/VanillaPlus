@@ -11,25 +11,30 @@ import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.Difficulty
 import org.bukkit.World
 import org.bukkit.attribute.Attribute
+import org.bukkit.entity.Creeper
+import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.CreatureSpawnEvent
+import org.bukkit.inventory.EquipmentSlot
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Perms
+import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.EclipseData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.Utils
+import kotlin.random.Random
 
 /** Represents a module handling eclipse mechanics within the system. */
 class EclipseModule : ModuleInterface {
     override fun enabled(): Boolean = Config.EclipseModule.ENABLED
 
     @Suppress("UnstableApiUsage")
-    override fun cmd(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
+    override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
         return listOf(
             Commands.literal("eclipse")
                 .requires { it.sender.hasPermission(Perms.Eclipse.ECLIPSE) }
@@ -39,7 +44,14 @@ class EclipseModule : ModuleInterface {
     private var hordeState = EclipseData()
 
     init {
-        if (enabled()) schedule()
+        if (enabled()) {
+            instance.server.scheduler.runTaskTimer(
+                instance,
+                Runnable { eclipse() },
+                Config.EclipseModule.INIT_DELAY,
+                Config.EclipseModule.INTERVAL
+            )
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -50,18 +62,73 @@ class EclipseModule : ModuleInterface {
         if (!hordeState.isActive && !enabled()) return
         if (world.environment != World.Environment.NORMAL) return
         if (world.difficulty != Difficulty.HARD) return
+        if (entity.type in Config.EclipseModule.EXCLUDED_MOBS) return
 
-        Config.EclipseModule.MOB_ATTRIBUTE_ADJUSTMENTS.forEach { (attribute, adjust) ->
-            entity.getAttribute(attribute)?.let { attr ->
-                attr.baseValue = adjust(attr.baseValue)
-                if (attribute == Attribute.MAX_HEALTH) {
-                    entity.health = attr.baseValue
+        Config.EclipseModule.MOB_ATTRIBUTE
+            .filter { it.types.contains(entity.type) }
+            .forEach { mobAttr ->
+                mobAttr.attributes.forEach { (attribute, adjust) ->
+                    entity.getAttribute(attribute)?.let { attr ->
+                        attr.baseValue = adjust(attr.baseValue)
+                        if (attribute == Attribute.MAX_HEALTH) {
+                            entity.health = attr.baseValue
+                        }
+                    }
+                }
+            }
+
+        val equipment = entity.equipment ?: return
+
+        if (Config.EclipseModule.MOB_EQUIPMENT.isNotEmpty()) {
+            Config.EclipseModule.MOB_EQUIPMENT.forEach { config ->
+                when (config.slot) {
+                    EquipmentSlot.HEAD -> {
+                        equipment.helmet = config.item.clone()
+                        equipment.helmetDropChance = config.dropChance
+                    }
+
+                    EquipmentSlot.CHEST -> {
+                        equipment.chestplate = config.item.clone()
+                        equipment.chestplateDropChance = config.dropChance
+                    }
+
+                    EquipmentSlot.LEGS -> {
+                        equipment.leggings = config.item.clone()
+                        equipment.leggingsDropChance = config.dropChance
+                    }
+
+                    EquipmentSlot.FEET -> {
+                        equipment.boots = config.item.clone()
+                        equipment.bootsDropChance = config.dropChance
+                    }
+
+                    EquipmentSlot.HAND -> {
+                        equipment.setItemInMainHand(config.item.clone())
+                        equipment.itemInMainHandDropChance = config.dropChance
+                    }
+
+                    EquipmentSlot.OFF_HAND -> {
+                        equipment.setItemInOffHand(config.item.clone())
+                        equipment.itemInOffHandDropChance = config.dropChance
+                    }
+
+                    else -> {}
                 }
             }
         }
 
+        if (entity.type == EntityType.CREEPER && Random.nextBoolean()) {
+            (entity as Creeper).isPowered = Config.EclipseModule.RANDOM_POWERED_CREEPERS
+        }
+
         if (hordeState.isActive && event.spawnReason == CreatureSpawnEvent.SpawnReason.NATURAL) {
-            repeat(Config.EclipseModule.SPAWN_RATE) {
+            val specific = Config.EclipseModule.MOB_ATTRIBUTE
+                .firstOrNull { it.types.size == 1 && it.types.contains(entity.type) }
+            val general = Config.EclipseModule.MOB_ATTRIBUTE
+                .firstOrNull { it.types.containsAll(EntityType.entries) }
+            val spawnRate = (specific ?: general)?.spawnRate?.toInt() ?: 1
+
+            repeat(spawnRate - 1) {
                 entity.world.spawnEntity(
                     entity.location.clone().add(
                         (-5..5).random().toDouble(),
@@ -71,16 +138,6 @@ class EclipseModule : ModuleInterface {
                 )
             }
         }
-    }
-
-    /** Holds all the schedules for this module. */
-    private fun schedule() {
-        instance.server.scheduler.runTaskTimer(
-            instance,
-            Runnable { eclipse() },
-            Config.EclipseModule.INIT_DELAY,
-            Config.EclipseModule.INTERVAL
-        )
     }
 
     /** Handles the eclipse mechanics. */
@@ -170,6 +227,6 @@ class EclipseModule : ModuleInterface {
         val daysToNewMoon = (4 - currentPhase + 8) % 8
         val newMoonDay = currentDay + daysToNewMoon
         world.fullTime = newMoonDay * 24000 + 13000
-        player.sendMessage("Skipped to the next new moon night!".fireFmt().mm())
+        player.sendMessage("${PREFIX}${"Skipped to the next eclipse!".fireFmt()}".mm())
     }
 }
