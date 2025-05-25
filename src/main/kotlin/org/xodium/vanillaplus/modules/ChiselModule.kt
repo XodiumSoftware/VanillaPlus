@@ -66,22 +66,13 @@ class ChiselModule : ModuleInterface {
      * @param iterateClockwise True if iterating clockwise, false otherwise.
      * @param event The [PlayerInteractEvent] triggered by the [Player].
      */
-    private fun handleChiselAction(
-        block: Block,
-        iterateClockwise: Boolean,
-        event: PlayerInteractEvent
-    ) {
-        val player = event.player
-        val item = player.inventory.itemInMainHand
+    private fun handleChiselAction(block: Block, iterateClockwise: Boolean, event: PlayerInteractEvent) {
         val data = block.blockData
-
-        var used = false
-
-        when {
+        val used = when {
             data is Fence -> {
-                block.blockData = data.apply { iterate(data.allowedFaces.toList(), iterateClockwise) }
+                block.blockData = data.apply { iterate(allowedFaces.toList(), iterateClockwise) }
                 event.isCancelled = true
-                used = true
+                true
             }
 
             data is Stairs -> {
@@ -92,7 +83,7 @@ class ChiselModule : ModuleInterface {
                     facing = facing.iterate(faces.toList(), iterateClockwise)
                 }
                 event.isCancelled = true
-                used = true
+                true
             }
 
             data is Slab && data.type != Slab.Type.DOUBLE -> {
@@ -100,12 +91,16 @@ class ChiselModule : ModuleInterface {
                     type = type.iterate(Slab.Type.entries.filter { it != Slab.Type.DOUBLE }, iterateClockwise)
                 }
                 event.isCancelled = true
-                used = true
+                true
             }
+
+            else -> false
         }
 
         @Suppress("UnstableApiUsage")
         if (used) {
+            val player = event.player
+            val item = player.inventory.itemInMainHand
             val currentDamage = item.getData(DataComponentTypes.DAMAGE) ?: 0
             val newDamage = currentDamage + 1
             if (newDamage >= item.type.maxDurability) {
