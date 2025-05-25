@@ -5,16 +5,31 @@
 
 package org.xodium.vanillaplus.modules
 
+import com.mojang.brigadier.builder.LiteralArgumentBuilder
+import io.papermc.paper.command.brigadier.CommandSourceStack
+import io.papermc.paper.command.brigadier.Commands
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.xodium.vanillaplus.Config
+import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
+import org.xodium.vanillaplus.utils.Utils
 import java.time.LocalTime
 import java.time.temporal.ChronoUnit
 
 /** Represents a module handling auto-restart mechanics within the system. */
 class AutoRestartModule : ModuleInterface {
     override fun enabled(): Boolean = Config.AutoRestartModule.ENABLED
+
+    @Suppress("UnstableApiUsage")
+    override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
+        return listOf(
+            Commands.literal("autorestart")
+                .requires { it.sender.hasPermission(Perms.AutoRestart.USE) }
+                .executes { it -> Utils.tryCatch(it) { countdown() } })
+    }
 
     init {
         if (enabled()) {
@@ -47,18 +62,14 @@ class AutoRestartModule : ModuleInterface {
                     remainingSeconds--
                     val displayTime =
                         if (remainingSeconds % 60 > 0) (remainingSeconds / 60) + 1 else remainingSeconds / 60
-                    bossBar.name(
-                        Config.AutoRestartModule.BOSSBAR_NAME.replace(
-                            "%t",
-                            displayTime.toString()
-                        ).mm()
-                    )
                     val progress = remainingSeconds.toFloat() / totalSeconds
+                    bossBar.name(
+                        Config.AutoRestartModule.BOSSBAR_NAME.fireFmt()
+                            .mm(Placeholder.component("time", displayTime.toString().mm()))
+                    )
                     bossBar.progress(progress)
                     instance.server.onlinePlayers.forEach { player ->
-                        if (!player.activeBossBars().contains(bossBar)) {
-                            player.showBossBar(bossBar)
-                        }
+                        if (!player.activeBossBars().contains(bossBar)) player.showBossBar(bossBar)
                     }
                 } else {
                     instance.server.onlinePlayers.forEach { player -> player.hideBossBar(bossBar) }

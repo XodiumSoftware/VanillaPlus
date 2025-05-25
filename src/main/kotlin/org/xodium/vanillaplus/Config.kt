@@ -64,12 +64,12 @@ object Config {
         /** How many minutes before the restart to start countdown. */
         var COUNTDOWN_START_MINUTES: Int = 5
 
-        /** The placeholder for the countdown time. */
-        var BOSSBAR_NAME: String = "⚡ RESTARTING in %t minute(s) ⚡"
+        /** The name of the boss bar, formatted with the display time. */
+        var BOSSBAR_NAME: String = "⚡ RESTARTING in <time> minute(s) ⚡".fireFmt()
 
         /** Bossbar for the auto-restart. */
         var BOSSBAR: BossBar = BossBar.bossBar(
-            BOSSBAR_NAME.fireFmt().mm(),
+            BOSSBAR_NAME.mm(),
             1.0f,
             BossBar.Color.RED,
             BossBar.Overlay.PROGRESS
