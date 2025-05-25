@@ -11,6 +11,7 @@ import net.kyori.adventure.key.Key
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.block.Block
+import org.bukkit.block.data.Directional
 import org.bukkit.block.data.Rotatable
 import org.bukkit.block.data.type.Slab
 import org.bukkit.entity.Player
@@ -23,6 +24,7 @@ import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.registries.BlockFacesRegistry
 import org.xodium.vanillaplus.utils.BlockUtils.iterate
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
@@ -76,15 +78,22 @@ class ChiselModule : ModuleInterface {
         var used = false
 
         when {
+            data is Directional -> {
+                data.facing = data.facing.iterate(BlockFacesRegistry.DIRECTIONAL, iterateClockwise)
+                block.blockData = data
+                event.isCancelled = true
+                used = true
+            }
+
             data is Rotatable -> {
-                data.rotation = data.rotation.iterate(iterateClockwise)
+                data.rotation = data.rotation.iterate(BlockFacesRegistry.ROTATABLE, iterateClockwise)
                 block.blockData = data
                 event.isCancelled = true
                 used = true
             }
 
             data is Slab && data.type != Slab.Type.DOUBLE -> {
-                data.type = data.type.iterate(iterateClockwise)
+                data.type = data.type.iterate(listOf(Slab.Type.TOP, Slab.Type.BOTTOM), iterateClockwise)
                 block.blockData = data
                 event.isCancelled = true
                 used = true

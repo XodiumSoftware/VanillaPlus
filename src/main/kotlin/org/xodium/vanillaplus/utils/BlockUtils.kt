@@ -10,20 +10,6 @@ import org.bukkit.block.data.type.Slab
 
 /** Block utilities. */
 object BlockUtils {
-    private val blockFaces = listOf(
-        BlockFace.NORTH,
-        BlockFace.EAST,
-        BlockFace.SOUTH,
-        BlockFace.WEST,
-        BlockFace.UP,
-        BlockFace.DOWN,
-    )
-
-    private val slabTypes = listOf(
-        Slab.Type.BOTTOM,
-        Slab.Type.TOP,
-    )
-
     /**
      * Iterates the given [Enum] to the next face in the list.
      * @param list The list of [Enum] to iterate through.
@@ -40,17 +26,21 @@ object BlockUtils {
 
     /**
      * Iterates the given [BlockFace] to the next face in the list.
+     * @param blockFaces The list of [BlockFace] to iterate through.
      * @param clockwise If true, iterates clockwise; otherwise, iterates counter-clockwise.
      * @return The iterated [BlockFace].
      */
-    fun BlockFace.iterate(clockwise: Boolean = true): BlockFace = iterateEnum(blockFaces, this, clockwise)
-
+    fun BlockFace.iterate(blockFaces: List<BlockFace>, clockwise: Boolean = true): BlockFace {
+        return iterateEnum(blockFaces, this, clockwise)
+    }
 
     /**
      * Iterates the given [Slab.Type] to the next type in the list.
+     * @param slabTypes The list of [Slab.Type] to iterate through.
      * @param clockwise If true, iterates clockwise; otherwise, iterates counter-clockwise.
      * @return The iterated [Slab.Type].
      */
-    fun Slab.Type.iterate(clockwise: Boolean = true): Slab.Type = iterateEnum(slabTypes, this, clockwise)
-
+    fun Slab.Type.iterate(slabTypes: List<Slab.Type>, clockwise: Boolean = true): Slab.Type {
+        return iterateEnum(slabTypes, this, clockwise)
+    }
 }
