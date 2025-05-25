@@ -11,7 +11,7 @@ import net.kyori.adventure.key.Key
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.block.Block
-import org.bukkit.block.data.Directional
+import org.bukkit.block.data.Rotatable
 import org.bukkit.block.data.type.Slab
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -76,8 +76,8 @@ class ChiselModule : ModuleInterface {
         var used = false
 
         when {
-            data is Directional -> {
-                data.facing = data.facing.iterate(iterateClockwise)
+            data is Rotatable -> {
+                data.rotation = data.rotation.iterate(iterateClockwise)
                 block.blockData = data
                 event.isCancelled = true
                 used = true
