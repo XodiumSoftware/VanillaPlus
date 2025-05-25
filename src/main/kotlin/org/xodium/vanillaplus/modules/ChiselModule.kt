@@ -11,7 +11,6 @@ import net.kyori.adventure.key.Key
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.block.Block
-import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Bisected
 import org.bukkit.block.data.type.Fence
 import org.bukkit.block.data.type.Slab
@@ -80,24 +79,26 @@ class ChiselModule : ModuleInterface {
 
         when {
             data is Fence -> {
-                data.iterate(data.allowedFaces.toList(), iterateClockwise)
-                block.blockData = data
+                block.blockData = data.apply { iterate(data.allowedFaces.toList(), iterateClockwise) }
                 event.isCancelled = true
                 used = true
             }
 
             data is Stairs -> {
-                data.shape.iterate(Stairs.Shape.entries, iterateClockwise)
-                data.half.iterate(Bisected.Half.entries, iterateClockwise)
-                data.facing = data.facing.iterate(BlockFace.entries.filter { it.isCartesian }, iterateClockwise)
-                block.blockData = data
+                //TODO: Maybe add mode switch for shape, half, and facing?
+                block.blockData = data.apply {
+                    shape = shape.iterate(Stairs.Shape.entries, iterateClockwise)
+                    half = half.iterate(Bisected.Half.entries, iterateClockwise)
+                    facing = facing.iterate(faces.toList(), iterateClockwise)
+                }
                 event.isCancelled = true
                 used = true
             }
 
             data is Slab && data.type != Slab.Type.DOUBLE -> {
-                data.type = data.type.iterate(Slab.Type.entries.filter { it != Slab.Type.DOUBLE }, iterateClockwise)
-                block.blockData = data
+                block.blockData = data.apply {
+                    type = type.iterate(Slab.Type.entries.filter { it != Slab.Type.DOUBLE }, iterateClockwise)
+                }
                 event.isCancelled = true
                 used = true
             }
