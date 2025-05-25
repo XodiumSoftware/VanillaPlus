@@ -11,9 +11,11 @@ import net.kyori.adventure.key.Key
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.block.Block
-import org.bukkit.block.data.Directional
-import org.bukkit.block.data.Rotatable
+import org.bukkit.block.BlockFace
+import org.bukkit.block.data.Bisected
+import org.bukkit.block.data.type.Fence
 import org.bukkit.block.data.type.Slab
+import org.bukkit.block.data.type.Stairs
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -24,7 +26,6 @@ import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.registries.BlockFacesRegistry
 import org.xodium.vanillaplus.utils.BlockUtils.iterate
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
@@ -78,22 +79,24 @@ class ChiselModule : ModuleInterface {
         var used = false
 
         when {
-            data is Directional -> {
-                data.facing = data.facing.iterate(BlockFacesRegistry.DIRECTIONAL, iterateClockwise)
+            data is Fence -> {
+                data.iterate(data.allowedFaces.toList(), iterateClockwise)
                 block.blockData = data
                 event.isCancelled = true
                 used = true
             }
 
-            data is Rotatable -> {
-                data.rotation = data.rotation.iterate(BlockFacesRegistry.ROTATABLE, iterateClockwise)
+            data is Stairs -> {
+                data.shape.iterate(Stairs.Shape.entries, iterateClockwise)
+                data.half.iterate(Bisected.Half.entries, iterateClockwise)
+                data.facing = data.facing.iterate(BlockFace.entries.filter { it.isCartesian }, iterateClockwise)
                 block.blockData = data
                 event.isCancelled = true
                 used = true
             }
 
             data is Slab && data.type != Slab.Type.DOUBLE -> {
-                data.type = data.type.iterate(listOf(Slab.Type.TOP, Slab.Type.BOTTOM), iterateClockwise)
+                data.type = data.type.iterate(Slab.Type.entries.filter { it != Slab.Type.DOUBLE }, iterateClockwise)
                 block.blockData = data
                 event.isCancelled = true
                 used = true
