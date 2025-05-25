@@ -10,8 +10,8 @@ import java.awt.image.BufferedImage
 import java.net.URI
 import javax.imageio.ImageIO
 
-//TODO: fix rectangles not filling the whole face (they seem rounded)
-//TODO: fix the image not rendering properly
+//FIX: rectangles not filling the whole face (they seem rounded)
+//FIX: the image not rendering properly
 
 /** Skin utilities. */
 object SkinUtils {

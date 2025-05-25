@@ -11,11 +11,12 @@ import org.bukkit.block.data.type.Slab
 /** Block utilities. */
 object BlockUtils {
     private val blockFaces = listOf(
-        //TODO: only cartesian directions allowed, see what to do about up,bottom
         BlockFace.NORTH,
         BlockFace.EAST,
         BlockFace.SOUTH,
         BlockFace.WEST,
+        BlockFace.UP,
+        BlockFace.DOWN,
     )
 
     private val slabTypes = listOf(
