@@ -3,8 +3,6 @@
  *  All rights reserved.
  */
 
-@file:Suppress("unused")
-
 package org.xodium.vanillaplus.utils
 
 import org.bukkit.entity.Player

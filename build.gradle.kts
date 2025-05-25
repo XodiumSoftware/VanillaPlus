@@ -25,7 +25,6 @@ repositories {
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://maven.enginehub.org/repo/")
     maven("https://repo.jeff-media.com/public/")
-    maven("https://repo.triumphteam.dev/snapshots")
 }
 
 dependencies {
@@ -37,9 +36,6 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-jdbc:0.61.0")
     implementation("org.xerial:sqlite-jdbc:3.49.1.0")
     implementation("de.jeff_media:ChestSortAPI:12.0.0")
-    implementation("dev.triumphteam:triumph-gui-paper-kotlin:4.0.0-SNAPSHOT") {
-        exclude(group = "com.google.guava", module = "guava")
-    }
 }
 
 java { toolchain.languageVersion.set(JavaLanguageVersion.of(21)) }
@@ -58,7 +54,6 @@ tasks {
     shadowJar {
         dependsOn(processResources)
         archiveClassifier.set("")
-        relocate("dev.triumphteam.gui", "org.xodium.vanillaplus.gui")
         mergeServiceFiles()
         destinationDirectory.set(file(".server/plugins/update"))
         doLast {

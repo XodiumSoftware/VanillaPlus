@@ -36,12 +36,6 @@ object Perms {
         private val G1 = this::class.simpleName.toString().lowercase()
         val GENERAL: Permission =
             Permission("${G0}.${G1}", "Allows use of the commands", PermissionDefault.TRUE)
-        val CLEAR_CHEST_ACCESS: Permission =
-            Permission(
-                "${G0}.${G1}.clear_chest_access",
-                "Allows use of the clearchestaccess command",
-                PermissionDefault.OP
-            )
     }
 
     /** Permissions for AutoRefill commands. */
