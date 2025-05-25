@@ -19,7 +19,6 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.ShapedRecipe
-import org.bukkit.inventory.meta.Damageable
 import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -92,17 +91,15 @@ class ChiselModule : ModuleInterface {
             }
         }
 
+        @Suppress("UnstableApiUsage")
         if (used) {
-            //TODO: maybe not use itemMeta?
-            val meta = item.itemMeta
-            if (meta is Damageable) {
-                meta.damage = meta.damage + 1
-                if (meta.damage >= item.type.maxDurability) {
-                    player.inventory.setItemInMainHand(null)
-                    player.playSound(Config.ChiselModule.CHISEL_DURABILITY_DECREASE_SOUND)
-                } else {
-                    item.itemMeta = meta
-                }
+            val currentDamage = item.getData(DataComponentTypes.DAMAGE) ?: 0
+            val newDamage = currentDamage + 1
+            if (newDamage >= item.type.maxDurability) {
+                player.inventory.setItemInMainHand(null)
+                player.playSound(Config.ChiselModule.CHISEL_DURABILITY_DECREASE_SOUND)
+            } else {
+                item.setData(DataComponentTypes.DAMAGE, newDamage)
             }
         }
     }
@@ -131,12 +128,10 @@ class ChiselModule : ModuleInterface {
             setData(DataComponentTypes.CUSTOM_NAME, "Chisel".mm())
             setData(
                 DataComponentTypes.LORE, ItemLore.lore(
-                    //TODO: dont forget to adjust lore based on what solution you have for the mode switching issue.
                     listOf(
                         "Usage:".fireFmt(),
-                        "${"[Sneak + Right-click]".skylineFmt()} <white>Switch Mode",
-                        "${"[Right-click]".skylineFmt()} <white>Iterate Block Faces Clockwise",
-                        "${"[Left-click]".skylineFmt()} <white>Iterate Block Faces Anti-Clockwise",
+                        "${"[Right-click]".skylineFmt()} <white>Iterate Block State Clockwise",
+                        "${"[Left-click]".skylineFmt()} <white>Iterate Block State Anti-Clockwise",
                     ).mm()
                 )
             )
