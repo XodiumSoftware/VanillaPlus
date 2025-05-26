@@ -8,6 +8,7 @@ package org.xodium.vanillaplus
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.inventory.Book
 import net.kyori.adventure.sound.Sound
+import net.kyori.adventure.title.Title
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
@@ -332,11 +333,13 @@ object Config {
         /** If creepers should be randomly powered. */
         var RANDOM_POWERED_CREEPERS: Boolean = true
 
-        /** The message displayed when the eclipse is active. */
-        var ECLIPSE_START_MSG: String = "⚡ An Eclipse is rising! ⚡".fireFmt()
+        /** The title message displayed when the eclipse is active. */
+        var ECLIPSE_START_TITLE: Title =
+            Title.title("An Eclipse is rising!".fireFmt().mm(), "Stay inside ;)".mangoFmt().mm())
 
-        /** The message displayed when the eclipse is inactive. */
-        var ECLIPSE_END_MSG: String = "⚡ An Eclipse is setting! ⚡".fireFmt()
+        /** The title message displayed when the eclipse is inactive. */
+        var ECLIPSE_END_TITLE: Title =
+            Title.title("An Eclipse is setting!".fireFmt().mm(), "You can go outside now :P".mangoFmt().mm())
 
         /** The sound effect used for when the eclipse is active. */
         var ECLIPSE_START_SOUND: Sound = Sound.sound(

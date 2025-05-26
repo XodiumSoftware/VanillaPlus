@@ -144,7 +144,7 @@ class EclipseModule : ModuleInterface {
     private fun eclipse() {
         val world = instance.server.worlds.firstOrNull() ?: return
         val isNewMoon = getMoonPhase(world) == 4
-        val isNight = !world.isDayTime
+        val isNight = world.time in 13000..23000
 
         if (shouldActivateEclipse(isNight, isNewMoon)) {
             activateEclipse(world)
@@ -152,7 +152,7 @@ class EclipseModule : ModuleInterface {
             deactivateEclipse(world)
         }
 
-        if (world.time < 1000 && hordeState.hasTriggeredThisEclipse) {
+        if (world.time < 13000 && hordeState.hasTriggeredThisEclipse) {
             hordeState.hasTriggeredThisEclipse = false
         }
     }
@@ -163,10 +163,7 @@ class EclipseModule : ModuleInterface {
      * @param isEclipse Indicates if it's currently an eclipse.
      */
     private fun shouldActivateEclipse(isNight: Boolean, isEclipse: Boolean): Boolean {
-        return isNight &&
-                isEclipse &&
-                !hordeState.isActive &&
-                !hordeState.hasTriggeredThisEclipse
+        return isNight && isEclipse && !hordeState.isActive && !hordeState.hasTriggeredThisEclipse
     }
 
     /**
@@ -187,7 +184,7 @@ class EclipseModule : ModuleInterface {
         hordeState.isActive = true
         hordeState.hasTriggeredThisEclipse = true
         instance.server.onlinePlayers.forEach {
-            it.sendActionBar(Config.EclipseModule.ECLIPSE_START_MSG.mm())
+            it.showTitle(Config.EclipseModule.ECLIPSE_START_TITLE)
             it.playSound(Config.EclipseModule.ECLIPSE_START_SOUND)
         }
         world.setStorm(true)
@@ -202,7 +199,7 @@ class EclipseModule : ModuleInterface {
     private fun deactivateEclipse(world: World) {
         hordeState.isActive = false
         instance.server.onlinePlayers.forEach {
-            it.sendActionBar(Config.EclipseModule.ECLIPSE_END_MSG.mm())
+            it.showTitle(Config.EclipseModule.ECLIPSE_END_TITLE)
             it.playSound(Config.EclipseModule.ECLIPSE_END_SOUND)
         }
         world.setStorm(false)
