@@ -59,7 +59,7 @@ class EclipseModule : ModuleInterface {
         val entity = event.entity
         val world = entity.world
 
-        if (!hordeState.isActive && !enabled()) return
+        if (!enabled() || !hordeState.isActive) return
         if (world.environment != World.Environment.NORMAL) return
         if (world.difficulty != Difficulty.HARD) return
         if (entity.type in Config.EclipseModule.EXCLUDED_MOBS) return
