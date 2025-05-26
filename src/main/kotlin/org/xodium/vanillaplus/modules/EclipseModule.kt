@@ -8,6 +8,7 @@ package org.xodium.vanillaplus.modules
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
+import net.kyori.adventure.sound.Sound
 import org.bukkit.Difficulty
 import org.bukkit.World
 import org.bukkit.attribute.Attribute
@@ -185,7 +186,7 @@ class EclipseModule : ModuleInterface {
         hordeState.hasTriggeredThisEclipse = true
         instance.server.onlinePlayers.forEach {
             it.showTitle(Config.EclipseModule.ECLIPSE_START_TITLE)
-            it.playSound(Config.EclipseModule.ECLIPSE_START_SOUND)
+            it.playSound(Config.EclipseModule.ECLIPSE_START_SOUND, Sound.Emitter.self())
         }
         world.setStorm(true)
         world.isThundering = true
@@ -200,7 +201,7 @@ class EclipseModule : ModuleInterface {
         hordeState.isActive = false
         instance.server.onlinePlayers.forEach {
             it.showTitle(Config.EclipseModule.ECLIPSE_END_TITLE)
-            it.playSound(Config.EclipseModule.ECLIPSE_END_SOUND)
+            it.playSound(Config.EclipseModule.ECLIPSE_END_SOUND, Sound.Emitter.self())
         }
         world.setStorm(false)
         world.isThundering = false
