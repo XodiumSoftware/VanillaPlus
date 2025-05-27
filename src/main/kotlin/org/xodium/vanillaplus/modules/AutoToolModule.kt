@@ -32,7 +32,7 @@ import org.xodium.vanillaplus.data.BlockTypeData
 import org.xodium.vanillaplus.data.PlayerData
 import org.xodium.vanillaplus.enums.ToolEnum
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.registries.EntityRegistry
+import org.xodium.vanillaplus.registries.EntityTypeRegistry
 import org.xodium.vanillaplus.registries.MaterialRegistry
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
@@ -583,8 +583,8 @@ class AutoToolModule : ModuleInterface {
         itemStack?.itemMeta?.enchants?.entries?.sumOf { (enchantment, level) ->
             when (enchantment) {
                 Enchantment.SHARPNESS -> 0.5 * level + 0.5
-                Enchantment.BANE_OF_ARTHROPODS -> if (EntityRegistry.ARTHROPODS.contains(entityType)) 2.5 * level else 0.0
-                Enchantment.SMITE -> if (EntityRegistry.UNDEAD.contains(entityType)) 2.5 * level else 0.0
+                Enchantment.BANE_OF_ARTHROPODS -> if (EntityTypeRegistry.ARTHROPODS.contains(entityType)) 2.5 * level else 0.0
+                Enchantment.SMITE -> if (EntityTypeRegistry.UNDEAD.contains(entityType)) 2.5 * level else 0.0
                 else -> 0.0
             }
         } ?: 0.0

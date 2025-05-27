@@ -8,7 +8,7 @@ package org.xodium.vanillaplus.registries
 import org.bukkit.entity.EntityType
 
 /** Registry for entity types. */
-object EntityRegistry {
+object EntityTypeRegistry {
     val ARTHROPODS: Set<EntityType> = setOf(
         EntityType.BEE,
         EntityType.CAVE_SPIDER,
