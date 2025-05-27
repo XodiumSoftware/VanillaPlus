@@ -22,7 +22,6 @@ import org.bukkit.inventory.Inventory
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.hooks.ChestSortHook
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.ChestAccessManager
 import org.xodium.vanillaplus.managers.CooldownManager
@@ -98,7 +97,6 @@ class InvUnloadModule : ModuleInterface {
 
         for (block in affectedChests) {
             Utils.chestEffect(player, block)
-            if (ChestSortHook.shouldSort(player)) ChestSortHook.sort(player, block)
         }
 
         player.playSound(Config.InvUnloadModule.SOUND_ON_UNLOAD, Sound.Emitter.self())

@@ -24,7 +24,6 @@ repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://maven.enginehub.org/repo/")
-    maven("https://repo.jeff-media.com/public/")
 }
 
 dependencies {
@@ -35,7 +34,6 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-dao:0.61.0")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.61.0")
     implementation("org.xerial:sqlite-jdbc:3.49.1.0")
-    implementation("de.jeff_media:ChestSortAPI:12.0.0")
 }
 
 java { toolchain.languageVersion.set(JavaLanguageVersion.of(21)) }
