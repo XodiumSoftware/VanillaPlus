@@ -289,7 +289,6 @@ object Config {
                     Attribute.ATTACK_DAMAGE to { it * 2.0 },
                     Attribute.MAX_HEALTH to { it * 2.0 },
                     Attribute.FOLLOW_RANGE to { it * 2.0 },
-                    Attribute.MOVEMENT_SPEED to { it * 2.0 },
                     Attribute.MOVEMENT_EFFICIENCY to { it * 2.0 },
                     Attribute.WATER_MOVEMENT_EFFICIENCY to { it * 2.0 },
                     Attribute.SPAWN_REINFORCEMENTS to { it * 2.0 },

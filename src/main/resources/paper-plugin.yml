@@ -11,3 +11,32 @@ dependencies:
       load: BEFORE
       required: true
       join-classpath: true
+# NOTE: Manually update this. (no workaround yet due to LuckPerms not supporting dynamic permission registering)
+permissions:
+  vanillaplus.use:
+    description: Allows use of the commands
+    default: true
+  vanillaplus.autorefill.use:
+    description: Allows use of the autorefill command
+    default: true
+  vanillaplus.autorestart.use:
+    description: Allows use of the autorestart command
+    default: op
+  vanillaplus.autotool.use:
+    description: Allows use of the autotool command
+    default: true
+  vanillaplus.book.guide:
+    description: Allows use of the guide command
+    default: true
+  vanillaplus.book.rules:
+    description: Allows use of the rules command
+    default: true
+  vanillaplus.eclipse.eclipse:
+    description: Allows use of the eclipse command
+    default: op
+  vanillaplus.invsearch.use:
+    description: Allows use of the invsearch command
+    default: true
+  vanillaplus.invunload.use:
+    description: Allows use of the invunload command
+    default: true

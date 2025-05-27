@@ -45,6 +45,7 @@ object Perms {
             Permission("${G0}.${G1}.use", "Allows use of the autorefill command", PermissionDefault.TRUE)
     }
 
+    /** Permissions for AutoRestart commands. */
     object AutoRestart {
         private val G1 = this::class.simpleName.toString().lowercase()
         val USE: Permission =
