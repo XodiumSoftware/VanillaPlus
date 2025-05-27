@@ -197,14 +197,6 @@ object Config {
     object ChestSortModule {
         /** Enables or disables the ChestSortModule. */
         var ENABLED: Boolean = true
-
-        /** The sound effect used for sorting chests. */
-        var SOUND_ON_SORT: Sound = Sound.sound(
-            BukkitSound.ENTITY_PLAYER_LEVELUP,
-            Sound.Source.PLAYER,
-            1.0f,
-            1.0f
-        )
     }
 
     /** Configuration settings for the ChiselModule. */
