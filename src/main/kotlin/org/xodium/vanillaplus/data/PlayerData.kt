@@ -8,26 +8,22 @@ package org.xodium.vanillaplus.data
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.dao.id.IdTable
+import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.util.*
 
-object PlayerDataSchema : IdTable<String>(PlayerData::class.simpleName.toString()) {
-    override val id: Column<EntityID<String>> = varchar("id", 36).entityId()
+object PlayerDataSchema : UUIDTable(PlayerData::class.simpleName.toString()) {
     val sample: Column<Boolean> = bool("sample").default(false)
-    override val primaryKey: PrimaryKey = PrimaryKey(id)
 }
 
-class PlayerDataEntity(id: EntityID<String>) : Entity<String>(id) {
-    companion object : EntityClass<String, PlayerDataEntity>(PlayerDataSchema)
+class PlayerDataEntity(id: EntityID<UUID>) : Entity<UUID>(id) {
+    companion object : EntityClass<UUID, PlayerDataEntity>(PlayerDataSchema)
 
     var sample: Boolean by PlayerDataSchema.sample
 
-    fun toData(): PlayerData = PlayerData(
-        id.value,
-        sample,
-    )
+    fun toData(): PlayerData = PlayerData(id.value, sample)
 }
 
 /**
@@ -36,7 +32,7 @@ class PlayerDataEntity(id: EntityID<String>) : Entity<String>(id) {
  * @property sample SAMPLE.
  */
 data class PlayerData(
-    val id: String,
+    val id: UUID,
     val sample: Boolean = false,
 ) {
     companion object {
