@@ -138,6 +138,7 @@ class ChiselModule : ModuleInterface {
                 DataComponentTypes.LORE, ItemLore.lore(
                     listOf(
                         "Usage:".fireFmt(),
+                        "${"[shift]".skylineFmt()} <white>Switch Chisel Mode",
                         "${"[Right-click]".skylineFmt()} <white>Iterate Block State Clockwise",
                         "${"[Left-click]".skylineFmt()} <white>Iterate Block State Anti-Clockwise",
                     ).mm()
