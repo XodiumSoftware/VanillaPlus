@@ -42,7 +42,10 @@ class TabListModule : ModuleInterface {
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    fun on(event: PlayerJoinEvent): Unit = updateTabList(event.player)
+    fun on(event: PlayerJoinEvent) {
+        updateTabList(event.player)
+        updatePlayerDisplayName(event.player)
+    }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: WeatherChangeEvent): Unit = event.world.players.forEach { updateTabList(it) }
