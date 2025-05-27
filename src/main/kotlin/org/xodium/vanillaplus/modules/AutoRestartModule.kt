@@ -5,11 +5,17 @@
 
 package org.xodium.vanillaplus.modules
 
+import com.mojang.brigadier.builder.LiteralArgumentBuilder
+import io.papermc.paper.command.brigadier.CommandSourceStack
+import io.papermc.paper.command.brigadier.Commands
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.xodium.vanillaplus.Config
+import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.TimeUtils
+import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
+import org.xodium.vanillaplus.utils.Utils
 import java.time.LocalTime
 import java.time.temporal.ChronoUnit
 
@@ -17,26 +23,29 @@ import java.time.temporal.ChronoUnit
 class AutoRestartModule : ModuleInterface {
     override fun enabled(): Boolean = Config.AutoRestartModule.ENABLED
 
-    //TODO: look into sh-script-restart / cron job.
-    //TODO: refactor to use schedule better and to use config for init delay and interval.
-    init {
-        if (enabled()) schedule()
+    @Suppress("UnstableApiUsage")
+    override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
+        return listOf(
+            Commands.literal("autorestart")
+                .requires { it.sender.hasPermission(Perms.AutoRestart.USE) }
+                .executes { it -> Utils.tryCatch(it) { countdown() } })
     }
 
-    /** Holds all the schedules for this module. */
-    private fun schedule() {
-        instance.server.scheduler.runTaskTimerAsynchronously(
-            instance,
-            Runnable {
-                Config.AutoRestartModule.RESTART_TIMES.forEach {
-                    if (isTimeToStartCountdown(it)) {
-                        instance.server.scheduler.runTask(instance, Runnable { countdown() })
+    init {
+        if (enabled()) {
+            instance.server.scheduler.runTaskTimerAsynchronously(
+                instance,
+                Runnable {
+                    Config.AutoRestartModule.RESTART_TIMES.forEach {
+                        if (isTimeToStartCountdown(it)) {
+                            instance.server.scheduler.runTask(instance, Runnable { countdown() })
+                        }
                     }
-                }
-            },
-            0L,
-            TimeUtils.minutes(1)
-        )
+                },
+                Config.AutoRestartModule.SCHEDULE_INIT_DELAY,
+                Config.AutoRestartModule.SCHEDULE_INTERVAL
+            )
+        }
     }
 
     /** Triggers a countdown for the server restart. */
@@ -53,26 +62,22 @@ class AutoRestartModule : ModuleInterface {
                     remainingSeconds--
                     val displayTime =
                         if (remainingSeconds % 60 > 0) (remainingSeconds / 60) + 1 else remainingSeconds / 60
-                    bossBar.name(
-                        Config.AutoRestartModule.BOSSBAR_NAME.replace(
-                            "%t",
-                            displayTime.toString()
-                        ).mm()
-                    )
                     val progress = remainingSeconds.toFloat() / totalSeconds
+                    bossBar.name(
+                        Config.AutoRestartModule.BOSSBAR_NAME.fireFmt()
+                            .mm(Placeholder.component("time", displayTime.toString().mm()))
+                    )
                     bossBar.progress(progress)
                     instance.server.onlinePlayers.forEach { player ->
-                        if (!player.activeBossBars().contains(bossBar)) {
-                            player.showBossBar(bossBar)
-                        }
+                        if (!player.activeBossBars().contains(bossBar)) player.showBossBar(bossBar)
                     }
                 } else {
                     instance.server.onlinePlayers.forEach { player -> player.hideBossBar(bossBar) }
-                    instance.server.restart() //TODO: replace with sh-script / cron job.
+                    instance.server.restart()
                 }
             },
-            0L,
-            TimeUtils.seconds(1)
+            Config.AutoRestartModule.COUNTDOWN_INIT_DELAY,
+            Config.AutoRestartModule.COUNTDOWN_INTERVAL
         )
     }
 

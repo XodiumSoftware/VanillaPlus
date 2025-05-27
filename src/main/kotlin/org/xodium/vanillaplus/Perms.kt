@@ -38,18 +38,11 @@ object Perms {
             Permission("${G0}.${G1}", "Allows use of the commands", PermissionDefault.TRUE)
     }
 
-    /** Permissions for AutoRefill commands. */
-    object AutoRefill {
+    /** Permissions for AutoRestart commands. */
+    object AutoRestart {
         private val G1 = this::class.simpleName.toString().lowercase()
         val USE: Permission =
-            Permission("${G0}.${G1}.use", "Allows use of the autorefill command", PermissionDefault.TRUE)
-    }
-
-    /** Permissions for AutoTool commands. */
-    object AutoTool {
-        private val G1 = this::class.simpleName.toString().lowercase()
-        val USE: Permission =
-            Permission("${G0}.${G1}.use", "Allows use of the autotool command", PermissionDefault.TRUE)
+            Permission("${G0}.${G1}.use", "Allows use of the autorestart command", PermissionDefault.OP)
     }
 
     /** Permissions for Book commands. */

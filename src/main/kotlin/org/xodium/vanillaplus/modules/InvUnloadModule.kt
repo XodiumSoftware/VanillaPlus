@@ -22,8 +22,9 @@ import org.bukkit.inventory.Inventory
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.hooks.ChestSortHook
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.managers.ChestAccessManager
+import org.xodium.vanillaplus.managers.CooldownManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
@@ -34,7 +35,7 @@ class InvUnloadModule : ModuleInterface {
     override fun enabled(): Boolean = Config.InvUnloadModule.ENABLED
 
     @Suppress("UnstableApiUsage")
-    override fun cmd(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
+    override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
         return listOf(
             Commands.literal("invunload")
                 .requires { it.sender.hasPermission(Perms.InvUnload.USE) }
@@ -55,12 +56,13 @@ class InvUnloadModule : ModuleInterface {
      * @param player The player whose inventory to unload.
      */
     private fun unload(player: Player) {
-        if (!Utils.cooldown(
-                player,
-                Config.InvUnloadModule.COOLDOWN,
-                NamespacedKey(instance, "invunload_cooldown")
-            )
-        ) return
+        val cooldownKey = NamespacedKey(instance, "invunload_cooldown")
+        val cooldownDuration = Config.InvUnloadModule.COOLDOWN
+        if (CooldownManager.isOnCooldown(player, cooldownKey, cooldownDuration)) {
+            player.sendActionBar("You must wait before using this again.".fireFmt().mm())
+            return
+        }
+        CooldownManager.setCooldown(player, cooldownKey, System.currentTimeMillis())
 
         val startSlot = 9
         val endSlot = 35
@@ -70,7 +72,8 @@ class InvUnloadModule : ModuleInterface {
             return
         }
 
-        val useableChests = chests.filter { Utils.canPlayerUseChest(it, player) }
+        val deniedChestKey = NamespacedKey(instance, "denied_chest")
+        val useableChests = chests.filter { ChestAccessManager.isAllowed(player, deniedChestKey, it) }
         if (useableChests.isEmpty()) {
             player.sendActionBar("No usable chests found nearby".fireFmt().mm())
             return
@@ -94,7 +97,6 @@ class InvUnloadModule : ModuleInterface {
 
         for (block in affectedChests) {
             Utils.chestEffect(player, block)
-            if (ChestSortHook.shouldSort(player)) ChestSortHook.sort(block)
         }
 
         player.playSound(Config.InvUnloadModule.SOUND_ON_UNLOAD, Sound.Emitter.self())

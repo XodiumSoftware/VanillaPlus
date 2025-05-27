@@ -15,7 +15,7 @@ plugins {
 }
 
 group = "org.xodium.vanillaplus"
-version = "1.8.1"
+version = "1.9.0"
 description = "Minecraft plugin that enhances the base gameplay."
 
 var apiVersion: String = "1.21.5"
@@ -24,18 +24,16 @@ repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://maven.enginehub.org/repo/")
-    maven("https://repo.jeff-media.com/public/")
-    maven("https://repo.triumphteam.dev/snapshots")
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.5-R0.1-SNAPSHOT")
-    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.11") //TODO("Move away from WorldEdit")
+    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.13") //TODO("Move away from WorldEdit")
     implementation(kotlin("stdlib-jdk8"))
-    implementation("de.jeff_media:ChestSortAPI:12.0.0")
-    implementation("dev.triumphteam:triumph-gui-paper-kotlin:4.0.0-SNAPSHOT") {
-        exclude(group = "com.google.guava", module = "guava")
-    }
+    implementation("org.jetbrains.exposed:exposed-core:0.61.0")
+    implementation("org.jetbrains.exposed:exposed-dao:0.61.0")
+    implementation("org.jetbrains.exposed:exposed-jdbc:0.61.0")
+    implementation("org.xerial:sqlite-jdbc:3.49.1.0")
 }
 
 java { toolchain.languageVersion.set(JavaLanguageVersion.of(21)) }
@@ -54,10 +52,8 @@ tasks {
     shadowJar {
         dependsOn(processResources)
         archiveClassifier.set("")
-        relocate("kotlin", "org.xodium.vanillaplus.kotlin")
-        relocate("dev.triumphteam.gui", "org.xodium.vanillaplus.gui")
-        destinationDirectory.set(file(".server/plugins"))
-        minimize()
+        mergeServiceFiles()
+        destinationDirectory.set(file(".server/plugins/update"))
         doLast {
             copy {
                 from(archiveFile)
@@ -72,16 +68,22 @@ tasks {
         group = "application"
         description = "Download the PaperMC server jar"
         doFirst {
-            val latestBuild = (JsonSlurper().parse(
-                URI("https://api.papermc.io/v2/projects/paper/versions/$apiVersion/builds").toURL()
-            ) as? Map<*, *>)?.get("builds")?.let { builds ->
-                (builds as? List<*>)?.mapNotNull { it as? Map<*, *> }
-                    ?.findLast { it["channel"] == "default" }
-                    ?: (builds as? List<*>)?.mapNotNull { it as? Map<*, *> }
-                        ?.findLast { it["channel"] == "experimental" }
-            }?.get("build")
+            fun findLatestBuild(builds: List<Map<*, *>>): Map<*, *>? {
+                return builds.findLast { it["channel"] == "default" }
+                    ?: builds.findLast { it["channel"] == "experimental" }
+            }
+
+            val buildsUrl = URI("https://api.papermc.io/v2/projects/paper/versions/$apiVersion/builds").toURL()
+            val response = JsonSlurper().parse(buildsUrl) as? Map<*, *>
+                ?: throw GradleException("Failed to parse PaperMC builds API response.")
+            val builds = response["builds"] as? List<*>
+                ?: throw GradleException("No 'builds' key in PaperMC API response.")
+            val buildMapList = builds.mapNotNull { it as? Map<*, *> }
+            val latestBuild = findLatestBuild(buildMapList)
                 ?: throw GradleException("No build with channel='default' or 'experimental' found.")
-            src("https://api.papermc.io/v2/projects/paper/versions/$apiVersion/builds/$latestBuild/downloads/paper-$apiVersion-$latestBuild.jar")
+            val buildNumber = latestBuild["build"] ?: throw GradleException("Build number missing in build info.")
+
+            src("https://api.papermc.io/v2/projects/paper/versions/$apiVersion/builds/$buildNumber/downloads/paper-$apiVersion-$buildNumber.jar")
             dest(file(".server/server.jar"))
             onlyIfModified(true)
         }
@@ -96,6 +98,7 @@ tasks {
         description = "Run Development Server"
         dependsOn("shadowJar", "downloadServerJar", "acceptEula")
         workingDir = file(".server/")
+        standardInput = System.`in`
         val javaExec = project.extensions.getByType(JavaToolchainService::class.java)
             .launcherFor { languageVersion.set(JavaLanguageVersion.of(21)) }
             .get().executablePath.asFile.absolutePath
@@ -108,3 +111,4 @@ tasks {
         )
     }
 }
+

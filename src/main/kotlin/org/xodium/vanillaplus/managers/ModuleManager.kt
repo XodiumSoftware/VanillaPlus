@@ -21,36 +21,47 @@ import kotlin.time.measureTime
 
 /** Represents the module manager within the system. */
 object ModuleManager {
+    private val modules = listOf(
+        AutoRestartModule(),
+        BooksModule(),
+        ChiselModule(),
+        DimensionsModule(),
+        DoorsModule(),
+        EclipseModule(),
+        InvSearchModule(),
+        InvUnloadModule(),
+        JoinQuitModule(),
+        MotdModule(),
+        RecipiesModule(),
+        TabListModule(),
+        TreesModule(),
+    )
+
     @Suppress("UnstableApiUsage")
-    private val commandBuilders = mutableListOf<LiteralArgumentBuilder<CommandSourceStack>>()
+    private val commands = mutableListOf<LiteralArgumentBuilder<CommandSourceStack>>()
 
     init {
-        listOf(
-            AutoRefillModule(),
-            AutoRestartModule(),
-            AutoToolModule(),
-            BooksModule(),
-            DimensionsModule(),
-            DoorsModule(),
-            EclipseModule(),
-            InvSearchModule(),
-            InvUnloadModule(),
-            MotdModule(),
-            RecipiesModule(),
-            TabListModule(),
-            TreesModule(),
-        ).filter { it.enabled() }
-            .forEach { module ->
-                instance.logger.info(
-                    "Loaded: ${module::class.simpleName} | Took ${
-                        measureTime {
-                            instance.server.pluginManager.registerEvents(module, instance)
-                            module.cmd()?.let { commandBuilders.addAll(it) }
-                        }.inWholeMilliseconds
-                    }ms"
-                )
-            }
-        commandBuilders.takeIf { it.isNotEmpty() }?.let {
+        modules()
+        commands()
+    }
+
+    /** Registers the modules. */
+    private fun modules() {
+        modules.filter { it.enabled() }.forEach { module ->
+            instance.logger.info(
+                "Loaded: ${module::class.simpleName} | Took ${
+                    measureTime {
+                        instance.server.pluginManager.registerEvents(module, instance)
+                        module.cmds()?.let { commands.addAll(it) }
+                    }.inWholeMilliseconds
+                }ms"
+            )
+        }
+    }
+
+    /** Registers commands for the modules. */
+    private fun commands() {
+        commands.takeIf { it.isNotEmpty() }?.let {
             @Suppress("UnstableApiUsage")
             instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
                 event.registrar().register(
@@ -60,11 +71,11 @@ object ModuleManager {
                             Utils.tryCatch(it) {
                                 (it.sender as Player).sendMessage(
                                     "${PREFIX}v${instance.pluginMeta.version} | Click on me for more info!".mm()
-                                        .clickEvent(ClickEvent.suggestCommand("/help ${instance.name.lowercase()}"))
+                                        .clickEvent(ClickEvent.runCommand("/help ${instance.name.lowercase()}"))
                                 )
                             }
                         }
-                        .apply { commandBuilders.forEach(this::then) }
+                        .apply { commands.forEach(this::then) }
                         .build(),
                     "${instance.name} plugin",
                     mutableListOf("vp")

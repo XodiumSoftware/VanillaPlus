@@ -128,6 +128,7 @@
     <inspection_tool class="ExplicitArgumentCanBeLambda" enabled="false" level="INFORMATION" enabled_by_default="false" />
     <inspection_tool class="ExplicitArrayFilling" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="ExplicitToImplicitClassMigration" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="ExposedReference" enabled="false" level="ERROR" enabled_by_default="false" />
     <inspection_tool class="ExpressionComparedToItself" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="ExpressionMayBeFactorized" enabled="false" level="INFORMATION" enabled_by_default="false" />
     <inspection_tool class="ExtendsAnnotation" enabled="false" level="WARNING" enabled_by_default="false" />
