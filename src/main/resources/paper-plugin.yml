@@ -16,15 +16,9 @@ permissions:
   vanillaplus.use:
     description: Allows use of the commands
     default: true
-  vanillaplus.autorefill.use:
-    description: Allows use of the autorefill command
-    default: true
   vanillaplus.autorestart.use:
     description: Allows use of the autorestart command
     default: op
-  vanillaplus.autotool.use:
-    description: Allows use of the autotool command
-    default: true
   vanillaplus.book.guide:
     description: Allows use of the guide command
     default: true
