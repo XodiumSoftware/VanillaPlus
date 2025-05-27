@@ -101,6 +101,7 @@ object Config {
         /** Enables or disables the BookModule. */
         var ENABLED: Boolean = true
 
+        //TODO: replace asMMCmd with suggestCommand.
         /** The Guide book. */
         var GUIDE_BOOK: Book = Book.book(
             "Guide".fireFmt().mm(),
@@ -191,12 +192,6 @@ object Config {
                 """.trimIndent()
             ).mm()
         )
-    }
-
-    /** Configuration settings for the ChestSortModule. */
-    object ChestSortModule {
-        /** Enables or disables the ChestSortModule. */
-        var ENABLED: Boolean = true
     }
 
     /** Configuration settings for the ChiselModule. */
@@ -383,9 +378,6 @@ object Config {
     object InvUnloadModule {
         /** Enables or disables the InvUnloadModule. */
         var ENABLED: Boolean = true
-
-        /** If the ChestSort plugin should be used. */
-        var USE_CHESTSORT: Boolean = true
 
         /** The cooldown to use the mechanic again. */
         var COOLDOWN: Long = 1L * 1000L // 1 second

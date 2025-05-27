@@ -98,7 +98,7 @@ class InvUnloadModule : ModuleInterface {
 
         for (block in affectedChests) {
             Utils.chestEffect(player, block)
-            if (ChestSortHook.shouldSort(player)) ChestSortHook.sort(block)
+            if (ChestSortHook.shouldSort(player)) ChestSortHook.sort(player, block)
         }
 
         player.playSound(Config.InvUnloadModule.SOUND_ON_UNLOAD, Sound.Emitter.self())

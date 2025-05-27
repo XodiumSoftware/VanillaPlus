@@ -238,23 +238,13 @@ class AutoRefillModule : ModuleInterface {
     }
 
     /**
-     * Retrieves the PlayerData object for the given player.
-     * @param player The player to check.
-     * @return The PlayerData object, or a default object with both fields set to true if not found.
-     */
-    private fun getPlayerData(player: Player): PlayerData {
-        return PlayerData.getData().firstOrNull { it.id == player.uniqueId.toString() }
-            ?: PlayerData(id = player.uniqueId.toString(), autorefill = true, autotool = true)
-    }
-
-    /**
      * Toggles AutoRefill for the given player.
      * @param player the player to toggle.
      */
     private fun toggle(player: Player) {
-        val playerData = getPlayerData(player)
-        val updatedData = playerData.copy(autorefill = !playerData.autorefill)
-        PlayerData.setData(updatedData)
+        val id = player.uniqueId.toString()
+        val data = PlayerData.getData().find { it.id == id } ?: PlayerData(id)
+        PlayerData.setData(data.copy(autorefill = !data.autorefill))
         cooldowns.remove(player.uniqueId)
         player.sendActionBar(("${"AutoRefill:".fireFmt()} ${if (isEnabledForPlayer(player)) "<green>ON" else "<red>OFF"}").mm())
     }
