@@ -70,16 +70,22 @@ tasks {
         group = "application"
         description = "Download the PaperMC server jar"
         doFirst {
-            val latestBuild = (JsonSlurper().parse(
-                URI("https://api.papermc.io/v2/projects/paper/versions/$apiVersion/builds").toURL()
-            ) as? Map<*, *>)?.get("builds")?.let { builds ->
-                (builds as? List<*>)?.mapNotNull { it as? Map<*, *> }
-                    ?.findLast { it["channel"] == "default" }
-                    ?: (builds as? List<*>)?.mapNotNull { it as? Map<*, *> }
-                        ?.findLast { it["channel"] == "experimental" }
-            }?.get("build")
+            fun findLatestBuild(builds: List<Map<*, *>>): Map<*, *>? {
+                return builds.findLast { it["channel"] == "default" }
+                    ?: builds.findLast { it["channel"] == "experimental" }
+            }
+
+            val buildsUrl = URI("https://api.papermc.io/v2/projects/paper/versions/$apiVersion/builds").toURL()
+            val response = JsonSlurper().parse(buildsUrl) as? Map<*, *>
+                ?: throw GradleException("Failed to parse PaperMC builds API response.")
+            val builds = response["builds"] as? List<*>
+                ?: throw GradleException("No 'builds' key in PaperMC API response.")
+            val buildMapList = builds.mapNotNull { it as? Map<*, *> }
+            val latestBuild = findLatestBuild(buildMapList)
                 ?: throw GradleException("No build with channel='default' or 'experimental' found.")
-            src("https://api.papermc.io/v2/projects/paper/versions/$apiVersion/builds/$latestBuild/downloads/paper-$apiVersion-$latestBuild.jar")
+            val buildNumber = latestBuild["build"] ?: throw GradleException("Build number missing in build info.")
+
+            src("https://api.papermc.io/v2/projects/paper/versions/$apiVersion/builds/$buildNumber/downloads/paper-$apiVersion-$buildNumber.jar")
             dest(file(".server/server.jar"))
             onlyIfModified(true)
         }
@@ -94,6 +100,7 @@ tasks {
         description = "Run Development Server"
         dependsOn("shadowJar", "downloadServerJar", "acceptEula")
         workingDir = file(".server/")
+        standardInput = System.`in`
         val javaExec = project.extensions.getByType(JavaToolchainService::class.java)
             .launcherFor { languageVersion.set(JavaLanguageVersion.of(21)) }
             .get().executablePath.asFile.absolutePath
