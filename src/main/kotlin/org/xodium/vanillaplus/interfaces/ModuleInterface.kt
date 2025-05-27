@@ -8,7 +8,6 @@ package org.xodium.vanillaplus.interfaces
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import org.bukkit.event.Listener
-import org.bukkit.permissions.Permission
 
 /** Represents a contract for a module within the system. */
 interface ModuleInterface : Listener {
@@ -24,10 +23,4 @@ interface ModuleInterface : Listener {
      */
     @Suppress("UnstableApiUsage")
     fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? = null
-
-    /**
-     * Returns a collection of permissions associated with this module.
-     * @return A [Collection] of [Permission] instances, or `null` if no permissions are defined.
-     */
-    fun perms(): Collection<Permission>? = null
 }

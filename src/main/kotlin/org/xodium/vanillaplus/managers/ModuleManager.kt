@@ -71,7 +71,7 @@ object ModuleManager {
                             Utils.tryCatch(it) {
                                 (it.sender as Player).sendMessage(
                                     "${PREFIX}v${instance.pluginMeta.version} | Click on me for more info!".mm()
-                                        .clickEvent(ClickEvent.suggestCommand("/help ${instance.name.lowercase()}"))
+                                        .clickEvent(ClickEvent.runCommand("/help ${instance.name.lowercase()}"))
                                 )
                             }
                         }

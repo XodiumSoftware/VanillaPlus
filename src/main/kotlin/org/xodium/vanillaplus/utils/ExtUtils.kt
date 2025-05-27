@@ -92,11 +92,24 @@ object ExtUtils {
      * @param hover Optional hover text for the command.
      * @return The formatted [String] with the command.
      */
-    fun String.asMMCmd(hover: String? = null): String {
+    fun String.clickRunCmd(hover: String? = null): String {
         return if (hover != null) {
             "<hover:show_text:'$hover'><click:run_command:'$this'>$this</click></hover>"
         } else {
             "<click:run_command:'$this'>$this</click>"
+        }
+    }
+
+    /**
+     * Suggests a command from a [String].
+     * @param hover Optional hover text for the command.
+     * @return The formatted [String] with the suggested command.
+     */
+    fun String.clickSuggestCmd(hover: String? = null): String {
+        return if (hover != null) {
+            "<hover:show_text:'$hover'><click:suggest_command:'$this'>$this</click></hover>"
+        } else {
+            "<click:suggest_command:'$this'>$this</click>"
         }
     }
 }

@@ -17,7 +17,8 @@ import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.MobAttributeData
 import org.xodium.vanillaplus.data.MobEquipmentData
-import org.xodium.vanillaplus.utils.ExtUtils.asMMCmd
+import org.xodium.vanillaplus.utils.ExtUtils.clickRunCmd
+import org.xodium.vanillaplus.utils.ExtUtils.clickSuggestCmd
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
@@ -74,7 +75,6 @@ object Config {
         /** Enables or disables the BookModule. */
         var ENABLED: Boolean = true
 
-        //TODO: replace asMMCmd with suggestCommand.
         /** The Guide book. */
         var GUIDE_BOOK: Book = Book.book(
             "Guide".fireFmt().mm(),
@@ -84,34 +84,34 @@ object Config {
                 """
                 <b><u>${"Tips & Tricks".fireFmt()}
                 
-                <gold>▶ ${"/home".asMMCmd(Utils.cmdHover).skylineFmt()}
+                <gold>▶ ${"/home".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
                 <dark_gray>Teleport to your home
                 
-                <gold>▶ ${"/skills".asMMCmd(Utils.cmdHover).skylineFmt()}
+                <gold>▶ ${"/skills".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
                 <dark_gray>Opens up the Skills GUI
                 
-                <gold>▶ ${"/rtp".asMMCmd(Utils.cmdHover).skylineFmt()}
+                <gold>▶ ${"/rtp".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
                 <dark_gray>Random teleport in the current dimension
                 """.trimIndent(),
 
                 // Page 2
                 """
-                <gold>▶ ${"/unload".asMMCmd(Utils.cmdHover).skylineFmt()}
+                <gold>▶ ${"/unload".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
                 <dark_gray>Unloads your inventory into nearby chests
                 
-                <gold>▶ ${"/search".asMMCmd(Utils.cmdHover).skylineFmt()}
+                <gold>▶ ${"/search".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
                 <dark_gray>Search into nearby chests for an item
                 
-                <gold>▶ ${"/tpa [player]".asMMCmd().skylineFmt()}
+                <gold>▶ ${"/tpa [player]".clickSuggestCmd().skylineFmt()}
                 <dark_gray>Request to teleport to a player
                 """.trimIndent(),
 
                 // Page 3
                 """
-                <gold>▶ ${"/condense".asMMCmd(Utils.cmdHover).skylineFmt()}
+                <gold>▶ ${"/condense".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
                 <dark_gray>Condenses resources (if possible) to their highest form (blocks)
                 
-                <gold>▶ ${"/uncondense".asMMCmd(Utils.cmdHover).skylineFmt()}
+                <gold>▶ ${"/uncondense".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
                 <dark_gray>Uncondenses resources (if possible) to their lowest form (items)
                 """.trimIndent(),
 
@@ -385,8 +385,8 @@ object Config {
             <image>${"⯈".mangoFmt(true)}
             <image>${"⯈".mangoFmt(true)}
             <image>${"⯈".mangoFmt(true)} ${"Check out".fireFmt()}<gray>: ${
-                "/rules".asMMCmd(Utils.cmdHover).skylineFmt()
-            } <gray>🟅 ${"/guide".asMMCmd(Utils.cmdHover).skylineFmt()}
+                "/rules".clickRunCmd(Utils.cmdHover).skylineFmt()
+            } <gray>🟅 ${"/guide".clickRunCmd(Utils.cmdHover).skylineFmt()}
             <image>${"⯈".mangoFmt(true)}
             <image>${"⯈".mangoFmt(true)}
             ${"]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)}
