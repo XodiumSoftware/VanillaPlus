@@ -75,7 +75,7 @@ object Config {
         /** Enables or disables the BookModule. */
         var ENABLED: Boolean = true
 
-        //FIX: suggestcmd not working.
+        //TODO: suggest cmd not working because of minecraft bug.
         /** The Guide book. */
         var GUIDE_BOOK: Book = Book.book(
             "Guide".fireFmt().mm(),
