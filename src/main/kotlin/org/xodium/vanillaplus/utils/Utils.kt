@@ -28,7 +28,6 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.math.roundToInt
 
 /** General utilities. */
 object Utils {
@@ -53,44 +52,6 @@ object Utils {
             (ctx.source.sender as Player).sendMessage("${PREFIX}<red>An Error has occurred. Check server logs for details.".mm())
         }
         return Command.SINGLE_SUCCESS
-    }
-
-    /**
-     * A function to get the tps of the server.
-     * @return The tps of the server.
-     */
-    fun getTps(): String {
-        val tps = instance.server.tps[0]
-        val clampedTps = tps.coerceIn(0.0, 20.0)
-        val ratio = clampedTps / 20.0
-        val color = getColorForTps(ratio)
-        val formattedTps = String.format("%.1f", tps)
-        return "<color:$color>$formattedTps</color>"
-    }
-
-    /**
-     * Calculate a hex colour between red and green based on the provided ratio (0.0 to 1.0).
-     * @param ratio The ratio to calculate the colour for.
-     * @return The hex colour for the ratio.
-     */
-    private fun getColorForTps(ratio: Double): String {
-        val clamped = ratio.coerceIn(0.0, 1.0)
-        val r = (255 * (1 - clamped)).roundToInt()
-        val g = (255 * clamped).roundToInt()
-        return String.format("#%02X%02X%02X", r, g, 0)
-    }
-
-    /**
-     * Gets a formatted string representing the current weather in the main world.
-     * @return A formatted string representing the weather.
-     */
-    fun getWeather(): String {
-        val world = instance.server.worlds[0]
-        return when {
-            world.isThundering -> "<red>\uD83C\uDF29<reset>"
-            world.hasStorm() -> "<yellow>\uD83C\uDF26<reset>"
-            else -> "<green>\uD83C\uDF24<reset>"
-        }
     }
 
     /**

@@ -24,8 +24,6 @@ import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.FmtUtils.skylineFmt
 import org.xodium.vanillaplus.utils.TimeUtils
 import org.xodium.vanillaplus.utils.Utils
-import org.xodium.vanillaplus.utils.Utils.getTps
-import org.xodium.vanillaplus.utils.Utils.getWeather
 import java.time.LocalTime
 import org.bukkit.Sound as BukkitSound
 
@@ -465,9 +463,9 @@ object Config {
         /** The footer of the tab list. Each element is a line. */
         var FOOTER: List<String> = listOf(
             "",
-            "${"]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt()}  ${"TPS:".fireFmt()} ${getTps()} ${"|".mangoFmt()} ${
+            "${"]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt()}  ${"TPS:".fireFmt()} <tps> ${"|".mangoFmt()} ${
                 "Weather:".fireFmt()
-            } ${getWeather()}  ${
+            } <weather>  ${
                 "]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)
             }"
         )
