@@ -20,6 +20,8 @@ import org.xodium.vanillaplus.utils.SkinUtils.faceToMM
 class JoinQuitModule : ModuleInterface {
     override fun enabled(): Boolean = Config.JoinQuitModule.ENABLED
 
+    //TODO: either some error or conflict with CMI.
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
         if (!enabled()) return
