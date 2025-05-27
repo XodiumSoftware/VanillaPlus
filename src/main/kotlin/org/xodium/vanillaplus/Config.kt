@@ -29,12 +29,6 @@ import org.bukkit.Sound as BukkitSound
 
 /** Configuration settings. */
 object Config {
-    /** Configuration settings for the AutoRefillModule. */
-    object AutoRefillModule {
-        /** Enables or disables the AutoRefillModule. */
-        var ENABLED: Boolean = true
-    }
-
     /** Configuration settings for the AutoRestartModule. */
     object AutoRestartModule {
         /** Enables or disables the AutoRestartModule. */
@@ -73,27 +67,6 @@ object Config {
             BossBar.Color.RED,
             BossBar.Overlay.PROGRESS
         )
-    }
-
-    /** Configuration settings for the AutoToolModule. */
-    object AutoToolModule {
-        /** Enables or disables the AutoToolModule. */
-        var ENABLED: Boolean = true
-
-        /** If the AutoTool feature should not switch tools during battle. */
-        var DONT_SWITCH_DURING_BATTLE: Boolean = true
-
-        /** If swords should be considered for breaking leaves. */
-        var CONSIDER_SWORDS_FOR_LEAVES: Boolean = true
-
-        /** If swords should be considered for breaking cobwebs. */
-        var CONSIDER_SWORDS_FOR_COBWEBS: Boolean = true
-
-        /** If swords should be used on hostile mobs. */
-        var USE_SWORD_ON_HOSTILE_MOBS: Boolean = true
-
-        /** If axes should be used as swords. */
-        var USE_AXE_AS_SWORD: Boolean = true
     }
 
     /** Configuration settings for the BooksModule. */

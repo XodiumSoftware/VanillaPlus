@@ -15,34 +15,29 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 object PlayerDataSchema : IdTable<String>(PlayerData::class.simpleName.toString()) {
     override val id: Column<EntityID<String>> = varchar("id", 36).entityId()
-    val autorefill: Column<Boolean> = bool("autorefill").default(false)
-    val autotool: Column<Boolean> = bool("autotool").default(false)
+    val sample: Column<Boolean> = bool("sample").default(false)
     override val primaryKey: PrimaryKey = PrimaryKey(id)
 }
 
 class PlayerDataEntity(id: EntityID<String>) : Entity<String>(id) {
     companion object : EntityClass<String, PlayerDataEntity>(PlayerDataSchema)
 
-    var autorefill: Boolean by PlayerDataSchema.autorefill
-    var autotool: Boolean by PlayerDataSchema.autotool
+    var sample: Boolean by PlayerDataSchema.sample
 
     fun toData(): PlayerData = PlayerData(
         id.value,
-        autorefill,
-        autotool,
+        sample,
     )
 }
 
 /**
  * Represents player-specific configuration data.
  * @property id A unique identifier for the player.
- * @property autorefill Indicates whether the autorefill feature is enabled for the player.
- * @property autotool Indicates whether the autotool feature is enabled for the player.
+ * @property sample SAMPLE.
  */
 data class PlayerData(
     val id: String,
-    val autorefill: Boolean = false,
-    val autotool: Boolean = false,
+    val sample: Boolean = false,
 ) {
     companion object {
         /** Creates a table in the database for the provided class type if it does not already exist. */
@@ -55,11 +50,9 @@ data class PlayerData(
          */
         fun setData(data: PlayerData): PlayerDataEntity = transaction {
             PlayerDataEntity.findById(data.id)?.apply {
-                autorefill = data.autorefill
-                autotool = data.autotool
+                sample = data.sample
             } ?: PlayerDataEntity.new(data.id) {
-                autorefill = data.autorefill
-                autotool = data.autotool
+                sample = data.sample
             }
         }
 

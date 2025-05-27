@@ -22,9 +22,7 @@ import kotlin.time.measureTime
 /** Represents the module manager within the system. */
 object ModuleManager {
     private val modules = listOf(
-        AutoRefillModule(),
         AutoRestartModule(),
-        AutoToolModule(),
         BooksModule(),
         ChiselModule(),
         DimensionsModule(),
