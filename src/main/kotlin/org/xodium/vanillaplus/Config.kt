@@ -75,6 +75,7 @@ object Config {
         /** Enables or disables the BookModule. */
         var ENABLED: Boolean = true
 
+        //FIX: suggestcmd not working.
         /** The Guide book. */
         var GUIDE_BOOK: Book = Book.book(
             "Guide".fireFmt().mm(),
