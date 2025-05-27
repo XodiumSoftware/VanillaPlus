@@ -12,6 +12,7 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
+import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.weather.ThunderChangeEvent
 import org.bukkit.event.weather.WeatherChangeEvent
 import org.xodium.vanillaplus.Config
@@ -30,7 +31,7 @@ class TabListModule : ModuleInterface {
                 updateTabList(it)
                 updatePlayerDisplayName(it)
             }
-            // NOTE: needed for tps.
+            // TPS Check.
             instance.server.scheduler.runTaskTimer(
                 instance,
                 Runnable { instance.server.onlinePlayers.forEach { updateTabList(it) } },
@@ -41,14 +42,13 @@ class TabListModule : ModuleInterface {
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    fun on(event: WeatherChangeEvent) {
-        event.world.players.forEach { updateTabList(it) }
-    }
+    fun on(event: PlayerJoinEvent): Unit = updateTabList(event.player)
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    fun on(event: ThunderChangeEvent) {
-        event.world.players.forEach { updateTabList(it) }
-    }
+    fun on(event: WeatherChangeEvent): Unit = event.world.players.forEach { updateTabList(it) }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun on(event: ThunderChangeEvent): Unit = event.world.players.forEach { updateTabList(it) }
 
     /**
      * Update the player's display name in the tab list.
