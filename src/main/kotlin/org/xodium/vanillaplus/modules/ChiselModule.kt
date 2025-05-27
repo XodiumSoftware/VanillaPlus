@@ -68,6 +68,7 @@ class ChiselModule : ModuleInterface {
      */
     private fun handleChiselAction(block: Block, iterateClockwise: Boolean, event: PlayerInteractEvent) {
         val data = block.blockData
+        val isSneaking = event.player.isSneaking
         val used = when {
             data is Fence -> {
                 block.blockData = data.apply { iterate(allowedFaces.toList(), iterateClockwise) }
@@ -76,11 +77,10 @@ class ChiselModule : ModuleInterface {
             }
 
             data is Stairs -> {
-                //TODO: Maybe add mode switch for shape, half, and facing?
                 block.blockData = data.apply {
+                    if (isSneaking) facing = facing.iterate(faces.toList(), iterateClockwise)
                     shape = shape.iterate(Stairs.Shape.entries, iterateClockwise)
                     half = half.iterate(Bisected.Half.entries, iterateClockwise)
-                    facing = facing.iterate(faces.toList(), iterateClockwise)
                 }
                 event.isCancelled = true
                 true
