@@ -11,6 +11,8 @@ import org.bukkit.block.data.MultipleFacing
 import org.bukkit.block.data.type.Slab
 import org.bukkit.block.data.type.Stairs
 
+//FIX: the iterating is doing N - S - W - E, but it should be N - E - S - W
+
 /** Block utilities. */
 object BlockUtils {
     /**
