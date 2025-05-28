@@ -24,8 +24,7 @@ class DiscordModule : ModuleInterface {
     private var job: Job? = null
 
     init {
-        require(!token.isNullOrBlank()) { "Discord bot token is not set!" }
-        start(token)
+        if (token.isBlank()) instance.logger.warning("Discord bot token is not set.") else start(token)
     }
 
     /**
