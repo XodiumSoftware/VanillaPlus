@@ -5,6 +5,7 @@
 
 package org.xodium.vanillaplus.modules
 
+import dev.kord.common.Color
 import dev.kord.common.entity.Permission
 import dev.kord.common.entity.Permissions
 import dev.kord.common.entity.Snowflake
@@ -13,6 +14,7 @@ import dev.kord.core.behavior.interaction.respondEphemeral
 import dev.kord.core.event.interaction.ChatInputCommandInteractionCreateEvent
 import dev.kord.core.on
 import dev.kord.rest.builder.interaction.string
+import dev.kord.rest.builder.message.EmbedBuilder
 import io.github.cdimascio.dotenv.dotenv
 import io.papermc.paper.ban.BanListType
 import kotlinx.coroutines.*
@@ -79,7 +81,7 @@ class DiscordModule : ModuleInterface {
     private suspend fun handleListCommand(event: ChatInputCommandInteractionCreateEvent) {
         val interaction = event.interaction
         val commandName = interaction.command.rootName
-        if (commandName != "whitelist" && commandName != "blacklist") return
+        if (commandName != "whitelist" && commandName != "blacklist" && commandName != "map") return
 
         instance.logger.info(
             "Discord command executed: /$commandName by ${interaction.user.username}#${interaction.user.discriminator} (ID: ${interaction.user.id.value}) " +
@@ -89,12 +91,33 @@ class DiscordModule : ModuleInterface {
         val action = interaction.command.strings["action"] ?: ""
         val playerName = interaction.command.strings["player"] ?: ""
 
+        when (commandName) {
+            "map" -> {
+                event.interaction.respondEphemeral {
+                    embeds = mutableListOf(
+                        EmbedBuilder().apply {
+                            title = "Open the Online Server Map"
+                            url = "https://illyria.xodium.org/"
+                            description = "Click the title above to open the map."
+                            color = Color(0x00FF00)
+                        }
+                    )
+                }
+                return
+            }
+        }
+
         if (commandName == "whitelist" && action == "list") {
-            val whitelisted = instance.server.whitelistedPlayers
-                .joinToString(", ") { it.name ?: it.uniqueId.toString() }
+            val whitelisted =
+                instance.server.whitelistedPlayers.joinToString(", ") { it.name ?: it.uniqueId.toString() }
             interaction.respondEphemeral {
-                content =
-                    if (whitelisted.isEmpty()) "No players are whitelisted." else "Whitelisted players: $whitelisted"
+                embeds = mutableListOf(
+                    EmbedBuilder().apply {
+                        title = "Whitelisted Players"
+                        description = whitelisted.ifEmpty { "No players are whitelisted." }
+                        color = Color(0x00FF00)
+                    }
+                )
             }
             return
         }
@@ -102,14 +125,27 @@ class DiscordModule : ModuleInterface {
         if (commandName == "blacklist" && action == "list") {
             val blacklisted = instance.server.bannedPlayers.joinToString(", ") { it.name ?: it.uniqueId.toString() }
             interaction.respondEphemeral {
-                content =
-                    if (blacklisted.isEmpty()) "No players are blacklisted." else "Blacklisted players: $blacklisted"
+                embeds = mutableListOf(
+                    EmbedBuilder().apply {
+                        title = "Blacklisted Players"
+                        description = blacklisted.ifEmpty { "No players are blacklisted." }
+                        color = Color(0x00FF00)
+                    }
+                )
             }
             return
         }
 
         if (playerName.isEmpty() || (action != "add" && action != "remove")) {
-            interaction.respondEphemeral { content = "Please provide a valid player name and action (add/remove)." }
+            interaction.respondEphemeral {
+                embeds = mutableListOf(
+                    EmbedBuilder().apply {
+                        title = "Invalid Input"
+                        description = "Please provide a valid player name and action (add/remove)."
+                        color = Color(0x00FF00)
+                    }
+                )
+            }
             return
         }
 
@@ -132,21 +168,31 @@ class DiscordModule : ModuleInterface {
         }
 
         interaction.respondEphemeral {
-            content = when (commandName) {
-                "whitelist" -> when (action) {
-                    "add" -> "Player `$playerName` has been whitelisted."
-                    "remove" -> "Player `$playerName` has been removed from the whitelist."
-                    else -> "Unknown action."
-                }
+            embeds = mutableListOf(
+                EmbedBuilder().apply {
+                    title = when (commandName) {
+                        "whitelist" -> "Whitelist Update"
+                        "blacklist" -> "Blacklist Update"
+                        else -> "Update"
+                    }
+                    description = when (commandName) {
+                        "whitelist" -> when (action) {
+                            "add" -> "Player `$playerName` has been whitelisted."
+                            "remove" -> "Player `$playerName` has been removed from the whitelist."
+                            else -> "Unknown action."
+                        }
 
-                "blacklist" -> when (action) {
-                    "add" -> "Player `$playerName` has been blacklisted."
-                    "remove" -> "Player `$playerName` has been removed from the blacklist."
-                    else -> "Unknown action."
-                }
+                        "blacklist" -> when (action) {
+                            "add" -> "Player `$playerName` has been blacklisted."
+                            "remove" -> "Player `$playerName` has been removed from the blacklist."
+                            else -> "Unknown action."
+                        }
 
-                else -> "Unknown command."
-            }
+                        else -> "Unknown command."
+                    }
+                    color = Color(0x00FF00)
+                }
+            )
         }
     }
 }
