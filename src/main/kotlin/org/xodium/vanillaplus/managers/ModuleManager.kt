@@ -26,6 +26,7 @@ object ModuleManager {
         BooksModule(),
         ChiselModule(),
         DimensionsModule(),
+        DiscordModule(),
         DoorsModule(),
         EclipseModule(),
         InvSearchModule(),

@@ -191,6 +191,12 @@ object Config {
         var PORTAL_SEARCH_RADIUS: Double = 128.0
     }
 
+    /** Configuration settings for the WhiteListModule. */
+    object DiscordModule {
+        /** Enables or disables the WhiteListModule. */
+        var ENABLED: Boolean = true
+    }
+
     /** Configuration settings for the DoorsModule. */
     object DoorsModule {
         /** Enables or disables the DoorsModule. */
