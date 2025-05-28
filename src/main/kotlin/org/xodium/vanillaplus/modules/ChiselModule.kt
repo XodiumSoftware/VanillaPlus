@@ -92,9 +92,12 @@ class ChiselModule : ModuleInterface {
 
             data is Stairs -> {
                 block.blockData = data.apply {
-                    if (isSneaking) facing = facing.iterate(faces.toList(), iterateClockwise)
-                    shape = shape.iterate(Stairs.Shape.entries, iterateClockwise)
-                    half = half.iterate(Bisected.Half.entries, iterateClockwise)
+                    if (isSneaking) {
+                        facing = facing.iterate(faces.toList(), iterateClockwise)
+                    } else {
+                        shape = shape.iterate(Stairs.Shape.entries, iterateClockwise)
+                        half = half.iterate(Bisected.Half.entries, iterateClockwise)
+                    }
                 }
                 event.isCancelled = true
                 true
