@@ -18,11 +18,14 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 class DiscordModule : ModuleInterface {
     override fun enabled(): Boolean = Config.DiscordModule.ENABLED
 
+    private val token = System.getenv("DISCORD_BOT_TOKEN")
+
     private var kord: Kord? = null
     private var job: Job? = null
 
     init {
-        start(TODO("setup way to get token"))
+        require(!token.isNullOrBlank()) { "Discord bot token is not set!" }
+        start(token)
     }
 
     /**
@@ -32,25 +35,53 @@ class DiscordModule : ModuleInterface {
     private fun start(token: String) {
         job = CoroutineScope(Dispatchers.Default).launch {
             kord = Kord(token)
-            kord?.createGlobalChatInputCommand("whitelist", "Whitelist a player") {
+            kord?.createGlobalChatInputCommand("whitelist", "Manage the whitelist") {
+                string("action", "Add or remove the player from the whitelist") {
+                    required = true
+                    choice("add", "add")
+                    choice("remove", "remove")
+                }
                 string("player", "The player name to whitelist") { required = true }
             }
             kord?.on<ChatInputCommandInteractionCreateEvent> {
                 if (interaction.command.rootName == "whitelist") {
-                    val playerName = interaction.command.strings["player"] ?: ""
-                    if (playerName.isNotEmpty()) {
-                        withContext(Dispatchers.IO) {
-                            instance.server.scheduler.runTask(instance, Runnable {
-                                val offlinePlayer = instance.server.getOfflinePlayer(playerName)
-                                instance.server.whitelistedPlayers.add(offlinePlayer)
-                            })
-                        }
-                        interaction.respondEphemeral {
-                            content = "Player `$playerName` has been whitelisted."
+                    val guildId = interaction.invokedCommandGuildId
+                    if (guildId != null) {
+                        val requiredRoleId = "" //TODO: replace with actual role ID
+                        val member = interaction.user.asMember(guildId)
+                        if (requiredRoleId !in member.roleIds.map { it.toString() }) {
+                            interaction.respondEphemeral {
+                                content = "You do not have permission to use this command."
+                            }
+                            return@on
                         }
                     } else {
                         interaction.respondEphemeral {
-                            content = "Please provide a valid player name."
+                            content = "This command can only be used in a server."
+                        }
+                        return@on
+                    }
+
+                    val action = interaction.command.strings["action"] ?: ""
+                    val playerName = interaction.command.strings["player"] ?: ""
+                    if (playerName.isNotEmpty() && (action == "add" || action == "remove")) {
+                        withContext(Dispatchers.IO) {
+                            instance.server.scheduler.runTask(instance, Runnable {
+                                val offlinePlayer = instance.server.getOfflinePlayer(playerName)
+                                if (action == "add") instance.server.whitelistedPlayers.add(offlinePlayer)
+                                if (action == "remove") instance.server.whitelistedPlayers.remove(offlinePlayer)
+                            })
+                        }
+                        interaction.respondEphemeral {
+                            content = when (action) {
+                                "add" -> "Player `$playerName` has been whitelisted."
+                                "remove" -> "Player `$playerName` has been removed from the whitelist."
+                                else -> "Unknown action."
+                            }
+                        }
+                    } else {
+                        interaction.respondEphemeral {
+                            content = "Please provide a valid player name and action (add/remove)."
                         }
                     }
                 }
