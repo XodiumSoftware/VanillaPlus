@@ -22,6 +22,9 @@ permissions:
   vanillaplus.book.guide:
     description: Allows use of the guide command
     default: true
+  vanillaplus.chisel.give:
+    description: Allows use of the chisel give command
+    default: op
   vanillaplus.book.rules:
     description: Allows use of the rules command
     default: true
