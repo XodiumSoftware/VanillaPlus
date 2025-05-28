@@ -5,6 +5,8 @@
 
 package org.xodium.vanillaplus.modules
 
+import dev.kord.common.entity.Permission
+import dev.kord.common.entity.Permissions
 import dev.kord.core.Kord
 import dev.kord.core.behavior.interaction.respondEphemeral
 import dev.kord.core.event.interaction.ChatInputCommandInteractionCreateEvent
@@ -43,6 +45,7 @@ class DiscordModule : ModuleInterface {
                         choice("remove", "remove")
                     }
                     string("player", "The player name to whitelist") { required = true }
+                    defaultMemberPermissions = Permissions(Permission.Administrator)
                 }
                 kord?.createGlobalChatInputCommand("blacklist", "Manage the blacklist") {
                     string("action", "Add or remove the player from the blacklist") {
@@ -51,6 +54,7 @@ class DiscordModule : ModuleInterface {
                         choice("remove", "remove")
                     }
                     string("player", "The player name to blacklist") { required = true }
+                    defaultMemberPermissions = Permissions(Permission.Administrator)
                 }
                 kord?.on<ChatInputCommandInteractionCreateEvent> {
                     handleListCommand(this)
@@ -61,6 +65,10 @@ class DiscordModule : ModuleInterface {
         }
     }
 
+    /**
+     * Handles the whitelist and blacklist commands.
+     * @param event The interaction event containing the command details.
+     */
     private suspend fun handleListCommand(event: ChatInputCommandInteractionCreateEvent) {
         val interaction = event.interaction
         val commandName = interaction.command.rootName
