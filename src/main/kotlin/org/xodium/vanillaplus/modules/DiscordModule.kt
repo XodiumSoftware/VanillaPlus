@@ -17,6 +17,8 @@ import kotlinx.coroutines.*
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import java.net.HttpURLConnection
+import java.net.URI
 
 class DiscordModule : ModuleInterface {
     override fun enabled(): Boolean = Config.DiscordModule.ENABLED
@@ -24,7 +26,7 @@ class DiscordModule : ModuleInterface {
     private val token = dotenv()["DISCORD_BOT_TOKEN"]
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
-    private var kord: Kord? = null
+    private lateinit var kord: Kord
 
     init {
         if (token.isNullOrBlank()) instance.logger.warning("Warning: Discord bot token is not set!") else start(token)
@@ -38,7 +40,7 @@ class DiscordModule : ModuleInterface {
         scope.launch {
             try {
                 kord = Kord(token)
-                kord?.createGlobalChatInputCommand("whitelist", "Manage the whitelist") {
+                kord.createGlobalChatInputCommand("whitelist", "Manage the whitelist") {
                     string("action", "Add or remove the player from the whitelist") {
                         required = true
                         choice("add", "add")
@@ -47,7 +49,7 @@ class DiscordModule : ModuleInterface {
                     string("player", "The player name to whitelist") { required = true }
                     defaultMemberPermissions = Permissions(Permission.Administrator)
                 }
-                kord?.createGlobalChatInputCommand("blacklist", "Manage the blacklist") {
+                kord.createGlobalChatInputCommand("blacklist", "Manage the blacklist") {
                     string("action", "Add or remove the player from the blacklist") {
                         required = true
                         choice("add", "add")
@@ -56,7 +58,7 @@ class DiscordModule : ModuleInterface {
                     string("player", "The player name to blacklist") { required = true }
                     defaultMemberPermissions = Permissions(Permission.Administrator)
                 }
-                kord?.on<ChatInputCommandInteractionCreateEvent> {
+                kord.on<ChatInputCommandInteractionCreateEvent> {
                     handleListCommand(this)
                 }
             } catch (e: Exception) {
@@ -84,6 +86,11 @@ class DiscordModule : ModuleInterface {
         val playerName = interaction.command.strings["player"] ?: ""
         if (playerName.isEmpty() || (action != "add" && action != "remove")) {
             interaction.respondEphemeral { content = "Please provide a valid player name and action (add/remove)." }
+            return
+        }
+
+        if (!isValidMinecraftUsername(playerName)) {
+            interaction.respondEphemeral { content = "The username `$playerName` does not exist on Minecraft." }
             return
         }
 
@@ -119,6 +126,25 @@ class DiscordModule : ModuleInterface {
 
                 else -> "Unknown command."
             }
+        }
+    }
+
+    /**
+     * Checks if a given Minecraft username is valid by querying the Mojang API.
+     * @param username The Minecraft username to validate.
+     * @return True if the username is valid, false otherwise.
+     */
+    private suspend fun isValidMinecraftUsername(username: String): Boolean {
+        return withContext(Dispatchers.IO) {
+            val url = URI("https://api.mojang.com/users/profiles/minecraft/$username").toURL()
+            val connection = url.openConnection() as HttpURLConnection
+            connection.requestMethod = "GET"
+            connection.connectTimeout = 3000
+            connection.readTimeout = 3000
+            connection.connect()
+            val exists = connection.responseCode == 200
+            connection.disconnect()
+            exists
         }
     }
 }
