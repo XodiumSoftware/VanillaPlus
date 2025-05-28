@@ -13,6 +13,7 @@ import dev.kord.core.Kord
 import dev.kord.core.behavior.channel.createMessage
 import dev.kord.core.behavior.interaction.respondEphemeral
 import dev.kord.core.entity.channel.TextChannel
+import dev.kord.core.entity.interaction.ChatInputCommandInteraction
 import dev.kord.core.event.interaction.ChatInputCommandInteractionCreateEvent
 import dev.kord.core.on
 import dev.kord.rest.builder.interaction.string
@@ -22,6 +23,7 @@ import io.papermc.paper.ban.BanListType
 import kotlinx.coroutines.*
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.data.DiscordCommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import java.time.Instant
 import java.util.*
@@ -76,127 +78,116 @@ class DiscordModule : ModuleInterface {
         }
     }
 
+    private val discordCommands = listOf(
+        DiscordCommandData("whitelist", "list") { interaction, _ ->
+            val whitelisted =
+                instance.server.whitelistedPlayers.joinToString(", ") { it.name ?: it.uniqueId.toString() }
+            respond(interaction, "Whitelisted Players", whitelisted.ifEmpty { "No players are whitelisted." })
+        },
+        DiscordCommandData("blacklist", "list") { interaction, _ ->
+            val blacklisted = instance.server.bannedPlayers.joinToString(", ") { it.name ?: it.uniqueId.toString() }
+            respond(interaction, "Blacklisted Players", blacklisted.ifEmpty { "No players are blacklisted." })
+        },
+        DiscordCommandData("whitelist", "add") { interaction, playerName ->
+            if (playerName.isBlank()) {
+                respond(interaction, "Invalid Input", "Please provide a valid player name.")
+                return@DiscordCommandData
+            }
+            updateList("whitelist", "add", playerName)
+            respond(interaction, "Whitelist Update", "Player `$playerName` has been whitelisted.")
+        },
+        DiscordCommandData("whitelist", "remove") { interaction, playerName ->
+            if (playerName.isBlank()) {
+                respond(interaction, "Invalid Input", "Please provide a valid player name.")
+                return@DiscordCommandData
+            }
+            updateList("whitelist", "remove", playerName)
+            respond(interaction, "Whitelist Update", "Player `$playerName` has been removed from the whitelist.")
+        },
+        DiscordCommandData("blacklist", "add") { interaction, playerName ->
+            if (playerName.isBlank()) {
+                respond(interaction, "Invalid Input", "Please provide a valid player name.")
+                return@DiscordCommandData
+            }
+            updateList("blacklist", "add", playerName)
+            respond(interaction, "Blacklist Update", "Player `$playerName` has been blacklisted.")
+        },
+        DiscordCommandData("blacklist", "remove") { interaction, playerName ->
+            if (playerName.isBlank()) {
+                respond(interaction, "Invalid Input", "Please provide a valid player name.")
+                return@DiscordCommandData
+            }
+            updateList("blacklist", "remove", playerName)
+            respond(interaction, "Blacklist Update", "Player `$playerName` has been removed from the blacklist.")
+        }
+    )
+
     /**
-     * Handles the whitelist and blacklist commands.
-     * @param event The interaction event containing the command details.
+     * Updates the whitelist or blacklist for a player.
+     * @param command The command type ("whitelist" or "blacklist").
+     * @param action The action to perform ("add" or "remove").
+     * @param playerName The name of the player to update.
+     */
+    private suspend fun updateList(command: String, action: String, playerName: String) = withContext(Dispatchers.IO) {
+        instance.server.scheduler.runTask(instance, Runnable {
+            val offlinePlayer = instance.server.getOfflinePlayer(playerName)
+            val banList = instance.server.getBanList(BanListType.PROFILE)
+            when (command) {
+                "whitelist" -> offlinePlayer.isWhitelisted = (action == "add")
+                "blacklist" -> if (action == "add")
+                    banList.addBan(offlinePlayer.playerProfile, "", Date.from(Instant.MAX), "")
+                else
+                    banList.pardon(offlinePlayer.playerProfile)
+            }
+        })
+    }
+
+    /**
+     * Handles the Discord command interaction for listing or managing players.
+     * @param event The event containing the interaction data.
      */
     private suspend fun handleListCommand(event: ChatInputCommandInteractionCreateEvent) {
         val interaction = event.interaction
         val commandName = interaction.command.rootName
-        if (commandName != "whitelist" && commandName != "blacklist" && commandName != "map") return
-
-        instance.logger.info(
-            "Discord command executed: /$commandName by ${interaction.user.username}#${interaction.user.discriminator} (ID: ${interaction.user.id.value}) " +
-                    "with options: action=${interaction.command.strings["action"]}, player=${interaction.command.strings["player"]}"
-        )
-
         val action = interaction.command.strings["action"] ?: ""
         val playerName = interaction.command.strings["player"] ?: ""
 
-        when (commandName) {
-            "map" -> {
-                event.interaction.respondEphemeral {
-                    embeds = mutableListOf(
-                        EmbedBuilder().apply {
-                            title = "Open the Online Server Map"
-                            url = "https://illyria.xodium.org/"
-                            description = "Click the title above to open the map."
-                            color = Color(0x00FF00)
-                        }
-                    )
-                }
-                return
-            }
-        }
-
-        if (commandName == "whitelist" && action == "list") {
-            val whitelisted =
-                instance.server.whitelistedPlayers.joinToString(", ") { it.name ?: it.uniqueId.toString() }
-            interaction.respondEphemeral {
-                embeds = mutableListOf(
-                    EmbedBuilder().apply {
-                        title = "Whitelisted Players"
-                        description = whitelisted.ifEmpty { "No players are whitelisted." }
-                        color = Color(0x00FF00)
-                    }
-                )
-            }
+        if (commandName == "map") {
+            respond(interaction, "Open the Online Server Map", "Click the title above to open the map.")
             return
         }
 
-        if (commandName == "blacklist" && action == "list") {
-            val blacklisted = instance.server.bannedPlayers.joinToString(", ") { it.name ?: it.uniqueId.toString() }
-            interaction.respondEphemeral {
-                embeds = mutableListOf(
-                    EmbedBuilder().apply {
-                        title = "Blacklisted Players"
-                        description = blacklisted.ifEmpty { "No players are blacklisted." }
-                        color = Color(0x00FF00)
-                    }
-                )
-            }
-            return
-        }
-
-        if (playerName.isEmpty() || (action != "add" && action != "remove")) {
-            interaction.respondEphemeral {
-                embeds = mutableListOf(
-                    EmbedBuilder().apply {
-                        title = "Invalid Input"
-                        description = "Please provide a valid player name and action (add/remove)."
-                        color = Color(0x00FF00)
-                    }
-                )
-            }
-            return
-        }
-
-        withContext(Dispatchers.IO) {
-            instance.server.scheduler.runTask(instance, Runnable {
-                val offlinePlayer = instance.server.getOfflinePlayer(playerName)
-                val banList = instance.server.getBanList(BanListType.PROFILE)
-                when (commandName) {
-                    "whitelist" -> when (action) {
-                        "add" -> offlinePlayer.isWhitelisted = true
-                        "remove" -> offlinePlayer.isWhitelisted = false
-                    }
-
-                    "blacklist" -> when (action) {
-                        "add" -> banList.addBan(offlinePlayer.playerProfile, "", Date.from(Instant.MAX), "")
-                        "remove" -> banList.pardon(offlinePlayer.playerProfile)
-                    }
-                }
-            })
-        }
-
-        interaction.respondEphemeral {
-            embeds = mutableListOf(
-                EmbedBuilder().apply {
-                    title = when (commandName) {
-                        "whitelist" -> "Whitelist Update"
-                        "blacklist" -> "Blacklist Update"
-                        else -> "Update"
-                    }
-                    description = when (commandName) {
-                        "whitelist" -> when (action) {
-                            "add" -> "Player `$playerName` has been whitelisted."
-                            "remove" -> "Player `$playerName` has been removed from the whitelist."
-                            else -> "Unknown action."
-                        }
-
-                        "blacklist" -> when (action) {
-                            "add" -> "Player `$playerName` has been blacklisted."
-                            "remove" -> "Player `$playerName` has been removed from the blacklist."
-                            else -> "Unknown action."
-                        }
-
-                        else -> "Unknown command."
-                    }
-                    color = Color(0x00FF00)
-                }
-            )
+        val command = discordCommands.find { it.name == commandName && it.action == action }
+        if (command != null) {
+            command.handler(interaction, playerName)
+        } else {
+            respond(interaction, "Unknown Command", "This command/action is not recognized.")
         }
     }
+
+    /**
+     * Responds to a Discord interaction with an ephemeral message.
+     * @param interaction The interaction to respond to.
+     * @param title The title of the response embed.
+     * @param description The description of the response embed.
+     */
+    private suspend fun respond(interaction: ChatInputCommandInteraction, title: String, description: String) {
+        interaction.respondEphemeral { embeds = buildEmbed(title, description) }
+    }
+
+    /**
+     * Builds an embed message with the specified title and description.
+     * @param title The title of the embed.
+     * @param description The description of the embed.
+     * @return A list containing the constructed EmbedBuilder.
+     */
+    private fun buildEmbed(title: String, description: String): MutableList<EmbedBuilder> = mutableListOf(
+        EmbedBuilder().apply {
+            this.title = title
+            this.description = description
+            this.color = Color(0x00FF00)
+        }
+    )
 
     /**
      * Sends an embed message in response to an interaction.
