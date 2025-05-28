@@ -10,7 +10,9 @@ import dev.kord.common.entity.Permission
 import dev.kord.common.entity.Permissions
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.Kord
+import dev.kord.core.behavior.channel.createMessage
 import dev.kord.core.behavior.interaction.respondEphemeral
+import dev.kord.core.entity.channel.TextChannel
 import dev.kord.core.event.interaction.ChatInputCommandInteractionCreateEvent
 import dev.kord.core.on
 import dev.kord.rest.builder.interaction.string
@@ -191,6 +193,28 @@ class DiscordModule : ModuleInterface {
                         else -> "Unknown command."
                     }
                     color = Color(0x00FF00)
+                }
+            )
+        }
+    }
+
+    /**
+     * Sends an embed message in response to an interaction.
+     * @param title The title of the embed.
+     * @param description The description of the embed.
+     * @param color The color of the embed in hexadecimal format.
+     */
+    suspend fun sendEventEmbed(
+        title: String,
+        description: String,
+        color: Int
+    ) {
+        kord.getChannelOf<TextChannel>(Snowflake(1285516564153761883))?.createMessage {
+            embeds = mutableListOf(
+                EmbedBuilder().apply {
+                    this.title = title
+                    this.description = description
+                    this.color = Color(color)
                 }
             )
         }

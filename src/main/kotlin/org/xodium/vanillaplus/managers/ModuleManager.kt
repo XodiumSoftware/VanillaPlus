@@ -20,22 +20,38 @@ import org.xodium.vanillaplus.utils.Utils
 import kotlin.time.measureTime
 
 /** Represents the module manager within the system. */
+@Suppress("MemberVisibilityCanBePrivate")
 object ModuleManager {
+    val autoRestartModule: AutoRestartModule = AutoRestartModule()
+    val booksModule: BooksModule = BooksModule()
+    val chiselModule: ChiselModule = ChiselModule()
+    val dimensionsModule: DimensionsModule = DimensionsModule()
+    val discordModule: DiscordModule = DiscordModule()
+    val doorsModule: DoorsModule = DoorsModule()
+    val eclipseModule: EclipseModule = EclipseModule()
+    val invSearchModule: InvSearchModule = InvSearchModule()
+    val invUnloadModule: InvUnloadModule = InvUnloadModule()
+    val joinQuitModule: JoinQuitModule = JoinQuitModule()
+    val motdModule: MotdModule = MotdModule()
+    val recipiesModule: RecipiesModule = RecipiesModule()
+    val tabListModule: TabListModule = TabListModule()
+    val treesModule: TreesModule = TreesModule()
+
     private val modules = listOf(
-        AutoRestartModule(),
-        BooksModule(),
-        ChiselModule(),
-        DimensionsModule(),
-        DiscordModule(),
-        DoorsModule(),
-        EclipseModule(),
-        InvSearchModule(),
-        InvUnloadModule(),
-        JoinQuitModule(),
-        MotdModule(),
-        RecipiesModule(),
-        TabListModule(),
-        TreesModule(),
+        autoRestartModule,
+        booksModule,
+        chiselModule,
+        dimensionsModule,
+        discordModule,
+        doorsModule,
+        eclipseModule,
+        invSearchModule,
+        invUnloadModule,
+        joinQuitModule,
+        motdModule,
+        recipiesModule,
+        tabListModule,
+        treesModule
     )
 
     @Suppress("UnstableApiUsage")
