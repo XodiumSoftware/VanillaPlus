@@ -39,7 +39,8 @@ class InvUnloadModule : ModuleInterface {
         return listOf(
             Commands.literal("invunload")
                 .requires { it.sender.hasPermission(Perms.InvUnload.USE) }
-                .executes { it -> Utils.tryCatch(it) { unload(it.sender as Player) } })
+                .executes { it -> Utils.tryCatch(it) { unload(it.sender as Player) } }
+        )
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

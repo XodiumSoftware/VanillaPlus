@@ -5,6 +5,9 @@
 
 package org.xodium.vanillaplus.modules
 
+import com.mojang.brigadier.builder.LiteralArgumentBuilder
+import io.papermc.paper.command.brigadier.CommandSourceStack
+import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
 import net.kyori.adventure.key.Key
@@ -23,16 +26,27 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.ShapedRecipe
 import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.Config
+import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.BlockUtils.iterate
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.skylineFmt
+import org.xodium.vanillaplus.utils.Utils
 
 /** Represents a module handling chisel mechanics within the system. */
 class ChiselModule : ModuleInterface {
     override fun enabled(): Boolean = Config.ChiselModule.ENABLED
+
+    @Suppress("UnstableApiUsage")
+    override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
+        return listOf(
+            Commands.literal("chisel")
+                .requires { it.sender.hasPermission(Perms.Chisel.GIVE) }
+                .executes { it -> Utils.tryCatch(it) { (it.sender as Player).give(chisel()) } }
+        )
+    }
 
     private val chiselKey = NamespacedKey(instance, "chisel")
 

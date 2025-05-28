@@ -54,6 +54,13 @@ object Perms {
             Permission("${G0}.${G1}.rules", "Allows use of the rules command", PermissionDefault.TRUE)
     }
 
+    /** Permissions for Chisel commands. */
+    object Chisel {
+        private val G1 = this::class.simpleName.toString().lowercase()
+        val GIVE: Permission =
+            Permission("${G0}.${G1}.give", "Allows use of the chisel give command", PermissionDefault.OP)
+    }
+
     /** Permissions for Eclipse commands. */
     object Eclipse {
         private val G1 = this::class.simpleName.toString().lowercase()

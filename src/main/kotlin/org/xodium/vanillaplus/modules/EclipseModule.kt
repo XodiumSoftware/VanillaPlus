@@ -39,7 +39,8 @@ class EclipseModule : ModuleInterface {
         return listOf(
             Commands.literal("eclipse")
                 .requires { it.sender.hasPermission(Perms.Eclipse.ECLIPSE) }
-                .executes { it -> Utils.tryCatch(it) { skipToEclipse(it.sender as Player) } })
+                .executes { it -> Utils.tryCatch(it) { skipToEclipse(it.sender as Player) } }
+        )
     }
 
     private var hordeState = EclipseData()
