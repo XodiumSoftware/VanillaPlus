@@ -97,10 +97,6 @@ class DiscordModule : ModuleInterface {
             val playerName = interaction.command.strings["player"] ?: ""
 
             when (interaction.command.rootName) {
-                "map" -> {
-                    respond(interaction, "Open the Online Server Map", "Click the title above to open the map.")
-                }
-
                 "whitelist" -> {
                     when (action) {
                         "list" -> {
@@ -181,6 +177,15 @@ class DiscordModule : ModuleInterface {
                     }
                 }
 
+                "map" -> {
+                    respond(
+                        interaction,
+                        "Open the Online Server Map",
+                        "Click the title above to open the map.",
+                        url = "https://illyria.xodium.org/"
+                    )
+                }
+
                 else -> {
                     respond(interaction, "Unknown Command", "This command/action is not recognized.")
                 }
@@ -214,14 +219,16 @@ class DiscordModule : ModuleInterface {
      * @param title The title of the response embed.
      * @param description The description of the response embed.
      * @param color The color of the embed in hexadecimal format.
+     * @param url An optional URL for the embed.
      */
     private suspend fun respond(
         interaction: ChatInputCommandInteraction,
         title: String,
         description: String,
-        color: Int = 0x00FF00
+        color: Int = 0x00FF00,
+        url: String? = null
     ) {
-        interaction.respondEphemeral { embeds = mutableListOf(embed(title, description, color)) }
+        interaction.respondEphemeral { embeds = mutableListOf(embed(title, description, color, url)) }
     }
 
     /**
@@ -229,13 +236,20 @@ class DiscordModule : ModuleInterface {
      * @param title The title of the embed.
      * @param description The description of the embed.
      * @param color The color of the embed in hexadecimal format.
+     * @param url An optional URL for the embed.
      * @return An EmbedBuilder instance with the specified properties.
      */
-    private fun embed(title: String, description: String, color: Int): EmbedBuilder {
+    private fun embed(
+        title: String? = null,
+        description: String? = null,
+        color: Int? = null,
+        url: String? = null
+    ): EmbedBuilder {
         return EmbedBuilder().apply {
             this.title = title
             this.description = description
-            this.color = Color(color)
+            this.color = Color(color ?: 0x00FF00)
+            this.url = url
         }
     }
 
