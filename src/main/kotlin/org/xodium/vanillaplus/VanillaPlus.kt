@@ -37,6 +37,11 @@ class VanillaPlus : JavaPlugin() {
         }
     }
 
+    /** Called when the plugin is disabled. */
+    override fun onDisable() {
+        if (ModuleManager.discordModule.enabled()) ModuleManager.discordModule.disable()
+    }
+
     /**
      * Disable the plugin and log the message.
      * @param msg The message to log.

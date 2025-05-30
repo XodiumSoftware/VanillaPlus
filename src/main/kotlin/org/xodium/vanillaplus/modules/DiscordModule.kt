@@ -34,7 +34,7 @@ class DiscordModule : ModuleInterface {
     private val guildId = Snowflake(691029695894126623)
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
-    private lateinit var kord: Kord
+    private var kord: Kord? = null
 
     init {
         if (token.isNullOrBlank()) instance.logger.warning("Warning: Discord bot token is not set!") else bot(token)
@@ -48,8 +48,8 @@ class DiscordModule : ModuleInterface {
         scope.launch {
             try {
                 kord = Kord(token)
-                with(kord) {
-                    createGuildChatInputCommand(guildId, "whitelist", "Manage the whitelist") {
+                kord?.let {
+                    it.createGuildChatInputCommand(guildId, "whitelist", "Manage the whitelist") {
                         string("action", "Add, remove, or list players on the whitelist") {
                             required = true
                             choice("add", "add")
@@ -59,7 +59,7 @@ class DiscordModule : ModuleInterface {
                         string("player", "The player name to whitelist") { required = false }
                         defaultMemberPermissions = Permissions(Permission.Administrator)
                     }
-                    createGuildChatInputCommand(guildId, "blacklist", "Manage the blacklist") {
+                    it.createGuildChatInputCommand(guildId, "blacklist", "Manage the blacklist") {
                         string("action", "Add or remove the player from the blacklist") {
                             required = true
                             choice("add", "add")
@@ -69,9 +69,9 @@ class DiscordModule : ModuleInterface {
                         string("player", "The player name to blacklist") { required = false }
                         defaultMemberPermissions = Permissions(Permission.Administrator)
                     }
-                    createGuildChatInputCommand(guildId, "map", "Open the online server map") {}
-                    on<ChatInputCommandInteractionCreateEvent> { commandImplementations(this) }
-                    login {}
+                    it.createGuildChatInputCommand(guildId, "map", "Open the online server map") {}
+                    it.on<ChatInputCommandInteractionCreateEvent> { commandImplementations(this) }
+                    it.login {}
                 }
             } catch (e: Exception) {
                 instance.logger.severe("Failed to start Discord bot: ${e.message}")
@@ -240,8 +240,14 @@ class DiscordModule : ModuleInterface {
         description: String,
         color: Int
     ) {
-        kord.getChannelOf<TextChannel>(Snowflake(1285516564153761883))?.createMessage {
+        kord?.getChannelOf<TextChannel>(Snowflake(1285516564153761883))?.createMessage {
             embeds = mutableListOf(embed(title, description, color))
         }
+    }
+
+    /** Disables the Discord module, canceling the coroutine scope and nullifying the Kord instance. */
+    fun disable() {
+        scope.cancel()
+        kord = null
     }
 }
