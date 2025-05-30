@@ -13,7 +13,6 @@ import dev.kord.core.Kord
 import dev.kord.core.behavior.channel.createMessage
 import dev.kord.core.behavior.interaction.respondEphemeral
 import dev.kord.core.entity.channel.TextChannel
-import dev.kord.core.entity.interaction.ChatInputCommandInteraction
 import dev.kord.core.event.interaction.ChatInputCommandInteractionCreateEvent
 import dev.kord.core.on
 import dev.kord.rest.builder.interaction.string
@@ -33,6 +32,8 @@ class DiscordModule : ModuleInterface {
     private val token = dotenv()["DISCORD_BOT_TOKEN"]
     private val guildId = Snowflake(691029695894126623)
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    private val whitelist = instance.server.whitelistedPlayers.joinToString(", ") { it.name ?: it.uniqueId.toString() }
+    private val blacklist = instance.server.bannedPlayers.joinToString(", ") { it.name ?: it.uniqueId.toString() }
 
     private var kord: Kord? = null
 
@@ -100,40 +101,54 @@ class DiscordModule : ModuleInterface {
                 "whitelist" -> {
                     when (action) {
                         "list" -> {
-                            val whitelisted =
-                                instance.server.whitelistedPlayers.joinToString(", ") {
-                                    it.name ?: it.uniqueId.toString()
-                                }
-                            respond(
-                                interaction,
-                                "Whitelisted Players",
-                                whitelisted.ifEmpty { "No players are whitelisted." })
+                            interaction.respondEphemeral {
+                                embeds = mutableListOf(
+                                    embed(
+                                        "Whitelisted Players",
+                                        whitelist.ifEmpty { "No players are whitelisted." }
+                                    )
+                                )
+                            }
                         }
 
                         "add" -> {
                             if (playerName.isBlank()) {
-                                respond(interaction, "Invalid Input", "Please provide a valid player name.")
+                                interaction.respondEphemeral {
+                                    embeds = mutableListOf(
+                                        embed("Invalid Input", "Please provide a valid player name.")
+                                    )
+                                }
                             } else {
                                 updateList("whitelist", "add", playerName)
-                                respond(interaction, "Whitelist Update", "Player `$playerName` has been whitelisted.")
+                                interaction.respondEphemeral {
+                                    embeds = mutableListOf(
+                                        embed(
+                                            "Whitelist Update",
+                                            "Player `$playerName` has been added to the whitelist."
+                                        )
+                                    )
+                                }
                             }
                         }
 
                         "remove" -> {
                             if (playerName.isBlank()) {
-                                respond(interaction, "Invalid Input", "Please provide a valid player name.")
+                                interaction.respondEphemeral {
+                                    embeds = mutableListOf(
+                                        embed("Invalid Input", "Please provide a valid player name.")
+                                    )
+                                }
                             } else {
                                 updateList("whitelist", "remove", playerName)
-                                respond(
-                                    interaction,
-                                    "Whitelist Update",
-                                    "Player `$playerName` has been removed from the whitelist."
-                                )
+                                interaction.respondEphemeral {
+                                    embeds = mutableListOf(
+                                        embed(
+                                            "Whitelist Update",
+                                            "Player `$playerName` has been removed from the whitelist."
+                                        )
+                                    )
+                                }
                             }
-                        }
-
-                        else -> {
-                            respond(interaction, "Unknown Command", "This command/action is not recognized.")
                         }
                     }
                 }
@@ -141,53 +156,68 @@ class DiscordModule : ModuleInterface {
                 "blacklist" -> {
                     when (action) {
                         "list" -> {
-                            val blacklisted =
-                                instance.server.bannedPlayers.joinToString(", ") { it.name ?: it.uniqueId.toString() }
-                            respond(
-                                interaction,
-                                "Blacklisted Players",
-                                blacklisted.ifEmpty { "No players are blacklisted." })
+                            interaction.respondEphemeral {
+                                embeds = mutableListOf(
+                                    embed(
+                                        "Blacklisted Players",
+                                        blacklist.ifEmpty { "No players are blacklisted." }
+                                    )
+                                )
+                            }
                         }
 
                         "add" -> {
                             if (playerName.isBlank()) {
-                                respond(interaction, "Invalid Input", "Please provide a valid player name.")
+                                interaction.respondEphemeral {
+                                    embeds = mutableListOf(
+                                        embed("Invalid Input", "Please provide a valid player name.")
+                                    )
+                                }
                             } else {
                                 updateList("blacklist", "add", playerName)
-                                respond(interaction, "Blacklist Update", "Player `$playerName` has been blacklisted.")
+                                interaction.respondEphemeral {
+                                    embeds = mutableListOf(
+                                        embed(
+                                            "Blacklist Update",
+                                            "Player `$playerName` has been blacklisted."
+                                        )
+                                    )
+                                }
                             }
                         }
 
                         "remove" -> {
                             if (playerName.isBlank()) {
-                                respond(interaction, "Invalid Input", "Please provide a valid player name.")
+                                interaction.respondEphemeral {
+                                    embeds = mutableListOf(
+                                        embed("Invalid Input", "Please provide a valid player name.")
+                                    )
+                                }
                             } else {
                                 updateList("blacklist", "remove", playerName)
-                                respond(
-                                    interaction,
-                                    "Blacklist Update",
-                                    "Player `$playerName` has been removed from the blacklist."
-                                )
+                                interaction.respondEphemeral {
+                                    embeds = mutableListOf(
+                                        embed(
+                                            "Blacklist Update",
+                                            "Player `$playerName` has been removed from the blacklist."
+                                        )
+                                    )
+                                }
                             }
-                        }
-
-                        else -> {
-                            respond(interaction, "Unknown Command", "This command/action is not recognized.")
                         }
                     }
                 }
 
                 "map" -> {
-                    respond(
-                        interaction,
-                        "Open the Online Server Map",
-                        "Click the title above to open the map.",
-                        url = "https://illyria.xodium.org/"
-                    )
-                }
-
-                else -> {
-                    respond(interaction, "Unknown Command", "This command/action is not recognized.")
+                    interaction.respondEphemeral {
+                        embeds = mutableListOf(
+                            embed(
+                                "Open the Online Server Map",
+                                "Click the title above to open the map.",
+                                "https://illyria.xodium.org/"
+                            )
+                        )
+                    }
                 }
             }
         }
@@ -214,24 +244,6 @@ class DiscordModule : ModuleInterface {
     }
 
     /**
-     * Responds to a Discord interaction with an ephemeral message.
-     * @param interaction The interaction to respond to.
-     * @param title The title of the response embed.
-     * @param description The description of the response embed.
-     * @param color The color of the embed in hexadecimal format.
-     * @param url An optional URL for the embed.
-     */
-    private suspend fun respond(
-        interaction: ChatInputCommandInteraction,
-        title: String,
-        description: String,
-        color: Int = 0x00FF00,
-        url: String? = null
-    ) {
-        interaction.respondEphemeral { embeds = mutableListOf(embed(title, description, color, url)) }
-    }
-
-    /**
      * Creates an embed builder with the specified title, description, and color.
      * @param title The title of the embed.
      * @param description The description of the embed.
@@ -242,14 +254,14 @@ class DiscordModule : ModuleInterface {
     private fun embed(
         title: String? = null,
         description: String? = null,
+        url: String? = null,
         color: Int? = null,
-        url: String? = null
     ): EmbedBuilder {
         return EmbedBuilder().apply {
             this.title = title
             this.description = description
-            this.color = Color(color ?: 0x00FF00)
             this.url = url
+            this.color = Color(color ?: 0x00FF00)
         }
     }
 
@@ -260,12 +272,13 @@ class DiscordModule : ModuleInterface {
      * @param color The color of the embed in hexadecimal format.
      */
     suspend fun sendEventEmbed(
-        title: String,
-        description: String,
-        color: Int
+        title: String? = null,
+        description: String? = null,
+        url: String? = null,
+        color: Int? = 0x00FF00
     ) {
         kord?.getChannelOf<TextChannel>(Snowflake(1285516564153761883))?.createMessage {
-            embeds = mutableListOf(embed(title, description, color))
+            embeds = mutableListOf(embed(title, description, url, color))
         }
     }
 
