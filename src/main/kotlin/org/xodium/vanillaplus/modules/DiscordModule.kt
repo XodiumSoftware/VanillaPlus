@@ -49,28 +49,8 @@ class DiscordModule : ModuleInterface {
             try {
                 kord = Kord(token)
                 kord?.let {
-                    it.createGuildChatInputCommand(guildId, "whitelist", "Manage the whitelist") {
-                        string("action", "Add, remove, or list players on the whitelist") {
-                            required = true
-                            choice("add", "add")
-                            choice("remove", "remove")
-                            choice("list", "list")
-                        }
-                        string("player", "The player name to whitelist") { required = false }
-                        defaultMemberPermissions = Permissions(Permission.Administrator)
-                    }
-                    it.createGuildChatInputCommand(guildId, "blacklist", "Manage the blacklist") {
-                        string("action", "Add or remove the player from the blacklist") {
-                            required = true
-                            choice("add", "add")
-                            choice("remove", "remove")
-                            choice("list", "list")
-                        }
-                        string("player", "The player name to blacklist") { required = false }
-                        defaultMemberPermissions = Permissions(Permission.Administrator)
-                    }
-                    it.createGuildChatInputCommand(guildId, "map", "Open the online server map") {}
-                    it.on<ChatInputCommandInteractionCreateEvent> { commandImplementations(this) }
+                    it.registerCommands()
+                    it.registerEvents()
                     it.login {}
                 }
             } catch (e: Exception) {
@@ -80,100 +60,130 @@ class DiscordModule : ModuleInterface {
     }
 
     /**
-     * Handles the Discord command interaction for listing or managing players.
-     * @param event The event containing the interaction data.
+     * Registers the Discord commands for the bot.
+     * This includes commands for managing the whitelist, blacklist, and opening the online server map.
      */
-    private suspend fun commandImplementations(event: ChatInputCommandInteractionCreateEvent) {
-        val interaction = event.interaction
-        val commandName = interaction.command.rootName
-        val action = interaction.command.strings["action"] ?: ""
-        val playerName = interaction.command.strings["player"] ?: ""
-
-        when (commandName) {
-            "map" -> {
-                respond(interaction, "Open the Online Server Map", "Click the title above to open the map.")
+    private suspend fun Kord.registerCommands() {
+        createGuildChatInputCommand(guildId, "whitelist", "Manage the whitelist") {
+            string("action", "Add, remove, or list players on the whitelist") {
+                required = true
+                choice("add", "add")
+                choice("remove", "remove")
+                choice("list", "list")
             }
+            string("player", "The player name to whitelist") { required = false }
+            defaultMemberPermissions = Permissions(Permission.Administrator)
+        }
+        createGuildChatInputCommand(guildId, "blacklist", "Manage the blacklist") {
+            string("action", "Add or remove the player from the blacklist") {
+                required = true
+                choice("add", "add")
+                choice("remove", "remove")
+                choice("list", "list")
+            }
+            string("player", "The player name to blacklist") { required = false }
+            defaultMemberPermissions = Permissions(Permission.Administrator)
+        }
+        createGuildChatInputCommand(guildId, "map", "Open the online server map") {}
+    }
 
-            "whitelist" -> {
-                when (action) {
-                    "list" -> {
-                        val whitelisted =
-                            instance.server.whitelistedPlayers.joinToString(", ") { it.name ?: it.uniqueId.toString() }
-                        respond(
-                            interaction,
-                            "Whitelisted Players",
-                            whitelisted.ifEmpty { "No players are whitelisted." })
-                    }
+    /**
+     * Registers the event listeners for the Discord bot.
+     * This includes handling command interactions.
+     */
+    private fun Kord.registerEvents() {
+        on<ChatInputCommandInteractionCreateEvent> {
+            val action = interaction.command.strings["action"] ?: ""
+            val playerName = interaction.command.strings["player"] ?: ""
 
-                    "add" -> {
-                        if (playerName.isBlank()) {
-                            respond(interaction, "Invalid Input", "Please provide a valid player name.")
-                        } else {
-                            updateList("whitelist", "add", playerName)
-                            respond(interaction, "Whitelist Update", "Player `$playerName` has been whitelisted.")
-                        }
-                    }
+            when (interaction.command.rootName) {
+                "map" -> {
+                    respond(interaction, "Open the Online Server Map", "Click the title above to open the map.")
+                }
 
-                    "remove" -> {
-                        if (playerName.isBlank()) {
-                            respond(interaction, "Invalid Input", "Please provide a valid player name.")
-                        } else {
-                            updateList("whitelist", "remove", playerName)
+                "whitelist" -> {
+                    when (action) {
+                        "list" -> {
+                            val whitelisted =
+                                instance.server.whitelistedPlayers.joinToString(", ") {
+                                    it.name ?: it.uniqueId.toString()
+                                }
                             respond(
                                 interaction,
-                                "Whitelist Update",
-                                "Player `$playerName` has been removed from the whitelist."
-                            )
+                                "Whitelisted Players",
+                                whitelisted.ifEmpty { "No players are whitelisted." })
                         }
-                    }
 
-                    else -> {
-                        respond(interaction, "Unknown Command", "This command/action is not recognized.")
+                        "add" -> {
+                            if (playerName.isBlank()) {
+                                respond(interaction, "Invalid Input", "Please provide a valid player name.")
+                            } else {
+                                updateList("whitelist", "add", playerName)
+                                respond(interaction, "Whitelist Update", "Player `$playerName` has been whitelisted.")
+                            }
+                        }
+
+                        "remove" -> {
+                            if (playerName.isBlank()) {
+                                respond(interaction, "Invalid Input", "Please provide a valid player name.")
+                            } else {
+                                updateList("whitelist", "remove", playerName)
+                                respond(
+                                    interaction,
+                                    "Whitelist Update",
+                                    "Player `$playerName` has been removed from the whitelist."
+                                )
+                            }
+                        }
+
+                        else -> {
+                            respond(interaction, "Unknown Command", "This command/action is not recognized.")
+                        }
                     }
                 }
-            }
 
-            "blacklist" -> {
-                when (action) {
-                    "list" -> {
-                        val blacklisted =
-                            instance.server.bannedPlayers.joinToString(", ") { it.name ?: it.uniqueId.toString() }
-                        respond(
-                            interaction,
-                            "Blacklisted Players",
-                            blacklisted.ifEmpty { "No players are blacklisted." })
-                    }
-
-                    "add" -> {
-                        if (playerName.isBlank()) {
-                            respond(interaction, "Invalid Input", "Please provide a valid player name.")
-                        } else {
-                            updateList("blacklist", "add", playerName)
-                            respond(interaction, "Blacklist Update", "Player `$playerName` has been blacklisted.")
-                        }
-                    }
-
-                    "remove" -> {
-                        if (playerName.isBlank()) {
-                            respond(interaction, "Invalid Input", "Please provide a valid player name.")
-                        } else {
-                            updateList("blacklist", "remove", playerName)
+                "blacklist" -> {
+                    when (action) {
+                        "list" -> {
+                            val blacklisted =
+                                instance.server.bannedPlayers.joinToString(", ") { it.name ?: it.uniqueId.toString() }
                             respond(
                                 interaction,
-                                "Blacklist Update",
-                                "Player `$playerName` has been removed from the blacklist."
-                            )
+                                "Blacklisted Players",
+                                blacklisted.ifEmpty { "No players are blacklisted." })
+                        }
+
+                        "add" -> {
+                            if (playerName.isBlank()) {
+                                respond(interaction, "Invalid Input", "Please provide a valid player name.")
+                            } else {
+                                updateList("blacklist", "add", playerName)
+                                respond(interaction, "Blacklist Update", "Player `$playerName` has been blacklisted.")
+                            }
+                        }
+
+                        "remove" -> {
+                            if (playerName.isBlank()) {
+                                respond(interaction, "Invalid Input", "Please provide a valid player name.")
+                            } else {
+                                updateList("blacklist", "remove", playerName)
+                                respond(
+                                    interaction,
+                                    "Blacklist Update",
+                                    "Player `$playerName` has been removed from the blacklist."
+                                )
+                            }
+                        }
+
+                        else -> {
+                            respond(interaction, "Unknown Command", "This command/action is not recognized.")
                         }
                     }
-
-                    else -> {
-                        respond(interaction, "Unknown Command", "This command/action is not recognized.")
-                    }
                 }
-            }
 
-            else -> {
-                respond(interaction, "Unknown Command", "This command/action is not recognized.")
+                else -> {
+                    respond(interaction, "Unknown Command", "This command/action is not recognized.")
+                }
             }
         }
     }
