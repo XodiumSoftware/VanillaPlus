@@ -14,7 +14,10 @@ import dev.kord.core.behavior.channel.createMessage
 import dev.kord.core.behavior.interaction.respondEphemeral
 import dev.kord.core.entity.channel.TextChannel
 import dev.kord.core.event.interaction.ChatInputCommandInteractionCreateEvent
+import dev.kord.core.event.interaction.ComponentInteractionCreateEvent
 import dev.kord.core.on
+import dev.kord.rest.builder.component.ActionRowBuilder
+import dev.kord.rest.builder.component.option
 import dev.kord.rest.builder.interaction.string
 import dev.kord.rest.builder.message.EmbedBuilder
 import io.github.cdimascio.dotenv.dotenv
@@ -31,6 +34,7 @@ class DiscordModule : ModuleInterface {
 
     private val token = dotenv()["DISCORD_BOT_TOKEN"]
     private val guildId = Snowflake(691029695894126623)
+    private var channelIds: List<Snowflake> = listOf()
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val whitelist = instance.server.whitelistedPlayers.joinToString(", ") { it.name ?: it.uniqueId.toString() }
     private val blacklist = instance.server.bannedPlayers.joinToString(", ") { it.name ?: it.uniqueId.toString() }
@@ -86,6 +90,9 @@ class DiscordModule : ModuleInterface {
             defaultMemberPermissions = Permissions(Permission.Administrator)
         }
         createGuildChatInputCommand(guildId, "map", "Open the online server map") {}
+        createGuildChatInputCommand(guildId, "setup", "Setup the Discord bot") {
+            defaultMemberPermissions = Permissions(Permission.Administrator)
+        }
     }
 
     /**
@@ -93,12 +100,17 @@ class DiscordModule : ModuleInterface {
      * This includes handling command interactions.
      */
     private fun Kord.registerEvents() {
+        on<ComponentInteractionCreateEvent> {
+            if (interaction.componentId != "channel_select") return@on
+            channelIds = interaction.values.map { Snowflake(it) }
+        }
         on<ChatInputCommandInteractionCreateEvent> {
             val action = interaction.command.strings["action"] ?: ""
             val playerName = interaction.command.strings["player"] ?: ""
 
             when (interaction.command.rootName) {
                 "whitelist" -> {
+                    if (!isChannelAllowed(this)) return@on
                     when (action) {
                         "list" -> {
                             interaction.respondEphemeral {
@@ -154,6 +166,7 @@ class DiscordModule : ModuleInterface {
                 }
 
                 "blacklist" -> {
+                    if (!isChannelAllowed(this)) return@on
                     when (action) {
                         "list" -> {
                             interaction.respondEphemeral {
@@ -209,6 +222,7 @@ class DiscordModule : ModuleInterface {
                 }
 
                 "map" -> {
+                    if (!isChannelAllowed(this)) return@on
                     interaction.respondEphemeral {
                         embeds = mutableListOf(
                             embed(
@@ -219,8 +233,42 @@ class DiscordModule : ModuleInterface {
                         )
                     }
                 }
+
+                "setup" -> {
+                    interaction.respondEphemeral {
+                        embeds = mutableListOf(embed("Setup", "Select allowed channels for bot commands:"))
+                        components = mutableListOf(
+                            ActionRowBuilder().apply {
+                                stringSelect("channel_select") {
+                                    placeholder = "Choose allowed channels"
+                                    channelIds.forEach { option("Channel: $it", it.toString()) }
+                                }
+                            }
+                        )
+                    }
+                }
+
+                else -> {
+                    interaction.respondEphemeral { content = "Unknown command: ${interaction.command.rootName}" }
+                }
             }
         }
+    }
+
+    /**
+     * Checks if the interaction is in an allowed channel.
+     * If not, responds with an ephemeral message indicating the command can only be used in designated channels.
+     * @param event The interaction event to check.
+     * @return True if the channel is allowed, false otherwise.
+     */
+    private suspend fun isChannelAllowed(event: ChatInputCommandInteractionCreateEvent): Boolean {
+        if (event.interaction.channelId != channelIds) {
+            event.interaction.respondEphemeral {
+                content = "This command can only be used in the designated channel(s)."
+            }
+            return false
+        }
+        return true
     }
 
     /**
