@@ -6,9 +6,12 @@
 package org.xodium.vanillaplus.modules
 
 import dev.kord.common.Color
+import dev.kord.common.entity.ChannelType
 import dev.kord.common.entity.Permission
 import dev.kord.common.entity.Permissions
 import dev.kord.common.entity.Snowflake
+import dev.kord.common.entity.optional.map
+import dev.kord.common.entity.optional.orEmpty
 import dev.kord.core.Kord
 import dev.kord.core.behavior.channel.createMessage
 import dev.kord.core.behavior.interaction.respondEphemeral
@@ -17,7 +20,6 @@ import dev.kord.core.event.interaction.ChatInputCommandInteractionCreateEvent
 import dev.kord.core.event.interaction.ComponentInteractionCreateEvent
 import dev.kord.core.on
 import dev.kord.rest.builder.component.ActionRowBuilder
-import dev.kord.rest.builder.component.option
 import dev.kord.rest.builder.interaction.string
 import dev.kord.rest.builder.message.EmbedBuilder
 import io.github.cdimascio.dotenv.dotenv
@@ -34,7 +36,7 @@ class DiscordModule : ModuleInterface {
 
     private val token = dotenv()["DISCORD_BOT_TOKEN"]
     private val guildId = Snowflake(691029695894126623)
-    private var channelIds: List<Snowflake> = listOf()
+    private var channelIds: List<Snowflake> = emptyList()
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val whitelist = instance.server.whitelistedPlayers.joinToString(", ") { it.name ?: it.uniqueId.toString() }
     private val blacklist = instance.server.bannedPlayers.joinToString(", ") { it.name ?: it.uniqueId.toString() }
@@ -102,7 +104,7 @@ class DiscordModule : ModuleInterface {
     private fun Kord.registerEvents() {
         on<ComponentInteractionCreateEvent> {
             if (interaction.componentId != "channel_select") return@on
-            channelIds = interaction.values.map { Snowflake(it) }
+            channelIds = interaction.data.data.values.map { it.map(::Snowflake) }.orEmpty()
         }
         on<ChatInputCommandInteractionCreateEvent> {
             val action = interaction.command.strings["action"] ?: ""
@@ -127,7 +129,7 @@ class DiscordModule : ModuleInterface {
                             if (playerName.isBlank()) {
                                 interaction.respondEphemeral {
                                     embeds = mutableListOf(
-                                        embed("Invalid Input", "Please provide a valid player name.")
+                                        embed("Invalid Input", "Please provide a valid player name.", color = 0xFF0000)
                                     )
                                 }
                             } else {
@@ -147,7 +149,7 @@ class DiscordModule : ModuleInterface {
                             if (playerName.isBlank()) {
                                 interaction.respondEphemeral {
                                     embeds = mutableListOf(
-                                        embed("Invalid Input", "Please provide a valid player name.")
+                                        embed("Invalid Input", "Please provide a valid player name.", color = 0xFF0000)
                                     )
                                 }
                             } else {
@@ -183,7 +185,7 @@ class DiscordModule : ModuleInterface {
                             if (playerName.isBlank()) {
                                 interaction.respondEphemeral {
                                     embeds = mutableListOf(
-                                        embed("Invalid Input", "Please provide a valid player name.")
+                                        embed("Invalid Input", "Please provide a valid player name.", color = 0xFF0000)
                                     )
                                 }
                             } else {
@@ -203,7 +205,7 @@ class DiscordModule : ModuleInterface {
                             if (playerName.isBlank()) {
                                 interaction.respondEphemeral {
                                     embeds = mutableListOf(
-                                        embed("Invalid Input", "Please provide a valid player name.")
+                                        embed("Invalid Input", "Please provide a valid player name.", color = 0xFF0000)
                                     )
                                 }
                             } else {
@@ -226,7 +228,7 @@ class DiscordModule : ModuleInterface {
                     interaction.respondEphemeral {
                         embeds = mutableListOf(
                             embed(
-                                "Open the Online Server Map",
+                                "\uD83D\uDDFA\uFE0F Server Web Map",
                                 "Click the title above to open the map.",
                                 "https://illyria.xodium.org/"
                             )
@@ -236,21 +238,20 @@ class DiscordModule : ModuleInterface {
 
                 "setup" -> {
                     interaction.respondEphemeral {
-                        embeds = mutableListOf(embed("Setup", "Select allowed channels for bot commands:"))
+                        embeds = mutableListOf(embed("⚙\uFE0F Setup", "Select allowed channels for bot commands:"))
                         components = mutableListOf(
                             ActionRowBuilder().apply {
-                                stringSelect("channel_select") {
+                                channelSelect("channel_select") {
+                                    allowedValues = 1..25
                                     placeholder = "Choose allowed channels"
-                                    channelIds.forEach { option("Channel: $it", it.toString()) }
+                                    channelTypes = mutableListOf(ChannelType.GuildText)
                                 }
                             }
                         )
                     }
                 }
 
-                else -> {
-                    interaction.respondEphemeral { content = "Unknown command: ${interaction.command.rootName}" }
-                }
+                else -> {}
             }
         }
     }
@@ -262,7 +263,7 @@ class DiscordModule : ModuleInterface {
      * @return True if the channel is allowed, false otherwise.
      */
     private suspend fun isChannelAllowed(event: ChatInputCommandInteractionCreateEvent): Boolean {
-        if (event.interaction.channelId != channelIds) {
+        if (channelIds.isNotEmpty() && event.interaction.channelId !in channelIds) {
             event.interaction.respondEphemeral {
                 content = "This command can only be used in the designated channel(s)."
             }
@@ -295,8 +296,8 @@ class DiscordModule : ModuleInterface {
      * Creates an embed builder with the specified title, description, and color.
      * @param title The title of the embed.
      * @param description The description of the embed.
-     * @param color The color of the embed in hexadecimal format.
      * @param url An optional URL for the embed.
+     * @param color The color of the embed in hexadecimal format.
      * @return An EmbedBuilder instance with the specified properties.
      */
     private fun embed(
@@ -317,6 +318,7 @@ class DiscordModule : ModuleInterface {
      * Sends an embed message in response to an interaction.
      * @param title The title of the embed.
      * @param description The description of the embed.
+     * @param url An optional URL for the embed.
      * @param color The color of the embed in hexadecimal format.
      */
     suspend fun sendEventEmbed(
