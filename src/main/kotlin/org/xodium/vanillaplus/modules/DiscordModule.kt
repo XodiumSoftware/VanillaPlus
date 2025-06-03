@@ -282,9 +282,28 @@ class DiscordModule : ModuleInterface {
      * @return True if the channel is allowed, false otherwise.
      */
     private suspend fun isChannelAllowed(event: ChatInputCommandInteractionCreateEvent): Boolean {
-        if (channelIds.isNotEmpty() && event.interaction.channelId !in channelIds) {
+        if (channelIds.isEmpty()) {
             event.interaction.respondEphemeral {
-                content = "This command can only be used in the designated channel(s)."
+                embeds = mutableListOf(
+                    embed(
+                        title = "❌ Channel Restriction",
+                        description = "No allowed channels are configured. Please use the setup command to select allowed channels.",
+                        color = 0xFFA500
+                    )
+                )
+            }
+            return false
+        }
+        if (event.interaction.channelId !in channelIds) {
+            val allowedMentions = channelIds.joinToString(", ") { "<#${it.value}>" }
+            event.interaction.respondEphemeral {
+                embeds = mutableListOf(
+                    embed(
+                        title = "❌ Channel Restriction",
+                        description = "This command can only be used in the designated channel(s): $allowedMentions",
+                        color = 0xFF0000
+                    )
+                )
             }
             return false
         }
