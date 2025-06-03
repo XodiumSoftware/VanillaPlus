@@ -27,6 +27,7 @@ import io.papermc.paper.ban.BanListType
 import kotlinx.coroutines.*
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.data.DiscordData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import java.time.Instant
 import java.util.*
@@ -34,6 +35,7 @@ import java.util.*
 class DiscordModule : ModuleInterface {
     override fun enabled(): Boolean = Config.DiscordModule.ENABLED
 
+    private val configId: UUID = UUID.nameUUIDFromBytes("discord-config".toByteArray())
     private val token = dotenv()["DISCORD_BOT_TOKEN"]
     private val guildId = Snowflake(691029695894126623)
     private var channelIds: List<Snowflake> = emptyList()
@@ -44,7 +46,13 @@ class DiscordModule : ModuleInterface {
     private var kord: Kord? = null
 
     init {
-        if (token.isNullOrBlank()) instance.logger.warning("Warning: Discord bot token is not set!") else bot(token)
+        if (token.isNullOrBlank()) {
+            instance.logger.warning("Warning: Discord bot token is not set!")
+        } else {
+            DiscordData.createTable()
+            DiscordData.getData().firstOrNull { it.id == configId }?.let { channelIds = it.allowedChannels }
+            bot(token)
+        }
     }
 
     /**
@@ -104,7 +112,9 @@ class DiscordModule : ModuleInterface {
     private fun Kord.registerEvents() {
         on<ComponentInteractionCreateEvent> {
             if (interaction.componentId != "channel_select") return@on
-            channelIds = interaction.data.data.values.map { it.map(::Snowflake) }.orEmpty()
+            val newAllowedChannels = interaction.data.data.values.map { it.map(::Snowflake) }.orEmpty()
+            channelIds = newAllowedChannels
+            DiscordData.setData(DiscordData(id = configId, allowedChannels = channelIds))
         }
         on<ChatInputCommandInteractionCreateEvent> {
             val action = interaction.command.strings["action"] ?: ""
