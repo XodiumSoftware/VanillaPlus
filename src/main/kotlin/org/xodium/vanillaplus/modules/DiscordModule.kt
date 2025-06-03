@@ -79,10 +79,7 @@ class DiscordModule : ModuleInterface {
         }
     }
 
-    /**
-     * Registers the Discord commands for the bot.
-     * This includes commands for managing the whitelist, blacklist, and opening the online server map.
-     */
+    /** Registers the Discord commands for the bot. */
     private suspend fun Kord.registerCommands() {
         createGuildChatInputCommand(guildId, "whitelist", "Manage the whitelist") {
             string("action", "Add, remove, or list players on the whitelist") {
@@ -104,7 +101,6 @@ class DiscordModule : ModuleInterface {
             string("player", "The player name to blacklist") { required = false }
             defaultMemberPermissions = Permissions(Permission.Administrator)
         }
-        createGuildChatInputCommand(guildId, "map", "Open the online server map") {}
         createGuildChatInputCommand(guildId, "setup", "Setup the Discord bot") {
             subCommand("channels", "Configure allowed channels") {}
             subCommand("roles", "Configure allowed roles") {}
@@ -112,10 +108,7 @@ class DiscordModule : ModuleInterface {
         }
     }
 
-    /**
-     * Registers the event listeners for the Discord bot.
-     * This includes handling command interactions.
-     */
+    /** Registers the event listeners for the Discord bot. */
     private fun Kord.registerEvents() {
         on<ComponentInteractionCreateEvent> {
             when (interaction.componentId) {
@@ -261,19 +254,6 @@ class DiscordModule : ModuleInterface {
                                 }
                             }
                         }
-                    }
-                }
-
-                "map" -> {
-                    if (!isChannelAllowed(this)) return@on
-                    interaction.respondEphemeral {
-                        embeds = mutableListOf(
-                            embed(
-                                "\uD83D\uDDFA\uFE0F Server Web Map",
-                                "Click the title above to open the map.",
-                                "https://illyria.xodium.org/"
-                            )
-                        )
                     }
                 }
 
