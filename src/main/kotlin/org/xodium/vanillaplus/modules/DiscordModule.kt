@@ -35,10 +35,10 @@ import java.util.*
 class DiscordModule : ModuleInterface {
     override fun enabled(): Boolean = Config.DiscordModule.ENABLED
 
-    private val configId: UUID = UUID.nameUUIDFromBytes("discord-config".toByteArray())
-    private val token = dotenv()["DISCORD_BOT_TOKEN"]
     private val guildId = Snowflake(691029695894126623)
-    private var channelIds: List<Snowflake> = emptyList()
+    private val configId = UUID.nameUUIDFromBytes(guildId.value.toString().toByteArray())
+    private val token = dotenv()["DISCORD_BOT_TOKEN"]
+    private var channelIds = emptyList<Snowflake>()
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val whitelist = instance.server.whitelistedPlayers.joinToString(", ") { it.name ?: it.uniqueId.toString() }
     private val blacklist = instance.server.bannedPlayers.joinToString(", ") { it.name ?: it.uniqueId.toString() }
@@ -115,6 +115,14 @@ class DiscordModule : ModuleInterface {
             val newAllowedChannels = interaction.data.data.values.map { it.map(::Snowflake) }.orEmpty()
             channelIds = newAllowedChannels
             DiscordData.setData(DiscordData(id = configId, allowedChannels = channelIds))
+            interaction.respondEphemeral {
+                embeds = mutableListOf(
+                    embed(
+                        "⚙\uFE0F Setup | Allowed Channels",
+                        "Allowed channels updated successfully."
+                    )
+                )
+            }
         }
         on<ChatInputCommandInteractionCreateEvent> {
             val action = interaction.command.strings["action"] ?: ""
@@ -252,9 +260,10 @@ class DiscordModule : ModuleInterface {
                         components = mutableListOf(
                             ActionRowBuilder().apply {
                                 channelSelect("channel_select") {
-                                    allowedValues = 1..25
                                     placeholder = "Choose allowed channels"
                                     channelTypes = mutableListOf(ChannelType.GuildText)
+                                    allowedValues = 1..25
+                                    defaultChannels.addAll(channelIds)
                                 }
                             }
                         )
