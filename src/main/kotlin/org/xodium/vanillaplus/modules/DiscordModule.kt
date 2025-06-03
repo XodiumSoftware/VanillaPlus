@@ -287,7 +287,7 @@ class DiscordModule : ModuleInterface {
                 embeds = mutableListOf(
                     embed(
                         title = "❌ Channel Restriction",
-                        description = "No allowed channels are configured. Please use the setup command to select allowed channels.",
+                        description = "No allowed channels are configured. Please use the `/setup` command to select allowed channels.",
                         color = 0xFFA500
                     )
                 )
@@ -300,7 +300,7 @@ class DiscordModule : ModuleInterface {
                 embeds = mutableListOf(
                     embed(
                         title = "❌ Channel Restriction",
-                        description = "This command can only be used in the designated channel(s): $allowedMentions",
+                        description = "This command can only be executed in the designated channel(s): \n$allowedMentions",
                         color = 0xFF0000
                     )
                 )
