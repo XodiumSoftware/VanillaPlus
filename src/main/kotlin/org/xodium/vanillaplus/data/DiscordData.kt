@@ -17,27 +17,32 @@ import java.util.*
 
 object DiscordDataSchema : UUIDTable(DiscordData::class.simpleName.toString()) {
     val allowedChannels: Column<String> = text("allowed_channels")
+    val allowedRoles: Column<String> = text("allowed_roles")
 }
 
 class DiscordDataEntity(id: EntityID<UUID>) : Entity<UUID>(id) {
     companion object : EntityClass<UUID, DiscordDataEntity>(DiscordDataSchema)
 
     var allowedChannels: String by DiscordDataSchema.allowedChannels
+    var allowedRoles: String by DiscordDataSchema.allowedRoles
 
     fun toData(): DiscordData = DiscordData(
         id.value,
-        allowedChannels.split(",").filter { it.isNotBlank() }.map { Snowflake(it) }
+        allowedChannels.takeIf { it.isNotBlank() }?.split(",")?.filter { it.isNotBlank() }?.map { Snowflake(it) },
+        allowedRoles.takeIf { it.isNotBlank() }?.split(",")?.filter { it.isNotBlank() }?.map { Snowflake(it) }
     )
 }
 
 /**
  * Data class representing Discord-related configuration.
  * @property id A unique identifier for the [DiscordData], represented as a [UUID].
- * @property allowedChannels A list of [Snowflake] IDs representing channels that are allowed for some operation.
+ * @property allowedChannels A list of [Snowflake] IDs representing channels where the bot is allowed to operate.
+ * @property allowedRoles A list of [Snowflake] IDs representing roles that are allowed to interact with the bot.
  */
 data class DiscordData(
     val id: UUID,
-    val allowedChannels: List<Snowflake>
+    val allowedChannels: List<Snowflake>? = null,
+    val allowedRoles: List<Snowflake>? = null
 ) {
     companion object {
         /** Creates a table in the database for the provided class type if it does not already exist. */
@@ -50,9 +55,11 @@ data class DiscordData(
          */
         fun setData(data: DiscordData): DiscordDataEntity = transaction {
             DiscordDataEntity.findById(data.id)?.apply {
-                allowedChannels = data.allowedChannels.joinToString(",") { it.value.toString() }
+                allowedChannels = data.allowedChannels?.joinToString(",") { it.value.toString() } ?: ""
+                allowedRoles = data.allowedRoles?.joinToString(",") { it.value.toString() } ?: ""
             } ?: DiscordDataEntity.new(data.id) {
-                allowedChannels = data.allowedChannels.joinToString(",") { it.value.toString() }
+                allowedChannels = data.allowedChannels?.joinToString(",") { it.value.toString() } ?: ""
+                allowedRoles = data.allowedRoles?.joinToString(",") { it.value.toString() } ?: ""
             }
         }
 

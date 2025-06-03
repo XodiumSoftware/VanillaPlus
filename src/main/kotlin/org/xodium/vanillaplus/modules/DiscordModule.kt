@@ -21,6 +21,7 @@ import dev.kord.core.event.interaction.ComponentInteractionCreateEvent
 import dev.kord.core.on
 import dev.kord.rest.builder.component.ActionRowBuilder
 import dev.kord.rest.builder.interaction.string
+import dev.kord.rest.builder.interaction.subCommand
 import dev.kord.rest.builder.message.EmbedBuilder
 import io.github.cdimascio.dotenv.dotenv
 import io.papermc.paper.ban.BanListType
@@ -38,19 +39,23 @@ class DiscordModule : ModuleInterface {
     private val guildId = Snowflake(691029695894126623)
     private val configId = UUID.nameUUIDFromBytes(guildId.value.toString().toByteArray())
     private val token = dotenv()["DISCORD_BOT_TOKEN"]
-    private var channelIds = emptyList<Snowflake>()
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val whitelist = instance.server.whitelistedPlayers.joinToString(", ") { it.name ?: it.uniqueId.toString() }
     private val blacklist = instance.server.bannedPlayers.joinToString(", ") { it.name ?: it.uniqueId.toString() }
 
     private var kord: Kord? = null
+    private var channelIds: List<Snowflake>? = emptyList()
+    private var roleIds: List<Snowflake>? = emptyList()
 
     init {
         if (token.isNullOrBlank()) {
             instance.logger.warning("Warning: Discord bot token is not set!")
         } else {
             DiscordData.createTable()
-            DiscordData.getData().firstOrNull { it.id == configId }?.let { channelIds = it.allowedChannels }
+            DiscordData.getData().firstOrNull { it.id == configId }?.let {
+                channelIds = it.allowedChannels
+                roleIds = it.allowedRoles
+            }
             bot(token)
         }
     }
@@ -101,6 +106,8 @@ class DiscordModule : ModuleInterface {
         }
         createGuildChatInputCommand(guildId, "map", "Open the online server map") {}
         createGuildChatInputCommand(guildId, "setup", "Setup the Discord bot") {
+            subCommand("channels", "Configure allowed channels") {}
+            subCommand("roles", "Configure allowed roles") {}
             defaultMemberPermissions = Permissions(Permission.Administrator)
         }
     }
@@ -111,24 +118,40 @@ class DiscordModule : ModuleInterface {
      */
     private fun Kord.registerEvents() {
         on<ComponentInteractionCreateEvent> {
-            if (interaction.componentId != "channel_select") return@on
-            val newAllowedChannels = interaction.data.data.values.map { it.map(::Snowflake) }.orEmpty()
-            channelIds = newAllowedChannels
-            DiscordData.setData(DiscordData(id = configId, allowedChannels = channelIds))
-            interaction.respondEphemeral {
-                embeds = mutableListOf(
-                    embed(
-                        "⚙\uFE0F Setup | Allowed Channels",
-                        "Allowed channels updated successfully."
-                    )
-                )
+            when (interaction.componentId) {
+                "channel_select" -> {
+                    channelIds = interaction.data.data.values.map { it.map(::Snowflake) }.orEmpty()
+                    DiscordData.setData(DiscordData(id = configId, allowedChannels = channelIds))
+                    interaction.respondEphemeral {
+                        embeds = mutableListOf(
+                            embed(
+                                "⚙\uFE0F Setup | Allowed Channels",
+                                "Allowed channels updated successfully."
+                            )
+                        )
+                    }
+                }
+
+                "role_select" -> {
+                    roleIds = interaction.data.data.values.map { it.map(::Snowflake) }.orEmpty()
+                    DiscordData.setData(DiscordData(id = configId, allowedRoles = roleIds))
+                    interaction.respondEphemeral {
+                        embeds = mutableListOf(
+                            embed(
+                                "⚙\uFE0F Setup | Allowed Roles",
+                                "Allowed roles updated successfully."
+                            )
+                        )
+                    }
+                }
             }
         }
         on<ChatInputCommandInteractionCreateEvent> {
+            val cmd = interaction.command.rootName
             val action = interaction.command.strings["action"] ?: ""
             val playerName = interaction.command.strings["player"] ?: ""
 
-            when (interaction.command.rootName) {
+            when (cmd) {
                 "whitelist" -> {
                     if (!isChannelAllowed(this)) return@on
                     when (action) {
@@ -255,22 +278,39 @@ class DiscordModule : ModuleInterface {
                 }
 
                 "setup" -> {
-                    interaction.respondEphemeral {
-                        embeds = mutableListOf(embed("⚙\uFE0F Setup", "Select allowed channels for bot commands:"))
-                        components = mutableListOf(
-                            ActionRowBuilder().apply {
-                                channelSelect("channel_select") {
-                                    placeholder = "Choose allowed channels"
-                                    channelTypes = mutableListOf(ChannelType.GuildText)
-                                    allowedValues = 1..25
-                                    defaultChannels.addAll(channelIds)
-                                }
+                    when (interaction.command.options.values.firstOrNull()?.value) {
+                        "channels" -> {
+                            interaction.respondEphemeral {
+                                embeds = mutableListOf(embed("⚙\uFE0F Setup", "Select the allowed channels:"))
+                                components = mutableListOf(
+                                    ActionRowBuilder().apply {
+                                        channelSelect("channel_select") {
+                                            placeholder = "Choose allowed channels"
+                                            channelTypes = mutableListOf(ChannelType.GuildText)
+                                            allowedValues = 1..25
+                                            channelIds?.let { defaultChannels.addAll(it) }
+                                        }
+                                    }
+                                )
                             }
-                        )
+                        }
+
+                        "roles" -> {
+                            interaction.respondEphemeral {
+                                embeds = mutableListOf(embed("⚙\uFE0F Setup", "Select the allowed roles:"))
+                                components = mutableListOf(
+                                    ActionRowBuilder().apply {
+                                        roleSelect("role_select") {
+                                            placeholder = "Choose allowed roles"
+                                            allowedValues = 1..25
+                                            roleIds?.let { defaultRoles.addAll(it) }
+                                        }
+                                    }
+                                )
+                            }
+                        }
                     }
                 }
-
-                else -> {}
             }
         }
     }
@@ -282,30 +322,73 @@ class DiscordModule : ModuleInterface {
      * @return True if the channel is allowed, false otherwise.
      */
     private suspend fun isChannelAllowed(event: ChatInputCommandInteractionCreateEvent): Boolean {
-        if (channelIds.isEmpty()) {
-            event.interaction.respondEphemeral {
-                embeds = mutableListOf(
-                    embed(
-                        title = "❌ Channel Restriction",
-                        description = "No allowed channels are configured. Please use the `/setup` command to select allowed channels.",
-                        color = 0xFFA500
+        channelIds?.let {
+            if (it.isEmpty()) {
+                event.interaction.respondEphemeral {
+                    embeds = mutableListOf(
+                        embed(
+                            title = "❌ Channel Restriction",
+                            description = "No allowed channels are configured. Please use the `/setup` command to select allowed channels.",
+                            color = 0xFFA500
+                        )
                     )
-                )
+                }
+                return false
             }
-            return false
         }
-        if (event.interaction.channelId !in channelIds) {
-            val allowedMentions = channelIds.joinToString(", ") { "<#${it.value}>" }
-            event.interaction.respondEphemeral {
-                embeds = mutableListOf(
-                    embed(
-                        title = "❌ Channel Restriction",
-                        description = "This command can only be executed in the designated channel(s): \n$allowedMentions",
-                        color = 0xFF0000
+        channelIds?.let { ids ->
+            if (event.interaction.channelId !in ids) {
+                val allowedMentions = channelIds?.joinToString(", ") { "<#${it.value}>" }
+                event.interaction.respondEphemeral {
+                    embeds = mutableListOf(
+                        embed(
+                            title = "❌ Channel Restriction",
+                            description = "This command can only be executed in the designated channel(s): \n$allowedMentions",
+                            color = 0xFF0000
+                        )
                     )
-                )
+                }
+                return false
             }
-            return false
+        }
+        return true
+    }
+
+    /**
+     * Checks if the user has the required role to execute the command.
+     * If not, responds with an ephemeral message indicating the command can only be used by members with specific roles.
+     * @param event The interaction event to check.
+     * @return True if the user has the required role, false otherwise.
+     */
+    private suspend fun isRoleAllowed(event: ChatInputCommandInteractionCreateEvent): Boolean {
+        roleIds?.let {
+            if (it.isEmpty()) {
+                event.interaction.respondEphemeral {
+                    embeds = mutableListOf(
+                        embed(
+                            title = "❌ Role Restriction",
+                            description = "No allowed roles are configured. Please use the `/setup` command to select allowed roles.",
+                            color = 0xFFA500
+                        )
+                    )
+                }
+                return false
+            }
+        }
+        roleIds?.let { ids ->
+            if (event.interaction.user.id !in ids) {
+                val allowedMentions = roleIds?.joinToString(", ") { "<@&${it.value}>" }
+                event.interaction.respondEphemeral {
+                    embeds = mutableListOf(
+                        embed(
+                            title = "❌ Role Restriction",
+                            description = "This command can only be executed by members with the following role(s): \n$allowedMentions",
+                            color = 0xFF0000
+                        )
+                    )
+                }
+                return false
+            }
         }
         return true
     }
