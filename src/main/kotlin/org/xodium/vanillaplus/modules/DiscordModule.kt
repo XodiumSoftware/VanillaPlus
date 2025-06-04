@@ -10,20 +10,19 @@ import dev.kord.common.entity.ChannelType
 import dev.kord.common.entity.Permission
 import dev.kord.common.entity.Permissions
 import dev.kord.common.entity.Snowflake
+import dev.kord.common.entity.optional.firstOrNull
 import dev.kord.common.entity.optional.map
 import dev.kord.common.entity.optional.orEmpty
 import dev.kord.core.Kord
 import dev.kord.core.behavior.channel.createMessage
 import dev.kord.core.behavior.interaction.respondEphemeral
 import dev.kord.core.entity.channel.TextChannel
-import dev.kord.core.entity.interaction.GroupCommand
-import dev.kord.core.entity.interaction.SubCommand
 import dev.kord.core.event.interaction.ChatInputCommandInteractionCreateEvent
 import dev.kord.core.event.interaction.ComponentInteractionCreateEvent
 import dev.kord.core.on
 import dev.kord.rest.builder.component.ActionRowBuilder
+import dev.kord.rest.builder.component.option
 import dev.kord.rest.builder.interaction.string
-import dev.kord.rest.builder.interaction.subCommand
 import dev.kord.rest.builder.message.EmbedBuilder
 import io.github.cdimascio.dotenv.dotenv
 import io.papermc.paper.ban.BanListType
@@ -104,8 +103,6 @@ class DiscordModule : ModuleInterface {
             defaultMemberPermissions = Permissions(Permission.Administrator)
         }
         createGuildChatInputCommand(guildId, "setup", "Setup the Discord bot") {
-            subCommand("channels", "Configure allowed channels") {}
-            subCommand("roles", "Configure allowed roles") {}
             defaultMemberPermissions = Permissions(Permission.Administrator)
         }
     }
@@ -140,6 +137,52 @@ class DiscordModule : ModuleInterface {
                             )
                         }
                     }
+
+                    "setup_select" -> {
+                        val selectedValue = interaction.data.data.values.firstOrNull { it.isNotEmpty() }
+                        when (selectedValue) {
+                            "channels" -> {
+                                interaction.respondEphemeral {
+                                    embeds = mutableListOf(
+                                        embed(
+                                            "⚙\uFE0F Setup | Allowed Channels",
+                                            "Select the allowed channels:"
+                                        )
+                                    )
+                                    components = mutableListOf(
+                                        ActionRowBuilder().apply {
+                                            channelSelect("channel_select") {
+                                                placeholder = "Choose allowed channels"
+                                                channelTypes = mutableListOf(ChannelType.GuildText)
+                                                allowedValues = 1..25
+                                                channelIds?.let { defaultChannels.addAll(it) }
+                                            }
+                                        }
+                                    )
+                                }
+                            }
+
+                            "roles" -> {
+                                interaction.respondEphemeral {
+                                    embeds = mutableListOf(
+                                        embed(
+                                            "⚙\uFE0F Setup | Allowed Roles",
+                                            "Select the allowed roles:"
+                                        )
+                                    )
+                                    components = mutableListOf(
+                                        ActionRowBuilder().apply {
+                                            roleSelect("role_select") {
+                                                placeholder = "Choose allowed roles"
+                                                allowedValues = 1..25
+                                                roleIds?.let { defaultRoles.addAll(it) }
+                                            }
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
             } catch (e: Exception) {
                 instance.logger.severe("Discord interaction error: ${e.message}\n${e.stackTraceToString()}")
@@ -157,12 +200,6 @@ class DiscordModule : ModuleInterface {
         on<ChatInputCommandInteractionCreateEvent> {
             try {
                 val cmd = interaction.command.rootName
-                val subcmd = when (interaction.command) {
-                    is SubCommand -> (interaction.command as SubCommand).name
-                    is GroupCommand -> (interaction.command as GroupCommand).name
-                    else -> null
-                }
-                instance.logger.info("DEBUG | cmd: $cmd, subcmd: $subcmd")
                 val action = interaction.command.strings["action"] ?: ""
                 val playerName = interaction.command.strings["player"] ?: ""
 
@@ -296,37 +333,17 @@ class DiscordModule : ModuleInterface {
                     }
 
                     "setup" -> {
-                        when (subcmd) {
-                            "channels" -> {
-                                interaction.respondEphemeral {
-                                    embeds = mutableListOf(embed("⚙\uFE0F Setup", "Select the allowed channels:"))
-                                    components = mutableListOf(
-                                        ActionRowBuilder().apply {
-                                            channelSelect("channel_select") {
-                                                placeholder = "Choose allowed channels"
-                                                channelTypes = mutableListOf(ChannelType.GuildText)
-                                                allowedValues = 1..25
-                                                channelIds?.let { defaultChannels.addAll(it) }
-                                            }
-                                        }
-                                    )
+                        interaction.respondEphemeral {
+                            embeds = mutableListOf(embed("⚙\uFE0F Setup", "Configure channels or roles:"))
+                            components = mutableListOf(
+                                ActionRowBuilder().apply {
+                                    stringSelect("setup_select") {
+                                        placeholder = "Choose what to setup"
+                                        option("Channels", "channels")
+                                        option("Roles", "roles")
+                                    }
                                 }
-                            }
-
-                            "roles" -> {
-                                interaction.respondEphemeral {
-                                    embeds = mutableListOf(embed("⚙\uFE0F Setup", "Select the allowed roles:"))
-                                    components = mutableListOf(
-                                        ActionRowBuilder().apply {
-                                            roleSelect("role_select") {
-                                                placeholder = "Choose allowed roles"
-                                                allowedValues = 1..25
-                                                roleIds?.let { defaultRoles.addAll(it) }
-                                            }
-                                        }
-                                    )
-                                }
-                            }
+                            )
                         }
                     }
                 }
