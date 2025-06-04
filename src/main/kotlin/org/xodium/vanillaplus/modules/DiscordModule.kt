@@ -461,6 +461,7 @@ class DiscordModule : ModuleInterface {
      * @param event The interaction event to log.
      */
     private fun logInteraction(event: InteractionCreateEvent) {
+        //TODO: redo.
         val user = event.interaction.user
         val userId = user.id.value
         val username = user.username
