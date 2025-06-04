@@ -55,8 +55,8 @@ data class DiscordData(
          */
         fun setData(data: DiscordData): DiscordDataEntity = transaction {
             DiscordDataEntity.findById(data.id)?.apply {
-                allowedChannels = data.allowedChannels?.joinToString(",") { it.value.toString() } ?: ""
-                allowedRoles = data.allowedRoles?.joinToString(",") { it.value.toString() } ?: ""
+                data.allowedChannels?.let { new -> allowedChannels = new.joinToString(",") { it.value.toString() } }
+                data.allowedRoles?.let { new -> allowedRoles = new.joinToString(",") { it.value.toString() } }
             } ?: DiscordDataEntity.new(data.id) {
                 allowedChannels = data.allowedChannels?.joinToString(",") { it.value.toString() } ?: ""
                 allowedRoles = data.allowedRoles?.joinToString(",") { it.value.toString() } ?: ""

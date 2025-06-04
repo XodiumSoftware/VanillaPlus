@@ -16,6 +16,8 @@ import dev.kord.core.Kord
 import dev.kord.core.behavior.channel.createMessage
 import dev.kord.core.behavior.interaction.respondEphemeral
 import dev.kord.core.entity.channel.TextChannel
+import dev.kord.core.entity.interaction.GroupCommand
+import dev.kord.core.entity.interaction.SubCommand
 import dev.kord.core.event.interaction.ChatInputCommandInteractionCreateEvent
 import dev.kord.core.event.interaction.ComponentInteractionCreateEvent
 import dev.kord.core.on
@@ -111,185 +113,233 @@ class DiscordModule : ModuleInterface {
     /** Registers the event listeners for the Discord bot. */
     private fun Kord.registerEvents() {
         on<ComponentInteractionCreateEvent> {
-            when (interaction.componentId) {
-                "channel_select" -> {
-                    channelIds = interaction.data.data.values.map { it.map(::Snowflake) }.orEmpty()
-                    DiscordData.setData(DiscordData(id = configId, allowedChannels = channelIds))
-                    interaction.respondEphemeral {
-                        embeds = mutableListOf(
-                            embed(
-                                "⚙\uFE0F Setup | Allowed Channels",
-                                "Allowed channels updated successfully."
+            try {
+                when (interaction.componentId) {
+                    "channel_select" -> {
+                        channelIds = interaction.data.data.values.map { it.map(::Snowflake) }.orEmpty()
+                        DiscordData.setData(DiscordData(id = configId, allowedChannels = channelIds))
+                        interaction.respondEphemeral {
+                            embeds = mutableListOf(
+                                embed(
+                                    "⚙\uFE0F Setup | Allowed Channels",
+                                    "Allowed channels updated successfully."
+                                )
                             )
-                        )
+                        }
+                    }
+
+                    "role_select" -> {
+                        roleIds = interaction.data.data.values.map { it.map(::Snowflake) }.orEmpty()
+                        DiscordData.setData(DiscordData(id = configId, allowedRoles = roleIds))
+                        interaction.respondEphemeral {
+                            embeds = mutableListOf(
+                                embed(
+                                    "⚙\uFE0F Setup | Allowed Roles",
+                                    "Allowed roles updated successfully."
+                                )
+                            )
+                        }
                     }
                 }
-
-                "role_select" -> {
-                    roleIds = interaction.data.data.values.map { it.map(::Snowflake) }.orEmpty()
-                    DiscordData.setData(DiscordData(id = configId, allowedRoles = roleIds))
-                    interaction.respondEphemeral {
-                        embeds = mutableListOf(
-                            embed(
-                                "⚙\uFE0F Setup | Allowed Roles",
-                                "Allowed roles updated successfully."
-                            )
+            } catch (e: Exception) {
+                instance.logger.severe("Discord interaction error: ${e.message}\n${e.stackTraceToString()}")
+                interaction.respondEphemeral {
+                    embeds = mutableListOf(
+                        embed(
+                            title = "❌ Error",
+                            description = "An error occurred while processing your command: ${e.message}",
+                            color = 0xFF0000
                         )
-                    }
+                    )
                 }
             }
         }
         on<ChatInputCommandInteractionCreateEvent> {
-            val cmd = interaction.command.rootName
-            val action = interaction.command.strings["action"] ?: ""
-            val playerName = interaction.command.strings["player"] ?: ""
+            try {
+                val cmd = interaction.command.rootName
+                val subcmd = when (interaction.command) {
+                    is SubCommand -> (interaction.command as SubCommand).name
+                    is GroupCommand -> (interaction.command as GroupCommand).name
+                    else -> null
+                }
+                instance.logger.info("DEBUG | cmd: $cmd, subcmd: $subcmd")
+                val action = interaction.command.strings["action"] ?: ""
+                val playerName = interaction.command.strings["player"] ?: ""
 
-            when (cmd) {
-                "whitelist" -> {
-                    if (!isChannelAllowed(this) || !isRoleAllowed(this)) return@on
-                    when (action) {
-                        "list" -> {
-                            interaction.respondEphemeral {
-                                embeds = mutableListOf(
-                                    embed(
-                                        "Whitelisted Players",
-                                        whitelist.ifEmpty { "No players are whitelisted." }
-                                    )
-                                )
-                            }
-                        }
-
-                        "add" -> {
-                            if (playerName.isBlank()) {
-                                interaction.respondEphemeral {
-                                    embeds = mutableListOf(
-                                        embed("Invalid Input", "Please provide a valid player name.", color = 0xFF0000)
-                                    )
-                                }
-                            } else {
-                                updateList("whitelist", "add", playerName)
+                when (cmd) {
+                    "whitelist" -> {
+                        if (!isChannelAllowed(this) || !isRoleAllowed(this)) return@on
+                        when (action) {
+                            "list" -> {
                                 interaction.respondEphemeral {
                                     embeds = mutableListOf(
                                         embed(
-                                            "Whitelist Update",
-                                            "Player `$playerName` has been added to the whitelist."
+                                            "Whitelisted Players",
+                                            whitelist.ifEmpty { "No players are whitelisted." }
                                         )
                                     )
                                 }
                             }
-                        }
 
-                        "remove" -> {
-                            if (playerName.isBlank()) {
-                                interaction.respondEphemeral {
-                                    embeds = mutableListOf(
-                                        embed("Invalid Input", "Please provide a valid player name.", color = 0xFF0000)
-                                    )
+                            "add" -> {
+                                if (playerName.isBlank()) {
+                                    interaction.respondEphemeral {
+                                        embeds = mutableListOf(
+                                            embed(
+                                                "Invalid Input",
+                                                "Please provide a valid player name.",
+                                                color = 0xFF0000
+                                            )
+                                        )
+                                    }
+                                } else {
+                                    updateList("whitelist", "add", playerName)
+                                    interaction.respondEphemeral {
+                                        embeds = mutableListOf(
+                                            embed(
+                                                "Whitelist Update",
+                                                "Player `$playerName` has been added to the whitelist."
+                                            )
+                                        )
+                                    }
                                 }
-                            } else {
-                                updateList("whitelist", "remove", playerName)
+                            }
+
+                            "remove" -> {
+                                if (playerName.isBlank()) {
+                                    interaction.respondEphemeral {
+                                        embeds = mutableListOf(
+                                            embed(
+                                                "Invalid Input",
+                                                "Please provide a valid player name.",
+                                                color = 0xFF0000
+                                            )
+                                        )
+                                    }
+                                } else {
+                                    updateList("whitelist", "remove", playerName)
+                                    interaction.respondEphemeral {
+                                        embeds = mutableListOf(
+                                            embed(
+                                                "Whitelist Update",
+                                                "Player `$playerName` has been removed from the whitelist."
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    "blacklist" -> {
+                        if (!isChannelAllowed(this) || !isRoleAllowed(this)) return@on
+                        when (action) {
+                            "list" -> {
                                 interaction.respondEphemeral {
                                     embeds = mutableListOf(
                                         embed(
-                                            "Whitelist Update",
-                                            "Player `$playerName` has been removed from the whitelist."
+                                            "Blacklisted Players",
+                                            blacklist.ifEmpty { "No players are blacklisted." }
                                         )
+                                    )
+                                }
+                            }
+
+                            "add" -> {
+                                if (playerName.isBlank()) {
+                                    interaction.respondEphemeral {
+                                        embeds = mutableListOf(
+                                            embed(
+                                                "Invalid Input",
+                                                "Please provide a valid player name.",
+                                                color = 0xFF0000
+                                            )
+                                        )
+                                    }
+                                } else {
+                                    updateList("blacklist", "add", playerName)
+                                    interaction.respondEphemeral {
+                                        embeds = mutableListOf(
+                                            embed(
+                                                "Blacklist Update",
+                                                "Player `$playerName` has been blacklisted."
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+
+                            "remove" -> {
+                                if (playerName.isBlank()) {
+                                    interaction.respondEphemeral {
+                                        embeds = mutableListOf(
+                                            embed(
+                                                "Invalid Input",
+                                                "Please provide a valid player name.",
+                                                color = 0xFF0000
+                                            )
+                                        )
+                                    }
+                                } else {
+                                    updateList("blacklist", "remove", playerName)
+                                    interaction.respondEphemeral {
+                                        embeds = mutableListOf(
+                                            embed(
+                                                "Blacklist Update",
+                                                "Player `$playerName` has been removed from the blacklist."
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    "setup" -> {
+                        when (subcmd) {
+                            "channels" -> {
+                                interaction.respondEphemeral {
+                                    embeds = mutableListOf(embed("⚙\uFE0F Setup", "Select the allowed channels:"))
+                                    components = mutableListOf(
+                                        ActionRowBuilder().apply {
+                                            channelSelect("channel_select") {
+                                                placeholder = "Choose allowed channels"
+                                                channelTypes = mutableListOf(ChannelType.GuildText)
+                                                allowedValues = 1..25
+                                                channelIds?.let { defaultChannels.addAll(it) }
+                                            }
+                                        }
+                                    )
+                                }
+                            }
+
+                            "roles" -> {
+                                interaction.respondEphemeral {
+                                    embeds = mutableListOf(embed("⚙\uFE0F Setup", "Select the allowed roles:"))
+                                    components = mutableListOf(
+                                        ActionRowBuilder().apply {
+                                            roleSelect("role_select") {
+                                                placeholder = "Choose allowed roles"
+                                                allowedValues = 1..25
+                                                roleIds?.let { defaultRoles.addAll(it) }
+                                            }
+                                        }
                                     )
                                 }
                             }
                         }
                     }
                 }
-
-                "blacklist" -> {
-                    if (!isChannelAllowed(this) || !isRoleAllowed(this)) return@on
-                    when (action) {
-                        "list" -> {
-                            interaction.respondEphemeral {
-                                embeds = mutableListOf(
-                                    embed(
-                                        "Blacklisted Players",
-                                        blacklist.ifEmpty { "No players are blacklisted." }
-                                    )
-                                )
-                            }
-                        }
-
-                        "add" -> {
-                            if (playerName.isBlank()) {
-                                interaction.respondEphemeral {
-                                    embeds = mutableListOf(
-                                        embed("Invalid Input", "Please provide a valid player name.", color = 0xFF0000)
-                                    )
-                                }
-                            } else {
-                                updateList("blacklist", "add", playerName)
-                                interaction.respondEphemeral {
-                                    embeds = mutableListOf(
-                                        embed(
-                                            "Blacklist Update",
-                                            "Player `$playerName` has been blacklisted."
-                                        )
-                                    )
-                                }
-                            }
-                        }
-
-                        "remove" -> {
-                            if (playerName.isBlank()) {
-                                interaction.respondEphemeral {
-                                    embeds = mutableListOf(
-                                        embed("Invalid Input", "Please provide a valid player name.", color = 0xFF0000)
-                                    )
-                                }
-                            } else {
-                                updateList("blacklist", "remove", playerName)
-                                interaction.respondEphemeral {
-                                    embeds = mutableListOf(
-                                        embed(
-                                            "Blacklist Update",
-                                            "Player `$playerName` has been removed from the blacklist."
-                                        )
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-
-                "setup" -> {
-                    when (interaction.command.options.values.firstOrNull()?.value) {
-                        "channels" -> {
-                            interaction.respondEphemeral {
-                                embeds = mutableListOf(embed("⚙\uFE0F Setup", "Select the allowed channels:"))
-                                components = mutableListOf(
-                                    ActionRowBuilder().apply {
-                                        channelSelect("channel_select") {
-                                            placeholder = "Choose allowed channels"
-                                            channelTypes = mutableListOf(ChannelType.GuildText)
-                                            allowedValues = 1..25
-                                            channelIds?.let { defaultChannels.addAll(it) }
-                                        }
-                                    }
-                                )
-                            }
-                        }
-
-                        "roles" -> {
-                            interaction.respondEphemeral {
-                                embeds = mutableListOf(embed("⚙\uFE0F Setup", "Select the allowed roles:"))
-                                components = mutableListOf(
-                                    ActionRowBuilder().apply {
-                                        roleSelect("role_select") {
-                                            placeholder = "Choose allowed roles"
-                                            allowedValues = 1..25
-                                            roleIds?.let { defaultRoles.addAll(it) }
-                                        }
-                                    }
-                                )
-                            }
-                        }
-                    }
+            } catch (e: Exception) {
+                instance.logger.severe("Discord interaction error: ${e.message}\n${e.stackTraceToString()}")
+                interaction.respondEphemeral {
+                    embeds = mutableListOf(
+                        embed(
+                            title = "❌ Error",
+                            description = "An error occurred while processing your command: ${e.message}",
+                            color = 0xFF0000
+                        )
+                    )
                 }
             }
         }
