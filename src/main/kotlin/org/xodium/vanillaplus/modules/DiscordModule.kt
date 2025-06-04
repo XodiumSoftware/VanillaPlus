@@ -19,6 +19,7 @@ import dev.kord.core.behavior.interaction.respondEphemeral
 import dev.kord.core.entity.channel.TextChannel
 import dev.kord.core.event.interaction.ChatInputCommandInteractionCreateEvent
 import dev.kord.core.event.interaction.ComponentInteractionCreateEvent
+import dev.kord.core.event.interaction.InteractionCreateEvent
 import dev.kord.core.on
 import dev.kord.rest.builder.component.ActionRowBuilder
 import dev.kord.rest.builder.component.option
@@ -46,16 +47,12 @@ class DiscordModule : ModuleInterface {
 
     private var kord: Kord? = null
     private var channelIds: List<Snowflake>? = emptyList()
-    private var roleIds: List<Snowflake>? = emptyList()
 
     init {
         if (enabled()) {
             if (!token.isNullOrBlank()) {
                 DiscordData.createTable()
-                DiscordData.getData().firstOrNull { it.id == configId }?.let {
-                    channelIds = it.allowedChannels
-                    roleIds = it.allowedRoles
-                }
+                DiscordData.getData().firstOrNull { it.id == configId }?.let { channelIds = it.allowedChannels }
                 bot(token)
             } else instance.logger.warning("Warning: Discord bot token is not set!")
         }
@@ -110,34 +107,9 @@ class DiscordModule : ModuleInterface {
     /** Registers the event listeners for the Discord bot. */
     private fun Kord.registerEvents() {
         on<ComponentInteractionCreateEvent> {
+            logInteraction(this)
             try {
                 when (interaction.componentId) {
-                    "channel_select" -> {
-                        channelIds = interaction.data.data.values.map { it.map(::Snowflake) }.orEmpty()
-                        DiscordData.setData(DiscordData(id = configId, allowedChannels = channelIds))
-                        interaction.respondEphemeral {
-                            embeds = mutableListOf(
-                                embed(
-                                    "⚙\uFE0F Setup | Allowed Channels",
-                                    "Allowed channels updated successfully."
-                                )
-                            )
-                        }
-                    }
-
-                    "role_select" -> {
-                        roleIds = interaction.data.data.values.map { it.map(::Snowflake) }.orEmpty()
-                        DiscordData.setData(DiscordData(id = configId, allowedRoles = roleIds))
-                        interaction.respondEphemeral {
-                            embeds = mutableListOf(
-                                embed(
-                                    "⚙\uFE0F Setup | Allowed Roles",
-                                    "Allowed roles updated successfully."
-                                )
-                            )
-                        }
-                    }
-
                     "setup_select" -> {
                         val selectedValue = interaction.data.data.values.firstOrNull { it.isNotEmpty() }
                         when (selectedValue) {
@@ -161,26 +133,19 @@ class DiscordModule : ModuleInterface {
                                     )
                                 }
                             }
+                        }
+                    }
 
-                            "roles" -> {
-                                interaction.respondEphemeral {
-                                    embeds = mutableListOf(
-                                        embed(
-                                            "⚙\uFE0F Setup | Allowed Roles",
-                                            "Select the allowed roles:"
-                                        )
-                                    )
-                                    components = mutableListOf(
-                                        ActionRowBuilder().apply {
-                                            roleSelect("role_select") {
-                                                placeholder = "Choose allowed roles"
-                                                allowedValues = 1..25
-                                                roleIds?.let { defaultRoles.addAll(it) }
-                                            }
-                                        }
-                                    )
-                                }
-                            }
+                    "channel_select" -> {
+                        channelIds = interaction.data.data.values.map { it.map(::Snowflake) }.orEmpty()
+                        DiscordData.setData(DiscordData(id = configId, allowedChannels = channelIds))
+                        interaction.respondEphemeral {
+                            embeds = mutableListOf(
+                                embed(
+                                    "⚙\uFE0F Setup | Allowed Channels",
+                                    "Allowed channels updated successfully."
+                                )
+                            )
                         }
                     }
                 }
@@ -198,6 +163,7 @@ class DiscordModule : ModuleInterface {
             }
         }
         on<ChatInputCommandInteractionCreateEvent> {
+            logInteraction(this)
             try {
                 val cmd = interaction.command.rootName
                 val action = interaction.command.strings["action"] ?: ""
@@ -205,7 +171,7 @@ class DiscordModule : ModuleInterface {
 
                 when (cmd) {
                     "whitelist" -> {
-                        if (!isChannelAllowed(this) || !isRoleAllowed(this)) return@on
+                        if (!isChannelAllowed(this)) return@on
                         when (action) {
                             "list" -> {
                                 interaction.respondEphemeral {
@@ -269,7 +235,7 @@ class DiscordModule : ModuleInterface {
                     }
 
                     "blacklist" -> {
-                        if (!isChannelAllowed(this) || !isRoleAllowed(this)) return@on
+                        if (!isChannelAllowed(this)) return@on
                         when (action) {
                             "list" -> {
                                 interaction.respondEphemeral {
@@ -340,8 +306,53 @@ class DiscordModule : ModuleInterface {
                                     stringSelect("setup_select") {
                                         placeholder = "Choose what to setup"
                                         option("Channels", "channels")
-                                        option("Roles", "roles")
                                     }
+                                }
+                            )
+                        }
+                    }
+
+                    "whitelist" -> {
+                        if (!isChannelAllowed(this)) return@on
+                        interaction.respondEphemeral {
+                            embeds = mutableListOf(embed("Whitelist Management", "Choose an action:"))
+                            components = mutableListOf(
+                                ActionRowBuilder().apply {
+                                    button(
+                                        Kord.PublicComponent взаимодействий . Primary,
+                                        "whitelist_add_button"
+                                    ) { label = "Add" }
+                                    button(
+                                        Kord.PublicComponent взаимодействий . Primary,
+                                        "whitelist_remove_button"
+                                    ) { label = "Remove" }
+                                    button(
+                                        Kord.PublicComponent взаимодействий . Secondary,
+                                        "whitelist_list_button"
+                                    ) { label = "List" }
+                                }
+                            )
+                        }
+                    }
+
+                    "blacklist" -> {
+                        if (!isChannelAllowed(this)) return@on
+                        interaction.respondEphemeral {
+                            embeds = mutableListOf(embed("Blacklist Management", "Choose an action:"))
+                            components = mutableListOf(
+                                ActionRowBuilder().apply {
+                                    button(
+                                        Kord.PublicComponent взаимодействий . Primary,
+                                        "blacklist_add_button"
+                                    ) { label = "Add" }
+                                    button(
+                                        Kord.PublicComponent взаимодействий . Primary,
+                                        "blacklist_remove_button"
+                                    ) { label = "Remove" }
+                                    button(
+                                        Kord.PublicComponent взаимодействий . Secondary,
+                                        "blacklist_list_button"
+                                    ) { label = "List" }
                                 }
                             )
                         }
@@ -402,45 +413,6 @@ class DiscordModule : ModuleInterface {
     }
 
     /**
-     * Checks if the user has the required role to execute the command.
-     * If not, responds with an ephemeral message indicating the command can only be used by members with specific roles.
-     * @param event The interaction event to check.
-     * @return True if the user has the required role, false otherwise.
-     */
-    private suspend fun isRoleAllowed(event: ChatInputCommandInteractionCreateEvent): Boolean {
-        roleIds?.let {
-            if (it.isEmpty()) {
-                event.interaction.respondEphemeral {
-                    embeds = mutableListOf(
-                        embed(
-                            title = "❌ Role Restriction",
-                            description = "No allowed roles are configured. Please use the `/setup roles` command to select allowed roles.",
-                            color = 0xFFA500
-                        )
-                    )
-                }
-                return false
-            }
-        }
-        roleIds?.let { ids ->
-            if (event.interaction.user.id !in ids) {
-                val allowedMentions = roleIds?.joinToString(", ") { "<@&${it.value}>" }
-                event.interaction.respondEphemeral {
-                    embeds = mutableListOf(
-                        embed(
-                            title = "❌ Role Restriction",
-                            description = "This command can only be executed by members with the following role(s): \n$allowedMentions",
-                            color = 0xFF0000
-                        )
-                    )
-                }
-                return false
-            }
-        }
-        return true
-    }
-
-    /**
      * Updates the whitelist or blacklist for a player.
      * @param command The command type ("whitelist" or "blacklist").
      * @param action The action to perform ("add" or "remove").
@@ -458,6 +430,23 @@ class DiscordModule : ModuleInterface {
                     banList.pardon(offlinePlayer.playerProfile)
             }
         })
+    }
+
+    /**
+     * Logs the interaction event to the console.
+     * @param event The interaction event to log.
+     */
+    private fun logInteraction(event: InteractionCreateEvent) {
+        val user = event.interaction.user
+        val userId = user.id.value
+        val username = user.username
+        val commandName = when (event) {
+            is ChatInputCommandInteractionCreateEvent -> event.interaction.command.rootName
+            is ComponentInteractionCreateEvent -> event.interaction.componentId
+            else -> "Unknown Command"
+        }
+
+        instance.logger.info("Discord: User $username ($userId) used command '$commandName'")
     }
 
     /**
