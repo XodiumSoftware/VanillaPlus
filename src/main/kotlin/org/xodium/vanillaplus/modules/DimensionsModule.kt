@@ -65,6 +65,7 @@ class DimensionsModule : ModuleInterface {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: EntityPortalEvent) {
         if (!enabled()) return
+
         event.canCreatePortal = false
     }
 

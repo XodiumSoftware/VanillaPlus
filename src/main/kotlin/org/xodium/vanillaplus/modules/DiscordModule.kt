@@ -48,14 +48,16 @@ class DiscordModule : ModuleInterface {
     private var roleIds: List<Snowflake>? = emptyList()
 
     init {
-        if (!token.isNullOrBlank() && enabled()) {
-            DiscordData.createTable()
-            DiscordData.getData().firstOrNull { it.id == configId }?.let {
-                channelIds = it.allowedChannels
-                roleIds = it.allowedRoles
-            }
-            bot(token)
-        } else instance.logger.warning("Warning: Discord bot token is not set!")
+        if (enabled()) {
+            if (!token.isNullOrBlank()) {
+                DiscordData.createTable()
+                DiscordData.getData().firstOrNull { it.id == configId }?.let {
+                    channelIds = it.allowedChannels
+                    roleIds = it.allowedRoles
+                }
+                bot(token)
+            } else instance.logger.warning("Warning: Discord bot token is not set!")
+        }
     }
 
     /**
