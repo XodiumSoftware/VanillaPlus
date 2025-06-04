@@ -133,7 +133,7 @@ class DiscordModule : ModuleInterface {
                     }
 
                     "whitelist_add_button" -> {
-                        interaction.modal("whitelist_add_modal", "Add to Whitelist") {
+                        interaction.modal("Add to Whitelist", "whitelist_add_modal") {
                             actionRow {
                                 textInput(TextInputStyle.Short, "player_name", "Player Name") {
                                     required = true
@@ -143,7 +143,7 @@ class DiscordModule : ModuleInterface {
                     }
 
                     "whitelist_remove_button" -> {
-                        interaction.modal("whitelist_remove_modal", "Remove from Whitelist") {
+                        interaction.modal("Remove from Whitelist", "whitelist_remove_modal") {
                             actionRow {
                                 textInput(TextInputStyle.Short, "player_name", "Player Name") {
                                     required = true
@@ -163,7 +163,7 @@ class DiscordModule : ModuleInterface {
                     }
 
                     "blacklist_add_button" -> {
-                        interaction.modal("blacklist_add_modal", "Add to Blacklist") {
+                        interaction.modal("Add to Blacklist", "blacklist_add_modal") {
                             actionRow {
                                 textInput(TextInputStyle.Short, "player_name", "Player Name") {
                                     required = true
@@ -173,7 +173,7 @@ class DiscordModule : ModuleInterface {
                     }
 
                     "blacklist_remove_button" -> {
-                        interaction.modal("blacklist_remove_modal", "Remove from Blacklist") {
+                        interaction.modal("Remove from Blacklist", "blacklist_remove_modal") {
                             actionRow {
                                 textInput(TextInputStyle.Short, "player_name", "Player Name") {
                                     required = true
@@ -227,7 +227,7 @@ class DiscordModule : ModuleInterface {
                     "whitelist" -> {
                         if (!isChannelAllowed(this)) return@on
                         interaction.respondEphemeral {
-                            embeds = mutableListOf(embed("Whitelist Management", "Choose an action:"))
+                            embeds = mutableListOf(embed("\uD83D\uDCDC Whitelist Management", "Choose an action:"))
                             components = mutableListOf(
                                 ActionRowBuilder().apply {
                                     interactionButton(ButtonStyle.Success, "whitelist_add_button") {
@@ -247,7 +247,7 @@ class DiscordModule : ModuleInterface {
                     "blacklist" -> {
                         if (!isChannelAllowed(this)) return@on
                         interaction.respondEphemeral {
-                            embeds = mutableListOf(embed("Blacklist Management", "Choose an action:"))
+                            embeds = mutableListOf(embed("\uD83D\uDCDC Blacklist Management", "Choose an action:"))
                             components = mutableListOf(
                                 ActionRowBuilder().apply {
                                     interactionButton(ButtonStyle.Success, "blacklist_add_button") {
