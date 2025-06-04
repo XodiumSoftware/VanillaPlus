@@ -230,13 +230,13 @@ class DiscordModule : ModuleInterface {
                             embeds = mutableListOf(embed("Whitelist Management", "Choose an action:"))
                             components = mutableListOf(
                                 ActionRowBuilder().apply {
-                                    interactionButton(ButtonStyle.Primary, "whitelist_add_button") {
+                                    interactionButton(ButtonStyle.Success, "whitelist_add_button") {
                                         label = "Add"
                                     }
-                                    interactionButton(ButtonStyle.Primary, "whitelist_remove_button") {
+                                    interactionButton(ButtonStyle.Danger, "whitelist_remove_button") {
                                         label = "Remove"
                                     }
-                                    interactionButton(ButtonStyle.Secondary, "whitelist_list_button") {
+                                    interactionButton(ButtonStyle.Primary, "whitelist_list_button") {
                                         label = "List"
                                     }
                                 }
@@ -250,13 +250,13 @@ class DiscordModule : ModuleInterface {
                             embeds = mutableListOf(embed("Blacklist Management", "Choose an action:"))
                             components = mutableListOf(
                                 ActionRowBuilder().apply {
-                                    interactionButton(ButtonStyle.Primary, "blacklist_add_button") {
+                                    interactionButton(ButtonStyle.Success, "blacklist_add_button") {
                                         label = "Add"
                                     }
-                                    interactionButton(ButtonStyle.Primary, "blacklist_remove_button") {
+                                    interactionButton(ButtonStyle.Danger, "blacklist_remove_button") {
                                         label = "Remove"
                                     }
-                                    interactionButton(ButtonStyle.Secondary, "blacklist_list_button") {
+                                    interactionButton(ButtonStyle.Primary, "blacklist_list_button") {
                                         label = "List"
                                     }
                                 }
