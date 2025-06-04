@@ -45,11 +45,11 @@ class InvUnloadModule : ModuleInterface {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerQuitEvent) {
-        if (enabled()) {
-            val uuid = event.player.uniqueId
-            Utils.lastUnloads.remove(uuid)
-            Utils.activeVisualizations.remove(uuid)
-        }
+        if (!enabled()) return
+
+        val uuid = event.player.uniqueId
+        Utils.lastUnloads.remove(uuid)
+        Utils.activeVisualizations.remove(uuid)
     }
 
     /**

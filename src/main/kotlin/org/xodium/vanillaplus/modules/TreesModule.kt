@@ -48,6 +48,7 @@ class TreesModule : ModuleInterface {
      */
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: StructureGrowEvent) {
+        if (!enabled()) return
         event.location.block.takeIf {
             Tag.SAPLINGS.isTagged(it.type)
                     || it.type == Material.WARPED_FUNGUS

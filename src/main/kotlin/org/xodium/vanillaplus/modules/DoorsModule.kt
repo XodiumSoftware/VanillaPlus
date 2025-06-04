@@ -47,20 +47,24 @@ class DoorsModule : ModuleInterface {
     )
 
     init {
-        instance.server.scheduler.runTaskTimer(
-            instance,
-            Runnable {
-                autoClose.entries.removeIf { (block, time) ->
-                    System.currentTimeMillis() >= time && handleAutoClose(block)
-                }
-            },
-            Config.DoorsModule.INIT_DELAY,
-            Config.DoorsModule.INTERVAL
-        )
+        if (enabled()) {
+            instance.server.scheduler.runTaskTimer(
+                instance,
+                Runnable {
+                    autoClose.entries.removeIf { (block, time) ->
+                        System.currentTimeMillis() >= time && handleAutoClose(block)
+                    }
+                },
+                Config.DoorsModule.INIT_DELAY,
+                Config.DoorsModule.INTERVAL
+            )
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: PlayerInteractEvent) {
+        if (!enabled()) return
+
         val clickedBlock = event.clickedBlock ?: return
         if (!isValidInteraction(event)) return
         when (event.action) {

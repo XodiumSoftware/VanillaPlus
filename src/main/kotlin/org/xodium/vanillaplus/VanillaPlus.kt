@@ -5,6 +5,9 @@
 
 package org.xodium.vanillaplus
 
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.bukkit.plugin.java.JavaPlugin
 import org.xodium.vanillaplus.managers.ModuleManager
 
@@ -38,8 +41,9 @@ class VanillaPlus : JavaPlugin() {
     }
 
     /** Called when the plugin is disabled. */
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onDisable() {
-        if (ModuleManager.discordModule.enabled()) ModuleManager.discordModule.disable()
+        if (ModuleManager.discordModule.enabled()) GlobalScope.launch { ModuleManager.discordModule.disable() }
     }
 
     /**

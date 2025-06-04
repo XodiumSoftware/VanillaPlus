@@ -48,16 +48,14 @@ class DiscordModule : ModuleInterface {
     private var roleIds: List<Snowflake>? = emptyList()
 
     init {
-        if (token.isNullOrBlank()) {
-            instance.logger.warning("Warning: Discord bot token is not set!")
-        } else {
+        if (!token.isNullOrBlank() && enabled()) {
             DiscordData.createTable()
             DiscordData.getData().firstOrNull { it.id == configId }?.let {
                 channelIds = it.allowedChannels
                 roleIds = it.allowedRoles
             }
             bot(token)
-        }
+        } else instance.logger.warning("Warning: Discord bot token is not set!")
     }
 
     /**
@@ -146,7 +144,7 @@ class DiscordModule : ModuleInterface {
 
             when (cmd) {
                 "whitelist" -> {
-                    if (!isChannelAllowed(this)) return@on
+                    if (!isChannelAllowed(this) || !isRoleAllowed(this)) return@on
                     when (action) {
                         "list" -> {
                             interaction.respondEphemeral {
@@ -202,7 +200,7 @@ class DiscordModule : ModuleInterface {
                 }
 
                 "blacklist" -> {
-                    if (!isChannelAllowed(this)) return@on
+                    if (!isChannelAllowed(this) || !isRoleAllowed(this)) return@on
                     when (action) {
                         "list" -> {
                             interaction.respondEphemeral {
@@ -308,7 +306,7 @@ class DiscordModule : ModuleInterface {
                     embeds = mutableListOf(
                         embed(
                             title = "❌ Channel Restriction",
-                            description = "No allowed channels are configured. Please use the `/setup` command to select allowed channels.",
+                            description = "No allowed channels are configured. Please use the `/setup channels` command to select allowed channels.",
                             color = 0xFFA500
                         )
                     )
@@ -347,7 +345,7 @@ class DiscordModule : ModuleInterface {
                     embeds = mutableListOf(
                         embed(
                             title = "❌ Role Restriction",
-                            description = "No allowed roles are configured. Please use the `/setup` command to select allowed roles.",
+                            description = "No allowed roles are configured. Please use the `/setup roles` command to select allowed roles.",
                             color = 0xFFA500
                         )
                     )
@@ -434,8 +432,9 @@ class DiscordModule : ModuleInterface {
     }
 
     /** Disables the Discord module, canceling the coroutine scope and nullifying the Kord instance. */
-    fun disable() {
+    suspend fun disable() {
         scope.cancel()
+        kord?.shutdown()
         kord = null
     }
 }
