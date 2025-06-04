@@ -22,7 +22,6 @@ import dev.kord.core.event.interaction.ModalSubmitInteractionCreateEvent
 import dev.kord.core.on
 import dev.kord.rest.builder.component.ActionRowBuilder
 import dev.kord.rest.builder.component.option
-import dev.kord.rest.builder.interaction.string
 import dev.kord.rest.builder.message.EmbedBuilder
 import io.github.cdimascio.dotenv.dotenv
 import io.papermc.paper.ban.BanListType
@@ -78,27 +77,13 @@ class DiscordModule : ModuleInterface {
 
     /** Registers the Discord commands for the bot. */
     private suspend fun Kord.registerCommands() {
+        createGuildChatInputCommand(guildId, "setup", "Setup the Discord bot") {
+            defaultMemberPermissions = Permissions(Permission.Administrator)
+        }
         createGuildChatInputCommand(guildId, "whitelist", "Manage the whitelist") {
-            string("action", "Add, remove, or list players on the whitelist") {
-                required = true
-                choice("add", "add")
-                choice("remove", "remove")
-                choice("list", "list")
-            }
-            string("player", "The player name to whitelist") { required = false }
             defaultMemberPermissions = Permissions(Permission.Administrator)
         }
         createGuildChatInputCommand(guildId, "blacklist", "Manage the blacklist") {
-            string("action", "Add or remove the player from the blacklist") {
-                required = true
-                choice("add", "add")
-                choice("remove", "remove")
-                choice("list", "list")
-            }
-            string("player", "The player name to blacklist") { required = false }
-            defaultMemberPermissions = Permissions(Permission.Administrator)
-        }
-        createGuildChatInputCommand(guildId, "setup", "Setup the Discord bot") {
             defaultMemberPermissions = Permissions(Permission.Administrator)
         }
     }
