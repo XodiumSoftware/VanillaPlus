@@ -24,7 +24,6 @@ import kotlin.time.measureTime
 object ModuleManager {
     val autoRestartModule: AutoRestartModule = AutoRestartModule()
     val booksModule: BooksModule = BooksModule()
-    val chiselModule: ChiselModule = ChiselModule()
     val dimensionsModule: DimensionsModule = DimensionsModule()
     val discordModule: DiscordModule = DiscordModule()
     val doorsModule: DoorsModule = DoorsModule()
@@ -40,7 +39,6 @@ object ModuleManager {
     private val modules = listOf(
         autoRestartModule,
         booksModule,
-        chiselModule,
         dimensionsModule,
         discordModule,
         doorsModule,

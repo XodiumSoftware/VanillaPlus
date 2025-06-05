@@ -198,7 +198,7 @@ class EclipseModule : ModuleInterface {
             ModuleManager.discordModule.sendEventEmbed(
                 title = "🌑 Eclipse Event",
                 description = "**An eclipse is happening now!**\nBe careful out there.",
-                color = 0xFF8800
+                color = 0xFF702963.toInt()
             )
         }
         world.setStorm(true)

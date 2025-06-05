@@ -36,7 +36,7 @@ class JoinQuitModule : ModuleInterface {
             .filter { it.uniqueId != player.uniqueId }
             .forEach { it.sendMessage("<gold>[<green>+<gold>]<reset> ${player.displayName()}".mm()) }
 
-        GlobalScope.launch { ModuleManager.discordModule.sendEventEmbed(title = "\uD83E\uDEE1 ${player.name} Is now online!") }
+        GlobalScope.launch { ModuleManager.discordModule.sendEventEmbed(title = "\uD83E\uDEE1 ${player.name} is now online!") }
 
         val faceLines = player.faceToMM().lines()
         var imageIndex = 1
