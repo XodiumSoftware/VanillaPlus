@@ -94,7 +94,7 @@ class DiscordModule : ModuleInterface {
     /** Registers the event listeners for the Discord bot. */
     private fun Kord.registerEvents() {
         on<ComponentInteractionCreateEvent> {
-            logInteraction(this)
+            log()
             try {
                 when (interaction.componentId) {
                     "setup_select" -> {
@@ -210,7 +210,7 @@ class DiscordModule : ModuleInterface {
         }
 
         on<ChatInputCommandInteractionCreateEvent> {
-            logInteraction(this)
+            log()
             try {
                 when (interaction.command.rootName) {
                     "setup" -> {
@@ -295,7 +295,7 @@ class DiscordModule : ModuleInterface {
         }
 
         on<ModalSubmitInteractionCreateEvent> {
-            logInteraction(this)
+            log()
             try {
                 when (interaction.modalId) {
                     "whitelist_add_modal" -> {
@@ -474,20 +474,28 @@ class DiscordModule : ModuleInterface {
 
     /**
      * Logs the interaction event to the console.
-     * @param event The interaction event to log.
+     * @param enabled Whether logging is enabled (default is true).
      */
-    private fun logInteraction(event: InteractionCreateEvent) {
-        //TODO: redo.
-        val user = event.interaction.user
+    private fun InteractionCreateEvent.log(enabled: Boolean = true) {
+        if (!enabled) return
+        val user = interaction.user
         val userId = user.id.value
         val username = user.username
-        val commandName = when (event) {
-            is ChatInputCommandInteractionCreateEvent -> event.interaction.command.rootName
-            is ComponentInteractionCreateEvent -> event.interaction.componentId
+        val commandName = when (this) {
+            is ChatInputCommandInteractionCreateEvent -> interaction.command.rootName
+            is ComponentInteractionCreateEvent -> interaction.componentId
+            is ModalSubmitInteractionCreateEvent -> interaction.modalId
             else -> "Unknown Command"
         }
+        val value = when (this) {
+            is ChatInputCommandInteractionCreateEvent -> interaction.command.data.options.firstOrNull { true }?.value
+            is ComponentInteractionCreateEvent -> interaction.data.data.values.firstOrNull { true }
+            is ModalSubmitInteractionCreateEvent -> interaction.textInputs["player_name"]?.value
+            else -> null
+        }
+        val valuePart = if (value != null && value.toString().isNotBlank()) " and changed value to '$value'" else ""
 
-        instance.logger.info("Discord: User $username ($userId) used command '$commandName'")
+        instance.logger.info("Discord: User $username ($userId) used command '$commandName'$valuePart")
     }
 
     /**
