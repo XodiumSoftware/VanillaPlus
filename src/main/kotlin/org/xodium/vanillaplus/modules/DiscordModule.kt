@@ -26,6 +26,7 @@ import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.firstOrNull
 import org.bukkit.scheduler.BukkitTask
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -35,13 +36,13 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 class DiscordModule : ModuleInterface {
     override fun enabled(): Boolean = Config.DiscordModule.ENABLED
 
-    private val guildId = Snowflake(691029695894126623)
     private val token = dotenv()["DISCORD_BOT_TOKEN"]
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val whitelist
         get() = instance.server.whitelistedPlayers
 
     private var kord: Kord? = null
+    private lateinit var guildId: Snowflake
 
     init {
         if (enabled()) {
@@ -59,6 +60,7 @@ class DiscordModule : ModuleInterface {
             try {
                 kord = Kord(token)
                 kord?.let {
+                    guildId = it.guilds.firstOrNull()?.id ?: error("Bot is not in any guilds.")
                     it.registerCommands()
                     it.registerEvents()
                     it.login {}
