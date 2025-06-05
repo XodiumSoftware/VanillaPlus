@@ -32,6 +32,7 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("dev.kord:kord-core:0.15.0")
     implementation("io.github.cdimascio:dotenv-kotlin:6.5.1")
+    implementation("io.ktor:ktor-client-cio:2.3.9")
 }
 
 java { toolchain.languageVersion.set(JavaLanguageVersion.of(21)) }
@@ -52,6 +53,7 @@ tasks {
         archiveClassifier.set("")
         destinationDirectory.set(file(".server/plugins/update"))
         relocate("dev.kord", "org.xodium.vanillaplus.kord")
+        relocate("io.github.cdimascio", "org.xodium.shadow.dotenv")
         relocate("io.ktor", "org.xodium.shadow.ktor")
         relocate("kotlinx.serialization", "org.xodium.shadow.kotlinx.serialization")
         minimize()

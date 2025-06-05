@@ -22,6 +22,9 @@ import dev.kord.rest.builder.component.ActionRowBuilder
 import dev.kord.rest.builder.component.option
 import dev.kord.rest.builder.message.EmbedBuilder
 import io.github.cdimascio.dotenv.dotenv
+import io.ktor.client.*
+import io.ktor.client.request.*
+import io.ktor.http.*
 import kotlinx.coroutines.*
 import org.bukkit.scheduler.BukkitTask
 import org.xodium.vanillaplus.Config
@@ -220,25 +223,53 @@ class DiscordModule : ModuleInterface {
                 when (interaction.modalId) {
                     "whitelist_add_modal" -> {
                         val player = interaction.textInputs["player_name"]?.value ?: ""
-                        if (player.isBlank()) {
-                            interaction.respondEphemeral {
-                                embeds = mutableListOf(
-                                    embed(
-                                        "❌ Invalid Input",
-                                        "Please provide a valid player name.",
-                                        color = 0xFF0000
+                        when {
+                            player.isBlank() -> {
+                                interaction.respondEphemeral {
+                                    embeds = mutableListOf(
+                                        embed(
+                                            "❌ Invalid Input",
+                                            "Please provide a valid player name.",
+                                            color = 0xFF0000
+                                        )
                                     )
-                                )
+                                }
                             }
-                        } else {
-                            updateWhitelist(interaction.user, "add", player)
-                            interaction.respondEphemeral {
-                                embeds = mutableListOf(
-                                    embed(
-                                        "\uD83D\uDCDC Whitelist Update",
-                                        "Player `$player` has been added to the whitelist."
+
+                            whitelist.any { it.name.equals(player, ignoreCase = true) } -> {
+                                interaction.respondEphemeral {
+                                    embeds = mutableListOf(
+                                        embed(
+                                            "❌ Player Already Whitelisted",
+                                            "Player `$player` is already in the whitelist.",
+                                            color = 0xFF0000
+                                        )
                                     )
-                                )
+                                }
+                            }
+
+                            !isValidMinecraftUsername(player) -> {
+                                interaction.respondEphemeral {
+                                    embeds = mutableListOf(
+                                        embed(
+                                            "❌ Invalid Player Name",
+                                            "The player name `$player` does not exist in Minecraft.",
+                                            color = 0xFF0000
+                                        )
+                                    )
+                                }
+                            }
+
+                            else -> {
+                                updateWhitelist(interaction.user, "add", player)
+                                interaction.respondEphemeral {
+                                    embeds = mutableListOf(
+                                        embed(
+                                            "\uD83D\uDCDC Whitelist Update",
+                                            "Player `$player` has been added to the whitelist."
+                                        )
+                                    )
+                                }
                             }
                         }
                     }
@@ -255,6 +286,17 @@ class DiscordModule : ModuleInterface {
                     )
                 }
             }
+        }
+    }
+
+    /**
+     * Validates a Minecraft username by checking if it exists in Mojang's API.
+     * @param username The Minecraft username to validate.
+     * @return True if the username is valid, false otherwise.
+     */
+    private suspend fun isValidMinecraftUsername(username: String): Boolean {
+        return HttpClient().use {
+            it.get("https://api.mojang.com/users/profiles/minecraft/$username").status == HttpStatusCode.OK
         }
     }
 
