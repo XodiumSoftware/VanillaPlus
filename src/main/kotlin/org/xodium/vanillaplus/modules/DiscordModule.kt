@@ -146,11 +146,53 @@ class DiscordModule : ModuleInterface {
                     }
 
                     "whitelist_remove_button" -> {
-                        interaction.modal("Remove from Whitelist", "whitelist_remove_modal") {
-                            actionRow {
-                                textInput(TextInputStyle.Short, "player_name", "Player Name") {
-                                    required = true
-                                }
+                        val players = instance.server.whitelistedPlayers.mapNotNull { it.name }
+                        if (players.isNotEmpty()) {
+                            interaction.respondEphemeral {
+                                embeds = mutableListOf(
+                                    embed(
+                                        "\uD83D\uDCDC Remove from Whitelist",
+                                        "Select a player to remove from the whitelist."
+                                    )
+                                )
+                                components = mutableListOf(
+                                    ActionRowBuilder().apply {
+                                        stringSelect("whitelist_remove_select") {
+                                            placeholder = "Select player"
+                                            players.forEach { option(it, it) }
+                                        }
+                                    }
+                                )
+                            }
+                        } else {
+                            interaction.respondEphemeral {
+                                embeds = mutableListOf(
+                                    embed(
+                                        "❌ No Whitelisted Players",
+                                        "There are no players in the whitelist to remove."
+                                    )
+                                )
+                            }
+                        }
+                    }
+
+                    "whitelist_remove_select" -> {
+                        val player = interaction.data.data.values.firstOrNull { it.isNotEmpty() } ?: ""
+                        if (player.isBlank()) {
+                            interaction.respondEphemeral {
+                                embeds = mutableListOf(
+                                    embed("❌ Invalid Selection", "Please select a valid player.", color = 0xFF0000)
+                                )
+                            }
+                        } else {
+                            updateList("whitelist", "remove", player)
+                            interaction.respondEphemeral {
+                                embeds = mutableListOf(
+                                    embed(
+                                        "\uD83D\uDCDC Whitelist Update",
+                                        "Player `$player` has been removed from the whitelist."
+                                    )
+                                )
                             }
                         }
                     }
@@ -176,11 +218,53 @@ class DiscordModule : ModuleInterface {
                     }
 
                     "blacklist_remove_button" -> {
-                        interaction.modal("Remove from Blacklist", "blacklist_remove_modal") {
-                            actionRow {
-                                textInput(TextInputStyle.Short, "player_name", "Player Name") {
-                                    required = true
-                                }
+                        val players = instance.server.bannedPlayers.mapNotNull { it.name }
+                        if (players.isNotEmpty()) {
+                            interaction.respondEphemeral {
+                                embeds = mutableListOf(
+                                    embed(
+                                        "\uD83D\uDCDC Remove from Blacklist",
+                                        "Select a player to remove from the blacklist."
+                                    )
+                                )
+                                components = mutableListOf(
+                                    ActionRowBuilder().apply {
+                                        stringSelect("blacklist_remove_select") {
+                                            placeholder = "Select player"
+                                            players.forEach { option(it, it) }
+                                        }
+                                    }
+                                )
+                            }
+                        } else {
+                            interaction.respondEphemeral {
+                                embeds = mutableListOf(
+                                    embed(
+                                        "❌ No Blacklisted Players",
+                                        "There are no players in the blacklist to remove."
+                                    )
+                                )
+                            }
+                        }
+                    }
+
+                    "blacklist_remove_select" -> {
+                        val player = interaction.data.data.values.firstOrNull { it.isNotEmpty() } ?: ""
+                        if (player.isBlank()) {
+                            interaction.respondEphemeral {
+                                embeds = mutableListOf(
+                                    embed("❌ Invalid Selection", "Please select a valid player.", color = 0xFF0000)
+                                )
+                            }
+                        } else {
+                            updateList("blacklist", "remove", player)
+                            interaction.respondEphemeral {
+                                embeds = mutableListOf(
+                                    embed(
+                                        "\uD83D\uDCDC Blacklist Update",
+                                        "Player `$player` has been removed from the blacklist."
+                                    )
+                                )
                             }
                         }
                     }
@@ -238,6 +322,7 @@ class DiscordModule : ModuleInterface {
                                     }
                                     interactionButton(ButtonStyle.Danger, "whitelist_remove_button") {
                                         label = "Remove"
+                                        disabled = instance.server.whitelistedPlayers.isEmpty()
                                     }
                                     interactionButton(ButtonStyle.Primary, "whitelist_list_button") {
                                         label = "List"
@@ -258,6 +343,7 @@ class DiscordModule : ModuleInterface {
                                     }
                                     interactionButton(ButtonStyle.Danger, "blacklist_remove_button") {
                                         label = "Remove"
+                                        disabled = instance.server.bannedPlayers.isEmpty()
                                     }
                                     interactionButton(ButtonStyle.Primary, "blacklist_list_button") {
                                         label = "List"
@@ -323,31 +409,6 @@ class DiscordModule : ModuleInterface {
                         }
                     }
 
-                    "whitelist_remove_modal" -> {
-                        val playerName = interaction.textInputs["player_name"]?.value ?: ""
-                        if (playerName.isBlank()) {
-                            interaction.respondEphemeral {
-                                embeds = mutableListOf(
-                                    embed(
-                                        "❌ Invalid Input",
-                                        "Please provide a valid player name.",
-                                        color = 0xFF0000
-                                    )
-                                )
-                            }
-                        } else {
-                            updateList("whitelist", "remove", playerName)
-                            interaction.respondEphemeral {
-                                embeds = mutableListOf(
-                                    embed(
-                                        "\uD83D\uDCDC Whitelist Update",
-                                        "Player `$playerName` has been removed from the whitelist."
-                                    )
-                                )
-                            }
-                        }
-                    }
-
                     "blacklist_add_modal" -> {
                         val playerName = interaction.textInputs["player_name"]?.value ?: ""
                         if (playerName.isBlank()) {
@@ -373,30 +434,6 @@ class DiscordModule : ModuleInterface {
                         }
                     }
 
-                    "blacklist_remove_modal" -> {
-                        val playerName = interaction.textInputs["player_name"]?.value ?: ""
-                        if (playerName.isBlank()) {
-                            interaction.respondEphemeral {
-                                embeds = mutableListOf(
-                                    embed(
-                                        "❌ Invalid Input",
-                                        "Please provide a valid player name.",
-                                        color = 0xFF0000
-                                    )
-                                )
-                            }
-                        } else {
-                            updateList("blacklist", "remove", playerName)
-                            interaction.respondEphemeral {
-                                embeds = mutableListOf(
-                                    embed(
-                                        "\uD83D\uDCDC Blacklist Update",
-                                        "Player `$playerName` has been removed from the blacklist."
-                                    )
-                                )
-                            }
-                        }
-                    }
                 }
             } catch (e: Exception) {
                 instance.logger.severe("Discord interaction error: ${e.message}\n${e.stackTraceToString()}")
