@@ -152,6 +152,7 @@ class DiscordModule : ModuleInterface {
                                     ActionRowBuilder().apply {
                                         stringSelect("whitelist_remove_select") {
                                             placeholder = "Select player"
+                                            allowedValues = 1..25
                                             whitelist.mapNotNull { it.name }.forEach { option(it, it) }
                                         }
                                     }
