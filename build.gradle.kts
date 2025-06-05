@@ -32,7 +32,6 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("dev.kord:kord-core:0.15.0")
     implementation("io.github.cdimascio:dotenv-kotlin:6.5.1")
-    implementation("io.ktor:ktor-client-cio:2.3.9")
 }
 
 java { toolchain.languageVersion.set(JavaLanguageVersion.of(21)) }
@@ -53,10 +52,9 @@ tasks {
         archiveClassifier.set("")
         destinationDirectory.set(file(".server/plugins/update"))
         relocate("dev.kord", "org.xodium.vanillaplus.kord")
-        relocate("io.github.cdimascio", "org.xodium.shadow.dotenv")
-        relocate("io.ktor", "org.xodium.shadow.ktor")
-        relocate("kotlinx.serialization", "org.xodium.shadow.kotlinx.serialization")
-        minimize()
+        relocate("io.ktor", "org.xodium.vanillaplus.ktor")
+        relocate("io.github.cdimascio", "org.xodium.vanillaplus.dotenv")
+        mergeServiceFiles()
         doLast {
             copy {
                 from(archiveFile)
@@ -105,10 +103,8 @@ tasks {
         val javaExec = project.extensions.getByType(JavaToolchainService::class.java)
             .launcherFor { languageVersion.set(JavaLanguageVersion.of(21)) }
             .get().executablePath.asFile.absolutePath
-        val hotswapAgentPath = file(".hotswap/hotswap-agent-core.jar").absolutePath
         commandLine = listOf(
             javaExec,
-            "-javaagent:$hotswapAgentPath",
             "-XX:+AllowEnhancedClassRedefinition",
             "-jar", "server.jar", "nogui"
         )
