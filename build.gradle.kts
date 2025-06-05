@@ -32,7 +32,7 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("dev.kord:kord-core:0.15.0")
     implementation("io.github.cdimascio:dotenv-kotlin:6.5.1")
-    implementation("io.ktor:ktor-client-cio:2.3.9")
+    implementation("io.ktor:ktor-client-cio:3.1.3")
 }
 
 java { toolchain.languageVersion.set(JavaLanguageVersion.of(21)) }
