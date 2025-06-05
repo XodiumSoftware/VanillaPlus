@@ -14,6 +14,7 @@ import dev.kord.core.behavior.interaction.modal
 import dev.kord.core.behavior.interaction.respondEphemeral
 import dev.kord.core.entity.User
 import dev.kord.core.entity.channel.TextChannel
+import dev.kord.core.entity.interaction.ActionInteraction
 import dev.kord.core.event.interaction.ChatInputCommandInteractionCreateEvent
 import dev.kord.core.event.interaction.ComponentInteractionCreateEvent
 import dev.kord.core.event.interaction.ModalSubmitInteractionCreateEvent
@@ -40,9 +41,14 @@ class DiscordModule : ModuleInterface {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val whitelist
         get() = instance.server.whitelistedPlayers
+    private val httpClient = HttpClient()
 
     private var kord: Kord? = null
-    private lateinit var guildId: Snowflake
+
+    private companion object {
+        private const val DEFAULT_EMBED_COLOR = 0x00FF00
+        private const val EVENT_CHANNEL_ID = 1285516564153761883L
+    }
 
     init {
         if (enabled()) {
@@ -60,23 +66,27 @@ class DiscordModule : ModuleInterface {
             try {
                 kord = Kord(token)
                 kord?.let {
-                    guildId = it.guilds.firstOrNull()?.id ?: error("Bot is not in any guilds.")
                     it.registerCommands()
                     it.registerEvents()
                     it.login {}
                 }
             } catch (e: Exception) {
-                instance.logger.severe("Failed to start Discord bot: ${e.message}")
+                instance.logger.severe("Error: Failed to start Discord bot: ${e.message}")
             }
         }
     }
 
     /** Registers the Discord commands for the bot. */
     private suspend fun Kord.registerCommands() {
-        createGuildChatInputCommand(guildId, "whitelist", "Manage the whitelist") {
+        val gid = guilds.firstOrNull()?.id
+        if (gid == null) {
+            instance.logger.warning("Warning: Bot has not been added to a Guild.")
+            return
+        }
+        createGuildChatInputCommand(gid, "whitelist", "Manage the whitelist") {
             defaultMemberPermissions = Permissions(Permission.Administrator)
         }
-        createGuildChatInputCommand(guildId, "online", "Online players") {}
+        createGuildChatInputCommand(gid, "online", "Online players") {}
     }
 
     /** Registers the event listeners for the Discord bot. */
@@ -129,7 +139,11 @@ class DiscordModule : ModuleInterface {
                         if (player.isBlank()) {
                             interaction.respondEphemeral {
                                 embeds = mutableListOf(
-                                    embed("❌ Invalid Selection", "Please select a valid player.", color = 0xFF0000)
+                                    embed(
+                                        "❌ Invalid Selection",
+                                        "Please select a valid player.",
+                                        color = 0xFF0000
+                                    )
                                 )
                             }
                         } else {
@@ -157,16 +171,7 @@ class DiscordModule : ModuleInterface {
                     }
                 }
             } catch (e: Exception) {
-                instance.logger.severe("Discord interaction error: ${e.message}\n${e.stackTraceToString()}")
-                interaction.respondEphemeral {
-                    embeds = mutableListOf(
-                        embed(
-                            title = "❌ Error",
-                            description = "An error occurred while processing your command: ${e.message}",
-                            color = 0xFF0000
-                        )
-                    )
-                }
+                tryCatchMsg(interaction, e)
             }
         }
 
@@ -175,7 +180,8 @@ class DiscordModule : ModuleInterface {
                 when (interaction.command.rootName) {
                     "whitelist" -> {
                         interaction.respondEphemeral {
-                            embeds = mutableListOf(embed("\uD83D\uDCDC Whitelist Management", "Choose an action:"))
+                            embeds =
+                                mutableListOf(embed("\uD83D\uDCDC Whitelist Management", "Choose an action:"))
                             components = mutableListOf(
                                 ActionRowBuilder().apply {
                                     interactionButton(ButtonStyle.Success, "whitelist_add_button") {
@@ -207,16 +213,7 @@ class DiscordModule : ModuleInterface {
                     }
                 }
             } catch (e: Exception) {
-                instance.logger.severe("Discord interaction error: ${e.message}\n${e.stackTraceToString()}")
-                interaction.respondEphemeral {
-                    embeds = mutableListOf(
-                        embed(
-                            title = "❌ Error",
-                            description = "An error occurred while processing your command: ${e.message}",
-                            color = 0xFF0000
-                        )
-                    )
-                }
+                tryCatchMsg(interaction, e)
             }
         }
 
@@ -277,17 +274,21 @@ class DiscordModule : ModuleInterface {
                     }
                 }
             } catch (e: Exception) {
-                instance.logger.severe("Discord interaction error: ${e.message}\n${e.stackTraceToString()}")
-                interaction.respondEphemeral {
-                    embeds = mutableListOf(
-                        embed(
-                            title = "❌ Error",
-                            description = "An error occurred while processing your command: ${e.message}",
-                            color = 0xFF0000
-                        )
-                    )
-                }
+                tryCatchMsg(interaction, e)
             }
+        }
+    }
+
+    private suspend fun tryCatchMsg(interaction: ActionInteraction, e: Exception) {
+        instance.logger.severe("Discord interaction error: ${e.message}\n${e.stackTraceToString()}")
+        interaction.respondEphemeral {
+            embeds = mutableListOf(
+                embed(
+                    title = "❌ Error",
+                    description = "An error occurred while processing your command: ${e.message}",
+                    color = 0xFF0000
+                )
+            )
         }
     }
 
@@ -297,9 +298,7 @@ class DiscordModule : ModuleInterface {
      * @return True if the username is valid, false otherwise.
      */
     private suspend fun isValidMinecraftUsername(username: String): Boolean {
-        return HttpClient().use {
-            it.get("https://api.mojang.com/users/profiles/minecraft/$username").status == HttpStatusCode.OK
-        }
+        return httpClient.get("https://api.mojang.com/users/profiles/minecraft/$username").status == HttpStatusCode.OK
     }
 
     /**
@@ -335,7 +334,7 @@ class DiscordModule : ModuleInterface {
             this.title = title
             this.description = description
             this.url = url
-            this.color = Color(color ?: 0x00FF00)
+            this.color = Color(color ?: DEFAULT_EMBED_COLOR)
         }
     }
 
@@ -350,9 +349,9 @@ class DiscordModule : ModuleInterface {
         title: String? = null,
         description: String? = null,
         url: String? = null,
-        color: Int? = 0x00FF00
+        color: Int? = DEFAULT_EMBED_COLOR
     ) {
-        kord?.getChannelOf<TextChannel>(Snowflake(1285516564153761883))?.createMessage {
+        kord?.getChannelOf<TextChannel>(Snowflake(EVENT_CHANNEL_ID))?.createMessage {
             embeds = mutableListOf(embed(title, description, url, color))
         }
     }
