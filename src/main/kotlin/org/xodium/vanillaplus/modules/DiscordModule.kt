@@ -357,6 +357,7 @@ class DiscordModule : ModuleInterface {
     }
 
     /** Disables the Discord module, canceling the coroutine scope and nullifying the Kord instance. */
+    //TODO: shutdown throws errors.
     suspend fun disable() {
         scope.cancel()
         kord?.shutdown()
