@@ -11,14 +11,15 @@ import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.server.MapInitializeEvent
-import org.bukkit.map.MapRenderer
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.mapify.Mapify
+import org.xodium.vanillaplus.mapify.util.Util
 import org.xodium.vanillaplus.utils.Utils
-import java.util.function.Consumer
+import java.awt.image.BufferedImage
+import java.net.URI
+import javax.imageio.ImageIO
 
 /** Represents a module handling map mechanics within the system. */
 class MapModule : ModuleInterface {
@@ -39,16 +40,27 @@ class MapModule : ModuleInterface {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: MapInitializeEvent) {
-        instance.server.scheduler.runTaskAsynchronously(Mapify.INSTANCE, Runnable runTaskAsynchronously@{
-            val pluginRenderer: MapRenderer? = Util.getRenderer(event.map)
-            if (pluginRenderer == null) return@runTaskAsynchronously
-
-            event.map.renderers.forEach(Consumer { event.map.removeRenderer(it) })
-            event.map.addRenderer(pluginRenderer)
+        instance.server.scheduler.runTaskAsynchronously(instance, Runnable {
+            Util.getRenderer(event.map)?.let { pluginRenderer ->
+                event.map.renderers.forEach { event.map.removeRenderer(it) }
+                event.map.addRenderer(pluginRenderer)
+            }
         })
     }
 
-    private fun mapify() {
+    private fun mapify() {}
 
+    /**
+     * Fetches an image from the specified URL.
+     * @param url The URL of the image to fetch.
+     * @return A BufferedImage if the image was successfully fetched, null otherwise.
+     */
+    fun fetchImageFromUrl(url: String): BufferedImage? {
+        return try {
+            URI(url).toURL().openStream().use { ImageIO.read(it) }
+        } catch (e: Exception) {
+            instance.logger.warning("Failed to fetch image from $url : ${e.message}")
+            null
+        }
     }
 }

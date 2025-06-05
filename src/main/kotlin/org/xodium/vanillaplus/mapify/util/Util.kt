@@ -4,24 +4,17 @@
  */
 package org.xodium.vanillaplus.mapify.util
 
-import com.google.gson.JsonParser
 import net.md_5.bungee.api.ChatColor
-import org.bukkit.Bukkit
-import org.bukkit.Material
-import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.meta.MapMeta
 import org.bukkit.map.MapRenderer
 import org.bukkit.map.MapView
 import org.xodium.vanillaplus.mapify.Mapify
-import org.xodium.vanillaplus.mapify.PluginData.MapData
 import java.awt.Image
 import java.awt.Point
 import java.awt.image.RenderedImage
 import java.io.File
 import java.io.IOException
-import java.io.InputStreamReader
 import java.net.MalformedURLException
 import java.net.URL
 import java.nio.charset.StandardCharsets
@@ -29,46 +22,10 @@ import java.nio.file.Paths
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.util.*
-import java.util.concurrent.CompletableFuture
-import java.util.function.Consumer
-import java.util.function.Supplier
 import javax.imageio.ImageIO
 
 object Util {
-    val isLatestVersion: CompletableFuture<Boolean?>
-        get() {
-            val serverVersion = Mapify.INSTANCE
-                .description
-                .version
-                .replace("\\.|-SNAPSHOT|v".toRegex(), "").toInt()
-
-            return CompletableFuture.supplyAsync<Boolean?>(Supplier supplyAsync@{
-                try {
-                    var url = URL("https://api.modrinth.com/v2/project/wsr1TOgJ")
-                    var reader = InputStreamReader(url.openStream())
-                    val versions =
-                        JsonParser.parseReader(reader).getAsJsonObject().getAsJsonArray("versions")
-                    val version = versions.get(versions.size() - 1).asString
-
-                    url = URL("https://api.modrinth.com/v2/version/$version")
-                    reader = InputStreamReader(url.openStream())
-                    val latestVersion = JsonParser.parseReader(reader)
-                        .getAsJsonObject()
-                        .get("version_number")
-                        .asString
-                        .replace("\\.|-SNAPSHOT|v".toRegex(), "").toInt()
-                    Mapify.INSTANCE.logger.info("Latest Version: $latestVersion")
-
-                    return@supplyAsync latestVersion <= serverVersion
-                } catch (_: IOException) {
-                    Mapify.INSTANCE.logger
-                        .severe("Unable to contact Modrinth API to check version!")
-                    return@supplyAsync true
-                }
-            })
-        }
-
-    private fun getUrl(arg: String): URL? {
+    fun getUrl(arg: String): URL? {
         return try {
             URL(arg)
         } catch (_: MalformedURLException) {
@@ -77,11 +34,6 @@ object Util {
     }
 
     fun getImage(url: URL): Image? {
-        Mapify.INSTANCE.config?.let {
-            if (it.debug) {
-                Mapify.INSTANCE.logger.info("Fetching image from $url")
-            }
-        }
         val imgFile = getImageFile(url)
         Mapify.INSTANCE.config?.let {
             if (it.saveImages) {
@@ -139,31 +91,6 @@ object Util {
         return Paths.get(Mapify.INSTANCE.dataFolder.path, "img", name).toFile()
     }
 
-    private fun createMap(url: String?, x: Int, y: Int, w: Int, h: Int): ItemStack? {
-        val stack = ItemStack(Material.FILLED_MAP)
-        val meta = checkNotNull(stack.itemMeta as MapMeta)
-        val view = Bukkit.getServer().createMap(Bukkit.getServer().worlds[0])
-        Mapify.INSTANCE.dataHandler!!.data?.mapData?.put(view.id, MapData(url, x, y, w, h))
-        Mapify.INSTANCE.dataHandler!!.dirty()
-
-
-        view.renderers.forEach(Consumer { renderer: MapRenderer? -> view.removeRenderer(renderer) })
-        val renderer = getRenderer(view)
-        if (renderer == null) return null
-        view.addRenderer(renderer)
-
-        meta.mapView = view
-
-
-        var lore = meta.lore
-        lore = lore ?: ArrayList()
-        lore.add(0, "Position: ($x, $y)")
-        meta.lore = lore
-
-        stack.setItemMeta(meta)
-        return stack
-    }
-
     fun getMaps(url: String, width: Int, height: Int): MutableList<ItemStack?>? {
         ArrayList<ItemStack?>()
 
@@ -208,7 +135,7 @@ object Util {
         overflow.forEach { (_: Int?, stack: ItemStack?) -> player.world.dropItem(player.location, stack!!) }
     }
 
-    private fun getRenderer(view: MapView): MapRenderer? {
+    fun getRenderer(view: MapView): MapRenderer? {
         val data = Mapify.INSTANCE.dataHandler!!.data?.mapData?.get(view.id)
         Mapify.INSTANCE.dataHandler!!.dirty()
 
@@ -217,27 +144,6 @@ object Util {
         val img: Image? = Mapify.INSTANCE.imageCache!!.get(getUrl(data.url!!))
         if (img == null) return null
         return CustomMapRenderer(img, data.x, data.y, data.scaleX, data.scaleY)
-    }
-
-    fun isOperator(player: CommandSender): Boolean {
-        return player.hasPermission("mapify.operator")
-    }
-
-    fun isAllowed(url: URL): Boolean {
-        val host = url.host
-
-        val whitelist = Mapify.INSTANCE.config!!.whitelist
-
-        for (s in whitelist) {
-            if (s!!.lowercase(Locale.getDefault()).startsWith("regexp:")) {
-                if (s.matches(s.substring("regexp:".length).toRegex())) {
-                    return !Mapify.INSTANCE.config!!.whitelistIsBlacklist
-                }
-            } else {
-                if (s.equals(host, ignoreCase = true)) return !Mapify.INSTANCE.config!!.whitelistIsBlacklist
-            }
-        }
-        return Mapify.INSTANCE.config!!.whitelistIsBlacklist
     }
 
     private fun bytesToString(bytes: ByteArray): String {

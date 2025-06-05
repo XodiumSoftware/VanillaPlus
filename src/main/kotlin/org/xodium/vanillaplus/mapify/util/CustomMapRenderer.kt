@@ -8,13 +8,14 @@ package org.xodium.vanillaplus.mapify.util
 import org.bukkit.entity.Player
 import org.bukkit.map.MapCanvas
 import org.bukkit.map.MapRenderer
-import org.bukkit.map.MapView
 import java.awt.Color
 import java.awt.Image
 import java.awt.image.BufferedImage
+import java.util.*
 
 abstract class CustomMapRenderer(image: Image, x: Int, y: Int, scaleX: Int, scaleY: Int) : MapRenderer() {
     private val image: BufferedImage
+    private val renderedPlayers: MutableSet<UUID> = mutableSetOf()
 
     init {
         val img = BufferedImage(128, 128, BufferedImage.TYPE_INT_RGB)
@@ -25,13 +26,17 @@ abstract class CustomMapRenderer(image: Image, x: Int, y: Int, scaleX: Int, scal
         this.image = img
     }
 
-    override fun render(map: MapView?, canvas: MapCanvas, player: Player?) {
+    //TODO: Use.
+    fun render(canvas: MapCanvas, player: Player?) {
+        val playerId = player?.uniqueId ?: return
+        if (renderedPlayers.contains(playerId)) return
+
         for (x in 0..127) {
             for (y in 0..127) {
-                // _Note: this seems to be more performant than using MapCanvas#drawImage._
                 val col = Color(this.image.getRGB(x, y))
                 canvas.setPixelColor(x, y, col)
             }
         }
+        renderedPlayers.add(playerId)
     }
 }
