@@ -2,70 +2,74 @@
  *  Copyright (c) 2025. Xodium.
  *  All rights reserved.
  */
+package org.xodium.vanillaplus.mapify
 
-package org.xodium.vanillaplus.mapify;
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import java.io.File
+import java.io.FileWriter
+import java.io.IOException
+import java.nio.file.Files
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+class DataHandler {
+    private var gson: Gson = GsonBuilder().create()
+    private var dataFile: File? = null
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Files;
+    @JvmField
+    var data: PluginData? = null
+    private var dirty: Boolean = false
 
-public class DataHandler {
-
-    public Gson gson = new GsonBuilder().create();
-    public File dataFile = null;
-    public PluginData data = null;
-    public boolean dirty = false;
-
-    public DataHandler() {
-        this.dataFile = new File(Mapify.INSTANCE.getDataFolder(), "data.json");
+    init {
+        this.dataFile = File(Mapify.INSTANCE.dataFolder, "data.json")
         try {
-            this.loadData();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            this.loadData()
+        } catch (e: IOException) {
+            throw RuntimeException(e)
         }
     }
 
-    public void dirty() {
-        this.dirty = true;
+    fun dirty() {
+        this.dirty = true
     }
 
-    public void loadData() throws IOException {
-        if (!this.dataFile.exists()) {
-            Mapify.INSTANCE.getLogger().info("No data file found.  Using blank data...");
-            this.data = new PluginData();
+    @Throws(IOException::class)
+    fun loadData() {
+        if (!this.dataFile!!.exists()) {
+            Mapify.INSTANCE.logger.info("No data file found.  Using blank data...")
+            this.data = PluginData()
         } else {
-            Mapify.INSTANCE.getLogger().info("Loading from data file...");
-            String content = Files.readString(this.dataFile.toPath());
-            this.data = gson.fromJson(content, PluginData.class);
+            Mapify.INSTANCE.logger.info("Loading from data file...")
+            val content = Files.readString(this.dataFile!!.toPath())
+            this.data = gson.fromJson(content, PluginData::class.java)
         }
     }
 
-    public void trySaveData(boolean force) {
+    fun trySaveData(force: Boolean) {
         try {
-            this.saveData(force);
-        } catch (IOException ex) {
-            throw new RuntimeException("Error saving data file", ex);
+            this.saveData(force)
+        } catch (ex: IOException) {
+            throw RuntimeException("Error saving data file", ex)
         }
     }
 
-    public void saveData(boolean force) throws IOException {
-        if (!dirty && !force) return;
-        if (Mapify.INSTANCE.config.debug) {
-            Mapify.INSTANCE.getLogger().info("Saving data file...");
+    @Throws(IOException::class)
+    fun saveData(force: Boolean) {
+        if (!dirty && !force) return
+        Mapify.INSTANCE.config?.let {
+            if (it.debug) {
+                Mapify.INSTANCE.logger.info("Saving data file...")
+            }
         }
-        String json = gson.toJson(data);
-        if (!this.dataFile.getParentFile().exists()) this.dataFile.getParentFile().mkdir();
-        if (!this.dataFile.exists()) this.dataFile.createNewFile();
-        FileWriter fw = new FileWriter(this.dataFile);
-        fw.write(json);
-        fw.close();
-        if (Mapify.INSTANCE.config.debug) {
-            Mapify.INSTANCE.getLogger().info("Done saving data.");
+        val json = gson.toJson(data)
+        if (!this.dataFile!!.getParentFile().exists()) this.dataFile!!.getParentFile().mkdir()
+        if (!this.dataFile!!.exists()) this.dataFile!!.createNewFile()
+        val fw = FileWriter(this.dataFile!!)
+        fw.write(json)
+        fw.close()
+        Mapify.INSTANCE.config?.let {
+            if (it.debug) {
+                Mapify.INSTANCE.logger.info("Done saving data.")
+            }
         }
     }
-
 }

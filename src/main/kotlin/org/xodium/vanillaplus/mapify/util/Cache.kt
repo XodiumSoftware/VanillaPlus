@@ -3,35 +3,25 @@
  *  All rights reserved.
  */
 
-package org.xodium.vanillaplus.mapify.util;
+package org.xodium.vanillaplus.mapify.util
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
+import java.util.concurrent.atomic.AtomicInteger
+import java.util.function.Function
 
-public class Cache<K, V> {
+class Cache<K, V>(var cacheDuration: Long, private val getter: Function<K?, V?>) {
+    private val map: MutableMap<K?, CacheItem> = HashMap<K?, CacheItem>()
 
-    private final Map<K, CacheItem> map = new HashMap<>();
-    private final Function<K, V> getter;
-    private long cacheDuration;
-
-    public Cache(long cacheDurationMs, Function<K, V> getter) {
-        this.cacheDuration = cacheDurationMs;
-        this.getter = getter;
-    }
-
-    public V get(K key) {
+    fun get(key: K?): V? {
         if (map.containsKey(key)) {
-            CacheItem item = map.get(key);
-            if (!item.isExpired()) {
-                item.refresh();
-                return item.value;
+            val item: CacheItem = map[key]!!
+            if (!item.isExpired) {
+                item.refresh()
+                return item.value
             }
         }
-        V newValue = this.getter.apply(key);
-        this.map.put(key, new CacheItem(newValue));
-        return newValue;
+        val newValue = this.getter.apply(key)
+        this.map.put(key, Cache.CacheItem(newValue))
+        return newValue
     }
 
     /**
@@ -39,42 +29,30 @@ public class Cache<K, V> {
      *
      * @return the amount of cleared values
      */
-    public int clearExpired() {
-        AtomicInteger count = new AtomicInteger(0);
-        map.entrySet().removeIf(value -> {
-            if (value.getValue().isExpired()) {
-                count.incrementAndGet();
-                return true;
+    fun clearExpired(): Int {
+        val count = AtomicInteger(0)
+        map.entries.removeIf { value: MutableMap.MutableEntry<K?, CacheItem?>? ->
+            if (value!!.value.isExpired()) {
+                count.incrementAndGet()
+                return@removeIf true.toInt()
             }
-            return false;
-        });
-        return count.get();
+            false
+        }
+        return count.get()
     }
 
-    public long getCacheDuration() {
-        return cacheDuration;
-    }
+    inner class CacheItem(val value: V?) {
+        private var insertedTime: Long
 
-    public void setCacheDuration(long cacheDuration) {
-        this.cacheDuration = cacheDuration;
-    }
-
-    private class CacheItem {
-
-        private final V value;
-        private long insertedTime;
-
-        public CacheItem(V value) {
-            this.insertedTime = System.currentTimeMillis();
-            this.value = value;
+        init {
+            this.insertedTime = System.currentTimeMillis()
         }
 
-        public void refresh() {
-            this.insertedTime = System.currentTimeMillis();
+        fun refresh() {
+            this.insertedTime = System.currentTimeMillis()
         }
 
-        public boolean isExpired() {
-            return System.currentTimeMillis() - this.insertedTime > cacheDuration;
-        }
+        val isExpired: Boolean
+            get() = System.currentTimeMillis() - this.insertedTime > cacheDuration
     }
 }
