@@ -31,6 +31,7 @@ import org.xodium.vanillaplus.data.DiscordData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import java.util.*
 
+/** Represents a module handling discord mechanics within the system. */
 class DiscordModule : ModuleInterface {
     override fun enabled(): Boolean = Config.DiscordModule.ENABLED
 
@@ -38,8 +39,8 @@ class DiscordModule : ModuleInterface {
     private val configId = UUID.nameUUIDFromBytes(guildId.value.toString().toByteArray())
     private val token = dotenv()["DISCORD_BOT_TOKEN"]
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-    private val whitelist: String
-        get() = instance.server.whitelistedPlayers.joinToString(", ") { it.name ?: it.uniqueId.toString() }
+    private val whitelist
+        get() = instance.server.whitelistedPlayers
 
     private var kord: Kord? = null
     private var channelIds: List<Snowflake>? = emptyList()
@@ -139,8 +140,7 @@ class DiscordModule : ModuleInterface {
                     }
 
                     "whitelist_remove_button" -> {
-                        val players = instance.server.whitelistedPlayers.mapNotNull { it.name }
-                        if (players.isNotEmpty()) {
+                        if (whitelist.isNotEmpty()) {
                             interaction.respondEphemeral {
                                 embeds = mutableListOf(
                                     embed(
@@ -152,7 +152,7 @@ class DiscordModule : ModuleInterface {
                                     ActionRowBuilder().apply {
                                         stringSelect("whitelist_remove_select") {
                                             placeholder = "Select player"
-                                            players.forEach { option(it, it) }
+                                            whitelist.mapNotNull { it.name }.forEach { option(it, it) }
                                         }
                                     }
                                 )
@@ -195,7 +195,8 @@ class DiscordModule : ModuleInterface {
                             embeds = mutableListOf(
                                 embed(
                                     "\uD83D\uDCDC Whitelisted Players",
-                                    whitelist.ifEmpty { "No players are whitelisted." })
+                                    whitelist.joinToString("\n") { it.name.toString() }
+                                        .ifEmpty { "No players are whitelisted." })
                             )
                         }
                     }
