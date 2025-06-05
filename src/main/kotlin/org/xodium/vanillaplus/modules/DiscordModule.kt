@@ -24,13 +24,11 @@ import dev.kord.rest.builder.component.ActionRowBuilder
 import dev.kord.rest.builder.component.option
 import dev.kord.rest.builder.message.EmbedBuilder
 import io.github.cdimascio.dotenv.dotenv
-import io.papermc.paper.ban.BanListType
 import kotlinx.coroutines.*
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.DiscordData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import java.time.Instant
 import java.util.*
 
 class DiscordModule : ModuleInterface {
@@ -42,8 +40,6 @@ class DiscordModule : ModuleInterface {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val whitelist: String
         get() = instance.server.whitelistedPlayers.joinToString(", ") { it.name ?: it.uniqueId.toString() }
-    private val blacklist: String
-        get() = instance.server.bannedPlayers.joinToString(", ") { it.name ?: it.uniqueId.toString() }
 
     private var kord: Kord? = null
     private var channelIds: List<Snowflake>? = emptyList()
@@ -83,9 +79,6 @@ class DiscordModule : ModuleInterface {
             defaultMemberPermissions = Permissions(Permission.Administrator)
         }
         createGuildChatInputCommand(guildId, "whitelist", "Manage the whitelist") {
-            defaultMemberPermissions = Permissions(Permission.Administrator)
-        }
-        createGuildChatInputCommand(guildId, "blacklist", "Manage the blacklist") {
             defaultMemberPermissions = Permissions(Permission.Administrator)
         }
         createGuildChatInputCommand(guildId, "online", "Online players") {}
@@ -185,7 +178,7 @@ class DiscordModule : ModuleInterface {
                                 )
                             }
                         } else {
-                            updateList("whitelist", "remove", player)
+                            updateWhitelist("remove", player)
                             interaction.respondEphemeral {
                                 embeds = mutableListOf(
                                     embed(
@@ -203,78 +196,6 @@ class DiscordModule : ModuleInterface {
                                 embed(
                                     "\uD83D\uDCDC Whitelisted Players",
                                     whitelist.ifEmpty { "No players are whitelisted." })
-                            )
-                        }
-                    }
-
-                    "blacklist_add_button" -> {
-                        interaction.modal("Add to Blacklist", "blacklist_add_modal") {
-                            actionRow {
-                                textInput(TextInputStyle.Short, "player_name", "Player Name") {
-                                    required = true
-                                }
-                            }
-                        }
-                    }
-
-                    "blacklist_remove_button" -> {
-                        val players = instance.server.bannedPlayers.mapNotNull { it.name }
-                        if (players.isNotEmpty()) {
-                            interaction.respondEphemeral {
-                                embeds = mutableListOf(
-                                    embed(
-                                        "\uD83D\uDCDC Remove from Blacklist",
-                                        "Select a player to remove from the blacklist."
-                                    )
-                                )
-                                components = mutableListOf(
-                                    ActionRowBuilder().apply {
-                                        stringSelect("blacklist_remove_select") {
-                                            placeholder = "Select player"
-                                            players.forEach { option(it, it) }
-                                        }
-                                    }
-                                )
-                            }
-                        } else {
-                            interaction.respondEphemeral {
-                                embeds = mutableListOf(
-                                    embed(
-                                        "❌ No Blacklisted Players",
-                                        "There are no players in the blacklist to remove."
-                                    )
-                                )
-                            }
-                        }
-                    }
-
-                    "blacklist_remove_select" -> {
-                        val player = interaction.data.data.values.firstOrNull { it.isNotEmpty() } ?: ""
-                        if (player.isBlank()) {
-                            interaction.respondEphemeral {
-                                embeds = mutableListOf(
-                                    embed("❌ Invalid Selection", "Please select a valid player.", color = 0xFF0000)
-                                )
-                            }
-                        } else {
-                            updateList("blacklist", "remove", player)
-                            interaction.respondEphemeral {
-                                embeds = mutableListOf(
-                                    embed(
-                                        "\uD83D\uDCDC Blacklist Update",
-                                        "Player `$player` has been removed from the blacklist."
-                                    )
-                                )
-                            }
-                        }
-                    }
-
-                    "blacklist_list_button" -> {
-                        interaction.respondEphemeral {
-                            embeds = mutableListOf(
-                                embed(
-                                    "\uD83D\uDCDC Blacklisted Players",
-                                    blacklist.ifEmpty { "No players are blacklisted." })
                             )
                         }
                     }
@@ -333,28 +254,6 @@ class DiscordModule : ModuleInterface {
                         }
                     }
 
-                    "blacklist" -> {
-                        if (!isChannelAllowed(this)) return@on
-                        interaction.respondEphemeral {
-                            embeds = mutableListOf(embed("\uD83D\uDCDC Blacklist Management", "Choose an action:"))
-                            components = mutableListOf(
-                                ActionRowBuilder().apply {
-                                    interactionButton(ButtonStyle.Success, "blacklist_add_button") {
-                                        label = "Add"
-                                    }
-                                    interactionButton(ButtonStyle.Danger, "blacklist_remove_button") {
-                                        label = "Remove"
-                                        disabled = blacklist.isEmpty()
-                                    }
-                                    interactionButton(ButtonStyle.Primary, "blacklist_list_button") {
-                                        label = "List"
-                                        disabled = blacklist.isEmpty()
-                                    }
-                                }
-                            )
-                        }
-                    }
-
                     "online" -> {
                         if (!isChannelAllowed(this)) return@on
                         val players = instance.server.onlinePlayers.joinToString(", ") { it.name }
@@ -399,7 +298,7 @@ class DiscordModule : ModuleInterface {
                                 )
                             }
                         } else {
-                            updateList("whitelist", "add", player)
+                            updateWhitelist("add", player)
                             interaction.respondEphemeral {
                                 embeds = mutableListOf(
                                     embed(
@@ -410,32 +309,6 @@ class DiscordModule : ModuleInterface {
                             }
                         }
                     }
-
-                    "blacklist_add_modal" -> {
-                        val player = interaction.textInputs["player_name"]?.value ?: ""
-                        if (player.isBlank()) {
-                            interaction.respondEphemeral {
-                                embeds = mutableListOf(
-                                    embed(
-                                        "❌ Invalid Input",
-                                        "Please provide a valid player name.",
-                                        color = 0xFF0000
-                                    )
-                                )
-                            }
-                        } else {
-                            updateList("blacklist", "add", player)
-                            interaction.respondEphemeral {
-                                embeds = mutableListOf(
-                                    embed(
-                                        "\uD83D\uDCDC Blacklist Update",
-                                        "Player `$player` has been blacklisted."
-                                    )
-                                )
-                            }
-                        }
-                    }
-
                 }
             } catch (e: Exception) {
                 instance.logger.severe("Discord interaction error: ${e.message}\n${e.stackTraceToString()}")
@@ -492,23 +365,13 @@ class DiscordModule : ModuleInterface {
     }
 
     /**
-     * Updates the whitelist or blacklist for a player.
-     * @param command The command type ("whitelist" or "blacklist").
+     * Updates the whitelist.
      * @param action The action to perform ("add" or "remove").
      * @param playerName The name of the player to update.
      */
-    private suspend fun updateList(command: String, action: String, playerName: String) = withContext(Dispatchers.IO) {
+    private suspend fun updateWhitelist(action: String, playerName: String) = withContext(Dispatchers.IO) {
         instance.server.scheduler.runTask(instance, Runnable {
-            val offlinePlayer = instance.server.getOfflinePlayer(playerName)
-            val banList = instance.server.getBanList(BanListType.PROFILE)
-            when (command) {
-                "whitelist" -> offlinePlayer.isWhitelisted = (action == "add")
-                //TODO: Banning gives error in console.
-                "blacklist" -> if (action == "add")
-                    banList.addBan(offlinePlayer.playerProfile, "", Date.from(Instant.MAX), "")
-                else
-                    banList.pardon(offlinePlayer.playerProfile)
-            }
+            instance.server.getOfflinePlayer(playerName).isWhitelisted = (action == "add")
         })
     }
 
