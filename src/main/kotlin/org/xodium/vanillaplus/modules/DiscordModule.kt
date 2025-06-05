@@ -86,6 +86,7 @@ class DiscordModule : ModuleInterface {
         createGuildChatInputCommand(guildId, "blacklist", "Manage the blacklist") {
             defaultMemberPermissions = Permissions(Permission.Administrator)
         }
+        createGuildChatInputCommand(guildId, "online", "Online players") {}
     }
 
     /** Registers the event listeners for the Discord bot. */
@@ -156,7 +157,7 @@ class DiscordModule : ModuleInterface {
                         interaction.respondEphemeral {
                             embeds = mutableListOf(
                                 embed(
-                                    "Whitelisted Players",
+                                    "\uD83D\uDCDC Whitelisted Players",
                                     whitelist.ifEmpty { "No players are whitelisted." })
                             )
                         }
@@ -186,7 +187,7 @@ class DiscordModule : ModuleInterface {
                         interaction.respondEphemeral {
                             embeds = mutableListOf(
                                 embed(
-                                    "Blacklisted Players",
+                                    "\uD83D\uDCDC Blacklisted Players",
                                     blacklist.ifEmpty { "No players are blacklisted." })
                             )
                         }
@@ -263,6 +264,19 @@ class DiscordModule : ModuleInterface {
                             )
                         }
                     }
+
+                    "online" -> {
+                        if (!isChannelAllowed(this)) return@on
+                        val onlinePlayers = instance.server.onlinePlayers.joinToString(", ") { it.name }
+                        interaction.respondEphemeral {
+                            embeds = mutableListOf(
+                                embed(
+                                    "⚡ Online Players",
+                                    onlinePlayers.ifEmpty { "No players are currently online." }
+                                )
+                            )
+                        }
+                    }
                 }
             } catch (e: Exception) {
                 instance.logger.severe("Discord interaction error: ${e.message}\n${e.stackTraceToString()}")
@@ -288,7 +302,7 @@ class DiscordModule : ModuleInterface {
                             interaction.respondEphemeral {
                                 embeds = mutableListOf(
                                     embed(
-                                        "Invalid Input",
+                                        "❌ Invalid Input",
                                         "Please provide a valid player name.",
                                         color = 0xFF0000
                                     )
@@ -299,7 +313,7 @@ class DiscordModule : ModuleInterface {
                             interaction.respondEphemeral {
                                 embeds = mutableListOf(
                                     embed(
-                                        "Whitelist Update",
+                                        "\uD83D\uDCDC Whitelist Update",
                                         "Player `$playerName` has been added to the whitelist."
                                     )
                                 )
@@ -313,7 +327,7 @@ class DiscordModule : ModuleInterface {
                             interaction.respondEphemeral {
                                 embeds = mutableListOf(
                                     embed(
-                                        "Invalid Input",
+                                        "❌ Invalid Input",
                                         "Please provide a valid player name.",
                                         color = 0xFF0000
                                     )
@@ -324,7 +338,7 @@ class DiscordModule : ModuleInterface {
                             interaction.respondEphemeral {
                                 embeds = mutableListOf(
                                     embed(
-                                        "Whitelist Update",
+                                        "\uD83D\uDCDC Whitelist Update",
                                         "Player `$playerName` has been removed from the whitelist."
                                     )
                                 )
@@ -338,7 +352,7 @@ class DiscordModule : ModuleInterface {
                             interaction.respondEphemeral {
                                 embeds = mutableListOf(
                                     embed(
-                                        "Invalid Input",
+                                        "❌ Invalid Input",
                                         "Please provide a valid player name.",
                                         color = 0xFF0000
                                     )
@@ -349,7 +363,7 @@ class DiscordModule : ModuleInterface {
                             interaction.respondEphemeral {
                                 embeds = mutableListOf(
                                     embed(
-                                        "Blacklist Update",
+                                        "\uD83D\uDCDC Blacklist Update",
                                         "Player `$playerName` has been blacklisted."
                                     )
                                 )
@@ -363,7 +377,7 @@ class DiscordModule : ModuleInterface {
                             interaction.respondEphemeral {
                                 embeds = mutableListOf(
                                     embed(
-                                        "Invalid Input",
+                                        "❌ Invalid Input",
                                         "Please provide a valid player name.",
                                         color = 0xFF0000
                                     )
@@ -374,7 +388,7 @@ class DiscordModule : ModuleInterface {
                             interaction.respondEphemeral {
                                 embeds = mutableListOf(
                                     embed(
-                                        "Blacklist Update",
+                                        "\uD83D\uDCDC Blacklist Update",
                                         "Player `$playerName` has been removed from the blacklist."
                                     )
                                 )
