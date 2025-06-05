@@ -40,8 +40,10 @@ class DiscordModule : ModuleInterface {
     private val configId = UUID.nameUUIDFromBytes(guildId.value.toString().toByteArray())
     private val token = dotenv()["DISCORD_BOT_TOKEN"]
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-    private val whitelist = instance.server.whitelistedPlayers.joinToString(", ") { it.name ?: it.uniqueId.toString() }
-    private val blacklist = instance.server.bannedPlayers.joinToString(", ") { it.name ?: it.uniqueId.toString() }
+    private val whitelist: String
+        get() = instance.server.whitelistedPlayers.joinToString(", ") { it.name ?: it.uniqueId.toString() }
+    private val blacklist: String
+        get() = instance.server.bannedPlayers.joinToString(", ") { it.name ?: it.uniqueId.toString() }
 
     private var kord: Kord? = null
     private var channelIds: List<Snowflake>? = emptyList()
