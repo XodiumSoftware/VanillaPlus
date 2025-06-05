@@ -74,4 +74,13 @@ object Perms {
         val USE: Permission =
             Permission("${G0}.${G1}.use", "Allows use of the invunload command", PermissionDefault.TRUE)
     }
+
+    /** Permissions for Mapify commands. */
+    object Mapify {
+        private val G1 = this::class.simpleName.toString().lowercase()
+        val USE: Permission =
+            Permission("${G0}.${G1}.use", "Allows use of the mapify command", PermissionDefault.TRUE)
+        val REFRESH: Permission =
+            Permission("${G0}.${G1}.refresh", "Allows use of the mapify refresh command", PermissionDefault.TRUE)
+    }
 }

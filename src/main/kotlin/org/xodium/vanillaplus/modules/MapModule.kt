@@ -21,8 +21,12 @@ class MapModule : ModuleInterface {
     override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
         return listOf(
             Commands.literal("mapify")
-                .requires { it.sender.hasPermission(Perms.InvUnload.USE) }
+                .requires { it.sender.hasPermission(Perms.Mapify.USE) }
                 .executes { it -> Utils.tryCatch(it) { mapify() } }
+                .then(
+                    Commands.literal("refresh")
+                        .requires { it.sender.hasPermission(Perms.Mapify.REFRESH) }
+                        .executes { it -> Utils.tryCatch(it) { mapify() } })
         )
     }
 
