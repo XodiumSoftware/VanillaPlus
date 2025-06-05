@@ -31,6 +31,7 @@ object ModuleManager {
     val invSearchModule: InvSearchModule = InvSearchModule()
     val invUnloadModule: InvUnloadModule = InvUnloadModule()
     val joinQuitModule: JoinQuitModule = JoinQuitModule()
+    val mapModule: MapModule = MapModule()
     val motdModule: MotdModule = MotdModule()
     val recipiesModule: RecipiesModule = RecipiesModule()
     val tabListModule: TabListModule = TabListModule()
@@ -46,6 +47,7 @@ object ModuleManager {
         invSearchModule,
         invUnloadModule,
         joinQuitModule,
+        mapModule,
         motdModule,
         recipiesModule,
         tabListModule,
