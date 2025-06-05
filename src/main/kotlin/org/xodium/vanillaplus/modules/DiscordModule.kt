@@ -361,5 +361,6 @@ class DiscordModule : ModuleInterface {
         scope.cancel()
         kord?.shutdown()
         kord = null
+        httpClient.close()
     }
 }
