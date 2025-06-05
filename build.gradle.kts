@@ -51,6 +51,9 @@ tasks {
         dependsOn(processResources)
         archiveClassifier.set("")
         destinationDirectory.set(file(".server/plugins/update"))
+        relocate("dev.kord", "org.xodium.vanillaplus.kord")
+        relocate("io.ktor", "org.xodium.shadow.ktor")
+        relocate("kotlinx.serialization", "org.xodium.shadow.kotlinx.serialization")
         minimize()
         doLast {
             copy {
