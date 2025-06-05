@@ -8,16 +8,14 @@ package org.xodium.vanillaplus.modules
 import dev.kord.common.Color
 import dev.kord.common.entity.*
 import dev.kord.common.entity.optional.firstOrNull
-import dev.kord.common.entity.optional.map
-import dev.kord.common.entity.optional.orEmpty
 import dev.kord.core.Kord
 import dev.kord.core.behavior.channel.createMessage
 import dev.kord.core.behavior.interaction.modal
 import dev.kord.core.behavior.interaction.respondEphemeral
+import dev.kord.core.entity.User
 import dev.kord.core.entity.channel.TextChannel
 import dev.kord.core.event.interaction.ChatInputCommandInteractionCreateEvent
 import dev.kord.core.event.interaction.ComponentInteractionCreateEvent
-import dev.kord.core.event.interaction.InteractionCreateEvent
 import dev.kord.core.event.interaction.ModalSubmitInteractionCreateEvent
 import dev.kord.core.on
 import dev.kord.rest.builder.component.ActionRowBuilder
@@ -25,33 +23,27 @@ import dev.kord.rest.builder.component.option
 import dev.kord.rest.builder.message.EmbedBuilder
 import io.github.cdimascio.dotenv.dotenv
 import kotlinx.coroutines.*
+import org.bukkit.scheduler.BukkitTask
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.data.DiscordData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import java.util.*
 
 /** Represents a module handling discord mechanics within the system. */
 class DiscordModule : ModuleInterface {
     override fun enabled(): Boolean = Config.DiscordModule.ENABLED
 
     private val guildId = Snowflake(691029695894126623)
-    private val configId = UUID.nameUUIDFromBytes(guildId.value.toString().toByteArray())
     private val token = dotenv()["DISCORD_BOT_TOKEN"]
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val whitelist
         get() = instance.server.whitelistedPlayers
 
     private var kord: Kord? = null
-    private var channelIds: List<Snowflake>? = emptyList()
 
     init {
         if (enabled()) {
-            if (!token.isNullOrBlank()) {
-                DiscordData.createTable()
-                DiscordData.getData().firstOrNull { it.id == configId }?.let { channelIds = it.allowedChannels }
-                bot(token)
-            } else instance.logger.warning("Warning: Discord bot token is not set!")
+            if (!token.isNullOrBlank())
+                bot(token) else instance.logger.warning("Warning: Discord bot token is not set!")
         }
     }
 
@@ -76,9 +68,6 @@ class DiscordModule : ModuleInterface {
 
     /** Registers the Discord commands for the bot. */
     private suspend fun Kord.registerCommands() {
-        createGuildChatInputCommand(guildId, "setup", "Setup the Discord bot") {
-            defaultMemberPermissions = Permissions(Permission.Administrator)
-        }
         createGuildChatInputCommand(guildId, "whitelist", "Manage the whitelist") {
             defaultMemberPermissions = Permissions(Permission.Administrator)
         }
@@ -88,47 +77,8 @@ class DiscordModule : ModuleInterface {
     /** Registers the event listeners for the Discord bot. */
     private fun Kord.registerEvents() {
         on<ComponentInteractionCreateEvent> {
-            log()
             try {
                 when (interaction.componentId) {
-                    "setup_select" -> {
-                        when (interaction.data.data.values.firstOrNull { it.isNotEmpty() }) {
-                            "channels" -> {
-                                interaction.respondEphemeral {
-                                    embeds = mutableListOf(
-                                        embed(
-                                            "⚙\uFE0F Setup | Allowed Channels",
-                                            "Select the allowed channels:"
-                                        )
-                                    )
-                                    components = mutableListOf(
-                                        ActionRowBuilder().apply {
-                                            channelSelect("channel_select") {
-                                                placeholder = "Choose allowed channels"
-                                                channelTypes = mutableListOf(ChannelType.GuildText)
-                                                allowedValues = 1..25
-                                                channelIds?.let { defaultChannels.addAll(it) }
-                                            }
-                                        }
-                                    )
-                                }
-                            }
-                        }
-                    }
-
-                    "channel_select" -> {
-                        channelIds = interaction.data.data.values.map { it.map(::Snowflake) }.orEmpty()
-                        DiscordData.setData(DiscordData(id = configId, allowedChannels = channelIds))
-                        interaction.respondEphemeral {
-                            embeds = mutableListOf(
-                                embed(
-                                    "⚙\uFE0F Setup | Allowed Channels",
-                                    "Allowed channels updated successfully."
-                                )
-                            )
-                        }
-                    }
-
                     "whitelist_add_button" -> {
                         interaction.modal("Add to Whitelist", "whitelist_add_modal") {
                             actionRow {
@@ -178,7 +128,7 @@ class DiscordModule : ModuleInterface {
                                 )
                             }
                         } else {
-                            updateWhitelist("remove", player)
+                            updateWhitelist(interaction.user, "remove", player)
                             interaction.respondEphemeral {
                                 embeds = mutableListOf(
                                     embed(
@@ -216,25 +166,9 @@ class DiscordModule : ModuleInterface {
         }
 
         on<ChatInputCommandInteractionCreateEvent> {
-            log()
             try {
                 when (interaction.command.rootName) {
-                    "setup" -> {
-                        interaction.respondEphemeral {
-                            embeds = mutableListOf(embed("⚙\uFE0F Setup", "Configure channels or roles:"))
-                            components = mutableListOf(
-                                ActionRowBuilder().apply {
-                                    stringSelect("setup_select") {
-                                        placeholder = "Choose what to setup"
-                                        option("Channels", "channels")
-                                    }
-                                }
-                            )
-                        }
-                    }
-
                     "whitelist" -> {
-                        if (!isChannelAllowed(this)) return@on
                         interaction.respondEphemeral {
                             embeds = mutableListOf(embed("\uD83D\uDCDC Whitelist Management", "Choose an action:"))
                             components = mutableListOf(
@@ -256,7 +190,6 @@ class DiscordModule : ModuleInterface {
                     }
 
                     "online" -> {
-                        if (!isChannelAllowed(this)) return@on
                         val players = instance.server.onlinePlayers.joinToString(", ") { it.name }
                         interaction.respondEphemeral {
                             embeds = mutableListOf(
@@ -283,7 +216,6 @@ class DiscordModule : ModuleInterface {
         }
 
         on<ModalSubmitInteractionCreateEvent> {
-            log()
             try {
                 when (interaction.modalId) {
                     "whitelist_add_modal" -> {
@@ -299,7 +231,7 @@ class DiscordModule : ModuleInterface {
                                 )
                             }
                         } else {
-                            updateWhitelist("add", player)
+                            updateWhitelist(interaction.user, "add", player)
                             interaction.respondEphemeral {
                                 embeds = mutableListOf(
                                     embed(
@@ -327,79 +259,18 @@ class DiscordModule : ModuleInterface {
     }
 
     /**
-     * Checks if the interaction is in an allowed channel.
-     * If not, responds with an ephemeral message indicating the command can only be used in designated channels.
-     * @param event The interaction event to check.
-     * @return True if the channel is allowed, false otherwise.
-     */
-    private suspend fun isChannelAllowed(event: ChatInputCommandInteractionCreateEvent): Boolean {
-        channelIds?.let {
-            if (it.isEmpty()) {
-                event.interaction.respondEphemeral {
-                    embeds = mutableListOf(
-                        embed(
-                            title = "❌ Channel Restriction",
-                            description = "No allowed channels are configured. Please use the `/setup channels` command to select allowed channels.",
-                            color = 0xFFA500
-                        )
-                    )
-                }
-                return false
-            }
-        }
-        channelIds?.let { ids ->
-            if (event.interaction.channelId !in ids) {
-                val allowedMentions = channelIds?.joinToString(", ") { "<#${it.value}>" }
-                event.interaction.respondEphemeral {
-                    embeds = mutableListOf(
-                        embed(
-                            title = "❌ Channel Restriction",
-                            description = "This command can only be executed in the designated channel(s): \n$allowedMentions",
-                            color = 0xFF0000
-                        )
-                    )
-                }
-                return false
-            }
-        }
-        return true
-    }
-
-    /**
      * Updates the whitelist.
+     * @param discordUser The Discord user performing the action.
      * @param action The action to perform ("add" or "remove").
      * @param playerName The name of the player to update.
      */
-    private suspend fun updateWhitelist(action: String, playerName: String) = withContext(Dispatchers.IO) {
-        instance.server.scheduler.runTask(instance, Runnable {
-            instance.server.getOfflinePlayer(playerName).isWhitelisted = (action == "add")
-        })
-    }
-
-    /**
-     * Logs the interaction event to the console.
-     * @param enabled Whether logging is enabled (default is true).
-     */
-    private fun InteractionCreateEvent.log(enabled: Boolean = true) {
-        if (!enabled) return
-        val user = interaction.user
-        val userId = user.id.value
-        val username = user.username
-        val commandName = when (this) {
-            is ChatInputCommandInteractionCreateEvent -> interaction.command.rootName
-            is ComponentInteractionCreateEvent -> interaction.componentId
-            is ModalSubmitInteractionCreateEvent -> interaction.modalId
-            else -> "Unknown Command"
+    private suspend fun updateWhitelist(discordUser: User, action: String, playerName: String): BukkitTask {
+        return withContext(Dispatchers.IO) {
+            instance.server.scheduler.runTask(instance, Runnable {
+                instance.server.getOfflinePlayer(playerName).isWhitelisted = (action == "add")
+                instance.logger.info("Whitelist: ${discordUser.username} (${discordUser.id.value}) performed: $action $playerName")
+            })
         }
-        val value = when (this) {
-            is ChatInputCommandInteractionCreateEvent -> interaction.command.data.options.firstOrNull { true }?.value
-            is ComponentInteractionCreateEvent -> interaction.data.data.values.firstOrNull { true }
-            is ModalSubmitInteractionCreateEvent -> interaction.textInputs["player_name"]?.value
-            else -> null
-        }
-        val valuePart = if (value != null && value.toString().isNotBlank()) " and changed value to '$value'" else ""
-
-        instance.logger.info("Discord: User $username ($userId) used command '$commandName'$valuePart")
     }
 
     /**
