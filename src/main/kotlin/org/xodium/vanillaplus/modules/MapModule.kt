@@ -69,9 +69,7 @@ class MapModule : ModuleInterface {
             player.sendMessage("Could not get map view.".mm())
             return
         }
-        val image = fetchAndResizeImage(url)
-
-        if (image == null) {
+        val image = fetchAndResizeImage(url) ?: run {
             player.sendMessage("Failed to fetch or process image.".mm())
             return
         }
@@ -87,17 +85,18 @@ class MapModule : ModuleInterface {
      */
     private fun fetchAndResizeImage(url: String): Image? {
         return try {
-            val connection = URI.create(url).toURL().openConnection().apply {
+            URI.create(url).toURL().openConnection().apply {
                 connectTimeout = 5000
                 readTimeout = 5000
-            }
-            connection.inputStream.use {
-                val original = ImageIO.read(it) ?: return null
-                val resized = BufferedImage(128, 128, BufferedImage.TYPE_INT_ARGB)
-                val graphics = resized.createGraphics()
-                graphics.drawImage(original.getScaledInstance(128, 128, Image.SCALE_SMOOTH), 0, 0, null)
-                graphics.dispose()
-                resized
+            }.getInputStream().use { input ->
+                ImageIO.read(input)?.let { original ->
+                    BufferedImage(128, 128, BufferedImage.TYPE_INT_ARGB).apply {
+                        createGraphics().apply {
+                            drawImage(original.getScaledInstance(128, 128, Image.SCALE_SMOOTH), 0, 0, null)
+                            dispose()
+                        }
+                    }
+                }
             }
         } catch () {
             null
