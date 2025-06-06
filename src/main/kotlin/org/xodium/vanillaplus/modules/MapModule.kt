@@ -5,18 +5,26 @@
 
 package org.xodium.vanillaplus.modules
 
+import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
+import org.bukkit.Material
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.server.MapInitializeEvent
+import org.bukkit.inventory.meta.MapMeta
+import org.bukkit.map.MapCanvas
+import org.bukkit.map.MapRenderer
+import org.bukkit.map.MapView
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.mapify.util.Util
+import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.Utils
+import java.awt.Image
 import java.awt.image.BufferedImage
 import java.net.URI
 import javax.imageio.ImageIO
@@ -30,37 +38,101 @@ class MapModule : ModuleInterface {
         return listOf(
             Commands.literal("mapify")
                 .requires { it.sender.hasPermission(Perms.Mapify.USE) }
-                .executes { it -> Utils.tryCatch(it) { mapify() } }
                 .then(
-                    Commands.literal("refresh")
-                        .requires { it.sender.hasPermission(Perms.Mapify.REFRESH) }
-                        .executes { it -> Utils.tryCatch(it) { mapify() } })
+                    Commands.argument("url", StringArgumentType.string())
+                        .executes { ctx ->
+                            Utils.tryCatch(ctx) {
+                                mapify(
+                                    it.sender as Player,
+                                    StringArgumentType.getString(ctx, "url")
+                                )
+                            }
+                        }
+                )
         )
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: MapInitializeEvent) {
         instance.server.scheduler.runTaskAsynchronously(instance, Runnable {
-            Util.getRenderer(event.map)?.let { pluginRenderer ->
+            getRenderer(event.map)?.let { pluginRenderer ->
                 event.map.renderers.forEach { event.map.removeRenderer(it) }
                 event.map.addRenderer(pluginRenderer)
             }
         })
     }
 
-    private fun mapify() {}
+    /**
+     * Maps the given URL to the player's held map item.
+     * @param player The player holding the map item.
+     * @param url The URL of the image to be mapped onto the map item.
+     */
+    private fun mapify(player: Player, url: String) {
+        val item = player.inventory.itemInMainHand
+
+        if (item.type != Material.MAP) {
+            player.sendMessage("You must hold a map in your hand to use this command.".mm())
+            return
+        }
+
+        val itemMeta = item.itemMeta as? MapMeta ?: run {
+            player.sendMessage("Invalid map item.".mm())
+            return
+        }
+        val mapView = itemMeta.mapView ?: run {
+            player.sendMessage("Could not get map view.".mm())
+            return
+        }
+        val image = fetchAndResizeImage(url)
+
+        if (image == null) {
+            player.sendMessage("Failed to fetch or process image.".mm())
+            return
+        }
+
+        renderImageToMap(mapView, image)
+        player.sendMessage("Map updated with image from URL.".mm())
+    }
 
     /**
-     * Fetches an image from the specified URL.
+     * Fetches an image from the given URL and resizes it to fit a map.
      * @param url The URL of the image to fetch.
-     * @return A BufferedImage if the image was successfully fetched, null otherwise.
+     * @return A resized image suitable for rendering on a map, or null if the fetch fails.
      */
-    fun fetchImageFromUrl(url: String): BufferedImage? {
+    private fun fetchAndResizeImage(url: String): Image? {
         return try {
-            URI(url).toURL().openStream().use { ImageIO.read(it) }
-        } catch (e: Exception) {
-            instance.logger.warning("Failed to fetch image from $url : ${e.message}")
+            val connection = URI.create(url).toURL().openConnection().apply {
+                connectTimeout = 5000
+                readTimeout = 5000
+            }
+            connection.inputStream.use {
+                val original = ImageIO.read(it) ?: return null
+                val resized = BufferedImage(128, 128, BufferedImage.TYPE_INT_ARGB)
+                val graphics = resized.createGraphics()
+                graphics.drawImage(original.getScaledInstance(128, 128, Image.SCALE_SMOOTH), 0, 0, null)
+                graphics.dispose()
+                resized
+            }
+        } catch () {
             null
         }
+    }
+
+    /**
+     * Renders the given image onto the specified map view.
+     * @param mapView The map view to render the image onto.
+     * @param image The image to render.
+     */
+    private fun renderImageToMap(mapView: MapView, image: Image) {
+        mapView.renderers.forEach { mapView.removeRenderer(it) }
+        mapView.addRenderer(object : MapRenderer() {
+            private var rendered = false
+
+            override fun render(map: MapView, canvas: MapCanvas, player: Player) {
+                if (rendered) return
+                canvas.drawImage(0, 0, image)
+                rendered = true
+            }
+        })
     }
 }

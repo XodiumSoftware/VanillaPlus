@@ -37,6 +37,3 @@ permissions:
   vanillaplus.mapify.use:
     description: Allows use of the mapify command
     default: true
-  vanillaplus.mapify.refresh:
-    description: Allows use of the mapify refresh command
-    default: true
