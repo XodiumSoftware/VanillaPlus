@@ -25,6 +25,12 @@ import java.awt.image.BufferedImage
 import java.net.URI
 import javax.imageio.ImageIO
 
+//TODO: Implement persistent map color cache storage.
+//TODO: On startup, check if a cache file exists on disk.
+//TODO: If cache file does not exist, build the cache and save it to disk.
+//TODO: On subsequent startups, load the cache from the file to avoid rebuilding.
+//TODO: Write back to disk if map colors change or cache is updated.
+
 /** Represents a module handling map mechanics within the system. */
 class MapModule : ModuleInterface {
     override fun enabled(): Boolean = Config.MapModule.ENABLED
@@ -56,7 +62,7 @@ class MapModule : ModuleInterface {
     private fun mapify(player: Player, url: String) {
         val item = player.inventory.itemInMainHand
 
-        if (item.type != Material.MAP) {
+        if (item.type != Material.FILLED_MAP) {
             player.sendMessage("You must hold a map in your hand to use this command.".mm())
             return
         }
@@ -98,7 +104,7 @@ class MapModule : ModuleInterface {
                     }
                 }
             }
-        } catch () {
+        } catch (_: Exception) {
             null
         }
     }
