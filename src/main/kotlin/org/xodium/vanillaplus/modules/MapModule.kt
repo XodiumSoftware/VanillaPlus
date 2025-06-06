@@ -23,9 +23,12 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.Utils
 import java.awt.Image
 import java.awt.image.BufferedImage
+import java.io.ByteArrayOutputStream
 import java.net.URI
 import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.concurrent.Executors
 import javax.imageio.ImageIO
 
 /** Represents a module handling map mechanics within the system. */
@@ -50,6 +53,8 @@ class MapModule : ModuleInterface {
                 )
         )
     }
+
+    private val mapSaveExecutor = Executors.newSingleThreadExecutor()
 
     init {
         if (enabled()) {
@@ -97,18 +102,11 @@ class MapModule : ModuleInterface {
 
         renderImageToMap(mapView, image)
 
-        val mapsDir = Paths.get(instance.dataFolder.toString(), "maps")
-        Files.createDirectories(mapsDir)
-        val mapId = mapView.id
-        val file = mapsDir.resolve("$mapId.png")
-        try {
-            Files.newOutputStream(file).use { out ->
-                ImageIO.write(image as BufferedImage, "PNG", out)
-            }
-        } catch (e: Exception) {
-            player.sendMessage("Failed to save map image. See logs!".mm())
-            instance.logger.severe("Failed to save map image: ${e.printStackTrace()}")
-        }
+        val file = Paths.get(instance.dataFolder.toString(), "maps")
+            .also { Files.createDirectories(it) }
+            .resolve("${mapView.id}.png")
+
+        saveMapImageAsync(image as BufferedImage, file)
 
         player.sendMessage("Map updated with image from URL.".mm())
     }
@@ -154,5 +152,20 @@ class MapModule : ModuleInterface {
                 rendered = true
             }
         })
+    }
+
+    /**
+     * Asynchronously saves the map image to a file.
+     * @param image The image to save.
+     * @param file The path to the file where the image will be saved.
+     */
+    private fun saveMapImageAsync(image: BufferedImage, file: Path) {
+        mapSaveExecutor.submit {
+            val baos = ByteArrayOutputStream()
+            ImageIO.write(image, "PNG", baos)
+            val newBytes = baos.toByteArray()
+            val shouldSave = !Files.exists(file) || !Files.readAllBytes(file).contentEquals(newBytes)
+            if (shouldSave) Files.newOutputStream(file).use { it.write(newBytes) }
+        }
     }
 }
