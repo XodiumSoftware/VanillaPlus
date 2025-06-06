@@ -31,6 +31,8 @@ import java.nio.file.Paths
 import java.util.concurrent.Executors
 import javax.imageio.ImageIO
 
+//TODO: add way to spread image across multiple maps.
+
 /** Represents a module handling map mechanics within the system. */
 class MapModule : ModuleInterface {
     override fun enabled(): Boolean = Config.MapModule.ENABLED
