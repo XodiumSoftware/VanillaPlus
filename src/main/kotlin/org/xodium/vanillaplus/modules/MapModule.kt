@@ -28,12 +28,6 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import javax.imageio.ImageIO
 
-//TODO: Implement persistent map color cache storage.
-//TODO: On startup, check if a cache file exists on disk.
-//TODO: If cache file does not exist, build the cache and save it to disk.
-//TODO: On subsequent startups, load the cache from the file to avoid rebuilding.
-//TODO: Write back to disk if map colors change or cache is updated.
-
 /** Represents a module handling map mechanics within the system. */
 class MapModule : ModuleInterface {
     override fun enabled(): Boolean = Config.MapModule.ENABLED
