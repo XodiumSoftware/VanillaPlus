@@ -17,12 +17,15 @@ import org.bukkit.map.MapRenderer
 import org.bukkit.map.MapView
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Perms
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.Utils
 import java.awt.Image
 import java.awt.image.BufferedImage
 import java.net.URI
+import java.nio.file.Files
+import java.nio.file.Paths
 import javax.imageio.ImageIO
 
 //TODO: Implement persistent map color cache storage.
@@ -54,6 +57,24 @@ class MapModule : ModuleInterface {
         )
     }
 
+    init {
+        if (enabled()) {
+            val mapsDir = Paths.get(instance.dataFolder.toString(), "maps")
+            if (Files.exists(mapsDir)) {
+                Files.newDirectoryStream(mapsDir).use { stream ->
+                    for (path in stream) {
+                        val mapId = path.fileName.toString().substringBeforeLast('.').toIntOrNull() ?: continue
+                        val mapView = instance.server.getMap(mapId) ?: continue
+                        Files.newInputStream(path).use { input ->
+                            val image = ImageIO.read(input)
+                            renderImageToMap(mapView, image)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * Maps the given URL to the player's held map item.
      * @param player The player holding the map item.
@@ -81,6 +102,20 @@ class MapModule : ModuleInterface {
         }
 
         renderImageToMap(mapView, image)
+
+        val mapsDir = Paths.get(instance.dataFolder.toString(), "maps")
+        Files.createDirectories(mapsDir)
+        val mapId = mapView.id
+        val file = mapsDir.resolve("$mapId.png")
+        try {
+            Files.newOutputStream(file).use { out ->
+                ImageIO.write(image as BufferedImage, "PNG", out)
+            }
+        } catch (e: Exception) {
+            player.sendMessage("Failed to save map image. See logs!".mm())
+            instance.logger.severe("Failed to save map image: ${e.printStackTrace()}")
+        }
+
         player.sendMessage("Map updated with image from URL.".mm())
     }
 
