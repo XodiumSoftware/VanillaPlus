@@ -11,16 +11,12 @@ import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.Material
 import org.bukkit.entity.Player
-import org.bukkit.event.EventHandler
-import org.bukkit.event.EventPriority
-import org.bukkit.event.server.MapInitializeEvent
 import org.bukkit.inventory.meta.MapMeta
 import org.bukkit.map.MapCanvas
 import org.bukkit.map.MapRenderer
 import org.bukkit.map.MapView
 import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Perms
-import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.Utils
@@ -50,16 +46,6 @@ class MapModule : ModuleInterface {
                         }
                 )
         )
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    fun on(event: MapInitializeEvent) {
-        instance.server.scheduler.runTaskAsynchronously(instance, Runnable {
-            getRenderer(event.map)?.let { pluginRenderer ->
-                event.map.renderers.forEach { event.map.removeRenderer(it) }
-                event.map.addRenderer(pluginRenderer)
-            }
-        })
     }
 
     /**
