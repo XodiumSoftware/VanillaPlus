@@ -17,8 +17,11 @@ jobs:
     steps:
       - id: check_branches
         name: Check Branches
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+          BASE_REF: ${{ github.base_ref }}
         run: |
-          if [ ${{ github.head_ref }} != "dev" ] && [ ${{ github.base_ref }} == "main" ]; then
+          if [ "$HEAD_REF" != "dev" ] && [ "$BASE_REF" == "main" ]; then
             echo "Merge requests to main branch are only allowed from dev branch."
             exit 1
           fi
