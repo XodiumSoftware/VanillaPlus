@@ -5,22 +5,22 @@
 
 package org.xodium.vanillaplus.modules
 
-import com.mojang.brigadier.arguments.StringArgumentType
-import com.mojang.brigadier.builder.LiteralArgumentBuilder
-import io.papermc.paper.command.brigadier.CommandSourceStack
-import io.papermc.paper.command.brigadier.Commands
+import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.MapId
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.Material
 import org.bukkit.entity.Player
-import org.bukkit.inventory.meta.MapMeta
+import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
+import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.InventoryType
+import org.bukkit.inventory.ItemStack
 import org.bukkit.map.MapCanvas
 import org.bukkit.map.MapRenderer
 import org.bukkit.map.MapView
 import org.xodium.vanillaplus.Config
-import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.Utils
 import java.awt.Image
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
@@ -32,29 +32,13 @@ import java.util.concurrent.Executors
 import javax.imageio.ImageIO
 
 //TODO: add way to spread image across multiple maps.
+//TODO: move away from using cmds for this, instead lets use tags or something similar in combination with a map.
+//TODO: where the tag has the URL, and the map renderer reads that tag and fetches the image.
+//TODO: has to be combined in an anvil.
 
 /** Represents a module handling map mechanics within the system. */
 class MapModule : ModuleInterface {
     override fun enabled(): Boolean = Config.MapModule.ENABLED
-
-    @Suppress("UnstableApiUsage")
-    override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
-        return listOf(
-            Commands.literal("mapify")
-                .requires { it.sender.hasPermission(Perms.Mapify.USE) }
-                .then(
-                    Commands.argument("url", StringArgumentType.string())
-                        .executes { ctx ->
-                            Utils.tryCatch(ctx) {
-                                mapify(
-                                    it.sender as Player,
-                                    StringArgumentType.getString(ctx, "url")
-                                )
-                            }
-                        }
-                )
-        )
-    }
 
     private val mapSaveExecutor = Executors.newSingleThreadExecutor()
 
@@ -76,31 +60,43 @@ class MapModule : ModuleInterface {
         }
     }
 
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun on(event: InventoryClickEvent) {
+        if (!enabled()) return
+        if (event.inventory.type == InventoryType.ANVIL) {
+            val slot1 = event.inventory.getItem(0)
+            val slot2 = event.inventory.getItem(1)
+            val result = event.currentItem
+
+            if (slot1?.type == Material.MAP && slot2?.type == Material.NAME_TAG && result?.type == Material.FILLED_MAP) {
+                if (slot2.itemMeta?.hasCustomName() != true) return
+                val tag = slot2.itemMeta?.customName() ?: return
+                val url = PlainTextComponentSerializer.plainText().serialize(tag)
+                val player = event.whoClicked as? Player ?: return
+
+                event.isCancelled = true
+                event.inventory.clear()
+
+                @Suppress("UnstableApiUsage")
+                val mapId = slot1.getData(DataComponentTypes.MAP_ID) ?: return
+
+                @Suppress("UnstableApiUsage")
+                val mapView = instance.server.getMap(mapId.id()) ?: return
+
+                if (slot1.type == Material.FILLED_MAP) mapify(mapView, url)
+
+                player.inventory.addItem(map(mapId))
+            }
+        }
+    }
+
     /**
      * Maps the given URL to the player's held map item.
-     * @param player The player holding the map item.
+     * @param mapView The MapView to associate with the ItemStack.
      * @param url The URL of the image to be mapped onto the map item.
      */
-    private fun mapify(player: Player, url: String) {
-        val item = player.inventory.itemInMainHand
-
-        if (item.type != Material.FILLED_MAP) {
-            player.sendMessage("You must hold a map in your hand to use this command.".mm())
-            return
-        }
-
-        val itemMeta = item.itemMeta as? MapMeta ?: run {
-            player.sendMessage("Invalid map item.".mm())
-            return
-        }
-        val mapView = itemMeta.mapView ?: run {
-            player.sendMessage("Could not get map view.".mm())
-            return
-        }
-        val image = fetchAndResizeImage(url) ?: run {
-            player.sendMessage("Failed to fetch or process image.".mm())
-            return
-        }
+    private fun mapify(mapView: MapView, url: String) {
+        val image = fetchAndResizeImage(url) ?: run { return }
 
         renderImageToMap(mapView, image)
 
@@ -109,8 +105,18 @@ class MapModule : ModuleInterface {
             .resolve("${mapView.id}.png")
 
         saveMapImageAsync(image as BufferedImage, file)
+    }
 
-        player.sendMessage("Map updated with image from URL.".mm())
+    /**
+     * Creates a new map item stack.
+     * @param mapId The ID of the map to be created.
+     * @return A new ItemStack representing a filled map.
+     */
+    @Suppress("UnstableApiUsage")
+    private fun map(mapId: MapId): ItemStack {
+        return ItemStack.of(Material.FILLED_MAP).apply {
+            setData(DataComponentTypes.MAP_ID, mapId)
+        }
     }
 
     /**

@@ -34,6 +34,3 @@ permissions:
   vanillaplus.invunload.use:
     description: Allows use of the invunload command
     default: true
-  vanillaplus.mapify.use:
-    description: Allows use of the mapify command
-    default: true
