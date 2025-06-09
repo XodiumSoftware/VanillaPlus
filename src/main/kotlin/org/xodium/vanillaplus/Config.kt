@@ -386,12 +386,6 @@ object Config {
             """.trimIndent()
     }
 
-    /** Configuration settings for the MapModule. */
-    object MapModule {
-        /** Enables or disables the MapModule. */
-        var ENABLED: Boolean = true
-    }
-
     /** Configuration settings for the MotdModule. */
     object MotdModule {
         /** Enables or disables the MotdModule. */
