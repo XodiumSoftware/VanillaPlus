@@ -4,6 +4,7 @@
       <w>autorefill</w>
       <w>autorestart</w>
       <w>autotool</w>
+      <w>baos</w>
       <w>birdflop</w>
       <w>blocktypes</w>
       <w>bloodmoon</w>
@@ -12,12 +13,16 @@
       <w>cmds</w>
       <w>coords</w>
       <w>datas</w>
+      <w>dpaper</w>
       <w>invsearch</w>
       <w>invunload</w>
       <w>luckperms</w>
+      <w>mapify</w>
+      <w>mojang</w>
       <w>netherite</w>
       <w>newmoon</w>
       <w>shulker</w>
+      <w>subcmd</w>
       <w>triumphteam</w>
       <w>useable</w>
       <w>vanillaplus</w>

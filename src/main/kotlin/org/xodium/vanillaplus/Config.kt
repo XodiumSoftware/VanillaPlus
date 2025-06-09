@@ -75,7 +75,7 @@ object Config {
         /** Enables or disables the BookModule. */
         var ENABLED: Boolean = true
 
-        //FIX: suggestcmd not working.
+        //TODO: suggest cmd not working because of minecraft bug.
         /** The Guide book. */
         var GUIDE_BOOK: Book = Book.book(
             "Guide".fireFmt().mm(),
@@ -168,20 +168,6 @@ object Config {
         )
     }
 
-    /** Configuration settings for the ChiselModule. */
-    object ChiselModule {
-        /** Enables or disables the ChiselModule. */
-        var ENABLED: Boolean = true
-
-        /** The sound effect used for chisel durability decrease. */
-        var CHISEL_DURABILITY_DECREASE_SOUND: Sound = Sound.sound(
-            BukkitSound.ENTITY_ITEM_BREAK,
-            Sound.Source.PLAYER,
-            1.0f,
-            1.0f
-        )
-    }
-
     /** Configuration settings for the DimensionsModule. */
     object DimensionsModule {
         /** Enables or disables the DimensionsModule. */
@@ -189,6 +175,12 @@ object Config {
 
         /** The radius within which to search for portals in the overworld. */
         var PORTAL_SEARCH_RADIUS: Double = 128.0
+    }
+
+    /** Configuration settings for the DiscordModule. */
+    object DiscordModule {
+        /** Enables or disables the DiscordModule. */
+        var ENABLED: Boolean = true
     }
 
     /** Configuration settings for the DoorsModule. */
@@ -472,7 +464,7 @@ object Config {
             Material.JUNGLE_SAPLING to listOf("trees/jungle"),
             Material.MANGROVE_PROPAGULE to listOf("trees/mangrove"),
             Material.OAK_SAPLING to listOf("trees/oak"),
-            //Material.PALE_OAK_SAPLING to listOf("trees/pale_oak"), // TODO: add when artist has schematics ready.
+            Material.PALE_OAK_SAPLING to listOf("trees/pale_oak"),
             Material.SPRUCE_SAPLING to listOf("trees/spruce"),
             Material.WARPED_FUNGUS to listOf("trees/warped"),
         )

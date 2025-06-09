@@ -10,12 +10,12 @@ import java.net.URI
 plugins {
     id("java")
     kotlin("jvm") version "2.1.21"
-    id("com.gradleup.shadow") version "9.0.0-beta13"
+    id("com.gradleup.shadow") version "9.0.0-beta15"
     id("de.undercouch.download") version "5.6.0"
 }
 
 group = "org.xodium.vanillaplus"
-version = "1.9.0"
+version = "1.9.1"
 description = "Minecraft plugin that enhances the base gameplay."
 
 var apiVersion: String = "1.21.5"
@@ -28,12 +28,10 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.5-R0.1-SNAPSHOT")
-    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.13") //TODO("Move away from WorldEdit")
+    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.14") //TODO("Move away from WorldEdit")
     implementation(kotlin("stdlib-jdk8"))
-    implementation("org.jetbrains.exposed:exposed-core:0.61.0")
-    implementation("org.jetbrains.exposed:exposed-dao:0.61.0")
-    implementation("org.jetbrains.exposed:exposed-jdbc:0.61.0")
-    implementation("org.xerial:sqlite-jdbc:3.49.1.0")
+    implementation("dev.kord:kord-core:0.15.0")
+    implementation("io.github.cdimascio:dotenv-kotlin:6.5.1")
 }
 
 java { toolchain.languageVersion.set(JavaLanguageVersion.of(21)) }
@@ -52,8 +50,11 @@ tasks {
     shadowJar {
         dependsOn(processResources)
         archiveClassifier.set("")
-        mergeServiceFiles()
         destinationDirectory.set(file(".server/plugins/update"))
+        relocate("dev.kord", "org.xodium.vanillaplus.kord")
+        relocate("io.ktor", "org.xodium.vanillaplus.ktor")
+        relocate("io.github.cdimascio", "org.xodium.vanillaplus.dotenv")
+        mergeServiceFiles()
         doLast {
             copy {
                 from(archiveFile)
@@ -102,10 +103,8 @@ tasks {
         val javaExec = project.extensions.getByType(JavaToolchainService::class.java)
             .launcherFor { languageVersion.set(JavaLanguageVersion.of(21)) }
             .get().executablePath.asFile.absolutePath
-        val hotswapAgentPath = file(".hotswap/hotswap-agent-core.jar").absolutePath
         commandLine = listOf(
             javaExec,
-            "-javaagent:$hotswapAgentPath",
             "-XX:+AllowEnhancedClassRedefinition",
             "-jar", "server.jar", "nogui"
         )

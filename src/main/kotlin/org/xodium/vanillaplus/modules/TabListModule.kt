@@ -42,13 +42,23 @@ class TabListModule : ModuleInterface {
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    fun on(event: PlayerJoinEvent): Unit = updateTabList(event.player)
+    fun on(event: PlayerJoinEvent) {
+        if (!enabled()) return
+        updateTabList(event.player)
+        updatePlayerDisplayName(event.player)
+    }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    fun on(event: WeatherChangeEvent): Unit = event.world.players.forEach { updateTabList(it) }
+    fun on(event: WeatherChangeEvent) {
+        if (!enabled()) return
+        event.world.players.forEach { updateTabList(it) }
+    }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    fun on(event: ThunderChangeEvent): Unit = event.world.players.forEach { updateTabList(it) }
+    fun on(event: ThunderChangeEvent) {
+        if (!enabled()) return
+        event.world.players.forEach { updateTabList(it) }
+    }
 
     /**
      * Update the player's display name in the tab list.

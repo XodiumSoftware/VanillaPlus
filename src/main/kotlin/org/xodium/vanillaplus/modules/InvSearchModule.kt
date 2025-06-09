@@ -57,7 +57,8 @@ class InvSearchModule : ModuleInterface {
                         .suggests(materialSuggestionProvider)
                         .executes { ctx -> handleSearch(ctx) }
                 )
-                .executes { ctx -> handleSearch(ctx) })
+                .executes { ctx -> handleSearch(ctx) }
+        )
     }
 
     /**

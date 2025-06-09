@@ -19,6 +19,7 @@ class RecipiesModule : ModuleInterface {
 
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: PlayerJoinEvent) {
+        if (!enabled()) return
         event.player.discoverRecipes(
             instance.server.recipeIterator().asSequence().filterIsInstance<Keyed>().map { it.key }.toList()
         )

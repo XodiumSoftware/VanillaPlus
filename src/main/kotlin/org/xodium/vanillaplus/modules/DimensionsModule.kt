@@ -36,6 +36,8 @@ class DimensionsModule : ModuleInterface {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerPortalEvent) {
+        if (!enabled()) return
+
         val player = event.player
         if (event.cause == TeleportCause.NETHER_PORTAL) {
             when (player.world.environment) {
@@ -62,11 +64,15 @@ class DimensionsModule : ModuleInterface {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: EntityPortalEvent) {
+        if (!enabled()) return
+
         event.canCreatePortal = false
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: BlockIgniteEvent) {
+        if (!enabled()) return
+
         val block = event.block
         val world = block.world
 
