@@ -31,13 +31,6 @@ object Perms {
         permissions.forEach(instance.server.pluginManager::addPermission)
     }
 
-    /** Permissions for Usage commands. */
-    object Use {
-        private val G1 = this::class.simpleName.toString().lowercase()
-        val GENERAL: Permission =
-            Permission("${G0}.${G1}", "Allows use of the commands", PermissionDefault.TRUE)
-    }
-
     /** Permissions for AutoRestart commands. */
     object AutoRestart {
         private val G1 = this::class.simpleName.toString().lowercase()
@@ -52,6 +45,13 @@ object Perms {
             Permission("${G0}.${G1}.guide", "Allows use of the guide command", PermissionDefault.TRUE)
         val RULES: Permission =
             Permission("${G0}.${G1}.rules", "Allows use of the rules command", PermissionDefault.TRUE)
+    }
+
+    /** Permissions for Config commands. */
+    object Config {
+        private val G1 = this::class.simpleName.toString().lowercase()
+        val USE: Permission =
+            Permission("${G0}.${G1}.use", "Allows use of the config command", PermissionDefault.OP)
     }
 
     /** Permissions for Eclipse commands. */

@@ -15,7 +15,7 @@ plugins {
 }
 
 group = "org.xodium.vanillaplus"
-version = "1.9.1"
+version = "1.9.2"
 description = "Minecraft plugin that enhances the base gameplay."
 
 var apiVersion: String = "1.21.5"
@@ -24,6 +24,7 @@ repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://maven.enginehub.org/repo/")
+    maven("https://repo.triumphteam.dev/snapshots")
 }
 
 dependencies {
@@ -32,6 +33,9 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("dev.kord:kord-core:0.15.0")
     implementation("io.github.cdimascio:dotenv-kotlin:6.5.1")
+    implementation("dev.triumphteam:triumph-gui-paper-kotlin:4.0.0-SNAPSHOT") {
+        exclude(group = "com.google.guava", module = "guava")
+    }
 }
 
 java { toolchain.languageVersion.set(JavaLanguageVersion.of(21)) }
@@ -54,6 +58,7 @@ tasks {
         relocate("dev.kord", "org.xodium.vanillaplus.kord")
         relocate("io.ktor", "org.xodium.vanillaplus.ktor")
         relocate("io.github.cdimascio", "org.xodium.vanillaplus.dotenv")
+        relocate("dev.triumphteam.gui", "org.xodium.vanillaplus.gui")
         mergeServiceFiles()
         doLast {
             copy {

@@ -11,7 +11,6 @@ import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import net.kyori.adventure.text.event.ClickEvent
 import org.bukkit.entity.Player
-import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.modules.*
@@ -81,7 +80,6 @@ object ModuleManager {
             instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
                 event.registrar().register(
                     Commands.literal(instance.name.lowercase())
-                        .requires { it.sender.hasPermission(Perms.Use.GENERAL) }
                         .executes { it ->
                             Utils.tryCatch(it) {
                                 (it.sender as Player).sendMessage(

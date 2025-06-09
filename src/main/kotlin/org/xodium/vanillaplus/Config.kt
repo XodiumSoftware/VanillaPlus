@@ -5,6 +5,14 @@
 
 package org.xodium.vanillaplus
 
+import com.mojang.brigadier.builder.LiteralArgumentBuilder
+import dev.triumphteam.gui.paper.Gui
+import dev.triumphteam.gui.paper.builder.item.ItemBuilder
+import dev.triumphteam.gui.paper.kotlin.builder.buildGui
+import dev.triumphteam.gui.paper.kotlin.builder.chestContainer
+import io.papermc.paper.command.brigadier.CommandSourceStack
+import io.papermc.paper.command.brigadier.Commands
+import io.papermc.paper.datacomponent.DataComponentTypes
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.inventory.Book
 import net.kyori.adventure.sound.Sound
@@ -12,6 +20,7 @@ import net.kyori.adventure.title.Title
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
+import org.bukkit.entity.Player
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -19,6 +28,7 @@ import org.xodium.vanillaplus.data.MobAttributeData
 import org.xodium.vanillaplus.data.MobEquipmentData
 import org.xodium.vanillaplus.utils.ExtUtils.clickRunCmd
 import org.xodium.vanillaplus.utils.ExtUtils.clickSuggestCmd
+import org.xodium.vanillaplus.utils.ExtUtils.il
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
@@ -26,12 +36,58 @@ import org.xodium.vanillaplus.utils.FmtUtils.skylineFmt
 import org.xodium.vanillaplus.utils.TimeUtils
 import org.xodium.vanillaplus.utils.Utils
 import java.time.LocalTime
+import kotlin.time.Duration.Companion.seconds
 import org.bukkit.Sound as BukkitSound
 
 //TODO: add way to have the config on a gui.
 
 /** Configuration settings. */
 object Config {
+    /**
+     * Provides a collection of commands for the configuration settings.
+     * @return A collection of LiteralArgumentBuilder objects representing the commands.
+     */
+    @Suppress("UnstableApiUsage")
+    fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? { //TODO: register cmds.
+        return listOf(
+            Commands.literal("guide")
+                .requires { it.sender.hasPermission(Perms.Config.USE) }
+                .executes { it -> Utils.tryCatch(it) { gui().open(it.sender as Player) } })
+    }
+
+    /**
+     * Creates a GUI for the configuration settings.
+     * @return A Gui object representing the configuration GUI.
+     */
+    private fun gui(): Gui {
+        return buildGui {
+            containerType = chestContainer { rows = 6 } //TODO: make rows dynamic based on config.
+            spamPreventionDuration = 1.seconds
+            title("Config".fireFmt().mm())
+            statelessComponent {
+                //TODO: make the gui item setting dynamic based on the config.
+                //TODO: adjust material based on config value. (e.g., if enabled, use green wool; if disabled, use red wool; if ranged value, use blue wool).
+                it[1] = ItemBuilder.from(guiItem(Material.RED_WOOL, "", listOf("")))
+                    .asGuiItem() //TODO: set title, lore and action based on config.
+            }
+        }
+    }
+
+    /**
+     * Creates a GUI item.
+     * @param material The material of the item.
+     * @param title The title of the item.
+     * @param lore The lore of the item.
+     * @return An ItemStack representing the GUI item.
+     */
+    @Suppress("UnstableApiUsage")
+    private fun guiItem(material: Material, title: String, lore: List<String>): ItemStack {
+        return ItemStack.of(material).apply {
+            setData(DataComponentTypes.CUSTOM_NAME, title.mm())
+            setData(DataComponentTypes.LORE, lore.il())
+        }
+    }
+
     /** Configuration settings for the AutoRestartModule. */
     object AutoRestartModule {
         /** Enables or disables the AutoRestartModule. */
