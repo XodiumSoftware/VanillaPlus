@@ -66,6 +66,7 @@ object Config {
             title("Config".fireFmt().mm())
             statelessComponent {
                 //TODO: make the gui item setting dynamic based on the config.
+                //TODO: lets start with just the enable/disable settings.
                 //TODO: adjust material based on config value. (e.g., if enabled, use green wool; if disabled, use red wool; if ranged value, use blue wool).
                 it[1] = ItemBuilder.from(guiItem(Material.RED_WOOL, "", listOf("")))
                     .asGuiItem() //TODO: set title, lore and action based on config.
