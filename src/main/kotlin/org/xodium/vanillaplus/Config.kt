@@ -28,6 +28,8 @@ import org.xodium.vanillaplus.utils.Utils
 import java.time.LocalTime
 import org.bukkit.Sound as BukkitSound
 
+//TODO: add way to have the config on a gui.
+
 /** Configuration settings. */
 object Config {
     /** Configuration settings for the AutoRestartModule. */
