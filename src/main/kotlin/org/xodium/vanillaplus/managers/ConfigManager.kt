@@ -16,7 +16,6 @@ import dev.triumphteam.gui.paper.kotlin.builder.chestContainer
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.datacomponent.DataComponentTypes
-import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.inventory.Book
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.title.Title
@@ -142,19 +141,8 @@ object ConfigManager {
         }
     }
 
-    /** Configuration settings for the AutoRestartModule. */
-    object AutoRestartModule {
-        /** The name of the boss bar, formatted with the display time. */
-        private var BOSSBAR_NAME: String = "⚡ RESTARTING in <time> minute(s) ⚡".fireFmt()
-
-        /** Bossbar for the auto-restart. */
-        var BOSSBAR: BossBar = BossBar.bossBar(
-            BOSSBAR_NAME.mm(),
-            1.0f,
-            BossBar.Color.RED,
-            BossBar.Overlay.PROGRESS
-        )
-    }
+    //NOTE: The following is deprecated and will be removed in the future.
+    //NOTE: START...
 
     /** Configuration settings for the BooksModule. */
     object BooksModule {
@@ -357,14 +345,5 @@ object ConfigManager {
 //        var INTERVAL: Long = TimeUtils.seconds(10)
     }
 
-    /** Configuration settings for the InvUnloadModule. */
-    object InvUnloadModule {
-        /** The sound effect used for unloading. */
-        var SOUND_ON_UNLOAD: Sound = Sound.sound(
-            org.bukkit.Sound.ENTITY_PLAYER_LEVELUP,
-            Sound.Source.PLAYER,
-            1.0f,
-            1.0f
-        )
-    }
+    //NOTE: ...END
 }

@@ -100,7 +100,7 @@ class InvUnloadModule : ModuleInterface {
             Utils.chestEffect(player, block)
         }
 
-        player.playSound(ConfigManager.InvUnloadModule.SOUND_ON_UNLOAD, Sound.Emitter.self())
+        player.playSound(ConfigManager.data.invUnloadModule.soundOnUnload.toSound(), Sound.Emitter.self())
     }
 
     /**

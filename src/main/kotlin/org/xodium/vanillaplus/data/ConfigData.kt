@@ -6,16 +6,17 @@
 package org.xodium.vanillaplus.data
 
 import net.kyori.adventure.bossbar.BossBar
+import net.kyori.adventure.sound.Sound
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
 import org.xodium.vanillaplus.utils.ExtUtils.clickRunCmd
-import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.FmtUtils.skylineFmt
 import org.xodium.vanillaplus.utils.TimeUtils
 import org.xodium.vanillaplus.utils.Utils
 import java.time.LocalTime
+import org.bukkit.Sound as BukkitSound
 
 /**
  * Data class representing the configuration.
@@ -70,8 +71,8 @@ data class AutoRestartModuleData(
         LocalTime.of(18, 0),
     ),
     var bossbarName: String = "⚡ RESTARTING in <time> minute(s) ⚡".fireFmt(),
-    var bossbar: BossBar = BossBar.bossBar(
-        bossbarName.mm(),
+    var bossbar: BossBarData = BossBarData(
+        bossbarName,
         1.0f,
         BossBar.Color.RED,
         BossBar.Overlay.PROGRESS,
@@ -171,12 +172,19 @@ data class InvSearchModuleData(
  * @property cooldown The cooldown period for unloading inventories, in milliseconds. Default is 1 second (1000 milliseconds).
  * @property matchEnchantments Indicates whether to match enchantments when unloading inventories. Default is true.
  * @property matchEnchantmentsOnBooks Indicates whether to match enchantments on books when unloading inventories. Default is true.
+ * @property soundOnUnload The sound played when an inventory is unloaded. Default is the player level-up sound with a volume of 1.0 and pitch of 1.0.
  */
 data class InvUnloadModuleData(
     var enabled: Boolean = true,
     var cooldown: Long = 1L * 1000L,
     var matchEnchantments: Boolean = true,
     var matchEnchantmentsOnBooks: Boolean = true,
+    var soundOnUnload: SoundData = SoundData(
+        BukkitSound.ENTITY_PLAYER_LEVELUP,
+        Sound.Source.PLAYER,
+        1.0f,
+        1.0f
+    )
 )
 
 /**

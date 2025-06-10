@@ -57,7 +57,7 @@ class AutoRestartModule : ModuleInterface {
         val totalMinutes = ConfigManager.data.autoRestartModule.countdownStartMinutes
         var remainingSeconds = totalMinutes * 60
         val totalSeconds = remainingSeconds
-        val bossBar = ConfigManager.AutoRestartModule.BOSSBAR
+        val bossBar = ConfigManager.data.autoRestartModule.bossbar.toBossBar()
         instance.server.onlinePlayers.forEach { player -> player.showBossBar(bossBar) }
         instance.server.scheduler.runTaskTimer(
             instance,
