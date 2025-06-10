@@ -35,7 +35,7 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 
 /** Represents a module handling discord mechanics within the system. */
 class DiscordModule : ModuleInterface {
-    override fun enabled(): Boolean = Config.data.discordModule
+    override fun enabled(): Boolean = Config.data.discordModule.enabled
 
     private val token = dotenv()["DISCORD_BOT_TOKEN"]
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)

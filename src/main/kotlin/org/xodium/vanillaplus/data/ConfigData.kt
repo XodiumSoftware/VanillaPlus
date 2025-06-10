@@ -5,33 +5,48 @@
 
 package org.xodium.vanillaplus.data
 
-/** Data class representing the state of various modules in the application.
- * @property autoRestartModule Indicates if the auto-restart module is enabled.
- * @property booksModule Indicates if the books module is enabled.
- * @property dimensionsModule Indicates if the dimensions module is enabled.
- * @property discordModule Indicates if the Discord module is enabled.
- * @property doorsModule Indicates if the doors module is enabled.
- * @property eclipseModule Indicates if the eclipse module is enabled.
- * @property invSearchModule Indicates if the inventory search module is enabled.
- * @property invUnloadModule Indicates if the inventory unload module is enabled.
- * @property joinQuitModule Indicates if the join/quit module is enabled.
- * @property motdModule Indicates if the message of the day (MOTD) module is enabled.
- * @property recipiesModule Indicates if the recipes module is enabled.
- * @property tabListModule Indicates if the tab list module is enabled.
- * @property treesModule Indicates if the trees module is enabled.
+/**
+ * Data class representing the configuration.
+ * @property autoRestartModule Configuration for the [AutoRestartModule].
+ * @property booksModule Configuration for the [BooksModule].
+ * @property dimensionsModule Configuration for the [DimensionsModule].
+ * @property discordModule Configuration for the [DimensionsModule].
+ * @property doorsModule Configuration for the [DoorsModule].
+ * @property eclipseModule Configuration for the [EclipseModule].
+ * @property invSearchModule Configuration for the [InvSearchModule].
+ * @property invUnloadModule Configuration for the [InvUnloadModule].
+ * @property joinQuitModule Configuration for the [JoinQuitModule].
+ * @property motdModule Configuration for the [MotdModule].
+ * @property recipiesModule Configuration for the [RecipiesModule].
+ * @property tabListModule Configuration for the [TabListModule].
+ * @property treesModule Configuration for the [TreesModule].
  */
 data class ConfigData(
-    var autoRestartModule: Boolean = true,
-    var booksModule: Boolean = true,
-    var dimensionsModule: Boolean = true,
-    var discordModule: Boolean = true,
-    var doorsModule: Boolean = true,
-    var eclipseModule: Boolean = true,
-    var invSearchModule: Boolean = true,
-    var invUnloadModule: Boolean = true,
-    var joinQuitModule: Boolean = true,
-    var motdModule: Boolean = true,
-    var recipiesModule: Boolean = true,
-    var tabListModule: Boolean = true,
-    var treesModule: Boolean = true
+    var autoRestartModule: AutoRestartModule = AutoRestartModule(),
+    var booksModule: BooksModule = BooksModule(),
+    var dimensionsModule: DimensionsModule = DimensionsModule(),
+    var discordModule: DiscordModule = DiscordModule(),
+    var doorsModule: DoorsModule = DoorsModule(),
+    var eclipseModule: EclipseModule = EclipseModule(),
+    var invSearchModule: InvSearchModule = InvSearchModule(),
+    var invUnloadModule: InvUnloadModule = InvUnloadModule(),
+    var joinQuitModule: JoinQuitModule = JoinQuitModule(),
+    var motdModule: MotdModule = MotdModule(),
+    var recipiesModule: RecipiesModule = RecipiesModule(),
+    var tabListModule: TabListModule = TabListModule(),
+    var treesModule: TreesModule = TreesModule()
 )
+
+data class AutoRestartModule(var enabled: Boolean = true)
+data class BooksModule(var enabled: Boolean = true)
+data class DimensionsModule(var enabled: Boolean = true)
+data class DiscordModule(var enabled: Boolean = true)
+data class DoorsModule(var enabled: Boolean = true)
+data class EclipseModule(var enabled: Boolean = true)
+data class InvSearchModule(var enabled: Boolean = true)
+data class InvUnloadModule(var enabled: Boolean = true)
+data class JoinQuitModule(var enabled: Boolean = true)
+data class MotdModule(var enabled: Boolean = true)
+data class RecipiesModule(var enabled: Boolean = true)
+data class TabListModule(var enabled: Boolean = true)
+data class TreesModule(var enabled: Boolean = true)

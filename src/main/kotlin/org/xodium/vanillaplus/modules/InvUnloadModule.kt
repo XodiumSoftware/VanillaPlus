@@ -32,7 +32,7 @@ import org.xodium.vanillaplus.utils.Utils
 
 /** Represents a module handling inv-unload mechanics within the system. */
 class InvUnloadModule : ModuleInterface {
-    override fun enabled(): Boolean = Config.data.invUnloadModule
+    override fun enabled(): Boolean = Config.data.invUnloadModule.enabled
 
     @Suppress("UnstableApiUsage")
     override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {

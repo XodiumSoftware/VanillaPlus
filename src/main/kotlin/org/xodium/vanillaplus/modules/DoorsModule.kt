@@ -29,7 +29,7 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 
 /** Represents a module handling door mechanics within the system. */
 class DoorsModule : ModuleInterface {
-    override fun enabled(): Boolean = Config.data.doorsModule
+    override fun enabled(): Boolean = Config.data.doorsModule.enabled
 
     private val autoClose = mutableMapOf<Block, Long>()
     private val possibleNeighbours = listOf(

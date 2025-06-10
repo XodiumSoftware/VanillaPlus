@@ -23,7 +23,7 @@ import kotlin.math.roundToInt
 
 /** Represents a module handling tab-list mechanics within the system. */
 class TabListModule : ModuleInterface {
-    override fun enabled(): Boolean = Config.data.tabListModule
+    override fun enabled(): Boolean = Config.data.tabListModule.enabled
 
     init {
         if (enabled()) {

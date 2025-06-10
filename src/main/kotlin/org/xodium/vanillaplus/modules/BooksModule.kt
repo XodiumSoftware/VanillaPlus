@@ -16,7 +16,7 @@ import org.xodium.vanillaplus.utils.Utils
 
 /** Represents a module handling book mechanics within the system. */
 class BooksModule : ModuleInterface {
-    override fun enabled(): Boolean = Config.data.booksModule
+    override fun enabled(): Boolean = Config.data.booksModule.enabled
 
     @Suppress("UnstableApiUsage")
     override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {

@@ -36,7 +36,7 @@ import java.util.concurrent.CompletableFuture
 
 /** Represents a module handling inv-search mechanics within the system. */
 class InvSearchModule : ModuleInterface {
-    override fun enabled(): Boolean = Config.data.invSearchModule
+    override fun enabled(): Boolean = Config.data.invSearchModule.enabled
 
     @Suppress("UnstableApiUsage")
     private val materialSuggestionProvider = SuggestionProvider<CommandSourceStack> { ctx, builder ->
