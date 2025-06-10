@@ -65,7 +65,7 @@ object Config {
         return buildGui {
             containerType = chestContainer { rows = 6 } //TODO: make rows dynamic based on config.
             spamPreventionDuration = 1.seconds
-            title("Config".fireFmt().mm())
+            title("<b>Config</b>".fireFmt().mm())
             statelessComponent { inv ->
                 val modules = Config::class.nestedClasses.mapNotNull { kClass ->
                     val enabledProp = kClass.declaredMemberProperties.find { it.name == "ENABLED" }
@@ -77,8 +77,8 @@ object Config {
                     val enabled = enabledProp.getter.call(obj) as? Boolean ?: false
                     val name = kClass.simpleName ?: "Unknown"
                     val mat = if (enabled) Material.GREEN_WOOL else Material.RED_WOOL
-                    val lore = listOf("Click to toggle")
-                    inv[idx] = ItemBuilder.from(guiItem(mat, "$name: ${if (enabled) "Enabled" else "Disabled"}", lore))
+                    val lore = listOf(if (enabled) "Enabled" else "Disabled")
+                    inv[idx] = ItemBuilder.from(guiItem(mat, name.mangoFmt(), lore))
                         .asGuiItem { player, _ ->
                             val mutableProp = enabledProp as? KMutableProperty1<*, *>
                             mutableProp?.setter?.call(obj, !enabled)
