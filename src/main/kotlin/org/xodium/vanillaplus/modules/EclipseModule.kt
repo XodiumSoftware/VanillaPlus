@@ -36,7 +36,7 @@ import kotlin.random.Random
 
 /** Represents a module handling eclipse mechanics within the system. */
 class EclipseModule : ModuleInterface {
-    override fun enabled(): Boolean = Config.EclipseModule.ENABLED
+    override fun enabled(): Boolean = Config.data.eclipseModule
 
     @Suppress("UnstableApiUsage")
     override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {

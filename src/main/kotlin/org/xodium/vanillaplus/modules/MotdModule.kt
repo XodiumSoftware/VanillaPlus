@@ -14,7 +14,7 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 
 /** Represents a module handling MOTD mechanics within the system. */
 class MotdModule : ModuleInterface {
-    override fun enabled(): Boolean = Config.MotdModule.ENABLED
+    override fun enabled(): Boolean = Config.data.motdModule
 
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: ServerListPingEvent) {

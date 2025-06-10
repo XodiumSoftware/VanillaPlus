@@ -25,7 +25,7 @@ import java.time.temporal.ChronoUnit
 
 /** Represents a module handling auto-restart mechanics within the system. */
 class AutoRestartModule : ModuleInterface {
-    override fun enabled(): Boolean = Config.AutoRestartModule.ENABLED
+    override fun enabled(): Boolean = Config.data.autoRestartModule
 
     @Suppress("UnstableApiUsage")
     override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {

@@ -26,9 +26,9 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.data.ConfigData
 import org.xodium.vanillaplus.data.MobAttributeData
 import org.xodium.vanillaplus.data.MobEquipmentData
-import org.xodium.vanillaplus.data.ModuleStateData
 import org.xodium.vanillaplus.utils.ExtUtils.clickRunCmd
 import org.xodium.vanillaplus.utils.ExtUtils.clickSuggestCmd
 import org.xodium.vanillaplus.utils.ExtUtils.il
@@ -51,52 +51,29 @@ import org.bukkit.Sound as BukkitSound
 object Config {
     private val configPath = instance.dataFolder.toPath().resolve("config.json")
     private val objectMapper = jacksonObjectMapper()
+    var data: ConfigData = ConfigData()
 
     /** Initializes the configuration by loading module states from the config file. */
-    fun loadModuleStates() {
+    fun load() {
         if (Files.exists(configPath)) {
             instance.logger.info("Config: Loading module states.")
-            val states: ModuleStateData = objectMapper.readValue(Files.readString(configPath))
-            AutoRestartModule.ENABLED = states.AutoRestartModule
-            BooksModule.ENABLED = states.BooksModule
-            DimensionsModule.ENABLED = states.DimensionsModule
-            DiscordModule.ENABLED = states.DiscordModule
-            DoorsModule.ENABLED = states.DoorsModule
-            EclipseModule.ENABLED = states.EclipseModule
-            InvSearchModule.ENABLED = states.InvSearchModule
-            InvUnloadModule.ENABLED = states.InvUnloadModule
-            JoinQuitModule.ENABLED = states.JoinQuitModule
-            MotdModule.ENABLED = states.MotdModule
-            RecipiesModule.ENABLED = states.RecipiesModule
-            TabListModule.ENABLED = states.TabListModule
-            TreesModule.ENABLED = states.TreesModule
+            data = objectMapper.readValue(Files.readString(configPath))
             instance.logger.info("Config: Module states loaded successfully.")
         } else {
             instance.logger.info("Config: No config file found, creating default states.")
-            saveModuleStates()
+            save()
         }
     }
 
     /** Saves the current module states to the config file. */
-    private fun saveModuleStates() {
+    private fun save() {
         instance.logger.info("Config: Saving module states.")
-        val states = ModuleStateData(
-            AutoRestartModule.ENABLED,
-            BooksModule.ENABLED,
-            DimensionsModule.ENABLED,
-            DiscordModule.ENABLED,
-            DoorsModule.ENABLED,
-            EclipseModule.ENABLED,
-            InvSearchModule.ENABLED,
-            InvUnloadModule.ENABLED,
-            JoinQuitModule.ENABLED,
-            MotdModule.ENABLED,
-            RecipiesModule.ENABLED,
-            TabListModule.ENABLED,
-            TreesModule.ENABLED
+        Files.writeString(
+            configPath,
+            objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(data),
+            StandardOpenOption.CREATE,
+            StandardOpenOption.TRUNCATE_EXISTING
         )
-        val json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(states)
-        Files.writeString(configPath, json, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)
         instance.logger.info("Config: Module states saved successfully.")
     }
 
@@ -140,7 +117,7 @@ object Config {
                         .asGuiItem { player, _ ->
                             val mutableProp = enabledProp as? KMutableProperty1<*, *>
                             mutableProp?.setter?.call(obj, !enabled)
-                            saveModuleStates()
+                            save()
                             gui().open(player)
                         }
                 }

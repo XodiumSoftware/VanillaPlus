@@ -15,7 +15,7 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 
 /** Represents a module handling recipe mechanics within the system. */
 class RecipiesModule : ModuleInterface {
-    override fun enabled(): Boolean = Config.RecipiesModule.ENABLED
+    override fun enabled(): Boolean = Config.data.recipiesModule
 
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: PlayerJoinEvent) {

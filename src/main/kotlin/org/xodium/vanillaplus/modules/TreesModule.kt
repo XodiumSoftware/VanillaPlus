@@ -34,7 +34,7 @@ import java.util.stream.Collectors
 
 /** Represents a module handling tree mechanics within the system. */
 class TreesModule : ModuleInterface {
-    override fun enabled(): Boolean = Config.TreesModule.ENABLED
+    override fun enabled(): Boolean = Config.data.treesModule
 
     /** A map of sapling materials to a list of schematics. */
     private val schematicCache: Map<Material, List<Clipboard>> =

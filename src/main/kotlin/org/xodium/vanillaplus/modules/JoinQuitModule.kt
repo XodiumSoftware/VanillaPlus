@@ -22,7 +22,7 @@ import org.xodium.vanillaplus.utils.SkinUtils.faceToMM
 
 /** Represents a module handling join/quit mechanics within the system. */
 class JoinQuitModule : ModuleInterface {
-    override fun enabled(): Boolean = Config.JoinQuitModule.ENABLED
+    override fun enabled(): Boolean = Config.data.joinQuitModule
 
     //TODO: Conflict with CMI, disable in CMI or move away.
 
