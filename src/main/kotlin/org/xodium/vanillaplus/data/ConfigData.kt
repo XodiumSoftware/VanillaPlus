@@ -43,9 +43,19 @@ data class ConfigData(
 /**
  * Data class representing the configuration for the `AutoRestartModule`.
  * @property enabled Indicates whether the module is enabled. Default is true.
+ * @property scheduleInitDelay The initial delay before the schedule starts, in seconds. Default is 0 seconds.
+ * @property scheduleInterval The interval at which the schedule runs, in seconds. Default is 1 second.
+ * @property countdownInitDelay The initial delay before the countdown starts, in seconds. Default is 0 seconds.
+ * @property countdownInterval The interval at which the countdown runs, in seconds. Default is 1 second.
+ * @property countdownStartMinutes The number of minutes to start the countdown from. Default is 5 minutes.
  */
 data class AutoRestartModuleData(
     var enabled: Boolean = true,
+    var scheduleInitDelay: Long = TimeUtils.seconds(0),
+    var scheduleInterval: Long = TimeUtils.seconds(1),
+    var countdownInitDelay: Long = TimeUtils.seconds(0),
+    var countdownInterval: Long = TimeUtils.seconds(1),
+    var countdownStartMinutes: Int = 5,
 )
 
 /**
@@ -77,17 +87,39 @@ data class DiscordModuleData(
 /**
  * Data class representing the configuration for the `DoorsModule`.
  * @property enabled Indicates whether the module is enabled. Default is true.
+ * @property initDelay The initial delay before the doors module starts, in seconds. Default is 1 second.
+ * @property interval The interval at which the doors module operates, in seconds. Default is 1 second.
+ * @property allowAutoClose Indicates whether doors can automatically close. Default is true.
+ * @property allowDoubleDoors Indicates whether double doors are allowed. Default is true.
+ * @property allowKnockingDoors Indicates whether knocking on doors is allowed. Default is true.
+ * @property allowKnockingGates Indicates whether knocking on gates is allowed. Default is true.
+ * @property allowKnockingTrapdoors Indicates whether knocking on trapdoors is allowed. Default is true.
+ * @property knockingRequiresEmptyHand Indicates whether knocking requires an empty hand. Default is true.
+ * @property knockingRequiresShifting Indicates whether knocking requires the player to be shifting. Default is true.
+ * @property autoCloseDelay The delay before doors automatically close, in milliseconds. Default is 6 seconds (6000 milliseconds).
  */
 data class DoorsModuleData(
     var enabled: Boolean = true,
+    var initDelay: Long = 1L,
+    var interval: Long = 1L,
+    var allowAutoClose: Boolean = true,
+    var allowDoubleDoors: Boolean = true,
+    var allowKnockingDoors: Boolean = true,
+    var allowKnockingGates: Boolean = true,
+    var allowKnockingTrapdoors: Boolean = true,
+    var knockingRequiresEmptyHand: Boolean = true,
+    var knockingRequiresShifting: Boolean = true,
+    var autoCloseDelay: Long = 6L * 1000L,
 )
 
 /**
  * Data class representing the configuration for the `EclipseModule`.
  * @property enabled Indicates whether the module is enabled. Default is true.
+ * @property randomPoweredCreepers Indicates whether creepers can randomly become powered. Default is true.
  */
 data class EclipseModuleData(
     var enabled: Boolean = true,
+    var randomPoweredCreepers: Boolean = true,
 )
 
 /**

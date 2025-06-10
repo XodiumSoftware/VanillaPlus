@@ -151,21 +151,6 @@ object Config {
             LocalTime.of(18, 0)
         )
 
-        /** The initial delay before the first schedule. */
-        var SCHEDULE_INIT_DELAY: Long = TimeUtils.seconds(0)
-
-        /** The interval between schedule. */
-        var SCHEDULE_INTERVAL: Long = TimeUtils.minutes(1)
-
-        /** The initial delay before the first countdown. */
-        var COUNTDOWN_INIT_DELAY: Long = TimeUtils.seconds(0)
-
-        /** The interval between countdown. */
-        var COUNTDOWN_INTERVAL: Long = TimeUtils.seconds(1)
-
-        /** How many minutes before the restart to start countdown. */
-        var COUNTDOWN_START_MINUTES: Int = 5
-
         /** The name of the boss bar, formatted with the display time. */
         var BOSSBAR_NAME: String = "⚡ RESTARTING in <time> minute(s) ⚡".fireFmt()
 
@@ -275,12 +260,6 @@ object Config {
 
     /** Configuration settings for the DoorsModule. */
     object DoorsModule {
-        /** The initial delay before the first autoclose. */
-        var INIT_DELAY: Long = 1L
-
-        /** The interval between autoclosing. */
-        var INTERVAL: Long = 1L
-
         /** The sound effect used for closing doors. */
         var SOUND_DOOR_CLOSE: Sound = Sound.sound(
             BukkitSound.BLOCK_IRON_DOOR_CLOSE,
@@ -304,30 +283,6 @@ object Config {
             1.0f,
             1.0f
         )
-
-        /** Enables automatic closing of doors after a set delay. */
-        var ALLOW_AUTO_CLOSE: Boolean = true
-
-        /** Allows both sides of double doors to open/close simultaneously. */
-        var ALLOW_DOUBLE_DOORS: Boolean = true
-
-        /** Enables knocking on doors. */
-        var ALLOW_KNOCKING_DOORS: Boolean = true
-
-        /** Enables knocking on gates. */
-        var ALLOW_KNOCKING_GATES: Boolean = true
-
-        /** Enables knocking on trapdoors. */
-        var ALLOW_KNOCKING_TRAPDOORS: Boolean = true
-
-        /** Knocking requires the player's hand to be empty. */
-        var KNOCKING_REQUIRES_EMPTY_HAND: Boolean = true
-
-        /** Players must shift (crouch) to knock. */
-        var KNOCKING_REQUIRES_SHIFT: Boolean = true
-
-        /** The delay (in milliseconds) before automatic closure. */
-        var AUTO_CLOSE_DELAY: Long = 6L * 1000L // 6 seconds
     }
 
     /** Configuration settings for the eclipseModule. */
@@ -377,9 +332,6 @@ object Config {
 
         /** The list of mobs that are excluded from the eclipse buff. */
         var EXCLUDED_MOBS: Set<EntityType> = setOf(EntityType.ENDERMAN)
-
-        /** If creepers should be randomly powered. */
-        var RANDOM_POWERED_CREEPERS: Boolean = true
 
         /** The title message displayed when the eclipse is active. */
         var ECLIPSE_START_TITLE: Title =

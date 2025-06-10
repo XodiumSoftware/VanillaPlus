@@ -55,8 +55,8 @@ class DoorsModule : ModuleInterface {
                         System.currentTimeMillis() >= time && handleAutoClose(block)
                     }
                 },
-                Config.DoorsModule.INIT_DELAY,
-                Config.DoorsModule.INTERVAL
+                Config.data.doorsModule.initDelay,
+                Config.data.doorsModule.interval
             )
         }
     }
@@ -146,11 +146,11 @@ class DoorsModule : ModuleInterface {
      * @param block The block representing the door or gate being interacted with.
      */
     private fun handleRightClick(block: Block) {
-        if (Config.DoorsModule.ALLOW_DOUBLE_DOORS && (block.blockData is Door || block.blockData is Gate)) {
+        if (Config.data.doorsModule.allowDoubleDoors && (block.blockData is Door || block.blockData is Gate)) {
             processDoorOrGateInteraction(block)
         }
-        if (Config.DoorsModule.ALLOW_AUTO_CLOSE) autoClose[block] =
-            System.currentTimeMillis() + Config.DoorsModule.AUTO_CLOSE_DELAY
+        if (Config.data.doorsModule.allowAutoClose) autoClose[block] =
+            System.currentTimeMillis() + Config.data.doorsModule.autoCloseDelay
     }
 
     /**
@@ -162,8 +162,8 @@ class DoorsModule : ModuleInterface {
         val door2Block = getOtherPart(getDoorBottom(door, block), block) ?: return
         val secondDoor = door2Block.blockData as? Door ?: return
         toggleOtherDoor(block, door2Block, !secondDoor.isOpen)
-        if (Config.DoorsModule.ALLOW_AUTO_CLOSE) {
-            autoClose[door2Block] = System.currentTimeMillis() + Config.DoorsModule.AUTO_CLOSE_DELAY
+        if (Config.data.doorsModule.allowAutoClose) {
+            autoClose[door2Block] = System.currentTimeMillis() + Config.data.doorsModule.autoCloseDelay
         }
     }
 
@@ -188,8 +188,8 @@ class DoorsModule : ModuleInterface {
      * @return True if the knocking conditions are violated, false otherwise.
      */
     private fun isKnockingConditionViolated(player: Player): Boolean {
-        return (Config.DoorsModule.KNOCKING_REQUIRES_SHIFT && !player.isSneaking) ||
-                (Config.DoorsModule.KNOCKING_REQUIRES_EMPTY_HAND &&
+        return (Config.data.doorsModule.knockingRequiresShifting && !player.isSneaking) ||
+                (Config.data.doorsModule.knockingRequiresEmptyHand &&
                         player.inventory.itemInMainHand.type != Material.AIR)
     }
 
@@ -200,9 +200,9 @@ class DoorsModule : ModuleInterface {
      */
     private fun isKnockableBlock(data: BlockData): Boolean {
         return when (data) {
-            is Door -> Config.DoorsModule.ALLOW_KNOCKING_DOORS
-            is Gate -> Config.DoorsModule.ALLOW_KNOCKING_GATES
-            is TrapDoor -> Config.DoorsModule.ALLOW_KNOCKING_TRAPDOORS
+            is Door -> Config.data.doorsModule.allowKnockingDoors
+            is Gate -> Config.data.doorsModule.allowKnockingGates
+            is TrapDoor -> Config.data.doorsModule.allowKnockingTrapdoors
             else -> false
         }
     }
@@ -222,7 +222,7 @@ class DoorsModule : ModuleInterface {
                 val door2 = block2.blockData as Door
                 if (door.isOpen != door2.isOpen) toggleDoor(block2, door2, open)
             },
-            Config.DoorsModule.INIT_DELAY
+            Config.data.doorsModule.initDelay
         )
     }
 

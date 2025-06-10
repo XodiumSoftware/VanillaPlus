@@ -124,7 +124,7 @@ class EclipseModule : ModuleInterface {
         }
 
         if (entity.type == EntityType.CREEPER && Random.nextBoolean()) {
-            (entity as Creeper).isPowered = Config.EclipseModule.RANDOM_POWERED_CREEPERS
+            (entity as Creeper).isPowered = Config.data.eclipseModule.randomPoweredCreepers
         }
 
         if (hordeState.isActive && event.spawnReason == CreatureSpawnEvent.SpawnReason.NATURAL) {

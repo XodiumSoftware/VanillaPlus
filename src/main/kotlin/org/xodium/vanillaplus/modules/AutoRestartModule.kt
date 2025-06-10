@@ -46,8 +46,8 @@ class AutoRestartModule : ModuleInterface {
                         }
                     }
                 },
-                Config.AutoRestartModule.SCHEDULE_INIT_DELAY,
-                Config.AutoRestartModule.SCHEDULE_INTERVAL
+                Config.data.autoRestartModule.scheduleInitDelay,
+                Config.data.autoRestartModule.scheduleInterval
             )
         }
     }
@@ -55,7 +55,7 @@ class AutoRestartModule : ModuleInterface {
     /** Triggers a countdown for the server restart. */
     @OptIn(DelicateCoroutinesApi::class)
     private fun countdown() {
-        val totalMinutes = Config.AutoRestartModule.COUNTDOWN_START_MINUTES
+        val totalMinutes = Config.data.autoRestartModule.countdownStartMinutes
         var remainingSeconds = totalMinutes * 60
         val totalSeconds = remainingSeconds
         val bossBar = Config.AutoRestartModule.BOSSBAR
@@ -88,8 +88,8 @@ class AutoRestartModule : ModuleInterface {
                     instance.server.restart()
                 }
             },
-            Config.AutoRestartModule.COUNTDOWN_INIT_DELAY,
-            Config.AutoRestartModule.COUNTDOWN_INTERVAL
+            Config.data.autoRestartModule.countdownInitDelay,
+            Config.data.autoRestartModule.countdownInterval
         )
     }
 
@@ -102,6 +102,6 @@ class AutoRestartModule : ModuleInterface {
         return ChronoUnit.MINUTES.between(
             LocalTime.now().truncatedTo(ChronoUnit.MINUTES),
             restartTime
-        ) == Config.AutoRestartModule.COUNTDOWN_START_MINUTES.toLong()
+        ) == Config.data.autoRestartModule.countdownStartMinutes.toLong()
     }
 }
