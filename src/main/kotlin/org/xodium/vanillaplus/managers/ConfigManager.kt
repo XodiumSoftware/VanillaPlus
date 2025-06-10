@@ -5,6 +5,8 @@
 
 package org.xodium.vanillaplus.managers
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import dev.triumphteam.gui.paper.Gui
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder
