@@ -13,6 +13,7 @@ import dev.triumphteam.gui.paper.kotlin.builder.chestContainer
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.inventory.Book
 import net.kyori.adventure.sound.Sound
@@ -36,6 +37,9 @@ import org.xodium.vanillaplus.utils.FmtUtils.skylineFmt
 import org.xodium.vanillaplus.utils.TimeUtils
 import org.xodium.vanillaplus.utils.Utils
 import java.time.LocalTime
+import kotlin.reflect.KMutableProperty1
+import kotlin.reflect.full.declaredMemberProperties
+import kotlin.reflect.jvm.isAccessible
 import kotlin.time.Duration.Companion.seconds
 import org.bukkit.Sound as BukkitSound
 
@@ -43,12 +47,21 @@ import org.bukkit.Sound as BukkitSound
 
 /** Configuration settings. */
 object Config {
+    init {
+        cmds()?.forEach { cmd ->
+            @Suppress("UnstableApiUsage")
+            instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) {
+                it.registrar().register(cmd.build())
+            }
+        }
+    }
+
     /**
      * Provides a collection of commands for the configuration settings.
      * @return A collection of LiteralArgumentBuilder objects representing the commands.
      */
     @Suppress("UnstableApiUsage")
-    fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? { //TODO: register cmds.
+    private fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
         return listOf(
             Commands.literal("guide")
                 .requires { it.sender.hasPermission(Perms.Config.USE) }
@@ -64,12 +77,25 @@ object Config {
             containerType = chestContainer { rows = 6 } //TODO: make rows dynamic based on config.
             spamPreventionDuration = 1.seconds
             title("Config".fireFmt().mm())
-            statelessComponent {
-                //TODO: make the gui item setting dynamic based on the config.
-                //TODO: lets start with just the enable/disable settings.
-                //TODO: adjust material based on config value. (e.g., if enabled, use green wool; if disabled, use red wool; if ranged value, use blue wool).
-                it[1] = ItemBuilder.from(guiItem(Material.RED_WOOL, "", listOf("")))
-                    .asGuiItem() //TODO: set title, lore and action based on config.
+            statelessComponent { inv ->
+                val modules = Config::class.nestedClasses.mapNotNull { kClass ->
+                    val enabledProp = kClass.declaredMemberProperties.find { it.name == "ENABLED" }
+                    if (enabledProp != null) kClass to enabledProp else null
+                }
+                modules.forEachIndexed { idx, (kClass, enabledProp) ->
+                    enabledProp.isAccessible = true
+                    val obj = kClass.objectInstance ?: return@forEachIndexed
+                    val enabled = enabledProp.getter.call(obj) as? Boolean ?: false
+                    val name = kClass.simpleName ?: "Unknown"
+                    val mat = if (enabled) Material.GREEN_WOOL else Material.RED_WOOL
+                    val lore = listOf("Click to toggle")
+                    inv[idx] = ItemBuilder.from(guiItem(mat, "$name: ${if (enabled) "Enabled" else "Disabled"}", lore))
+                        .asGuiItem { player, _ ->
+                            val mutableProp = enabledProp as? KMutableProperty1<*, *>
+                            mutableProp?.setter?.call(obj, !enabled)
+                            gui().open(player)
+                        }
+                }
             }
         }
     }
