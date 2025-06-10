@@ -47,11 +47,9 @@ import kotlin.reflect.jvm.isAccessible
 import kotlin.time.Duration.Companion.seconds
 import org.bukkit.Sound as BukkitSound
 
-//TODO: add way to have the config on a gui.
-
 /** Configuration settings. */
 object Config {
-    private val configPath = instance.dataFolder.toPath().resolve("modules.json")
+    private val configPath = instance.dataFolder.toPath().resolve("config.json")
     private val objectMapper = jacksonObjectMapper()
 
     /** Initializes the configuration by loading module states from the config file. */
@@ -118,15 +116,16 @@ object Config {
      * @return A Gui object representing the configuration GUI.
      */
     private fun gui(): Gui {
+        val modules = Config::class.nestedClasses.mapNotNull { kClass ->
+            val enabledProp = kClass.declaredMemberProperties.find { it.name == "ENABLED" }
+            if (enabledProp != null) kClass to enabledProp else null
+        }
+        val dynamicRows = modules.size.let { ((it - 1) / 9 + 1).coerceIn(1, 6) }
         return buildGui {
-            containerType = chestContainer { rows = 6 } //TODO: make rows dynamic based on config.
+            containerType = chestContainer { rows = dynamicRows }
             spamPreventionDuration = 1.seconds
             title("<b>Config</b>".fireFmt().mm())
             statelessComponent { inv ->
-                val modules = Config::class.nestedClasses.mapNotNull { kClass ->
-                    val enabledProp = kClass.declaredMemberProperties.find { it.name == "ENABLED" }
-                    if (enabledProp != null) kClass to enabledProp else null
-                }
                 modules.forEachIndexed { idx, (kClass, enabledProp) ->
                     enabledProp.isAccessible = true
                     val obj = kClass.objectInstance ?: return@forEachIndexed
