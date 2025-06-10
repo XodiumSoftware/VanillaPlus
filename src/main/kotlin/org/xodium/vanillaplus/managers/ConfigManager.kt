@@ -38,11 +38,9 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.FmtUtils.skylineFmt
-import org.xodium.vanillaplus.utils.TimeUtils
 import org.xodium.vanillaplus.utils.Utils
 import java.nio.file.Files
 import java.nio.file.StandardOpenOption
-import java.time.LocalTime
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.jvm.isAccessible
@@ -144,14 +142,6 @@ object ConfigManager {
 
     /** Configuration settings for the AutoRestartModule. */
     object AutoRestartModule {
-        /** The times of day when the server should restart. */
-        var RESTART_TIMES: MutableList<LocalTime> = mutableListOf(
-            LocalTime.of(0, 0),
-            LocalTime.of(6, 0),
-            LocalTime.of(12, 0),
-            LocalTime.of(18, 0)
-        )
-
         /** The name of the boss bar, formatted with the display time. */
         private var BOSSBAR_NAME: String = "⚡ RESTARTING in <time> minute(s) ⚡".fireFmt()
 
@@ -331,8 +321,8 @@ object ConfigManager {
             MobEquipmentData(EquipmentSlot.OFF_HAND, ItemStack(Material.SHIELD), 0.0f)
         )
 
-        /** The list of mobs that are excluded from the eclipse buff. */
-        var EXCLUDED_MOBS: Set<EntityType> = setOf(EntityType.ENDERMAN)
+//        /** The list of mobs that are excluded from the eclipse buff. */
+//        var EXCLUDED_MOBS: Set<EntityType> = setOf(EntityType.ENDERMAN)
 
         /** The title message displayed when the eclipse is active. */
         var ECLIPSE_START_TITLE: Title =
@@ -358,11 +348,11 @@ object ConfigManager {
             1.0f
         )
 
-        /** The initial delay before the first eclipse. */
-        var INIT_DELAY: Long = TimeUtils.seconds(0)
-
-        /** The interval between eclipses. */
-        var INTERVAL: Long = TimeUtils.seconds(10)
+//        /** The initial delay before the first eclipse. */
+//        var INIT_DELAY: Long = TimeUtils.seconds(0)
+//
+//        /** The interval between eclipses. */
+//        var INTERVAL: Long = TimeUtils.seconds(10)
     }
 
     /** Configuration settings for the InvUnloadModule. */
@@ -423,27 +413,6 @@ object ConfigManager {
             } <weather>  ${
                 "]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)
             }"
-        )
-    }
-
-    /** Configuration settings for the TreesModule. */
-    object TreesModule {
-        /**
-         * If a sapling type is missing here, no custom schematic will be used and default behaviour applies.
-         * You can define a file, multiple files, or a folder.
-         */
-        var SAPLING_LINK: Map<Material, List<String>> = mapOf(
-            Material.ACACIA_SAPLING to listOf("trees/acacia"),
-            Material.BIRCH_SAPLING to listOf("trees/birch"),
-            Material.CHERRY_SAPLING to listOf("trees/cherry"),
-            Material.CRIMSON_FUNGUS to listOf("trees/crimson"),
-            Material.DARK_OAK_SAPLING to listOf("trees/dark_oak"),
-            Material.JUNGLE_SAPLING to listOf("trees/jungle"),
-            Material.MANGROVE_PROPAGULE to listOf("trees/mangrove"),
-            Material.OAK_SAPLING to listOf("trees/oak"),
-            Material.PALE_OAK_SAPLING to listOf("trees/pale_oak"),
-            Material.SPRUCE_SAPLING to listOf("trees/spruce"),
-            Material.WARPED_FUNGUS to listOf("trees/warped"),
         )
     }
 }

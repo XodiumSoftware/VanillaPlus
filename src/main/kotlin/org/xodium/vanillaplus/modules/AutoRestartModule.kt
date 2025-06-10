@@ -39,7 +39,7 @@ class AutoRestartModule : ModuleInterface {
             instance.server.scheduler.runTaskTimerAsynchronously(
                 instance,
                 Runnable {
-                    ConfigManager.AutoRestartModule.RESTART_TIMES.forEach {
+                    ConfigManager.data.autoRestartModule.restartTimes.forEach {
                         if (isTimeToStartCountdown(it)) {
                             instance.server.scheduler.runTask(instance, Runnable { countdown() })
                         }

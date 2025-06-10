@@ -54,8 +54,8 @@ class EclipseModule : ModuleInterface {
             instance.server.scheduler.runTaskTimer(
                 instance,
                 Runnable { eclipse() },
-                ConfigManager.EclipseModule.INIT_DELAY,
-                ConfigManager.EclipseModule.INTERVAL
+                ConfigManager.data.eclipseModule.initDelay,
+                ConfigManager.data.eclipseModule.interval,
             )
         }
     }
@@ -68,7 +68,7 @@ class EclipseModule : ModuleInterface {
         if (!enabled() || !hordeState.isActive) return
         if (world.environment != World.Environment.NORMAL) return
         if (world.difficulty != Difficulty.HARD) return
-        if (entity.type in ConfigManager.EclipseModule.EXCLUDED_MOBS) return
+        if (entity.type in ConfigManager.data.eclipseModule.excludedMobs) return
 
         ConfigManager.EclipseModule.MOB_ATTRIBUTE
             .filter { it.types.contains(entity.type) }

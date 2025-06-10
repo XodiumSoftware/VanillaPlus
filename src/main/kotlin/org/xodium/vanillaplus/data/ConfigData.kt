@@ -7,6 +7,7 @@ package org.xodium.vanillaplus.data
 
 import net.kyori.adventure.bossbar.BossBar
 import org.bukkit.Material
+import org.bukkit.entity.EntityType
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.TimeUtils
@@ -63,7 +64,6 @@ data class AutoRestartModuleData(
         LocalTime.of(6, 0),
         LocalTime.of(12, 0),
         LocalTime.of(18, 0),
-        //TODO use kotlin variant?
     ),
     var bossbarName: String = "⚡ RESTARTING in <time> minute(s) ⚡".fireFmt(),
     var bossbar: BossBar = BossBar.bossBar(
@@ -136,11 +136,17 @@ data class DoorsModuleData(
 /**
  * Data class representing the configuration for the `EclipseModule`.
  * @property enabled Indicates whether the module is enabled. Default is true.
+ * @property excludedMobs A set of entity types that are excluded from the eclipse effect. Default is a set containing [EntityType.ENDERMAN].
  * @property randomPoweredCreepers Indicates whether creepers can randomly become powered. Default is true.
+ * @property initDelay The initial delay before the module starts, in milliseconds. Default is 0 seconds (0 milliseconds).
+ * @property interval The interval at which the module operates, in milliseconds. Default is 10 seconds (10000 milliseconds).
  */
 data class EclipseModuleData(
     var enabled: Boolean = true,
+    var excludedMobs: Set<EntityType> = setOf(EntityType.ENDERMAN),
     var randomPoweredCreepers: Boolean = true,
+    var initDelay: Long = TimeUtils.seconds(0),
+    var interval: Long = TimeUtils.seconds(10),
 )
 
 /**
