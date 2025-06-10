@@ -28,7 +28,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21.5-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21.5-no-moonrise-SNAPSHOT")
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.14") //TODO("Move away from WorldEdit")
     implementation(kotlin("stdlib-jdk8"))
     implementation("dev.kord:kord-core:0.15.0")
