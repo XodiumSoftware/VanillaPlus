@@ -68,6 +68,7 @@ object Config {
     /** Saves the current module states to the config file. */
     private fun save() {
         instance.logger.info("Config: Saving module states.")
+        Files.createDirectories(configPath.parent)
         Files.writeString(
             configPath,
             objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(data),
