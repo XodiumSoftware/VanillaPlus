@@ -13,7 +13,6 @@ import dev.triumphteam.gui.paper.kotlin.builder.chestContainer
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.datacomponent.DataComponentTypes
-import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.inventory.Book
 import net.kyori.adventure.sound.Sound
@@ -47,25 +46,15 @@ import org.bukkit.Sound as BukkitSound
 
 /** Configuration settings. */
 object Config {
-    init {
-        cmds()?.forEach { cmd ->
-            @Suppress("UnstableApiUsage")
-            instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) {
-                it.registrar().register(cmd.build())
-            }
-        }
-    }
-
     /**
-     * Provides a collection of commands for the configuration settings.
-     * @return A collection of LiteralArgumentBuilder objects representing the commands.
+     * Creates the command for the configuration GUI.
+     * @return A LiteralArgumentBuilder for the "config" command.
      */
     @Suppress("UnstableApiUsage")
-    private fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
-        return listOf(
-            Commands.literal("config")
-                .requires { it.sender.hasPermission(Perms.Config.USE) }
-                .executes { it -> Utils.tryCatch(it) { gui().open(it.sender as Player) } })
+    fun cmd(): LiteralArgumentBuilder<CommandSourceStack> {
+        return Commands.literal("config")
+            .requires { it.sender.hasPermission(Perms.Config.USE) }
+            .executes { it -> Utils.tryCatch(it) { gui().open(it.sender as Player) } }
     }
 
     /**
