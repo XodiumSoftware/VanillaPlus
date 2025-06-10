@@ -73,10 +73,10 @@ class TabListModule : ModuleInterface {
     private fun updateTabList(audience: Audience) {
         val joinConfig = JoinConfiguration.separator(Component.newline())
         audience.sendPlayerListHeaderAndFooter(
-            Component.join(joinConfig, ConfigManager.TabListModule.HEADER.mm()),
+            Component.join(joinConfig, ConfigManager.data.tabListModule.header.mm()),
             Component.join(
                 joinConfig,
-                ConfigManager.TabListModule.FOOTER.mm(
+                ConfigManager.data.tabListModule.footer.mm(
                     Placeholder.component("weather", getWeather().mm()),
                     Placeholder.component("tps", getTps().mm())
                 )

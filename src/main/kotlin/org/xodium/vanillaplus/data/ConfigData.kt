@@ -8,9 +8,13 @@ package org.xodium.vanillaplus.data
 import net.kyori.adventure.bossbar.BossBar
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
+import org.xodium.vanillaplus.utils.ExtUtils.clickRunCmd
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
+import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
+import org.xodium.vanillaplus.utils.FmtUtils.skylineFmt
 import org.xodium.vanillaplus.utils.TimeUtils
+import org.xodium.vanillaplus.utils.Utils
 import java.time.LocalTime
 
 /**
@@ -178,17 +182,38 @@ data class InvUnloadModuleData(
 /**
  * Data class representing the configuration for the `JoinQuitModule`.
  * @property enabled Indicates whether the module is enabled. Default is true.
+ * @property welcomeText A string representing the welcome message displayed to players when they join the server. Default includes a formatted welcome message with commands for rules and guide.
  */
 data class JoinQuitModuleData(
     var enabled: Boolean = true,
+    var welcomeText: String =
+        """
+        ${"]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)}
+        <image>${"⯈".mangoFmt(true)}
+        <image>${"⯈".mangoFmt(true)}
+        <image>${"⯈".mangoFmt(true)} ${"Welcome".fireFmt()} <player>
+        <image>${"⯈".mangoFmt(true)}
+        <image>${"⯈".mangoFmt(true)}
+        <image>${"⯈".mangoFmt(true)} ${"Check out".fireFmt()}<gray>: ${
+            "/rules".clickRunCmd(Utils.cmdHover).skylineFmt()
+        } <gray>🟅 ${"/guide".clickRunCmd(Utils.cmdHover).skylineFmt()}
+        <image>${"⯈".mangoFmt(true)}
+        <image>${"⯈".mangoFmt(true)}
+        ${"]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)}
+        """.trimIndent()
 )
 
 /**
  * Data class representing the configuration for the `MotdModule`.
  * @property enabled Indicates whether the module is enabled. Default is true.
+ * @property motd A list of strings representing the message of the day (MOTD). Default includes a formatted title and welcome message.
  */
 data class MotdModuleData(
     var enabled: Boolean = true,
+    val motd: List<String> = listOf(
+        "<b>Ultimate Private SMP</b>".fireFmt(),
+        "<b>➤ WELCOME BACK LADS!</b>".mangoFmt()
+    )
 )
 
 /**
@@ -204,11 +229,27 @@ data class RecipiesModuleData(
  * @property enabled Indicates whether the module is enabled. Default is true.
  * @property initDelay The initial delay before the tab list updates, in milliseconds. Default is 0L.
  * @property interval The interval at which the tab list updates, in milliseconds. Default is 10 seconds.
+ * @property header A list of strings representing the header of the tab list. Default includes a formatted string with the server version.
+ * @property footer A list of strings representing the footer of the tab list. Default includes a formatted string with TPS and weather information.
  */
 data class TabListModuleData(
     var enabled: Boolean = true,
     var initDelay: Long = 0L,
     var interval: Long = TimeUtils.seconds(10),
+    var header: List<String> = listOf(
+        "${"]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt()}   ${"⚡ IllyriaRPG 1.21.5 ⚡".fireFmt()}   ${
+            "]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)
+        }",
+        ""
+    ),
+    var footer: List<String> = listOf(
+        "",
+        "${"]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt()}  ${"TPS:".fireFmt()} <tps> ${"|".mangoFmt()} ${
+            "Weather:".fireFmt()
+        } <weather>  ${
+            "]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)
+        }"
+    ),
 )
 
 /**

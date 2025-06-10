@@ -40,7 +40,7 @@ class JoinQuitModule : ModuleInterface {
 
         val faceLines = player.faceToMM().lines()
         var imageIndex = 1
-        val welcomeText = Regex("<image>").replace(ConfigManager.JoinQuitModule.WELCOME_TEXT) {
+        val welcomeText = Regex("<image>").replace(ConfigManager.data.joinQuitModule.welcomeText) {
             "<image${imageIndex++}>"
         }
         val imageResolvers = faceLines.mapIndexed { i, line ->

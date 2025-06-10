@@ -31,7 +31,6 @@ import org.xodium.vanillaplus.VanillaPlus
 import org.xodium.vanillaplus.data.ConfigData
 import org.xodium.vanillaplus.data.MobAttributeData
 import org.xodium.vanillaplus.data.MobEquipmentData
-import org.xodium.vanillaplus.utils.ExtUtils.clickRunCmd
 import org.xodium.vanillaplus.utils.ExtUtils.clickSuggestCmd
 import org.xodium.vanillaplus.utils.ExtUtils.il
 import org.xodium.vanillaplus.utils.ExtUtils.mm
@@ -93,6 +92,9 @@ object ConfigManager {
      * @return A Gui object representing the configuration GUI.
      */
     private fun gui(): Gui {
+        //TODO: make a main page with all the modules inside.
+        //TODO: each module has its own page with settings.
+        //TODO: add handling of settings that are not boolean (e.g. strings, numbers, etc.).
         val modules = ConfigManager::class.nestedClasses.mapNotNull { kClass ->
             val enabledProp = kClass.declaredMemberProperties.find { it.name == "ENABLED" }
             if (enabledProp != null) kClass to enabledProp else null
@@ -363,56 +365,6 @@ object ConfigManager {
             Sound.Source.PLAYER,
             1.0f,
             1.0f
-        )
-    }
-
-    /** Configuration settings for the JoinQuitModule. */
-    object JoinQuitModule {
-        /** The message displayed when a player joins. */
-        var WELCOME_TEXT: String =
-            """
-            ${"]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)}
-            <image>${"⯈".mangoFmt(true)}
-            <image>${"⯈".mangoFmt(true)}
-            <image>${"⯈".mangoFmt(true)} ${"Welcome".fireFmt()} <player>
-            <image>${"⯈".mangoFmt(true)}
-            <image>${"⯈".mangoFmt(true)}
-            <image>${"⯈".mangoFmt(true)} ${"Check out".fireFmt()}<gray>: ${
-                "/rules".clickRunCmd(Utils.cmdHover).skylineFmt()
-            } <gray>🟅 ${"/guide".clickRunCmd(Utils.cmdHover).skylineFmt()}
-            <image>${"⯈".mangoFmt(true)}
-            <image>${"⯈".mangoFmt(true)}
-            ${"]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)}
-            """.trimIndent()
-    }
-
-    /** Configuration settings for the MotdModule. */
-    object MotdModule {
-        /** The message of the day, with max 2 lines. */
-        val MOTD: List<String> = listOf(
-            "<b>Ultimate Private SMP</b>".fireFmt(),
-            "<b>➤ WELCOME BACK LADS!</b>".mangoFmt()
-        )
-    }
-
-    /** Configuration settings for the TabListModule. */
-    object TabListModule {
-        /** The header of the tab list. Each element is a line. */
-        var HEADER: List<String> = listOf(
-            "${"]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt()}   ${"⚡ IllyriaRPG 1.21.5 ⚡".fireFmt()}   ${
-                "]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)
-            }",
-            ""
-        )
-
-        /** The footer of the tab list. Each element is a line. */
-        var FOOTER: List<String> = listOf(
-            "",
-            "${"]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt()}  ${"TPS:".fireFmt()} <tps> ${"|".mangoFmt()} ${
-                "Weather:".fireFmt()
-            } <weather>  ${
-                "]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)
-            }"
         )
     }
 }

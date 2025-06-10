@@ -19,6 +19,6 @@ class MotdModule : ModuleInterface {
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: ServerListPingEvent) {
         if (!enabled()) return
-        event.motd(ConfigManager.MotdModule.MOTD.joinToString("\n").mm())
+        event.motd(ConfigManager.data.motdModule.motd.joinToString("\n").mm())
     }
 }
