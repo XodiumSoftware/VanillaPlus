@@ -85,8 +85,14 @@ object ConfigManager {
         //TODO: each module has its own page with settings.
         //TODO: add handling of settings that are not boolean (e.g. strings, numbers, etc.).
         val modules = ConfigManager::class.nestedClasses.mapNotNull { kClass ->
+            //TODO, "ENABLED" might be wrong.
             val enabledProp = kClass.declaredMemberProperties.find { it.name == "ENABLED" }
-            if (enabledProp != null) kClass to enabledProp else null
+            if (enabledProp != null) {
+                enabledProp.isAccessible = true
+                val obj = kClass.objectInstance ?: return@mapNotNull null
+                val value = enabledProp.getter.call(obj)
+                if (value is Boolean || value is String) kClass to enabledProp else null
+            } else null
         }
         val dynamicRows = modules.size.let { ((it - 1) / 9 + 1).coerceIn(1, 6) }
         return buildGui {
@@ -95,21 +101,42 @@ object ConfigManager {
             title("<b>Config</b>".fireFmt().mm())
             statelessComponent { inv ->
                 modules.forEachIndexed { idx, (kClass, enabledProp) ->
-                    enabledProp.isAccessible = true
                     val obj = kClass.objectInstance ?: return@forEachIndexed
-                    val enabled = enabledProp.getter.call(obj) as? Boolean ?: false
-                    val mat = if (enabled) Material.GREEN_WOOL else Material.RED_WOOL
+                    val value = enabledProp.getter.call(obj)
+                    val (mat, lore) = when (value) {
+                        is Boolean -> {
+                            (if (value) Material.GREEN_WOOL else Material.RED_WOOL) to listOf(
+                                if (value) "<green>Enabled<reset>" else "<red>Disabled<reset>",
+                                "*Requires server restart*"
+                            )
+                        }
+
+                        is String -> {
+                            Material.BLUE_WOOL to listOf(
+                                "<aqua>Value: <white>${value}<reset>",
+                                "*Requires server restart*"
+                            )
+                        }
+
+                        else -> {
+                            Material.GRAY_WOOL to listOf("<gray>Unsupported type<reset>")
+                        }
+                    }
                     val name = kClass.simpleName ?: "Unknown"
-                    val lore = listOf(
-                        if (enabled) "<green>Enabled<reset>" else "<red>Disabled<reset>",
-                        "*Requires server restart*"
-                    )
                     inv[idx] = ItemBuilder.from(guiItem(mat, name.mangoFmt(), lore))
                         .asGuiItem { player, _ ->
                             val mutableProp = enabledProp as? KMutableProperty1<*, *>
-                            mutableProp?.setter?.call(obj, !enabled)
-                            save()
-                            gui().open(player)
+                            when (value) {
+                                is Boolean -> {
+                                    mutableProp?.setter?.call(obj, !value)
+                                    save()
+                                    gui().open(player)
+                                }
+
+                                is String -> {
+                                    player.sendMessage("Feature to edit String values is not implemented yet.")
+                                }
+                            }
                         }
                 }
             }
