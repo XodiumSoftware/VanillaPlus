@@ -61,9 +61,9 @@ object Utils {
      * @return True if the enchantments match, false otherwise.
      */
     private fun hasMatchingEnchantments(first: ItemStack, second: ItemStack): Boolean {
-        val config = Config.InvUnloadModule
+        val config = Config.data.invUnloadModule
 
-        if (!config.MATCH_ENCHANTMENTS && (!config.MATCH_ENCHANTMENTS_ON_BOOKS || first.type != Material.ENCHANTED_BOOK)) return true
+        if (!config.matchEnchantments && (!config.matchEnchantmentsOnBooks || first.type != Material.ENCHANTED_BOOK)) return true
 
         val firstMeta = first.itemMeta
         val secondMeta = second.itemMeta

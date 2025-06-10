@@ -88,7 +88,7 @@ class InvSearchModule : ModuleInterface {
      */
     private fun search(player: Player, material: Material) {
         val cooldownKey = NamespacedKey(instance, "invsearch_cooldown")
-        val cooldownDuration = Config.InvSearchModule.COOLDOWN
+        val cooldownDuration = Config.data.invSearchModule.cooldown
         if (CooldownManager.isOnCooldown(player, cooldownKey, cooldownDuration)) {
             player.sendActionBar("You must wait before using this again.".fireFmt().mm())
             return
@@ -96,7 +96,7 @@ class InvSearchModule : ModuleInterface {
         CooldownManager.setCooldown(player, cooldownKey, System.currentTimeMillis())
 
         val deniedChestKey = NamespacedKey(instance, "denied_chest")
-        val chests = Utils.findBlocksInRadius(player.location, Config.InvSearchModule.SEARCH_RADIUS)
+        val chests = Utils.findBlocksInRadius(player.location, Config.data.invSearchModule.searchRadius)
             .filter { ChestAccessManager.isAllowed(player, deniedChestKey, it) }
         if (chests.isEmpty()) {
             player.sendActionBar("No usable chests found for ${"$material".roseFmt()}".fireFmt().mm())

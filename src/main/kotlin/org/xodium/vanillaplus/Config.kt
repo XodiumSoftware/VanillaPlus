@@ -143,9 +143,6 @@ object Config {
 
     /** Configuration settings for the AutoRestartModule. */
     object AutoRestartModule {
-        /** Enables or disables the AutoRestartModule. */
-        var ENABLED: Boolean = true
-
         /** The times of day when the server should restart. */
         var RESTART_TIMES: MutableList<LocalTime> = mutableListOf(
             LocalTime.of(0, 0),
@@ -183,9 +180,6 @@ object Config {
 
     /** Configuration settings for the BooksModule. */
     object BooksModule {
-        /** Enables or disables the BookModule. */
-        var ENABLED: Boolean = true
-
         //TODO: suggest cmd not working because of minecraft bug.
         /** The Guide book. */
         var GUIDE_BOOK: Book = Book.book(
@@ -279,26 +273,8 @@ object Config {
         )
     }
 
-    /** Configuration settings for the DimensionsModule. */
-    object DimensionsModule {
-        /** Enables or disables the DimensionsModule. */
-        var ENABLED: Boolean = true
-
-        /** The radius within which to search for portals in the overworld. */
-        var PORTAL_SEARCH_RADIUS: Double = 128.0
-    }
-
-    /** Configuration settings for the DiscordModule. */
-    object DiscordModule {
-        /** Enables or disables the DiscordModule. */
-        var ENABLED: Boolean = true
-    }
-
     /** Configuration settings for the DoorsModule. */
     object DoorsModule {
-        /** Enables or disables the DoorsModule. */
-        var ENABLED: Boolean = true
-
         /** The initial delay before the first autoclose. */
         var INIT_DELAY: Long = 1L
 
@@ -356,9 +332,6 @@ object Config {
 
     /** Configuration settings for the eclipseModule. */
     object EclipseModule {
-        /** Enables or disables the eclipseModule. */
-        var ENABLED: Boolean = true
-
         /** The list of attributes for mobs during an eclipse. */
         var MOB_ATTRIBUTE: List<MobAttributeData> = listOf(
             MobAttributeData(
@@ -439,32 +412,8 @@ object Config {
         var INTERVAL: Long = TimeUtils.seconds(10)
     }
 
-    /** Configuration settings for the InvSearchModule. */
-    object InvSearchModule {
-        /** Enables or disables the InvSearchModule. */
-        var ENABLED: Boolean = true
-
-        /** The cooldown to use the mechanic again. */
-        var COOLDOWN: Long = 1L * 1000L // 1 second
-
-        /** The radius used for searching. */
-        var SEARCH_RADIUS: Int = 5
-    }
-
     /** Configuration settings for the InvUnloadModule. */
     object InvUnloadModule {
-        /** Enables or disables the InvUnloadModule. */
-        var ENABLED: Boolean = true
-
-        /** The cooldown to use the mechanic again. */
-        var COOLDOWN: Long = 1L * 1000L // 1 second
-
-        /** If it should match enchantments. */
-        var MATCH_ENCHANTMENTS: Boolean = true
-
-        /** If it should match enchantments on books. */
-        var MATCH_ENCHANTMENTS_ON_BOOKS: Boolean = true
-
         /** The sound effect used for unloading. */
         var SOUND_ON_UNLOAD: Sound = Sound.sound(
             BukkitSound.ENTITY_PLAYER_LEVELUP,
@@ -476,9 +425,6 @@ object Config {
 
     /** Configuration settings for the JoinQuitModule. */
     object JoinQuitModule {
-        /** Enables or disables the MotdModule. */
-        var ENABLED: Boolean = true
-
         /** The message displayed when a player joins. */
         var WELCOME_TEXT: String =
             """
@@ -499,9 +445,6 @@ object Config {
 
     /** Configuration settings for the MotdModule. */
     object MotdModule {
-        /** Enables or disables the MotdModule. */
-        var ENABLED: Boolean = true
-
         /** The message of the day, with max 2 lines. */
         val MOTD: List<String> = listOf(
             "<b>Ultimate Private SMP</b>".fireFmt(),
@@ -509,23 +452,8 @@ object Config {
         )
     }
 
-    /** Configuration settings for the RecipiesModule. */
-    object RecipiesModule {
-        /** Enables or disables the RecipiesModule. */
-        var ENABLED: Boolean = true
-    }
-
     /** Configuration settings for the TabListModule. */
     object TabListModule {
-        /** Enables or disables the TabListModule. */
-        var ENABLED: Boolean = true
-
-        /** The initial delay before the first update. */
-        var INIT_DELAY: Long = 0L
-
-        /** The interval between updates. */
-        var INTERVAL: Long = TimeUtils.seconds(10)
-
         /** The header of the tab list. Each element is a line. */
         var HEADER: List<String> = listOf(
             "${"]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt()}   ${"⚡ IllyriaRPG 1.21.5 ⚡".fireFmt()}   ${
@@ -547,21 +475,6 @@ object Config {
 
     /** Configuration settings for the TreesModule. */
     object TreesModule {
-        /** Enables or disables the TreesModule. */
-        var ENABLED: Boolean = true
-
-        /** If it should copy the biomes. */
-        var COPY_BIOMES: Boolean = false
-
-        /** If it should copy the entities. */
-        var COPY_ENTITIES: Boolean = false
-
-        /** If it should ignore air blocks. */
-        var IGNORE_AIR_BLOCKS: Boolean = true
-
-        /** If it should ignore structure void blocks. */
-        var IGNORE_STRUCTURE_VOID_BLOCKS: Boolean = true
-
         /**
          * If a sapling type is missing here, no custom schematic will be used and default behaviour applies.
          * You can define a file, multiple files, or a folder.

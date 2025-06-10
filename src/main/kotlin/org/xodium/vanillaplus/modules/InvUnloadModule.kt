@@ -58,7 +58,7 @@ class InvUnloadModule : ModuleInterface {
      */
     private fun unload(player: Player) {
         val cooldownKey = NamespacedKey(instance, "invunload_cooldown")
-        val cooldownDuration = Config.InvUnloadModule.COOLDOWN
+        val cooldownDuration = Config.data.invUnloadModule.cooldown
         if (CooldownManager.isOnCooldown(player, cooldownKey, cooldownDuration)) {
             player.sendActionBar("You must wait before using this again.".fireFmt().mm())
             return

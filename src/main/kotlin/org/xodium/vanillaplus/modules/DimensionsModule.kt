@@ -122,7 +122,7 @@ class DimensionsModule : ModuleInterface {
      * @return True if a portal exists within the radius.
      */
     private fun hasPortalNearby(world: World, x: Double, y: Double, z: Double): Boolean {
-        val portalSearchRadius = Config.DimensionsModule.PORTAL_SEARCH_RADIUS
+        val portalSearchRadius = Config.data.dimensionsModule.portalSearchRadius
         val radiusSquared = portalSearchRadius * portalSearchRadius
         val searchRadius = portalSearchRadius.toInt()
         val centerX = x.toInt()

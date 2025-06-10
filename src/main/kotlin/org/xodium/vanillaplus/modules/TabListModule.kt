@@ -35,8 +35,8 @@ class TabListModule : ModuleInterface {
             instance.server.scheduler.runTaskTimer(
                 instance,
                 Runnable { instance.server.onlinePlayers.forEach { updateTabList(it) } },
-                Config.TabListModule.INIT_DELAY,
-                Config.TabListModule.INTERVAL
+                Config.data.tabListModule.initDelay,
+                Config.data.tabListModule.interval
             )
         }
     }
