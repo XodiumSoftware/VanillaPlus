@@ -5,7 +5,10 @@
 
 package org.xodium.vanillaplus.data
 
+import kotlinx.datetime.LocalTime
+import net.kyori.adventure.bossbar.BossBar
 import org.bukkit.Material
+import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.TimeUtils
 
 /**
@@ -37,12 +40,15 @@ data class ConfigData(
     var motdModule: MotdModuleData = MotdModuleData(),
     var recipiesModule: RecipiesModuleData = RecipiesModuleData(),
     var tabListModule: TabListModuleData = TabListModuleData(),
-    var treesModule: TreesModuleData = TreesModuleData()
+    var treesModule: TreesModuleData = TreesModuleData(),
 )
 
 /**
  * Data class representing the configuration for the `AutoRestartModule`.
  * @property enabled Indicates whether the module is enabled. Default is true.
+ * @property restartTimes A list of times at which the server will restart. Default is TODO.
+ * @property bossbarName The name of the boss bar displayed during the restart countdown. Default is "⚡ RESTARTING in <time> minute(s) ⚡".
+ * @property bossbar The boss bar object used for displaying the countdown. Default is TODO.
  * @property scheduleInitDelay The initial delay before the schedule starts, in seconds. Default is 0 seconds.
  * @property scheduleInterval The interval at which the schedule runs, in seconds. Default is 1 second.
  * @property countdownInitDelay The initial delay before the countdown starts, in seconds. Default is 0 seconds.
@@ -51,6 +57,9 @@ data class ConfigData(
  */
 data class AutoRestartModuleData(
     var enabled: Boolean = true,
+    var restartTimes: MutableList<LocalTime>, //TODO
+    var bossbarName: String = "⚡ RESTARTING in <time> minute(s) ⚡".fireFmt(),
+    var bossbar: BossBar, //TODO
     var scheduleInitDelay: Long = TimeUtils.seconds(0),
     var scheduleInterval: Long = TimeUtils.seconds(1),
     var countdownInitDelay: Long = TimeUtils.seconds(0),
@@ -191,6 +200,7 @@ data class TabListModuleData(
  * @property copyEntities Indicates whether to copy entities when generating trees. Default is false.
  * @property ignoreAirBlocks Indicates whether to ignore air blocks when generating trees. Default is true.
  * @property ignoreStructureVoidBlocks Indicates whether to ignore structure void blocks when generating trees. Default is true.
+ * @property saplingLink A map linking sapling materials to a list of strings (e.g., tree types or configurations). Default is TODO.
  */
 data class TreesModuleData(
     var enabled: Boolean = true,
@@ -198,5 +208,5 @@ data class TreesModuleData(
     var copyEntities: Boolean = false,
     var ignoreAirBlocks: Boolean = true,
     var ignoreStructureVoidBlocks: Boolean = true,
-    var saplingLink: Map<Material, List<String>> = TODO(),
+    var saplingLink: Map<Material, List<String>>, //TODO
 )

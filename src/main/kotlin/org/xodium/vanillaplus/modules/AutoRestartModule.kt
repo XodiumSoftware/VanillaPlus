@@ -18,7 +18,6 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.ModuleManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.Utils
 import java.time.LocalTime
 import java.time.temporal.ChronoUnit
@@ -69,7 +68,7 @@ class AutoRestartModule : ModuleInterface {
                         if (remainingSeconds % 60 > 0) (remainingSeconds / 60) + 1 else remainingSeconds / 60
                     val progress = remainingSeconds.toFloat() / totalSeconds
                     bossBar.name(
-                        Config.AutoRestartModule.BOSSBAR_NAME.fireFmt()
+                        Config.data.autoRestartModule.bossbarName
                             .mm(Placeholder.component("time", displayTime.toString().mm()))
                     )
                     bossBar.progress(progress)

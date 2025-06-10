@@ -152,7 +152,7 @@ object Config {
         )
 
         /** The name of the boss bar, formatted with the display time. */
-        var BOSSBAR_NAME: String = "⚡ RESTARTING in <time> minute(s) ⚡".fireFmt()
+        private var BOSSBAR_NAME: String = "⚡ RESTARTING in <time> minute(s) ⚡".fireFmt()
 
         /** Bossbar for the auto-restart. */
         var BOSSBAR: BossBar = BossBar.bossBar(
