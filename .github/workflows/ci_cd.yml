@@ -51,7 +51,7 @@ jobs:
 
       - id: release_artifact
         name: Release Artifact
-        uses: softprops/action-gh-release@37fd9d0351a2df198244c8ef9f56d02d1f921e20
+        uses: softprops/action-gh-release@d5382d3e6f2fa7bd53cb749d33091853d4985daf
         env: { GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}" }
         with:
           draft: ${{ contains(github.event.head_commit.message, '.draft') }}
