@@ -282,6 +282,7 @@ data class EclipseModuleData(
         )
     ),
     var mobEquipment: List<MobEquipmentData> = listOf(
+        //TODO: ItemStack -> ItemStackData.
         MobEquipmentData(EquipmentSlot.HEAD, ItemStack(Material.NETHERITE_HELMET), 0.0f),
         MobEquipmentData(EquipmentSlot.CHEST, ItemStack(Material.NETHERITE_CHESTPLATE), 0.0f),
         MobEquipmentData(EquipmentSlot.LEGS, ItemStack(Material.NETHERITE_LEGGINGS), 0.0f),
