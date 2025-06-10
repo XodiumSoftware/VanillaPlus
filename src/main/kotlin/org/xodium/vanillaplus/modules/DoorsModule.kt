@@ -110,14 +110,15 @@ class DoorsModule : ModuleInterface {
      */
     private fun handleDoorClose(block: Block, door: Door) {
         getOtherPart(door, block)?.let { toggleOtherDoor(block, it, false) }
-        block.world.playSound(ConfigManager.DoorsModule.SOUND_DOOR_CLOSE)
+        block.world.playSound(ConfigManager.data.doorsModule.soundDoorClose.toSound())
     }
 
     /**
      * Handles the sound effect for closing a gate.
      * @param block The block representing the gate being closed.
      */
-    private fun handleGateClose(block: Block) = block.world.playSound(ConfigManager.DoorsModule.SOUND_GATE_CLOSE)
+    private fun handleGateClose(block: Block) =
+        block.world.playSound(ConfigManager.data.doorsModule.soundGateClose.toSound())
 
     /**
      * Checks if the interaction event is valid for processing.
@@ -137,7 +138,7 @@ class DoorsModule : ModuleInterface {
      */
     private fun handleLeftClick(event: PlayerInteractEvent, block: Block) {
         if (canKnock(event, event.player) && isKnockableBlock(block.blockData)) {
-            block.world.playSound(ConfigManager.DoorsModule.SOUND_KNOCK)
+            block.world.playSound(ConfigManager.data.doorsModule.soundKnock.toSound())
         }
     }
 

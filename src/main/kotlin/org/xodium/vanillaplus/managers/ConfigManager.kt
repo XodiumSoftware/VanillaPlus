@@ -16,7 +16,6 @@ import dev.triumphteam.gui.paper.kotlin.builder.chestContainer
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.datacomponent.DataComponentTypes
-import net.kyori.adventure.inventory.Book
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.title.Title
 import org.bukkit.Material
@@ -30,12 +29,10 @@ import org.xodium.vanillaplus.VanillaPlus
 import org.xodium.vanillaplus.data.ConfigData
 import org.xodium.vanillaplus.data.MobAttributeData
 import org.xodium.vanillaplus.data.MobEquipmentData
-import org.xodium.vanillaplus.utils.ExtUtils.clickSuggestCmd
 import org.xodium.vanillaplus.utils.ExtUtils.il
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
-import org.xodium.vanillaplus.utils.FmtUtils.skylineFmt
 import org.xodium.vanillaplus.utils.Utils
 import java.nio.file.Files
 import java.nio.file.StandardOpenOption
@@ -143,128 +140,6 @@ object ConfigManager {
 
     //NOTE: The following is deprecated and will be removed in the future.
     //NOTE: START...
-
-    /** Configuration settings for the BooksModule. */
-    object BooksModule {
-        //TODO: suggest cmd not working because of minecraft bug.
-        /** The Guide book. */
-        var GUIDE_BOOK: Book = Book.book(
-            "Guide".fireFmt().mm(),
-            VanillaPlus.Companion.instance::class.simpleName.toString().fireFmt().mm(),
-            listOf(
-                // Page 1
-                """
-                <b><u>${"Tips & Tricks".fireFmt()}
-                
-                <gold>▶ ${"/home".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
-                <dark_gray>Teleport to your home
-                
-                <gold>▶ ${"/skills".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
-                <dark_gray>Opens up the Skills GUI
-                
-                <gold>▶ ${"/rtp".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
-                <dark_gray>Random teleport in the current dimension
-                """.trimIndent(),
-
-                // Page 2
-                """
-                <gold>▶ ${"/unload".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
-                <dark_gray>Unloads your inventory into nearby chests
-                
-                <gold>▶ ${"/search".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
-                <dark_gray>Search into nearby chests for an item
-                
-                <gold>▶ ${"/tpa [player]".clickSuggestCmd().skylineFmt()}
-                <dark_gray>Request to teleport to a player
-                """.trimIndent(),
-
-                // Page 3
-                """
-                <gold>▶ ${"/condense".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
-                <dark_gray>Condenses resources (if possible) to their highest form (blocks)
-                
-                <gold>▶ ${"/uncondense".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
-                <dark_gray>Uncondenses resources (if possible) to their lowest form (items)
-                """.trimIndent(),
-
-                // Page 4
-                """
-                <gold>▶ ${"Enchantment max level".skylineFmt()}
-                <dark_gray>has been incremented by <red><b>x2<reset>
-                
-                <gold>▶ ${"During an Eclipse".skylineFmt()}
-                <dark_gray>A horde will spawn where the mobs are stronger than usual
-                """.trimIndent()
-            ).mm()
-        )
-
-        /** The Rules book. */
-        var RULES_BOOK: Book = Book.book(
-            "Rules".fireFmt().mm(),
-            VanillaPlus.Companion.instance::class.simpleName.toString().fireFmt().mm(),
-            listOf(
-                // Page 1: Player Rules (1-7)
-                """
-                <b><u><dark_aqua>Player Rules:<reset>
-        
-                <gold>▶ <dark_aqua>01 <dark_gray>| <red>No Griefing
-                <gold>▶ <dark_aqua>02 <dark_gray>| <red>No Spamming
-                <gold>▶ <dark_aqua>03 <dark_gray>| <red>No Advertising
-                <gold>▶ <dark_aqua>04 <dark_gray>| <red>No Cursing/No Constant Cursing
-                <gold>▶ <dark_aqua>05 <dark_gray>| <red>No Trolling/Flaming
-                <gold>▶ <dark_aqua>06 <dark_gray>| <red>No Asking for OP, Ranks, or Items
-                <gold>▶ <dark_aqua>07 <dark_gray>| <red>Respect all Players
-                """.trimIndent(),
-
-                // Page 2: Player Rules (8-13)
-                """
-                <gold>▶ <dark_aqua>08 <dark_gray>| <red>Obey Staff they are the Law Enforcers
-                <gold>▶ <dark_aqua>09 <dark_gray>| <red>No Racist or Sexist Remarks
-                <gold>▶ <dark_aqua>10 <dark_gray>| <red>No Mods/Hacks
-                <gold>▶ <dark_aqua>11 <dark_gray>| <red>No Full Caps Messages
-                <gold>▶ <dark_aqua>12 <dark_gray>| <red>No 1x1 Towers
-                <gold>▶ <dark_aqua>13 <dark_gray>| <red>Build in (Fantasy)Medieval style
-                """.trimIndent(),
-
-                // Page 3: Mod/Admin Rules
-                """
-                <b><u><dark_aqua>Mod/Admin Rules:<reset>
-        
-                <gold>▶ <dark_aqua>01 <dark_gray>| <red>Be Responsible with the power you are given as staff
-                <gold>▶ <dark_aqua>02 <dark_gray>| <red>Do not spawn blocks or items for other players
-                <gold>▶ <dark_aqua>03 <dark_gray>| <red>When Trading, only buy and sell legit items
-                <gold>▶ <dark_aqua>05 <dark_gray>| <red>No Power Abuse
-                """.trimIndent()
-            ).mm()
-        )
-    }
-
-    /** Configuration settings for the DoorsModule. */
-    object DoorsModule {
-        /** The sound effect used for closing doors. */
-        var SOUND_DOOR_CLOSE: Sound = Sound.sound(
-            org.bukkit.Sound.BLOCK_IRON_DOOR_CLOSE,
-            Sound.Source.BLOCK,
-            1.0f,
-            1.0f
-        )
-
-        /** The sound effect used for closing gates. */
-        var SOUND_GATE_CLOSE: Sound = Sound.sound(
-            org.bukkit.Sound.BLOCK_FENCE_GATE_CLOSE,
-            Sound.Source.BLOCK,
-            1.0f,
-            1.0f
-        )
-
-        /** The sound effect used for knocking. */
-        var SOUND_KNOCK: Sound = Sound.sound(
-            org.bukkit.Sound.ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR,
-            Sound.Source.HOSTILE,
-            1.0f,
-            1.0f
-        )
-    }
 
     /** Configuration settings for the eclipseModule. */
     object EclipseModule {

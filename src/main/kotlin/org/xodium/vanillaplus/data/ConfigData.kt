@@ -9,7 +9,9 @@ import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.sound.Sound
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
+import org.xodium.vanillaplus.VanillaPlus
 import org.xodium.vanillaplus.utils.ExtUtils.clickRunCmd
+import org.xodium.vanillaplus.utils.ExtUtils.clickSuggestCmd
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.FmtUtils.skylineFmt
@@ -87,9 +89,98 @@ data class AutoRestartModuleData(
 /**
  * Data class representing the configuration for the `BooksModule`.
  * @property enabled Indicates whether the module is enabled. Default is true.
+ * @property guideBook The data for the guide book, including its title, author, and pages. Default includes a formatted title and author, with several pages of tips and tricks.
+ * @property rulesBook The data for the rules book, including its title, author, and pages. Default includes a formatted title and author, with pages detailing player and mod/admin rules.
  */
 data class BooksModuleData(
     var enabled: Boolean = true,
+    var guideBook: BookData = BookData(
+        "Guide".fireFmt(),
+        VanillaPlus.Companion.instance::class.simpleName.toString().fireFmt(),
+        listOf(
+            // Page 1
+            """
+                <b><u>${"Tips & Tricks".fireFmt()}
+                
+                <gold>▶ ${"/home".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
+                <dark_gray>Teleport to your home
+                
+                <gold>▶ ${"/skills".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
+                <dark_gray>Opens up the Skills GUI
+                
+                <gold>▶ ${"/rtp".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
+                <dark_gray>Random teleport in the current dimension
+                """.trimIndent(),
+
+            // Page 2
+            """
+                <gold>▶ ${"/unload".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
+                <dark_gray>Unloads your inventory into nearby chests
+                
+                <gold>▶ ${"/search".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
+                <dark_gray>Search into nearby chests for an item
+                
+                <gold>▶ ${"/tpa [player]".clickSuggestCmd().skylineFmt()}
+                <dark_gray>Request to teleport to a player
+                """.trimIndent(),
+
+            // Page 3
+            """
+                <gold>▶ ${"/condense".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
+                <dark_gray>Condenses resources (if possible) to their highest form (blocks)
+                
+                <gold>▶ ${"/uncondense".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
+                <dark_gray>Uncondenses resources (if possible) to their lowest form (items)
+                """.trimIndent(),
+
+            // Page 4
+            """
+                <gold>▶ ${"Enchantment max level".skylineFmt()}
+                <dark_gray>has been incremented by <red><b>x2<reset>
+                
+                <gold>▶ ${"During an Eclipse".skylineFmt()}
+                <dark_gray>A horde will spawn where the mobs are stronger than usual
+                """.trimIndent()
+        )
+    ),
+    var rulesBook: BookData = BookData(
+        "Rules".fireFmt(),
+        VanillaPlus.Companion.instance::class.simpleName.toString().fireFmt(),
+        listOf(
+            // Page 1: Player Rules (1-7)
+            """
+                <b><u><dark_aqua>Player Rules:<reset>
+        
+                <gold>▶ <dark_aqua>01 <dark_gray>| <red>No Griefing
+                <gold>▶ <dark_aqua>02 <dark_gray>| <red>No Spamming
+                <gold>▶ <dark_aqua>03 <dark_gray>| <red>No Advertising
+                <gold>▶ <dark_aqua>04 <dark_gray>| <red>No Cursing/No Constant Cursing
+                <gold>▶ <dark_aqua>05 <dark_gray>| <red>No Trolling/Flaming
+                <gold>▶ <dark_aqua>06 <dark_gray>| <red>No Asking for OP, Ranks, or Items
+                <gold>▶ <dark_aqua>07 <dark_gray>| <red>Respect all Players
+                """.trimIndent(),
+
+            // Page 2: Player Rules (8-13)
+            """
+                <gold>▶ <dark_aqua>08 <dark_gray>| <red>Obey Staff they are the Law Enforcers
+                <gold>▶ <dark_aqua>09 <dark_gray>| <red>No Racist or Sexist Remarks
+                <gold>▶ <dark_aqua>10 <dark_gray>| <red>No Mods/Hacks
+                <gold>▶ <dark_aqua>11 <dark_gray>| <red>No Full Caps Messages
+                <gold>▶ <dark_aqua>12 <dark_gray>| <red>No 1x1 Towers
+                <gold>▶ <dark_aqua>13 <dark_gray>| <red>Build in (Fantasy)Medieval style
+                """.trimIndent(),
+
+            // Page 3: Mod/Admin Rules
+            """
+                <b><u><dark_aqua>Mod/Admin Rules:<reset>
+        
+                <gold>▶ <dark_aqua>01 <dark_gray>| <red>Be Responsible with the power you are given as staff
+                <gold>▶ <dark_aqua>02 <dark_gray>| <red>Do not spawn blocks or items for other players
+                <gold>▶ <dark_aqua>03 <dark_gray>| <red>When Trading, only buy and sell legit items
+                <gold>▶ <dark_aqua>05 <dark_gray>| <red>No Power Abuse
+                """.trimIndent()
+        )
+    )
 )
 
 /**
@@ -136,6 +227,24 @@ data class DoorsModuleData(
     var knockingRequiresEmptyHand: Boolean = true,
     var knockingRequiresShifting: Boolean = true,
     var autoCloseDelay: Long = 6L * 1000L,
+    var soundDoorClose: SoundData = SoundData(
+        BukkitSound.BLOCK_IRON_DOOR_CLOSE,
+        Sound.Source.BLOCK,
+        1.0f,
+        1.0f
+    ),
+    var soundGateClose: SoundData = SoundData(
+        BukkitSound.BLOCK_FENCE_GATE_CLOSE,
+        Sound.Source.BLOCK,
+        1.0f,
+        1.0f
+    ),
+    var soundKnock: SoundData = SoundData(
+        BukkitSound.ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR,
+        Sound.Source.HOSTILE,
+        1.0f,
+        1.0f
+    ),
 )
 
 /**

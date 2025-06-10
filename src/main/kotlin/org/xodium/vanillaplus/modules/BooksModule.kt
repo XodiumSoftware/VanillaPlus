@@ -23,10 +23,11 @@ class BooksModule : ModuleInterface {
         return listOf(
             Commands.literal("guide")
                 .requires { it.sender.hasPermission(Perms.Book.GUIDE) }
-                .executes { it -> Utils.tryCatch(it) { (it.sender as Player).openBook(ConfigManager.BooksModule.GUIDE_BOOK) } },
+                .executes { it -> Utils.tryCatch(it) { (it.sender as Player).openBook(ConfigManager.data.booksModule.guideBook.toBook()) } },
             Commands.literal("rules")
                 .requires { it.sender.hasPermission(Perms.Book.RULES) }
-                .executes { it -> Utils.tryCatch(it) { (it.sender as Player).openBook(ConfigManager.BooksModule.RULES_BOOK) } })
+                .executes { it -> Utils.tryCatch(it) { (it.sender as Player).openBook(ConfigManager.data.booksModule.rulesBook.toBook()) } },
+        )
     }
 }
 
