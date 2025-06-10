@@ -70,7 +70,7 @@ class EclipseModule : ModuleInterface {
         if (world.difficulty != Difficulty.HARD) return
         if (entity.type in ConfigManager.data.eclipseModule.excludedMobs) return
 
-        ConfigManager.EclipseModule.MOB_ATTRIBUTE
+        ConfigManager.data.eclipseModule.mobAttribute
             .filter { it.types.contains(entity.type) }
             .forEach { mobAttr ->
                 mobAttr.attributes.forEach { (attribute, adjust) ->
@@ -85,8 +85,8 @@ class EclipseModule : ModuleInterface {
 
         val equipment = entity.equipment ?: return
 
-        if (ConfigManager.EclipseModule.MOB_EQUIPMENT.isNotEmpty()) {
-            ConfigManager.EclipseModule.MOB_EQUIPMENT.forEach { config ->
+        if (ConfigManager.data.eclipseModule.mobEquipment.isNotEmpty()) {
+            ConfigManager.data.eclipseModule.mobEquipment.forEach { config ->
                 when (config.slot) {
                     EquipmentSlot.HEAD -> {
                         equipment.helmet = config.item.clone()
@@ -128,9 +128,9 @@ class EclipseModule : ModuleInterface {
         }
 
         if (hordeState.isActive && event.spawnReason == CreatureSpawnEvent.SpawnReason.NATURAL) {
-            val specific = ConfigManager.EclipseModule.MOB_ATTRIBUTE
+            val specific = ConfigManager.data.eclipseModule.mobAttribute
                 .firstOrNull { it.types.size == 1 && it.types.contains(entity.type) }
-            val general = ConfigManager.EclipseModule.MOB_ATTRIBUTE
+            val general = ConfigManager.data.eclipseModule.mobAttribute
                 .firstOrNull { it.types.containsAll(EntityType.entries) }
             val spawnRate = (specific ?: general)?.spawnRate?.toInt() ?: 1
 

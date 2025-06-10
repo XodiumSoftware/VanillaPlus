@@ -17,16 +17,11 @@ import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.datacomponent.DataComponentTypes
 import org.bukkit.Material
-import org.bukkit.attribute.Attribute
-import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
-import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.VanillaPlus
 import org.xodium.vanillaplus.data.ConfigData
-import org.xodium.vanillaplus.data.MobAttributeData
-import org.xodium.vanillaplus.data.MobEquipmentData
 import org.xodium.vanillaplus.utils.ExtUtils.il
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
@@ -135,55 +130,4 @@ object ConfigManager {
             setData(DataComponentTypes.LORE, lore.il())
         }
     }
-
-    //NOTE: The following is deprecated and will be removed in the future.
-    //NOTE: START...
-
-    /** Configuration settings for the eclipseModule. */
-    object EclipseModule {
-        /** The list of attributes for mobs during an eclipse. */
-        var MOB_ATTRIBUTE: List<MobAttributeData> = listOf(
-            MobAttributeData(
-                EntityType.entries,
-                mapOf(
-                    Attribute.ATTACK_DAMAGE to { it * 2.0 },
-                    Attribute.MAX_HEALTH to { it * 2.0 },
-                    Attribute.FOLLOW_RANGE to { it * 2.0 },
-                    Attribute.MOVEMENT_EFFICIENCY to { it * 2.0 },
-                    Attribute.WATER_MOVEMENT_EFFICIENCY to { it * 2.0 },
-                    Attribute.SPAWN_REINFORCEMENTS to { it * 2.0 },
-                ),
-                10.0
-            ),
-            MobAttributeData(
-                listOf(EntityType.SPIDER),
-                mapOf(
-                    Attribute.SCALE to { it * 4.0 },
-                ),
-                1.5
-            )
-        )
-
-        /** The list of equipment for mobs during an eclipse. */
-        var MOB_EQUIPMENT: List<MobEquipmentData> = listOf(
-            MobEquipmentData(EquipmentSlot.HEAD, ItemStack(Material.NETHERITE_HELMET), 0.0f),
-            MobEquipmentData(EquipmentSlot.CHEST, ItemStack(Material.NETHERITE_CHESTPLATE), 0.0f),
-            MobEquipmentData(EquipmentSlot.LEGS, ItemStack(Material.NETHERITE_LEGGINGS), 0.0f),
-            MobEquipmentData(EquipmentSlot.FEET, ItemStack(Material.NETHERITE_BOOTS), 0.0f),
-            MobEquipmentData(
-                EquipmentSlot.HAND,
-                ItemStack(
-                    listOf(
-                        Material.NETHERITE_SWORD,
-                        Material.NETHERITE_AXE,
-                        Material.BOW
-                    ).random()
-                ),
-                0.0f
-            ),
-            MobEquipmentData(EquipmentSlot.OFF_HAND, ItemStack(Material.SHIELD), 0.0f)
-        )
-    }
-
-    //NOTE: ...END
 }
