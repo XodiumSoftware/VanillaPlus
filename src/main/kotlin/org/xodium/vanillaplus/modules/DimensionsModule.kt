@@ -16,15 +16,15 @@ import org.bukkit.event.entity.EntityPortalEvent
 import org.bukkit.event.player.PlayerPortalEvent
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause
 import org.bukkit.util.Vector
-import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 
 /** Represents a module handling dimension mechanics within the system. */
 class DimensionsModule : ModuleInterface {
-    override fun enabled(): Boolean = Config.data.dimensionsModule.enabled
+    override fun enabled(): Boolean = ConfigManager.data.dimensionsModule.enabled
 
     companion object {
         private val ADJACENT_DIRECTIONS = listOf<Vector>(
@@ -122,7 +122,7 @@ class DimensionsModule : ModuleInterface {
      * @return True if a portal exists within the radius.
      */
     private fun hasPortalNearby(world: World, x: Double, y: Double, z: Double): Boolean {
-        val portalSearchRadius = Config.data.dimensionsModule.portalSearchRadius
+        val portalSearchRadius = ConfigManager.data.dimensionsModule.portalSearchRadius
         val radiusSquared = portalSearchRadius * portalSearchRadius
         val searchRadius = portalSearchRadius.toInt()
         val centerX = x.toInt()

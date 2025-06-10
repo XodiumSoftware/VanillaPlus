@@ -19,11 +19,11 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.Inventory
-import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.ChestAccessManager
+import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.managers.CooldownManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
@@ -32,7 +32,7 @@ import org.xodium.vanillaplus.utils.Utils
 
 /** Represents a module handling inv-unload mechanics within the system. */
 class InvUnloadModule : ModuleInterface {
-    override fun enabled(): Boolean = Config.data.invUnloadModule.enabled
+    override fun enabled(): Boolean = ConfigManager.data.invUnloadModule.enabled
 
     @Suppress("UnstableApiUsage")
     override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
@@ -58,7 +58,7 @@ class InvUnloadModule : ModuleInterface {
      */
     private fun unload(player: Player) {
         val cooldownKey = NamespacedKey(instance, "invunload_cooldown")
-        val cooldownDuration = Config.data.invUnloadModule.cooldown
+        val cooldownDuration = ConfigManager.data.invUnloadModule.cooldown
         if (CooldownManager.isOnCooldown(player, cooldownKey, cooldownDuration)) {
             player.sendActionBar("You must wait before using this again.".fireFmt().mm())
             return
@@ -100,7 +100,7 @@ class InvUnloadModule : ModuleInterface {
             Utils.chestEffect(player, block)
         }
 
-        player.playSound(Config.InvUnloadModule.SOUND_ON_UNLOAD, Sound.Emitter.self())
+        player.playSound(ConfigManager.InvUnloadModule.SOUND_ON_UNLOAD, Sound.Emitter.self())
     }
 
     /**

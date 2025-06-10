@@ -19,9 +19,9 @@ import org.bukkit.block.Block
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.world.StructureGrowEvent
-import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.registries.BlockTypesRegistry
 import java.io.IOException
 import java.nio.channels.Channels
@@ -34,11 +34,11 @@ import java.util.stream.Collectors
 
 /** Represents a module handling tree mechanics within the system. */
 class TreesModule : ModuleInterface {
-    override fun enabled(): Boolean = Config.data.treesModule.enabled
+    override fun enabled(): Boolean = ConfigManager.data.treesModule.enabled
 
     /** A map of sapling materials to a list of schematics. */
     private val schematicCache: Map<Material, List<Clipboard>> =
-        Config.TreesModule.SAPLING_LINK.mapValues { (_, dirs) ->
+        ConfigManager.TreesModule.SAPLING_LINK.mapValues { (_, dirs) ->
             dirs.flatMap { dir -> loadSchematics("/schematics/$dir") }
         }
 
@@ -116,10 +116,10 @@ class TreesModule : ModuleInterface {
                                 ClipboardHolder(clipboard)
                                     .createPaste(editSession)
                                     .to(BlockVector3.at(block.x, block.y, block.z))
-                                    .copyBiomes(Config.data.treesModule.copyBiomes)
-                                    .copyEntities(Config.data.treesModule.copyEntities)
-                                    .ignoreAirBlocks(Config.data.treesModule.ignoreAirBlocks)
-                                    .ignoreStructureVoidBlocks(Config.data.treesModule.ignoreStructureVoidBlocks)
+                                    .copyBiomes(ConfigManager.data.treesModule.copyBiomes)
+                                    .copyEntities(ConfigManager.data.treesModule.copyEntities)
+                                    .ignoreAirBlocks(ConfigManager.data.treesModule.ignoreAirBlocks)
+                                    .ignoreStructureVoidBlocks(ConfigManager.data.treesModule.ignoreStructureVoidBlocks)
                                     .build()
                             )
                         }

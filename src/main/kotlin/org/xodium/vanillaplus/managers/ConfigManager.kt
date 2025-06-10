@@ -3,10 +3,8 @@
  *  All rights reserved.
  */
 
-package org.xodium.vanillaplus
+package org.xodium.vanillaplus.managers
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import dev.triumphteam.gui.paper.Gui
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder
@@ -25,7 +23,8 @@ import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
-import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.Perms
+import org.xodium.vanillaplus.VanillaPlus
 import org.xodium.vanillaplus.data.ConfigData
 import org.xodium.vanillaplus.data.MobAttributeData
 import org.xodium.vanillaplus.data.MobEquipmentData
@@ -45,29 +44,28 @@ import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.jvm.isAccessible
 import kotlin.time.Duration.Companion.seconds
-import org.bukkit.Sound as BukkitSound
 
-/** Configuration settings. */
-object Config {
-    private val configPath = instance.dataFolder.toPath().resolve("config.json")
+/** Represents the config manager within the system. */
+object ConfigManager {
+    private val configPath = VanillaPlus.Companion.instance.dataFolder.toPath().resolve("config.json")
     private val objectMapper = jacksonObjectMapper()
     var data: ConfigData = ConfigData()
 
     /** Initializes the configuration by loading module states from the config file. */
     fun load() {
         if (Files.exists(configPath)) {
-            instance.logger.info("Config: Loading module states.")
+            VanillaPlus.Companion.instance.logger.info("Config: Loading module states.")
             data = objectMapper.readValue(Files.readString(configPath))
-            instance.logger.info("Config: Module states loaded successfully.")
+            VanillaPlus.Companion.instance.logger.info("Config: Module states loaded successfully.")
         } else {
-            instance.logger.info("Config: No config file found, creating default states.")
+            VanillaPlus.Companion.instance.logger.info("Config: No config file found, creating default states.")
             save()
         }
     }
 
     /** Saves the current module states to the config file. */
     private fun save() {
-        instance.logger.info("Config: Saving module states.")
+        VanillaPlus.Companion.instance.logger.info("Config: Saving module states.")
         Files.createDirectories(configPath.parent)
         Files.writeString(
             configPath,
@@ -75,7 +73,7 @@ object Config {
             StandardOpenOption.CREATE,
             StandardOpenOption.TRUNCATE_EXISTING
         )
-        instance.logger.info("Config: Module states saved successfully.")
+        VanillaPlus.Companion.instance.logger.info("Config: Module states saved successfully.")
     }
 
     /**
@@ -94,7 +92,7 @@ object Config {
      * @return A Gui object representing the configuration GUI.
      */
     private fun gui(): Gui {
-        val modules = Config::class.nestedClasses.mapNotNull { kClass ->
+        val modules = ConfigManager::class.nestedClasses.mapNotNull { kClass ->
             val enabledProp = kClass.declaredMemberProperties.find { it.name == "ENABLED" }
             if (enabledProp != null) kClass to enabledProp else null
         }
@@ -169,7 +167,7 @@ object Config {
         /** The Guide book. */
         var GUIDE_BOOK: Book = Book.book(
             "Guide".fireFmt().mm(),
-            instance::class.simpleName.toString().fireFmt().mm(),
+            VanillaPlus.Companion.instance::class.simpleName.toString().fireFmt().mm(),
             listOf(
                 // Page 1
                 """
@@ -220,7 +218,7 @@ object Config {
         /** The Rules book. */
         var RULES_BOOK: Book = Book.book(
             "Rules".fireFmt().mm(),
-            instance::class.simpleName.toString().fireFmt().mm(),
+            VanillaPlus.Companion.instance::class.simpleName.toString().fireFmt().mm(),
             listOf(
                 // Page 1: Player Rules (1-7)
                 """
@@ -262,7 +260,7 @@ object Config {
     object DoorsModule {
         /** The sound effect used for closing doors. */
         var SOUND_DOOR_CLOSE: Sound = Sound.sound(
-            BukkitSound.BLOCK_IRON_DOOR_CLOSE,
+            org.bukkit.Sound.BLOCK_IRON_DOOR_CLOSE,
             Sound.Source.BLOCK,
             1.0f,
             1.0f
@@ -270,7 +268,7 @@ object Config {
 
         /** The sound effect used for closing gates. */
         var SOUND_GATE_CLOSE: Sound = Sound.sound(
-            BukkitSound.BLOCK_FENCE_GATE_CLOSE,
+            org.bukkit.Sound.BLOCK_FENCE_GATE_CLOSE,
             Sound.Source.BLOCK,
             1.0f,
             1.0f
@@ -278,7 +276,7 @@ object Config {
 
         /** The sound effect used for knocking. */
         var SOUND_KNOCK: Sound = Sound.sound(
-            BukkitSound.ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR,
+            org.bukkit.Sound.ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR,
             Sound.Source.HOSTILE,
             1.0f,
             1.0f
@@ -343,7 +341,7 @@ object Config {
 
         /** The sound effect used for when the eclipse is active. */
         var ECLIPSE_START_SOUND: Sound = Sound.sound(
-            BukkitSound.ENTITY_WITHER_SPAWN,
+            org.bukkit.Sound.ENTITY_WITHER_SPAWN,
             Sound.Source.HOSTILE,
             1.0f,
             1.0f
@@ -351,7 +349,7 @@ object Config {
 
         /** The sound effect used for when the eclipse is inactive. */
         var ECLIPSE_END_SOUND: Sound = Sound.sound(
-            BukkitSound.ENTITY_WITHER_DEATH,
+            org.bukkit.Sound.ENTITY_WITHER_DEATH,
             Sound.Source.HOSTILE,
             1.0f,
             1.0f
@@ -368,7 +366,7 @@ object Config {
     object InvUnloadModule {
         /** The sound effect used for unloading. */
         var SOUND_ON_UNLOAD: Sound = Sound.sound(
-            BukkitSound.ENTITY_PLAYER_LEVELUP,
+            org.bukkit.Sound.ENTITY_PLAYER_LEVELUP,
             Sound.Source.PLAYER,
             1.0f,
             1.0f

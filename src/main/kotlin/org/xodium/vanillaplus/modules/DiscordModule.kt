@@ -29,13 +29,13 @@ import io.ktor.http.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.firstOrNull
 import org.bukkit.scheduler.BukkitTask
-import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.managers.ConfigManager
 
 /** Represents a module handling discord mechanics within the system. */
 class DiscordModule : ModuleInterface {
-    override fun enabled(): Boolean = Config.data.discordModule.enabled
+    override fun enabled(): Boolean = ConfigManager.data.discordModule.enabled
 
     private val token = dotenv()["DISCORD_BOT_TOKEN"]
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)

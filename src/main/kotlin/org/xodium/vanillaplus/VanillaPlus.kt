@@ -8,6 +8,7 @@ package org.xodium.vanillaplus
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import org.bukkit.plugin.java.JavaPlugin
+import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.managers.ModuleManager
 
 /** Main class of the plugin. */
@@ -32,7 +33,7 @@ class VanillaPlus : JavaPlugin() {
             !isSupportedVersion() -> disablePlugin(UNSUPPORTED_VERSION_MSG)
             !isSupportedPlatform() -> disablePlugin(UNSUPPORTED_PLATFORM_MSG)
             else -> {
-                Config.load()
+                ConfigManager.load()
                 Perms
                 ModuleManager
             }

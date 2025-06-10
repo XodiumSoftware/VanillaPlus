@@ -12,10 +12,10 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
-import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.managers.ModuleManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.Utils
@@ -24,7 +24,7 @@ import java.time.temporal.ChronoUnit
 
 /** Represents a module handling auto-restart mechanics within the system. */
 class AutoRestartModule : ModuleInterface {
-    override fun enabled(): Boolean = Config.data.autoRestartModule.enabled
+    override fun enabled(): Boolean = ConfigManager.data.autoRestartModule.enabled
 
     @Suppress("UnstableApiUsage")
     override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
@@ -39,14 +39,14 @@ class AutoRestartModule : ModuleInterface {
             instance.server.scheduler.runTaskTimerAsynchronously(
                 instance,
                 Runnable {
-                    Config.AutoRestartModule.RESTART_TIMES.forEach {
+                    ConfigManager.AutoRestartModule.RESTART_TIMES.forEach {
                         if (isTimeToStartCountdown(it)) {
                             instance.server.scheduler.runTask(instance, Runnable { countdown() })
                         }
                     }
                 },
-                Config.data.autoRestartModule.scheduleInitDelay,
-                Config.data.autoRestartModule.scheduleInterval
+                ConfigManager.data.autoRestartModule.scheduleInitDelay,
+                ConfigManager.data.autoRestartModule.scheduleInterval
             )
         }
     }
@@ -54,10 +54,10 @@ class AutoRestartModule : ModuleInterface {
     /** Triggers a countdown for the server restart. */
     @OptIn(DelicateCoroutinesApi::class)
     private fun countdown() {
-        val totalMinutes = Config.data.autoRestartModule.countdownStartMinutes
+        val totalMinutes = ConfigManager.data.autoRestartModule.countdownStartMinutes
         var remainingSeconds = totalMinutes * 60
         val totalSeconds = remainingSeconds
-        val bossBar = Config.AutoRestartModule.BOSSBAR
+        val bossBar = ConfigManager.AutoRestartModule.BOSSBAR
         instance.server.onlinePlayers.forEach { player -> player.showBossBar(bossBar) }
         instance.server.scheduler.runTaskTimer(
             instance,
@@ -68,7 +68,7 @@ class AutoRestartModule : ModuleInterface {
                         if (remainingSeconds % 60 > 0) (remainingSeconds / 60) + 1 else remainingSeconds / 60
                     val progress = remainingSeconds.toFloat() / totalSeconds
                     bossBar.name(
-                        Config.data.autoRestartModule.bossbarName
+                        ConfigManager.data.autoRestartModule.bossbarName
                             .mm(Placeholder.component("time", displayTime.toString().mm()))
                     )
                     bossBar.progress(progress)
@@ -87,8 +87,8 @@ class AutoRestartModule : ModuleInterface {
                     instance.server.restart()
                 }
             },
-            Config.data.autoRestartModule.countdownInitDelay,
-            Config.data.autoRestartModule.countdownInterval
+            ConfigManager.data.autoRestartModule.countdownInitDelay,
+            ConfigManager.data.autoRestartModule.countdownInterval
         )
     }
 
@@ -101,6 +101,6 @@ class AutoRestartModule : ModuleInterface {
         return ChronoUnit.MINUTES.between(
             LocalTime.now().truncatedTo(ChronoUnit.MINUTES),
             restartTime
-        ) == Config.data.autoRestartModule.countdownStartMinutes.toLong()
+        ) == ConfigManager.data.autoRestartModule.countdownStartMinutes.toLong()
     }
 }

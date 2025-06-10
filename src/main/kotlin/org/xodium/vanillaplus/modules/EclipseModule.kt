@@ -22,12 +22,12 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.inventory.EquipmentSlot
-import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.EclipseData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.managers.ModuleManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
@@ -36,7 +36,7 @@ import kotlin.random.Random
 
 /** Represents a module handling eclipse mechanics within the system. */
 class EclipseModule : ModuleInterface {
-    override fun enabled(): Boolean = Config.data.eclipseModule.enabled
+    override fun enabled(): Boolean = ConfigManager.data.eclipseModule.enabled
 
     @Suppress("UnstableApiUsage")
     override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
@@ -54,8 +54,8 @@ class EclipseModule : ModuleInterface {
             instance.server.scheduler.runTaskTimer(
                 instance,
                 Runnable { eclipse() },
-                Config.EclipseModule.INIT_DELAY,
-                Config.EclipseModule.INTERVAL
+                ConfigManager.EclipseModule.INIT_DELAY,
+                ConfigManager.EclipseModule.INTERVAL
             )
         }
     }
@@ -68,9 +68,9 @@ class EclipseModule : ModuleInterface {
         if (!enabled() || !hordeState.isActive) return
         if (world.environment != World.Environment.NORMAL) return
         if (world.difficulty != Difficulty.HARD) return
-        if (entity.type in Config.EclipseModule.EXCLUDED_MOBS) return
+        if (entity.type in ConfigManager.EclipseModule.EXCLUDED_MOBS) return
 
-        Config.EclipseModule.MOB_ATTRIBUTE
+        ConfigManager.EclipseModule.MOB_ATTRIBUTE
             .filter { it.types.contains(entity.type) }
             .forEach { mobAttr ->
                 mobAttr.attributes.forEach { (attribute, adjust) ->
@@ -85,8 +85,8 @@ class EclipseModule : ModuleInterface {
 
         val equipment = entity.equipment ?: return
 
-        if (Config.EclipseModule.MOB_EQUIPMENT.isNotEmpty()) {
-            Config.EclipseModule.MOB_EQUIPMENT.forEach { config ->
+        if (ConfigManager.EclipseModule.MOB_EQUIPMENT.isNotEmpty()) {
+            ConfigManager.EclipseModule.MOB_EQUIPMENT.forEach { config ->
                 when (config.slot) {
                     EquipmentSlot.HEAD -> {
                         equipment.helmet = config.item.clone()
@@ -124,13 +124,13 @@ class EclipseModule : ModuleInterface {
         }
 
         if (entity.type == EntityType.CREEPER && Random.nextBoolean()) {
-            (entity as Creeper).isPowered = Config.data.eclipseModule.randomPoweredCreepers
+            (entity as Creeper).isPowered = ConfigManager.data.eclipseModule.randomPoweredCreepers
         }
 
         if (hordeState.isActive && event.spawnReason == CreatureSpawnEvent.SpawnReason.NATURAL) {
-            val specific = Config.EclipseModule.MOB_ATTRIBUTE
+            val specific = ConfigManager.EclipseModule.MOB_ATTRIBUTE
                 .firstOrNull { it.types.size == 1 && it.types.contains(entity.type) }
-            val general = Config.EclipseModule.MOB_ATTRIBUTE
+            val general = ConfigManager.EclipseModule.MOB_ATTRIBUTE
                 .firstOrNull { it.types.containsAll(EntityType.entries) }
             val spawnRate = (specific ?: general)?.spawnRate?.toInt() ?: 1
 
@@ -191,8 +191,8 @@ class EclipseModule : ModuleInterface {
         hordeState.isActive = true
         hordeState.hasTriggeredThisEclipse = true
         instance.server.onlinePlayers.forEach {
-            it.showTitle(Config.EclipseModule.ECLIPSE_START_TITLE)
-            it.playSound(Config.EclipseModule.ECLIPSE_START_SOUND, Sound.Emitter.self())
+            it.showTitle(ConfigManager.EclipseModule.ECLIPSE_START_TITLE)
+            it.playSound(ConfigManager.EclipseModule.ECLIPSE_START_SOUND, Sound.Emitter.self())
         }
         GlobalScope.launch {
             ModuleManager.discordModule.sendEventEmbed(
@@ -213,8 +213,8 @@ class EclipseModule : ModuleInterface {
     private fun deactivateEclipse(world: World) {
         hordeState.isActive = false
         instance.server.onlinePlayers.forEach {
-            it.showTitle(Config.EclipseModule.ECLIPSE_END_TITLE)
-            it.playSound(Config.EclipseModule.ECLIPSE_END_SOUND, Sound.Emitter.self())
+            it.showTitle(ConfigManager.EclipseModule.ECLIPSE_END_TITLE)
+            it.playSound(ConfigManager.EclipseModule.ECLIPSE_END_SOUND, Sound.Emitter.self())
         }
         world.setStorm(false)
         world.isThundering = false
