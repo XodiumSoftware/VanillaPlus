@@ -5,6 +5,7 @@
 
 package org.xodium.vanillaplus.managers
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
@@ -50,7 +51,7 @@ import kotlin.time.Duration.Companion.seconds
 /** Represents the config manager within the system. */
 object ConfigManager {
     private val configPath = VanillaPlus.Companion.instance.dataFolder.toPath().resolve("config.json")
-    private val objectMapper = jacksonObjectMapper()
+    private val objectMapper = jacksonObjectMapper().apply { registerModule(JavaTimeModule()) }
     var data: ConfigData = ConfigData()
 
     /** Initializes the configuration by loading module states from the config file. */
