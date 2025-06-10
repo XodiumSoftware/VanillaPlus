@@ -5,11 +5,12 @@
 
 package org.xodium.vanillaplus.data
 
-import kotlinx.datetime.LocalTime
 import net.kyori.adventure.bossbar.BossBar
 import org.bukkit.Material
+import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.TimeUtils
+import java.time.LocalTime
 
 /**
  * Data class representing the configuration.
@@ -46,9 +47,9 @@ data class ConfigData(
 /**
  * Data class representing the configuration for the `AutoRestartModule`.
  * @property enabled Indicates whether the module is enabled. Default is true.
- * @property restartTimes A list of times at which the server will restart. Default is TODO.
+ * @property restartTimes A list of times at which the server will restart. Default is a list containing 00:00, 06:00, 12:00, and 18:00.
  * @property bossbarName The name of the boss bar displayed during the restart countdown. Default is "⚡ RESTARTING in <time> minute(s) ⚡".
- * @property bossbar The boss bar object used for displaying the countdown. Default is TODO.
+ * @property bossbar The boss bar object used for displaying the countdown. Default is a boss bar with the name defined above, full progress, red color, and progress overlay.
  * @property scheduleInitDelay The initial delay before the schedule starts, in seconds. Default is 0 seconds.
  * @property scheduleInterval The interval at which the schedule runs, in seconds. Default is 1 second.
  * @property countdownInitDelay The initial delay before the countdown starts, in seconds. Default is 0 seconds.
@@ -57,9 +58,20 @@ data class ConfigData(
  */
 data class AutoRestartModuleData(
     var enabled: Boolean = true,
-    var restartTimes: MutableList<LocalTime>, //TODO
+    var restartTimes: MutableList<LocalTime> = mutableListOf(
+        LocalTime.of(0, 0),
+        LocalTime.of(6, 0),
+        LocalTime.of(12, 0),
+        LocalTime.of(18, 0),
+        //TODO use kotlin variant?
+    ),
     var bossbarName: String = "⚡ RESTARTING in <time> minute(s) ⚡".fireFmt(),
-    var bossbar: BossBar, //TODO
+    var bossbar: BossBar = BossBar.bossBar(
+        bossbarName.mm(),
+        1.0f,
+        BossBar.Color.RED,
+        BossBar.Overlay.PROGRESS,
+    ),
     var scheduleInitDelay: Long = TimeUtils.seconds(0),
     var scheduleInterval: Long = TimeUtils.seconds(1),
     var countdownInitDelay: Long = TimeUtils.seconds(0),
@@ -200,7 +212,7 @@ data class TabListModuleData(
  * @property copyEntities Indicates whether to copy entities when generating trees. Default is false.
  * @property ignoreAirBlocks Indicates whether to ignore air blocks when generating trees. Default is true.
  * @property ignoreStructureVoidBlocks Indicates whether to ignore structure void blocks when generating trees. Default is true.
- * @property saplingLink A map linking sapling materials to a list of strings (e.g., tree types or configurations). Default is TODO.
+ * @property saplingLink A map linking sapling materials to a list of strings (e.g., tree types or configurations). Default is a predefined map linking various sapling materials to their respective tree types.
  */
 data class TreesModuleData(
     var enabled: Boolean = true,
@@ -208,5 +220,17 @@ data class TreesModuleData(
     var copyEntities: Boolean = false,
     var ignoreAirBlocks: Boolean = true,
     var ignoreStructureVoidBlocks: Boolean = true,
-    var saplingLink: Map<Material, List<String>>, //TODO
+    var saplingLink: Map<Material, List<String>> = mapOf(
+        Material.ACACIA_SAPLING to listOf("trees/acacia"),
+        Material.BIRCH_SAPLING to listOf("trees/birch"),
+        Material.CHERRY_SAPLING to listOf("trees/cherry"),
+        Material.CRIMSON_FUNGUS to listOf("trees/crimson"),
+        Material.DARK_OAK_SAPLING to listOf("trees/dark_oak"),
+        Material.JUNGLE_SAPLING to listOf("trees/jungle"),
+        Material.MANGROVE_PROPAGULE to listOf("trees/mangrove"),
+        Material.OAK_SAPLING to listOf("trees/oak"),
+        Material.PALE_OAK_SAPLING to listOf("trees/pale_oak"),
+        Material.SPRUCE_SAPLING to listOf("trees/spruce"),
+        Material.WARPED_FUNGUS to listOf("trees/warped"),
+    ),
 )
