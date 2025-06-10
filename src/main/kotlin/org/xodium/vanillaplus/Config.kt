@@ -38,7 +38,8 @@ import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.FmtUtils.skylineFmt
 import org.xodium.vanillaplus.utils.TimeUtils
 import org.xodium.vanillaplus.utils.Utils
-import java.io.File
+import java.nio.file.Files
+import java.nio.file.StandardOpenOption
 import java.time.LocalTime
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.full.declaredMemberProperties
@@ -50,13 +51,14 @@ import org.bukkit.Sound as BukkitSound
 
 /** Configuration settings. */
 object Config {
-    private val configFile = File("modules.json")
+    private val configPath = instance.dataFolder.toPath().resolve("modules.json")
     private val objectMapper = jacksonObjectMapper()
 
     /** Initializes the configuration by loading module states from the config file. */
     fun loadModuleStates() {
-        if (configFile.exists()) {
-            val states: ModuleStateData = objectMapper.readValue(configFile)
+        if (Files.exists(configPath)) {
+            instance.logger.info("Config: Loading module states.")
+            val states: ModuleStateData = objectMapper.readValue(Files.readString(configPath))
             AutoRestartModule.ENABLED = states.AutoRestartModule
             BooksModule.ENABLED = states.BooksModule
             DimensionsModule.ENABLED = states.DimensionsModule
@@ -70,11 +72,16 @@ object Config {
             RecipiesModule.ENABLED = states.RecipiesModule
             TabListModule.ENABLED = states.TabListModule
             TreesModule.ENABLED = states.TreesModule
+            instance.logger.info("Config: Module states loaded successfully.")
+        } else {
+            instance.logger.info("Config: No config file found, creating default states.")
+            saveModuleStates()
         }
     }
 
     /** Saves the current module states to the config file. */
     private fun saveModuleStates() {
+        instance.logger.info("Config: Saving module states.")
         val states = ModuleStateData(
             AutoRestartModule.ENABLED,
             BooksModule.ENABLED,
@@ -90,7 +97,9 @@ object Config {
             TabListModule.ENABLED,
             TreesModule.ENABLED
         )
-        objectMapper.writerWithDefaultPrettyPrinter().writeValue(configFile, states)
+        val json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(states)
+        Files.writeString(configPath, json, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)
+        instance.logger.info("Config: Module states saved successfully.")
     }
 
     /**
