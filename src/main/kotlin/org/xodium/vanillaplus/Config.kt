@@ -5,6 +5,8 @@
 
 package org.xodium.vanillaplus
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import dev.triumphteam.gui.paper.Gui
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder
@@ -26,6 +28,7 @@ import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.MobAttributeData
 import org.xodium.vanillaplus.data.MobEquipmentData
+import org.xodium.vanillaplus.data.ModuleStateData
 import org.xodium.vanillaplus.utils.ExtUtils.clickRunCmd
 import org.xodium.vanillaplus.utils.ExtUtils.clickSuggestCmd
 import org.xodium.vanillaplus.utils.ExtUtils.il
@@ -35,6 +38,7 @@ import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.FmtUtils.skylineFmt
 import org.xodium.vanillaplus.utils.TimeUtils
 import org.xodium.vanillaplus.utils.Utils
+import java.io.File
 import java.time.LocalTime
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.full.declaredMemberProperties
@@ -46,6 +50,49 @@ import org.bukkit.Sound as BukkitSound
 
 /** Configuration settings. */
 object Config {
+    private val configFile = File("modules.json")
+    private val objectMapper = jacksonObjectMapper()
+
+    /** Initializes the configuration by loading module states from the config file. */
+    fun loadModuleStates() {
+        if (configFile.exists()) {
+            val states: ModuleStateData = objectMapper.readValue(configFile)
+            AutoRestartModule.ENABLED = states.AutoRestartModule
+            BooksModule.ENABLED = states.BooksModule
+            DimensionsModule.ENABLED = states.DimensionsModule
+            DiscordModule.ENABLED = states.DiscordModule
+            DoorsModule.ENABLED = states.DoorsModule
+            EclipseModule.ENABLED = states.EclipseModule
+            InvSearchModule.ENABLED = states.InvSearchModule
+            InvUnloadModule.ENABLED = states.InvUnloadModule
+            JoinQuitModule.ENABLED = states.JoinQuitModule
+            MotdModule.ENABLED = states.MotdModule
+            RecipiesModule.ENABLED = states.RecipiesModule
+            TabListModule.ENABLED = states.TabListModule
+            TreesModule.ENABLED = states.TreesModule
+        }
+    }
+
+    /** Saves the current module states to the config file. */
+    private fun saveModuleStates() {
+        val states = ModuleStateData(
+            AutoRestartModule.ENABLED,
+            BooksModule.ENABLED,
+            DimensionsModule.ENABLED,
+            DiscordModule.ENABLED,
+            DoorsModule.ENABLED,
+            EclipseModule.ENABLED,
+            InvSearchModule.ENABLED,
+            InvUnloadModule.ENABLED,
+            JoinQuitModule.ENABLED,
+            MotdModule.ENABLED,
+            RecipiesModule.ENABLED,
+            TabListModule.ENABLED,
+            TreesModule.ENABLED
+        )
+        objectMapper.writerWithDefaultPrettyPrinter().writeValue(configFile, states)
+    }
+
     /**
      * Creates the command for the configuration GUI.
      * @return A LiteralArgumentBuilder for the "config" command.
@@ -82,6 +129,7 @@ object Config {
                         .asGuiItem { player, _ ->
                             val mutableProp = enabledProp as? KMutableProperty1<*, *>
                             mutableProp?.setter?.call(obj, !enabled)
+                            saveModuleStates()
                             gui().open(player)
                         }
                 }

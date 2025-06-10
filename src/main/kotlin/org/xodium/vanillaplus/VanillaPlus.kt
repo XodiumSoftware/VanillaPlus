@@ -34,6 +34,7 @@ class VanillaPlus : JavaPlugin() {
             else -> {
                 Perms
                 ModuleManager
+                Config.loadModuleStates()
             }
         }
     }
