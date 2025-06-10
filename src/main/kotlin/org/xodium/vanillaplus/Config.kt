@@ -75,9 +75,9 @@ object Config {
                     enabledProp.isAccessible = true
                     val obj = kClass.objectInstance ?: return@forEachIndexed
                     val enabled = enabledProp.getter.call(obj) as? Boolean ?: false
-                    val name = kClass.simpleName ?: "Unknown"
                     val mat = if (enabled) Material.GREEN_WOOL else Material.RED_WOOL
-                    val lore = listOf(if (enabled) "Enabled" else "Disabled")
+                    val name = kClass.simpleName ?: "Unknown"
+                    val lore = listOf(if (enabled) "<green>Enabled<reset>" else "<red>Disabled<reset>")
                     inv[idx] = ItemBuilder.from(guiItem(mat, name.mangoFmt(), lore))
                         .asGuiItem { player, _ ->
                             val mutableProp = enabledProp as? KMutableProperty1<*, *>
