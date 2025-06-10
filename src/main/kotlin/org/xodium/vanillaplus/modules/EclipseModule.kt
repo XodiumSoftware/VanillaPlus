@@ -8,9 +8,6 @@ package org.xodium.vanillaplus.modules
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import net.kyori.adventure.sound.Sound
 import org.bukkit.Difficulty
 import org.bukkit.World
@@ -28,7 +25,6 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.EclipseData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.ConfigManager
-import org.xodium.vanillaplus.managers.ModuleManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.Utils
@@ -186,20 +182,12 @@ class EclipseModule : ModuleInterface {
      * Also sets the world to stormy and thundering.
      * @param world The world in which the eclipse is activated.
      */
-    @OptIn(DelicateCoroutinesApi::class)
     private fun activateEclipse(world: World) {
         hordeState.isActive = true
         hordeState.hasTriggeredThisEclipse = true
         instance.server.onlinePlayers.forEach {
             it.showTitle(ConfigManager.data.eclipseModule.eclipseStartTitle.toTitle())
             it.playSound(ConfigManager.data.eclipseModule.eclipseStartSound.toSound(), Sound.Emitter.self())
-        }
-        GlobalScope.launch {
-            ModuleManager.discordModule.sendEventEmbed(
-                title = "🌑 Eclipse Event",
-                description = "**An eclipse is happening now!**\nBe careful out there.",
-                color = 0xFF702963.toInt()
-            )
         }
         world.setStorm(true)
         world.isThundering = true

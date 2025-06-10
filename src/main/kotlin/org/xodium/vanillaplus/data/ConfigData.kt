@@ -28,7 +28,6 @@ import org.bukkit.Sound as BukkitSound
  * @property autoRestartModule Configuration for the `AutoRestartModule`.
  * @property booksModule Configuration for the `BooksModule`.
  * @property dimensionsModule Configuration for the `DimensionsModule`.
- * @property discordModule Configuration for the `DiscordModule`.
  * @property doorsModule Configuration for the `DoorsModule`.
  * @property eclipseModule Configuration for the `EclipseModule`.
  * @property invSearchModule Configuration for the `InvSearchModule`.
@@ -43,7 +42,6 @@ data class ConfigData(
     var autoRestartModule: AutoRestartModuleData = AutoRestartModuleData(),
     var booksModule: BooksModuleData = BooksModuleData(),
     var dimensionsModule: DimensionsModuleData = DimensionsModuleData(),
-    var discordModule: DiscordModuleData = DiscordModuleData(),
     var doorsModule: DoorsModuleData = DoorsModuleData(),
     var eclipseModule: EclipseModuleData = EclipseModuleData(),
     var invSearchModule: InvSearchModuleData = InvSearchModuleData(),
@@ -194,14 +192,6 @@ data class BooksModuleData(
 data class DimensionsModuleData(
     var enabled: Boolean = true,
     var portalSearchRadius: Double = 128.0
-)
-
-/**
- * Data class representing the configuration for the `DiscordModule`.
- * @property enabled Indicates whether the module is enabled. Default is true.
- */
-data class DiscordModuleData(
-    var enabled: Boolean = true,
 )
 
 /**

@@ -8,15 +8,11 @@ package org.xodium.vanillaplus.modules
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.ConfigManager
-import org.xodium.vanillaplus.managers.ModuleManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.Utils
 import java.time.LocalTime
@@ -52,7 +48,6 @@ class AutoRestartModule : ModuleInterface {
     }
 
     /** Triggers a countdown for the server restart. */
-    @OptIn(DelicateCoroutinesApi::class)
     private fun countdown() {
         val totalMinutes = ConfigManager.data.autoRestartModule.countdownStartMinutes
         var remainingSeconds = totalMinutes * 60
@@ -77,13 +72,6 @@ class AutoRestartModule : ModuleInterface {
                     }
                 } else {
                     instance.server.onlinePlayers.forEach { player -> player.hideBossBar(bossBar) }
-                    GlobalScope.launch {
-                        ModuleManager.discordModule.sendEventEmbed(
-                            title = "🔄 Server Restart",
-                            description = "**The server is restarting now!**\nPlease rejoin in a moment.",
-                            color = 0xFF8800
-                        )
-                    }
                     instance.server.restart()
                 }
             },
