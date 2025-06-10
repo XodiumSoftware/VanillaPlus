@@ -191,8 +191,8 @@ class EclipseModule : ModuleInterface {
         hordeState.isActive = true
         hordeState.hasTriggeredThisEclipse = true
         instance.server.onlinePlayers.forEach {
-            it.showTitle(ConfigManager.EclipseModule.ECLIPSE_START_TITLE)
-            it.playSound(ConfigManager.EclipseModule.ECLIPSE_START_SOUND, Sound.Emitter.self())
+            it.showTitle(ConfigManager.data.eclipseModule.eclipseStartTitle.toTitle())
+            it.playSound(ConfigManager.data.eclipseModule.eclipseStartSound.toSound(), Sound.Emitter.self())
         }
         GlobalScope.launch {
             ModuleManager.discordModule.sendEventEmbed(
@@ -213,8 +213,8 @@ class EclipseModule : ModuleInterface {
     private fun deactivateEclipse(world: World) {
         hordeState.isActive = false
         instance.server.onlinePlayers.forEach {
-            it.showTitle(ConfigManager.EclipseModule.ECLIPSE_END_TITLE)
-            it.playSound(ConfigManager.EclipseModule.ECLIPSE_END_SOUND, Sound.Emitter.self())
+            it.showTitle(ConfigManager.data.eclipseModule.eclipseEndTitle.toTitle())
+            it.playSound(ConfigManager.data.eclipseModule.eclipseEndSound.toSound(), Sound.Emitter.self())
         }
         world.setStorm(false)
         world.isThundering = false

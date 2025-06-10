@@ -8,7 +8,10 @@ package org.xodium.vanillaplus.data
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.sound.Sound
 import org.bukkit.Material
+import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
+import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.VanillaPlus
 import org.xodium.vanillaplus.utils.ExtUtils.clickRunCmd
 import org.xodium.vanillaplus.utils.ExtUtils.clickSuggestCmd
@@ -257,7 +260,62 @@ data class DoorsModuleData(
  */
 data class EclipseModuleData(
     var enabled: Boolean = true,
+    var mobAttribute: List<MobAttributeData> = listOf(
+        MobAttributeData(
+            EntityType.entries,
+            mapOf(
+                Attribute.ATTACK_DAMAGE to { it * 2.0 },
+                Attribute.MAX_HEALTH to { it * 2.0 },
+                Attribute.FOLLOW_RANGE to { it * 2.0 },
+                Attribute.MOVEMENT_EFFICIENCY to { it * 2.0 },
+                Attribute.WATER_MOVEMENT_EFFICIENCY to { it * 2.0 },
+                Attribute.SPAWN_REINFORCEMENTS to { it * 2.0 },
+            ),
+            10.0
+        ),
+        MobAttributeData(
+            listOf(EntityType.SPIDER),
+            mapOf(
+                Attribute.SCALE to { it * 4.0 },
+            ),
+            1.5
+        )
+    ),
+    var mobEquipment: List<MobEquipmentData> = listOf(
+        MobEquipmentData(EquipmentSlot.HEAD, ItemStack(Material.NETHERITE_HELMET), 0.0f),
+        MobEquipmentData(EquipmentSlot.CHEST, ItemStack(Material.NETHERITE_CHESTPLATE), 0.0f),
+        MobEquipmentData(EquipmentSlot.LEGS, ItemStack(Material.NETHERITE_LEGGINGS), 0.0f),
+        MobEquipmentData(EquipmentSlot.FEET, ItemStack(Material.NETHERITE_BOOTS), 0.0f),
+        MobEquipmentData(
+            EquipmentSlot.HAND,
+            ItemStack(
+                listOf(
+                    Material.NETHERITE_SWORD,
+                    Material.NETHERITE_AXE,
+                    Material.BOW
+                ).random()
+            ),
+            0.0f
+        ),
+        MobEquipmentData(EquipmentSlot.OFF_HAND, ItemStack(Material.SHIELD), 0.0f)
+    ),
     var excludedMobs: Set<EntityType> = setOf(EntityType.ENDERMAN),
+    var eclipseStartTitle: TitleData =
+        TitleData("An Eclipse is rising!".fireFmt(), "Stay inside ;)".mangoFmt()),
+    var eclipseEndTitle: TitleData =
+        TitleData("An Eclipse is setting!".fireFmt(), "You can go outside now :P".mangoFmt()),
+    var eclipseStartSound: SoundData = SoundData(
+        BukkitSound.ENTITY_WITHER_SPAWN,
+        Sound.Source.HOSTILE,
+        1.0f,
+        1.0f
+    ),
+    var eclipseEndSound: SoundData = SoundData(
+        BukkitSound.ENTITY_WITHER_DEATH,
+        Sound.Source.HOSTILE,
+        1.0f,
+        1.0f
+    ),
     var randomPoweredCreepers: Boolean = true,
     var initDelay: Long = TimeUtils.seconds(0),
     var interval: Long = TimeUtils.seconds(10),

@@ -16,8 +16,6 @@ import dev.triumphteam.gui.paper.kotlin.builder.chestContainer
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.datacomponent.DataComponentTypes
-import net.kyori.adventure.sound.Sound
-import net.kyori.adventure.title.Title
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
@@ -185,39 +183,6 @@ object ConfigManager {
             ),
             MobEquipmentData(EquipmentSlot.OFF_HAND, ItemStack(Material.SHIELD), 0.0f)
         )
-
-//        /** The list of mobs that are excluded from the eclipse buff. */
-//        var EXCLUDED_MOBS: Set<EntityType> = setOf(EntityType.ENDERMAN)
-
-        /** The title message displayed when the eclipse is active. */
-        var ECLIPSE_START_TITLE: Title =
-            Title.title("An Eclipse is rising!".fireFmt().mm(), "Stay inside ;)".mangoFmt().mm())
-
-        /** The title message displayed when the eclipse is inactive. */
-        var ECLIPSE_END_TITLE: Title =
-            Title.title("An Eclipse is setting!".fireFmt().mm(), "You can go outside now :P".mangoFmt().mm())
-
-        /** The sound effect used for when the eclipse is active. */
-        var ECLIPSE_START_SOUND: Sound = Sound.sound(
-            org.bukkit.Sound.ENTITY_WITHER_SPAWN,
-            Sound.Source.HOSTILE,
-            1.0f,
-            1.0f
-        )
-
-        /** The sound effect used for when the eclipse is inactive. */
-        var ECLIPSE_END_SOUND: Sound = Sound.sound(
-            org.bukkit.Sound.ENTITY_WITHER_DEATH,
-            Sound.Source.HOSTILE,
-            1.0f,
-            1.0f
-        )
-
-//        /** The initial delay before the first eclipse. */
-//        var INIT_DELAY: Long = TimeUtils.seconds(0)
-//
-//        /** The interval between eclipses. */
-//        var INTERVAL: Long = TimeUtils.seconds(10)
     }
 
     //NOTE: ...END
