@@ -63,7 +63,7 @@ object Config {
     @Suppress("UnstableApiUsage")
     private fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
         return listOf(
-            Commands.literal("guide")
+            Commands.literal("config")
                 .requires { it.sender.hasPermission(Perms.Config.USE) }
                 .executes { it -> Utils.tryCatch(it) { gui().open(it.sender as Player) } })
     }
