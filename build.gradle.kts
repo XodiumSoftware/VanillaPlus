@@ -34,6 +34,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.0")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.0")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.19.0")
     implementation("dev.triumphteam:triumph-gui-paper-kotlin:4.0.0-SNAPSHOT") {
         exclude(group = "com.google.guava", module = "guava")
     }
@@ -50,6 +51,8 @@ tasks {
         archiveClassifier.set("")
         destinationDirectory.set(file(".server/plugins/update"))
         relocate("dev.triumphteam.gui", "org.xodium.vanillaplus.gui")
+        relocate("com.fasterxml.jackson", "org.xodium.vanillaplus.jackson")
+        relocate("com.fasterxml.jackson.datatype.jdk8", "org.xodium.vanillaplus.jackson.datatype.jdk8")
         minimize { exclude(dependency("org.jetbrains.kotlin:kotlin-reflect:.*")) }
         doLast {
             copy {
