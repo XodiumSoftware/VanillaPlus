@@ -33,12 +33,15 @@ object ConfigManager {
 
     //TODO: redo logging.
 
-    /** Initializes the configuration by loading settings from the config file. */
-    fun load() {
+    /**
+     * Initializes the configuration by loading settings from the config file.
+     * @param silent If true, suppresses logging messages during loading.
+     */
+    fun load(silent: Boolean = false) {
         if (Files.exists(configPath)) {
-            instance.logger.info("Config: Loading settings.")
+            if (!silent) instance.logger.info("Config: Loading settings.")
             data = objectMapper.readValue(Files.readString(configPath))
-            instance.logger.info("Config: Settings loaded successfully.")
+            if (!silent) instance.logger.info("Config: Settings loaded successfully.")
         } else {
             instance.logger.info("Config: No config file found, creating new config.")
             save()
@@ -68,7 +71,7 @@ object ConfigManager {
             .requires { it.sender.hasPermission(Perms.Config.RELOAD) }
             .executes { it ->
                 Utils.tryCatch(it) {
-                    load()
+                    load(true)
                     instance.logger.info("Config: Reloaded settings.")
                     (it.sender as Player).sendMessage("$PREFIX Reloaded config.".mm())
                 }
