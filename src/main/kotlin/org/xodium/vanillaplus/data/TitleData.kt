@@ -14,8 +14,8 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
  * @property subtitle The subtitle text.
  */
 data class TitleData(
-    private val title: String,
-    private val subtitle: String,
+    val title: String,
+    val subtitle: String,
 ) {
     fun toTitle(): Title = Title.title(title.mm(), subtitle.mm())
 }

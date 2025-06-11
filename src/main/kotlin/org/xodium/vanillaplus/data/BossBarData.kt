@@ -17,11 +17,11 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
  * @property flags Additional flags for the boss bar, such as visibility or dark mode.
  */
 data class BossBarData(
-    private val name: String,
-    private val progress: Float,
-    private val color: BossBar.Color,
-    private val style: BossBar.Overlay,
-    private val flags: Set<BossBar.Flag> = emptySet()
+    val name: String,
+    val progress: Float,
+    val color: BossBar.Color,
+    val style: BossBar.Overlay,
+    val flags: Set<BossBar.Flag> = emptySet()
 ) {
     /**
      * Converts this BossBarData instance to a BossBar instance.

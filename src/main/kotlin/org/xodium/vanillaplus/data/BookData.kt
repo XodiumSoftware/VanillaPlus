@@ -15,9 +15,9 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
  * @property pages The content of the book, represented as a list of strings.
  */
 data class BookData(
-    private val title: String,
-    private val author: String,
-    private val pages: List<String>,
+    val title: String,
+    val author: String,
+    val pages: List<String>,
 ) {
     /**
      * Converts this BookData instance to a Book instance.
