@@ -42,21 +42,21 @@ object ConfigManager {
     }
     var data: ConfigData = ConfigData()
 
-    /** Initializes the configuration by loading module states from the config file. */
+    /** Initializes the configuration by loading settings from the config file. */
     fun load() {
         if (Files.exists(configPath)) {
-            VanillaPlus.Companion.instance.logger.info("Config: Loading module states.")
+            VanillaPlus.Companion.instance.logger.info("Config: Loading settings.")
             data = objectMapper.readValue(Files.readString(configPath))
-            VanillaPlus.Companion.instance.logger.info("Config: Module states loaded successfully.")
+            VanillaPlus.Companion.instance.logger.info("Config: Settings loaded successfully.")
         } else {
-            VanillaPlus.Companion.instance.logger.info("Config: No config file found, creating default states.")
+            VanillaPlus.Companion.instance.logger.info("Config: No config file found, creating new config.")
             save()
         }
     }
 
-    /** Saves the current module states to the config file. */
+    /** Saves the current settings to the config file. */
     private fun save() {
-        VanillaPlus.Companion.instance.logger.info("Config: Saving module states.")
+        VanillaPlus.Companion.instance.logger.info("Config: Saving settings.")
         Files.createDirectories(configPath.parent)
         Files.writeString(
             configPath,
@@ -64,7 +64,7 @@ object ConfigManager {
             StandardOpenOption.CREATE,
             StandardOpenOption.TRUNCATE_EXISTING
         )
-        VanillaPlus.Companion.instance.logger.info("Config: Module states saved successfully.")
+        VanillaPlus.Companion.instance.logger.info("Config: Settings saved successfully.")
     }
 
     /**
