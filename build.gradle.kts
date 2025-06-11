@@ -15,10 +15,10 @@ plugins {
 }
 
 group = "org.xodium.vanillaplus"
-version = "1.9.2"
+version = "1.10.0"
 description = "Minecraft plugin that enhances the base gameplay."
 
-var apiVersion: String = "1.21.5"
+var apiVersion: String = "1.21.6"
 
 repositories {
     mavenCentral()
@@ -27,7 +27,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21.5-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21.6-R0.1-SNAPSHOT")
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.14") //TODO("Move away from WorldEdit")
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlin:kotlin-reflect")
