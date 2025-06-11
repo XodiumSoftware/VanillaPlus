@@ -43,21 +43,14 @@ java { toolchain.languageVersion.set(JavaLanguageVersion.of(21)) }
 
 tasks {
     processResources {
-        filesMatching("paper-plugin.yml") {
-            expand(
-                mapOf(
-                    "version" to version,
-                    "description" to description,
-                )
-            )
-        }
+        filesMatching("paper-plugin.yml") { expand(mapOf("version" to version, "description" to description)) }
     }
     shadowJar {
         dependsOn(processResources)
         archiveClassifier.set("")
         destinationDirectory.set(file(".server/plugins/update"))
         relocate("dev.triumphteam.gui", "org.xodium.vanillaplus.gui")
-        minimize()
+        minimize { exclude(dependency("org.jetbrains.kotlin:kotlin-reflect:.*")) }
         doLast {
             copy {
                 from(archiveFile)
