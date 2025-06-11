@@ -83,20 +83,22 @@ object ConfigManager {
      * @return A Gui object representing the configuration GUI.
      */
     private fun gui(): Gui {
-        val modules = ConfigData::class.declaredMemberProperties
+        val modules = ConfigData::class.declaredMemberProperties.mapNotNull { prop ->
+            prop.get(data)?.let { module -> prop to module }
+        }
         return buildGui {
             containerType = chestContainer { rows = dynamicRowsCalculator(modules.size) }
             spamPreventionDuration = 1.seconds
             title("<b>VanillaPlus Config</b>".fireFmt().mm())
             statelessComponent { inv ->
-                modules.forEachIndexed { idx, prop ->
+                modules.forEachIndexed { idx, (prop, _) ->
                     inv[idx] = ItemBuilder.from(
                         guiItem(
                             Material.WRITABLE_BOOK,
                             prop.name.replaceFirstChar { it.uppercaseChar() }.mangoFmt(),
                             listOf("<i>Click to open module settings</i>".fireFmt())
                         )
-                    ).asGuiItem { player, _ -> moduleGui((prop.get(data))).open(player) }
+                    ).asGuiItem { player, _ -> moduleGui(prop.get(data) ?: "").open(player) }
                 }
             }
         }
@@ -107,8 +109,8 @@ object ConfigManager {
      * @param module The module for which the GUI is created.
      * @return A Gui object representing the module GUI.
      */
-    private fun moduleGui(module: Any?): Gui {
-        val props = module!!::class.declaredMemberProperties
+    private fun moduleGui(module: Any): Gui {
+        val props = module::class.declaredMemberProperties
         return buildGui {
             containerType = chestContainer { rows = dynamicRowsCalculator(props.size) }
             spamPreventionDuration = 1.seconds
