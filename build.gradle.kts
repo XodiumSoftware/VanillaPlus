@@ -47,7 +47,6 @@ tasks {
         archiveClassifier.set("")
         destinationDirectory.set(file(".server/plugins/update"))
         relocate("com.fasterxml.jackson", "org.xodium.vanillaplus.jackson")
-        relocate("com.fasterxml.jackson.datatype.jdk8", "org.xodium.vanillaplus.jackson.datatype.jdk8")
         minimize { exclude(dependency("org.jetbrains.kotlin:kotlin-reflect:.*")) }
         doLast {
             copy {
