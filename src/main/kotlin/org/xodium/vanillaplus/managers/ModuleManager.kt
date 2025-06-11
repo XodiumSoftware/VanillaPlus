@@ -11,7 +11,6 @@ import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import net.kyori.adventure.text.event.ClickEvent
 import org.bukkit.entity.Player
-import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.modules.*
@@ -25,7 +24,6 @@ object ModuleManager {
     val autoRestartModule: AutoRestartModule = AutoRestartModule()
     val booksModule: BooksModule = BooksModule()
     val dimensionsModule: DimensionsModule = DimensionsModule()
-    val discordModule: DiscordModule = DiscordModule()
     val doorsModule: DoorsModule = DoorsModule()
     val eclipseModule: EclipseModule = EclipseModule()
     val invSearchModule: InvSearchModule = InvSearchModule()
@@ -40,7 +38,6 @@ object ModuleManager {
         autoRestartModule,
         booksModule,
         dimensionsModule,
-        discordModule,
         doorsModule,
         eclipseModule,
         invSearchModule,
@@ -76,16 +73,16 @@ object ModuleManager {
 
     /** Registers commands for the modules. */
     private fun commands() {
+        commands.add(ConfigManager.cmd())
         commands.takeIf { it.isNotEmpty() }?.let {
             @Suppress("UnstableApiUsage")
             instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
                 event.registrar().register(
                     Commands.literal(instance.name.lowercase())
-                        .requires { it.sender.hasPermission(Perms.Use.GENERAL) }
                         .executes { it ->
                             Utils.tryCatch(it) {
                                 (it.sender as Player).sendMessage(
-                                    "${PREFIX}v${instance.pluginMeta.version} | Click on me for more info!".mm()
+                                    "$PREFIX v${instance.pluginMeta.version} | Click on me for more info!".mm()
                                         .clickEvent(ClickEvent.runCommand("/help ${instance.name.lowercase()}"))
                                 )
                             }

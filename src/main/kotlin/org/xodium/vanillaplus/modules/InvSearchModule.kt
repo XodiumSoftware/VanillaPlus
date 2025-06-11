@@ -21,11 +21,11 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
-import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.ChestAccessManager
+import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.managers.CooldownManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
@@ -36,7 +36,7 @@ import java.util.concurrent.CompletableFuture
 
 /** Represents a module handling inv-search mechanics within the system. */
 class InvSearchModule : ModuleInterface {
-    override fun enabled(): Boolean = Config.InvSearchModule.ENABLED
+    override fun enabled(): Boolean = ConfigManager.data.invSearchModule.enabled
 
     @Suppress("UnstableApiUsage")
     private val materialSuggestionProvider = SuggestionProvider<CommandSourceStack> { ctx, builder ->
@@ -88,7 +88,7 @@ class InvSearchModule : ModuleInterface {
      */
     private fun search(player: Player, material: Material) {
         val cooldownKey = NamespacedKey(instance, "invsearch_cooldown")
-        val cooldownDuration = Config.InvSearchModule.COOLDOWN
+        val cooldownDuration = ConfigManager.data.invSearchModule.cooldown
         if (CooldownManager.isOnCooldown(player, cooldownKey, cooldownDuration)) {
             player.sendActionBar("You must wait before using this again.".fireFmt().mm())
             return
@@ -96,7 +96,7 @@ class InvSearchModule : ModuleInterface {
         CooldownManager.setCooldown(player, cooldownKey, System.currentTimeMillis())
 
         val deniedChestKey = NamespacedKey(instance, "denied_chest")
-        val chests = Utils.findBlocksInRadius(player.location, Config.InvSearchModule.SEARCH_RADIUS)
+        val chests = Utils.findBlocksInRadius(player.location, ConfigManager.data.invSearchModule.searchRadius)
             .filter { ChestAccessManager.isAllowed(player, deniedChestKey, it) }
         if (chests.isEmpty()) {
             player.sendActionBar("No usable chests found for ${"$material".roseFmt()}".fireFmt().mm())

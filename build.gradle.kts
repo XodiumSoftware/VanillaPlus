@@ -15,7 +15,7 @@ plugins {
 }
 
 group = "org.xodium.vanillaplus"
-version = "1.9.1"
+version = "1.9.2"
 description = "Minecraft plugin that enhances the base gameplay."
 
 var apiVersion: String = "1.21.5"
@@ -30,31 +30,25 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.5-R0.1-SNAPSHOT")
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.14") //TODO("Move away from WorldEdit")
     implementation(kotlin("stdlib-jdk8"))
-    implementation("dev.kord:kord-core:0.15.0")
-    implementation("io.github.cdimascio:dotenv-kotlin:6.5.1")
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.0")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.0")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.19.0")
 }
 
 java { toolchain.languageVersion.set(JavaLanguageVersion.of(21)) }
 
 tasks {
     processResources {
-        filesMatching("paper-plugin.yml") {
-            expand(
-                mapOf(
-                    "version" to version,
-                    "description" to description,
-                )
-            )
-        }
+        filesMatching("paper-plugin.yml") { expand(mapOf("version" to version, "description" to description)) }
     }
     shadowJar {
         dependsOn(processResources)
         archiveClassifier.set("")
         destinationDirectory.set(file(".server/plugins/update"))
-        relocate("dev.kord", "org.xodium.vanillaplus.kord")
-        relocate("io.ktor", "org.xodium.vanillaplus.ktor")
-        relocate("io.github.cdimascio", "org.xodium.vanillaplus.dotenv")
-        mergeServiceFiles()
+        relocate("com.fasterxml.jackson", "org.xodium.vanillaplus.jackson")
+        relocate("com.fasterxml.jackson.datatype.jdk8", "org.xodium.vanillaplus.jackson.datatype.jdk8")
+        minimize { exclude(dependency("org.jetbrains.kotlin:kotlin-reflect:.*")) }
         doLast {
             copy {
                 from(archiveFile)

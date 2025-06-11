@@ -15,15 +15,15 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.weather.ThunderChangeEvent
 import org.bukkit.event.weather.WeatherChangeEvent
-import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import kotlin.math.roundToInt
 
 /** Represents a module handling tab-list mechanics within the system. */
 class TabListModule : ModuleInterface {
-    override fun enabled(): Boolean = Config.TabListModule.ENABLED
+    override fun enabled(): Boolean = ConfigManager.data.tabListModule.enabled
 
     init {
         if (enabled()) {
@@ -35,8 +35,8 @@ class TabListModule : ModuleInterface {
             instance.server.scheduler.runTaskTimer(
                 instance,
                 Runnable { instance.server.onlinePlayers.forEach { updateTabList(it) } },
-                Config.TabListModule.INIT_DELAY,
-                Config.TabListModule.INTERVAL
+                ConfigManager.data.tabListModule.initDelay,
+                ConfigManager.data.tabListModule.interval
             )
         }
     }
@@ -73,10 +73,10 @@ class TabListModule : ModuleInterface {
     private fun updateTabList(audience: Audience) {
         val joinConfig = JoinConfiguration.separator(Component.newline())
         audience.sendPlayerListHeaderAndFooter(
-            Component.join(joinConfig, Config.TabListModule.HEADER.mm()),
+            Component.join(joinConfig, ConfigManager.data.tabListModule.header.mm()),
             Component.join(
                 joinConfig,
-                Config.TabListModule.FOOTER.mm(
+                ConfigManager.data.tabListModule.footer.mm(
                     Placeholder.component("weather", getWeather().mm()),
                     Placeholder.component("tps", getTps().mm())
                 )

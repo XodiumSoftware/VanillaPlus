@@ -19,10 +19,10 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.EnchantmentStorageMeta
 import org.bukkit.util.BoundingBox
 import org.bukkit.util.Vector
-import org.xodium.vanillaplus.Config
 import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.managers.ChestAccessManager
+import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.registries.MaterialRegistry
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
@@ -49,7 +49,7 @@ object Utils {
         } catch (e: Exception) {
             instance.logger.severe("An Error has occurred: ${e.message}")
             e.printStackTrace()
-            (ctx.source.sender as Player).sendMessage("${PREFIX}<red>An Error has occurred. Check server logs for details.".mm())
+            (ctx.source.sender as Player).sendMessage("$PREFIX <red>An Error has occurred. Check server logs for details.".mm())
         }
         return Command.SINGLE_SUCCESS
     }
@@ -61,9 +61,9 @@ object Utils {
      * @return True if the enchantments match, false otherwise.
      */
     private fun hasMatchingEnchantments(first: ItemStack, second: ItemStack): Boolean {
-        val config = Config.InvUnloadModule
+        val config = ConfigManager.data.invUnloadModule
 
-        if (!config.MATCH_ENCHANTMENTS && (!config.MATCH_ENCHANTMENTS_ON_BOOKS || first.type != Material.ENCHANTED_BOOK)) return true
+        if (!config.matchEnchantments && (!config.matchEnchantmentsOnBooks || first.type != Material.ENCHANTED_BOOK)) return true
 
         val firstMeta = first.itemMeta
         val secondMeta = second.itemMeta
