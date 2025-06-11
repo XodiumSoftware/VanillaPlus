@@ -31,8 +31,6 @@ object ConfigManager {
     }
     var data: ConfigData = ConfigData()
 
-    //TODO: redo logging.
-
     /**
      * Initializes the configuration by loading settings from the config file.
      * @param silent If true, suppresses logging messages during loading.
