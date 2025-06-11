@@ -29,9 +29,7 @@ import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.Utils
 import java.nio.file.Files
 import java.nio.file.StandardOpenOption
-import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.jvm.isAccessible
 import kotlin.time.Duration.Companion.seconds
 
 /** Represents the config manager within the system. */
@@ -81,63 +79,21 @@ object ConfigManager {
      * @return A Gui object representing the configuration GUI.
      */
     private fun gui(): Gui {
-        //TODO: make a main page with all the modules inside.
-        //TODO: each module has its own page with settings.
-        //TODO: add handling of settings that are not boolean (e.g. strings, numbers, etc.).
-        val modules = ConfigManager::class.nestedClasses.mapNotNull { kClass ->
-            //TODO, "ENABLED" might be wrong.
-            val enabledProp = kClass.declaredMemberProperties.find { it.name == "ENABLED" }
-            if (enabledProp != null) {
-                enabledProp.isAccessible = true
-                val obj = kClass.objectInstance ?: return@mapNotNull null
-                val value = enabledProp.getter.call(obj)
-                if (value is Boolean || value is String) kClass to enabledProp else null
-            } else null
-        }
+        val modules = ConfigData::class.declaredMemberProperties
         val dynamicRows = modules.size.let { ((it - 1) / 9 + 1).coerceIn(1, 6) }
         return buildGui {
             containerType = chestContainer { rows = dynamicRows }
             spamPreventionDuration = 1.seconds
-            title("<b>Config</b>".fireFmt().mm())
+            title("<b>VanillaPlus Config</b>".fireFmt().mm())
             statelessComponent { inv ->
-                modules.forEachIndexed { idx, (kClass, enabledProp) ->
-                    val obj = kClass.objectInstance ?: return@forEachIndexed
-                    val value = enabledProp.getter.call(obj)
-                    val (mat, lore) = when (value) {
-                        is Boolean -> {
-                            (if (value) Material.GREEN_WOOL else Material.RED_WOOL) to listOf(
-                                if (value) "<green>Enabled<reset>" else "<red>Disabled<reset>",
-                                "*Requires server restart*"
-                            )
-                        }
-
-                        is String -> {
-                            Material.BLUE_WOOL to listOf(
-                                "<aqua>Value: <white>${value}<reset>",
-                                "*Requires server restart*"
-                            )
-                        }
-
-                        else -> {
-                            Material.GRAY_WOOL to listOf("<gray>Unsupported type<reset>")
-                        }
-                    }
-                    val name = kClass.simpleName ?: "Unknown"
-                    inv[idx] = ItemBuilder.from(guiItem(mat, name.mangoFmt(), lore))
-                        .asGuiItem { player, _ ->
-                            val mutableProp = enabledProp as? KMutableProperty1<*, *>
-                            when (value) {
-                                is Boolean -> {
-                                    mutableProp?.setter?.call(obj, !value)
-                                    save()
-                                    gui().open(player)
-                                }
-
-                                is String -> {
-                                    player.sendMessage("Feature to edit String values is not implemented yet.")
-                                }
-                            }
-                        }
+                modules.forEachIndexed { idx, property ->
+                    inv[idx] = ItemBuilder.from(
+                        guiItem(
+                            Material.WRITABLE_BOOK,
+                            property.name.mangoFmt(),
+                            listOf("<i>Click to open module settings</i>".fireFmt())
+                        )
+                    ).asGuiItem { _, _ -> }
                 }
             }
         }
