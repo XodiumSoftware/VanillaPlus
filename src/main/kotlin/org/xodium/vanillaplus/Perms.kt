@@ -50,8 +50,8 @@ object Perms {
     /** Permissions for Config commands. */
     object Config {
         private val G1 = this::class.simpleName.toString().lowercase()
-        val USE: Permission =
-            Permission("${G0}.${G1}.use", "Allows use of the config command", PermissionDefault.OP)
+        val RELOAD: Permission =
+            Permission("${G0}.${G1}.reload", "Allows use of the config reload command", PermissionDefault.OP)
     }
 
     /** Permissions for Eclipse commands. */

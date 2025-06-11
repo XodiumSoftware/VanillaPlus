@@ -19,7 +19,7 @@ class VanillaPlus : JavaPlugin() {
         private val UNSUPPORTED_VERSION_MSG =
             "This plugin requires a supported server version. Supported versions: ${SUPPORTED_VERSIONS.joinToString(", ")}."
 
-        const val PREFIX: String = "<gold>[</gold><dark_aqua>VanillaPlus</dark_aqua><gold>] </gold>"
+        const val PREFIX: String = "<gold>[</gold><dark_aqua>VanillaPlus</dark_aqua><gold>]</gold>"
 
         @JvmStatic
         val instance: VanillaPlus by lazy { getPlugin(VanillaPlus::class.java) }

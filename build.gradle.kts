@@ -24,7 +24,6 @@ repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://maven.enginehub.org/repo/")
-    maven("https://repo.triumphteam.dev/snapshots")
 }
 
 dependencies {
@@ -35,9 +34,6 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.0")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.0")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.19.0")
-    implementation("dev.triumphteam:triumph-gui-paper-kotlin:4.0.0-SNAPSHOT") {
-        exclude(group = "com.google.guava", module = "guava")
-    }
 }
 
 java { toolchain.languageVersion.set(JavaLanguageVersion.of(21)) }
@@ -50,7 +46,6 @@ tasks {
         dependsOn(processResources)
         archiveClassifier.set("")
         destinationDirectory.set(file(".server/plugins/update"))
-        relocate("dev.triumphteam.gui", "org.xodium.vanillaplus.gui")
         relocate("com.fasterxml.jackson", "org.xodium.vanillaplus.jackson")
         relocate("com.fasterxml.jackson.datatype.jdk8", "org.xodium.vanillaplus.jackson.datatype.jdk8")
         minimize { exclude(dependency("org.jetbrains.kotlin:kotlin-reflect:.*")) }
