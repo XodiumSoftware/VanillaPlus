@@ -42,7 +42,7 @@ class EclipseModule : ModuleInterface {
     override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
         return listOf(
             Commands.literal("eclipse")
-                .requires { it.sender.hasPermission(Perms.Eclipse.ECLIPSE) }
+                .requires { it.sender.hasPermission(Perms.Eclipse.USE) }
                 .executes { it -> Utils.tryCatch(it) { skipToEclipse(it.sender as Player) } }
         )
     }
