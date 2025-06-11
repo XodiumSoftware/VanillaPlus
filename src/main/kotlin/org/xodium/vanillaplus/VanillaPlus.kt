@@ -8,6 +8,8 @@ package org.xodium.vanillaplus
 import org.bukkit.plugin.java.JavaPlugin
 import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.managers.ModuleManager
+import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
+import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 
 /** Main class of the plugin. */
 class VanillaPlus : JavaPlugin() {
@@ -19,7 +21,7 @@ class VanillaPlus : JavaPlugin() {
         private val UNSUPPORTED_VERSION_MSG =
             "This plugin requires a supported server version. Supported versions: ${SUPPORTED_VERSIONS.joinToString(", ")}."
 
-        const val PREFIX: String = "<gold>[</gold><dark_aqua>VanillaPlus</dark_aqua><gold>]</gold>"
+        val PREFIX: String = "${"[".mangoFmt(true)}${"VanillaPlus".fireFmt()}${"]".mangoFmt()}"
 
         @JvmStatic
         val instance: VanillaPlus by lazy { getPlugin(VanillaPlus::class.java) }

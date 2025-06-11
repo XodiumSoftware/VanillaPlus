@@ -73,7 +73,7 @@ object ConfigManager {
                 Utils.tryCatch(it) {
                     load(true)
                     instance.logger.info("Config: Reloaded settings.")
-                    (it.sender as Player).sendMessage("$PREFIX Reloaded config.".mm())
+                    (it.sender as Player).sendMessage("$PREFIX Reloaded config".mm())
                 }
             }
     }
