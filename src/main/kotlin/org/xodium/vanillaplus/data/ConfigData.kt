@@ -8,10 +8,7 @@ package org.xodium.vanillaplus.data
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.sound.Sound
 import org.bukkit.Material
-import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
-import org.bukkit.inventory.EquipmentSlot
-import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.VanillaPlus
 import org.xodium.vanillaplus.utils.ExtUtils.clickRunCmd
 import org.xodium.vanillaplus.utils.ExtUtils.clickSuggestCmd
@@ -244,52 +241,16 @@ data class DoorsModuleData(
  * Data class representing the configuration for the `EclipseModule`.
  * @property enabled Indicates whether the module is enabled. Default is true.
  * @property excludedMobs A set of entity types that are excluded from the eclipse effect. Default is a set containing [EntityType.ENDERMAN].
+ * @property eclipseStartTitle The title displayed when the eclipse starts. Default is a title with a fire formatted message "An Eclipse is rising!" and a mango formatted subtitle "Stay inside ;)".
+ * @property eclipseEndTitle The title displayed when the eclipse ends. Default is a title with a fire formatted message "An Eclipse is setting!" and a mango formatted subtitle "You can go outside now :P".
+ * @property eclipseStartSound The sound played when the eclipse starts. Default is a sound of a wither spawn with a volume of 1.0 and pitch of 1.0.
+ * @property eclipseEndSound The sound played when the eclipse ends. Default is a sound of a wither death with a volume of 1.0 and pitch of 1.0.
  * @property randomPoweredCreepers Indicates whether creepers can randomly become powered. Default is true.
  * @property initDelay The initial delay before the module starts, in milliseconds. Default is 0 seconds (0 milliseconds).
  * @property interval The interval at which the module operates, in milliseconds. Default is 10 seconds (10000 milliseconds).
  */
 data class EclipseModuleData(
     var enabled: Boolean = true,
-    var mobAttribute: List<MobAttributeData> = listOf(
-        MobAttributeData(
-            EntityType.entries,
-            mapOf(
-                Attribute.ATTACK_DAMAGE to { it * 2.0 },
-                Attribute.MAX_HEALTH to { it * 2.0 },
-                Attribute.FOLLOW_RANGE to { it * 2.0 },
-                Attribute.MOVEMENT_EFFICIENCY to { it * 2.0 },
-                Attribute.WATER_MOVEMENT_EFFICIENCY to { it * 2.0 },
-                Attribute.SPAWN_REINFORCEMENTS to { it * 2.0 },
-            ),
-            10.0
-        ),
-        MobAttributeData(
-            listOf(EntityType.SPIDER),
-            mapOf(
-                Attribute.SCALE to { it * 4.0 },
-            ),
-            1.5
-        )
-    ),
-    var mobEquipment: List<MobEquipmentData> = listOf(
-        //TODO: ItemStack -> ItemStackData.
-        MobEquipmentData(EquipmentSlot.HEAD, ItemStack(Material.NETHERITE_HELMET), 0.0f),
-        MobEquipmentData(EquipmentSlot.CHEST, ItemStack(Material.NETHERITE_CHESTPLATE), 0.0f),
-        MobEquipmentData(EquipmentSlot.LEGS, ItemStack(Material.NETHERITE_LEGGINGS), 0.0f),
-        MobEquipmentData(EquipmentSlot.FEET, ItemStack(Material.NETHERITE_BOOTS), 0.0f),
-        MobEquipmentData(
-            EquipmentSlot.HAND,
-            ItemStack(
-                listOf(
-                    Material.NETHERITE_SWORD,
-                    Material.NETHERITE_AXE,
-                    Material.BOW
-                ).random()
-            ),
-            0.0f
-        ),
-        MobEquipmentData(EquipmentSlot.OFF_HAND, ItemStack(Material.SHIELD), 0.0f)
-    ),
     var excludedMobs: Set<EntityType> = setOf(EntityType.ENDERMAN),
     var eclipseStartTitle: TitleData =
         TitleData("An Eclipse is rising!".fireFmt(), "Stay inside ;)".mangoFmt()),

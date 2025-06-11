@@ -10,6 +10,7 @@ import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import net.kyori.adventure.sound.Sound
 import org.bukkit.Difficulty
+import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Creeper
@@ -19,10 +20,13 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.EclipseData
+import org.xodium.vanillaplus.data.MobAttributeData
+import org.xodium.vanillaplus.data.MobEquipmentData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
@@ -44,6 +48,45 @@ class EclipseModule : ModuleInterface {
     }
 
     private var hordeState = EclipseData()
+    private var mobAttribute: List<MobAttributeData> = listOf(
+        MobAttributeData(
+            EntityType.entries,
+            mapOf(
+                Attribute.ATTACK_DAMAGE to { it * 2.0 },
+                Attribute.MAX_HEALTH to { it * 2.0 },
+                Attribute.FOLLOW_RANGE to { it * 2.0 },
+                Attribute.MOVEMENT_EFFICIENCY to { it * 2.0 },
+                Attribute.WATER_MOVEMENT_EFFICIENCY to { it * 2.0 },
+                Attribute.SPAWN_REINFORCEMENTS to { it * 2.0 },
+            ),
+            10.0
+        ),
+        MobAttributeData(
+            listOf(EntityType.SPIDER),
+            mapOf(
+                Attribute.SCALE to { it * 4.0 },
+            ),
+            1.5
+        )
+    )
+    private var mobEquipment: List<MobEquipmentData> = listOf(
+        MobEquipmentData(EquipmentSlot.HEAD, ItemStack.of(Material.NETHERITE_HELMET), 0.0f),
+        MobEquipmentData(EquipmentSlot.CHEST, ItemStack.of(Material.NETHERITE_CHESTPLATE), 0.0f),
+        MobEquipmentData(EquipmentSlot.LEGS, ItemStack.of(Material.NETHERITE_LEGGINGS), 0.0f),
+        MobEquipmentData(EquipmentSlot.FEET, ItemStack.of(Material.NETHERITE_BOOTS), 0.0f),
+        MobEquipmentData(
+            EquipmentSlot.HAND,
+            ItemStack.of(
+                listOf(
+                    Material.NETHERITE_SWORD,
+                    Material.NETHERITE_AXE,
+                    Material.BOW
+                ).random()
+            ),
+            0.0f
+        ),
+        MobEquipmentData(EquipmentSlot.OFF_HAND, ItemStack.of(Material.SHIELD), 0.0f)
+    )
 
     init {
         if (enabled()) {
@@ -66,12 +109,12 @@ class EclipseModule : ModuleInterface {
         if (world.difficulty != Difficulty.HARD) return
         if (entity.type in ConfigManager.data.eclipseModule.excludedMobs) return
 
-        ConfigManager.data.eclipseModule.mobAttribute
+        mobAttribute
             .filter { it.types.contains(entity.type) }
             .forEach { mobAttr ->
-                mobAttr.attributes.forEach { (attribute, adjust) ->
+                mobAttr.attributes.forEach { (attribute, modifier) ->
                     entity.getAttribute(attribute)?.let { attr ->
-                        attr.baseValue = adjust(attr.baseValue)
+                        attr.baseValue = modifier(attr.baseValue)
                         if (attribute == Attribute.MAX_HEALTH) {
                             entity.health = attr.baseValue
                         }
@@ -81,8 +124,8 @@ class EclipseModule : ModuleInterface {
 
         val equipment = entity.equipment ?: return
 
-        if (ConfigManager.data.eclipseModule.mobEquipment.isNotEmpty()) {
-            ConfigManager.data.eclipseModule.mobEquipment.forEach { config ->
+        if (mobEquipment.isNotEmpty()) {
+            mobEquipment.forEach { config ->
                 when (config.slot) {
                     EquipmentSlot.HEAD -> {
                         equipment.helmet = config.item.clone()
@@ -124,10 +167,8 @@ class EclipseModule : ModuleInterface {
         }
 
         if (hordeState.isActive && event.spawnReason == CreatureSpawnEvent.SpawnReason.NATURAL) {
-            val specific = ConfigManager.data.eclipseModule.mobAttribute
-                .firstOrNull { it.types.size == 1 && it.types.contains(entity.type) }
-            val general = ConfigManager.data.eclipseModule.mobAttribute
-                .firstOrNull { it.types.containsAll(EntityType.entries) }
+            val specific = mobAttribute.firstOrNull { it.types.size == 1 && it.types.contains(entity.type) }
+            val general = mobAttribute.firstOrNull { it.types.containsAll(EntityType.entries) }
             val spawnRate = (specific ?: general)?.spawnRate?.toInt() ?: 1
 
             repeat(spawnRate - 1) {
