@@ -84,18 +84,42 @@ object ConfigManager {
      */
     private fun gui(): Gui {
         val modules = ConfigData::class.declaredMemberProperties
-        val dynamicRows = modules.size.let { ((it - 1) / 9 + 1).coerceIn(1, 6) }
         return buildGui {
-            containerType = chestContainer { rows = dynamicRows }
+            containerType = chestContainer { rows = dynamicRowsCalculator(modules.size) }
             spamPreventionDuration = 1.seconds
             title("<b>VanillaPlus Config</b>".fireFmt().mm())
             statelessComponent { inv ->
-                modules.forEachIndexed { idx, property ->
+                modules.forEachIndexed { idx, prop ->
                     inv[idx] = ItemBuilder.from(
                         guiItem(
                             Material.WRITABLE_BOOK,
-                            property.name.replaceFirstChar { it.uppercaseChar() }.mangoFmt(),
+                            prop.name.replaceFirstChar { it.uppercaseChar() }.mangoFmt(),
                             listOf("<i>Click to open module settings</i>".fireFmt())
+                        )
+                    ).asGuiItem { player, _ -> moduleGui((prop.get(data))).open(player) }
+                }
+            }
+        }
+    }
+
+    /**
+     * Creates a GUI for a specific module.
+     * @param module The module for which the GUI is created.
+     * @return A Gui object representing the module GUI.
+     */
+    private fun moduleGui(module: Any?): Gui {
+        val props = module!!::class.declaredMemberProperties
+        return buildGui {
+            containerType = chestContainer { rows = dynamicRowsCalculator(props.size) }
+            spamPreventionDuration = 1.seconds
+            title("<b>${module::class.simpleName}</b>".fireFmt().mm())
+            statelessComponent { inv ->
+                props.forEachIndexed { idx, prop ->
+                    inv[idx] = ItemBuilder.from(
+                        guiItem(
+                            Material.PAPER,
+                            prop.name.replaceFirstChar { it.uppercaseChar() }.mangoFmt(),
+                            listOf("<gray>Value:</gray> ${prop.getter.call(module).toString().fireFmt()}")
                         )
                     ).asGuiItem { _, _ -> }
                 }
@@ -117,4 +141,11 @@ object ConfigManager {
             setData(DataComponentTypes.LORE, lore.il())
         }
     }
+
+    /**
+     * Calculates the number of rows needed for a dynamic GUI based on the number of items.
+     * @param size The number of items.
+     * @return The number of rows needed.
+     */
+    private fun dynamicRowsCalculator(size: Int): Int = ((size - 1) / 9 + 1).coerceIn(1, 6)
 }
