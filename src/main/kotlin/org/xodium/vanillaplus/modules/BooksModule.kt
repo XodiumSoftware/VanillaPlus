@@ -31,6 +31,7 @@ class BooksModule : ModuleInterface {
         }
     }
 
+    //TODO: register via modulemanager.
     override fun perms(): List<Permission> {
         return ConfigManager.data.booksModule.books.map {
             Permission(
