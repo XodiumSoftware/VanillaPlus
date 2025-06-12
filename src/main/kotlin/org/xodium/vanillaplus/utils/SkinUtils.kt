@@ -13,9 +13,6 @@ import java.net.URI
 import java.util.*
 import javax.imageio.ImageIO
 
-//FIX: rectangles not filling the whole face (they seem rounded)
-//FIX: the image not rendering properly
-
 /** Skin utilities. */
 object SkinUtils {
     /**
