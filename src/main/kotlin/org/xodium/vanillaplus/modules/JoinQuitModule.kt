@@ -20,8 +20,6 @@ import org.xodium.vanillaplus.utils.SkinUtils.faceToMM
 class JoinQuitModule : ModuleInterface {
     override fun enabled(): Boolean = ConfigManager.data.joinQuitModule.enabled
 
-    //TODO: Join message in Conflict with CMI, disable in CMI or move away.
-
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
         if (!enabled()) return
@@ -29,6 +27,7 @@ class JoinQuitModule : ModuleInterface {
         val player = event.player
         instance.server.onlinePlayers
             .filter { it.uniqueId != player.uniqueId }
+            //TODO: message in Conflict with CMI, disable in CMI or move away.
             .forEach { it.sendMessage("<gold>[<green>+<gold>]<reset> ${player.displayName()}".mm()) }
 
         val faceLines = player.faceToMM().lines()
