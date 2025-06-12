@@ -53,7 +53,7 @@ class InvSearchModule : ModuleInterface {
     override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
         return listOf(
             Commands.literal("invsearch")
-                .requires { it.sender.hasPermission(perms()[1]) }
+                .requires { it.sender.hasPermission(perms()[0]) }
                 .then(
                     Commands.argument("material", StringArgumentType.word())
                         .suggests(materialSuggestionProvider)

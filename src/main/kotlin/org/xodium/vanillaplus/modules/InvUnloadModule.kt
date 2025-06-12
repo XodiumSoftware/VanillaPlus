@@ -41,7 +41,7 @@ class InvUnloadModule : ModuleInterface {
     override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
         return listOf(
             Commands.literal("invunload")
-                .requires { it.sender.hasPermission(perms()[1]) }
+                .requires { it.sender.hasPermission(perms()[0]) }
                 .executes { it -> Utils.tryCatch(it) { unload(it.sender as Player) } }
         )
     }

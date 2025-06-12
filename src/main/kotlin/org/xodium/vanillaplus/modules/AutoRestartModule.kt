@@ -29,7 +29,7 @@ class AutoRestartModule : ModuleInterface {
     override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
         return listOf(
             Commands.literal("autorestart")
-                .requires { it.sender.hasPermission(perms()[1]) }
+                .requires { it.sender.hasPermission(perms()[0]) }
                 .executes { it -> Utils.tryCatch(it) { countdown() } })
     }
 
