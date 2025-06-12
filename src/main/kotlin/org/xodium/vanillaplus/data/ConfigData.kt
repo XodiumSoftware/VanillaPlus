@@ -10,7 +10,6 @@ import net.kyori.adventure.sound.Sound
 import org.bukkit.Material
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.utils.ExtUtils.clickRunCmd
-import org.xodium.vanillaplus.utils.ExtUtils.clickSuggestCmd
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.FmtUtils.skylineFmt
@@ -98,42 +97,44 @@ data class BooksModuleData(
                 """
                 <b><u>${"Tips & Tricks".fireFmt()}
                 
-                <gold>▶ ${"/home".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
+                <gold>▶ ${"/home".skylineFmt()}
                 <dark_gray>Teleport to your home
                 
-                <gold>▶ ${"/skills".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
+                <gold>▶ ${"/skills".skylineFmt()}
                 <dark_gray>Opens up the Skills GUI
                 
-                <gold>▶ ${"/rtp".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
+                <gold>▶ ${"/rtp".skylineFmt()}
                 <dark_gray>Random teleport in the current dimension
                 """.trimIndent(),
 
                 // Page 2
                 """
-                <gold>▶ ${"/unload".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
+                <gold>▶ ${"/unload".skylineFmt()}
                 <dark_gray>Unloads your inventory into nearby chests
                 
-                <gold>▶ ${"/search".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
+                <gold>▶ ${"/search".skylineFmt()}
                 <dark_gray>Search into nearby chests for an item
                 
-                <gold>▶ ${"/tpa [player]".clickSuggestCmd().skylineFmt()}
+                <gold>▶ ${"/tpa [player]".skylineFmt()}
                 <dark_gray>Request to teleport to a player
                 """.trimIndent(),
 
                 // Page 3
                 """
-                <gold>▶ ${"/condense".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
+                <gold>▶ ${"/condense".skylineFmt()}
                 <dark_gray>Condenses resources (if possible) to their highest form (blocks)
                 
-                <gold>▶ ${"/uncondense".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
+                <gold>▶ ${"/uncondense".skylineFmt()}
                 <dark_gray>Uncondenses resources (if possible) to their lowest form (items)
                 """.trimIndent(),
 
-                // Page 4 //TODO: replace MiniMessage to clickable as url. https://www.birdflop.com/resources/rgb/ set to MiniMessage.
+                // Page 4
                 """
-                <gold>▶ ${"/nick".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
-                <dark_gray>Change your nickname, use MiniMessage formatting to change the color
-                    
+                <gold>▶ ${"/nick".skylineFmt()}
+                <dark_gray>Change your nickname, Visit: <b>birdflop.com</b>,
+                <dark_gray>Set Color Format on MiniMessage,
+                <dark_gray>Copy and Paste it after the command
+                
                 <gold>▶ ${"Enchantment max level".skylineFmt()}
                 <dark_gray>has been incremented by <red><b>x2
                 """.trimIndent()
