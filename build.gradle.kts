@@ -15,7 +15,7 @@ plugins {
 }
 
 group = "org.xodium.vanillaplus"
-version = "1.9.2"
+version = "1.10.0"
 description = "Minecraft plugin that enhances the base gameplay."
 
 var author: String = "Xodium"
