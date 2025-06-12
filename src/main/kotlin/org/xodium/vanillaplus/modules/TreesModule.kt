@@ -44,10 +44,11 @@ class TreesModule : ModuleInterface {
     }
 
     /** A map of sapling materials to a list of schematics. */
-    private val schematicCache: Map<Material, List<Clipboard>> =
+    private val schematicCache: Map<Material, List<Clipboard>> by lazy {
         ConfigManager.data.treesModule.saplingLink.mapValues { (_, dirs) ->
             dirs.flatMap { dir -> loadSchematics("/schematics/$dir") }
         }
+    }
 
     /**
      * Handle the StructureGrowEvent.
