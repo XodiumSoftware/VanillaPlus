@@ -8,7 +8,6 @@ package org.xodium.vanillaplus.data
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.sound.Sound
 import org.bukkit.Material
-import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.utils.ExtUtils.clickRunCmd
 import org.xodium.vanillaplus.utils.ExtUtils.clickSuggestCmd
@@ -92,7 +91,6 @@ data class BooksModuleData(
     var books: List<BookData> = listOf(
         BookData(
             "guide",
-            Perms.Book.GUIDE.name,
             "Guide".fireFmt(),
             instance::class.simpleName.toString().fireFmt(),
             listOf(
@@ -143,7 +141,6 @@ data class BooksModuleData(
         ),
         BookData(
             "rules",
-            Perms.Book.RULES.name,
             "Rules".fireFmt(),
             instance::class.simpleName.toString().fireFmt(),
             listOf(

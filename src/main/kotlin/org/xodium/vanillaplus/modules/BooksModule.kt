@@ -9,6 +9,9 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.entity.Player
+import org.bukkit.permissions.Permission
+import org.bukkit.permissions.PermissionDefault
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.utils.Utils
@@ -17,12 +20,23 @@ import org.xodium.vanillaplus.utils.Utils
 class BooksModule : ModuleInterface {
     override fun enabled(): Boolean = ConfigManager.data.booksModule.enabled
 
+    private val permPrefix: String = "${instance::class.simpleName}.book".lowercase()
+
     @Suppress("UnstableApiUsage")
     override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
         return ConfigManager.data.booksModule.books.map { book ->
-            Commands.literal(book.cmd)
-                .requires { it.sender.hasPermission(book.perm) }
+            Commands.literal(book.cmd.lowercase())
+                .requires { it.sender.hasPermission("$permPrefix${book.cmd.lowercase()}") }
                 .executes { ctx -> Utils.tryCatch(ctx) { (ctx.source.sender as Player).openBook(book.toBook()) } }
+        }
+    }
+
+    override fun perms(): List<Permission> {
+        return ConfigManager.data.booksModule.books.map {
+            Permission(
+                "$permPrefix.${it.cmd.lowercase()}",
+                PermissionDefault.TRUE
+            )
         }
     }
 }
