@@ -54,13 +54,6 @@ object Perms {
             Permission("${G0}.${G1}.reload", "Allows use of the config reload command", PermissionDefault.OP)
     }
 
-    /** Permissions for Eclipse commands. */
-    object Eclipse {
-        private val G1 = this::class.simpleName.toString().lowercase()
-        val USE: Permission =
-            Permission("${G0}.${G1}.use", "Allows use of the eclipse command", PermissionDefault.OP)
-    }
-
     /** Permissions for InvSearch commands. */
     object InvSearch {
         private val G1 = this::class.simpleName.toString().lowercase()

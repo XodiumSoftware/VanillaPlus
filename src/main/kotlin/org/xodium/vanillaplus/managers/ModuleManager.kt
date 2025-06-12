@@ -25,7 +25,6 @@ object ModuleManager {
     val booksModule: BooksModule = BooksModule()
     val dimensionsModule: DimensionsModule = DimensionsModule()
     val doorsModule: DoorsModule = DoorsModule()
-    val eclipseModule: EclipseModule = EclipseModule()
     val invSearchModule: InvSearchModule = InvSearchModule()
     val invUnloadModule: InvUnloadModule = InvUnloadModule()
     val joinQuitModule: JoinQuitModule = JoinQuitModule()
@@ -39,7 +38,6 @@ object ModuleManager {
         booksModule,
         dimensionsModule,
         doorsModule,
-        eclipseModule,
         invSearchModule,
         invUnloadModule,
         joinQuitModule,
