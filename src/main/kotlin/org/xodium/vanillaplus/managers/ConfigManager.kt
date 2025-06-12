@@ -5,10 +5,10 @@
 
 package org.xodium.vanillaplus.managers
 
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
@@ -23,12 +23,15 @@ import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.StandardOpenOption
 
-//TODO: add functionality to update config keys.
+//TODO: add commentation in the json file for each key. e.g. jsonc?
 
 /** Represents the config manager within the system. */
 object ConfigManager {
     private val configPath = instance.dataFolder.toPath().resolve("config.json")
-    private val objectMapper = jacksonObjectMapper().registerModules(JavaTimeModule(), Jdk8Module())
+    private val objectMapper = jacksonObjectMapper()
+        .registerModules(JavaTimeModule())
+        .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+        .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
 
     @Volatile
     var data: ConfigData = ConfigData()
@@ -40,14 +43,17 @@ object ConfigManager {
      */
     fun load(silent: Boolean = false) {
         try {
+            data = ConfigData()
             if (Files.exists(configPath)) {
                 if (!silent) instance.logger.info("Config: Loading settings.")
-                data = objectMapper.readValue(Files.readString(configPath))
+                data = objectMapper
+                    .readerForUpdating(data)
+                    .readValue(Files.readString(configPath))
                 if (!silent) instance.logger.info("Config: Settings loaded successfully.")
             } else {
                 instance.logger.info("Config: No config file found, creating new config.")
-                save()
             }
+            save()
         } catch (e: IOException) {
             instance.logger.severe("Config: Failed to load config file: ${e.printStackTrace()}")
         }
