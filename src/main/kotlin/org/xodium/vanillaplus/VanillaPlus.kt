@@ -34,8 +34,8 @@ class VanillaPlus : JavaPlugin() {
             !server.name.contains(SUPPORTED_PLATFORM) -> disablePlugin(UNSUPPORTED_PLATFORM_MSG)
             else -> {
                 ConfigManager.load()
-                Perms
                 ModuleManager
+                Perms
             }
         }
     }
