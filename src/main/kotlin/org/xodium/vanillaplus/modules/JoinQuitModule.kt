@@ -41,7 +41,7 @@ class JoinQuitModule : ModuleInterface {
         val imageResolvers = faceLines.mapIndexed { i, line -> Placeholder.component("image${i + 1}", line.mm()) }
         val playerComponent = player
             .displayName()
-            .clickEvent(ClickEvent.suggestCommand("nickname ${player.name}"))
+            .clickEvent(ClickEvent.suggestCommand("/nick ${player.name}"))
             .hoverEvent(HoverEvent.showText(Utils.cmdHover.mm()))
 
         player.sendMessage(
