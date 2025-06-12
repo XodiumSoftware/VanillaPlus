@@ -14,12 +14,12 @@ import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 /** Main class of the plugin. */
 class VanillaPlus : JavaPlugin() {
     companion object {
-        private const val SUPPORTED_VERSIONS = "1.21.6"
-        private const val SUPPORTED_PLATFORMS = "Paper"
+        private const val SUPPORTED_VERSION = "1.21.6"
+        private const val SUPPORTED_PLATFORM = "Paper"
         private const val UNSUPPORTED_PLATFORM_MSG =
-            "This plugin requires a supported server platform. Supported platforms: ${SUPPORTED_PLATFORMS}."
+            "This plugin requires a supported server platform. Supported platforms: ${SUPPORTED_PLATFORM}."
         private const val UNSUPPORTED_VERSION_MSG =
-            "This plugin requires a supported server version. Supported versions: ${SUPPORTED_VERSIONS}."
+            "This plugin requires a supported server version. Supported versions: ${SUPPORTED_VERSION}."
 
         val PREFIX: String = "${"[".mangoFmt(true)}${"VanillaPlus".fireFmt()}${"]".mangoFmt()}"
 
@@ -30,8 +30,8 @@ class VanillaPlus : JavaPlugin() {
     /** Called when the plugin is enabled. */
     override fun onEnable() {
         when {
-            !server.version.contains(SUPPORTED_VERSIONS) -> disablePlugin(UNSUPPORTED_VERSION_MSG)
-            !server.name.contains(SUPPORTED_PLATFORMS) -> disablePlugin(UNSUPPORTED_PLATFORM_MSG)
+            !server.version.contains(SUPPORTED_VERSION) -> disablePlugin(UNSUPPORTED_VERSION_MSG)
+            !server.name.contains(SUPPORTED_PLATFORM) -> disablePlugin(UNSUPPORTED_PLATFORM_MSG)
             else -> {
                 ConfigManager.load()
                 Perms

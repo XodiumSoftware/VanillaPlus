@@ -57,8 +57,8 @@ object Perms {
     /** Permissions for Eclipse commands. */
     object Eclipse {
         private val G1 = this::class.simpleName.toString().lowercase()
-        val ECLIPSE: Permission =
-            Permission("${G0}.${G1}.eclipse", "Allows use of the eclipse command", PermissionDefault.OP)
+        val USE: Permission =
+            Permission("${G0}.${G1}.use", "Allows use of the eclipse command", PermissionDefault.OP)
     }
 
     /** Permissions for InvSearch commands. */

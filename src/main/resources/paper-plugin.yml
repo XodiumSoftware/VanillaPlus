@@ -3,8 +3,7 @@ version: ${version}
 main: org.xodium.vanillaplus.VanillaPlus
 description: ${description}
 api-version: 1.21.5
-authors:
-  - XodiumSoftware
+author: ${author}
 dependencies:
   server:
     WorldEdit:
@@ -13,9 +12,6 @@ dependencies:
       join-classpath: true
 # NOTE: Manually update this. (no workaround yet due to LuckPerms not supporting dynamic permission registering)
 permissions:
-  vanillaplus.use:
-    description: Allows use of the commands
-    default: true
   vanillaplus.autorestart.use:
     description: Allows use of the autorestart command
     default: op
@@ -25,7 +21,10 @@ permissions:
   vanillaplus.book.rules:
     description: Allows use of the rules command
     default: true
-  vanillaplus.eclipse.eclipse:
+  vanillaplus.config.reload:
+    description: Allows use of the config reload command
+    default: op
+  vanillaplus.eclipse.use:
     description: Allows use of the eclipse command
     default: op
   vanillaplus.invsearch.use:

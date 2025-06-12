@@ -18,7 +18,8 @@ group = "org.xodium.vanillaplus"
 version = "1.10.0"
 description = "Minecraft plugin that enhances the base gameplay."
 
-var apiVersion: String = "1.21.6"
+var author: String = "Xodium"
+var apiVersion: String = "1.21.5"
 
 repositories {
     mavenCentral()
@@ -40,7 +41,15 @@ java { toolchain.languageVersion.set(JavaLanguageVersion.of(21)) }
 
 tasks {
     processResources {
-        filesMatching("paper-plugin.yml") { expand(mapOf("version" to version, "description" to description)) }
+        filesMatching("paper-plugin.yml") {
+            expand(
+                mapOf(
+                    "version" to version,
+                    "description" to description,
+                    "author" to author,
+                )
+            )
+        }
     }
     shadowJar {
         dependsOn(processResources)
