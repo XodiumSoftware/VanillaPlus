@@ -18,6 +18,7 @@ import org.xodium.vanillaplus.utils.Utils
 class BooksModule : ModuleInterface {
     override fun enabled(): Boolean = ConfigManager.data.booksModule.enabled
 
+    //TODO: make the books completely configurable, incl cmd and perm. and make it automatic.
     @Suppress("UnstableApiUsage")
     override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
         return listOf(
