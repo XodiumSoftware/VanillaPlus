@@ -24,9 +24,6 @@ permissions:
   vanillaplus.config.reload:
     description: Allows use of the config reload command
     default: op
-  vanillaplus.eclipse.use:
-    description: Allows use of the eclipse command
-    default: op
   vanillaplus.invsearch.use:
     description: Allows use of the invsearch command
     default: true

@@ -8,7 +8,6 @@ package org.xodium.vanillaplus.data
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.sound.Sound
 import org.bukkit.Material
-import org.bukkit.entity.EntityType
 import org.xodium.vanillaplus.VanillaPlus
 import org.xodium.vanillaplus.utils.ExtUtils.clickRunCmd
 import org.xodium.vanillaplus.utils.ExtUtils.clickSuggestCmd
@@ -26,7 +25,6 @@ import org.bukkit.Sound as BukkitSound
  * @property booksModule Configuration for the `BooksModule`.
  * @property dimensionsModule Configuration for the `DimensionsModule`.
  * @property doorsModule Configuration for the `DoorsModule`.
- * @property eclipseModule Configuration for the `EclipseModule`.
  * @property invSearchModule Configuration for the `InvSearchModule`.
  * @property invUnloadModule Configuration for the `InvUnloadModule`.
  * @property joinQuitModule Configuration for the `JoinQuitModule`.
@@ -40,7 +38,6 @@ data class ConfigData(
     var booksModule: BooksModuleData = BooksModuleData(),
     var dimensionsModule: DimensionsModuleData = DimensionsModuleData(),
     var doorsModule: DoorsModuleData = DoorsModuleData(),
-    var eclipseModule: EclipseModuleData = EclipseModuleData(),
     var invSearchModule: InvSearchModuleData = InvSearchModuleData(),
     var invUnloadModule: InvUnloadModuleData = InvUnloadModuleData(),
     var joinQuitModule: JoinQuitModuleData = JoinQuitModuleData(),
@@ -219,58 +216,16 @@ data class DoorsModuleData(
     var autoCloseDelay: Long = 6L * 1000L,
     var soundDoorClose: SoundData = SoundData(
         BukkitSound.BLOCK_IRON_DOOR_CLOSE,
-        Sound.Source.BLOCK,
-        1.0f,
-        1.0f
+        Sound.Source.BLOCK
     ),
     var soundGateClose: SoundData = SoundData(
         BukkitSound.BLOCK_FENCE_GATE_CLOSE,
-        Sound.Source.BLOCK,
-        1.0f,
-        1.0f
+        Sound.Source.BLOCK
     ),
     var soundKnock: SoundData = SoundData(
         BukkitSound.ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR,
-        Sound.Source.HOSTILE,
-        1.0f,
-        1.0f
+        Sound.Source.HOSTILE
     ),
-)
-
-/**
- * Data class representing the configuration for the `EclipseModule`.
- * @property enabled Indicates whether the module is enabled. Default is true.
- * @property excludedMobs A set of entity types that are excluded from the eclipse effect. Default is a set containing [EntityType.ENDERMAN].
- * @property eclipseStartTitle The title displayed when the eclipse starts. Default is a title with a fire formatted message "An Eclipse is rising!" and a mango formatted subtitle "Stay inside ;)".
- * @property eclipseEndTitle The title displayed when the eclipse ends. Default is a title with a fire formatted message "An Eclipse is setting!" and a mango formatted subtitle "You can go outside now :P".
- * @property eclipseStartSound The sound played when the eclipse starts. Default is a sound of a wither spawn with a volume of 1.0 and pitch of 1.0.
- * @property eclipseEndSound The sound played when the eclipse ends. Default is a sound of a wither death with a volume of 1.0 and pitch of 1.0.
- * @property randomPoweredCreepers Indicates whether creepers can randomly become powered. Default is true.
- * @property initDelay The initial delay before the module starts, in milliseconds. Default is 0 seconds (0 milliseconds).
- * @property interval The interval at which the module operates, in milliseconds. Default is 10 seconds (10000 milliseconds).
- */
-data class EclipseModuleData(
-    var enabled: Boolean = true,
-    var excludedMobs: Set<EntityType> = setOf(EntityType.ENDERMAN),
-    var eclipseStartTitle: TitleData =
-        TitleData("An Eclipse is rising!".fireFmt(), "Stay inside ;)".mangoFmt()),
-    var eclipseEndTitle: TitleData =
-        TitleData("An Eclipse is setting!".fireFmt(), "You can go outside now :P".mangoFmt()),
-    var eclipseStartSound: SoundData = SoundData(
-        BukkitSound.ENTITY_WITHER_SPAWN,
-        Sound.Source.HOSTILE,
-        1.0f,
-        1.0f
-    ),
-    var eclipseEndSound: SoundData = SoundData(
-        BukkitSound.ENTITY_WITHER_DEATH,
-        Sound.Source.HOSTILE,
-        1.0f,
-        1.0f
-    ),
-    var randomPoweredCreepers: Boolean = true,
-    var initDelay: Long = TimeUtils.seconds(0),
-    var interval: Long = TimeUtils.seconds(10),
 )
 
 /**
@@ -300,9 +255,7 @@ data class InvUnloadModuleData(
     var matchEnchantmentsOnBooks: Boolean = true,
     var soundOnUnload: SoundData = SoundData(
         BukkitSound.ENTITY_PLAYER_LEVELUP,
-        Sound.Source.PLAYER,
-        1.0f,
-        1.0f
+        Sound.Source.PLAYER
     )
 )
 
