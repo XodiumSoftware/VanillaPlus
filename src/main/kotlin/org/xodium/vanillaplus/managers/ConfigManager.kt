@@ -23,8 +23,6 @@ import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.StandardOpenOption
 
-//TODO: add commentation in the json file for each key. e.g. jsonc?
-
 /** Represents the config manager within the system. */
 object ConfigManager {
     private val configPath = instance.dataFolder.toPath().resolve("config.json")
