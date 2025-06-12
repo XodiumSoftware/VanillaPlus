@@ -92,7 +92,7 @@ data class BooksModuleData(
     var books: List<BookData> = listOf(
         BookData(
             "guide",
-            Perms.Book.GUIDE,
+            Perms.Book.GUIDE.name,
             "Guide".fireFmt(),
             instance::class.simpleName.toString().fireFmt(),
             listOf(
@@ -143,7 +143,7 @@ data class BooksModuleData(
         ),
         BookData(
             "rules",
-            Perms.Book.RULES,
+            Perms.Book.RULES.name,
             "Rules".fireFmt(),
             instance::class.simpleName.toString().fireFmt(),
             listOf(

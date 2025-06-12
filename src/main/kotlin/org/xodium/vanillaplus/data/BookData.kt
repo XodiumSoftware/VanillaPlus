@@ -6,7 +6,6 @@
 package org.xodium.vanillaplus.data
 
 import net.kyori.adventure.inventory.Book
-import org.bukkit.permissions.Permission
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 
 /**
@@ -19,7 +18,7 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
  */
 data class BookData(
     val cmd: String,
-    val perm: Permission,
+    val perm: String,
     val title: String,
     val author: String,
     val pages: List<String>,
