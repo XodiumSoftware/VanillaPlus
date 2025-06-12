@@ -12,22 +12,6 @@ import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 
 /**
- * Converts a [Sound.Type] to its string representation for JSON serialization.
- * Converts a string back to a [Sound.Type] for JSON deserialization.
- */
-private class SoundTypeToString : StdConverter<Sound.Type, String>() {
-    override fun convert(value: Sound.Type) = value.key().asString()
-}
-
-/**
- * Converts a string to a [Sound.Type] for JSON deserialization.
- * Converts a [Sound.Type] to its string representation for JSON serialization.
- */
-private class StringToSoundType : StdConverter<String, Sound.Type>() {
-    override fun convert(value: String) = Sound.Type { Key.key(value) }
-}
-
-/**
  * Represents sound data with its properties such as name, source, volume, and pitch.
  * @property name The name of the sound.
  * @property source The source of the sound. Defaults to [Sound.Source.MASTER].
@@ -42,6 +26,24 @@ data class SoundData(
     val volume: Float = 1.0f,
     val pitch: Float = 1.0f
 ) {
+    companion object {
+        /**
+         * Converts a [Sound.Type] to its string representation for JSON serialization.
+         * Converts a string back to a [Sound.Type] for JSON deserialization.
+         */
+        private object SoundTypeToString : StdConverter<Sound.Type, String>() {
+            override fun convert(value: Sound.Type) = value.key().asString()
+        }
+
+        /**
+         * Converts a string to a [Sound.Type] for JSON deserialization.
+         * Converts a [Sound.Type] to its string representation for JSON serialization.
+         */
+        private object StringToSoundType : StdConverter<String, Sound.Type>() {
+            override fun convert(value: String) = Sound.Type { Key.key(value) }
+        }
+    }
+
     /**
      * Converts this SoundData instance to a Sound instance.
      * @return A Sound instance with the properties of this SoundData.
