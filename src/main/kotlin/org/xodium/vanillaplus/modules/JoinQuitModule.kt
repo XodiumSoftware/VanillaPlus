@@ -5,6 +5,8 @@
 
 package org.xodium.vanillaplus.modules
 
+import net.kyori.adventure.text.event.ClickEvent
+import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -15,6 +17,7 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.SkinUtils.faceToMM
+import org.xodium.vanillaplus.utils.Utils
 
 /** Represents a module handling join/quit mechanics within the system. */
 class JoinQuitModule : ModuleInterface {
@@ -36,9 +39,14 @@ class JoinQuitModule : ModuleInterface {
         val welcomeText =
             Regex("<image>").replace(ConfigManager.data.joinQuitModule.welcomeText) { "<image${imageIndex++}>" }
         val imageResolvers = faceLines.mapIndexed { i, line -> Placeholder.component("image${i + 1}", line.mm()) }
+        val playerComponent = player
+            .displayName()
+            .clickEvent(ClickEvent.suggestCommand("/nick ${player.name}"))
+            .hoverEvent(HoverEvent.showText(Utils.cmdHover.mm()))
+
         player.sendMessage(
             welcomeText.mm(
-                Placeholder.component("player", player.displayName()),
+                Placeholder.component("player", playerComponent),
                 *imageResolvers.toTypedArray()
             )
         )
