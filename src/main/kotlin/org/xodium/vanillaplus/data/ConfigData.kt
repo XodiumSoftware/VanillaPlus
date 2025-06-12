@@ -129,7 +129,7 @@ data class BooksModuleData(
                 <dark_gray>Uncondenses resources (if possible) to their lowest form (items)
                 """.trimIndent(),
 
-                // Page 4 //TODO: make MiniMessage clickable as url.
+                // Page 4 //TODO: replace MiniMessage to clickable as url. https://www.birdflop.com/resources/rgb/ set to MiniMessage.
                 """
                 <gold>▶ ${"/nick".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
                 <dark_gray>Change your nickname, use MiniMessage formatting to change the color
