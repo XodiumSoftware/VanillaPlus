@@ -38,15 +38,6 @@ object Perms {
             Permission("${G0}.${G1}.use", "Allows use of the autorestart command", PermissionDefault.OP)
     }
 
-    /** Permissions for Book commands. */
-    object Book {
-        private val G1 = this::class.simpleName.toString().lowercase()
-        val GUIDE: Permission =
-            Permission("${G0}.${G1}.guide", "Allows use of the guide command", PermissionDefault.TRUE)
-        val RULES: Permission =
-            Permission("${G0}.${G1}.rules", "Allows use of the rules command", PermissionDefault.TRUE)
-    }
-
     /** Permissions for Config commands. */
     object Config {
         private val G1 = this::class.simpleName.toString().lowercase()
