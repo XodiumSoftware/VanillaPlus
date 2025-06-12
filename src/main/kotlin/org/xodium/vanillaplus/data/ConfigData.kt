@@ -8,7 +8,8 @@ package org.xodium.vanillaplus.data
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.sound.Sound
 import org.bukkit.Material
-import org.xodium.vanillaplus.VanillaPlus
+import org.xodium.vanillaplus.Perms
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.utils.ExtUtils.clickRunCmd
 import org.xodium.vanillaplus.utils.ExtUtils.clickSuggestCmd
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
@@ -84,17 +85,19 @@ data class AutoRestartModuleData(
 /**
  * Data class representing the configuration for the `BooksModule`.
  * @property enabled Indicates whether the module is enabled. Default is true.
- * @property guideBook The data for the guide book, including its title, author, and pages. Default includes a formatted title and author, with several pages of tips and tricks.
- * @property rulesBook The data for the rules book, including its title, author, and pages. Default includes a formatted title and author, with pages detailing player and mod/admin rules.
+ * @property books A list of `BookData` objects representing the books available in the module.
  */
 data class BooksModuleData(
     var enabled: Boolean = true,
-    var guideBook: BookData = BookData(
-        "Guide".fireFmt(),
-        VanillaPlus.Companion.instance::class.simpleName.toString().fireFmt(),
-        listOf(
-            // Page 1
-            """
+    var books: List<BookData> = listOf(
+        BookData(
+            "guide",
+            Perms.Book.GUIDE,
+            "Guide".fireFmt(),
+            instance::class.simpleName.toString().fireFmt(),
+            listOf(
+                // Page 1
+                """
                 <b><u>${"Tips & Tricks".fireFmt()}
                 
                 <gold>▶ ${"/home".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
@@ -107,8 +110,8 @@ data class BooksModuleData(
                 <dark_gray>Random teleport in the current dimension
                 """.trimIndent(),
 
-            // Page 2
-            """
+                // Page 2
+                """
                 <gold>▶ ${"/unload".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
                 <dark_gray>Unloads your inventory into nearby chests
                 
@@ -119,8 +122,8 @@ data class BooksModuleData(
                 <dark_gray>Request to teleport to a player
                 """.trimIndent(),
 
-            // Page 3
-            """
+                // Page 3
+                """
                 <gold>▶ ${"/condense".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
                 <dark_gray>Condenses resources (if possible) to their highest form (blocks)
                 
@@ -128,22 +131,24 @@ data class BooksModuleData(
                 <dark_gray>Uncondenses resources (if possible) to their lowest form (items)
                 """.trimIndent(),
 
-            // Page 4
-            """
+                // Page 4
+                """
                 <gold>▶ ${"Enchantment max level".skylineFmt()}
                 <dark_gray>has been incremented by <red><b>x2<reset>
                 
                 <gold>▶ ${"During an Eclipse".skylineFmt()}
                 <dark_gray>A horde will spawn where the mobs are stronger than usual
                 """.trimIndent()
-        )
-    ),
-    var rulesBook: BookData = BookData(
-        "Rules".fireFmt(),
-        VanillaPlus.Companion.instance::class.simpleName.toString().fireFmt(),
-        listOf(
-            // Page 1: Player Rules (1-7)
-            """
+            )
+        ),
+        BookData(
+            "rules",
+            Perms.Book.RULES,
+            "Rules".fireFmt(),
+            instance::class.simpleName.toString().fireFmt(),
+            listOf(
+                // Page 1: Player Rules (1-7)
+                """
                 <b><u><dark_aqua>Player Rules:<reset>
         
                 <gold>▶ <dark_aqua>01 <dark_gray>| <red>No Griefing
@@ -155,8 +160,8 @@ data class BooksModuleData(
                 <gold>▶ <dark_aqua>07 <dark_gray>| <red>Respect all Players
                 """.trimIndent(),
 
-            // Page 2: Player Rules (8-13)
-            """
+                // Page 2: Player Rules (8-13)
+                """
                 <gold>▶ <dark_aqua>08 <dark_gray>| <red>Obey Staff they are the Law Enforcers
                 <gold>▶ <dark_aqua>09 <dark_gray>| <red>No Racist or Sexist Remarks
                 <gold>▶ <dark_aqua>10 <dark_gray>| <red>No Mods/Hacks
@@ -165,8 +170,8 @@ data class BooksModuleData(
                 <gold>▶ <dark_aqua>13 <dark_gray>| <red>Build in (Fantasy)Medieval style
                 """.trimIndent(),
 
-            // Page 3: Mod/Admin Rules
-            """
+                // Page 3: Mod/Admin Rules
+                """
                 <b><u><dark_aqua>Mod/Admin Rules:<reset>
         
                 <gold>▶ <dark_aqua>01 <dark_gray>| <red>Be Responsible with the power you are given as staff
@@ -174,8 +179,9 @@ data class BooksModuleData(
                 <gold>▶ <dark_aqua>03 <dark_gray>| <red>When Trading, only buy and sell legit items
                 <gold>▶ <dark_aqua>05 <dark_gray>| <red>No Power Abuse
                 """.trimIndent()
+            )
         )
-    )
+    ),
 )
 
 /**

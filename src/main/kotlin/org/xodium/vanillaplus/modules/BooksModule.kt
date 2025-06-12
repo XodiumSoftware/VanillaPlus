@@ -9,7 +9,6 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.entity.Player
-import org.xodium.vanillaplus.Perms
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.utils.Utils
@@ -18,17 +17,13 @@ import org.xodium.vanillaplus.utils.Utils
 class BooksModule : ModuleInterface {
     override fun enabled(): Boolean = ConfigManager.data.booksModule.enabled
 
-    //TODO: make the books completely configurable, incl cmd and perm. and make it automatic.
     @Suppress("UnstableApiUsage")
     override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
-        return listOf(
-            Commands.literal("guide")
-                .requires { it.sender.hasPermission(Perms.Book.GUIDE) }
-                .executes { it -> Utils.tryCatch(it) { (it.sender as Player).openBook(ConfigManager.data.booksModule.guideBook.toBook()) } },
-            Commands.literal("rules")
-                .requires { it.sender.hasPermission(Perms.Book.RULES) }
-                .executes { it -> Utils.tryCatch(it) { (it.sender as Player).openBook(ConfigManager.data.booksModule.rulesBook.toBook()) } },
-        )
+        return ConfigManager.data.booksModule.books.map { book ->
+            Commands.literal(book.cmd)
+                .requires { it.sender.hasPermission(book.perm) }
+                .executes { ctx -> Utils.tryCatch(ctx) { (ctx.source.sender as Player).openBook(book.toBook()) } }
+        }
     }
 }
 
