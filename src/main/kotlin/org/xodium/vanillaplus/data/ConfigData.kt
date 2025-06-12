@@ -129,13 +129,13 @@ data class BooksModuleData(
                 <dark_gray>Uncondenses resources (if possible) to their lowest form (items)
                 """.trimIndent(),
 
-                // Page 4
+                // Page 4 //TODO: make MiniMessage clickable as url.
                 """
+                <gold>▶ ${"/nick".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
+                <dark_gray>Change your nickname, use MiniMessage formatting to change the color
+                    
                 <gold>▶ ${"Enchantment max level".skylineFmt()}
-                <dark_gray>has been incremented by <red><b>x2<reset>
-                
-                <gold>▶ ${"During an Eclipse".skylineFmt()}
-                <dark_gray>A horde will spawn where the mobs are stronger than usual
+                <dark_gray>has been incremented by <red><b>x2
                 """.trimIndent()
             )
         ),
