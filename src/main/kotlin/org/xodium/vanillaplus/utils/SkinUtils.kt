@@ -9,8 +9,6 @@ package org.xodium.vanillaplus.utils
 
 import com.google.gson.JsonParser
 import org.bukkit.entity.Player
-import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import java.io.File
 import java.net.URI
 import java.util.*
 import javax.imageio.ImageIO
@@ -39,12 +37,7 @@ object SkinUtils {
 
         // 2. load and crop
         val fullImg = ImageIO.read(URI.create(skinUrl).toURL())
-        val face = fullImg.getSubimage(0, 0, 8, 8) //FIX: cropping face wrong.
-
-        // 2a. save to file
-        val skinsDir = File(instance.dataFolder, "skins").apply { mkdirs() }
-        val outFile = File(skinsDir, "$uniqueId.png")
-        ImageIO.write(face, "png", outFile)
+        val face = fullImg.getSubimage(8, 8, 8, 8)
 
         // 3. scale & build MiniMessage
         val scale = 8.0 / size
