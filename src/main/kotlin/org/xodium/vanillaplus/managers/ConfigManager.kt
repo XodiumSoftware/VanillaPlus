@@ -22,6 +22,8 @@ import org.xodium.vanillaplus.utils.Utils
 import java.nio.file.Files
 import java.nio.file.StandardOpenOption
 
+//TODO: add functionality to update config keys.
+
 /** Represents the config manager within the system. */
 object ConfigManager {
     private val configPath = instance.dataFolder.toPath().resolve("config.json")
