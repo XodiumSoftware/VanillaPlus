@@ -13,7 +13,8 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.entity.Player
-import org.xodium.vanillaplus.Perms
+import org.bukkit.permissions.Permission
+import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.ConfigData
@@ -30,6 +31,7 @@ object ConfigManager {
         .registerModules(JavaTimeModule())
         .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
         .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+    private val permPrefix = "${instance::class.simpleName}.config".lowercase()
 
     @Volatile
     var data: ConfigData = ConfigData()
@@ -81,7 +83,7 @@ object ConfigManager {
     @Suppress("UnstableApiUsage")
     fun cmd(): LiteralArgumentBuilder<CommandSourceStack> {
         return Commands.literal("reload")
-            .requires { it.sender.hasPermission(Perms.Config.RELOAD) }
+            .requires { it.sender.hasPermission(perm()) }
             .executes { it ->
                 Utils.tryCatch(it) {
                     load(true)
@@ -89,5 +91,17 @@ object ConfigManager {
                     (it.sender as Player).sendMessage("$PREFIX Reloaded config".mm())
                 }
             }
+    }
+
+    /**
+     * Creates the permission for the configuration reload command.
+     * @return A Permission object for the config reload command.
+     */
+    fun perm(): Permission {
+        return Permission(
+            "$permPrefix.use",
+            "Allows use of the autorestart command",
+            PermissionDefault.OP
+        )
     }
 }

@@ -35,6 +35,7 @@ class BooksModule : ModuleInterface {
         return ConfigManager.data.booksModule.books.map {
             Permission(
                 "$permPrefix.${it.cmd.lowercase()}",
+                "Allows use of the book command: ${it.cmd}",
                 PermissionDefault.TRUE
             )
         }
