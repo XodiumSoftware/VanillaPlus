@@ -23,8 +23,7 @@ object SkinUtils {
      * @return A MiniMessage string representing the player's face.
      */
     fun Player.faceToMM(size: Int = 8): String {
-        val uuid = this.uniqueId
-        val url = URI("https://crafatar.com/avatars/$uuid").toURL()
+        val url = URI("https://crafatar.com/avatars/$uniqueId").toURL()
         val img: BufferedImage = ImageIO.read(url)
         val face = img.getSubimage(8, 8, 8, 8)
         val scale = 8.0 / size
