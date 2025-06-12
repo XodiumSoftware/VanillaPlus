@@ -19,7 +19,8 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.Inventory
-import org.xodium.vanillaplus.Perms
+import org.bukkit.permissions.Permission
+import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.ChestAccessManager
@@ -34,12 +35,24 @@ import org.xodium.vanillaplus.utils.Utils
 class InvUnloadModule : ModuleInterface {
     override fun enabled(): Boolean = ConfigManager.data.invUnloadModule.enabled
 
+    private val permPrefix: String = "${instance::class.simpleName}.invunload".lowercase()
+
     @Suppress("UnstableApiUsage")
     override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
         return listOf(
             Commands.literal("invunload")
-                .requires { it.sender.hasPermission(Perms.InvUnload.USE) }
+                .requires { it.sender.hasPermission(perms()[1]) }
                 .executes { it -> Utils.tryCatch(it) { unload(it.sender as Player) } }
+        )
+    }
+
+    override fun perms(): List<Permission> {
+        return listOf(
+            Permission(
+                "$permPrefix.use",
+                "Allows use of the autorestart command",
+                PermissionDefault.OP
+            )
         )
     }
 

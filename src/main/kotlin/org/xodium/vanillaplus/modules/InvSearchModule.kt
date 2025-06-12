@@ -21,7 +21,8 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
-import org.xodium.vanillaplus.Perms
+import org.bukkit.permissions.Permission
+import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.ChestAccessManager
@@ -46,18 +47,29 @@ class InvSearchModule : ModuleInterface {
             .forEach { builder.suggest(it) }
         CompletableFuture.completedFuture(builder.build())
     }
+    private val permPrefix: String = "${instance::class.simpleName}.invsearch".lowercase()
 
     @Suppress("UnstableApiUsage")
     override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
         return listOf(
             Commands.literal("invsearch")
-                .requires { it.sender.hasPermission(Perms.InvSearch.USE) }
+                .requires { it.sender.hasPermission(perms()[1]) }
                 .then(
                     Commands.argument("material", StringArgumentType.word())
                         .suggests(materialSuggestionProvider)
                         .executes { ctx -> handleSearch(ctx) }
                 )
                 .executes { ctx -> handleSearch(ctx) }
+        )
+    }
+
+    override fun perms(): List<Permission> {
+        return listOf(
+            Permission(
+                "$permPrefix.use",
+                "Allows use of the autorestart command",
+                PermissionDefault.OP
+            )
         )
     }
 
