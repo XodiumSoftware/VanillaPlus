@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/vanillaplus.iml" filepath="$PROJECT_DIR$/.idea/modules/vanillaplus.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/vanillaplus.main.iml" filepath="$PROJECT_DIR$/.idea/modules/vanillaplus.main.iml" />
     </modules>
   </component>
