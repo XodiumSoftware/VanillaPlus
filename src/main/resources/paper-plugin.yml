@@ -8,7 +8,7 @@ dependencies:
   server:
     WorldEdit:
       load: BEFORE
-      required: true
+      required: false
       join-classpath: true
 # NOTE: Manually update this. (no workaround yet due to LuckPerms not supporting dynamic permission registering)
 permissions:
