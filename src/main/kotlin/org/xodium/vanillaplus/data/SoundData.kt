@@ -5,36 +5,11 @@
 
 package org.xodium.vanillaplus.data
 
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.core.JsonToken
-import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.JsonDeserializer
-import com.fasterxml.jackson.databind.JsonMappingException
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.databind.util.StdConverter
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
-
-object SoundTypeDeserializer : JsonDeserializer<Sound.Type>() {
-    override fun deserialize(parser: JsonParser, ctxt: DeserializationContext): Sound.Type {
-        return when (parser.currentToken) {
-            JsonToken.VALUE_STRING -> Sound.Type { Key.key(parser.text) }
-            JsonToken.START_OBJECT -> {
-                val node = parser.codec.readTree<ObjectNode>(parser)
-                node.get("key")?.let { keyNode ->
-                    val namespace = keyNode.get("namespace").asText()
-                    val key = keyNode.get("key").asText()
-                    return Sound.Type { Key.key("$namespace:$key") }
-                }
-                node.path("holder").get("registeredName")?.asText(null)
-                    ?.let { Sound.Type { Key.key(it) } }
-                    ?: throw JsonMappingException.from(parser, "Cannot parse Sound.Type from $node")
-            }
-
-            else -> throw JsonMappingException.from(parser, "Unexpected token for Sound.Type: ${parser.currentToken}")
-        }
-    }
-}
 
 /**
  * Represents sound data with its properties such as name, source, volume, and pitch.
@@ -44,12 +19,31 @@ object SoundTypeDeserializer : JsonDeserializer<Sound.Type>() {
  * @property pitch The pitch of the sound. Defaults to 1.0f.
  */
 data class SoundData(
-    @JsonDeserialize(using = SoundTypeDeserializer::class)
+    @JsonSerialize(converter = SoundTypeToString::class)
+    @JsonDeserialize(converter = StringToSoundType::class)
     val name: Sound.Type,
     val source: Sound.Source = Sound.Source.MASTER,
     val volume: Float = 1.0f,
     val pitch: Float = 1.0f
 ) {
+    companion object {
+        /**
+         * Converts a [Sound.Type] to its string representation for JSON serialization.
+         * Converts a string back to a [Sound.Type] for JSON deserialization.
+         */
+        private object SoundTypeToString : StdConverter<Sound.Type, String>() {
+            override fun convert(value: Sound.Type) = value.key().asString()
+        }
+
+        /**
+         * Converts a string to a [Sound.Type] for JSON deserialization.
+         * Converts a [Sound.Type] to its string representation for JSON serialization.
+         */
+        private object StringToSoundType : StdConverter<String, Sound.Type>() {
+            override fun convert(value: String) = Sound.Type { Key.key(value) }
+        }
+    }
+
     /**
      * Converts this SoundData instance to a Sound instance.
      * @return A Sound instance with the properties of this SoundData.

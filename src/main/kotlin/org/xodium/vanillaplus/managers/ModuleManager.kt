@@ -53,6 +53,7 @@ object ModuleManager {
     init {
         modules()
         commands()
+        permissions()
     }
 
     /** Registers the modules. */
@@ -90,6 +91,16 @@ object ModuleManager {
                     "${instance.name} plugin",
                     mutableListOf("vp")
                 )
+            }
+        }
+    }
+
+    /** Registers permissions for the modules. */
+    private fun permissions() {
+        instance.server.pluginManager.addPermission(ConfigManager.perm())
+        modules.forEach { module ->
+            module.perms().forEach { perm ->
+                instance.server.pluginManager.addPermission(perm)
             }
         }
     }

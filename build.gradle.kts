@@ -34,7 +34,6 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.0")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.0")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.19.0")
 }
 
 java { toolchain.languageVersion.set(JavaLanguageVersion.of(21)) }

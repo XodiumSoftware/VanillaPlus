@@ -10,11 +10,13 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 
 /**
  * Represents the data structure for a book in the game.
+ * @property cmd The command associated with the book.
  * @property title The title of the book.
  * @property author The author of the book.
  * @property pages The content of the book, represented as a list of strings.
  */
 data class BookData(
+    val cmd: String,
     val title: String,
     val author: String,
     val pages: List<String>,

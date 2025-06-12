@@ -9,7 +9,8 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
-import org.xodium.vanillaplus.Perms
+import org.bukkit.permissions.Permission
+import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.ConfigManager
@@ -22,12 +23,24 @@ import java.time.temporal.ChronoUnit
 class AutoRestartModule : ModuleInterface {
     override fun enabled(): Boolean = ConfigManager.data.autoRestartModule.enabled
 
+    private val permPrefix: String = "${instance::class.simpleName}.autorestart".lowercase()
+
     @Suppress("UnstableApiUsage")
     override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
         return listOf(
             Commands.literal("autorestart")
-                .requires { it.sender.hasPermission(Perms.AutoRestart.USE) }
+                .requires { it.sender.hasPermission(perms()[0]) }
                 .executes { it -> Utils.tryCatch(it) { countdown() } })
+    }
+
+    override fun perms(): List<Permission> {
+        return listOf(
+            Permission(
+                "$permPrefix.use",
+                "Allows use of the autorestart command",
+                PermissionDefault.OP
+            )
+        )
     }
 
     init {

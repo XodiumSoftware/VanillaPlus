@@ -9,7 +9,9 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.entity.Player
-import org.xodium.vanillaplus.Perms
+import org.bukkit.permissions.Permission
+import org.bukkit.permissions.PermissionDefault
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.utils.Utils
@@ -18,19 +20,24 @@ import org.xodium.vanillaplus.utils.Utils
 class BooksModule : ModuleInterface {
     override fun enabled(): Boolean = ConfigManager.data.booksModule.enabled
 
+    private val permPrefix: String = "${instance::class.simpleName}.book".lowercase()
+
     @Suppress("UnstableApiUsage")
     override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
-        return listOf(
-            Commands.literal("guide")
-                .requires { it.sender.hasPermission(Perms.Book.GUIDE) }
-                .executes { it -> Utils.tryCatch(it) { (it.sender as Player).openBook(ConfigManager.data.booksModule.guideBook.toBook()) } },
-            Commands.literal("rules")
-                .requires { it.sender.hasPermission(Perms.Book.RULES) }
-                .executes { it -> Utils.tryCatch(it) { (it.sender as Player).openBook(ConfigManager.data.booksModule.rulesBook.toBook()) } },
-        )
+        return ConfigManager.data.booksModule.books.map { book ->
+            Commands.literal(book.cmd.lowercase())
+                .requires { it.sender.hasPermission("$permPrefix${book.cmd.lowercase()}") }
+                .executes { ctx -> Utils.tryCatch(ctx) { (ctx.source.sender as Player).openBook(book.toBook()) } }
+        }
+    }
+
+    override fun perms(): List<Permission> {
+        return ConfigManager.data.booksModule.books.map {
+            Permission(
+                "$permPrefix.${it.cmd.lowercase()}",
+                "Allows use of the book command: ${it.cmd}",
+                PermissionDefault.TRUE
+            )
+        }
     }
 }
-
-
-
-
