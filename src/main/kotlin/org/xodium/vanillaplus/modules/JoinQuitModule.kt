@@ -20,7 +20,7 @@ import org.xodium.vanillaplus.utils.SkinUtils.faceToMM
 class JoinQuitModule : ModuleInterface {
     override fun enabled(): Boolean = ConfigManager.data.joinQuitModule.enabled
 
-    //TODO: Conflict with CMI, disable in CMI or move away.
+    //TODO: Join message in Conflict with CMI, disable in CMI or move away.
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
@@ -33,12 +33,9 @@ class JoinQuitModule : ModuleInterface {
 
         val faceLines = player.faceToMM().lines()
         var imageIndex = 1
-        val welcomeText = Regex("<image>").replace(ConfigManager.data.joinQuitModule.welcomeText) {
-            "<image${imageIndex++}>"
-        }
-        val imageResolvers = faceLines.mapIndexed { i, line ->
-            Placeholder.component("image${i + 1}", line.mm())
-        }
+        val welcomeText =
+            Regex("<image>").replace(ConfigManager.data.joinQuitModule.welcomeText) { "<image${imageIndex++}>" }
+        val imageResolvers = faceLines.mapIndexed { i, line -> Placeholder.component("image${i + 1}", line.mm()) }
         player.sendMessage(
             welcomeText.mm(
                 Placeholder.component("player", player.displayName()),
