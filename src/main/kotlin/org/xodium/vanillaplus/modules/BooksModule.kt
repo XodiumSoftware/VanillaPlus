@@ -26,7 +26,7 @@ class BooksModule : ModuleInterface {
     override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
         return ConfigManager.data.booksModule.books.map { book ->
             Commands.literal(book.cmd.lowercase())
-                .requires { it.sender.hasPermission("$permPrefix${book.cmd.lowercase()}") }
+                .requires { it.sender.hasPermission("$permPrefix.${book.cmd.lowercase()}") }
                 .executes { ctx -> Utils.tryCatch(ctx) { (ctx.source.sender as Player).openBook(book.toBook()) } }
         }
     }
