@@ -28,7 +28,8 @@ jobs:
 
       - id: get_artifact_version
         name: Get Artifact Version
-        run: echo VERSION=v$(grep -m1 '^version = ' build.gradle.kts \| cut -d\" -f2) >> $GITHUB_OUTPUT
+        shell: bash
+        run: echo "VERSION=v$(grep -m1 '^version = ' build.gradle.kts | cut -d '"' -f2)" >> $GITHUB_OUTPUT
 
       - id: build_artifact
         name: Build Artifact
