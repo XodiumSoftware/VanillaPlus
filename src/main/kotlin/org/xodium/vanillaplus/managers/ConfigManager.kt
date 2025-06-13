@@ -103,7 +103,7 @@ object ConfigManager {
     fun perm(): Permission {
         return Permission(
             "$permPrefix.use",
-            "Allows use of the autorestart command",
+            "Allows use of the config reload command",
             PermissionDefault.OP
         )
     }
