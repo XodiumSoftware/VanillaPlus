@@ -67,7 +67,7 @@ class InvSearchModule : ModuleInterface {
             Permission(
                 "${instance::class.simpleName}.invsearch.use".lowercase(),
                 "Allows use of the autorestart command",
-                PermissionDefault.OP
+                PermissionDefault.TRUE
             )
         )
     }

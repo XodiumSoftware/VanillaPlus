@@ -49,7 +49,7 @@ class InvUnloadModule : ModuleInterface {
             Permission(
                 "${instance::class.simpleName}.invunload.use".lowercase(),
                 "Allows use of the autorestart command",
-                PermissionDefault.OP
+                PermissionDefault.TRUE
             )
         )
     }
