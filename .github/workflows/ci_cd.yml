@@ -29,6 +29,11 @@ jobs:
       - id: generate_dependency_graph
         name: Generate and submit dependency graph
         uses: gradle/actions/dependency-submission@ac638b010cf58a27ee6c972d7336334ccaf61c96
+        with:
+          dependency-graph-continue-on-failure: true
+          build-scan-publish: true
+          build-scan-terms-of-use-url: "https://gradle.com/help/legal-terms-of-use"
+          build-scan-terms-of-use-agree: "yes"
 
       - id: get_artifact_version
         name: Get Artifact Version
