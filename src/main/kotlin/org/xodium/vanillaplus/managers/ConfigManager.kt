@@ -5,6 +5,8 @@
 
 package org.xodium.vanillaplus.managers
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect
+import com.fasterxml.jackson.annotation.PropertyAccessor
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
@@ -31,6 +33,7 @@ object ConfigManager {
         .registerModules(JavaTimeModule())
         .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
         .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+        .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
     private val permPrefix = "${instance::class.simpleName}.config".lowercase()
 
     @Volatile

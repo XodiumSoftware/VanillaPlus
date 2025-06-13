@@ -22,9 +22,9 @@ data class SoundData(
     @JsonSerialize(converter = SoundTypeToString::class)
     @JsonDeserialize(converter = StringToSoundType::class)
     val name: Sound.Type,
-    val source: Sound.Source = Sound.Source.MASTER,
-    val volume: Float = 1.0f,
-    val pitch: Float = 1.0f
+    private val source: Sound.Source = Sound.Source.MASTER,
+    private val volume: Float = 1.0f,
+    private val pitch: Float = 1.0f
 ) {
     companion object {
         /**
