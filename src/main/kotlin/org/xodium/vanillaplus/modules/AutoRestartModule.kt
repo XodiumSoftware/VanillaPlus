@@ -30,7 +30,7 @@ class AutoRestartModule : ModuleInterface {
         return listOf(
             Commands.literal("autorestart")
                 .requires { it.sender.hasPermission(perms()[0]) }
-                .executes { it -> Utils.tryCatch(it) { countdown() } })
+                .executes { ctx -> Utils.tryCatch(ctx) { countdown() } })
     }
 
     override fun perms(): List<Permission> {

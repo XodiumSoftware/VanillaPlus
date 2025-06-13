@@ -42,7 +42,7 @@ class InvUnloadModule : ModuleInterface {
         return listOf(
             Commands.literal("invunload")
                 .requires { it.sender.hasPermission(perms()[0]) }
-                .executes { it -> Utils.tryCatch(it) { unload(it.sender as Player) } }
+                .executes { ctx -> Utils.tryCatch(ctx) { unload(it.sender as Player) } }
         )
     }
 

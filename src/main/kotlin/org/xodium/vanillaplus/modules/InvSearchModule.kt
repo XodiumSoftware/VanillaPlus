@@ -57,9 +57,9 @@ class InvSearchModule : ModuleInterface {
                 .then(
                     Commands.argument("material", StringArgumentType.word())
                         .suggests(materialSuggestionProvider)
-                        .executes { ctx -> handleSearch(ctx) }
+                        .executes { ctx -> Utils.tryCatch(ctx) { handleSearch(ctx) } }
                 )
-                .executes { ctx -> handleSearch(ctx) }
+                .executes { ctx -> Utils.tryCatch(ctx) { handleSearch(ctx) } }
         )
     }
 
