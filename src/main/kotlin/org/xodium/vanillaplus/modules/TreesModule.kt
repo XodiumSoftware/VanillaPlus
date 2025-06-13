@@ -22,7 +22,7 @@ import org.bukkit.event.world.StructureGrowEvent
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.ConfigManager
-import org.xodium.vanillaplus.registries.BlockTypesRegistry
+import org.xodium.vanillaplus.registries.MaterialRegistry
 import java.io.IOException
 import java.nio.channels.Channels
 import java.nio.channels.ReadableByteChannel
@@ -119,7 +119,9 @@ class TreesModule : ModuleInterface {
                     WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(block.world))
                         .use { editSession ->
                             block.type = Material.AIR
-                            editSession.mask = BlockTypeMask(editSession, BlockTypesRegistry.TREE_MASK)
+                            editSession.mask = BlockTypeMask(
+                                editSession,
+                                MaterialRegistry.TREE_MASK.map { BukkitAdapter.asBlockType(it) })
                             Operations.complete(
                                 ClipboardHolder(clipboard)
                                     .createPaste(editSession)
