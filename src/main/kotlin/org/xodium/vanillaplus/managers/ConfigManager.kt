@@ -87,8 +87,8 @@ object ConfigManager {
     fun cmd(): LiteralArgumentBuilder<CommandSourceStack> {
         return Commands.literal("reload")
             .requires { it.sender.hasPermission(perm()) }
-            .executes { it ->
-                Utils.tryCatch(it) {
+            .executes { ctx ->
+                Utils.tryCatch(ctx) {
                     load(true)
                     instance.logger.info("Config: Reloaded settings.")
                     (it.sender as Player).sendMessage("$PREFIX Reloaded config".mm())

@@ -23,20 +23,18 @@ import java.time.temporal.ChronoUnit
 class AutoRestartModule : ModuleInterface {
     override fun enabled(): Boolean = ConfigManager.data.autoRestartModule.enabled
 
-    private val permPrefix: String = "${instance::class.simpleName}.autorestart".lowercase()
-
     @Suppress("UnstableApiUsage")
     override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
         return listOf(
             Commands.literal("autorestart")
                 .requires { it.sender.hasPermission(perms()[0]) }
-                .executes { it -> Utils.tryCatch(it) { countdown() } })
+                .executes { ctx -> Utils.tryCatch(ctx) { countdown() } })
     }
 
     override fun perms(): List<Permission> {
         return listOf(
             Permission(
-                "$permPrefix.use",
+                "${instance::class.simpleName}.autorestart.use".lowercase(),
                 "Allows use of the autorestart command",
                 PermissionDefault.OP
             )
