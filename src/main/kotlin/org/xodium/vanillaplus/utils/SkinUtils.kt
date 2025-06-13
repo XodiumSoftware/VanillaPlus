@@ -5,13 +5,11 @@
 
 package org.xodium.vanillaplus.utils
 
+import com.google.gson.JsonParser
 import org.bukkit.entity.Player
-import java.awt.image.BufferedImage
 import java.net.URI
+import java.util.*
 import javax.imageio.ImageIO
-
-//FIX: rectangles not filling the whole face (they seem rounded)
-//FIX: the image not rendering properly
 
 /** Skin utilities. */
 object SkinUtils {
@@ -21,10 +19,22 @@ object SkinUtils {
      * @return A MiniMessage string representing the player's face.
      */
     fun Player.faceToMM(size: Int = 8): String {
-        val uuid = this.uniqueId
-        val url = URI("https://crafatar.com/avatars/$uuid").toURL()
-        val img: BufferedImage = ImageIO.read(url)
-        val face = img.getSubimage(8, 8, 8, 8)
+        // 1. fetch skin URL from the playerProfile
+        val texturesProp = playerProfile.properties
+            .firstOrNull { it.name == "textures" }
+            ?: throw IllegalStateException("Player has no skin texture")
+        val json = JsonParser.parseString(String(Base64.getDecoder().decode(texturesProp.value))).asJsonObject
+        val skinUrl = json
+            .getAsJsonObject("textures")
+            .getAsJsonObject("SKIN")
+            .get("url")
+            .asString
+
+        // 2. load and crop
+        val fullImg = ImageIO.read(URI.create(skinUrl).toURL())
+        val face = fullImg.getSubimage(8, 8, 8, 8)
+
+        // 3. scale & build MiniMessage
         val scale = 8.0 / size
         val builder = StringBuilder()
         for (y in 0 until size) {
@@ -36,11 +46,8 @@ object SkinUtils {
                 val r = (rgb shr 16) and 0xFF
                 val g = (rgb shr 8) and 0xFF
                 val b = rgb and 0xFF
-                if (a == 0) {
-                    builder.append("<color:#000000>█</color>")
-                } else {
-                    builder.append("<color:#%02x%02x%02x>█</color>".format(r, g, b))
-                }
+                if (a == 0) builder.append("<color:#000000>█</color>")
+                else builder.append("<color:#%02x%02x%02x>█</color>".format(r, g, b))
             }
             builder.append("\n")
         }

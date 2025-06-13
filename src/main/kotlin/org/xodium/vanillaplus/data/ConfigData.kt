@@ -8,10 +8,8 @@ package org.xodium.vanillaplus.data
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.sound.Sound
 import org.bukkit.Material
-import org.bukkit.entity.EntityType
-import org.xodium.vanillaplus.VanillaPlus
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.utils.ExtUtils.clickRunCmd
-import org.xodium.vanillaplus.utils.ExtUtils.clickSuggestCmd
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.FmtUtils.skylineFmt
@@ -26,7 +24,6 @@ import org.bukkit.Sound as BukkitSound
  * @property booksModule Configuration for the `BooksModule`.
  * @property dimensionsModule Configuration for the `DimensionsModule`.
  * @property doorsModule Configuration for the `DoorsModule`.
- * @property eclipseModule Configuration for the `EclipseModule`.
  * @property invSearchModule Configuration for the `InvSearchModule`.
  * @property invUnloadModule Configuration for the `InvUnloadModule`.
  * @property joinQuitModule Configuration for the `JoinQuitModule`.
@@ -40,7 +37,6 @@ data class ConfigData(
     var booksModule: BooksModuleData = BooksModuleData(),
     var dimensionsModule: DimensionsModuleData = DimensionsModuleData(),
     var doorsModule: DoorsModuleData = DoorsModuleData(),
-    var eclipseModule: EclipseModuleData = EclipseModuleData(),
     var invSearchModule: InvSearchModuleData = InvSearchModuleData(),
     var invUnloadModule: InvUnloadModuleData = InvUnloadModuleData(),
     var joinQuitModule: JoinQuitModuleData = JoinQuitModuleData(),
@@ -87,66 +83,70 @@ data class AutoRestartModuleData(
 /**
  * Data class representing the configuration for the `BooksModule`.
  * @property enabled Indicates whether the module is enabled. Default is true.
- * @property guideBook The data for the guide book, including its title, author, and pages. Default includes a formatted title and author, with several pages of tips and tricks.
- * @property rulesBook The data for the rules book, including its title, author, and pages. Default includes a formatted title and author, with pages detailing player and mod/admin rules.
+ * @property books A list of `BookData` objects representing the books available in the module.
  */
 data class BooksModuleData(
     var enabled: Boolean = true,
-    var guideBook: BookData = BookData(
-        "Guide".fireFmt(),
-        VanillaPlus.Companion.instance::class.simpleName.toString().fireFmt(),
-        listOf(
-            // Page 1
-            """
+    var books: List<BookData> = listOf(
+        BookData(
+            "guide",
+            "Guide".fireFmt(),
+            instance::class.simpleName.toString().fireFmt(),
+            listOf(
+                // Page 1
+                """
                 <b><u>${"Tips & Tricks".fireFmt()}
                 
-                <gold>▶ ${"/home".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
+                <gold>▶ ${"/home".skylineFmt()}
                 <dark_gray>Teleport to your home
                 
-                <gold>▶ ${"/skills".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
+                <gold>▶ ${"/skills".skylineFmt()}
                 <dark_gray>Opens up the Skills GUI
                 
-                <gold>▶ ${"/rtp".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
+                <gold>▶ ${"/rtp".skylineFmt()}
                 <dark_gray>Random teleport in the current dimension
                 """.trimIndent(),
 
-            // Page 2
-            """
-                <gold>▶ ${"/unload".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
+                // Page 2
+                """
+                <gold>▶ ${"/unload".skylineFmt()}
                 <dark_gray>Unloads your inventory into nearby chests
                 
-                <gold>▶ ${"/search".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
+                <gold>▶ ${"/search".skylineFmt()}
                 <dark_gray>Search into nearby chests for an item
                 
-                <gold>▶ ${"/tpa [player]".clickSuggestCmd().skylineFmt()}
+                <gold>▶ ${"/tpa [player]".skylineFmt()}
                 <dark_gray>Request to teleport to a player
                 """.trimIndent(),
 
-            // Page 3
-            """
-                <gold>▶ ${"/condense".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
+                // Page 3
+                """
+                <gold>▶ ${"/condense".skylineFmt()}
                 <dark_gray>Condenses resources (if possible) to their highest form (blocks)
                 
-                <gold>▶ ${"/uncondense".clickSuggestCmd(Utils.cmdHover).skylineFmt()}
+                <gold>▶ ${"/uncondense".skylineFmt()}
                 <dark_gray>Uncondenses resources (if possible) to their lowest form (items)
                 """.trimIndent(),
 
-            // Page 4
-            """
-                <gold>▶ ${"Enchantment max level".skylineFmt()}
-                <dark_gray>has been incremented by <red><b>x2<reset>
+                // Page 4
+                """
+                <gold>▶ ${"/nick".skylineFmt()}
+                <dark_gray>Change your nickname, Visit: <b>birdflop.com</b>,
+                <dark_gray>Set Color Format on MiniMessage,
+                <dark_gray>Copy and Paste it after the command
                 
-                <gold>▶ ${"During an Eclipse".skylineFmt()}
-                <dark_gray>A horde will spawn where the mobs are stronger than usual
+                <gold>▶ ${"Enchantment max level".skylineFmt()}
+                <dark_gray>has been incremented by <red><b>x2
                 """.trimIndent()
-        )
-    ),
-    var rulesBook: BookData = BookData(
-        "Rules".fireFmt(),
-        VanillaPlus.Companion.instance::class.simpleName.toString().fireFmt(),
-        listOf(
-            // Page 1: Player Rules (1-7)
-            """
+            )
+        ),
+        BookData(
+            "rules",
+            "Rules".fireFmt(),
+            instance::class.simpleName.toString().fireFmt(),
+            listOf(
+                // Page 1: Player Rules (1-7)
+                """
                 <b><u><dark_aqua>Player Rules:<reset>
         
                 <gold>▶ <dark_aqua>01 <dark_gray>| <red>No Griefing
@@ -158,8 +158,8 @@ data class BooksModuleData(
                 <gold>▶ <dark_aqua>07 <dark_gray>| <red>Respect all Players
                 """.trimIndent(),
 
-            // Page 2: Player Rules (8-13)
-            """
+                // Page 2: Player Rules (8-13)
+                """
                 <gold>▶ <dark_aqua>08 <dark_gray>| <red>Obey Staff they are the Law Enforcers
                 <gold>▶ <dark_aqua>09 <dark_gray>| <red>No Racist or Sexist Remarks
                 <gold>▶ <dark_aqua>10 <dark_gray>| <red>No Mods/Hacks
@@ -168,8 +168,8 @@ data class BooksModuleData(
                 <gold>▶ <dark_aqua>13 <dark_gray>| <red>Build in (Fantasy)Medieval style
                 """.trimIndent(),
 
-            // Page 3: Mod/Admin Rules
-            """
+                // Page 3: Mod/Admin Rules
+                """
                 <b><u><dark_aqua>Mod/Admin Rules:<reset>
         
                 <gold>▶ <dark_aqua>01 <dark_gray>| <red>Be Responsible with the power you are given as staff
@@ -177,8 +177,9 @@ data class BooksModuleData(
                 <gold>▶ <dark_aqua>03 <dark_gray>| <red>When Trading, only buy and sell legit items
                 <gold>▶ <dark_aqua>05 <dark_gray>| <red>No Power Abuse
                 """.trimIndent()
+            )
         )
-    )
+    ),
 )
 
 /**
@@ -219,58 +220,16 @@ data class DoorsModuleData(
     var autoCloseDelay: Long = 6L * 1000L,
     var soundDoorClose: SoundData = SoundData(
         BukkitSound.BLOCK_IRON_DOOR_CLOSE,
-        Sound.Source.BLOCK,
-        1.0f,
-        1.0f
+        Sound.Source.BLOCK
     ),
     var soundGateClose: SoundData = SoundData(
         BukkitSound.BLOCK_FENCE_GATE_CLOSE,
-        Sound.Source.BLOCK,
-        1.0f,
-        1.0f
+        Sound.Source.BLOCK
     ),
     var soundKnock: SoundData = SoundData(
         BukkitSound.ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR,
-        Sound.Source.HOSTILE,
-        1.0f,
-        1.0f
+        Sound.Source.HOSTILE
     ),
-)
-
-/**
- * Data class representing the configuration for the `EclipseModule`.
- * @property enabled Indicates whether the module is enabled. Default is true.
- * @property excludedMobs A set of entity types that are excluded from the eclipse effect. Default is a set containing [EntityType.ENDERMAN].
- * @property eclipseStartTitle The title displayed when the eclipse starts. Default is a title with a fire formatted message "An Eclipse is rising!" and a mango formatted subtitle "Stay inside ;)".
- * @property eclipseEndTitle The title displayed when the eclipse ends. Default is a title with a fire formatted message "An Eclipse is setting!" and a mango formatted subtitle "You can go outside now :P".
- * @property eclipseStartSound The sound played when the eclipse starts. Default is a sound of a wither spawn with a volume of 1.0 and pitch of 1.0.
- * @property eclipseEndSound The sound played when the eclipse ends. Default is a sound of a wither death with a volume of 1.0 and pitch of 1.0.
- * @property randomPoweredCreepers Indicates whether creepers can randomly become powered. Default is true.
- * @property initDelay The initial delay before the module starts, in milliseconds. Default is 0 seconds (0 milliseconds).
- * @property interval The interval at which the module operates, in milliseconds. Default is 10 seconds (10000 milliseconds).
- */
-data class EclipseModuleData(
-    var enabled: Boolean = true,
-    var excludedMobs: Set<EntityType> = setOf(EntityType.ENDERMAN),
-    var eclipseStartTitle: TitleData =
-        TitleData("An Eclipse is rising!".fireFmt(), "Stay inside ;)".mangoFmt()),
-    var eclipseEndTitle: TitleData =
-        TitleData("An Eclipse is setting!".fireFmt(), "You can go outside now :P".mangoFmt()),
-    var eclipseStartSound: SoundData = SoundData(
-        BukkitSound.ENTITY_WITHER_SPAWN,
-        Sound.Source.HOSTILE,
-        1.0f,
-        1.0f
-    ),
-    var eclipseEndSound: SoundData = SoundData(
-        BukkitSound.ENTITY_WITHER_DEATH,
-        Sound.Source.HOSTILE,
-        1.0f,
-        1.0f
-    ),
-    var randomPoweredCreepers: Boolean = true,
-    var initDelay: Long = TimeUtils.seconds(0),
-    var interval: Long = TimeUtils.seconds(10),
 )
 
 /**
@@ -300,9 +259,7 @@ data class InvUnloadModuleData(
     var matchEnchantmentsOnBooks: Boolean = true,
     var soundOnUnload: SoundData = SoundData(
         BukkitSound.ENTITY_PLAYER_LEVELUP,
-        Sound.Source.PLAYER,
-        1.0f,
-        1.0f
+        Sound.Source.PLAYER
     )
 )
 

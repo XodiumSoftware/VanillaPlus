@@ -18,10 +18,10 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
  */
 data class BossBarData(
     val name: String,
-    val progress: Float,
-    val color: BossBar.Color,
-    val style: BossBar.Overlay,
-    val flags: Set<BossBar.Flag> = emptySet()
+    private val progress: Float,
+    private val color: BossBar.Color,
+    private val style: BossBar.Overlay,
+    private val flags: Set<BossBar.Flag> = emptySet()
 ) {
     /**
      * Converts this BossBarData instance to a BossBar instance.

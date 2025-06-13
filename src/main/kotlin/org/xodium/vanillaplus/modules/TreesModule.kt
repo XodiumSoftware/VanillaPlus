@@ -34,13 +34,21 @@ import java.util.stream.Collectors
 
 /** Represents a module handling tree mechanics within the system. */
 class TreesModule : ModuleInterface {
-    override fun enabled(): Boolean = ConfigManager.data.treesModule.enabled
+    override fun enabled(): Boolean {
+        if (!ConfigManager.data.treesModule.enabled) return false
+
+        val worldEdit = instance.server.pluginManager.getPlugin("WorldEdit") != null
+        if (!worldEdit) instance.logger.warning("WorldEdit not found, disabling TreesModule")
+
+        return worldEdit
+    }
 
     /** A map of sapling materials to a list of schematics. */
-    private val schematicCache: Map<Material, List<Clipboard>> =
+    private val schematicCache: Map<Material, List<Clipboard>> by lazy {
         ConfigManager.data.treesModule.saplingLink.mapValues { (_, dirs) ->
             dirs.flatMap { dir -> loadSchematics("/schematics/$dir") }
         }
+    }
 
     /**
      * Handle the StructureGrowEvent.

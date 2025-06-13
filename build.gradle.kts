@@ -15,9 +15,10 @@ plugins {
 }
 
 group = "org.xodium.vanillaplus"
-version = "1.9.2"
+version = "1.10.0"
 description = "Minecraft plugin that enhances the base gameplay."
 
+var author: String = "Xodium"
 var apiVersion: String = "1.21.5"
 
 repositories {
@@ -33,21 +34,27 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.0")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.0")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.19.0")
 }
 
 java { toolchain.languageVersion.set(JavaLanguageVersion.of(21)) }
 
 tasks {
     processResources {
-        filesMatching("paper-plugin.yml") { expand(mapOf("version" to version, "description" to description)) }
+        filesMatching("paper-plugin.yml") {
+            expand(
+                mapOf(
+                    "version" to version,
+                    "description" to description,
+                    "author" to author,
+                )
+            )
+        }
     }
     shadowJar {
         dependsOn(processResources)
         archiveClassifier.set("")
         destinationDirectory.set(file(".server/plugins/update"))
         relocate("com.fasterxml.jackson", "org.xodium.vanillaplus.jackson")
-        relocate("com.fasterxml.jackson.datatype.jdk8", "org.xodium.vanillaplus.jackson.datatype.jdk8")
         minimize { exclude(dependency("org.jetbrains.kotlin:kotlin-reflect:.*")) }
         doLast {
             copy {
