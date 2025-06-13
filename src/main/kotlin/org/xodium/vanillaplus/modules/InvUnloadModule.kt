@@ -35,8 +35,6 @@ import org.xodium.vanillaplus.utils.Utils
 class InvUnloadModule : ModuleInterface {
     override fun enabled(): Boolean = ConfigManager.data.invUnloadModule.enabled
 
-    private val permPrefix: String = "${instance::class.simpleName}.invunload".lowercase()
-
     @Suppress("UnstableApiUsage")
     override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
         return listOf(
@@ -49,7 +47,7 @@ class InvUnloadModule : ModuleInterface {
     override fun perms(): List<Permission> {
         return listOf(
             Permission(
-                "$permPrefix.use",
+                "${instance::class.simpleName}.invunload.use".lowercase(),
                 "Allows use of the autorestart command",
                 PermissionDefault.OP
             )

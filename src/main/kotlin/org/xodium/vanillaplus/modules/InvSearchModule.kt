@@ -47,7 +47,6 @@ class InvSearchModule : ModuleInterface {
             .forEach { builder.suggest(it) }
         CompletableFuture.completedFuture(builder.build())
     }
-    private val permPrefix: String = "${instance::class.simpleName}.invsearch".lowercase()
 
     @Suppress("UnstableApiUsage")
     override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
@@ -66,7 +65,7 @@ class InvSearchModule : ModuleInterface {
     override fun perms(): List<Permission> {
         return listOf(
             Permission(
-                "$permPrefix.use",
+                "${instance::class.simpleName}.invsearch.use".lowercase(),
                 "Allows use of the autorestart command",
                 PermissionDefault.OP
             )
