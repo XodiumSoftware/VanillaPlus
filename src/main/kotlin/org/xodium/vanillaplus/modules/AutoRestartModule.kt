@@ -97,9 +97,10 @@ class AutoRestartModule : ModuleInterface {
      * @return true if the current time is equal to the restart time.
      */
     private fun isTimeToStartCountdown(restartTime: LocalTime): Boolean {
-        return LocalTime.now()
-            .truncatedTo(ChronoUnit.MINUTES) == restartTime.minusMinutes(
-            ConfigManager.data.autoRestartModule.countdownStartMinutes.toLong()
-        )
+        val now = LocalTime.now().truncatedTo(ChronoUnit.SECONDS)
+        val trigger = restartTime
+            .minusMinutes(ConfigManager.data.autoRestartModule.countdownStartMinutes.toLong())
+            .truncatedTo(ChronoUnit.SECONDS)
+        return now == trigger
     }
 }
