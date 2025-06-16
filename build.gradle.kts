@@ -10,12 +10,12 @@ import java.net.URI
 plugins {
     id("java")
     kotlin("jvm") version "2.1.21"
-    id("com.gradleup.shadow") version "9.0.0-beta15"
+    id("com.gradleup.shadow") version "9.0.0-beta16"
     id("de.undercouch.download") version "5.6.0"
 }
 
 group = "org.xodium.vanillaplus"
-version = "1.10.3"
+version = "1.11.0"
 description = "Minecraft plugin that enhances the base gameplay."
 
 var author: String = "Xodium"
@@ -32,8 +32,8 @@ dependencies {
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.14") //TODO("Move away from WorldEdit")
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.0")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.0")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.1")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.1")
 }
 
 java { toolchain.languageVersion.set(JavaLanguageVersion.of(21)) }

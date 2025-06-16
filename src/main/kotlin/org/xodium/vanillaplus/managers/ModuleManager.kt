@@ -32,6 +32,7 @@ object ModuleManager {
     val recipiesModule: RecipiesModule = RecipiesModule()
     val tabListModule: TabListModule = TabListModule()
     val treesModule: TreesModule = TreesModule()
+    val trowelModule: TrowelModule = TrowelModule()
 
     private val modules = listOf(
         autoRestartModule,
@@ -44,7 +45,8 @@ object ModuleManager {
         motdModule,
         recipiesModule,
         tabListModule,
-        treesModule
+        treesModule,
+        trowelModule,
     )
 
     @Suppress("UnstableApiUsage")
