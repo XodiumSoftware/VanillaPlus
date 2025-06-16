@@ -31,6 +31,7 @@ import org.bukkit.Sound as BukkitSound
  * @property recipiesModule Configuration for the `RecipiesModule`.
  * @property tabListModule Configuration for the `TabListModule`.
  * @property treesModule Configuration for the `TreesModule`.
+ * @property trowelModule Configuration for the `TrowelModule`.
  */
 data class ConfigData(
     var autoRestartModule: AutoRestartModuleData = AutoRestartModuleData(),
@@ -44,6 +45,7 @@ data class ConfigData(
     var recipiesModule: RecipiesModuleData = RecipiesModuleData(),
     var tabListModule: TabListModuleData = TabListModuleData(),
     var treesModule: TreesModuleData = TreesModuleData(),
+    var trowelModule: TrowelModuleData = TrowelModuleData(),
 )
 
 /**
@@ -364,4 +366,12 @@ data class TreesModuleData(
         Material.SPRUCE_SAPLING to listOf("trees/spruce"),
         Material.WARPED_FUNGUS to listOf("trees/warped"),
     ),
+)
+
+/**
+ * Data class representing the configuration for the `TrowelModule`.
+ * @property enabled Indicates whether the module is enabled. Default is true.
+ */
+data class TrowelModuleData(
+    var enabled: Boolean = true,
 )
