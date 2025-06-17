@@ -19,7 +19,7 @@ version = "1.11.1"
 description = "Minecraft plugin that enhances the base gameplay."
 
 var author: String = "Xodium"
-var apiVersion: String = "1.21.5"
+var apiVersion: String = "1.21.6"
 
 repositories {
     mavenCentral()
