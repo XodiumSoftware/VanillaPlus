@@ -8,8 +8,10 @@ package org.xodium.vanillaplus.modules
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
+import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.block.Block
+import org.bukkit.block.data.Directional
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -47,6 +49,7 @@ class TrowelModule : ModuleInterface {
         )
     }
 
+    //TODO: save to file.
     private val activePlayers = mutableSetOf<Player>()
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -68,8 +71,9 @@ class TrowelModule : ModuleInterface {
         val target = event.clickedBlock
             ?.getRelative(event.blockFace)
             ?.takeIf(Block::isEmpty) ?: return
+        val blockData = Bukkit.createBlockData(blockType).also { if (it is Directional) it.facing = player.facing }
 
-        target.type = blockType
+        target.blockData = blockData
 
         if (player.gameMode != GameMode.CREATIVE) {
             stack.amount--
