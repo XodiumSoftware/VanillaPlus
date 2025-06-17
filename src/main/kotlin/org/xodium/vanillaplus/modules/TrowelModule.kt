@@ -8,25 +8,24 @@ package org.xodium.vanillaplus.modules
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
-import io.papermc.paper.datacomponent.DataComponentTypes
+import org.bukkit.Bukkit
 import org.bukkit.GameMode
-import org.bukkit.Material
-import org.bukkit.NamespacedKey
 import org.bukkit.block.Block
+import org.bukkit.block.data.Directional
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
-import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.ShapedRecipe
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.data.TrowelStateData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.Utils
 
 /** Represents a module handling trowel mechanics within the system. */
@@ -38,30 +37,29 @@ class TrowelModule : ModuleInterface {
         return listOf(
             Commands.literal("trowel")
                 .requires { it.sender.hasPermission(perms()[0]) }
-                .executes { ctx -> Utils.tryCatch(ctx) { (it.sender as Player).give(trowelItem()) } })
+                .executes { ctx -> Utils.tryCatch(ctx) { toggle(it.sender as Player) } })
     }
 
     override fun perms(): List<Permission> {
         return listOf(
             Permission(
-                "${instance::class.simpleName}.trowel.give".lowercase(),
+                "${instance::class.simpleName}.trowel.toggle".lowercase(),
                 "Allows use of the trowel give command",
-                PermissionDefault.OP
+                PermissionDefault.TRUE
             )
         )
-    }
-
-    init {
-        if (enabled()) instance.server.addRecipe(trowelItemRecipe())
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerInteractEvent) {
         if (!enabled() || event.hand != EquipmentSlot.HAND || event.action != Action.RIGHT_CLICK_BLOCK) return
 
+        val player = event.player
+
+        if (!TrowelStateData.isActive(player)) return
+
         event.isCancelled = true
 
-        val player = event.player
         val inventory = player.inventory
         val slot = (0..8)
             .filter { inventory.getItem(it)?.type?.isBlock == true }
@@ -71,8 +69,9 @@ class TrowelModule : ModuleInterface {
         val target = event.clickedBlock
             ?.getRelative(event.blockFace)
             ?.takeIf(Block::isEmpty) ?: return
+        val blockData = Bukkit.createBlockData(blockType).also { if (it is Directional) it.facing = player.facing }
 
-        target.type = blockType
+        target.blockData = blockData
 
         if (player.gameMode != GameMode.CREATIVE) {
             stack.amount--
@@ -81,23 +80,12 @@ class TrowelModule : ModuleInterface {
     }
 
     /**
-     * Creates a trowel item with a custom name.
-     * @return An ItemStack representing the trowel.
+     * Toggles the trowel mode for the specified player.
+     * @param player The player whose trowel mode is to be toggled.
      */
-    private fun trowelItem(): ItemStack {
-        @Suppress("UnstableApiUsage")
-        return ItemStack.of(Material.BRUSH).apply {
-            setData(DataComponentTypes.CUSTOM_NAME, "Trowel".mm())
-        }
-    }
-
-    /**
-     * Creates a recipe for the trowel item.
-     * @return A ShapedRecipe for the trowel item.
-     */
-    private fun trowelItemRecipe(): ShapedRecipe {
-        return ShapedRecipe(NamespacedKey(instance, "trowel"), trowelItem()).shape("   ", "A  ", " BB")
-            .setIngredient('A', Material.STICK)
-            .setIngredient('B', Material.IRON_INGOT)
+    private fun toggle(player: Player) {
+        val enabled = TrowelStateData.toggle(player)
+        val msg = if (enabled) "Trowel mode enabled" else "Trowel mode disabled"
+        player.sendActionBar(msg.fireFmt().mm())
     }
 }
