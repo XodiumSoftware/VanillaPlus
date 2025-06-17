@@ -21,6 +21,15 @@ object SchematicUtils {
      */
     fun loadSimpleSchematic(inputStream: InputStream): List<Triple<Int, Int, Int>> {
         val root = BinaryTagIO.reader().read(inputStream)
+
+        if (!root.contains<Any>("Width")
+            || !root.contains<Any>("Height")
+            || !root.contains<Any>("Length")
+            || !root.contains<Any>("BlockData")
+        ) {
+            error("Invalid schematic format: missing required tags.")
+        }
+
         val width = root.getShort("Width").toInt()
         val height = root.getShort("Height").toInt()
         val length = root.getShort("Length").toInt()
