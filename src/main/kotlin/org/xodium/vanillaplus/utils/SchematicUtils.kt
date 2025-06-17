@@ -5,49 +5,39 @@
 
 package org.xodium.vanillaplus.utils
 
-import net.kyori.adventure.nbt.BinaryTagIO
+import net.sandrohc.schematic4j.SchematicLoader
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.Block
 import java.io.InputStream
 
-/** Utility class for loading and pasting simple schematic files. */
+/** Utility object for loading and pasting schematic4j-based schematic files. */
 object SchematicUtils {
     /**
-     * Load a schematic from an input stream.
-     * Only loads block positions; does not support full block state fidelity.
+     * Load a schematic from an input stream using `schematic4j`.
+     * Only loads block positions; does not preserve block states.
      * @param inputStream The schematic file input stream.
      * @return A list of block positions relative to the origin.
      */
-    fun loadSimpleSchematic(inputStream: InputStream): List<Triple<Int, Int, Int>> {
-        val root = BinaryTagIO.reader().read(inputStream)
+    @Throws(Exception::class)
+    fun load(inputStream: InputStream): List<Triple<Int, Int, Int>> {
+        val schematic = SchematicLoader.load(inputStream)
+        val width = schematic.width()
+        val height = schematic.height()
+        val length = schematic.length()
+        val blockPositions = mutableListOf<Triple<Int, Int, Int>>()
 
-        if (!root.contains<Any>("Width")
-            || !root.contains<Any>("Height")
-            || !root.contains<Any>("Length")
-            || !root.contains<Any>("BlockData")
-        ) {
-            error("Invalid schematic format: missing required tags.")
-        }
-
-        val width = root.getShort("Width").toInt()
-        val height = root.getShort("Height").toInt()
-        val length = root.getShort("Length").toInt()
-        val blocks = root.getByteArray("BlockData")
-        val blockList = mutableListOf<Triple<Int, Int, Int>>()
-
-        for (y in 0 until height) {
-            for (z in 0 until length) {
-                for (x in 0 until width) {
-                    val index = y * width * length + z * width + x
-                    val stateId = blocks[index].toInt()
-                    if (stateId != 0) {
-                        blockList += Triple(x, y, z)
+        for (x in 0 until width) {
+            for (y in 0 until height) {
+                for (z in 0 until length) {
+                    val block = schematic.block(x, y, z)
+                    if (block.name != "minecraft:air") {
+                        blockPositions += Triple(x, y, z)
                     }
                 }
             }
         }
-        return blockList
+        return blockPositions
     }
 
     /**
@@ -56,7 +46,7 @@ object SchematicUtils {
      * @param origin The origin block.
      * @param schematic The list of relative block positions.
      */
-    fun pasteSimpleSchematic(origin: Block, schematic: List<Triple<Int, Int, Int>>) {
+    fun paste(origin: Block, schematic: List<Triple<Int, Int, Int>>) {
         schematic.forEach { (x, y, z) ->
             origin.world.setBlockAt(
                 origin.x + x,

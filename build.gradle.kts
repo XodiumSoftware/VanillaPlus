@@ -33,7 +33,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.1")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.1")
-    implementation("net.kyori:adventure-nbt:4.21.0")
+    implementation("net.sandrohc:schematic4j:1.1.0")
 }
 
 java { toolchain.languageVersion.set(JavaLanguageVersion.of(21)) }

@@ -56,7 +56,7 @@ class TreesModule : ModuleInterface {
                 val dirPath = fs.getPath(resourceDir.removePrefix("/"))
                 Files.walk(dirPath, 1)
                     .filter { Files.isRegularFile(it) }
-                    .map { path -> Files.newInputStream(path).use { SchematicUtils.loadSimpleSchematic(it) } }
+                    .map { path -> Files.newInputStream(path).use { SchematicUtils.load(it) } }
                     .toList()
             }
         } catch (e: IOException) {
@@ -77,7 +77,7 @@ class TreesModule : ModuleInterface {
             instance,
             Runnable {
                 block.type = Material.AIR
-                SchematicUtils.pasteSimpleSchematic(block, schematic)
+                SchematicUtils.paste(block, schematic)
             })
         return true
     }
