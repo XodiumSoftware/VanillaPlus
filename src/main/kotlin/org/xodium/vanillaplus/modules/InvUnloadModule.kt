@@ -78,7 +78,7 @@ class InvUnloadModule : ModuleInterface {
 
         val startSlot = 9
         val endSlot = 35
-        val chests = Utils.findBlocksInRadius(player.location, 5)
+        val chests = Utils.findBlocksInRadius(player.location, ConfigManager.data.invUnloadModule.radius)
         if (chests.isEmpty()) {
             player.sendActionBar("No chests found nearby".fireFmt().mm())
             return
