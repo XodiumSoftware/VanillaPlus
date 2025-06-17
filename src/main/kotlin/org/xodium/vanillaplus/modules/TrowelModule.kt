@@ -52,9 +52,12 @@ class TrowelModule : ModuleInterface {
     fun on(event: PlayerInteractEvent) {
         if (!enabled() || event.hand != EquipmentSlot.HAND || event.action != Action.RIGHT_CLICK_BLOCK) return
 
+        val player = event.player
+
+        if (player !in activePlayers) return
+
         event.isCancelled = true
 
-        val player = event.player
         val inventory = player.inventory
         val slot = (0..8)
             .filter { inventory.getItem(it)?.type?.isBlock == true }
