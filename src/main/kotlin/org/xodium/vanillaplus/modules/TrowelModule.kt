@@ -22,6 +22,7 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.Utils
 
 /** Represents a module handling trowel mechanics within the system. */
@@ -41,7 +42,7 @@ class TrowelModule : ModuleInterface {
             Permission(
                 "${instance::class.simpleName}.trowel.toggle".lowercase(),
                 "Allows use of the trowel give command",
-                PermissionDefault.OP
+                PermissionDefault.TRUE
             )
         )
     }
@@ -83,10 +84,10 @@ class TrowelModule : ModuleInterface {
     private fun toggle(player: Player) {
         if (activePlayers.contains(player)) {
             activePlayers.remove(player)
-            player.sendActionBar("Trowel mode disabled".mm())
+            player.sendActionBar("Trowel mode disabled".fireFmt().mm())
         } else {
             activePlayers.add(player)
-            player.sendActionBar("Trowel mode enabled".mm())
+            player.sendActionBar("Trowel mode enabled".fireFmt().mm())
         }
     }
 }
