@@ -11,6 +11,10 @@ import org.bukkit.World
 import org.bukkit.block.Block
 import java.io.InputStream
 
+//TODO: re-implement missing features.
+//TODO: fix log spam.
+//TODO: add support for block states (e.g., orientation, properties).
+
 /** Utility object for loading and pasting schematic4j-based schematic files. */
 object SchematicUtils {
     /**
