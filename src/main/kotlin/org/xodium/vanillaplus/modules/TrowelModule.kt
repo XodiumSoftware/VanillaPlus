@@ -8,10 +8,7 @@ package org.xodium.vanillaplus.modules
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
-import io.papermc.paper.datacomponent.DataComponentTypes
 import org.bukkit.GameMode
-import org.bukkit.Material
-import org.bukkit.NamespacedKey
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -19,8 +16,6 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
-import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.ShapedRecipe
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -38,22 +33,20 @@ class TrowelModule : ModuleInterface {
         return listOf(
             Commands.literal("trowel")
                 .requires { it.sender.hasPermission(perms()[0]) }
-                .executes { ctx -> Utils.tryCatch(ctx) { (it.sender as Player).give(trowelItem()) } })
+                .executes { ctx -> Utils.tryCatch(ctx) { toggle(it.sender as Player) } })
     }
 
     override fun perms(): List<Permission> {
         return listOf(
             Permission(
-                "${instance::class.simpleName}.trowel.give".lowercase(),
+                "${instance::class.simpleName}.trowel.toggle".lowercase(),
                 "Allows use of the trowel give command",
                 PermissionDefault.OP
             )
         )
     }
 
-    init {
-        if (enabled()) instance.server.addRecipe(trowelItemRecipe())
-    }
+    private val activePlayers = mutableSetOf<Player>()
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerInteractEvent) {
@@ -81,23 +74,16 @@ class TrowelModule : ModuleInterface {
     }
 
     /**
-     * Creates a trowel item with a custom name.
-     * @return An ItemStack representing the trowel.
+     * Toggles the trowel mode for the specified player.
+     * @param player The player whose trowel mode is to be toggled.
      */
-    private fun trowelItem(): ItemStack {
-        @Suppress("UnstableApiUsage")
-        return ItemStack.of(Material.BRUSH).apply {
-            setData(DataComponentTypes.CUSTOM_NAME, "Trowel".mm())
+    private fun toggle(player: Player) {
+        if (activePlayers.contains(player)) {
+            activePlayers.remove(player)
+            player.sendActionBar("Trowel mode disabled".mm())
+        } else {
+            activePlayers.add(player)
+            player.sendActionBar("Trowel mode enabled".mm())
         }
-    }
-
-    /**
-     * Creates a recipe for the trowel item.
-     * @return A ShapedRecipe for the trowel item.
-     */
-    private fun trowelItemRecipe(): ShapedRecipe {
-        return ShapedRecipe(NamespacedKey(instance, "trowel"), trowelItem()).shape("   ", "A  ", " BB")
-            .setIngredient('A', Material.STICK)
-            .setIngredient('B', Material.IRON_INGOT)
     }
 }
