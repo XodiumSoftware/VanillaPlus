@@ -8,9 +8,9 @@ package org.xodium.vanillaplus.data
 import com.fasterxml.jackson.annotation.JsonAutoDetect
 import com.fasterxml.jackson.annotation.PropertyAccessor
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.*
@@ -27,7 +27,7 @@ data class TrowelStateData(
         private val mapper = jacksonObjectMapper()
             .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
         private val filePath: Path = instance.dataFolder.toPath().resolve("trowel.json")
-        private val cache = mutableSetOf<Player>()
+        private val cache = mutableSetOf<UUID>()
 
         init {
             load()
@@ -48,17 +48,25 @@ data class TrowelStateData(
         private fun load(): TrowelStateData {
             val state = readState()
             cache.clear()
-            cache.addAll(state.cache())
+            cache.addAll(state.uuids)
             return state
         }
 
         /**
-         * Writes the TrowelStateData to the JSON file.
+         * Writes the TrowelStateData to the JSON file in ASync.
          * @param state The TrowelStateData to write to the file.
          */
         private fun write(state: TrowelStateData) {
-            Files.createDirectories(filePath.parent)
-            Files.writeString(filePath, mapper.writeValueAsString(state))
+            instance.server.scheduler.runTaskAsynchronously(instance, Runnable {
+                try {
+                    Files.createDirectories(filePath.parent)
+                    Files.writeString(filePath, mapper.writeValueAsString(state))
+                } catch (e: IOException) {
+                    instance.logger.severe("Failed to write TrowelStateData to file: ${e.message}")
+                    e.printStackTrace()
+                }
+            })
+
         }
 
         /**
@@ -66,7 +74,7 @@ data class TrowelStateData(
          * @param player The player to check.
          * @return True if the player is active, false otherwise.
          */
-        fun isActive(player: Player): Boolean = player in cache
+        fun isActive(player: Player): Boolean = cache.contains(player.uniqueId)
 
         /**
          * Toggles the Trowel state for a player.
@@ -74,17 +82,10 @@ data class TrowelStateData(
          * @return True if the player was added (enabled), false if they were removed (disabled).
          */
         fun toggle(player: Player): Boolean {
-            val enabled = cache.add(player)
-            if (!enabled) cache.remove(player)
-            val newState = TrowelStateData(cache.map { it.uniqueId })
-            write(newState)
+            val enabled = cache.add(player.uniqueId)
+            if (!enabled) cache.remove(player.uniqueId)
+            write(TrowelStateData(cache.toList()))
             return enabled
         }
     }
-
-    /**
-     * Converts the list of UUIDs to a mutable set of Player objects.
-     * @return A mutable set of Player objects corresponding to the UUIDs.
-     */
-    fun cache(): MutableSet<Player> = uuids.mapNotNull(Bukkit::getPlayer).toMutableSet()
 }
