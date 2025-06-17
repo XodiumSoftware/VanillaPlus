@@ -21,6 +21,7 @@ import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.data.TrowelStateData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
@@ -49,16 +50,13 @@ class TrowelModule : ModuleInterface {
         )
     }
 
-    //TODO: save to file.
-    private val activePlayers = mutableSetOf<Player>()
-
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerInteractEvent) {
         if (!enabled() || event.hand != EquipmentSlot.HAND || event.action != Action.RIGHT_CLICK_BLOCK) return
 
         val player = event.player
 
-        if (player !in activePlayers) return
+        if (!TrowelStateData.isActive(player)) return
 
         event.isCancelled = true
 
@@ -86,12 +84,8 @@ class TrowelModule : ModuleInterface {
      * @param player The player whose trowel mode is to be toggled.
      */
     private fun toggle(player: Player) {
-        if (activePlayers.contains(player)) {
-            activePlayers.remove(player)
-            player.sendActionBar("Trowel mode disabled".fireFmt().mm())
-        } else {
-            activePlayers.add(player)
-            player.sendActionBar("Trowel mode enabled".fireFmt().mm())
-        }
+        val enabled = TrowelStateData.toggle(player)
+        val msg = if (enabled) "Trowel mode enabled" else "Trowel mode disabled"
+        player.sendActionBar(msg.fireFmt().mm())
     }
 }
