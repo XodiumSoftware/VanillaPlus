@@ -37,9 +37,13 @@ data class TrowelStateData(
          * Reads the TrowelStateData from the JSON file.
          * @return TrowelStateData read from the file or an empty instance if the file does not exist.
          */
-        private fun readState(): TrowelStateData =
-            if (Files.exists(filePath)) mapper.readValue(Files.readString(filePath), TrowelStateData::class.java)
-            else TrowelStateData()
+        private fun readState(): TrowelStateData {
+            return if (Files.exists(filePath)) {
+                mapper.readValue(Files.readString(filePath), TrowelStateData::class.java)
+            } else {
+                TrowelStateData()
+            }
+        }
 
         /**
          * Loads the TrowelStateData from the JSON file.
