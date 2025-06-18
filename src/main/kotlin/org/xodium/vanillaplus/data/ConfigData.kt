@@ -351,6 +351,7 @@ data class TabListModuleData(
  */
 data class TreesModuleData(
     var enabled: Boolean = true,
+    //TODO: see if needed.
     var copyBiomes: Boolean = false,
     var copyEntities: Boolean = false,
     var ignoreAirBlocks: Boolean = true,

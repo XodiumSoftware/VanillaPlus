@@ -19,6 +19,7 @@ object MaterialRegistry {
         }
     )
 
+    //TODO: make implementation to use this.
     val TREE_MASK: Set<Material> = setOf(
         // General
         Material.AIR,

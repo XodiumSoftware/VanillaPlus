@@ -5,6 +5,7 @@
 
 package org.xodium.vanillaplus.modules
 
+import net.sandrohc.schematic4j.schematic.Schematic
 import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.block.Block
@@ -24,17 +25,13 @@ class TreesModule : ModuleInterface {
     override fun enabled(): Boolean = ConfigManager.data.treesModule.enabled
 
     /** A map of sapling materials to a list of schematics. */
-    private val schematicCache: Map<Material, List<List<Triple<Int, Int, Int>>>> by lazy {
+    private val schematicCache: Map<Material, List<Schematic>> by lazy {
         ConfigManager.data.treesModule.saplingLink.mapValues { (_, dirs) ->
             dirs.flatMap { dir -> loadSchematics("/schematics/$dir") }
         }
     }
 
-    /**
-     * Handle the StructureGrowEvent.
-     * @param event The StructureGrowEvent.
-     */
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun on(event: StructureGrowEvent) {
         if (!enabled()) return
         event.location.block.takeIf {
@@ -49,12 +46,11 @@ class TreesModule : ModuleInterface {
      * @param resourceDir The directory containing the schematics.
      * @return A list of loaded schematics.
      */
-    private fun loadSchematics(resourceDir: String): List<List<Triple<Int, Int, Int>>> {
+    private fun loadSchematics(resourceDir: String): List<Schematic> {
         val url = javaClass.getResource(resourceDir) ?: error("Resource directory not found: $resourceDir")
         return try {
             FileSystems.newFileSystem(url.toURI(), mapOf("create" to false)).use { fs ->
-                val dirPath = fs.getPath(resourceDir.removePrefix("/"))
-                Files.walk(dirPath, 1)
+                Files.walk(fs.getPath(resourceDir.removePrefix("/")), 1)
                     .filter { Files.isRegularFile(it) }
                     .map { path -> Files.newInputStream(path).use { SchematicUtils.load(it) } }
                     .toList()
@@ -70,15 +66,14 @@ class TreesModule : ModuleInterface {
      * @return True if the schematic was pasted successfully.
      */
     private fun pasteSchematic(block: Block): Boolean {
-        val schematics = schematicCache[block.type] ?: return false
-        val schematic = schematics.random()
-
-        instance.server.scheduler.runTask(
-            instance,
-            Runnable {
-                block.type = Material.AIR
-                SchematicUtils.paste(block, schematic)
-            })
-        return true
+        return schematicCache[block.type]?.let { schematics ->
+            instance.server.scheduler.runTaskLater(
+                instance, Runnable {
+                    block.type = Material.AIR
+                    SchematicUtils.paste(block, schematics.random())
+                }, 1L
+            )
+            true
+        } ?: false
     }
 }
