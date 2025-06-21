@@ -8,7 +8,6 @@ package org.xodium.vanillaplus.modules
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
-import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.block.Block
 import org.bukkit.block.data.Directional
@@ -69,7 +68,9 @@ class TrowelModule : ModuleInterface {
         val target = event.clickedBlock
             ?.getRelative(event.blockFace)
             ?.takeIf(Block::isEmpty) ?: return
-        val blockData = Bukkit.createBlockData(blockType).also { if (it is Directional) it.facing = player.facing }
+        val blockData = instance.server.createBlockData(blockType).also {
+            if (it is Directional) it.facing = player.facing
+        }
 
         target.blockData = blockData
 
@@ -85,7 +86,7 @@ class TrowelModule : ModuleInterface {
      */
     private fun toggle(player: Player) {
         val enabled = TrowelStateData.toggle(player)
-        val msg = if (enabled) "Trowel mode enabled" else "Trowel mode disabled"
+        val msg = if (enabled) "Trowel: ${"<green>enabled"}" else "Trowel: ${"<red>disabled"}"
         player.sendActionBar(msg.fireFmt().mm())
     }
 }

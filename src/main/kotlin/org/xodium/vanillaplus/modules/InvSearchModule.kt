@@ -101,8 +101,7 @@ class InvSearchModule : ModuleInterface {
         val cooldownKey = NamespacedKey(instance, "invsearch_cooldown")
         val cooldownDuration = ConfigManager.data.invSearchModule.cooldown
         if (CooldownManager.isOnCooldown(player, cooldownKey, cooldownDuration)) {
-            player.sendActionBar("You must wait before using this again.".fireFmt().mm())
-            return
+            return player.sendActionBar("You must wait before using this again.".fireFmt().mm())
         }
         CooldownManager.setCooldown(player, cooldownKey, System.currentTimeMillis())
 
@@ -110,8 +109,7 @@ class InvSearchModule : ModuleInterface {
         val chests = Utils.findBlocksInRadius(player.location, ConfigManager.data.invSearchModule.searchRadius)
             .filter { ChestAccessManager.isAllowed(player, deniedChestKey, it) }
         if (chests.isEmpty()) {
-            player.sendActionBar("No usable chests found for ${"$material".roseFmt()}".fireFmt().mm())
-            return
+            return player.sendActionBar("No usable chests found for ${"$material".roseFmt()}".fireFmt().mm())
         }
 
         val seenDoubleChests = mutableSetOf<InventoryHolder?>()
@@ -124,8 +122,7 @@ class InvSearchModule : ModuleInterface {
             searchItemInContainers(material, inventory)
         }
         if (affectedChests.isEmpty()) {
-            player.sendActionBar("No chests contain ${"$material".roseFmt()}".fireFmt().mm())
-            return
+            return player.sendActionBar("No chests contain ${"$material".roseFmt()}".fireFmt().mm())
         }
 
         affectedChests.forEach { Utils.chestEffect(player, it) }
