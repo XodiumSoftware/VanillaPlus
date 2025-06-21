@@ -31,6 +31,7 @@ import org.bukkit.Sound as BukkitSound
  * @property motdModule Configuration for the `MotdModule`.
  * @property nicknameModule Configuration for the `NicknameModule`.
  * @property recipiesModule Configuration for the `RecipiesModule`.
+ * @property rtpModule Configuration for the `RtpModule`.
  * @property tabListModule Configuration for the `TabListModule`.
  * @property treesModule Configuration for the `TreesModule`.
  * @property trowelModule Configuration for the `TrowelModule`.
@@ -47,6 +48,7 @@ data class ConfigData(
     var motdModule: MotdModuleData = MotdModuleData(),
     var nicknameModule: NicknameModuleData = NicknameModuleData(),
     var recipiesModule: RecipiesModuleData = RecipiesModuleData(),
+    var rtpModule: RtpModuleData = RtpModuleData(),
     var tabListModule: TabListModuleData = TabListModuleData(),
     var treesModule: TreesModuleData = TreesModuleData(),
     var trowelModule: TrowelModuleData = TrowelModuleData(),
@@ -331,6 +333,14 @@ data class NicknameModuleData(
  * @property enabled Indicates whether the module is enabled. Default is true.
  */
 data class RecipiesModuleData(
+    var enabled: Boolean = true,
+)
+
+/**
+ * Data class representing the configuration for the `RtpModule`.
+ * @property enabled Indicates whether the module is enabled. Default is true.
+ */
+data class RtpModuleData(
     var enabled: Boolean = true,
 )
 
