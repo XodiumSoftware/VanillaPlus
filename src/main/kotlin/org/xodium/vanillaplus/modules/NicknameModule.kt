@@ -31,6 +31,7 @@ class NicknameModule : ModuleInterface {
         return listOf(
             Commands.literal("nickname")
                 .requires { it.sender.hasPermission(perms()[0]) }
+                .executes { ctx -> Utils.tryCatch(ctx) { nickname(it.sender as Player, "") } }
                 .then(
                     Commands.argument("name", StringArgumentType.greedyString())
                         .executes { ctx ->
