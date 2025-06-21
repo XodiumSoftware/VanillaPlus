@@ -11,9 +11,9 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.bukkit.entity.Player
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import java.io.IOException
-import java.nio.file.Files
-import java.nio.file.Path
 import java.util.*
+import kotlin.io.path.createDirectories
+import kotlin.io.path.writeText
 
 /**
  * Represents the state data for the Trowel module, containing a list of UUIDs.
@@ -21,50 +21,35 @@ import java.util.*
  * @property uuids List of UUIDs representing the state of the Trowel module. Defaults to an empty list.
  */
 data class TrowelStateData(
-    private val uuids: List<UUID> = emptyList()
+    val uuids: List<UUID> = emptyList()
 ) {
     companion object {
         private val mapper = jacksonObjectMapper()
             .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
-        private val filePath: Path = instance.dataFolder.toPath().resolve("trowel.json")
+        private val filePath = instance.dataFolder.toPath().resolve("trowel.json")
         private val cache = mutableSetOf<UUID>()
 
         init {
             load()
         }
 
-        /**
-         * Reads the TrowelStateData from the JSON file.
-         * @return TrowelStateData read from the file or an empty instance if the file does not exist.
-         */
-        private fun readState(): TrowelStateData {
-            return if (filePath.toFile().exists()) {
-                mapper.readValue(filePath.toFile(), TrowelStateData::class.java)
-            } else {
-                TrowelStateData()
+        private fun load() {
+            if (filePath.toFile().exists()) {
+                cache.clear()
+                cache.addAll(mapper.readValue(filePath.toFile(), TrowelStateData::class.java).uuids)
             }
         }
 
-        /** Loads the current state to the JSON file asynchronously. */
-        private fun load(): TrowelStateData {
-            val state = readState()
-            cache.clear()
-            cache.addAll(state.uuids)
-            return state
-        }
-
-        /** Saves the current state to the JSON file asynchronously. */
-        private fun save(state: TrowelStateData) {
+        private fun save() {
             instance.server.scheduler.runTaskAsynchronously(instance, Runnable {
                 try {
-                    Files.createDirectories(filePath.parent)
-                    Files.writeString(filePath, mapper.writeValueAsString(state))
+                    filePath.parent.createDirectories()
+                    filePath.writeText(mapper.writeValueAsString(TrowelStateData(cache.toList())))
                 } catch (e: IOException) {
-                    instance.logger.severe("Failed to write TrowelStateData to file: ${e.message}")
+                    instance.logger.severe("Failed to write ${TrowelStateData::class.simpleName} to file: ${e.message}")
                     e.printStackTrace()
                 }
             })
-
         }
 
         /**
@@ -82,7 +67,7 @@ data class TrowelStateData(
         fun toggle(player: Player): Boolean {
             val enabled = cache.add(player.uniqueId)
             if (!enabled) cache.remove(player.uniqueId)
-            save(TrowelStateData(cache.toList()))
+            save()
             return enabled
         }
     }

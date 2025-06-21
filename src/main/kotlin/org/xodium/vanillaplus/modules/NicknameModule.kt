@@ -10,9 +10,13 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.entity.Player
+import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
+import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.data.NicknameData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
@@ -45,6 +49,14 @@ class NicknameModule : ModuleInterface {
                 PermissionDefault.TRUE
             )
         )
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun on(event: PlayerJoinEvent) {
+        if (!enabled()) return
+        val nickname = NicknameData.get(event.player.uniqueId)
+        if (nickname != null) event.player.displayName(nickname.mm())
+        //TODO: update tablist playername.
     }
 
     /**
