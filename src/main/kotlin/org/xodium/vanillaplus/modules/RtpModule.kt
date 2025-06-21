@@ -109,6 +109,9 @@ class RtpModule : ModuleInterface {
      * @return True if the location is safe, false otherwise.
      */
     private fun isSafeLocation(world: World, x: Double, y: Double, z: Double): Boolean {
-        return world.getBlockAt(x.toInt(), y.toInt() - 1, z.toInt()).type.isSolid
+        val blockBelow = world.getBlockAt(x.toInt(), y.toInt() - 1, z.toInt())
+        val blockAtFeet = world.getBlockAt(x.toInt(), y.toInt(), z.toInt())
+        val blockAtHead = world.getBlockAt(x.toInt(), y.toInt() + 1, z.toInt())
+        return blockBelow.type.isSolid && blockAtFeet.type.isAir && blockAtHead.type.isAir
     }
 }
