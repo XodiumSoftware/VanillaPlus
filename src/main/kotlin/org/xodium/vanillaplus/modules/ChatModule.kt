@@ -7,7 +7,6 @@ package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.event.player.AsyncChatEvent
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.xodium.vanillaplus.interfaces.ModuleInterface
@@ -22,10 +21,8 @@ class ChatModule : ModuleInterface {
         if (!enabled()) return
         event.renderer { _, displayName, message, _ ->
             ConfigManager.data.chatModule.chatFormat.mm(
-                TagResolver.resolver(
-                    Placeholder.component("player", displayName),
-                    Placeholder.component("message", message),
-                )
+                Placeholder.component("player", displayName),
+                Placeholder.component("message", message),
             )
         }
     }
