@@ -71,8 +71,7 @@ class InvUnloadModule : ModuleInterface {
         val cooldownKey = NamespacedKey(instance, "invunload_cooldown")
         val cooldownDuration = ConfigManager.data.invUnloadModule.cooldown
         if (CooldownManager.isOnCooldown(player, cooldownKey, cooldownDuration)) {
-            player.sendActionBar("You must wait before using this again.".fireFmt().mm())
-            return
+            return player.sendActionBar("You must wait before using this again.".fireFmt().mm())
         }
         CooldownManager.setCooldown(player, cooldownKey, System.currentTimeMillis())
 
@@ -80,15 +79,13 @@ class InvUnloadModule : ModuleInterface {
         val endSlot = 35
         val chests = Utils.findBlocksInRadius(player.location, ConfigManager.data.invUnloadModule.radius)
         if (chests.isEmpty()) {
-            player.sendActionBar("No chests found nearby".fireFmt().mm())
-            return
+            return player.sendActionBar("No chests found nearby".fireFmt().mm())
         }
 
         val deniedChestKey = NamespacedKey(instance, "denied_chest")
         val useableChests = chests.filter { ChestAccessManager.isAllowed(player, deniedChestKey, it) }
         if (useableChests.isEmpty()) {
-            player.sendActionBar("No usable chests found nearby".fireFmt().mm())
-            return
+            return player.sendActionBar("No usable chests found nearby".fireFmt().mm())
         }
 
         val affectedChests = mutableListOf<Block>()
@@ -100,8 +97,7 @@ class InvUnloadModule : ModuleInterface {
         }
 
         if (affectedChests.isEmpty()) {
-            player.sendActionBar("No items were unloaded".fireFmt().mm())
-            return
+            return player.sendActionBar("No items were unloaded".fireFmt().mm())
         }
 
         player.sendActionBar("Inventory unloaded".mangoFmt().mm())
