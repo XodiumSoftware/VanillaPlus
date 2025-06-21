@@ -56,7 +56,6 @@ class NicknameModule : ModuleInterface {
         if (!enabled()) return
         val nickname = NicknameData.get(event.player.uniqueId)
         if (nickname != null) event.player.displayName(nickname.mm())
-        //TODO: update tablist playername.
     }
 
     /**
@@ -64,5 +63,8 @@ class NicknameModule : ModuleInterface {
      * @param player The player whose nickname is to be set.
      * @param name The new nickname for the player.
      */
-    private fun nickname(player: Player, name: String) = player.displayName(name.mm())
+    private fun nickname(player: Player, name: String) {
+        NicknameData.set(player.uniqueId, name)
+        player.displayName(name.mm())
+    }
 }
