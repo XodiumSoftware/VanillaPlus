@@ -19,7 +19,7 @@ class ChatModule : ModuleInterface {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun on(event: AsyncChatEvent) {
-        if (!enabled()) returna
+        if (!enabled()) return
         event.renderer { player, _, message, _ ->
             "<gold>[</gold><player><gold>]</gold> <message>".mangoFmt(true).mm(
                 Placeholder.component("player", player.displayName()),
