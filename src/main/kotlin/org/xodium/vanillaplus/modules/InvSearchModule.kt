@@ -6,9 +6,7 @@
 package org.xodium.vanillaplus.modules
 
 import com.mojang.brigadier.arguments.StringArgumentType
-import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
-import com.mojang.brigadier.suggestion.SuggestionProvider
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.Material
@@ -24,6 +22,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.ChestAccessManager
 import org.xodium.vanillaplus.managers.ConfigManager
@@ -39,26 +38,27 @@ import java.util.concurrent.CompletableFuture
 class InvSearchModule : ModuleInterface {
     override fun enabled(): Boolean = ConfigManager.data.invSearchModule.enabled
 
-    @Suppress("UnstableApiUsage")
-    private val materialSuggestionProvider = SuggestionProvider<CommandSourceStack> { ctx, builder ->
-        Material.entries
-            .map { it.name.lowercase() }
-            .filter { it.startsWith(builder.remaining.lowercase()) }
-            .forEach { builder.suggest(it) }
-        CompletableFuture.completedFuture(builder.build())
-    }
-
-    @Suppress("UnstableApiUsage")
-    override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
-        return listOf(
-            Commands.literal("invsearch")
-                .requires { it.sender.hasPermission(perms()[0]) }
-                .then(
-                    Commands.argument("material", StringArgumentType.word())
-                        .suggests(materialSuggestionProvider)
-                        .executes { ctx -> Utils.tryCatch(ctx) { handleSearch(ctx) } }
-                )
-                .executes { ctx -> Utils.tryCatch(ctx) { handleSearch(ctx) } }
+    override fun cmds(): CommandData? {
+        return CommandData(
+            listOf(
+                @Suppress("UnstableApiUsage")
+                Commands.literal("invsearch")
+                    .requires { it.sender.hasPermission(perms()[0]) }
+                    .then(
+                        Commands.argument("material", StringArgumentType.word())
+                            .suggests { ctx, builder ->
+                                Material.entries
+                                    .map { it.name.lowercase() }
+                                    .filter { it.startsWith(builder.remaining.lowercase()) }
+                                    .forEach { builder.suggest(it) }
+                                CompletableFuture.completedFuture(builder.build())
+                            }
+                            .executes { ctx -> Utils.tryCatch(ctx) { handleSearch(ctx) } }
+                    )
+                    .executes { ctx -> Utils.tryCatch(ctx) { handleSearch(ctx) } }
+            ),
+            "Allows players to search inventories for specific materials.",
+            listOf("searchinv", "invs")
         )
     }
 

@@ -5,13 +5,12 @@
 
 package org.xodium.vanillaplus.modules
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder
-import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
@@ -24,11 +23,16 @@ class AutoRestartModule : ModuleInterface {
     override fun enabled(): Boolean = ConfigManager.data.autoRestartModule.enabled
 
     @Suppress("UnstableApiUsage")
-    override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
-        return listOf(
-            Commands.literal("autorestart")
-                .requires { it.sender.hasPermission(perms()[0]) }
-                .executes { ctx -> Utils.tryCatch(ctx) { countdown() } })
+    override fun cmds(): CommandData? {
+        return CommandData(
+            listOf(
+                Commands.literal("autorestart")
+                    .requires { it.sender.hasPermission(perms()[0]) }
+                    .executes { ctx -> Utils.tryCatch(ctx) { countdown() } }
+            ),
+            "Triggers a countdown for the server restart.",
+            emptyList()
+        )
     }
 
     override fun perms(): List<Permission> {

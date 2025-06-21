@@ -5,8 +5,6 @@
 
 package org.xodium.vanillaplus.modules
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder
-import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import net.kyori.adventure.sound.Sound
 import org.bukkit.NamespacedKey
@@ -22,6 +20,7 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.ChestAccessManager
 import org.xodium.vanillaplus.managers.ConfigManager
@@ -36,11 +35,15 @@ class InvUnloadModule : ModuleInterface {
     override fun enabled(): Boolean = ConfigManager.data.invUnloadModule.enabled
 
     @Suppress("UnstableApiUsage")
-    override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
-        return listOf(
-            Commands.literal("invunload")
-                .requires { it.sender.hasPermission(perms()[0]) }
-                .executes { ctx -> Utils.tryCatch(ctx) { unload(it.sender as Player) } }
+    override fun cmds(): CommandData? {
+        return CommandData(
+            listOf(
+                Commands.literal("invunload")
+                    .requires { it.sender.hasPermission(perms()[0]) }
+                    .executes { ctx -> Utils.tryCatch(ctx) { unload(it.sender as Player) } }
+            ),
+            "Allows players to unload their inventory into nearby chests.",
+            listOf("unloadinv", "invu")
         )
     }
 
