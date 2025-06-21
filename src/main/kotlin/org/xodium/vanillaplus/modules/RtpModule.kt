@@ -80,7 +80,7 @@ class RtpModule : ModuleInterface {
         var y: Double
         var tries = 0
 
-        val maxTries = 10
+        val maxTries = ConfigManager.data.rtpModule.maxTries
 
         do {
             x = centerX + Random.nextDouble(-radius, radius)
@@ -96,7 +96,7 @@ class RtpModule : ModuleInterface {
         instance.server.scheduler.runTaskLater(
             instance,
             Runnable { player.teleport(Location(world, x, y, z)) },
-            1L
+            ConfigManager.data.rtpModule.delay
         )
     }
 
