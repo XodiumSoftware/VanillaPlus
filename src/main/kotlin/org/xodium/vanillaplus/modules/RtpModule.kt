@@ -11,6 +11,9 @@ import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Player
+import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
+import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -42,6 +45,17 @@ class RtpModule : ModuleInterface {
         )
     }
 
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun on(event: PlayerJoinEvent) {
+        if (!enabled()) return
+        val player = event.player
+        if (!player.hasPlayedBefore()) rtp(player)
+    }
+
+    /**
+     * Teleports the player to a random location within the world border.
+     * @param player The player to teleport.
+     */
     private fun rtp(player: Player) {
         val world = player.world
         val border = world.worldBorder
@@ -72,6 +86,14 @@ class RtpModule : ModuleInterface {
         player.teleport(Location(world, x, y, z))
     }
 
+    /**
+     * Checks if the location is safe for teleportation.
+     * @param world The world to check.
+     * @param x The x-coordinate of the location.
+     * @param y The y-coordinate of the location.
+     * @param z The z-coordinate of the location.
+     * @return True if the location is safe, false otherwise.
+     */
     private fun isSafeLocation(world: World, x: Double, y: Double, z: Double): Boolean {
         return world.getBlockAt(x.toInt(), y.toInt() - 1, z.toInt()).type.isSolid
     }
