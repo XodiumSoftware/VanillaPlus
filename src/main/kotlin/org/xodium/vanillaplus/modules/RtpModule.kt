@@ -8,9 +8,9 @@ package org.xodium.vanillaplus.modules
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
-import org.bukkit.Location
-import org.bukkit.NamespacedKey
-import org.bukkit.World
+import net.kyori.adventure.key.Key
+import net.kyori.adventure.sound.Sound
+import org.bukkit.*
 import org.bukkit.entity.Player
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
@@ -78,14 +78,12 @@ class RtpModule : ModuleInterface {
         } while (!isSafeLocation(world, x, y, z) && tries < maxTries)
 
         if (tries >= maxTries) {
-            player.sendActionBar("Could not find a safe location to teleport".fireFmt().mm())
+            cancelledEffects(player, "Failed to find a safe location after $maxTries tries")
             CooldownManager.setCooldown(player, rtpCooldownKey, 0)
             return
         }
 
         val initialLocation = player.location
-
-        //TODO: add cool effects + sounds.
         instance.server.scheduler.runTaskLater(
             instance,
             Runnable {
@@ -93,16 +91,51 @@ class RtpModule : ModuleInterface {
                     player.location.blockY != initialLocation.blockY ||
                     player.location.blockZ != initialLocation.blockZ
                 ) {
-                    player.sendActionBar("You moved! Teleportation cancelled.".fireFmt().mm())
+                    cancelledEffects(player, "You moved! Teleportation cancelled")
                     CooldownManager.setCooldown(player, rtpCooldownKey, 0)
                     return@Runnable
                 }
+                beforeEffects(player)
                 player.teleport(Location(world, x, y, z))
+                afterEffects(player)
             },
             ConfigManager.data.rtpModule.delay
         )
     }
 
+    /**
+     * Plays the cancelled teleportation effects.
+     * @param player The player to apply effects to.
+     * @param msg The message to display to the player.
+     */
+    private fun cancelledEffects(player: Player, msg: String) {
+        player.sendActionBar(msg.fireFmt().mm())
+        player.playSound(Sound.sound(Key.key("block.beacon.deactivate"), Sound.Source.PLAYER, 1f, 1f))
+    }
+
+    /**
+     * Plays the before teleportation effects.
+     * @param player The player to apply effects to.
+     */
+    private fun beforeEffects(player: Player) {
+        player.playEffect(EntityEffect.TELEPORT_ENDER)
+        player.playSound(Sound.sound(Key.key("block.beacon.activate"), Sound.Source.PLAYER, 1f, 1f))
+    }
+
+    /**
+     * Plays the after teleportation effects.
+     * @param player The player to apply effects to.
+     */
+    private fun afterEffects(player: Player) {
+        player.playSound(Sound.sound(Key.key("entity.enderman.teleport"), Sound.Source.PLAYER, 1f, 1f))
+        player.world.spawnParticle(Particle.PORTAL, player.location.add(0.0, 0.5, 0.0), 50, 0.5, 1.0, 0.5, 0.1)
+    }
+
+    /**
+     * Checks if the player is on cooldown for the RTP command.
+     * @param player The player to check.
+     * @return True if the player is on cooldown, false otherwise.
+     */
     private fun cooldown(player: Player): Boolean {
         val cooldownDuration = ConfigManager.data.rtpModule.cooldown.seconds.inWholeMilliseconds
         if (CooldownManager.isOnCooldown(player, rtpCooldownKey, cooldownDuration)) {
