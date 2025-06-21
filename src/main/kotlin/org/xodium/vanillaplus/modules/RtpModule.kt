@@ -73,11 +73,21 @@ class RtpModule : ModuleInterface {
             return player.sendActionBar("Could not find a safe location to teleport".fireFmt().mm())
         }
 
-        //TODO: add check if player moved.
+        val initialLocation = player.location
+
         //TODO: add cool effects + sounds.
         instance.server.scheduler.runTaskLater(
             instance,
-            Runnable { player.teleport(Location(world, x, y, z)) },
+            Runnable {
+                if (player.location.blockX != initialLocation.blockX ||
+                    player.location.blockY != initialLocation.blockY ||
+                    player.location.blockZ != initialLocation.blockZ
+                ) {
+                    player.sendActionBar("You moved! Teleportation cancelled.".fireFmt().mm())
+                    return@Runnable
+                }
+                player.teleport(Location(world, x, y, z))
+            },
             ConfigManager.data.rtpModule.delay
         )
     }
