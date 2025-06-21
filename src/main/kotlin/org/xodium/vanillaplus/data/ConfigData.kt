@@ -22,6 +22,7 @@ import org.bukkit.Sound as BukkitSound
  * Data class representing the configuration.
  * @property autoRestartModule Configuration for the `AutoRestartModule`.
  * @property booksModule Configuration for the `BooksModule`.
+ * @property chatModule Configuration for the `ChatModule`.
  * @property dimensionsModule Configuration for the `DimensionsModule`.
  * @property doorsModule Configuration for the `DoorsModule`.
  * @property invSearchModule Configuration for the `InvSearchModule`.
@@ -36,6 +37,7 @@ import org.bukkit.Sound as BukkitSound
 data class ConfigData(
     var autoRestartModule: AutoRestartModuleData = AutoRestartModuleData(),
     var booksModule: BooksModuleData = BooksModuleData(),
+    var chatModule: ChatModuleData = ChatModuleData(),
     var dimensionsModule: DimensionsModuleData = DimensionsModuleData(),
     var doorsModule: DoorsModuleData = DoorsModuleData(),
     var invSearchModule: InvSearchModuleData = InvSearchModuleData(),
@@ -182,6 +184,14 @@ data class BooksModuleData(
             )
         )
     ),
+)
+
+/**
+ * Data class representing the configuration for the `ChatModule`.
+ * @property enabled Indicates whether the module is enabled. Default is true.
+ */
+data class ChatModuleData(
+    var enabled: Boolean = true,
 )
 
 /**
