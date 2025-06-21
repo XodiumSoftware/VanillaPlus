@@ -13,6 +13,7 @@ import org.bukkit.World
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
+import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
@@ -48,8 +49,17 @@ class RtpModule : ModuleInterface {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
         if (!enabled()) return
+
         val player = event.player
         if (!player.hasPlayedBefore()) rtp(player)
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun on(event: PlayerDeathEvent) {
+        if (!enabled()) return
+
+        val player = event.entity
+        if (player.respawnLocation == null) rtp(player)
     }
 
     /**
@@ -83,7 +93,11 @@ class RtpModule : ModuleInterface {
             return player.sendActionBar("Could not find a safe location to teleport".fireFmt().mm())
         }
 
-        player.teleport(Location(world, x, y, z))
+        instance.server.scheduler.runTaskLater(
+            instance,
+            Runnable { player.teleport(Location(world, x, y, z)) },
+            1L
+        )
     }
 
     /**
