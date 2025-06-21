@@ -31,6 +31,7 @@ import org.bukkit.Sound as BukkitSound
  * @property motdModule Configuration for the `MotdModule`.
  * @property nicknameModule Configuration for the `NicknameModule`.
  * @property recipiesModule Configuration for the `RecipiesModule`.
+ * @property rtpModule Configuration for the `RtpModule`.
  * @property tabListModule Configuration for the `TabListModule`.
  * @property treesModule Configuration for the `TreesModule`.
  * @property trowelModule Configuration for the `TrowelModule`.
@@ -47,6 +48,7 @@ data class ConfigData(
     var motdModule: MotdModuleData = MotdModuleData(),
     var nicknameModule: NicknameModuleData = NicknameModuleData(),
     var recipiesModule: RecipiesModuleData = RecipiesModuleData(),
+    var rtpModule: RtpModuleData = RtpModuleData(),
     var tabListModule: TabListModuleData = TabListModuleData(),
     var treesModule: TreesModuleData = TreesModuleData(),
     var trowelModule: TrowelModuleData = TrowelModuleData(),
@@ -332,6 +334,22 @@ data class NicknameModuleData(
  */
 data class RecipiesModuleData(
     var enabled: Boolean = true,
+)
+
+/**
+ * Data class representing the configuration for the `RtpModule`.
+ * @property enabled Indicates whether the module is enabled. Default is true.
+ * @property delay The delay before the RTP operation starts, in milliseconds. Default is 5 second (5000 milliseconds).
+ * @property period The period at which the RTP operation runs, in milliseconds. Default is 1 second (1000 milliseconds).
+ * @property maxTries The maximum number of attempts to find a valid RTP location. Default is 10.
+ * @property cooldown The cooldown period between RTP operations, in milliseconds. Default is 10 seconds (10000 milliseconds).
+ */
+data class RtpModuleData(
+    var enabled: Boolean = true,
+    var delay: Long = TimeUtils.seconds(5),
+    var period: Long = TimeUtils.seconds(1),
+    var maxTries: Int = 10,
+    var cooldown: Long = TimeUtils.seconds(10),
 )
 
 /**

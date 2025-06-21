@@ -25,6 +25,7 @@ object ModuleManager {
     val motdModule: MotdModule = MotdModule()
     val nicknameModule: NicknameModule = NicknameModule()
     val recipiesModule: RecipiesModule = RecipiesModule()
+    val rtpModule: RtpModule = RtpModule()
     val tabListModule: TabListModule = TabListModule()
     val treesModule: TreesModule = TreesModule()
     val trowelModule: TrowelModule = TrowelModule()
@@ -41,6 +42,7 @@ object ModuleManager {
         motdModule,
         nicknameModule,
         recipiesModule,
+        rtpModule,
         tabListModule,
         treesModule,
         trowelModule,

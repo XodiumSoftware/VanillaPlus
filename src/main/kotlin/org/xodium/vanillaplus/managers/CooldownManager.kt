@@ -17,7 +17,7 @@ object CooldownManager {
      * @param key The NamespacedKey for the cooldown.
      * @return The timestamp, or 0L if not set.
      */
-    private fun getCooldown(player: Player, key: NamespacedKey): Long {
+    fun getCooldown(player: Player, key: NamespacedKey): Long {
         return player.persistentDataContainer.get(key, PersistentDataType.LONG) ?: 0L
     }
 
