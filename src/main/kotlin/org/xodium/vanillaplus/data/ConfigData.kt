@@ -335,7 +335,7 @@ data class TabListModuleData(
     var initDelay: Long = 0L,
     var interval: Long = TimeUtils.seconds(10),
     var header: List<String> = listOf(
-        "${"]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt()}   ${"⚡ IllyriaRPG 1.21.5 ⚡".fireFmt()}   ${
+        "${"]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt()}   ${"⚡ IllyriaRPG 1.21.6 ⚡".fireFmt()}   ${
             "]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)
         }",
         ""
