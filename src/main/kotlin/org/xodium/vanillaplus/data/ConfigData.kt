@@ -191,9 +191,11 @@ data class BooksModuleData(
 /**
  * Data class representing the configuration for the `ChatModule`.
  * @property enabled Indicates whether the module is enabled. Default is true.
+ * @property chatFormat A string representing the format of the chat messages. Default is "<player> <reset>${ "›".mangoFmt(true)} <message>".
  */
 data class ChatModuleData(
     var enabled: Boolean = true,
+    var chatFormat: String = "<player> <reset>${"›".mangoFmt(true)} <message>",
 )
 
 /**

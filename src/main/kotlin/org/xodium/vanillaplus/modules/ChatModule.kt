@@ -6,12 +6,13 @@
 package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.event.player.AsyncChatEvent
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 
 class ChatModule : ModuleInterface {
     override fun enabled(): Boolean = ConfigManager.data.chatModule.enabled
@@ -19,8 +20,13 @@ class ChatModule : ModuleInterface {
     @EventHandler(priority = EventPriority.HIGHEST)
     fun on(event: AsyncChatEvent) {
         if (!enabled()) return
-        event.renderer { player, _, message, _ ->
-            player.displayName().append(" ${"›".mangoFmt(true)} $message".mm())
+        event.renderer { _, displayName, message, _ ->
+            ConfigManager.data.chatModule.chatFormat.mm(
+                TagResolver.resolver(
+                    Placeholder.component("player", displayName),
+                    Placeholder.component("message", message),
+                )
+            )
         }
     }
 }
