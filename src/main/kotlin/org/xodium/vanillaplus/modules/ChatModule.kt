@@ -6,7 +6,6 @@
 package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.event.player.AsyncChatEvent
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.xodium.vanillaplus.interfaces.ModuleInterface
@@ -21,10 +20,7 @@ class ChatModule : ModuleInterface {
     fun on(event: AsyncChatEvent) {
         if (!enabled()) return
         event.renderer { player, _, message, _ ->
-            "<gold>[</gold><player><gold>]</gold> <message>".mangoFmt(true).mm(
-                Placeholder.component("player", player.displayName()),
-                Placeholder.component("message", message)
-            )
+            "${player.displayName()} ${"›".mangoFmt(true)} $message".mm()
         }
     }
 }
