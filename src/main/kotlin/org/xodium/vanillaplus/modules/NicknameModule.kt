@@ -53,7 +53,7 @@ class NicknameModule : ModuleInterface {
         )
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
         if (!enabled()) return
         val nickname = NicknameData.get(event.player.uniqueId)
