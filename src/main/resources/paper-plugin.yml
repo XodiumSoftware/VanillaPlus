@@ -2,7 +2,7 @@ name: VanillaPlus
 version: ${version}
 main: org.xodium.vanillaplus.VanillaPlus
 description: ${description}
-api-version: 1.21.5
+api-version: 1.21.6
 author: ${author}
 dependencies:
   server:

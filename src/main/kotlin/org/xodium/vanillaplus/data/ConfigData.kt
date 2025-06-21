@@ -249,6 +249,7 @@ data class InvSearchModuleData(
 /**
  * Data class representing the configuration for the `InvUnloadModule`.
  * @property enabled Indicates whether the module is enabled. Default is true.
+ * @property radius The radius within which to unload inventories, in blocks. Default is 5 blocks.
  * @property cooldown The cooldown period for unloading inventories, in milliseconds. Default is 1 second (1000 milliseconds).
  * @property matchEnchantments Indicates whether to match enchantments when unloading inventories. Default is true.
  * @property matchEnchantmentsOnBooks Indicates whether to match enchantments on books when unloading inventories. Default is true.
@@ -256,6 +257,7 @@ data class InvSearchModuleData(
  */
 data class InvUnloadModuleData(
     var enabled: Boolean = true,
+    var radius: Int = 5,
     var cooldown: Long = 1L * 1000L,
     var matchEnchantments: Boolean = true,
     var matchEnchantmentsOnBooks: Boolean = true,

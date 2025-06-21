@@ -10,16 +10,16 @@ import java.net.URI
 plugins {
     id("java")
     kotlin("jvm") version "2.1.21"
-    id("com.gradleup.shadow") version "9.0.0-beta16"
+    id("com.gradleup.shadow") version "9.0.0-beta17"
     id("de.undercouch.download") version "5.6.0"
 }
 
 group = "org.xodium.vanillaplus"
-version = "1.11.1"
+version = "1.12.0"
 description = "Minecraft plugin that enhances the base gameplay."
 
 var author: String = "Xodium"
-var apiVersion: String = "1.21.5"
+var apiVersion: String = "1.21.6"
 
 repositories {
     mavenCentral()
@@ -29,7 +29,7 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:$apiVersion-R0.1-SNAPSHOT")
-    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.14") //TODO("Move away from WorldEdit")
+    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.15-SNAPSHOT") //TODO("Move away from WorldEdit")
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.1")
