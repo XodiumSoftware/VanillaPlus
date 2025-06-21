@@ -65,8 +65,13 @@ class NicknameModule : ModuleInterface {
      * @param name The new nickname for the player.
      */
     private fun nickname(player: Player, name: String) {
-        NicknameData.set(player.uniqueId, name)
-        player.displayName(name.mm())
+        if (name.isBlank()) {
+            NicknameData.remove(player.uniqueId)
+            player.displayName(player.name.mm())
+        } else {
+            NicknameData.set(player.uniqueId, name)
+            player.displayName(name.mm())
+        }
         ModuleManager.tabListModule.updatePlayerDisplayName(player)
     }
 }

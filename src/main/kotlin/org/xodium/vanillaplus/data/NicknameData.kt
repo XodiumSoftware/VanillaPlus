@@ -62,5 +62,14 @@ data class NicknameData(
             cache[uuid] = nickname
             save()
         }
+
+        /**
+         * Removes the nickname for a given UUID and saves the changes.
+         * @param uuid The UUID of the player.
+         */
+        fun remove(uuid: UUID) {
+            cache.remove(uuid)
+            save()
+        }
     }
 }
