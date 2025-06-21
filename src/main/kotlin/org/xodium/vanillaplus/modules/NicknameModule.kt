@@ -27,7 +27,7 @@ class NicknameModule : ModuleInterface {
             Commands.literal("nickname")
                 .requires { it.sender.hasPermission(perms()[0]) }
                 .then(
-                    Commands.argument("name", StringArgumentType.word())
+                    Commands.argument("name", StringArgumentType.greedyString())
                         .executes { ctx ->
                             Utils.tryCatch(ctx) {
                                 nickname(it.sender as Player, StringArgumentType.getString(ctx, "name"))

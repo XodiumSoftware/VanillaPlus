@@ -38,17 +38,14 @@ data class TrowelStateData(
          * @return TrowelStateData read from the file or an empty instance if the file does not exist.
          */
         private fun readState(): TrowelStateData {
-            return if (Files.exists(filePath)) {
-                mapper.readValue(Files.readString(filePath), TrowelStateData::class.java)
+            return if (filePath.toFile().exists()) {
+                mapper.readValue(filePath.toFile(), TrowelStateData::class.java)
             } else {
                 TrowelStateData()
             }
         }
 
-        /**
-         * Loads the TrowelStateData from the JSON file.
-         * @return TrowelStateData loaded from the file or an empty instance if the file does not exist.
-         */
+        /** Loads the current state to the JSON file asynchronously. */
         private fun load(): TrowelStateData {
             val state = readState()
             cache.clear()
@@ -56,11 +53,8 @@ data class TrowelStateData(
             return state
         }
 
-        /**
-         * Writes the TrowelStateData to the JSON file in ASync.
-         * @param state The TrowelStateData to write to the file.
-         */
-        private fun write(state: TrowelStateData) {
+        /** Saves the current state to the JSON file asynchronously. */
+        private fun save(state: TrowelStateData) {
             instance.server.scheduler.runTaskAsynchronously(instance, Runnable {
                 try {
                     Files.createDirectories(filePath.parent)
@@ -88,7 +82,7 @@ data class TrowelStateData(
         fun toggle(player: Player): Boolean {
             val enabled = cache.add(player.uniqueId)
             if (!enabled) cache.remove(player.uniqueId)
-            write(TrowelStateData(cache.toList()))
+            save(TrowelStateData(cache.toList()))
             return enabled
         }
     }
