@@ -86,7 +86,7 @@ class TrowelModule : ModuleInterface {
      */
     private fun toggle(player: Player) {
         val enabled = TrowelStateData.toggle(player)
-        val msg = if (enabled) "Trowel: ${"<green>enabled"}" else "Trowel: ${"<red>disabled"}"
+        val msg = if (enabled) "Trowel: <green>enabled" else "Trowel: <red>disabled"
         player.sendActionBar(msg.fireFmt().mm())
     }
 }
