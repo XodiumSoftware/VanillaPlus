@@ -64,13 +64,13 @@ class TabListModule : ModuleInterface {
      * Update the player's display name in the tab list.
      * @param player the player to update.
      */
-    private fun updatePlayerDisplayName(player: Player) = player.playerListName(player.displayName())
+    fun updatePlayerDisplayName(player: Player) = player.playerListName(player.displayName())
 
     /**
      * Update the tab list for the given audience.
      * @param audience the audience to update the tab list for.
      */
-    private fun updateTabList(audience: Audience) {
+    fun updateTabList(audience: Audience) {
         val joinConfig = JoinConfiguration.separator(Component.newline())
         audience.sendPlayerListHeaderAndFooter(
             Component.join(joinConfig, ConfigManager.data.tabListModule.header.mm()),

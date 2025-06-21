@@ -19,6 +19,7 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.NicknameData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.ConfigManager
+import org.xodium.vanillaplus.managers.ModuleManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.Utils
 
@@ -66,5 +67,6 @@ class NicknameModule : ModuleInterface {
     private fun nickname(player: Player, name: String) {
         NicknameData.set(player.uniqueId, name)
         player.displayName(name.mm())
+        ModuleManager.tabListModule.updatePlayerDisplayName(player)
     }
 }
