@@ -93,6 +93,8 @@ class RtpModule : ModuleInterface {
             return player.sendActionBar("Could not find a safe location to teleport".fireFmt().mm())
         }
 
+        //TODO: add check if player moved.
+        //TODO: add cool effects + sounds.
         instance.server.scheduler.runTaskLater(
             instance,
             Runnable { player.teleport(Location(world, x, y, z)) },
