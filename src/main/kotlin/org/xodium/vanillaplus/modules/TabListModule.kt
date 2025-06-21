@@ -64,7 +64,7 @@ class TabListModule : ModuleInterface {
      * Update the player's display name in the tab list.
      * @param player the player to update.
      */
-    private fun updatePlayerDisplayName(player: Player) = player.playerListName(player.displayName())
+    fun updatePlayerDisplayName(player: Player): Unit = player.playerListName(player.displayName())
 
     /**
      * Update the tab list for the given audience.
