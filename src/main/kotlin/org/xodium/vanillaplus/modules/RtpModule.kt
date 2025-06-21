@@ -11,10 +11,6 @@ import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Player
-import org.bukkit.event.EventHandler
-import org.bukkit.event.EventPriority
-import org.bukkit.event.entity.PlayerDeathEvent
-import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -44,22 +40,6 @@ class RtpModule : ModuleInterface {
                 PermissionDefault.TRUE
             )
         )
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    fun on(event: PlayerJoinEvent) {
-        if (!enabled()) return
-
-        val player = event.player
-        if (!player.hasPlayedBefore()) rtp(player)
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    fun on(event: PlayerDeathEvent) {
-        if (!enabled()) return
-
-        val player = event.entity
-        if (player.respawnLocation == null) rtp(player)
     }
 
     /**
