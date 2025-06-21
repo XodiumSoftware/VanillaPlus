@@ -20,7 +20,7 @@ class ChatModule : ModuleInterface {
     fun on(event: AsyncChatEvent) {
         if (!enabled()) return
         event.renderer { player, _, message, _ ->
-            "${player.displayName()} ${"›".mangoFmt(true)} $message".mm()
+            player.displayName().append(" ${"›".mangoFmt(true)} $message".mm())
         }
     }
 }
