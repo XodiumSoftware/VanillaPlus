@@ -32,7 +32,7 @@ class JoinQuitModule : ModuleInterface {
         val player = event.player
         instance.server.onlinePlayers
             .filter { it.uniqueId != player.uniqueId }
-            .forEach { it.sendMessage("<gold>[<green>+<gold>]<reset> ${player.displayName()}".mm()) }
+            .forEach { it.sendMessage("<gold>[<green>+<gold>]<reset> ".mm().append(player.displayName())) }
 
         val faceLines = player.faceToMM().lines()
         var imageIndex = 1
@@ -61,6 +61,6 @@ class JoinQuitModule : ModuleInterface {
         val player = event.player
         instance.server.onlinePlayers
             .filter { it.uniqueId != player.uniqueId }
-            .forEach { it.sendMessage("<gold>[<red>-<gold>]<reset> ${player.displayName()}".mm()) }
+            .forEach { it.sendMessage("<gold>[<red>-<gold>]<reset> ".mm().append(player.displayName())) }
     }
 }
