@@ -9,6 +9,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.Location
+import org.bukkit.NamespacedKey
 import org.bukkit.World
 import org.bukkit.entity.Player
 import org.bukkit.permissions.Permission
@@ -16,10 +17,13 @@ import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.ConfigManager
+import org.xodium.vanillaplus.managers.CooldownManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
+import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.Utils
 import kotlin.random.Random
+import kotlin.time.Duration.Companion.seconds
 
 class RtpModule : ModuleInterface {
     override fun enabled(): Boolean = ConfigManager.data.rtpModule.enabled
@@ -42,11 +46,15 @@ class RtpModule : ModuleInterface {
         )
     }
 
+    private val rtpCooldownKey = NamespacedKey(instance, "rtp_cooldown")
+
     /**
      * Teleports the player to a random location within the world border.
      * @param player The player to teleport.
      */
     private fun rtp(player: Player) {
+        if (cooldown(player)) return
+
         val world = player.world
         val border = world.worldBorder
         val margin = 16.0
@@ -70,7 +78,9 @@ class RtpModule : ModuleInterface {
         } while (!isSafeLocation(world, x, y, z) && tries < maxTries)
 
         if (tries >= maxTries) {
-            return player.sendActionBar("Could not find a safe location to teleport".fireFmt().mm())
+            player.sendActionBar("Could not find a safe location to teleport".fireFmt().mm())
+            CooldownManager.setCooldown(player, rtpCooldownKey, 0)
+            return
         }
 
         val initialLocation = player.location
@@ -84,12 +94,28 @@ class RtpModule : ModuleInterface {
                     player.location.blockZ != initialLocation.blockZ
                 ) {
                     player.sendActionBar("You moved! Teleportation cancelled.".fireFmt().mm())
+                    CooldownManager.setCooldown(player, rtpCooldownKey, 0)
                     return@Runnable
                 }
                 player.teleport(Location(world, x, y, z))
             },
             ConfigManager.data.rtpModule.delay
         )
+    }
+
+    private fun cooldown(player: Player): Boolean {
+        val cooldownDuration = ConfigManager.data.rtpModule.cooldown.seconds.inWholeMilliseconds
+        if (CooldownManager.isOnCooldown(player, rtpCooldownKey, cooldownDuration)) {
+            val lastUsed = CooldownManager.getCooldown(player, rtpCooldownKey)
+            val remaining = (lastUsed + cooldownDuration - System.currentTimeMillis()) / 1000
+            player.sendActionBar(
+                "You must wait ${remaining.toString().mangoFmt()}s before using RTP again.".fireFmt().mm()
+            )
+            return true
+        }
+
+        CooldownManager.setCooldown(player, rtpCooldownKey, System.currentTimeMillis())
+        return false
     }
 
     /**
