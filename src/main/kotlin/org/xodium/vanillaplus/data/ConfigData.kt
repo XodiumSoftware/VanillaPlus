@@ -22,12 +22,14 @@ import org.bukkit.Sound as BukkitSound
  * Data class representing the configuration.
  * @property autoRestartModule Configuration for the `AutoRestartModule`.
  * @property booksModule Configuration for the `BooksModule`.
+ * @property chatModule Configuration for the `ChatModule`.
  * @property dimensionsModule Configuration for the `DimensionsModule`.
  * @property doorsModule Configuration for the `DoorsModule`.
  * @property invSearchModule Configuration for the `InvSearchModule`.
  * @property invUnloadModule Configuration for the `InvUnloadModule`.
  * @property joinQuitModule Configuration for the `JoinQuitModule`.
  * @property motdModule Configuration for the `MotdModule`.
+ * @property nicknameModule Configuration for the `NicknameModule`.
  * @property recipiesModule Configuration for the `RecipiesModule`.
  * @property tabListModule Configuration for the `TabListModule`.
  * @property treesModule Configuration for the `TreesModule`.
@@ -36,12 +38,14 @@ import org.bukkit.Sound as BukkitSound
 data class ConfigData(
     var autoRestartModule: AutoRestartModuleData = AutoRestartModuleData(),
     var booksModule: BooksModuleData = BooksModuleData(),
+    var chatModule: ChatModuleData = ChatModuleData(),
     var dimensionsModule: DimensionsModuleData = DimensionsModuleData(),
     var doorsModule: DoorsModuleData = DoorsModuleData(),
     var invSearchModule: InvSearchModuleData = InvSearchModuleData(),
     var invUnloadModule: InvUnloadModuleData = InvUnloadModuleData(),
     var joinQuitModule: JoinQuitModuleData = JoinQuitModuleData(),
     var motdModule: MotdModuleData = MotdModuleData(),
+    var nicknameModule: NicknameModuleData = NicknameModuleData(),
     var recipiesModule: RecipiesModuleData = RecipiesModuleData(),
     var tabListModule: TabListModuleData = TabListModuleData(),
     var treesModule: TreesModuleData = TreesModuleData(),
@@ -185,6 +189,16 @@ data class BooksModuleData(
 )
 
 /**
+ * Data class representing the configuration for the `ChatModule`.
+ * @property enabled Indicates whether the module is enabled. Default is true.
+ * @property chatFormat A string representing the format of the chat messages. Default is "<player> <reset>${ "›".mangoFmt(true)} <message>".
+ */
+data class ChatModuleData(
+    var enabled: Boolean = true,
+    var chatFormat: String = "<player> <reset>${"›".mangoFmt(true)} <message>",
+)
+
+/**
  * Data class representing the configuration for the `DimensionsModule`.
  * @property enabled Indicates whether the module is enabled. Default is true.
  * @property portalSearchRadius The search radius for portals in the dimensions. Default is 128.0 blocks.
@@ -305,6 +319,14 @@ data class MotdModuleData(
 )
 
 /**
+ * Data class representing the configuration for the `NicknameModuleData`.
+ * @property enabled Indicates whether the module is enabled. Default is true.
+ */
+data class NicknameModuleData(
+    var enabled: Boolean = true,
+)
+
+/**
  * Data class representing the configuration for the `RecipiesModule`.
  * @property enabled Indicates whether the module is enabled. Default is true.
  */
@@ -325,7 +347,7 @@ data class TabListModuleData(
     var initDelay: Long = 0L,
     var interval: Long = TimeUtils.seconds(10),
     var header: List<String> = listOf(
-        "${"]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt()}   ${"⚡ IllyriaRPG 1.21.5 ⚡".fireFmt()}   ${
+        "${"]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt()}   ${"⚡ IllyriaRPG 1.21.6 ⚡".fireFmt()}   ${
             "]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)
         }",
         ""
