@@ -10,6 +10,7 @@ import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
+import net.kyori.adventure.title.Title
 import org.bukkit.*
 import org.bukkit.entity.Player
 import org.bukkit.permissions.Permission
@@ -22,6 +23,7 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.Utils
+import java.time.Duration
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.seconds
 
@@ -84,7 +86,10 @@ class RtpModule : ModuleInterface {
         }
 
         val initialLocation = player.location
-        instance.server.scheduler.runTaskLater(
+
+        var countdown = ConfigManager.data.rtpModule.delay
+
+        instance.server.scheduler.runTaskTimer(
             instance,
             Runnable {
                 if (player.location.blockX != initialLocation.blockX ||
@@ -95,11 +100,31 @@ class RtpModule : ModuleInterface {
                     CooldownManager.setCooldown(player, rtpCooldownKey, 0)
                     return@Runnable
                 }
-                beforeEffects(player)
-                player.teleport(Location(world, x, y, z))
-                afterEffects(player)
+                if (countdown > 0) {
+                    player.showTitle(teleportTitle(countdown))
+                    player.playSound(Sound.sound(Key.key("block.note_block.pling"), Sound.Source.PLAYER, 1f, 1.5f))
+                    countdown--
+                } else {
+                    beforeEffects(player)
+                    player.teleport(Location(world, x, y, z))
+                    afterEffects(player)
+                    instance.server.scheduler.cancelTask(this.hashCode())
+                }
             },
-            ConfigManager.data.rtpModule.delay
+            0L,
+            ConfigManager.data.rtpModule.period
+        )
+    }
+
+    /**
+     * Creates a teleportation title for the player.
+     * @param countdown The countdown value to display.
+     */
+    private fun teleportTitle(countdown: Long): Title {
+        return Title.title(
+            "Teleporting in".fireFmt().mm(),
+            countdown.toString().mangoFmt().mm(),
+            Title.Times.times(Duration.ofMillis(100), Duration.ofMillis(800), Duration.ofMillis(100))
         )
     }
 

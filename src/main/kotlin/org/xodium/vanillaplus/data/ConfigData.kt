@@ -340,12 +340,14 @@ data class RecipiesModuleData(
  * Data class representing the configuration for the `RtpModule`.
  * @property enabled Indicates whether the module is enabled. Default is true.
  * @property delay The delay before the RTP operation starts, in milliseconds. Default is 5 second (5000 milliseconds).
+ * @property period The period at which the RTP operation runs, in milliseconds. Default is 1 second (1000 milliseconds).
  * @property maxTries The maximum number of attempts to find a valid RTP location. Default is 10.
  * @property cooldown The cooldown period between RTP operations, in milliseconds. Default is 10 seconds (10000 milliseconds).
  */
 data class RtpModuleData(
     var enabled: Boolean = true,
     var delay: Long = TimeUtils.seconds(5),
+    var period: Long = TimeUtils.seconds(1),
     var maxTries: Int = 10,
     var cooldown: Long = TimeUtils.seconds(10),
 )
