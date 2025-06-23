@@ -78,7 +78,7 @@ class AutoRestartModule : ModuleInterface {
                         if (remainingSeconds % 60 > 0) (remainingSeconds / 60) + 1 else remainingSeconds / 60
                     val progress = remainingSeconds.toFloat() / totalSeconds
                     bossBar.name(
-                        ConfigManager.data.autoRestartModule.bossbarName
+                        ConfigManager.data.autoRestartModule.bossbar.name
                             .mm(Placeholder.component("time", displayTime.toString().mm()))
                     )
                     bossBar.progress(progress)

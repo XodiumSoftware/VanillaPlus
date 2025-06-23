@@ -58,7 +58,6 @@ data class ConfigData(
  * Data class representing the configuration for the `AutoRestartModule`.
  * @property enabled Indicates whether the module is enabled. Default is true.
  * @property restartTimes A list of times at which the server will restart. Default is a list containing 00:00, 06:00, 12:00, and 18:00.
- * @property bossbarName The name of the boss bar displayed during the restart countdown. Default is "⚡ RESTARTING in <time> minute(s) ⚡".
  * @property bossbar The boss bar object used for displaying the countdown. Default is a boss bar with the name defined above, full progress, red color, and progress overlay.
  * @property scheduleInitDelay The initial delay before the schedule starts, in seconds. Default is 0 seconds.
  * @property scheduleInterval The interval at which the schedule runs, in seconds. Default is 1 second.
@@ -74,9 +73,8 @@ data class AutoRestartModuleData(
         LocalTime.of(12, 0),
         LocalTime.of(18, 0),
     ),
-    var bossbarName: String = "⚡ RESTARTING in <time> minute(s) ⚡".fireFmt(),
     var bossbar: BossBarData = BossBarData(
-        bossbarName,
+        "⚡ RESTARTING in <time> minute(s) ⚡".fireFmt(),
         1.0f,
         BossBar.Color.RED,
         BossBar.Overlay.PROGRESS,
