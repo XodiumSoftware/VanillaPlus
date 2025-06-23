@@ -115,15 +115,6 @@ data class BooksModuleData(
 
                 // Page 2
                 """
-                <gold>▶ ${"/condense".skylineFmt()}
-                <dark_gray>Condenses resources (if possible) to their highest form (blocks)
-                
-                <gold>▶ ${"/uncondense".skylineFmt()}
-                <dark_gray>Uncondenses resources (if possible) to their lowest form (items)
-                """.trimIndent(),
-
-                // Page 3
-                """
                 <gold>▶ ${"/nick <formatted_name>".skylineFmt()}
                 <dark_gray>Change your nickname, Visit: <b>birdflop.com</b>,
                 <dark_gray>Color Format: MiniMessage,
@@ -133,7 +124,7 @@ data class BooksModuleData(
                 <dark_gray>Change your waypoint color, Visit: <b>birdflop.com</b>
                 """.trimIndent(),
 
-                // Page 4
+                // Page 3
                 """
                 <gold>▶ ${"Enchantment max level".skylineFmt()}
                 <dark_gray>has been incremented by <red><b>x2
