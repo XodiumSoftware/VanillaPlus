@@ -34,7 +34,7 @@ class JoinQuitModule : ModuleInterface {
             .filter { it.uniqueId != player.uniqueId }
             .forEach {
                 it.sendMessage(
-                    ConfigManager.data.joinQuitModule.quitMessage.mm(
+                    ConfigManager.data.joinQuitModule.joinMessage.mm(
                         Placeholder.component("player", player.displayName())
                     )
                 )
@@ -69,7 +69,7 @@ class JoinQuitModule : ModuleInterface {
             .filter { it.uniqueId != player.uniqueId }
             .forEach {
                 it.sendMessage(
-                    ConfigManager.data.joinQuitModule.joinMessage.mm(
+                    ConfigManager.data.joinQuitModule.quitMessage.mm(
                         Placeholder.component("player", player.displayName())
                     )
                 )

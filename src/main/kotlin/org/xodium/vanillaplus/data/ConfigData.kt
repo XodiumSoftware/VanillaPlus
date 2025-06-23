@@ -286,8 +286,8 @@ data class JoinQuitModuleData(
         <image>${"⯈".mangoFmt(true)}
         ${"]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)}
         """.trimIndent(),
-    var joinMessage: String = "${"[${"<green>+"}]".mangoFmt(true)} <player>",
-    var quitMessage: String = "${"[${"<red>-"}]".mangoFmt(true)} <player>",
+    var joinMessage: String = "${"[".mangoFmt(true)}${"<green>+<reset>"}${"]".mangoFmt(true)} <player>",
+    var quitMessage: String = "${"[".mangoFmt(true)}${"<red>-<reset>"}${"]".mangoFmt(true)} <player>",
 )
 
 /**

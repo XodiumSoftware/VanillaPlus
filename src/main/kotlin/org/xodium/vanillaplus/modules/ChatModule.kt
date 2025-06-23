@@ -72,7 +72,7 @@ class ChatModule : ModuleInterface {
                 Placeholder.component(
                     "player",
                     sender.displayName()
-                        .clickEvent(ClickEvent.suggestCommand("/w ${target.name} "))
+                        .clickEvent(ClickEvent.suggestCommand("/w ${sender.name} "))
                         .hoverEvent(HoverEvent.showText("Click to Whisper".fireFmt().mm()))
                 ),
                 Placeholder.component("message", message.mm())
