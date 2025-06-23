@@ -175,6 +175,8 @@ data class BooksModuleData(
 data class ChatModuleData(
     var enabled: Boolean = true,
     var chatFormat: String = "<player> <reset>${"›".mangoFmt(true)} <message>",
+    var whisperToFormat: String = "${"You".skylineFmt()} ${"➛".mangoFmt(true)} <player> <reset>${"›".mangoFmt(true)} <message>",
+    var whisperFromFormat: String = "<player> <reset>${"➛".mangoFmt(true)} ${"You".skylineFmt()} ${"›".mangoFmt(true)} <message>",
 )
 
 /**
@@ -264,6 +266,8 @@ data class InvUnloadModuleData(
  * Data class representing the configuration for the `JoinQuitModule`.
  * @property enabled Indicates whether the module is enabled. Default is true.
  * @property welcomeText A string representing the welcome message displayed to players when they join the server. Default includes a formatted welcome message with commands for rules and guide.
+ * @property joinMessage A string representing the message displayed when a player joins the server. Default is "<player> has joined the server" with player name formatted.
+ * @property quitMessage A string representing the message displayed when a player leaves the server. Default is "<player> has left the server" with player name formatted.
  */
 data class JoinQuitModuleData(
     var enabled: Boolean = true,
@@ -281,7 +285,9 @@ data class JoinQuitModuleData(
         <image>${"⯈".mangoFmt(true)}
         <image>${"⯈".mangoFmt(true)}
         ${"]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)}
-        """.trimIndent()
+        """.trimIndent(),
+    var joinMessage: String = "${"[${"<green>+"}]".mangoFmt(true)} <player>",
+    var quitMessage: String = "${"[${"<red>-"}]".mangoFmt(true)} <player>",
 )
 
 /**
