@@ -120,15 +120,9 @@ data class BooksModuleData(
                 <dark_gray>Color Format: MiniMessage,
                 <dark_gray>Copy output into <formatted_name>
                 
-                <gold>▶ ${"/waypoint <color>".skylineFmt()}
-                <dark_gray>Change your waypoint color, Visit: <b>birdflop.com</b>
-                """.trimIndent(),
-
-                // Page 3
-                """
                 <gold>▶ ${"Enchantment max level".skylineFmt()}
                 <dark_gray>has been incremented by <red><b>x2
-                """.trimIndent()
+                """.trimIndent(),
             )
         ),
         BookData(
