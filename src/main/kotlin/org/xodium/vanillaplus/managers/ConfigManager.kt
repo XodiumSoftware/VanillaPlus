@@ -11,17 +11,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.mojang.brigadier.builder.LiteralArgumentBuilder
-import io.papermc.paper.command.brigadier.CommandSourceStack
-import io.papermc.paper.command.brigadier.Commands
-import org.bukkit.entity.Player
-import org.bukkit.permissions.Permission
-import org.bukkit.permissions.PermissionDefault
-import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.ConfigData
-import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.Utils
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.StandardOpenOption
@@ -34,7 +25,6 @@ object ConfigManager {
         .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
         .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
         .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
-    private val permPrefix = "${instance::class.simpleName}.config".lowercase()
 
     @Volatile
     var data: ConfigData = ConfigData()
@@ -77,34 +67,5 @@ object ConfigManager {
         } catch (e: IOException) {
             instance.logger.severe("Config: Failed to save config file: ${e.printStackTrace()}")
         }
-    }
-
-    /**
-     * Creates the command for the configuration GUI.
-     * @return A LiteralArgumentBuilder for the "config" command.
-     */
-    @Suppress("UnstableApiUsage")
-    fun cmd(): LiteralArgumentBuilder<CommandSourceStack> {
-        return Commands.literal("reload")
-            .requires { it.sender.hasPermission(perm()) }
-            .executes { ctx ->
-                Utils.tryCatch(ctx) {
-                    load(true)
-                    instance.logger.info("Config: Reloaded settings.")
-                    if (it.sender is Player) it.sender.sendMessage("$PREFIX Reloaded config".mm())
-                }
-            }
-    }
-
-    /**
-     * Creates the permission for the configuration reload command.
-     * @return A Permission object for the config reload command.
-     */
-    fun perm(): Permission {
-        return Permission(
-            "$permPrefix.use",
-            "Allows use of the config reload command",
-            PermissionDefault.OP
-        )
     }
 }

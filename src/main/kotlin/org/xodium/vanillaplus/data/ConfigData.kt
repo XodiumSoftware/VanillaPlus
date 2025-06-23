@@ -103,29 +103,17 @@ data class BooksModuleData(
                 """
                 <b><u>${"Tips & Tricks".fireFmt()}
                 
-                <gold>▶ ${"/home".skylineFmt()}
-                <dark_gray>Teleport to your home
-                
                 <gold>▶ ${"/skills".skylineFmt()}
                 <dark_gray>Opens up the Skills GUI
                 
-                <gold>▶ ${"/rtp".skylineFmt()}
-                <dark_gray>Random teleport in the current dimension
+                <gold>▶ ${"/invu".skylineFmt()}
+                <dark_gray>Unloads your inventory into nearby chests
+                
+                <gold>▶ ${"/invs".skylineFmt()}
+                <dark_gray>Search into nearby chests for an item
                 """.trimIndent(),
 
                 // Page 2
-                """
-                <gold>▶ ${"/unload".skylineFmt()}
-                <dark_gray>Unloads your inventory into nearby chests
-                
-                <gold>▶ ${"/search".skylineFmt()}
-                <dark_gray>Search into nearby chests for an item
-                
-                <gold>▶ ${"/tpa [player]".skylineFmt()}
-                <dark_gray>Request to teleport to a player
-                """.trimIndent(),
-
-                // Page 3
                 """
                 <gold>▶ ${"/condense".skylineFmt()}
                 <dark_gray>Condenses resources (if possible) to their highest form (blocks)
@@ -134,13 +122,19 @@ data class BooksModuleData(
                 <dark_gray>Uncondenses resources (if possible) to their lowest form (items)
                 """.trimIndent(),
 
+                // Page 3
+                """
+                <gold>▶ ${"/nick <formatted_name>".skylineFmt()}
+                <dark_gray>Change your nickname, Visit: <b>birdflop.com</b>,
+                <dark_gray>Color Format: MiniMessage,
+                <dark_gray>Copy output into <formatted_name>
+                
+                <gold>▶ ${"/waypoint <color>".skylineFmt()}
+                <dark_gray>Change your waypoint color, Visit: <b>birdflop.com</b>
+                """.trimIndent(),
+
                 // Page 4
                 """
-                <gold>▶ ${"/nick".skylineFmt()}
-                <dark_gray>Change your nickname, Visit: <b>birdflop.com</b>,
-                <dark_gray>Set Color Format on MiniMessage,
-                <dark_gray>Copy and Paste it after the command
-                
                 <gold>▶ ${"Enchantment max level".skylineFmt()}
                 <dark_gray>has been incremented by <red><b>x2
                 """.trimIndent()
