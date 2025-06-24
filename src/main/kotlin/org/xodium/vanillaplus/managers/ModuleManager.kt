@@ -7,7 +7,6 @@ package org.xodium.vanillaplus.managers
 
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.modules.*
 import kotlin.time.measureTime
 
@@ -48,12 +47,9 @@ object ModuleManager {
         trowelModule,
     )
 
-    private val commands = mutableListOf<CommandData>()
-
     init {
         modules()
         commands()
-        permissions()
     }
 
     /** Registers the modules. */
@@ -63,7 +59,8 @@ object ModuleManager {
                 "Loaded: ${module::class.simpleName} | Took ${
                     measureTime {
                         instance.server.pluginManager.registerEvents(module, instance)
-                        module.cmds()?.let { commands.add(it) }
+                        @Suppress("UnstableApiUsage")
+                        instance.server.pluginManager.addPermissions(module.perms())
                     }.inWholeMilliseconds
                 }ms"
             )
@@ -72,7 +69,7 @@ object ModuleManager {
 
     /** Registers commands for the modules. */
     private fun commands() {
-        commands.takeIf { it.isNotEmpty() }?.let {
+        modules.filter { it.enabled() }.mapNotNull { it.cmds() }.takeIf { it.isNotEmpty() }?.let {
             @Suppress("UnstableApiUsage")
             instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
                 it.forEach { commandData ->
@@ -83,17 +80,6 @@ object ModuleManager {
                             commandData.aliases.toMutableList()
                         )
                     }
-                }
-            }
-        }
-    }
-
-    /** Registers permissions for the modules. */
-    private fun permissions() {
-        modules.takeIf { it.isNotEmpty() }?.let {
-            it.forEach { module ->
-                module.perms().forEach { perm ->
-                    instance.server.pluginManager.addPermission(perm)
                 }
             }
         }
