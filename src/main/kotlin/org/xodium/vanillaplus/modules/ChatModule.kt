@@ -16,7 +16,6 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
-import org.bukkit.event.player.PlayerCommandPreprocessEvent
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -41,8 +40,8 @@ class ChatModule : ModuleInterface {
                         Commands.argument("target", ArgumentTypes.player())
                             .suggests { ctx, builder ->
                                 instance.server.onlinePlayers
-                                    .map { it.name.lowercase() }
-                                    .filter { it.startsWith(builder.remaining.lowercase()) }
+                                    .map { it.name }
+                                    .filter { it.lowercase().startsWith(builder.remaining.lowercase()) }
                                     .forEach(builder::suggest)
                                 CompletableFuture.completedFuture(builder.build())
                             }
@@ -121,12 +120,5 @@ class ChatModule : ModuleInterface {
                 Placeholder.component("message", message.mm())
             )
         )
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    fun on(event: PlayerCommandPreprocessEvent) {
-        if (!enabled()) return
-        if (event.message.split(" ").first().lowercase() !in setOf("/tell", "/w", "/msg")) return
-        event.isCancelled = true
     }
 }
