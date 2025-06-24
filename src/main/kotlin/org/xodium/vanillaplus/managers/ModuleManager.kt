@@ -34,26 +34,22 @@ object ModuleManager {
     val treesModule: TreesModule = TreesModule()
     val trowelModule: TrowelModule = TrowelModule()
 
-    private val modules: List<ModuleInterface> by lazy {
-        ModuleManager::class.memberProperties
-            .filterNot { it.name == "modules" }
-            .mapNotNull { it.get(this) as? ModuleInterface }
-    }
-
     init {
         val commandsToRegister = mutableListOf<CommandData>()
-        modules.filter { it.enabled() }.forEach { module ->
-            instance.logger.info(
-                "Loaded: ${module::class.simpleName} | Took ${
-                    measureTime {
-                        instance.server.pluginManager.registerEvents(module, instance)
-                        @Suppress("UnstableApiUsage")
-                        instance.server.pluginManager.addPermissions(module.perms())
-                        module.cmds()?.let { commandsToRegister.add(it) }
-                    }.inWholeMilliseconds
-                }ms"
-            )
-        }
+        ModuleManager::class.memberProperties
+            .mapNotNull { it.get(this) as? ModuleInterface }
+            .filter { it.enabled() }.forEach { module ->
+                instance.logger.info(
+                    "Loaded: ${module::class.simpleName} | Took ${
+                        measureTime {
+                            instance.server.pluginManager.registerEvents(module, instance)
+                            @Suppress("UnstableApiUsage")
+                            instance.server.pluginManager.addPermissions(module.perms())
+                            module.cmds()?.let { commandsToRegister.add(it) }
+                        }.inWholeMilliseconds
+                    }ms"
+                )
+            }
         commandsToRegister.takeIf { it.isNotEmpty() }?.let {
             @Suppress("UnstableApiUsage")
             instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
