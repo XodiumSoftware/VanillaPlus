@@ -90,9 +90,11 @@ object ModuleManager {
 
     /** Registers permissions for the modules. */
     private fun permissions() {
-        modules.forEach { module ->
-            module.perms().forEach { perm ->
-                instance.server.pluginManager.addPermission(perm)
+        modules.takeIf { it.isNotEmpty() }?.let {
+            it.forEach { module ->
+                module.perms().forEach { perm ->
+                    instance.server.pluginManager.addPermission(perm)
+                }
             }
         }
     }
