@@ -39,7 +39,9 @@ class ChatModule : ModuleInterface {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    fun onPlayerCommandPreprocess(event: PlayerCommandPreprocessEvent) {
+    fun on(event: PlayerCommandPreprocessEvent) {
+        if (!enabled()) return
+        
         val args = event.message.split(" ")
         val command = args.first().lowercase()
 

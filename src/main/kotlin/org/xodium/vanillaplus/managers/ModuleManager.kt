@@ -62,6 +62,7 @@ object ModuleManager {
                 }ms"
             )
         }
+        //TODO: check if we can make this more compact.
         commandsToRegister.takeIf { it.isNotEmpty() }?.let {
             @Suppress("UnstableApiUsage")
             instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
