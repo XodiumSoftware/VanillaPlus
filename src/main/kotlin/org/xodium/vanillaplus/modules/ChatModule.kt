@@ -7,7 +7,6 @@ package org.xodium.vanillaplus.modules
 
 import com.mojang.brigadier.arguments.StringArgumentType
 import io.papermc.paper.command.brigadier.Commands
-import io.papermc.paper.command.brigadier.argument.ArgumentTypes
 import io.papermc.paper.event.player.AsyncChatEvent
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
@@ -41,7 +40,7 @@ class ChatModule : ModuleInterface {
                 Commands.literal("whisper")
                     .requires { it.sender.hasPermission(perms()[0]) }
                     .then(
-                        Commands.argument("target", ArgumentTypes.player())
+                        Commands.argument("target", StringArgumentType.string())
                             .suggests { ctx, builder ->
                                 instance.server.onlinePlayers
                                     .map { it.name }
