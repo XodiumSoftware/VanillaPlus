@@ -7,6 +7,7 @@ package org.xodium.vanillaplus.managers
 
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.modules.*
 import kotlin.time.measureTime
 
@@ -48,12 +49,7 @@ object ModuleManager {
     )
 
     init {
-        modules()
-        commands()
-    }
-
-    /** Registers the modules. */
-    private fun modules() {
+        val commandsToRegister = mutableListOf<CommandData>()
         modules.filter { it.enabled() }.forEach { module ->
             instance.logger.info(
                 "Loaded: ${module::class.simpleName} | Took ${
@@ -61,15 +57,12 @@ object ModuleManager {
                         instance.server.pluginManager.registerEvents(module, instance)
                         @Suppress("UnstableApiUsage")
                         instance.server.pluginManager.addPermissions(module.perms())
+                        module.cmds()?.let { commandsToRegister.add(it) }
                     }.inWholeMilliseconds
                 }ms"
             )
         }
-    }
-
-    /** Registers commands for the modules. */
-    private fun commands() {
-        modules.filter { it.enabled() }.mapNotNull { it.cmds() }.takeIf { it.isNotEmpty() }?.let {
+        commandsToRegister.takeIf { it.isNotEmpty() }?.let {
             @Suppress("UnstableApiUsage")
             instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
                 it.forEach { commandData ->

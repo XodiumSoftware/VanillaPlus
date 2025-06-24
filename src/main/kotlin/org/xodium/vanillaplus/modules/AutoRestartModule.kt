@@ -105,6 +105,6 @@ class AutoRestartModule : ModuleInterface {
         val trigger = restartTime
             .minusMinutes(ConfigManager.data.autoRestartModule.countdownStartMinutes.toLong())
             .truncatedTo(ChronoUnit.SECONDS)
-        return now == trigger
+        return now.equals(trigger)
     }
 }
