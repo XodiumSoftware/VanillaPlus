@@ -3,16 +3,12 @@
  *  All rights reserved.
  */
 
-@file:Suppress("unused")
-
 package org.xodium.vanillaplus.managers
 
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
-import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.modules.*
-import kotlin.reflect.full.memberProperties
 import kotlin.time.measureTime
 
 /** Represents the module manager within the system. */
@@ -34,22 +30,38 @@ object ModuleManager {
     val treesModule: TreesModule = TreesModule()
     val trowelModule: TrowelModule = TrowelModule()
 
+    private val modules = listOf(
+        autoRestartModule,
+        booksModule,
+        chatModule,
+        dimensionsModule,
+        doorsModule,
+        invSearchModule,
+        invUnloadModule,
+        joinQuitModule,
+        motdModule,
+        nicknameModule,
+        recipiesModule,
+        signModule,
+        tabListModule,
+        treesModule,
+        trowelModule
+    )
+
     init {
         val commandsToRegister = mutableListOf<CommandData>()
-        ModuleManager::class.memberProperties
-            .mapNotNull { it.get(this) as? ModuleInterface }
-            .filter { it.enabled() }.forEach { module ->
-                instance.logger.info(
-                    "Loaded: ${module::class.simpleName} | Took ${
-                        measureTime {
-                            instance.server.pluginManager.registerEvents(module, instance)
-                            @Suppress("UnstableApiUsage")
-                            instance.server.pluginManager.addPermissions(module.perms())
-                            module.cmds()?.let { commandsToRegister.add(it) }
-                        }.inWholeMilliseconds
-                    }ms"
-                )
-            }
+        modules.filter { it.enabled() }.forEach { module ->
+            instance.logger.info(
+                "Loaded: ${module::class.simpleName} | Took ${
+                    measureTime {
+                        instance.server.pluginManager.registerEvents(module, instance)
+                        @Suppress("UnstableApiUsage")
+                        instance.server.pluginManager.addPermissions(module.perms())
+                        module.cmds()?.let { commandsToRegister.add(it) }
+                    }.inWholeMilliseconds
+                }ms"
+            )
+        }
         commandsToRegister.takeIf { it.isNotEmpty() }?.let {
             @Suppress("UnstableApiUsage")
             instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
