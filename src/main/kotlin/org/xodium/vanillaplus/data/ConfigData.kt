@@ -27,7 +27,6 @@ import org.bukkit.Sound as BukkitSound
  * @property doorsModule Configuration for the `DoorsModule`.
  * @property invSearchModule Configuration for the `InvSearchModule`.
  * @property invUnloadModule Configuration for the `InvUnloadModule`.
- * @property joinQuitModule Configuration for the `JoinQuitModule`.
  * @property motdModule Configuration for the `MotdModule`.
  * @property nicknameModule Configuration for the `NicknameModule`.
  * @property recipiesModule Configuration for the `RecipiesModule`.
@@ -44,7 +43,6 @@ data class ConfigData(
     var doorsModule: DoorsModuleData = DoorsModuleData(),
     var invSearchModule: InvSearchModuleData = InvSearchModuleData(),
     var invUnloadModule: InvUnloadModuleData = InvUnloadModuleData(),
-    var joinQuitModule: JoinQuitModuleData = JoinQuitModuleData(),
     var motdModule: MotdModuleData = MotdModuleData(),
     var nicknameModule: NicknameModuleData = NicknameModuleData(),
     var recipiesModule: RecipiesModuleData = RecipiesModuleData(),
@@ -171,10 +169,32 @@ data class BooksModuleData(
  * Data class representing the configuration for the `ChatModule`.
  * @property enabled Indicates whether the module is enabled. Default is true.
  * @property chatFormat A string representing the format of the chat messages. Default is "<player> <reset>${ "›".mangoFmt(true)} <message>".
+ * @property welcomeText A string representing the welcome message displayed to players when they join. Default includes a formatted welcome message with clickable commands for rules and guide.
+ * @property joinMessage A string representing the message displayed when a player joins the server. Default is "<green>➕<reset> ${"›".mangoFmt(true)} <player>".
+ * @property quitMessage A string representing the message displayed when a player quits the server. Default is "<red>➖<reset> ${"›".mangoFmt(true)} <player>".
+ * @property whisperToFormat A string representing the format of the whisper message sent to a player. Default is "${"You".skylineFmt()} ${"➛".mangoFmt(true)} <player> <reset>${"›".mangoFmt(true)} <message>".
+ * @property whisperFromFormat A string representing the format of the whisper message received from a player. Default is "<player> <reset>${"➛".mangoFmt(true)} ${"You".skylineFmt()} ${"›".mangoFmt(true)} <message>".
  */
 data class ChatModuleData(
     var enabled: Boolean = true,
     var chatFormat: String = "<player> <reset>${"›".mangoFmt(true)} <message>",
+    var welcomeText: String =
+        """
+        ${"]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)}
+        <image>${"⯈".mangoFmt(true)}
+        <image>${"⯈".mangoFmt(true)}
+        <image>${"⯈".mangoFmt(true)} ${"Welcome".fireFmt()} <player>
+        <image>${"⯈".mangoFmt(true)}
+        <image>${"⯈".mangoFmt(true)}
+        <image>${"⯈".mangoFmt(true)} ${"Check out".fireFmt()}<gray>: ${
+            "/rules".clickRunCmd(Utils.cmdHover).skylineFmt()
+        } <gray>🟅 ${"/guide".clickRunCmd(Utils.cmdHover).skylineFmt()}
+        <image>${"⯈".mangoFmt(true)}
+        <image>${"⯈".mangoFmt(true)}
+        ${"]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)}
+        """.trimIndent(),
+    var joinMessage: String = "<green>➕<reset> ${"›".mangoFmt(true)} <player>",
+    var quitMessage: String = "<red>➖<reset> ${"›".mangoFmt(true)} <player>",
     var whisperToFormat: String = "${"You".skylineFmt()} ${"➛".mangoFmt(true)} <player> <reset>${"›".mangoFmt(true)} <message>",
     var whisperFromFormat: String = "<player> <reset>${"➛".mangoFmt(true)} ${"You".skylineFmt()} ${"›".mangoFmt(true)} <message>",
 )
@@ -260,34 +280,6 @@ data class InvUnloadModuleData(
         BukkitSound.ENTITY_PLAYER_LEVELUP,
         Sound.Source.PLAYER
     )
-)
-
-/**
- * Data class representing the configuration for the `JoinQuitModule`.
- * @property enabled Indicates whether the module is enabled. Default is true.
- * @property welcomeText A string representing the welcome message displayed to players when they join the server. Default includes a formatted welcome message with commands for rules and guide.
- * @property joinMessage A string representing the message displayed when a player joins the server. Default is "<player> has joined the server" with player name formatted.
- * @property quitMessage A string representing the message displayed when a player leaves the server. Default is "<player> has left the server" with player name formatted.
- */
-data class JoinQuitModuleData(
-    var enabled: Boolean = true,
-    var welcomeText: String =
-        """
-        ${"]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)}
-        <image>${"⯈".mangoFmt(true)}
-        <image>${"⯈".mangoFmt(true)}
-        <image>${"⯈".mangoFmt(true)} ${"Welcome".fireFmt()} <player>
-        <image>${"⯈".mangoFmt(true)}
-        <image>${"⯈".mangoFmt(true)}
-        <image>${"⯈".mangoFmt(true)} ${"Check out".fireFmt()}<gray>: ${
-            "/rules".clickRunCmd(Utils.cmdHover).skylineFmt()
-        } <gray>🟅 ${"/guide".clickRunCmd(Utils.cmdHover).skylineFmt()}
-        <image>${"⯈".mangoFmt(true)}
-        <image>${"⯈".mangoFmt(true)}
-        ${"]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)}
-        """.trimIndent(),
-    var joinMessage: String = "${"[".mangoFmt(true)}${"<green>+<reset>"}${"]".mangoFmt(true)} <player>",
-    var quitMessage: String = "${"[".mangoFmt(true)}${"<red>-<reset>"}${"]".mangoFmt(true)} <player>",
 )
 
 /**

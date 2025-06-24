@@ -16,14 +16,18 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
+import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
+import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
+import org.xodium.vanillaplus.utils.SkinUtils.faceToMM
 import org.xodium.vanillaplus.utils.Utils
 import java.util.concurrent.CompletableFuture
 
@@ -51,7 +55,14 @@ class ChatModule : ModuleInterface {
                                         Utils.tryCatch(ctx) {
                                             whisper(
                                                 it.sender as Player,
-                                                ctx.getArgument("target", Player::class.java),
+                                                instance.server.getPlayer(
+                                                    ctx.getArgument(
+                                                        "target",
+                                                        String::class.java
+                                                    )
+                                                ) ?: return@tryCatch it.sender.sendMessage(
+                                                    "$PREFIX Player is not Online!".fireFmt().mm()
+                                                ),
                                                 ctx.getArgument("message", String::class.java)
                                             )
                                         }
@@ -88,6 +99,59 @@ class ChatModule : ModuleInterface {
                 Placeholder.component("message", PlainTextComponentSerializer.plainText().serialize(message).mm()),
             )
         }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun on(event: PlayerJoinEvent) {
+        if (!enabled()) return
+
+        event.joinMessage(null)
+
+        val player = event.player
+        instance.server.onlinePlayers
+            .filter { it.uniqueId != player.uniqueId }
+            .forEach {
+                it.sendMessage(
+                    ConfigManager.data.chatModule.joinMessage.mm(
+                        Placeholder.component("player", player.displayName())
+                    )
+                )
+            }
+
+        val faceLines = player.faceToMM().lines()
+        var imageIndex = 1
+        val welcomeText =
+            Regex("<image>").replace(ConfigManager.data.chatModule.welcomeText) { "<image${imageIndex++}>" }
+        val imageResolvers = faceLines.mapIndexed { i, line -> Placeholder.component("image${i + 1}", line.mm()) }
+        val playerComponent = player
+            .displayName()
+            .clickEvent(ClickEvent.suggestCommand("/nickname ${player.name}"))
+            .hoverEvent(HoverEvent.showText(Utils.cmdHover.mm()))
+
+        player.sendMessage(
+            welcomeText.mm(
+                Placeholder.component("player", playerComponent),
+                *imageResolvers.toTypedArray()
+            )
+        )
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun on(event: PlayerQuitEvent) {
+        if (!enabled()) return
+
+        event.quitMessage(null)
+
+        val player = event.player
+        instance.server.onlinePlayers
+            .filter { it.uniqueId != player.uniqueId }
+            .forEach {
+                it.sendMessage(
+                    ConfigManager.data.chatModule.quitMessage.mm(
+                        Placeholder.component("player", player.displayName())
+                    )
+                )
+            }
     }
 
     /**
