@@ -19,8 +19,8 @@ import net.kyori.adventure.sound.Sound
  * @property pitch The pitch of the sound. Defaults to 1.0f.
  */
 data class SoundData(
-    @JsonSerialize(converter = SoundTypeToString::class)
-    @JsonDeserialize(converter = StringToSoundType::class)
+    @get:JsonSerialize(converter = SoundTypeToString::class)
+    @param:JsonDeserialize(converter = StringToSoundType::class)
     val name: Sound.Type,
     private val source: Sound.Source = Sound.Source.MASTER,
     private val volume: Float = 1.0f,
