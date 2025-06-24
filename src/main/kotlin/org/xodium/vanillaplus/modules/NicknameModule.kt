@@ -22,7 +22,9 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.Utils
 
 class NicknameModule(private val tabListModule: TabListModule) : ModuleInterface {
-    override fun enabled(): Boolean = ConfigManager.data.nicknameModule.enabled
+    override fun enabled(): Boolean {
+        return ConfigManager.data.nicknameModule.enabled && tabListModule.enabled()
+    }
 
     override fun cmds(): CommandData? {
         return CommandData(
