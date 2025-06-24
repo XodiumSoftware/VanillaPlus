@@ -3,12 +3,16 @@
  *  All rights reserved.
  */
 
+@file:Suppress("unused")
+
 package org.xodium.vanillaplus.managers
 
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
+import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.modules.*
+import kotlin.reflect.full.memberProperties
 import kotlin.time.measureTime
 
 /** Represents the module manager within the system. */
@@ -30,23 +34,11 @@ object ModuleManager {
     val treesModule: TreesModule = TreesModule()
     val trowelModule: TrowelModule = TrowelModule()
 
-    private val modules = listOf(
-        autoRestartModule,
-        booksModule,
-        chatModule,
-        dimensionsModule,
-        doorsModule,
-        invSearchModule,
-        invUnloadModule,
-        joinQuitModule,
-        motdModule,
-        nicknameModule,
-        recipiesModule,
-        signModule,
-        tabListModule,
-        treesModule,
-        trowelModule,
-    )
+    private val modules: List<ModuleInterface> by lazy {
+        ModuleManager::class.memberProperties
+            .filterNot { it.name == "modules" }
+            .mapNotNull { it.get(this) as? ModuleInterface }
+    }
 
     init {
         val commandsToRegister = mutableListOf<CommandData>()
