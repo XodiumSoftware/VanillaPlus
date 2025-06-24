@@ -18,11 +18,10 @@ import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.NicknameData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.ConfigManager
-import org.xodium.vanillaplus.managers.ModuleManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.Utils
 
-class NicknameModule : ModuleInterface {
+class NicknameModule(private val tabListModule: TabListModule) : ModuleInterface {
     override fun enabled(): Boolean = ConfigManager.data.nicknameModule.enabled
 
     override fun cmds(): CommandData? {
@@ -76,6 +75,6 @@ class NicknameModule : ModuleInterface {
             NicknameData.set(player.uniqueId, name)
             player.displayName(name.mm())
         }
-        ModuleManager.tabListModule.updatePlayerDisplayName(player)
+        tabListModule.updatePlayerDisplayName(player)
     }
 }

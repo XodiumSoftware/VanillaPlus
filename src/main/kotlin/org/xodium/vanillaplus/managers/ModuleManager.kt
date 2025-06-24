@@ -23,10 +23,10 @@ object ModuleManager {
     val invUnloadModule: InvUnloadModule = InvUnloadModule()
     val joinQuitModule: JoinQuitModule = JoinQuitModule()
     val motdModule: MotdModule = MotdModule()
-    val nicknameModule: NicknameModule = NicknameModule()
     val recipiesModule: RecipiesModule = RecipiesModule()
     val signModule: SignModule = SignModule()
     val tabListModule: TabListModule = TabListModule()
+    val nicknameModule: NicknameModule = NicknameModule(tabListModule)
     val treesModule: TreesModule = TreesModule()
     val trowelModule: TrowelModule = TrowelModule()
 
