@@ -50,7 +50,7 @@ class InvSearchModule : ModuleInterface {
                                 Material.entries
                                     .map { it.name.lowercase() }
                                     .filter { it.startsWith(builder.remaining.lowercase()) }
-                                    .forEach { builder.suggest(it) }
+                                    .forEach(builder::suggest)
                                 CompletableFuture.completedFuture(builder.build())
                             }
                             .executes { ctx -> Utils.tryCatch(ctx) { handleSearch(ctx) } }

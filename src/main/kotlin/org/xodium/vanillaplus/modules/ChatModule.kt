@@ -5,7 +5,9 @@
 
 package org.xodium.vanillaplus.modules
 
+import com.mojang.brigadier.arguments.StringArgumentType
 import io.papermc.paper.command.brigadier.Commands
+import io.papermc.paper.command.brigadier.argument.ArgumentTypes
 import io.papermc.paper.event.player.AsyncChatEvent
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
@@ -24,6 +26,7 @@ import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.Utils
+import java.util.concurrent.CompletableFuture
 
 class ChatModule : ModuleInterface {
     override fun enabled(): Boolean = ConfigManager.data.chatModule.enabled
@@ -32,9 +35,30 @@ class ChatModule : ModuleInterface {
     override fun cmds(): CommandData? {
         return CommandData(
             listOf(
-                Commands.literal("autorestart")
+                Commands.literal("whisper")
                     .requires { it.sender.hasPermission(perms()[0]) }
-                    .executes { ctx -> Utils.tryCatch(ctx) { whisper(it.sender as Player) } }
+                    .then(
+                        Commands.argument("target", ArgumentTypes.player())
+                            .suggests { ctx, builder ->
+                                instance.server.onlinePlayers
+                                    .map { it.name.lowercase() }
+                                    .filter { it.startsWith(builder.remaining.lowercase()) }
+                                    .forEach(builder::suggest)
+                                CompletableFuture.completedFuture(builder.build())
+                            }
+                            .then(
+                                Commands.argument("message", StringArgumentType.greedyString())
+                                    .executes { ctx ->
+                                        Utils.tryCatch(ctx) {
+                                            whisper(
+                                                it.sender as Player,
+                                                ctx.getArgument("target", Player::class.java),
+                                                ctx.getArgument("message", String::class.java)
+                                            )
+                                        }
+                                    }
+                            )
+                    )
             ),
             "This command allows you to whisper to players.",
             listOf("w")
