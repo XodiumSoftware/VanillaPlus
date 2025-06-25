@@ -56,7 +56,6 @@ object ModuleManager {
             val configKey = module::class.simpleName!!.removeSuffix("Module").replaceFirstChar { it.lowercase() }
             allConfigsNode?.get(configKey)?.let { moduleConfigNode ->
                 try {
-                    @Suppress("UNCHECKED_CAST")
                     ConfigManager.objectMapper.readerForUpdating(module.config).readValue(moduleConfigNode)
                 } catch (e: Exception) {
                     instance.logger.warning("Failed to parse config for ${module::class.simpleName}. Using defaults. Error: ${e.message}")
