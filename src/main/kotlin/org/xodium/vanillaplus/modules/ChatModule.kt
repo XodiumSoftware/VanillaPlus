@@ -23,9 +23,11 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.managers.ConfigManager
+import org.xodium.vanillaplus.utils.ExtUtils.clickRunCmd
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
+import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
+import org.xodium.vanillaplus.utils.FmtUtils.skylineFmt
 import org.xodium.vanillaplus.utils.SkinUtils.faceToMM
 import org.xodium.vanillaplus.utils.Utils
 import java.util.concurrent.CompletableFuture
@@ -90,7 +92,7 @@ class ChatModule : ModuleInterface<ChatModule.Config> {
     fun on(event: AsyncChatEvent) {
         if (!config.enabled) return
         event.renderer { source, displayName, message, _ ->
-            ConfigManager.data.chatModule.chatFormat.mm(
+            config.chatFormat.mm(
                 Placeholder.component(
                     "player",
                     displayName
@@ -113,7 +115,7 @@ class ChatModule : ModuleInterface<ChatModule.Config> {
             .filter { it.uniqueId != player.uniqueId }
             .forEach {
                 it.sendMessage(
-                    ConfigManager.data.chatModule.joinMessage.mm(
+                    config.joinMessage.mm(
                         Placeholder.component("player", player.displayName())
                     )
                 )
@@ -122,7 +124,7 @@ class ChatModule : ModuleInterface<ChatModule.Config> {
         val faceLines = player.faceToMM().lines()
         var imageIndex = 1
         val welcomeText =
-            Regex("<image>").replace(ConfigManager.data.chatModule.welcomeText) { "<image${imageIndex++}>" }
+            Regex("<image>").replace(config.welcomeText) { "<image${imageIndex++}>" }
         val imageResolvers = faceLines.mapIndexed { i, line -> Placeholder.component("image${i + 1}", line.mm()) }
         val playerComponent = player
             .displayName()
@@ -148,7 +150,7 @@ class ChatModule : ModuleInterface<ChatModule.Config> {
             .filter { it.uniqueId != player.uniqueId }
             .forEach {
                 it.sendMessage(
-                    ConfigManager.data.chatModule.quitMessage.mm(
+                    config.quitMessage.mm(
                         Placeholder.component("player", player.displayName())
                     )
                 )
@@ -163,7 +165,7 @@ class ChatModule : ModuleInterface<ChatModule.Config> {
      */
     private fun whisper(sender: Player, target: Player, message: String) {
         sender.sendMessage(
-            ConfigManager.data.chatModule.whisperToFormat.mm(
+            config.whisperToFormat.mm(
                 Placeholder.component(
                     "player",
                     target.displayName()
@@ -175,7 +177,7 @@ class ChatModule : ModuleInterface<ChatModule.Config> {
         )
 
         target.sendMessage(
-            ConfigManager.data.chatModule.whisperFromFormat.mm(
+            config.whisperFromFormat.mm(
                 Placeholder.component(
                     "player",
                     sender.displayName()
@@ -188,6 +190,26 @@ class ChatModule : ModuleInterface<ChatModule.Config> {
     }
 
     data class Config(
-        override val enabled: Boolean = true
+        override val enabled: Boolean = true,
+        var chatFormat: String = "<player> <reset>${"›".mangoFmt(true)} <message>",
+        var welcomeText: String =
+            """
+        ${"]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)}
+        <image>${"⯈".mangoFmt(true)}
+        <image>${"⯈".mangoFmt(true)}
+        <image>${"⯈".mangoFmt(true)} ${"Welcome".fireFmt()} <player>
+        <image>${"⯈".mangoFmt(true)}
+        <image>${"⯈".mangoFmt(true)}
+        <image>${"⯈".mangoFmt(true)} ${"Check out".fireFmt()}<gray>: ${
+                "/rules".clickRunCmd(Utils.cmdHover).skylineFmt()
+            } <gray>🟅 ${"/guide".clickRunCmd(Utils.cmdHover).skylineFmt()}
+        <image>${"⯈".mangoFmt(true)}
+        <image>${"⯈".mangoFmt(true)}
+        ${"]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)}
+        """.trimIndent(),
+        var joinMessage: String = "<green>➕<reset> ${"›".mangoFmt(true)} <player>",
+        var quitMessage: String = "<red>➖<reset> ${"›".mangoFmt(true)} <player>",
+        var whisperToFormat: String = "${"You".skylineFmt()} ${"➛".mangoFmt(true)} <player> <reset>${"›".mangoFmt(true)} <message>",
+        var whisperFromFormat: String = "<player> <reset>${"➛".mangoFmt(true)} ${"You".skylineFmt()} ${"›".mangoFmt(true)} <message>",
     ) : ModuleInterface.Config
 }

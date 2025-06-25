@@ -25,7 +25,6 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.ChestAccessManager
-import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.managers.CooldownManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
@@ -101,14 +100,14 @@ class InvSearchModule : ModuleInterface<InvSearchModule.Config> {
      */
     private fun search(player: Player, material: Material) {
         val cooldownKey = NamespacedKey(instance, "invsearch_cooldown")
-        val cooldownDuration = ConfigManager.data.invSearchModule.cooldown
+        val cooldownDuration = config.cooldown
         if (CooldownManager.isOnCooldown(player, cooldownKey, cooldownDuration)) {
             return player.sendActionBar("You must wait before using this again.".fireFmt().mm())
         }
         CooldownManager.setCooldown(player, cooldownKey, System.currentTimeMillis())
 
         val deniedChestKey = NamespacedKey(instance, "denied_chest")
-        val chests = Utils.findBlocksInRadius(player.location, ConfigManager.data.invSearchModule.searchRadius)
+        val chests = Utils.findBlocksInRadius(player.location, config.searchRadius)
             .filter { ChestAccessManager.isAllowed(player, deniedChestKey, it) }
         if (chests.isEmpty()) {
             return player.sendActionBar("No usable chests found for ${"$material".roseFmt()}".fireFmt().mm())
@@ -224,6 +223,8 @@ class InvSearchModule : ModuleInterface<InvSearchModule.Config> {
     }
 
     data class Config(
-        override val enabled: Boolean = true
+        override val enabled: Boolean = true,
+        var cooldown: Long = 1L * 1000L,
+        var searchRadius: Int = 5,
     ) : ModuleInterface.Config
 }

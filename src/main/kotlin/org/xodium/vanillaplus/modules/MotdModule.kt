@@ -9,8 +9,9 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.server.ServerListPingEvent
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
+import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 
 /** Represents a module handling MOTD mechanics within the system. */
 class MotdModule : ModuleInterface<MotdModule.Config> {
@@ -21,10 +22,14 @@ class MotdModule : ModuleInterface<MotdModule.Config> {
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: ServerListPingEvent) {
         if (!enabled()) return
-        event.motd(ConfigManager.data.motdModule.motd.joinToString("\n").mm())
+        event.motd(config.motd.joinToString("\n").mm())
     }
 
     data class Config(
-        override val enabled: Boolean = true
+        override val enabled: Boolean = true,
+        val motd: List<String> = listOf(
+            "<b>Ultimate Private SMP</b>".fireFmt(),
+            "<b>➤ WELCOME BACK LADS!</b>".mangoFmt()
+        )
     ) : ModuleInterface.Config
 }

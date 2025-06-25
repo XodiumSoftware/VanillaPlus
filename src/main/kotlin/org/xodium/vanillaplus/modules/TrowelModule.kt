@@ -21,7 +21,6 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.TrowelStateData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.Utils
@@ -30,7 +29,7 @@ import org.xodium.vanillaplus.utils.Utils
 class TrowelModule : ModuleInterface<TrowelModule.Config> {
     override val config: Config = Config()
 
-    override fun enabled(): Boolean = ConfigManager.data.trowelModule.enabled
+    override fun enabled(): Boolean = config.enabled
 
     @Suppress("UnstableApiUsage")
     override fun cmds(): CommandData? {

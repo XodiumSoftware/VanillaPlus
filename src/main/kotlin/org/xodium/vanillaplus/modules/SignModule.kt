@@ -10,13 +10,12 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.SignChangeEvent
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 
 class SignModule : ModuleInterface<SignModule.Config> {
     override val config: Config = Config()
 
-    override fun enabled(): Boolean = ConfigManager.data.signModule.enabled
+    override fun enabled(): Boolean = config.enabled
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: SignChangeEvent) {
