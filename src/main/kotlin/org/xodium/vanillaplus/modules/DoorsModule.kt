@@ -5,6 +5,7 @@
 
 package org.xodium.vanillaplus.modules
 
+import net.kyori.adventure.sound.Sound
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.block.Block
@@ -24,12 +25,15 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.AdjacentBlockData
+import org.xodium.vanillaplus.data.SoundData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.managers.ConfigManager
+import org.bukkit.Sound as BukkitSound
 
 /** Represents a module handling door mechanics within the system. */
-class DoorsModule : ModuleInterface {
-    override fun enabled(): Boolean = ConfigManager.data.doorsModule.enabled
+class DoorsModule : ModuleInterface<DoorsModule.Config> {
+    override val config: Config = Config()
+
+    override fun enabled(): Boolean = config.enabled
 
     private val autoClose = mutableMapOf<Block, Long>()
     private val possibleNeighbours = listOf(
@@ -55,8 +59,8 @@ class DoorsModule : ModuleInterface {
                         System.currentTimeMillis() >= time && handleAutoClose(block)
                     }
                 },
-                ConfigManager.data.doorsModule.initDelay,
-                ConfigManager.data.doorsModule.interval
+                config.initDelay,
+                config.interval
             )
         }
     }
@@ -110,7 +114,7 @@ class DoorsModule : ModuleInterface {
      */
     private fun handleDoorClose(block: Block, door: Door) {
         getOtherPart(door, block)?.let { toggleOtherDoor(block, it, false) }
-        block.world.playSound(ConfigManager.data.doorsModule.soundDoorClose.toSound())
+        block.world.playSound(config.soundDoorClose.toSound())
     }
 
     /**
@@ -118,7 +122,7 @@ class DoorsModule : ModuleInterface {
      * @param block The block representing the gate being closed.
      */
     private fun handleGateClose(block: Block) =
-        block.world.playSound(ConfigManager.data.doorsModule.soundGateClose.toSound())
+        block.world.playSound(config.soundGateClose.toSound())
 
     /**
      * Checks if the interaction event is valid for processing.
@@ -138,7 +142,7 @@ class DoorsModule : ModuleInterface {
      */
     private fun handleLeftClick(event: PlayerInteractEvent, block: Block) {
         if (canKnock(event, event.player) && isKnockableBlock(block.blockData)) {
-            block.world.playSound(ConfigManager.data.doorsModule.soundKnock.toSound())
+            block.world.playSound(config.soundKnock.toSound())
         }
     }
 
@@ -147,11 +151,11 @@ class DoorsModule : ModuleInterface {
      * @param block The block representing the door or gate being interacted with.
      */
     private fun handleRightClick(block: Block) {
-        if (ConfigManager.data.doorsModule.allowDoubleDoors && (block.blockData is Door || block.blockData is Gate)) {
+        if (config.allowDoubleDoors && (block.blockData is Door || block.blockData is Gate)) {
             processDoorOrGateInteraction(block)
         }
-        if (ConfigManager.data.doorsModule.allowAutoClose) autoClose[block] =
-            System.currentTimeMillis() + ConfigManager.data.doorsModule.autoCloseDelay
+        if (config.allowAutoClose) autoClose[block] =
+            System.currentTimeMillis() + config.autoCloseDelay
     }
 
     /**
@@ -163,8 +167,8 @@ class DoorsModule : ModuleInterface {
         val door2Block = getOtherPart(getDoorBottom(door, block), block) ?: return
         val secondDoor = door2Block.blockData as? Door ?: return
         toggleOtherDoor(block, door2Block, !secondDoor.isOpen)
-        if (ConfigManager.data.doorsModule.allowAutoClose) {
-            autoClose[door2Block] = System.currentTimeMillis() + ConfigManager.data.doorsModule.autoCloseDelay
+        if (config.allowAutoClose) {
+            autoClose[door2Block] = System.currentTimeMillis() + config.autoCloseDelay
         }
     }
 
@@ -189,8 +193,8 @@ class DoorsModule : ModuleInterface {
      * @return True if the knocking conditions are violated, false otherwise.
      */
     private fun isKnockingConditionViolated(player: Player): Boolean {
-        return (ConfigManager.data.doorsModule.knockingRequiresShifting && !player.isSneaking) ||
-                (ConfigManager.data.doorsModule.knockingRequiresEmptyHand &&
+        return (config.knockingRequiresShifting && !player.isSneaking) ||
+                (config.knockingRequiresEmptyHand &&
                         player.inventory.itemInMainHand.type != Material.AIR)
     }
 
@@ -201,9 +205,9 @@ class DoorsModule : ModuleInterface {
      */
     private fun isKnockableBlock(data: BlockData): Boolean {
         return when (data) {
-            is Door -> ConfigManager.data.doorsModule.allowKnockingDoors
-            is Gate -> ConfigManager.data.doorsModule.allowKnockingGates
-            is TrapDoor -> ConfigManager.data.doorsModule.allowKnockingTrapdoors
+            is Door -> config.allowKnockingDoors
+            is Gate -> config.allowKnockingGates
+            is TrapDoor -> config.allowKnockingTrapdoors
             else -> false
         }
     }
@@ -223,7 +227,7 @@ class DoorsModule : ModuleInterface {
                 val door2 = block2.blockData as Door
                 if (door.isOpen != door2.isOpen) toggleDoor(block2, door2, open)
             },
-            ConfigManager.data.doorsModule.initDelay
+            config.initDelay
         )
     }
 
@@ -256,4 +260,30 @@ class DoorsModule : ModuleInterface {
             } != null
         }?.let { block.getRelative(it.offsetX, 0, it.offsetZ) }
     }
+
+    data class Config(
+        override var enabled: Boolean = true,
+        var initDelay: Long = 1L,
+        var interval: Long = 1L,
+        var allowAutoClose: Boolean = true,
+        var allowDoubleDoors: Boolean = true,
+        var allowKnockingDoors: Boolean = true,
+        var allowKnockingGates: Boolean = true,
+        var allowKnockingTrapdoors: Boolean = true,
+        var knockingRequiresEmptyHand: Boolean = true,
+        var knockingRequiresShifting: Boolean = true,
+        var autoCloseDelay: Long = 6L * 1000L,
+        var soundDoorClose: SoundData = SoundData(
+            BukkitSound.BLOCK_IRON_DOOR_CLOSE,
+            Sound.Source.BLOCK
+        ),
+        var soundGateClose: SoundData = SoundData(
+            BukkitSound.BLOCK_FENCE_GATE_CLOSE,
+            Sound.Source.BLOCK
+        ),
+        var soundKnock: SoundData = SoundData(
+            BukkitSound.ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR,
+            Sound.Source.HOSTILE
+        ),
+    ) : ModuleInterface.Config
 }

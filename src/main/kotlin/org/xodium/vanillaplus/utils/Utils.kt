@@ -22,7 +22,7 @@ import org.bukkit.util.Vector
 import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.managers.ChestAccessManager
-import org.xodium.vanillaplus.managers.ConfigManager
+import org.xodium.vanillaplus.modules.InvUnloadModule
 import org.xodium.vanillaplus.registries.MaterialRegistry
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
@@ -61,7 +61,7 @@ object Utils {
      * @return True if the enchantments match, false otherwise.
      */
     private fun hasMatchingEnchantments(first: ItemStack, second: ItemStack): Boolean {
-        val config = ConfigManager.data.invUnloadModule
+        val config = InvUnloadModule.Config()
 
         if (!config.matchEnchantments && (!config.matchEnchantmentsOnBooks || first.type != Material.ENCHANTED_BOOK)) return true
 

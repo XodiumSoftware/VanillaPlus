@@ -6,21 +6,26 @@
 package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.command.brigadier.Commands
+import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.data.BossBarData
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
+import org.xodium.vanillaplus.utils.TimeUtils
 import org.xodium.vanillaplus.utils.Utils
 import java.time.LocalTime
 import java.time.temporal.ChronoUnit
 
 /** Represents a module handling auto-restart mechanics within the system. */
-class AutoRestartModule : ModuleInterface {
-    override fun enabled(): Boolean = ConfigManager.data.autoRestartModule.enabled
+class AutoRestartModule : ModuleInterface<AutoRestartModule.Config> {
+    override val config: Config = Config()
+
+    override fun enabled(): Boolean = config.enabled
 
     @Suppress("UnstableApiUsage")
     override fun cmds(): CommandData? {
@@ -50,24 +55,24 @@ class AutoRestartModule : ModuleInterface {
             instance.server.scheduler.runTaskTimerAsynchronously(
                 instance,
                 Runnable {
-                    ConfigManager.data.autoRestartModule.restartTimes.forEach {
+                    config.restartTimes.forEach {
                         if (isTimeToStartCountdown(it)) {
                             instance.server.scheduler.runTask(instance, Runnable { countdown() })
                         }
                     }
                 },
-                ConfigManager.data.autoRestartModule.scheduleInitDelay,
-                ConfigManager.data.autoRestartModule.scheduleInterval
+                config.scheduleInitDelay,
+                config.scheduleInterval
             )
         }
     }
 
     /** Triggers a countdown for the server restart. */
     private fun countdown() {
-        val totalMinutes = ConfigManager.data.autoRestartModule.countdownStartMinutes
+        val totalMinutes = config.countdownStartMinutes
         var remainingSeconds = totalMinutes * 60
         val totalSeconds = remainingSeconds
-        val bossBar = ConfigManager.data.autoRestartModule.bossbar.toBossBar()
+        val bossBar = config.bossbar.toBossBar()
         instance.server.onlinePlayers.forEach { player -> player.showBossBar(bossBar) }
         instance.server.scheduler.runTaskTimer(
             instance,
@@ -78,7 +83,7 @@ class AutoRestartModule : ModuleInterface {
                         if (remainingSeconds % 60 > 0) (remainingSeconds / 60) + 1 else remainingSeconds / 60
                     val progress = remainingSeconds.toFloat() / totalSeconds
                     bossBar.name(
-                        ConfigManager.data.autoRestartModule.bossbar.name
+                        config.bossbar.name
                             .mm(Placeholder.component("time", displayTime.toString().mm()))
                     )
                     bossBar.progress(progress)
@@ -90,8 +95,8 @@ class AutoRestartModule : ModuleInterface {
                     instance.server.restart()
                 }
             },
-            ConfigManager.data.autoRestartModule.countdownInitDelay,
-            ConfigManager.data.autoRestartModule.countdownInterval
+            config.countdownInitDelay,
+            config.countdownInterval
         )
     }
 
@@ -103,8 +108,29 @@ class AutoRestartModule : ModuleInterface {
     private fun isTimeToStartCountdown(restartTime: LocalTime): Boolean {
         val now = LocalTime.now().truncatedTo(ChronoUnit.SECONDS)
         val trigger = restartTime
-            .minusMinutes(ConfigManager.data.autoRestartModule.countdownStartMinutes.toLong())
+            .minusMinutes(config.countdownStartMinutes.toLong())
             .truncatedTo(ChronoUnit.SECONDS)
         return now.equals(trigger)
     }
+
+    data class Config(
+        override var enabled: Boolean = true,
+        var restartTimes: MutableList<LocalTime> = mutableListOf(
+            LocalTime.of(0, 0),
+            LocalTime.of(6, 0),
+            LocalTime.of(12, 0),
+            LocalTime.of(18, 0),
+        ),
+        var bossbar: BossBarData = BossBarData(
+            "⚡ RESTARTING in <time> minute(s) ⚡".fireFmt(),
+            1.0f,
+            BossBar.Color.RED,
+            BossBar.Overlay.PROGRESS,
+        ),
+        var scheduleInitDelay: Long = TimeUtils.seconds(0),
+        var scheduleInterval: Long = TimeUtils.seconds(1),
+        var countdownInitDelay: Long = TimeUtils.seconds(0),
+        var countdownInterval: Long = TimeUtils.seconds(1),
+        var countdownStartMinutes: Int = 5,
+    ) : ModuleInterface.Config
 }

@@ -21,7 +21,6 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.world.StructureGrowEvent
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.registries.MaterialRegistry
 import java.io.IOException
 import java.nio.channels.Channels
@@ -33,9 +32,11 @@ import java.nio.file.StandardOpenOption
 import java.util.stream.Collectors
 
 /** Represents a module handling tree mechanics within the system. */
-class TreesModule : ModuleInterface {
+class TreesModule : ModuleInterface<TreesModule.Config> {
+    override val config: Config = Config()
+
     override fun enabled(): Boolean {
-        if (!ConfigManager.data.treesModule.enabled) return false
+        if (!config.enabled) return false
 
         val worldEdit = instance.server.pluginManager.getPlugin("WorldEdit") != null
         if (!worldEdit) instance.logger.warning("WorldEdit not found, disabling TreesModule")
@@ -45,7 +46,7 @@ class TreesModule : ModuleInterface {
 
     /** A map of sapling materials to a list of schematics. */
     private val schematicCache: Map<Material, List<Clipboard>> by lazy {
-        ConfigManager.data.treesModule.saplingLink.mapValues { (_, dirs) ->
+        config.saplingLink.mapValues { (_, dirs) ->
             dirs.flatMap { dir -> loadSchematics("/schematics/$dir") }
         }
     }
@@ -126,10 +127,10 @@ class TreesModule : ModuleInterface {
                                 ClipboardHolder(clipboard)
                                     .createPaste(editSession)
                                     .to(BlockVector3.at(block.x, block.y, block.z))
-                                    .copyBiomes(ConfigManager.data.treesModule.copyBiomes)
-                                    .copyEntities(ConfigManager.data.treesModule.copyEntities)
-                                    .ignoreAirBlocks(ConfigManager.data.treesModule.ignoreAirBlocks)
-                                    .ignoreStructureVoidBlocks(ConfigManager.data.treesModule.ignoreStructureVoidBlocks)
+                                    .copyBiomes(config.copyBiomes)
+                                    .copyEntities(config.copyEntities)
+                                    .ignoreAirBlocks(config.ignoreAirBlocks)
+                                    .ignoreStructureVoidBlocks(config.ignoreStructureVoidBlocks)
                                     .build()
                             )
                         }
@@ -139,4 +140,25 @@ class TreesModule : ModuleInterface {
             })
         return true
     }
+
+    data class Config(
+        override var enabled: Boolean = true,
+        var copyBiomes: Boolean = false,
+        var copyEntities: Boolean = false,
+        var ignoreAirBlocks: Boolean = true,
+        var ignoreStructureVoidBlocks: Boolean = true,
+        var saplingLink: Map<Material, List<String>> = mapOf(
+            Material.ACACIA_SAPLING to listOf("trees/acacia"),
+            Material.BIRCH_SAPLING to listOf("trees/birch"),
+            Material.CHERRY_SAPLING to listOf("trees/cherry"),
+            Material.CRIMSON_FUNGUS to listOf("trees/crimson"),
+            Material.DARK_OAK_SAPLING to listOf("trees/dark_oak"),
+            Material.JUNGLE_SAPLING to listOf("trees/jungle"),
+            Material.MANGROVE_PROPAGULE to listOf("trees/mangrove"),
+            Material.OAK_SAPLING to listOf("trees/oak"),
+            Material.PALE_OAK_SAPLING to listOf("trees/pale_oak"),
+            Material.SPRUCE_SAPLING to listOf("trees/spruce"),
+            Material.WARPED_FUNGUS to listOf("trees/warped"),
+        ),
+    ) : ModuleInterface.Config
 }

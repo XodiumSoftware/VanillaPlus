@@ -21,18 +21,21 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
+import org.xodium.vanillaplus.data.SoundData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.ChestAccessManager
-import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.managers.CooldownManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.Utils
+import org.bukkit.Sound as BukkitSound
 
 /** Represents a module handling inv-unload mechanics within the system. */
-class InvUnloadModule : ModuleInterface {
-    override fun enabled(): Boolean = ConfigManager.data.invUnloadModule.enabled
+class InvUnloadModule : ModuleInterface<InvUnloadModule.Config> {
+    override val config: Config = Config()
+
+    override fun enabled(): Boolean = config.enabled
 
     @Suppress("UnstableApiUsage")
     override fun cmds(): CommandData? {
@@ -72,7 +75,7 @@ class InvUnloadModule : ModuleInterface {
      */
     private fun unload(player: Player) {
         val cooldownKey = NamespacedKey(instance, "invunload_cooldown")
-        val cooldownDuration = ConfigManager.data.invUnloadModule.cooldown
+        val cooldownDuration = config.cooldown
         if (CooldownManager.isOnCooldown(player, cooldownKey, cooldownDuration)) {
             return player.sendActionBar("You must wait before using this again.".fireFmt().mm())
         }
@@ -80,7 +83,7 @@ class InvUnloadModule : ModuleInterface {
 
         val startSlot = 9
         val endSlot = 35
-        val chests = Utils.findBlocksInRadius(player.location, ConfigManager.data.invUnloadModule.radius)
+        val chests = Utils.findBlocksInRadius(player.location, config.radius)
         if (chests.isEmpty()) {
             return player.sendActionBar("No chests found nearby".fireFmt().mm())
         }
@@ -110,7 +113,7 @@ class InvUnloadModule : ModuleInterface {
             Utils.chestEffect(player, block)
         }
 
-        player.playSound(ConfigManager.data.invUnloadModule.soundOnUnload.toSound(), Sound.Emitter.self())
+        player.playSound(config.soundOnUnload.toSound(), Sound.Emitter.self())
     }
 
     /**
@@ -157,4 +160,15 @@ class InvUnloadModule : ModuleInterface {
      */
     private fun countInventoryContents(inv: Inventory): Int = inv.contents.filterNotNull().sumOf { it.amount }
 
+    data class Config(
+        override var enabled: Boolean = true,
+        var radius: Int = 5,
+        var cooldown: Long = 1L * 1000L,
+        var matchEnchantments: Boolean = true,
+        var matchEnchantmentsOnBooks: Boolean = true,
+        var soundOnUnload: SoundData = SoundData(
+            BukkitSound.ENTITY_PLAYER_LEVELUP,
+            Sound.Source.PLAYER
+        )
+    ) : ModuleInterface.Config
 }

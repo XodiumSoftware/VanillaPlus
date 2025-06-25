@@ -5,11 +5,14 @@
 
 package org.xodium.vanillaplus.managers
 
+import com.fasterxml.jackson.databind.JsonNode
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
+import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.modules.*
 import kotlin.time.measureTime
+
 
 /** Represents the module manager within the system. */
 @Suppress("MemberVisibilityCanBePrivate")
@@ -47,6 +50,21 @@ object ModuleManager {
     )
 
     init {
+        val allConfigsNode: JsonNode? = ConfigManager.load()
+        val configsToSave = mutableMapOf<String, ModuleInterface.Config>()
+        modules.forEach { module ->
+            val configKey = module::class.simpleName!!.removeSuffix("Module").replaceFirstChar { it.lowercase() }
+            allConfigsNode?.get(configKey)?.let { moduleConfigNode ->
+                try {
+                    ConfigManager.objectMapper.readerForUpdating(module.config).readValue(moduleConfigNode)
+                } catch (e: Exception) {
+                    instance.logger.warning("Failed to parse config for ${module::class.simpleName}. Using defaults. Error: ${e.message}")
+                }
+            }
+            configsToSave[configKey] = module.config
+        }
+        ConfigManager.save(configsToSave)
+
         val commandsToRegister = mutableListOf<CommandData>()
         modules.filter { it.enabled() }.forEach { module ->
             instance.logger.info(

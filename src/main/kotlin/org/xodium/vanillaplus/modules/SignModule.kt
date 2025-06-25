@@ -10,11 +10,12 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.SignChangeEvent
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 
-class SignModule : ModuleInterface {
-    override fun enabled(): Boolean = ConfigManager.data.signModule.enabled
+class SignModule : ModuleInterface<SignModule.Config> {
+    override val config: Config = Config()
+
+    override fun enabled(): Boolean = config.enabled
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: SignChangeEvent) {
@@ -25,4 +26,8 @@ class SignModule : ModuleInterface {
             lines[i] = PlainTextComponentSerializer.plainText().serialize(lines[i]).mm()
         }
     }
+
+    data class Config(
+        override var enabled: Boolean = true
+    ) : ModuleInterface.Config
 }
