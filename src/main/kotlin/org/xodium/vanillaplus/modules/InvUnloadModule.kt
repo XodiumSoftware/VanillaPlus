@@ -83,7 +83,7 @@ class InvUnloadModule : ModuleInterface<InvUnloadModule.Config> {
 
         val startSlot = 9
         val endSlot = 35
-        val chests = Utils.findBlocksInRadius(player.location, config.radius)
+        val chests = Utils.findBlocksInRadius(player.location, config.unloadRadius)
         if (chests.isEmpty()) {
             return player.sendActionBar("No chests found nearby".fireFmt().mm())
         }
@@ -162,7 +162,7 @@ class InvUnloadModule : ModuleInterface<InvUnloadModule.Config> {
 
     data class Config(
         override var enabled: Boolean = true,
-        var radius: Int = 5,
+        var unloadRadius: Int = 5,
         var cooldown: Long = 1L * 1000L,
         var matchEnchantments: Boolean = true,
         var matchEnchantmentsOnBooks: Boolean = true,
