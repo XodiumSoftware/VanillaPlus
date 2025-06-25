@@ -35,9 +35,9 @@ object ConfigManager {
         try {
             if (Files.exists(configPath)) {
                 if (!silent) instance.logger.info("Config: Loading settings.")
-                data = objectMapper
+                objectMapper
                     .readerForUpdating(data)
-                    .readValue(Files.readString(configPath))
+                    .readValue(Files.readString(configPath), data::class.java)
                 if (!silent) instance.logger.info("Config: Settings loaded successfully.")
             } else {
                 instance.logger.info("Config: No config file found, creating new config.")
