@@ -33,7 +33,9 @@ import java.nio.file.StandardOpenOption
 import java.util.stream.Collectors
 
 /** Represents a module handling tree mechanics within the system. */
-class TreesModule : ModuleInterface {
+class TreesModule : ModuleInterface<TreesModule.Config> {
+    override val config: Config = Config()
+
     override fun enabled(): Boolean {
         if (!ConfigManager.data.treesModule.enabled) return false
 
@@ -139,4 +141,8 @@ class TreesModule : ModuleInterface {
             })
         return true
     }
+
+    data class Config(
+        override val enabled: Boolean = true
+    ) : ModuleInterface.Config
 }

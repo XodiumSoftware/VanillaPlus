@@ -13,7 +13,9 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 
-class SignModule : ModuleInterface {
+class SignModule : ModuleInterface<SignModule.Config> {
+    override val config: Config = Config()
+
     override fun enabled(): Boolean = ConfigManager.data.signModule.enabled
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -25,4 +27,8 @@ class SignModule : ModuleInterface {
             lines[i] = PlainTextComponentSerializer.plainText().serialize(lines[i]).mm()
         }
     }
+
+    data class Config(
+        override val enabled: Boolean = true
+    ) : ModuleInterface.Config
 }

@@ -19,8 +19,10 @@ import java.time.LocalTime
 import java.time.temporal.ChronoUnit
 
 /** Represents a module handling auto-restart mechanics within the system. */
-class AutoRestartModule : ModuleInterface {
-    override fun enabled(): Boolean = ConfigManager.data.autoRestartModule.enabled
+class AutoRestartModule : ModuleInterface<AutoRestartModule.Config> {
+    override val config: Config = Config()
+
+    override fun enabled(): Boolean = config.enabled
 
     @Suppress("UnstableApiUsage")
     override fun cmds(): CommandData? {
@@ -107,4 +109,8 @@ class AutoRestartModule : ModuleInterface {
             .truncatedTo(ChronoUnit.SECONDS)
         return now.equals(trigger)
     }
+
+    data class Config(
+        override val enabled: Boolean = true
+    ) : ModuleInterface.Config
 }

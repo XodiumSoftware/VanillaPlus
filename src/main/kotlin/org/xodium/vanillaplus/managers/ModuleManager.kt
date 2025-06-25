@@ -48,7 +48,9 @@ object ModuleManager {
 
     init {
         val commandsToRegister = mutableListOf<CommandData>()
-        modules.filter { it.enabled() }.forEach { module ->
+        modules.filter {
+            it.config.enabled
+        }.forEach { module ->
             instance.logger.info(
                 "Loaded: ${module::class.simpleName} | Took ${
                     measureTime {

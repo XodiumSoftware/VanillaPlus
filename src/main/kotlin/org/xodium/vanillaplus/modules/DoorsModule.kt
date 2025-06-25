@@ -28,8 +28,10 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.ConfigManager
 
 /** Represents a module handling door mechanics within the system. */
-class DoorsModule : ModuleInterface {
-    override fun enabled(): Boolean = ConfigManager.data.doorsModule.enabled
+class DoorsModule : ModuleInterface<DoorsModule.Config> {
+    override val config: Config = Config()
+
+    override fun enabled(): Boolean = config.enabled
 
     private val autoClose = mutableMapOf<Block, Long>()
     private val possibleNeighbours = listOf(
@@ -256,4 +258,8 @@ class DoorsModule : ModuleInterface {
             } != null
         }?.let { block.getRelative(it.offsetX, 0, it.offsetZ) }
     }
+
+    data class Config(
+        override val enabled: Boolean = true
+    ) : ModuleInterface.Config
 }

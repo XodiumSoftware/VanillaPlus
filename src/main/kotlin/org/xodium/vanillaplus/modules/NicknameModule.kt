@@ -17,14 +17,13 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.NicknameData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.Utils
 
-class NicknameModule(private val tabListModule: TabListModule) : ModuleInterface {
-    override fun enabled(): Boolean {
-        return ConfigManager.data.nicknameModule.enabled && tabListModule.enabled()
-    }
+class NicknameModule(private val tabListModule: TabListModule) : ModuleInterface<NicknameModule.Config> {
+    override val config: Config = Config()
+
+    override fun enabled(): Boolean = config.enabled && tabListModule.enabled()
 
     override fun cmds(): CommandData? {
         return CommandData(
@@ -79,4 +78,8 @@ class NicknameModule(private val tabListModule: TabListModule) : ModuleInterface
         }
         tabListModule.updatePlayerDisplayName(player)
     }
+
+    data class Config(
+        override val enabled: Boolean = true
+    ) : ModuleInterface.Config
 }

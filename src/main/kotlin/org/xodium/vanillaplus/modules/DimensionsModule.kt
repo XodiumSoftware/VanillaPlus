@@ -23,8 +23,10 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 
 /** Represents a module handling dimension mechanics within the system. */
-class DimensionsModule : ModuleInterface {
-    override fun enabled(): Boolean = ConfigManager.data.dimensionsModule.enabled
+class DimensionsModule : ModuleInterface<DimensionsModule.Config> {
+    override val config: Config = Config()
+
+    override fun enabled(): Boolean = config.enabled
 
     companion object {
         private val ADJACENT_DIRECTIONS = listOf<Vector>(
@@ -175,4 +177,8 @@ class DimensionsModule : ModuleInterface {
             }
         }
     }
+
+    data class Config(
+        override val enabled: Boolean = true
+    ) : ModuleInterface.Config
 }

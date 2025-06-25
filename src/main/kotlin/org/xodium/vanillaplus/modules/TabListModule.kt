@@ -22,7 +22,9 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 import kotlin.math.roundToInt
 
 /** Represents a module handling tab-list mechanics within the system. */
-class TabListModule : ModuleInterface {
+class TabListModule : ModuleInterface<TabListModule.Config> {
+    override val config: Config = Config()
+
     override fun enabled(): Boolean = ConfigManager.data.tabListModule.enabled
 
     init {
@@ -121,4 +123,8 @@ class TabListModule : ModuleInterface {
             else -> "<green>\uD83C\uDF24<reset>"
         }
     }
+
+    data class Config(
+        override val enabled: Boolean = true
+    ) : ModuleInterface.Config
 }

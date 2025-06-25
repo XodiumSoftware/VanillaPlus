@@ -16,10 +16,11 @@ import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.utils.Utils
 
 /** Represents a module handling book mechanics within the system. */
-class BooksModule : ModuleInterface {
-    override fun enabled(): Boolean = ConfigManager.data.booksModule.enabled
-
+class BooksModule : ModuleInterface<BooksModule.Config> {
+    override val config: Config = Config()
     private val permPrefix: String = "${instance::class.simpleName}.book".lowercase()
+
+    override fun enabled(): Boolean = config.enabled
 
     @Suppress("UnstableApiUsage")
     override fun cmds(): CommandData? {
@@ -43,4 +44,8 @@ class BooksModule : ModuleInterface {
             )
         }
     }
+
+    data class Config(
+        override val enabled: Boolean = true
+    ) : ModuleInterface.Config
 }

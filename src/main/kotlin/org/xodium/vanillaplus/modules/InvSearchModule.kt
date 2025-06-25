@@ -35,8 +35,10 @@ import org.xodium.vanillaplus.utils.Utils
 import java.util.concurrent.CompletableFuture
 
 /** Represents a module handling inv-search mechanics within the system. */
-class InvSearchModule : ModuleInterface {
-    override fun enabled(): Boolean = ConfigManager.data.invSearchModule.enabled
+class InvSearchModule : ModuleInterface<InvSearchModule.Config> {
+    override val config: Config = Config()
+
+    override fun enabled(): Boolean = config.enabled
 
     override fun cmds(): CommandData? {
         return CommandData(
@@ -220,4 +222,8 @@ class InvSearchModule : ModuleInterface {
             }
         }
     }
+
+    data class Config(
+        override val enabled: Boolean = true
+    ) : ModuleInterface.Config
 }

@@ -31,8 +31,10 @@ import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.Utils
 
 /** Represents a module handling inv-unload mechanics within the system. */
-class InvUnloadModule : ModuleInterface {
-    override fun enabled(): Boolean = ConfigManager.data.invUnloadModule.enabled
+class InvUnloadModule : ModuleInterface<InvUnloadModule.Config> {
+    override val config: Config = Config()
+
+    override fun enabled(): Boolean = config.enabled
 
     @Suppress("UnstableApiUsage")
     override fun cmds(): CommandData? {
@@ -157,4 +159,7 @@ class InvUnloadModule : ModuleInterface {
      */
     private fun countInventoryContents(inv: Inventory): Int = inv.contents.filterNotNull().sumOf { it.amount }
 
+    data class Config(
+        override val enabled: Boolean = true
+    ) : ModuleInterface.Config
 }

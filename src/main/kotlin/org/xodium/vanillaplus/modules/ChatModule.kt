@@ -30,8 +30,10 @@ import org.xodium.vanillaplus.utils.SkinUtils.faceToMM
 import org.xodium.vanillaplus.utils.Utils
 import java.util.concurrent.CompletableFuture
 
-class ChatModule : ModuleInterface {
-    override fun enabled(): Boolean = ConfigManager.data.chatModule.enabled
+class ChatModule : ModuleInterface<ChatModule.Config> {
+    override val config: Config = Config()
+
+    override fun enabled(): Boolean = config.enabled
 
     @Suppress("UnstableApiUsage")
     override fun cmds(): CommandData? {
@@ -86,7 +88,7 @@ class ChatModule : ModuleInterface {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun on(event: AsyncChatEvent) {
-        if (!enabled()) return
+        if (!config.enabled) return
         event.renderer { source, displayName, message, _ ->
             ConfigManager.data.chatModule.chatFormat.mm(
                 Placeholder.component(
@@ -102,7 +104,7 @@ class ChatModule : ModuleInterface {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
-        if (!enabled()) return
+        if (!config.enabled) return
 
         event.joinMessage(null)
 
@@ -137,7 +139,7 @@ class ChatModule : ModuleInterface {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerQuitEvent) {
-        if (!enabled()) return
+        if (!config.enabled) return
 
         event.quitMessage(null)
 
@@ -184,4 +186,8 @@ class ChatModule : ModuleInterface {
             )
         )
     }
+
+    data class Config(
+        override val enabled: Boolean = true
+    ) : ModuleInterface.Config
 }
