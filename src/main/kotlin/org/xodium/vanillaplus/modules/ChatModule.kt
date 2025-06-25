@@ -129,7 +129,7 @@ class ChatModule : ModuleInterface<ChatModule.Config> {
         val playerComponent = player
             .displayName()
             .clickEvent(ClickEvent.suggestCommand("/nickname ${player.name}"))
-            .hoverEvent(HoverEvent.showText(Utils.cmdHover.mm()))
+            .hoverEvent(HoverEvent.showText("Click Me!".fireFmt().mm()))
 
         player.sendMessage(
             welcomeText.mm(
@@ -201,8 +201,8 @@ class ChatModule : ModuleInterface<ChatModule.Config> {
         <image>${"⯈".mangoFmt(true)}
         <image>${"⯈".mangoFmt(true)}
         <image>${"⯈".mangoFmt(true)} ${"Check out".fireFmt()}<gray>: ${
-                "/rules".clickRunCmd(Utils.cmdHover).skylineFmt()
-            } <gray>🟅 ${"/guide".clickRunCmd(Utils.cmdHover).skylineFmt()}
+                "/rules".clickRunCmd("Click Me!".fireFmt()).skylineFmt()
+            } <gray>🟅 ${"/guide".clickRunCmd("Click Me!".fireFmt()).skylineFmt()}
         <image>${"⯈".mangoFmt(true)}
         <image>${"⯈".mangoFmt(true)}
         ${"]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)}

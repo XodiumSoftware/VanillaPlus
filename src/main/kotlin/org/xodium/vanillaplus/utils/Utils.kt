@@ -25,7 +25,6 @@ import org.xodium.vanillaplus.managers.ChestAccessManager
 import org.xodium.vanillaplus.modules.InvUnloadModule
 import org.xodium.vanillaplus.registries.MaterialRegistry
 import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -34,7 +33,6 @@ object Utils {
     private val unloads = ConcurrentHashMap<Location, MutableMap<Material, Int>>()
     val lastUnloads: ConcurrentHashMap<UUID, List<Block>> = ConcurrentHashMap()
     val activeVisualizations: ConcurrentHashMap<UUID, Int> = ConcurrentHashMap()
-    val cmdHover: String = "Click Me!".fireFmt()
 
     /**
      * A helper function to wrap command execution with standardised error handling.
