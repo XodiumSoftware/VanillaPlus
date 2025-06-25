@@ -100,14 +100,14 @@ object Utils {
      * @return A list of blocks found within the radius.
      */
     fun findBlocksInRadius(loc: Location, radius: Int): MutableList<Block> {
-        val box = BoundingBox.of(loc, radius.toDouble(), radius.toDouble(), radius.toDouble())
-        val chunks = getChunksInBox(loc.world, box)
-        val radiusSq = radius * radius
-        return chunks.flatMap { chunk ->
+        return getChunksInBox(
+            loc.world,
+            BoundingBox.of(loc, radius.toDouble(), radius.toDouble(), radius.toDouble())
+        ).flatMap { chunk ->
             chunk.tileEntities.filter { state ->
                 state is Container &&
                         MaterialRegistry.CONTAINER_TYPES.contains(state.type) &&
-                        state.location.distanceSquared(loc) <= radiusSq &&
+                        state.location.distanceSquared(loc) <= radius * radius &&
                         (state.type != Material.CHEST ||
                                 !(state.block.getRelative(BlockFace.UP).type.isSolid &&
                                         state.block.getRelative(BlockFace.UP).type.isOccluding))
