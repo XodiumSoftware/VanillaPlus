@@ -46,7 +46,7 @@ class InvUnloadModule : ModuleInterface<InvUnloadModule.Config> {
                     .executes { ctx -> Utils.tryCatch(ctx) { unload(it.sender as Player) } }
             ),
             "Allows players to unload their inventory into nearby chests.",
-            listOf("unloadinv", "invu")
+            listOf("unload", "unloadinv", "invu")
         )
     }
 

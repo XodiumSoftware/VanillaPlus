@@ -59,7 +59,7 @@ class InvSearchModule : ModuleInterface<InvSearchModule.Config> {
                     .executes { ctx -> Utils.tryCatch(ctx) { handleSearch(ctx) } }
             ),
             "Allows players to search inventories for specific materials.",
-            listOf("searchinv", "invs")
+            listOf("search", "searchinv", "invs")
         )
     }
 
