@@ -5,6 +5,7 @@
 
 package org.xodium.vanillaplus.managers
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
@@ -28,7 +29,10 @@ data class AllConfigs(
     val tabList: TabListModule.Config = TabListModule.Config(),
     val trees: TreesModule.Config = TreesModule.Config(),
     val trowel: TrowelModule.Config = TrowelModule.Config()
-) : ModuleInterface.Config
+) : ModuleInterface.Config {
+    @JsonIgnore
+    override var enabled: Boolean = true
+}
 
 /** Represents the module manager within the system. */
 @Suppress("MemberVisibilityCanBePrivate")
