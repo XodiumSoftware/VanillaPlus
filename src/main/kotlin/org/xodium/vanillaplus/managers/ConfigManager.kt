@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.data.ConfigData
+import org.xodium.vanillaplus.interfaces.ModuleInterface
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.StandardOpenOption
@@ -26,17 +26,13 @@ object ConfigManager {
         .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
         .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
 
-    @Volatile
-    var data: ConfigData = ConfigData()
-        private set
-
     /**
      * Initializes the configuration by loading settings from the config file.
+     * @param data The initial configuration data to load.
      * @param silent If true, suppresses logging messages during loading.
      */
-    fun load(silent: Boolean = false) {
+    fun load(data: ModuleInterface.Config, silent: Boolean = false) {
         try {
-            data = ConfigData()
             if (Files.exists(configPath)) {
                 if (!silent) instance.logger.info("Config: Loading settings.")
                 data = objectMapper
@@ -46,14 +42,17 @@ object ConfigManager {
             } else {
                 instance.logger.info("Config: No config file found, creating new config.")
             }
-            save()
+            save(data)
         } catch (e: IOException) {
             instance.logger.severe("Config: Failed to load config file: ${e.printStackTrace()}")
         }
     }
 
-    /** Saves the current settings to the config file. */
-    private fun save() {
+    /**
+     * Saves the current settings to the config file.
+     * @param data The configuration data to save.
+     */
+    private fun save(data: ModuleInterface.Config) {
         try {
             instance.logger.info("Config: Saving settings.")
             Files.createDirectories(configPath.parent)

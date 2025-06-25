@@ -161,7 +161,7 @@ class InvUnloadModule : ModuleInterface<InvUnloadModule.Config> {
     private fun countInventoryContents(inv: Inventory): Int = inv.contents.filterNotNull().sumOf { it.amount }
 
     data class Config(
-        override val enabled: Boolean = true,
+        override var enabled: Boolean = true,
         var radius: Int = 5,
         var cooldown: Long = 1L * 1000L,
         var matchEnchantments: Boolean = true,

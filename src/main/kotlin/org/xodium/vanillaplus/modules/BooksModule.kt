@@ -48,7 +48,7 @@ class BooksModule : ModuleInterface<BooksModule.Config> {
     }
 
     data class Config(
-        override val enabled: Boolean = true,
+        override var enabled: Boolean = true,
         var books: List<BookData> = listOf(
             BookData(
                 "guide",

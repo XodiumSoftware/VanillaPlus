@@ -114,7 +114,7 @@ class AutoRestartModule : ModuleInterface<AutoRestartModule.Config> {
     }
 
     data class Config(
-        override val enabled: Boolean = true,
+        override var enabled: Boolean = true,
         var restartTimes: MutableList<LocalTime> = mutableListOf(
             LocalTime.of(0, 0),
             LocalTime.of(6, 0),

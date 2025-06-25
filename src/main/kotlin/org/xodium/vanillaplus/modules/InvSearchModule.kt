@@ -223,7 +223,7 @@ class InvSearchModule : ModuleInterface<InvSearchModule.Config> {
     }
 
     data class Config(
-        override val enabled: Boolean = true,
+        override var enabled: Boolean = true,
         var cooldown: Long = 1L * 1000L,
         var searchRadius: Int = 5,
     ) : ModuleInterface.Config

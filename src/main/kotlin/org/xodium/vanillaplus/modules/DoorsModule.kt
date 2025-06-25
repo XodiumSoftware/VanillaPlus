@@ -262,7 +262,7 @@ class DoorsModule : ModuleInterface<DoorsModule.Config> {
     }
 
     data class Config(
-        override val enabled: Boolean = true,
+        override var enabled: Boolean = true,
         var initDelay: Long = 1L,
         var interval: Long = 1L,
         var allowAutoClose: Boolean = true,

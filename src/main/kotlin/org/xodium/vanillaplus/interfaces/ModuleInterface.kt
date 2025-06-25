@@ -16,7 +16,7 @@ interface ModuleInterface<out T : ModuleInterface.Config> : Listener {
      * @property enabled Indicates whether the module is enabled or not.
      */
     interface Config {
-        val enabled: Boolean
+        var enabled: Boolean
     }
 
     /**

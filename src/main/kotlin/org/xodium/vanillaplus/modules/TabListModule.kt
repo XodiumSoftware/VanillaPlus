@@ -127,7 +127,7 @@ class TabListModule : ModuleInterface<TabListModule.Config> {
     }
 
     data class Config(
-        override val enabled: Boolean = true,
+        override var enabled: Boolean = true,
         var initDelay: Long = 0L,
         var interval: Long = TimeUtils.seconds(10),
         var header: List<String> = listOf(

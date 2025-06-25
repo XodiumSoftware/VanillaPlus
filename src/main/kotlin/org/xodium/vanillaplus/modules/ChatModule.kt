@@ -190,7 +190,7 @@ class ChatModule : ModuleInterface<ChatModule.Config> {
     }
 
     data class Config(
-        override val enabled: Boolean = true,
+        override var enabled: Boolean = true,
         var chatFormat: String = "<player> <reset>${"›".mangoFmt(true)} <message>",
         var welcomeText: String =
             """

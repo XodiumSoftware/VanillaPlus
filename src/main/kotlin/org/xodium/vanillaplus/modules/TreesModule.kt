@@ -142,7 +142,7 @@ class TreesModule : ModuleInterface<TreesModule.Config> {
     }
 
     data class Config(
-        override val enabled: Boolean = true,
+        override var enabled: Boolean = true,
         var copyBiomes: Boolean = false,
         var copyEntities: Boolean = false,
         var ignoreAirBlocks: Boolean = true,

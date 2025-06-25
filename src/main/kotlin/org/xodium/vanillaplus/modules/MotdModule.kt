@@ -26,7 +26,7 @@ class MotdModule : ModuleInterface<MotdModule.Config> {
     }
 
     data class Config(
-        override val enabled: Boolean = true,
+        override var enabled: Boolean = true,
         val motd: List<String> = listOf(
             "<b>Ultimate Private SMP</b>".fireFmt(),
             "<b>➤ WELCOME BACK LADS!</b>".mangoFmt()

@@ -178,7 +178,7 @@ class DimensionsModule : ModuleInterface<DimensionsModule.Config> {
     }
 
     data class Config(
-        override val enabled: Boolean = true,
+        override var enabled: Boolean = true,
         val portalSearchRadius: Double = 128.0,
     ) : ModuleInterface.Config
 }
