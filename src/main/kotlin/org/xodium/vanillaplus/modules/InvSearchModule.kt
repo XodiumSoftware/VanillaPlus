@@ -6,9 +6,7 @@
 package org.xodium.vanillaplus.modules
 
 import com.mojang.brigadier.arguments.StringArgumentType
-import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
-import com.mojang.brigadier.suggestion.SuggestionProvider
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.Material
@@ -24,9 +22,9 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.ChestAccessManager
-import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.managers.CooldownManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
@@ -36,29 +34,31 @@ import org.xodium.vanillaplus.utils.Utils
 import java.util.concurrent.CompletableFuture
 
 /** Represents a module handling inv-search mechanics within the system. */
-class InvSearchModule : ModuleInterface {
-    override fun enabled(): Boolean = ConfigManager.data.invSearchModule.enabled
+class InvSearchModule : ModuleInterface<InvSearchModule.Config> {
+    override val config: Config = Config()
 
-    @Suppress("UnstableApiUsage")
-    private val materialSuggestionProvider = SuggestionProvider<CommandSourceStack> { ctx, builder ->
-        Material.entries
-            .map { it.name.lowercase() }
-            .filter { it.startsWith(builder.remaining.lowercase()) }
-            .forEach { builder.suggest(it) }
-        CompletableFuture.completedFuture(builder.build())
-    }
+    override fun enabled(): Boolean = config.enabled
 
-    @Suppress("UnstableApiUsage")
-    override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
-        return listOf(
-            Commands.literal("invsearch")
-                .requires { it.sender.hasPermission(perms()[0]) }
-                .then(
-                    Commands.argument("material", StringArgumentType.word())
-                        .suggests(materialSuggestionProvider)
-                        .executes { ctx -> Utils.tryCatch(ctx) { handleSearch(ctx) } }
-                )
-                .executes { ctx -> Utils.tryCatch(ctx) { handleSearch(ctx) } }
+    override fun cmds(): CommandData? {
+        return CommandData(
+            listOf(
+                Commands.literal("invsearch")
+                    .requires { it.sender.hasPermission(perms()[0]) }
+                    .then(
+                        Commands.argument("material", StringArgumentType.word())
+                            .suggests { ctx, builder ->
+                                Material.entries
+                                    .map { it.name.lowercase() }
+                                    .filter { it.startsWith(builder.remaining.lowercase()) }
+                                    .forEach(builder::suggest)
+                                CompletableFuture.completedFuture(builder.build())
+                            }
+                            .executes { ctx -> Utils.tryCatch(ctx) { handleSearch(ctx) } }
+                    )
+                    .executes { ctx -> Utils.tryCatch(ctx) { handleSearch(ctx) } }
+            ),
+            "Allows players to search inventories for specific materials.",
+            listOf("search", "searchinv", "invs")
         )
     }
 
@@ -77,7 +77,6 @@ class InvSearchModule : ModuleInterface {
      * @param ctx The command context containing the command source and arguments.
      * @return An integer indicating the result of the command execution.
      */
-    @Suppress("UnstableApiUsage")
     private fun handleSearch(ctx: CommandContext<CommandSourceStack>): Int {
         val player = ctx.source.sender as? Player ?: return 0
         val materialName = runCatching { StringArgumentType.getString(ctx, "material") }.getOrNull()
@@ -99,14 +98,14 @@ class InvSearchModule : ModuleInterface {
      */
     private fun search(player: Player, material: Material) {
         val cooldownKey = NamespacedKey(instance, "invsearch_cooldown")
-        val cooldownDuration = ConfigManager.data.invSearchModule.cooldown
+        val cooldownDuration = config.cooldown
         if (CooldownManager.isOnCooldown(player, cooldownKey, cooldownDuration)) {
             return player.sendActionBar("You must wait before using this again.".fireFmt().mm())
         }
         CooldownManager.setCooldown(player, cooldownKey, System.currentTimeMillis())
 
         val deniedChestKey = NamespacedKey(instance, "denied_chest")
-        val chests = Utils.findBlocksInRadius(player.location, ConfigManager.data.invSearchModule.searchRadius)
+        val chests = Utils.findBlocksInRadius(player.location, config.searchRadius)
             .filter { ChestAccessManager.isAllowed(player, deniedChestKey, it) }
         if (chests.isEmpty()) {
             return player.sendActionBar("No usable chests found for ${"$material".roseFmt()}".fireFmt().mm())
@@ -220,4 +219,10 @@ class InvSearchModule : ModuleInterface {
             }
         }
     }
+
+    data class Config(
+        override var enabled: Boolean = true,
+        var cooldown: Long = 1L * 1000L,
+        var searchRadius: Int = 5,
+    ) : ModuleInterface.Config
 }

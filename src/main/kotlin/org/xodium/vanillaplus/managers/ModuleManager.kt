@@ -5,18 +5,14 @@
 
 package org.xodium.vanillaplus.managers
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder
-import io.papermc.paper.command.brigadier.CommandSourceStack
-import io.papermc.paper.command.brigadier.Commands
+import com.fasterxml.jackson.databind.JsonNode
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
-import net.kyori.adventure.text.event.ClickEvent
-import org.bukkit.entity.Player
-import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.data.CommandData
+import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.modules.*
-import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.Utils
 import kotlin.time.measureTime
+
 
 /** Represents the module manager within the system. */
 @Suppress("MemberVisibilityCanBePrivate")
@@ -28,11 +24,11 @@ object ModuleManager {
     val doorsModule: DoorsModule = DoorsModule()
     val invSearchModule: InvSearchModule = InvSearchModule()
     val invUnloadModule: InvUnloadModule = InvUnloadModule()
-    val joinQuitModule: JoinQuitModule = JoinQuitModule()
     val motdModule: MotdModule = MotdModule()
-    val nicknameModule: NicknameModule = NicknameModule()
     val recipiesModule: RecipiesModule = RecipiesModule()
+    val signModule: SignModule = SignModule()
     val tabListModule: TabListModule = TabListModule()
+    val nicknameModule: NicknameModule = NicknameModule(tabListModule)
     val treesModule: TreesModule = TreesModule()
     val trowelModule: TrowelModule = TrowelModule()
 
@@ -44,69 +40,56 @@ object ModuleManager {
         doorsModule,
         invSearchModule,
         invUnloadModule,
-        joinQuitModule,
         motdModule,
         nicknameModule,
         recipiesModule,
+        signModule,
         tabListModule,
         treesModule,
-        trowelModule,
+        trowelModule
     )
 
-    @Suppress("UnstableApiUsage")
-    private val commands = mutableListOf<LiteralArgumentBuilder<CommandSourceStack>>()
-
     init {
-        modules()
-        commands()
-        permissions()
-    }
+        val allConfigsNode: JsonNode? = ConfigManager.load()
+        val configsToSave = mutableMapOf<String, ModuleInterface.Config>()
+        modules.forEach { module ->
+            val configKey = module::class.simpleName!!.removeSuffix("Module").replaceFirstChar { it.lowercase() }
+            allConfigsNode?.get(configKey)?.let { moduleConfigNode ->
+                try {
+                    ConfigManager.objectMapper.readerForUpdating(module.config).readValue(moduleConfigNode)
+                } catch (e: Exception) {
+                    instance.logger.warning("Failed to parse config for ${module::class.simpleName}. Using defaults. Error: ${e.message}")
+                }
+            }
+            configsToSave[configKey] = module.config
+        }
+        ConfigManager.save(configsToSave)
 
-    /** Registers the modules. */
-    private fun modules() {
+        val commandsToRegister = mutableListOf<CommandData>()
         modules.filter { it.enabled() }.forEach { module ->
             instance.logger.info(
                 "Loaded: ${module::class.simpleName} | Took ${
                     measureTime {
                         instance.server.pluginManager.registerEvents(module, instance)
-                        module.cmds()?.let { commands.addAll(it) }
+                        @Suppress("UnstableApiUsage")
+                        instance.server.pluginManager.addPermissions(module.perms())
+                        module.cmds()?.let { commandsToRegister.add(it) }
                     }.inWholeMilliseconds
                 }ms"
             )
         }
-    }
-
-    /** Registers commands for the modules. */
-    private fun commands() {
-        commands.add(ConfigManager.cmd())
-        commands.takeIf { it.isNotEmpty() }?.let {
-            @Suppress("UnstableApiUsage")
+        //TODO: check if we can make this more compact.
+        commandsToRegister.takeIf { it.isNotEmpty() }?.let {
             instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
-                event.registrar().register(
-                    Commands.literal(instance.name.lowercase())
-                        .executes { it ->
-                            Utils.tryCatch(it) {
-                                (it.sender as Player).sendMessage(
-                                    "$PREFIX v${instance.pluginMeta.version} | Click on me for more info!".mm()
-                                        .clickEvent(ClickEvent.runCommand("/help ${instance.name.lowercase()}"))
-                                )
-                            }
-                        }
-                        .apply { commands.forEach(this::then) }
-                        .build(),
-                    "${instance.name} plugin",
-                    mutableListOf("vp")
-                )
-            }
-        }
-    }
-
-    /** Registers permissions for the modules. */
-    private fun permissions() {
-        instance.server.pluginManager.addPermission(ConfigManager.perm())
-        modules.forEach { module ->
-            module.perms().forEach { perm ->
-                instance.server.pluginManager.addPermission(perm)
+                it.forEach { commandData ->
+                    commandData.commands.forEach { command ->
+                        event.registrar().register(
+                            command.build(),
+                            commandData.description,
+                            commandData.aliases.toMutableList()
+                        )
+                    }
+                }
             }
         }
     }

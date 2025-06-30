@@ -6,7 +6,6 @@
 package org.xodium.vanillaplus
 
 import org.bukkit.plugin.java.JavaPlugin
-import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.managers.ModuleManager
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
@@ -32,10 +31,7 @@ class VanillaPlus : JavaPlugin() {
         when {
             !server.version.contains(SUPPORTED_VERSION) -> disablePlugin(UNSUPPORTED_VERSION_MSG)
             !server.name.contains(SUPPORTED_PLATFORM) -> disablePlugin(UNSUPPORTED_PLATFORM_MSG)
-            else -> {
-                ConfigManager.load()
-                ModuleManager
-            }
+            else -> ModuleManager
         }
     }
 

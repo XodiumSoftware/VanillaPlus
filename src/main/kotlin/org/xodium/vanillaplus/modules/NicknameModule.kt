@@ -6,8 +6,6 @@
 package org.xodium.vanillaplus.modules
 
 import com.mojang.brigadier.arguments.StringArgumentType
-import com.mojang.brigadier.builder.LiteralArgumentBuilder
-import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -16,30 +14,34 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.NicknameData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.managers.ConfigManager
-import org.xodium.vanillaplus.managers.ModuleManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.Utils
 
-class NicknameModule : ModuleInterface {
-    override fun enabled(): Boolean = ConfigManager.data.nicknameModule.enabled
+class NicknameModule(private val tabListModule: TabListModule) : ModuleInterface<NicknameModule.Config> {
+    override val config: Config = Config()
 
-    @Suppress("UnstableApiUsage")
-    override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
-        return listOf(
-            Commands.literal("nickname")
-                .requires { it.sender.hasPermission(perms()[0]) }
-                .executes { ctx -> Utils.tryCatch(ctx) { nickname(it.sender as Player, "") } }
-                .then(
-                    Commands.argument("name", StringArgumentType.greedyString())
-                        .executes { ctx ->
-                            Utils.tryCatch(ctx) {
-                                nickname(it.sender as Player, StringArgumentType.getString(ctx, "name"))
+    override fun enabled(): Boolean = config.enabled && tabListModule.enabled()
+
+    override fun cmds(): CommandData? {
+        return CommandData(
+            listOf(
+                Commands.literal("nickname")
+                    .requires { it.sender.hasPermission(perms()[0]) }
+                    .executes { ctx -> Utils.tryCatch(ctx) { nickname(it.sender as Player, "") } }
+                    .then(
+                        Commands.argument("name", StringArgumentType.greedyString())
+                            .executes { ctx ->
+                                Utils.tryCatch(ctx) {
+                                    nickname(it.sender as Player, StringArgumentType.getString(ctx, "name"))
+                                }
                             }
-                        }
-                )
+                    )
+            ),
+            "Allows players to set or remove their nickname.",
+            listOf("nick")
         )
     }
 
@@ -73,6 +75,10 @@ class NicknameModule : ModuleInterface {
             NicknameData.set(player.uniqueId, name)
             player.displayName(name.mm())
         }
-        ModuleManager.tabListModule.updatePlayerDisplayName(player)
+        tabListModule.updatePlayerDisplayName(player)
     }
+
+    data class Config(
+        override var enabled: Boolean = true
+    ) : ModuleInterface.Config
 }

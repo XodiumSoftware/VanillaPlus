@@ -9,17 +9,17 @@ import java.net.URI
 
 plugins {
     id("java")
-    kotlin("jvm") version "2.1.21"
+    kotlin("jvm") version "2.2.0"
     id("com.gradleup.shadow") version "9.0.0-beta17"
     id("de.undercouch.download") version "5.6.0"
 }
 
 group = "org.xodium.vanillaplus"
-version = "1.13.0"
+version = "1.14.0"
 description = "Minecraft plugin that enhances the base gameplay."
 
 var author: String = "Xodium"
-var apiVersion: String = "1.21.6"
+var apiVersion: String = "1.21.7"
 
 repositories {
     mavenCentral()

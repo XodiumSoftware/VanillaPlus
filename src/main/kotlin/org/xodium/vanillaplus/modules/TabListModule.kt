@@ -17,13 +17,17 @@ import org.bukkit.event.weather.ThunderChangeEvent
 import org.bukkit.event.weather.WeatherChangeEvent
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
+import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
+import org.xodium.vanillaplus.utils.TimeUtils
 import kotlin.math.roundToInt
 
 /** Represents a module handling tab-list mechanics within the system. */
-class TabListModule : ModuleInterface {
-    override fun enabled(): Boolean = ConfigManager.data.tabListModule.enabled
+class TabListModule : ModuleInterface<TabListModule.Config> {
+    override val config: Config = Config()
+
+    override fun enabled(): Boolean = config.enabled
 
     init {
         if (enabled()) {
@@ -35,8 +39,8 @@ class TabListModule : ModuleInterface {
             instance.server.scheduler.runTaskTimer(
                 instance,
                 Runnable { instance.server.onlinePlayers.forEach { updateTabList(it) } },
-                ConfigManager.data.tabListModule.initDelay,
-                ConfigManager.data.tabListModule.interval
+                config.initDelay,
+                config.interval
             )
         }
     }
@@ -73,10 +77,10 @@ class TabListModule : ModuleInterface {
     private fun updateTabList(audience: Audience) {
         val joinConfig = JoinConfiguration.separator(Component.newline())
         audience.sendPlayerListHeaderAndFooter(
-            Component.join(joinConfig, ConfigManager.data.tabListModule.header.mm()),
+            Component.join(joinConfig, config.header.mm()),
             Component.join(
                 joinConfig,
-                ConfigManager.data.tabListModule.footer.mm(
+                config.footer.mm(
                     Placeholder.component("weather", getWeather().mm()),
                     Placeholder.component("tps", getTps().mm())
                 )
@@ -121,4 +125,24 @@ class TabListModule : ModuleInterface {
             else -> "<green>\uD83C\uDF24<reset>"
         }
     }
+
+    data class Config(
+        override var enabled: Boolean = true,
+        var initDelay: Long = 0L,
+        var interval: Long = TimeUtils.seconds(10),
+        var header: List<String> = listOf(
+            "${"]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt()}   ${"⚡ IllyriaRPG 1.21.6 ⚡".fireFmt()}   ${
+                "]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)
+            }",
+            ""
+        ),
+        var footer: List<String> = listOf(
+            "",
+            "${"]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt()}  ${"TPS:".fireFmt()} <tps> ${"|".mangoFmt()} ${
+                "Weather:".fireFmt()
+            } <weather>  ${
+                "]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)
+            }"
+        ),
+    ) : ModuleInterface.Config
 }

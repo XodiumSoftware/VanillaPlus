@@ -5,34 +5,39 @@
 
 package org.xodium.vanillaplus.modules
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder
-import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.entity.Player
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.data.BookData
+import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.managers.ConfigManager
+import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
+import org.xodium.vanillaplus.utils.FmtUtils.skylineFmt
 import org.xodium.vanillaplus.utils.Utils
 
 /** Represents a module handling book mechanics within the system. */
-class BooksModule : ModuleInterface {
-    override fun enabled(): Boolean = ConfigManager.data.booksModule.enabled
-
+class BooksModule : ModuleInterface<BooksModule.Config> {
+    override val config: Config = Config()
     private val permPrefix: String = "${instance::class.simpleName}.book".lowercase()
 
-    @Suppress("UnstableApiUsage")
-    override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
-        return ConfigManager.data.booksModule.books.map { book ->
-            Commands.literal(book.cmd.lowercase())
-                .requires { it.sender.hasPermission("$permPrefix.${book.cmd.lowercase()}") }
-                .executes { ctx -> Utils.tryCatch(ctx) { (ctx.source.sender as Player).openBook(book.toBook()) } }
-        }
+    override fun enabled(): Boolean = config.enabled
+
+    override fun cmds(): CommandData? {
+        return CommandData(
+            config.books.map { book ->
+                Commands.literal(book.cmd.lowercase())
+                    .requires { it.sender.hasPermission("$permPrefix.${book.cmd.lowercase()}") }
+                    .executes { ctx -> Utils.tryCatch(ctx) { (ctx.source.sender as Player).openBook(book.toBook()) } }
+            },
+            "Provides commands to open predefined books.",
+            emptyList()
+        )
     }
 
     override fun perms(): List<Permission> {
-        return ConfigManager.data.booksModule.books.map {
+        return config.books.map {
             Permission(
                 "$permPrefix.${it.cmd.lowercase()}",
                 "Allows use of the book command: ${it.cmd}",
@@ -40,4 +45,80 @@ class BooksModule : ModuleInterface {
             )
         }
     }
+
+    data class Config(
+        override var enabled: Boolean = true,
+        var books: List<BookData> = listOf(
+            BookData(
+                "guide",
+                "Guide".fireFmt(),
+                instance::class.simpleName.toString().fireFmt(),
+                listOf(
+                    // Page 1
+                    """
+                <b><u>${"Tips & Tricks".fireFmt()}
+                
+                <gold>▶ ${"/skills".skylineFmt()}
+                <dark_gray>Opens up the Skills GUI
+                
+                <gold>▶ ${"/invu".skylineFmt()}
+                <dark_gray>Unloads your inventory into nearby chests
+                
+                <gold>▶ ${"/invs".skylineFmt()}
+                <dark_gray>Search into nearby chests for an item
+                """.trimIndent(),
+
+                    // Page 2
+                    """
+                <gold>▶ ${"/nick <formatted_name>".skylineFmt()}
+                <dark_gray>Change your nickname, Visit: <b>birdflop.com</b>,
+                <dark_gray>Color Format: MiniMessage,
+                <dark_gray>Copy output into <formatted_name>
+                
+                <gold>▶ ${"Enchantment max level".skylineFmt()}
+                <dark_gray>has been incremented by <red><b>x2
+                """.trimIndent(),
+                )
+            ),
+            BookData(
+                "rules",
+                "Rules".fireFmt(),
+                instance::class.simpleName.toString().fireFmt(),
+                listOf(
+                    // Page 1: Player Rules (1-7)
+                    """
+                <b><u><dark_aqua>Player Rules:<reset>
+        
+                <gold>▶ <dark_aqua>01 <dark_gray>| <red>No Griefing
+                <gold>▶ <dark_aqua>02 <dark_gray>| <red>No Spamming
+                <gold>▶ <dark_aqua>03 <dark_gray>| <red>No Advertising
+                <gold>▶ <dark_aqua>04 <dark_gray>| <red>No Cursing/No Constant Cursing
+                <gold>▶ <dark_aqua>05 <dark_gray>| <red>No Trolling/Flaming
+                <gold>▶ <dark_aqua>06 <dark_gray>| <red>No Asking for OP, Ranks, or Items
+                <gold>▶ <dark_aqua>07 <dark_gray>| <red>Respect all Players
+                """.trimIndent(),
+
+                    // Page 2: Player Rules (8-13)
+                    """
+                <gold>▶ <dark_aqua>08 <dark_gray>| <red>Obey Staff they are the Law Enforcers
+                <gold>▶ <dark_aqua>09 <dark_gray>| <red>No Racist or Sexist Remarks
+                <gold>▶ <dark_aqua>10 <dark_gray>| <red>No Mods/Hacks
+                <gold>▶ <dark_aqua>11 <dark_gray>| <red>No Full Caps Messages
+                <gold>▶ <dark_aqua>12 <dark_gray>| <red>No 1x1 Towers
+                <gold>▶ <dark_aqua>13 <dark_gray>| <red>Build in (Fantasy)Medieval style
+                """.trimIndent(),
+
+                    // Page 3: Mod/Admin Rules
+                    """
+                <b><u><dark_aqua>Mod/Admin Rules:<reset>
+        
+                <gold>▶ <dark_aqua>01 <dark_gray>| <red>Be Responsible with the power you are given as staff
+                <gold>▶ <dark_aqua>02 <dark_gray>| <red>Do not spawn blocks or items for other players
+                <gold>▶ <dark_aqua>03 <dark_gray>| <red>When Trading, only buy and sell legit items
+                <gold>▶ <dark_aqua>05 <dark_gray>| <red>No Power Abuse
+                """.trimIndent()
+                )
+            )
+        ),
+    ) : ModuleInterface.Config
 }

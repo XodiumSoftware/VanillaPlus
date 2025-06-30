@@ -5,8 +5,6 @@
 
 package org.xodium.vanillaplus.modules
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder
-import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.GameMode
 import org.bukkit.block.Block
@@ -20,23 +18,29 @@ import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.TrowelStateData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.Utils
 
 /** Represents a module handling trowel mechanics within the system. */
-class TrowelModule : ModuleInterface {
-    override fun enabled(): Boolean = ConfigManager.data.trowelModule.enabled
+class TrowelModule : ModuleInterface<TrowelModule.Config> {
+    override val config: Config = Config()
 
-    @Suppress("UnstableApiUsage")
-    override fun cmds(): Collection<LiteralArgumentBuilder<CommandSourceStack>>? {
-        return listOf(
-            Commands.literal("trowel")
-                .requires { it.sender.hasPermission(perms()[0]) }
-                .executes { ctx -> Utils.tryCatch(ctx) { toggle(it.sender as Player) } })
+    override fun enabled(): Boolean = config.enabled
+
+    override fun cmds(): CommandData? {
+        return CommandData(
+            listOf(
+                Commands.literal("trowel")
+                    .requires { it.sender.hasPermission(perms()[0]) }
+                    .executes { ctx -> Utils.tryCatch(ctx) { toggle(it.sender as Player) } }
+            ),
+            "Allows players to toggle the trowel functionality.",
+            emptyList()
+        )
     }
 
     override fun perms(): List<Permission> {
@@ -89,4 +93,8 @@ class TrowelModule : ModuleInterface {
         val msg = if (enabled) "Trowel: <green>enabled" else "Trowel: <red>disabled"
         player.sendActionBar(msg.fireFmt().mm())
     }
+
+    data class Config(
+        override var enabled: Boolean = true
+    ) : ModuleInterface.Config
 }

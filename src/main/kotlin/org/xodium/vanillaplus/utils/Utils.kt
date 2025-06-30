@@ -22,10 +22,9 @@ import org.bukkit.util.Vector
 import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.managers.ChestAccessManager
-import org.xodium.vanillaplus.managers.ConfigManager
+import org.xodium.vanillaplus.managers.ModuleManager
 import org.xodium.vanillaplus.registries.MaterialRegistry
 import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -34,7 +33,6 @@ object Utils {
     private val unloads = ConcurrentHashMap<Location, MutableMap<Material, Int>>()
     val lastUnloads: ConcurrentHashMap<UUID, List<Block>> = ConcurrentHashMap()
     val activeVisualizations: ConcurrentHashMap<UUID, Int> = ConcurrentHashMap()
-    val cmdHover: String = "Click Me!".fireFmt()
 
     /**
      * A helper function to wrap command execution with standardised error handling.
@@ -42,7 +40,6 @@ object Utils {
      * @param action The action to execute, receiving a CommandSourceStack as a parameter.
      * @return Command.SINGLE_SUCCESS after execution.
      */
-    @Suppress("UnstableApiUsage")
     fun tryCatch(ctx: CommandContext<CommandSourceStack>, action: (CommandSourceStack) -> Unit): Int {
         try {
             action(ctx.source)
@@ -61,7 +58,7 @@ object Utils {
      * @return True if the enchantments match, false otherwise.
      */
     private fun hasMatchingEnchantments(first: ItemStack, second: ItemStack): Boolean {
-        val config = ConfigManager.data.invUnloadModule
+        val config = ModuleManager.invUnloadModule.config
 
         if (!config.matchEnchantments && (!config.matchEnchantmentsOnBooks || first.type != Material.ENCHANTED_BOOK)) return true
 
@@ -102,14 +99,14 @@ object Utils {
      * @return A list of blocks found within the radius.
      */
     fun findBlocksInRadius(loc: Location, radius: Int): MutableList<Block> {
-        val box = BoundingBox.of(loc, radius.toDouble(), radius.toDouble(), radius.toDouble())
-        val chunks = getChunksInBox(loc.world, box)
-        val radiusSq = radius * radius
-        return chunks.flatMap { chunk ->
+        return getChunksInBox(
+            loc.world,
+            BoundingBox.of(loc, radius.toDouble(), radius.toDouble(), radius.toDouble())
+        ).flatMap { chunk ->
             chunk.tileEntities.filter { state ->
                 state is Container &&
                         MaterialRegistry.CONTAINER_TYPES.contains(state.type) &&
-                        state.location.distanceSquared(loc) <= radiusSq &&
+                        state.location.distanceSquared(loc) <= radius * radius &&
                         (state.type != Material.CHEST ||
                                 !(state.block.getRelative(BlockFace.UP).type.isSolid &&
                                         state.block.getRelative(BlockFace.UP).type.isOccluding))
