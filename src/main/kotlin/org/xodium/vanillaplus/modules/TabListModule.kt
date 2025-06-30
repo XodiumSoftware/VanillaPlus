@@ -131,8 +131,8 @@ class TabListModule : ModuleInterface<TabListModule.Config> {
         var initDelay: Long = 0L,
         var interval: Long = TimeUtils.seconds(10),
         var header: List<String> = listOf(
-            "${"]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt()}   ${"⚡ IllyriaRPG 1.21.6 ⚡".fireFmt()}   ${
-                "]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)
+            "${"]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt()}   ${"⚡ IllyriaRPG ⚡".fireFmt()}   ${
+                "]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)
             }",
             ""
         ),
