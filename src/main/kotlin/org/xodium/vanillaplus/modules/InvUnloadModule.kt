@@ -37,7 +37,6 @@ class InvUnloadModule : ModuleInterface<InvUnloadModule.Config> {
 
     override fun enabled(): Boolean = config.enabled
 
-    @Suppress("UnstableApiUsage")
     override fun cmds(): CommandData? {
         return CommandData(
             listOf(

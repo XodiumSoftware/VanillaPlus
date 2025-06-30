@@ -28,7 +28,6 @@ class NicknameModule(private val tabListModule: TabListModule) : ModuleInterface
     override fun cmds(): CommandData? {
         return CommandData(
             listOf(
-                @Suppress("UnstableApiUsage")
                 Commands.literal("nickname")
                     .requires { it.sender.hasPermission(perms()[0]) }
                     .executes { ctx -> Utils.tryCatch(ctx) { nickname(it.sender as Player, "") } }

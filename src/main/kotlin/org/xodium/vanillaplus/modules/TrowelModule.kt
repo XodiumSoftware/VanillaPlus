@@ -31,7 +31,6 @@ class TrowelModule : ModuleInterface<TrowelModule.Config> {
 
     override fun enabled(): Boolean = config.enabled
 
-    @Suppress("UnstableApiUsage")
     override fun cmds(): CommandData? {
         return CommandData(
             listOf(
