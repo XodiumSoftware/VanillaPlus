@@ -15,7 +15,6 @@ import io.papermc.paper.command.brigadier.CommandSourceStack
  * @property aliases A list of aliases for the command.
  */
 data class CommandData(
-    @Suppress("UnstableApiUsage")
     val commands: Collection<LiteralArgumentBuilder<CommandSourceStack>>,
     val description: String,
     val aliases: List<String>

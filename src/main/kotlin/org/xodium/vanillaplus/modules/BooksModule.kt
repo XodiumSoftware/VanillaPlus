@@ -24,7 +24,6 @@ class BooksModule : ModuleInterface<BooksModule.Config> {
 
     override fun enabled(): Boolean = config.enabled
 
-    @Suppress("UnstableApiUsage")
     override fun cmds(): CommandData? {
         return CommandData(
             config.books.map { book ->
