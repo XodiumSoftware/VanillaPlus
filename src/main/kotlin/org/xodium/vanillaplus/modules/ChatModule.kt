@@ -28,8 +28,8 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.FmtUtils.skylineFmt
-import org.xodium.vanillaplus.utils.SkinUtils.faceToMM
 import org.xodium.vanillaplus.utils.Utils
+import org.xodium.vanillaplus.utils.Utils.face
 import java.util.concurrent.CompletableFuture
 
 class ChatModule : ModuleInterface<ChatModule.Config> {
@@ -120,7 +120,7 @@ class ChatModule : ModuleInterface<ChatModule.Config> {
                 )
             }
 
-        val faceLines = player.faceToMM().lines()
+        val faceLines = player.face().lines()
         var imageIndex = 1
         val welcomeText =
             Regex("<image>").replace(config.welcomeText) { "<image${imageIndex++}>" }
