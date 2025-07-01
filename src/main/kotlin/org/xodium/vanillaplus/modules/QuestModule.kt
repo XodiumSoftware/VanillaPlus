@@ -16,6 +16,8 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.player.PlayerJoinEvent
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
+import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 
 class QuestModule : ModuleInterface<QuestModule.Config> {
     override val config: Config = Config()
@@ -33,11 +35,11 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
         if (enabled()) {
             val rootDisplay = AdvancementDisplay(
                 Material.GRASS_BLOCK,
-                "Quests",
-                "All your quests in one place",
+                "<b>Quests</b>".fireFmt(),
+                "All your quests in one place".mangoFmt(),
                 AdvancementDisplay.AdvancementFrame.TASK,
                 AdvancementVisibility.ALWAYS
-            ).apply {
+            ).apply { //FIX: doesn't work.
                 background(NameKey("minecraft", "block/red_terracotta.png"))
             }
             val rootAdvancement = Advancement(
