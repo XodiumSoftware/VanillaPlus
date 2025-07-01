@@ -23,7 +23,7 @@ import org.xodium.vanillaplus.data.TrowelStateData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
-import org.xodium.vanillaplus.utils.Utils
+import org.xodium.vanillaplus.utils.Utils.tryCatch
 
 /** Represents a module handling trowel mechanics within the system. */
 class TrowelModule : ModuleInterface<TrowelModule.Config> {
@@ -36,7 +36,7 @@ class TrowelModule : ModuleInterface<TrowelModule.Config> {
             listOf(
                 Commands.literal("trowel")
                     .requires { it.sender.hasPermission(perms()[0]) }
-                    .executes { ctx -> Utils.tryCatch(ctx) { toggle(it.sender as Player) } }
+                    .executes { ctx -> ctx.tryCatch { toggle(it.sender as Player) } }
             ),
             "Allows players to toggle the trowel functionality.",
             emptyList()

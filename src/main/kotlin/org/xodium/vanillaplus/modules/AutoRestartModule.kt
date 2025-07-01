@@ -17,7 +17,7 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.TimeUtils
-import org.xodium.vanillaplus.utils.Utils
+import org.xodium.vanillaplus.utils.Utils.tryCatch
 import java.time.LocalTime
 import java.time.temporal.ChronoUnit
 
@@ -32,7 +32,7 @@ class AutoRestartModule : ModuleInterface<AutoRestartModule.Config> {
             listOf(
                 Commands.literal("autorestart")
                     .requires { it.sender.hasPermission(perms()[0]) }
-                    .executes { ctx -> Utils.tryCatch(ctx) { countdown() } }
+                    .executes { ctx -> ctx.tryCatch { countdown() } }
             ),
             "Triggers a countdown for the server restart.",
             emptyList()

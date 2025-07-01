@@ -18,7 +18,7 @@ import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.NicknameData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.Utils
+import org.xodium.vanillaplus.utils.Utils.tryCatch
 
 class NicknameModule(private val tabListModule: TabListModule) : ModuleInterface<NicknameModule.Config> {
     override val config: Config = Config()
@@ -30,11 +30,11 @@ class NicknameModule(private val tabListModule: TabListModule) : ModuleInterface
             listOf(
                 Commands.literal("nickname")
                     .requires { it.sender.hasPermission(perms()[0]) }
-                    .executes { ctx -> Utils.tryCatch(ctx) { nickname(it.sender as Player, "") } }
+                    .executes { ctx -> ctx.tryCatch { nickname(it.sender as Player, "") } }
                     .then(
                         Commands.argument("name", StringArgumentType.greedyString())
                             .executes { ctx ->
-                                Utils.tryCatch(ctx) {
+                                ctx.tryCatch {
                                     nickname(it.sender as Player, StringArgumentType.getString(ctx, "name"))
                                 }
                             }

@@ -29,6 +29,7 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.Utils
+import org.xodium.vanillaplus.utils.Utils.tryCatch
 import org.bukkit.Sound as BukkitSound
 
 /** Represents a module handling inv-unload mechanics within the system. */
@@ -42,7 +43,7 @@ class InvUnloadModule : ModuleInterface<InvUnloadModule.Config> {
             listOf(
                 Commands.literal("invunload")
                     .requires { it.sender.hasPermission(perms()[0]) }
-                    .executes { ctx -> Utils.tryCatch(ctx) { unload(it.sender as Player) } }
+                    .executes { ctx -> ctx.tryCatch { unload(it.sender as Player) } }
             ),
             "Allows players to unload their inventory into nearby chests.",
             listOf("unload", "unloadinv", "invu")

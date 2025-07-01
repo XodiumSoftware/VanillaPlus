@@ -39,17 +39,16 @@ object Utils {
 
     /**
      * A helper function to wrap command execution with standardised error handling.
-     * @param ctx The CommandContext used to get the CommandSourceStack.
      * @param action The action to execute, receiving a CommandSourceStack as a parameter.
      * @return Command.SINGLE_SUCCESS after execution.
      */
-    fun tryCatch(ctx: CommandContext<CommandSourceStack>, action: (CommandSourceStack) -> Unit): Int {
+    fun CommandContext<CommandSourceStack>.tryCatch(action: (CommandSourceStack) -> Unit): Int {
         try {
-            action(ctx.source)
+            action(this.source)
         } catch (e: Exception) {
             instance.logger.severe("An Error has occurred: ${e.message}")
             e.printStackTrace()
-            (ctx.source.sender as Player).sendMessage("$PREFIX <red>An Error has occurred. Check server logs for details.".mm())
+            (this.source.sender as Player).sendMessage("$PREFIX <red>An Error has occurred. Check server logs for details.".mm())
         }
         return Command.SINGLE_SUCCESS
     }

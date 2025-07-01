@@ -31,6 +31,7 @@ import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.roseFmt
 import org.xodium.vanillaplus.utils.TimeUtils
 import org.xodium.vanillaplus.utils.Utils
+import org.xodium.vanillaplus.utils.Utils.tryCatch
 import java.util.concurrent.CompletableFuture
 
 /** Represents a module handling inv-search mechanics within the system. */
@@ -53,9 +54,9 @@ class InvSearchModule : ModuleInterface<InvSearchModule.Config> {
                                     .forEach(builder::suggest)
                                 CompletableFuture.completedFuture(builder.build())
                             }
-                            .executes { ctx -> Utils.tryCatch(ctx) { handleSearch(ctx) } }
+                            .executes { ctx -> ctx.tryCatch { handleSearch(ctx) } }
                     )
-                    .executes { ctx -> Utils.tryCatch(ctx) { handleSearch(ctx) } }
+                    .executes { ctx -> ctx.tryCatch { handleSearch(ctx) } }
             ),
             "Allows players to search inventories for specific materials.",
             listOf("search", "searchinv", "invs")
