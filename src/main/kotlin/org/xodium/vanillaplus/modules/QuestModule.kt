@@ -36,7 +36,7 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
                     "Break a log with your bare hands".mangoFmt(), AdvancementDisplay.AdvancementFrame.TASK,
                     AdvancementVisibility.ALWAYS
                 )
-            )
+            ).apply { display.x = 0f }
 
             val lumberjack1 = createAdvancement(
                 lumberjackRoot, "lumberjack_1",
@@ -45,23 +45,25 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
                     "Chop 1,000 logs".mangoFmt(), AdvancementDisplay.AdvancementFrame.TASK,
                     AdvancementVisibility.ALWAYS
                 )
-            )
+            ).apply { display.x = 1f }
+
             val lumberjack2 = createAdvancement(
                 lumberjack1, "lumberjack_2",
                 AdvancementDisplay(
                     Material.SPRUCE_LOG, "<b>Lumberjack II</b>".fireFmt(),
-                    "Chop 2,500 logs".mangoFmt(), AdvancementDisplay.AdvancementFrame.CHALLENGE,
+                    "Chop 2,500 logs".mangoFmt(), AdvancementDisplay.AdvancementFrame.TASK,
                     AdvancementVisibility.ALWAYS
                 )
-            )
+            ).apply { display.x = 2f }
+
             createAdvancement(
                 lumberjack2, "lumberjack_3",
                 AdvancementDisplay(
                     Material.DARK_OAK_LOG, "<b>Lumberjack III</b>".fireFmt(),
-                    "Chop 5,000 logs".mangoFmt(), AdvancementDisplay.AdvancementFrame.GOAL,
+                    "Chop 5,000 logs".mangoFmt(), AdvancementDisplay.AdvancementFrame.TASK,
                     AdvancementVisibility.ALWAYS
                 )
-            )
+            ).apply { display.x = 3f }
 
             // Miner Advancement
             createAdvancement(
@@ -71,7 +73,7 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
                     "Mine 1,000 ores".mangoFmt(), AdvancementDisplay.AdvancementFrame.TASK,
                     AdvancementVisibility.ALWAYS
                 )
-            )
+            ).apply { display.x = 0f }
         }
     }
 
