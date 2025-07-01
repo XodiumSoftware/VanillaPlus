@@ -25,11 +25,13 @@ repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://maven.enginehub.org/repo/")
+    maven("https://nexus.frengor.com/repository/public/")
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:$apiVersion-R0.1-SNAPSHOT")
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.15-SNAPSHOT") //TODO("Move away from WorldEdit")
+    compileOnly("com.frengor:ultimateadvancementapi-shadeable:2.5.1")
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.1")
@@ -55,6 +57,7 @@ tasks {
         archiveClassifier.set("")
         destinationDirectory.set(file(".server/plugins/update"))
         relocate("com.fasterxml.jackson", "org.xodium.vanillaplus.jackson")
+        relocate("com.frengor.ultimateadvancementapi-shadeable", "org.xodium.vanillaplus.advancements")
         minimize { exclude(dependency("org.jetbrains.kotlin:kotlin-reflect:.*")) }
         doLast {
             copy {

@@ -6,6 +6,7 @@
       <w>autotool</w>
       <w>baos</w>
       <w>birdflop</w>
+      <w>blobman</w>
       <w>blocktypes</w>
       <w>bloodmoon</w>
       <w>bossbar</w>
@@ -16,6 +17,7 @@
       <w>dpaper</w>
       <w>eldoria</w>
       <w>enderman</w>
+      <w>frengor</w>
       <w>gmazzo</w>
       <w>invs</w>
       <w>invsearch</w>
@@ -28,9 +30,11 @@
       <w>netherite</w>
       <w>newmoon</w>
       <w>searchinv</w>
+      <w>shadeable</w>
       <w>shulker</w>
       <w>subcmd</w>
       <w>triumphteam</w>
+      <w>ultimateadvancementapi</w>
       <w>unloadinv</w>
       <w>useable</w>
       <w>vanillaplus</w>
