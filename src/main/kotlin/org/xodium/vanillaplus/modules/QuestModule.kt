@@ -24,17 +24,35 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
 
     override fun enabled(): Boolean = config.enabled
 
+    private val advancementManager = advancementManager()
+
     init {
         if (enabled()) {
             listOf(
-                "lumberjack" to lumberjackDisplay(),
-                "miner" to minerDisplay()
+                "lumberjack" to AdvancementDisplay(
+                    Material.OAK_LOG,
+                    "<b>Lumberjack</b>".fireFmt(),
+                    "Complete the quest by chopping 1000 logs".mangoFmt(),
+                    AdvancementDisplay.AdvancementFrame.TASK,
+                    AdvancementVisibility.ALWAYS
+                ),
+                "miner" to AdvancementDisplay(
+                    Material.STONE_PICKAXE,
+                    "<b>Miner</b>".fireFmt(),
+                    "Complete the quest by mining 1000 ores".mangoFmt(),
+                    AdvancementDisplay.AdvancementFrame.TASK,
+                    AdvancementVisibility.ALWAYS
+                )
             ).forEach { (name, display) ->
-                advancementManager().addAdvancement(createAdvancement(name, display))
+                advancementManager.addAdvancement(createAdvancement(name, display))
             }
         }
     }
 
+    /**
+     * Returns the advancement manager for this module.
+     * @return The advancement manager.
+     */
     private fun advancementManager(): AdvancementManager {
         return AdvancementManager(
             NameKey(
@@ -44,9 +62,15 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
         )
     }
 
+    /**
+     * Creates an advancement with the given name and display.
+     * @param name The name of the advancement.
+     * @param display The display information for the advancement.
+     * @return The created advancement.
+     */
     private fun createAdvancement(name: String, display: AdvancementDisplay): Advancement {
         return Advancement(
-            advancementManager().getAdvancement(
+            advancementManager.getAdvancement(
                 NameKey(
                     instance::class.simpleName!!.lowercase(),
                     "${QuestModule::class.simpleName!!.lowercase()}/root"
@@ -60,30 +84,10 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
         )
     }
 
-    private fun lumberjackDisplay(): AdvancementDisplay {
-        return AdvancementDisplay(
-            Material.OAK_LOG,
-            "<b>Lumberjack</b>".fireFmt(),
-            "Complete the quest by chopping 1000 logs".mangoFmt(),
-            AdvancementDisplay.AdvancementFrame.TASK,
-            AdvancementVisibility.ALWAYS
-        )
-    }
-
-    private fun minerDisplay(): AdvancementDisplay {
-        return AdvancementDisplay(
-            Material.STONE_PICKAXE,
-            "<b>Miner</b>".fireFmt(),
-            "Complete the quest by mining 1000 ores".mangoFmt(),
-            AdvancementDisplay.AdvancementFrame.TASK,
-            AdvancementVisibility.ALWAYS
-        )
-    }
-
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
         if (!enabled()) return
-        advancementManager().addPlayer(event.player)
+        advancementManager.addPlayer(event.player)
     }
 
     data class Config(
