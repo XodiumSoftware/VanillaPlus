@@ -9,6 +9,7 @@ import eu.endercentral.crazy_advancements.NameKey
 import eu.endercentral.crazy_advancements.advancement.Advancement
 import eu.endercentral.crazy_advancements.advancement.AdvancementDisplay
 import eu.endercentral.crazy_advancements.advancement.AdvancementVisibility
+import eu.endercentral.crazy_advancements.advancement.criteria.Criteria
 import eu.endercentral.crazy_advancements.manager.AdvancementManager
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
@@ -28,10 +29,10 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
     private val advancementManager = advancementManager()
 
     init {
-        if (enabled()) lumberjack()
+        if (enabled()) advancements()
     }
 
-    private fun lumberjack() {
+    private fun advancements() {
         createAdvancementLines(
             createAdvancement(
                 null, "lumberjack_root",
@@ -47,36 +48,102 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
             ),
             listOf(
                 listOf(
-                    Tier(Material.OAK_LOG, "Logs", "Chop 1k logs", "5x Bottles o' Enchanting"),
-                    Tier(Material.SPRUCE_LOG, "Logs", "Chop 2.5k logs", "10x Bottles o' Enchanting"),
-                    Tier(Material.DARK_OAK_LOG, "Logs", "Chop 5k logs", "15x Bottles o' Enchanting"),
-                    Tier(Material.BIRCH_LOG, "Logs", "Chop 10k logs", "20x Bottles o' Enchanting"),
-                    Tier(Material.JUNGLE_LOG, "Logs", "Chop 25k logs", "25x Bottles o' Enchanting"),
-                    Tier(Material.ACACIA_LOG, "Logs", "Chop 50k logs", "30x Bottles o' Enchanting"),
-                    Tier(Material.CHERRY_LOG, "Logs", "Chop 100k logs", "40x Bottles o' Enchanting"),
-                    Tier(Material.MANGROVE_LOG, "Logs", "Chop 250k logs", "50x Bottles o' Enchanting"),
-                    Tier(Material.CRIMSON_STEM, "Logs", "Chop 500k logs", "64x Bottles o' Enchanting"),
-                    Tier(Material.WARPED_STEM, "Logs", "Chop 1m logs", "128x Bottles o' Enchanting")
+                    Tier(Material.OAK_LOG, "Logs", "Chop 1k logs", "5x Bottles o' Enchanting", "chop_logs"),
+                    Tier(Material.SPRUCE_LOG, "Logs", "Chop 2.5k logs", "10x Bottles o' Enchanting", "chop_logs"),
+                    Tier(Material.DARK_OAK_LOG, "Logs", "Chop 5k logs", "15x Bottles o' Enchanting", "chop_logs"),
+                    Tier(Material.BIRCH_LOG, "Logs", "Chop 10k logs", "20x Bottles o' Enchanting", "chop_logs"),
+                    Tier(Material.JUNGLE_LOG, "Logs", "Chop 25k logs", "25x Bottles o' Enchanting", "chop_logs"),
+                    Tier(Material.ACACIA_LOG, "Logs", "Chop 50k logs", "30x Bottles o' Enchanting", "chop_logs"),
+                    Tier(Material.CHERRY_LOG, "Logs", "Chop 100k logs", "40x Bottles o' Enchanting", "chop_logs"),
+                    Tier(Material.MANGROVE_LOG, "Logs", "Chop 250k logs", "50x Bottles o' Enchanting", "chop_logs"),
+                    Tier(Material.CRIMSON_STEM, "Logs", "Chop 500k logs", "64x Bottles o' Enchanting", "chop_logs"),
+                    Tier(Material.WARPED_STEM, "Logs", "Chop 1m logs", "128x Bottles o' Enchanting", "chop_logs")
                 ),
                 listOf(
-                    Tier(Material.OAK_SAPLING, "Saplings", "Plant 1k saplings", "3x Bottles o' Enchanting"),
-                    Tier(Material.SPRUCE_SAPLING, "Saplings", "Plant 2.5k saplings", "7x Bottles o' Enchanting"),
-                    Tier(Material.DARK_OAK_SAPLING, "Saplings", "Plant 5k saplings", "10x Bottles o' Enchanting"),
-                    Tier(Material.BIRCH_SAPLING, "Saplings", "Plant 10k saplings", "15x Bottles o' Enchanting"),
-                    Tier(Material.JUNGLE_SAPLING, "Saplings", "Plant 25k saplings", "20x Bottles o' Enchanting"),
-                    Tier(Material.ACACIA_SAPLING, "Saplings", "Plant 50k saplings", "25x Bottles o' Enchanting"),
-                    Tier(Material.CHERRY_SAPLING, "Saplings", "Plant 100k saplings", "30x Bottles o' Enchanting"),
-                    Tier(Material.MANGROVE_PROPAGULE, "Saplings", "Plant 250k saplings", "40x Bottles o' Enchanting"),
-                    Tier(Material.CRIMSON_FUNGUS, "Saplings", "Plant 500k saplings", "50x Bottles o' Enchanting"),
-                    Tier(Material.WARPED_FUNGUS, "Saplings", "Plant 1m saplings", "64x Bottles o' Enchanting")
+                    Tier(
+                        Material.OAK_SAPLING,
+                        "Saplings",
+                        "Plant 1k saplings",
+                        "3x Bottles o' Enchanting",
+                        "plant_saplings"
+                    ),
+                    Tier(
+                        Material.SPRUCE_SAPLING,
+                        "Saplings",
+                        "Plant 2.5k saplings",
+                        "7x Bottles o' Enchanting",
+                        "plant_saplings"
+                    ),
+                    Tier(
+                        Material.DARK_OAK_SAPLING,
+                        "Saplings",
+                        "Plant 5k saplings",
+                        "10x Bottles o' Enchanting",
+                        "plant_saplings"
+                    ),
+                    Tier(
+                        Material.BIRCH_SAPLING,
+                        "Saplings",
+                        "Plant 10k saplings",
+                        "15x Bottles o' Enchanting",
+                        "plant_saplings"
+                    ),
+                    Tier(
+                        Material.JUNGLE_SAPLING,
+                        "Saplings",
+                        "Plant 25k saplings",
+                        "20x Bottles o' Enchanting",
+                        "plant_saplings"
+                    ),
+                    Tier(
+                        Material.ACACIA_SAPLING,
+                        "Saplings",
+                        "Plant 50k saplings",
+                        "25x Bottles o' Enchanting",
+                        "plant_saplings"
+                    ),
+                    Tier(
+                        Material.CHERRY_SAPLING,
+                        "Saplings",
+                        "Plant 100k saplings",
+                        "30x Bottles o' Enchanting",
+                        "plant_saplings"
+                    ),
+                    Tier(
+                        Material.MANGROVE_PROPAGULE,
+                        "Saplings",
+                        "Plant 250k saplings",
+                        "40x Bottles o' Enchanting",
+                        "plant_saplings"
+                    ),
+                    Tier(
+                        Material.CRIMSON_FUNGUS,
+                        "Saplings",
+                        "Plant 500k saplings",
+                        "50x Bottles o' Enchanting",
+                        "plant_saplings"
+                    ),
+                    Tier(
+                        Material.WARPED_FUNGUS,
+                        "Saplings",
+                        "Plant 1m saplings",
+                        "64x Bottles o' Enchanting",
+                        "plant_saplings"
+                    )
                 ),
                 listOf(
-                    Tier(Material.WOODEN_AXE, "Axes", "Craft a wooden axe", "1x Bottle o' Enchanting"),
-                    Tier(Material.STONE_AXE, "Axes", "Craft a stone axe", "2x Bottles o' Enchanting"),
-                    Tier(Material.IRON_AXE, "Axes", "Craft an iron axe", "5x Bottles o' Enchanting"),
-                    Tier(Material.GOLDEN_AXE, "Axes", "Craft a golden axe", "3x Bottles o' Enchanting"),
-                    Tier(Material.DIAMOND_AXE, "Axes", "Craft a diamond axe", "10x Bottles o' Enchanting"),
-                    Tier(Material.NETHERITE_AXE, "Axes", "Craft a netherite axe", "20x Bottles o' Enchanting")
+                    Tier(Material.WOODEN_AXE, "Axes", "Craft a wooden axe", "1x Bottle o' Enchanting", "craft_axe"),
+                    Tier(Material.STONE_AXE, "Axes", "Craft a stone axe", "2x Bottles o' Enchanting", "craft_axe"),
+                    Tier(Material.IRON_AXE, "Axes", "Craft an iron axe", "5x Bottles o' Enchanting", "craft_axe"),
+                    Tier(Material.GOLDEN_AXE, "Axes", "Craft a golden axe", "3x Bottles o' Enchanting", "craft_axe"),
+                    Tier(Material.DIAMOND_AXE, "Axes", "Craft a diamond axe", "10x Bottles o' Enchanting", "craft_axe"),
+                    Tier(
+                        Material.NETHERITE_AXE,
+                        "Axes",
+                        "Craft a netherite axe",
+                        "20x Bottles o' Enchanting",
+                        "craft_axe"
+                    )
                 ),
             )
         )
@@ -108,6 +175,7 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
                         AdvancementVisibility.ALWAYS //TODO: Later change to VANILLA
                     )
                 ).apply {
+                    criteria = Criteria(arrayOf(tier.criterionKey), arrayOf(arrayOf(tier.criterionKey)))
                     display.x = level.toFloat()
                     display.y = y.toFloat()
                 }
