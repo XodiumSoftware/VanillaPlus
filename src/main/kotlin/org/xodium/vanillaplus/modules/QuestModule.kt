@@ -28,60 +28,78 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
 
     init {
         if (enabled()) {
-            listOf(
-                "lumberjack" to AdvancementDisplay(
-                    Material.OAK_LOG,
-                    "<b>Lumberjack</b>".fireFmt(),
-                    "Complete the quest by chopping 1000 logs".mangoFmt(),
-                    AdvancementDisplay.AdvancementFrame.TASK,
-                    AdvancementVisibility.ALWAYS
-                ),
-                "miner" to AdvancementDisplay(
-                    Material.STONE_PICKAXE,
-                    "<b>Miner</b>".fireFmt(),
-                    "Complete the quest by mining 1000 ores".mangoFmt(),
-                    AdvancementDisplay.AdvancementFrame.TASK,
+            // Lumberjack Advancements
+            val lumberjackRoot = createAdvancement(
+                null, "lumberjack_root",
+                AdvancementDisplay(
+                    Material.OAK_LOG, "<b>Lumberjack</b>".fireFmt(),
+                    "Break a log with your bare hands".mangoFmt(), AdvancementDisplay.AdvancementFrame.TASK,
                     AdvancementVisibility.ALWAYS
                 )
-            ).forEach { (name, display) ->
-                advancementManager.addAdvancement(createAdvancement(name, display))
-            }
+            )
+
+            val lumberjack1 = createAdvancement(
+                lumberjackRoot, "lumberjack_1",
+                AdvancementDisplay(
+                    Material.OAK_LOG, "<b>Lumberjack I</b>".fireFmt(),
+                    "Chop 1,000 logs".mangoFmt(), AdvancementDisplay.AdvancementFrame.TASK,
+                    AdvancementVisibility.ALWAYS
+                )
+            )
+            val lumberjack2 = createAdvancement(
+                lumberjack1, "lumberjack_2",
+                AdvancementDisplay(
+                    Material.SPRUCE_LOG, "<b>Lumberjack II</b>".fireFmt(),
+                    "Chop 2,500 logs".mangoFmt(), AdvancementDisplay.AdvancementFrame.CHALLENGE,
+                    AdvancementVisibility.ALWAYS
+                )
+            )
+            createAdvancement(
+                lumberjack2, "lumberjack_3",
+                AdvancementDisplay(
+                    Material.DARK_OAK_LOG, "<b>Lumberjack III</b>".fireFmt(),
+                    "Chop 5,000 logs".mangoFmt(), AdvancementDisplay.AdvancementFrame.GOAL,
+                    AdvancementVisibility.ALWAYS
+                )
+            )
+
+            // Miner Advancement
+            createAdvancement(
+                null, "miner",
+                AdvancementDisplay(
+                    Material.STONE_PICKAXE, "<b>Miner</b>".fireFmt(),
+                    "Mine 1,000 ores".mangoFmt(), AdvancementDisplay.AdvancementFrame.TASK,
+                    AdvancementVisibility.ALWAYS
+                )
+            )
         }
     }
+
+    /**
+     * Returns the namespace for advancements in this module.
+     * @return The namespace key part.
+     */
+    private fun namespace(): String = instance::class.simpleName!!.lowercase()
 
     /**
      * Returns the advancement manager for this module.
      * @return The advancement manager.
      */
     private fun advancementManager(): AdvancementManager {
-        return AdvancementManager(
-            NameKey(
-                instance::class.simpleName!!.lowercase(),
-                QuestModule::class.simpleName!!.lowercase()
-            ),
-        )
+        return AdvancementManager(NameKey(namespace(), QuestModule::class.simpleName!!.lowercase()))
     }
 
     /**
      * Creates an advancement with the given name and display.
+     * @param parent The parent advancement.
      * @param name The name of the advancement.
      * @param display The display information for the advancement.
      * @return The created advancement.
      */
-    private fun createAdvancement(name: String, display: AdvancementDisplay): Advancement {
-        return Advancement(
-            advancementManager.getAdvancement(
-                NameKey(
-                    instance::class.simpleName!!.lowercase(),
-                    "${QuestModule::class.simpleName!!.lowercase()}/root"
-                )
-            ),
-            NameKey(
-                instance::class.simpleName!!.lowercase(),
-                "${QuestModule::class.simpleName!!.lowercase()}/$name"
-            ),
-            display
-        )
+    private fun createAdvancement(parent: Advancement?, name: String, display: AdvancementDisplay): Advancement {
+        val advancement = Advancement(parent, NameKey(namespace(), name), display)
+        advancementManager.addAdvancement(advancement)
+        return advancement
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
