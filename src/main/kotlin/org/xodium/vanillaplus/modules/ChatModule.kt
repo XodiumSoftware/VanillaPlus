@@ -28,8 +28,8 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.FmtUtils.skylineFmt
-import org.xodium.vanillaplus.utils.Utils
 import org.xodium.vanillaplus.utils.Utils.face
+import org.xodium.vanillaplus.utils.Utils.tryCatch
 import java.util.concurrent.CompletableFuture
 
 class ChatModule : ModuleInterface<ChatModule.Config> {
@@ -54,7 +54,7 @@ class ChatModule : ModuleInterface<ChatModule.Config> {
                             .then(
                                 Commands.argument("message", StringArgumentType.greedyString())
                                     .executes { ctx ->
-                                        Utils.tryCatch(ctx) {
+                                        ctx.tryCatch {
                                             whisper(
                                                 it.sender as Player,
                                                 instance.server.getPlayer(
