@@ -15,6 +15,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.player.PlayerJoinEvent
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.data.Tier
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
@@ -27,167 +28,78 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
     private val advancementManager = advancementManager()
 
     init {
-        if (enabled()) {
-            lumberjack()
-            miner()
-        }
+        if (enabled()) lumberjack()
     }
 
     private fun lumberjack() {
-        val lumberjackRoot = createAdvancement(
-            null, "lumberjack_root",
-            AdvancementDisplay(
-                Material.STICK, "<b>Lumberjack</b>".fireFmt(),
-                """
+        createAdvancementLines(
+            createAdvancement(
+                null, "lumberjack_root",
+                AdvancementDisplay(
+                    Material.STICK, "<b>Lumberjack</b>".fireFmt(),
+                    """
                 Requirement: Break a log with your bare hands
                 Reward: 1x Bottle o' Enchanting
                 """.trimIndent().mangoFmt(),
-                AdvancementDisplay.AdvancementFrame.TASK,
-                AdvancementVisibility.ALWAYS
+                    AdvancementDisplay.AdvancementFrame.TASK,
+                    AdvancementVisibility.ALWAYS
+                )
+            ),
+            listOf(
+                listOf(
+                    Tier(Material.OAK_LOG, "Lumberjack", "Chop 1k logs", "5x Bottles o' Enchanting"),
+                    Tier(Material.SPRUCE_LOG, "Lumberjack", "Chop 2.5k logs", "10x Bottles o' Enchanting"),
+                    Tier(Material.DARK_OAK_LOG, "Lumberjack", "Chop 5k logs", "15x Bottles o' Enchanting"),
+                    Tier(Material.BIRCH_LOG, "Lumberjack", "Chop 10k logs", "20x Bottles o' Enchanting"),
+                    Tier(Material.JUNGLE_LOG, "Lumberjack", "Chop 25k logs", "25x Bottles o' Enchanting"),
+                    Tier(Material.ACACIA_LOG, "Lumberjack", "Chop 50k logs", "30x Bottles o' Enchanting"),
+                    Tier(Material.CHERRY_LOG, "Lumberjack", "Chop 100k logs", "40x Bottles o' Enchanting"),
+                    Tier(Material.MANGROVE_LOG, "Lumberjack", "Chop 250k logs", "50x Bottles o' Enchanting"),
+                    Tier(Material.CRIMSON_STEM, "Lumberjack", "Chop 500k logs", "64x Bottles o' Enchanting"),
+                    Tier(Material.WARPED_STEM, "Lumberjack", "Chop 1m logs", "2x 64x Bottles o' Enchanting")
+                ),
+                listOf(
+                    Tier(Material.WOODEN_AXE, "Axes", "Craft a wooden axe"),
+                    Tier(Material.STONE_AXE, "Axes", "Craft a stone axe"),
+                    Tier(Material.IRON_AXE, "Axes", "Craft an iron axe"),
+                    Tier(Material.GOLDEN_AXE, "Axes", "Craft a golden axe"),
+                    Tier(Material.DIAMOND_AXE, "Axes", "Craft a diamond axe"),
+                    Tier(Material.NETHERITE_AXE, "Axes", "Craft a netherite axe")
+                )
             )
-        ).apply { display.x = 0f }
-
-        val lumberjack1 = createAdvancement(
-            lumberjackRoot, "lumberjack_1",
-            AdvancementDisplay(
-                Material.OAK_LOG, "<b>Lumberjack I</b>".fireFmt(),
-                """
-                Requirement: Chop 1k logs
-                Reward: 5x Bottles o' Enchanting
-                """.trimIndent().mangoFmt(),
-                AdvancementDisplay.AdvancementFrame.TASK,
-                AdvancementVisibility.ALWAYS
-            )
-        ).apply { display.x = 1f }
-
-        val lumberjack2 = createAdvancement(
-            lumberjack1, "lumberjack_2",
-            AdvancementDisplay(
-                Material.SPRUCE_LOG, "<b>Lumberjack II</b>".fireFmt(),
-                """
-                Requirement: Chop 2.5k logs
-                Reward: 10x Bottles o' Enchanting
-                """.trimIndent().mangoFmt(),
-                AdvancementDisplay.AdvancementFrame.TASK,
-                AdvancementVisibility.ALWAYS
-            )
-        ).apply { display.x = 2f }
-
-        val lumberjack3 = createAdvancement(
-            lumberjack2, "lumberjack_3",
-            AdvancementDisplay(
-                Material.DARK_OAK_LOG, "<b>Lumberjack III</b>".fireFmt(),
-                """
-                Requirement: Chop 5k logs
-                Reward: 15x Bottles o' Enchanting
-                """.trimIndent().mangoFmt(),
-                AdvancementDisplay.AdvancementFrame.TASK,
-                AdvancementVisibility.ALWAYS
-            )
-        ).apply { display.x = 3f }
-
-        val lumberjack4 = createAdvancement(
-            lumberjack3, "lumberjack_4",
-            AdvancementDisplay(
-                Material.BIRCH_LOG, "<b>Lumberjack IV</b>".fireFmt(),
-                """
-                Requirement: Chop 10k logs
-                Reward: 20x Bottles o' Enchanting
-                """.trimIndent().mangoFmt(),
-                AdvancementDisplay.AdvancementFrame.TASK,
-                AdvancementVisibility.ALWAYS
-            )
-        ).apply { display.x = 4f }
-
-        val lumberjack5 = createAdvancement(
-            lumberjack4, "lumberjack_5",
-            AdvancementDisplay(
-                Material.JUNGLE_LOG, "<b>Lumberjack V</b>".fireFmt(),
-                """
-                Requirement: Chop 25k logs
-                Reward: 25x Bottles o' Enchanting
-                """.trimIndent().mangoFmt(),
-                AdvancementDisplay.AdvancementFrame.TASK,
-                AdvancementVisibility.ALWAYS
-            )
-        ).apply { display.x = 5f }
-
-        val lumberjack6 = createAdvancement(
-            lumberjack5, "lumberjack_6",
-            AdvancementDisplay(
-                Material.ACACIA_LOG, "<b>Lumberjack VI</b>".fireFmt(),
-                """
-                Requirement: Chop 50k logs
-                Reward: 30x Bottles o' Enchanting
-                """.trimIndent().mangoFmt(),
-                AdvancementDisplay.AdvancementFrame.TASK,
-                AdvancementVisibility.ALWAYS
-            )
-        ).apply { display.x = 6f }
-
-        val lumberjack7 = createAdvancement(
-            lumberjack6, "lumberjack_7",
-            AdvancementDisplay(
-                Material.CHERRY_LOG, "<b>Lumberjack VII</b>".fireFmt(),
-                """
-                Requirement: Chop 100k logs
-                Reward: 40x Bottles o' Enchanting
-                """.trimIndent().mangoFmt(),
-                AdvancementDisplay.AdvancementFrame.TASK,
-                AdvancementVisibility.ALWAYS
-            )
-        ).apply { display.x = 7f }
-
-        val lumberjack8 = createAdvancement(
-            lumberjack7, "lumberjack_8",
-            AdvancementDisplay(
-                Material.MANGROVE_LOG, "<b>Lumberjack VIII</b>".fireFmt(),
-                """
-                Requirement: Chop 250k logs
-                Reward: 50x Bottles o' Enchanting
-                """.trimIndent().mangoFmt(),
-                AdvancementDisplay.AdvancementFrame.TASK,
-                AdvancementVisibility.ALWAYS
-            )
-        ).apply { display.x = 8f }
-
-        val lumberjack9 = createAdvancement(
-            lumberjack8, "lumberjack_9",
-            AdvancementDisplay(
-                Material.CRIMSON_STEM, "<b>Lumberjack IX</b>".fireFmt(),
-                """
-                Requirement: Chop 500k logs
-                Reward: 64x Bottles o' Enchanting
-                """.trimIndent().mangoFmt(),
-                AdvancementDisplay.AdvancementFrame.TASK,
-                AdvancementVisibility.ALWAYS
-            )
-        ).apply { display.x = 9f }
-
-        createAdvancement(
-            lumberjack9, "lumberjack_10",
-            AdvancementDisplay(
-                Material.WARPED_STEM, "<b>Lumberjack X</b>".fireFmt(),
-                """
-                Requirement: Chop 1m logs
-                Reward: 2x 64x Bottles o' Enchanting
-                """.trimIndent().mangoFmt(),
-                AdvancementDisplay.AdvancementFrame.TASK,
-                AdvancementVisibility.ALWAYS
-            )
-        ).apply { display.x = 10f }
+        )
     }
 
-    private fun miner() {
-        createAdvancement(
-            null, "miner",
-            AdvancementDisplay(
-                Material.STONE_PICKAXE, "<b>Miner</b>".fireFmt(),
-                "Mine 1k ores".mangoFmt(),
-                AdvancementDisplay.AdvancementFrame.TASK,
-                AdvancementVisibility.ALWAYS
-            )
-        ).apply { display.x = 0f }
+    /**
+     * Creates advancement lines based on the provided root advancement and tier lists.
+     * Each line corresponds to a set of tiers, creating a structured progression.
+     * @param root The root advancement to attach the lines to.
+     * @param lines A list of lists, where each inner list contains Tiers for that line.
+     */
+    private fun createAdvancementLines(root: Advancement, lines: List<List<Tier>>) {
+        lines.forEachIndexed { y, line ->
+            var parent = root
+            line.forEachIndexed { x, tier ->
+                val level = x + 1
+                val romanNumeral = toRoman(level)
+                val description = StringBuilder("Requirement: ${tier.requirement}")
+                tier.reward?.let { description.append("\nReward: $it") }
+
+                val advancement = createAdvancement(
+                    parent, "${tier.title.lowercase()}_$level",
+                    AdvancementDisplay(
+                        tier.icon, "<b>${tier.title} $romanNumeral</b>".fireFmt(),
+                        description.toString().mangoFmt(),
+                        AdvancementDisplay.AdvancementFrame.TASK,
+                        AdvancementVisibility.ALWAYS
+                    )
+                ).apply {
+                    display.x = level.toFloat()
+                    display.y = y.toFloat()
+                }
+                parent = advancement
+            }
+        }
     }
 
     /**
@@ -215,6 +127,27 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
         val advancement = Advancement(parent, NameKey(namespace(), name), display)
         advancementManager.addAdvancement(advancement)
         return advancement
+    }
+
+    /**
+     * Converts an integer to a Roman numeral string.
+     * @param number The integer to convert.
+     * @return The Roman numeral representation of the integer.
+     */
+    private fun toRoman(number: Int): String {
+        val romanValues = listOf(10 to "X", 9 to "IX", 5 to "V", 4 to "IV", 1 to "I")
+        var num = number
+        val roman = StringBuilder()
+        while (num > 0) {
+            for ((value, symbol) in romanValues) {
+                if (num >= value) {
+                    roman.append(symbol)
+                    num -= value
+                    break
+                }
+            }
+        }
+        return roman.toString()
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
