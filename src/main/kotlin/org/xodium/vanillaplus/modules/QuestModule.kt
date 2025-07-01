@@ -24,40 +24,66 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
 
     override fun enabled(): Boolean = config.enabled
 
-    private val advancementManager = AdvancementManager(
-        NameKey(
-            instance::class.simpleName!!.lowercase(),
-            QuestModule::class.simpleName!!.lowercase()
-        ),
-    )
-
     init {
         if (enabled()) {
-            val rootDisplay = AdvancementDisplay(
-                Material.GRASS_BLOCK,
-                "<b>Quests</b>".fireFmt(),
-                "All your quests in one place".mangoFmt(),
-                AdvancementDisplay.AdvancementFrame.TASK,
-                AdvancementVisibility.ALWAYS
-            ).apply { //FIX: doesn't work.
-                background(NameKey("minecraft", "block/red_terracotta.png"))
+            listOf(
+                "lumberjack" to lumberjackDisplay(),
+                "miner" to minerDisplay()
+            ).forEach { (name, display) ->
+                advancementManager().addAdvancement(createAdvancement(name, display))
             }
-            val rootAdvancement = Advancement(
-                null,
+        }
+    }
+
+    private fun advancementManager(): AdvancementManager {
+        return AdvancementManager(
+            NameKey(
+                instance::class.simpleName!!.lowercase(),
+                QuestModule::class.simpleName!!.lowercase()
+            ),
+        )
+    }
+
+    private fun createAdvancement(name: String, display: AdvancementDisplay): Advancement {
+        return Advancement(
+            advancementManager().getAdvancement(
                 NameKey(
                     instance::class.simpleName!!.lowercase(),
                     "${QuestModule::class.simpleName!!.lowercase()}/root"
-                ),
-                rootDisplay
-            )
-            advancementManager.addAdvancement(rootAdvancement)
-        }
+                )
+            ),
+            NameKey(
+                instance::class.simpleName!!.lowercase(),
+                "${QuestModule::class.simpleName!!.lowercase()}/$name"
+            ),
+            display
+        )
+    }
+
+    private fun lumberjackDisplay(): AdvancementDisplay {
+        return AdvancementDisplay(
+            Material.OAK_LOG,
+            "<b>Lumberjack</b>".fireFmt(),
+            "Complete the quest by chopping 1000 logs".mangoFmt(),
+            AdvancementDisplay.AdvancementFrame.TASK,
+            AdvancementVisibility.ALWAYS
+        )
+    }
+
+    private fun minerDisplay(): AdvancementDisplay {
+        return AdvancementDisplay(
+            Material.STONE_PICKAXE,
+            "<b>Miner</b>".fireFmt(),
+            "Complete the quest by mining 1000 ores".mangoFmt(),
+            AdvancementDisplay.AdvancementFrame.TASK,
+            AdvancementVisibility.ALWAYS
+        )
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
         if (!enabled()) return
-        advancementManager.addPlayer(event.player)
+        advancementManager().addPlayer(event.player)
     }
 
     data class Config(
