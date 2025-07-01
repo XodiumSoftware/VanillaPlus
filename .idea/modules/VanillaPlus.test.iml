@@ -41,6 +41,15 @@
     <orderEntry type="jdk" jdkName="jbr-21" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="VanillaPlus.main" />
+    <orderEntry type="module-library">
+      <library name="Gradle: CrazyAdvancementsAPI-2.21.7.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../libs/CrazyAdvancementsAPI-2.21.7.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.1" level="project" />
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.module:jackson-module-kotlin:2.19.1" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-reflect:2.2.0" level="project" />

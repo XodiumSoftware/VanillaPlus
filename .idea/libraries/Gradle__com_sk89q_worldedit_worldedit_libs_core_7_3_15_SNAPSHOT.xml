@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: com.sk89q.worldedit.worldedit-libs:core:7.3.15-SNAPSHOT" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="com.sk89q.worldedit.worldedit-libs" artifactId="core" version="7.3.15-SNAPSHOT" baseVersion="7.3.15-SNAPSHOT" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.sk89q.worldedit.worldedit-libs/core/7.3.15-SNAPSHOT/8a43ebdb8880fee101eaf0d6748aab82d1f343ad/core-7.3.15-SNAPSHOT.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.sk89q.worldedit.worldedit-libs/core/7.3.15-SNAPSHOT/e0f94ee981400919ad1ac1507e743f0cd34fcbff/core-7.3.15-SNAPSHOT-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
