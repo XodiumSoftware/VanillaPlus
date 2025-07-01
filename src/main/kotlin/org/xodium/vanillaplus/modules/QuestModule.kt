@@ -105,7 +105,7 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
                         tier.icon, "<b>${tier.title} ${toRoman(level)}</b>".fireFmt(),
                         description.mangoFmt(),
                         frame,
-                        AdvancementVisibility.VANILLA
+                        AdvancementVisibility.ALWAYS //TODO: Later change to VANILLA
                     )
                 ).apply {
                     display.x = level.toFloat()
