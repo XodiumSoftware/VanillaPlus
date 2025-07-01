@@ -5,6 +5,7 @@
 
 package org.xodium.vanillaplus
 
+import com.fren_gor.ultimateAdvancementAPI.UltimateAdvancementAPI
 import org.bukkit.plugin.java.JavaPlugin
 import org.xodium.vanillaplus.managers.ModuleManager
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
@@ -25,6 +26,9 @@ class VanillaPlus : JavaPlugin() {
 
         @JvmStatic
         val instance: VanillaPlus by lazy { getPlugin(VanillaPlus::class.java) }
+
+        lateinit var advancementAPI: UltimateAdvancementAPI
+            private set
     }
 
     /** Called when the plugin is enabled. */
@@ -32,7 +36,10 @@ class VanillaPlus : JavaPlugin() {
         when {
             !server.version.contains(SUPPORTED_VERSION) -> disablePlugin(UNSUPPORTED_VERSION_MSG)
             !server.name.contains(SUPPORTED_PLATFORM) -> disablePlugin(UNSUPPORTED_PLATFORM_MSG)
-            else -> ModuleManager
+            else -> {
+                advancementAPI = UltimateAdvancementAPI.getInstance(this)
+                ModuleManager
+            }
         }
     }
 
