@@ -5,9 +5,9 @@
 
 package org.xodium.vanillaplus.modules
 
-import com.fren_gor.ultimateAdvancementAPI.events.PlayerLoadingCompletedEvent
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
+import org.bukkit.event.player.PlayerJoinEvent
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 
 class QuestModule : ModuleInterface<QuestModule.Config> {
@@ -20,7 +20,7 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    fun on(event: PlayerLoadingCompletedEvent) {
+    fun on(event: PlayerJoinEvent) {
         if (!enabled()) return
     }
 
