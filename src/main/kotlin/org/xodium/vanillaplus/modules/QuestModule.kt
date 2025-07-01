@@ -38,25 +38,37 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
                 AdvancementDisplay(
                     Material.STICK, "<b>Lumberjack</b>".fireFmt(),
                     """
-                Requirement: Break a log with your bare hands
-                Reward: 1x Bottle o' Enchanting
-                """.trimIndent().mangoFmt(),
+                            Requirement: Break a log with your bare hands
+                            Reward: 1x Bottle o' Enchanting
+                            """.trimIndent().mangoFmt(),
                     AdvancementDisplay.AdvancementFrame.TASK,
                     AdvancementVisibility.ALWAYS
                 )
             ),
             listOf(
                 listOf(
-                    Tier(Material.OAK_LOG, "Lumberjack", "Chop 1k logs", "5x Bottles o' Enchanting"),
-                    Tier(Material.SPRUCE_LOG, "Lumberjack", "Chop 2.5k logs", "10x Bottles o' Enchanting"),
-                    Tier(Material.DARK_OAK_LOG, "Lumberjack", "Chop 5k logs", "15x Bottles o' Enchanting"),
-                    Tier(Material.BIRCH_LOG, "Lumberjack", "Chop 10k logs", "20x Bottles o' Enchanting"),
-                    Tier(Material.JUNGLE_LOG, "Lumberjack", "Chop 25k logs", "25x Bottles o' Enchanting"),
-                    Tier(Material.ACACIA_LOG, "Lumberjack", "Chop 50k logs", "30x Bottles o' Enchanting"),
-                    Tier(Material.CHERRY_LOG, "Lumberjack", "Chop 100k logs", "40x Bottles o' Enchanting"),
-                    Tier(Material.MANGROVE_LOG, "Lumberjack", "Chop 250k logs", "50x Bottles o' Enchanting"),
-                    Tier(Material.CRIMSON_STEM, "Lumberjack", "Chop 500k logs", "64x Bottles o' Enchanting"),
-                    Tier(Material.WARPED_STEM, "Lumberjack", "Chop 1m logs", "2x 64x Bottles o' Enchanting")
+                    Tier(Material.OAK_LOG, "Logs", "Chop 1k logs", "5x Bottles o' Enchanting"),
+                    Tier(Material.SPRUCE_LOG, "Logs", "Chop 2.5k logs", "10x Bottles o' Enchanting"),
+                    Tier(Material.DARK_OAK_LOG, "Logs", "Chop 5k logs", "15x Bottles o' Enchanting"),
+                    Tier(Material.BIRCH_LOG, "Logs", "Chop 10k logs", "20x Bottles o' Enchanting"),
+                    Tier(Material.JUNGLE_LOG, "Logs", "Chop 25k logs", "25x Bottles o' Enchanting"),
+                    Tier(Material.ACACIA_LOG, "Logs", "Chop 50k logs", "30x Bottles o' Enchanting"),
+                    Tier(Material.CHERRY_LOG, "Logs", "Chop 100k logs", "40x Bottles o' Enchanting"),
+                    Tier(Material.MANGROVE_LOG, "Logs", "Chop 250k logs", "50x Bottles o' Enchanting"),
+                    Tier(Material.CRIMSON_STEM, "Logs", "Chop 500k logs", "64x Bottles o' Enchanting"),
+                    Tier(Material.WARPED_STEM, "Logs", "Chop 1m logs", "128x Bottles o' Enchanting")
+                ),
+                listOf(
+                    Tier(Material.OAK_SAPLING, "Saplings", "Plant 1k saplings", "3x Bottles o' Enchanting"),
+                    Tier(Material.SPRUCE_SAPLING, "Saplings", "Plant 2.5k saplings", "7x Bottles o' Enchanting"),
+                    Tier(Material.DARK_OAK_SAPLING, "Saplings", "Plant 5k saplings", "10x Bottles o' Enchanting"),
+                    Tier(Material.BIRCH_SAPLING, "Saplings", "Plant 10k saplings", "15x Bottles o' Enchanting"),
+                    Tier(Material.JUNGLE_SAPLING, "Saplings", "Plant 25k saplings", "20x Bottles o' Enchanting"),
+                    Tier(Material.ACACIA_SAPLING, "Saplings", "Plant 50k saplings", "25x Bottles o' Enchanting"),
+                    Tier(Material.CHERRY_SAPLING, "Saplings", "Plant 100k saplings", "30x Bottles o' Enchanting"),
+                    Tier(Material.MANGROVE_PROPAGULE, "Saplings", "Plant 250k saplings", "40x Bottles o' Enchanting"),
+                    Tier(Material.CRIMSON_FUNGUS, "Saplings", "Plant 500k saplings", "50x Bottles o' Enchanting"),
+                    Tier(Material.WARPED_FUNGUS, "Saplings", "Plant 1m saplings", "64x Bottles o' Enchanting")
                 ),
                 listOf(
                     Tier(Material.WOODEN_AXE, "Axes", "Craft a wooden axe", "1x Bottle o' Enchanting"),
@@ -65,7 +77,7 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
                     Tier(Material.GOLDEN_AXE, "Axes", "Craft a golden axe", "3x Bottles o' Enchanting"),
                     Tier(Material.DIAMOND_AXE, "Axes", "Craft a diamond axe", "10x Bottles o' Enchanting"),
                     Tier(Material.NETHERITE_AXE, "Axes", "Craft a netherite axe", "20x Bottles o' Enchanting")
-                )
+                ),
             )
         )
     }
