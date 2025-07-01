@@ -59,12 +59,12 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
                     Tier(Material.WARPED_STEM, "Lumberjack", "Chop 1m logs", "2x 64x Bottles o' Enchanting")
                 ),
                 listOf(
-                    Tier(Material.WOODEN_AXE, "Axes", "Craft a wooden axe"),
-                    Tier(Material.STONE_AXE, "Axes", "Craft a stone axe"),
-                    Tier(Material.IRON_AXE, "Axes", "Craft an iron axe"),
-                    Tier(Material.GOLDEN_AXE, "Axes", "Craft a golden axe"),
-                    Tier(Material.DIAMOND_AXE, "Axes", "Craft a diamond axe"),
-                    Tier(Material.NETHERITE_AXE, "Axes", "Craft a netherite axe")
+                    Tier(Material.WOODEN_AXE, "Axes", "Craft a wooden axe", "1x Bottle o' Enchanting"),
+                    Tier(Material.STONE_AXE, "Axes", "Craft a stone axe", "2x Bottles o' Enchanting"),
+                    Tier(Material.IRON_AXE, "Axes", "Craft an iron axe", "5x Bottles o' Enchanting"),
+                    Tier(Material.GOLDEN_AXE, "Axes", "Craft a golden axe", "3x Bottles o' Enchanting"),
+                    Tier(Material.DIAMOND_AXE, "Axes", "Craft a diamond axe", "10x Bottles o' Enchanting"),
+                    Tier(Material.NETHERITE_AXE, "Axes", "Craft a netherite axe", "20x Bottles o' Enchanting")
                 )
             )
         )
@@ -82,14 +82,13 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
             line.forEachIndexed { x, tier ->
                 val level = x + 1
                 val romanNumeral = toRoman(level)
-                val description = StringBuilder("Requirement: ${tier.requirement}")
-                tier.reward?.let { description.append("\nReward: $it") }
+                val description = "Requirement: ${tier.requirement}\nReward: ${tier.reward}"
 
                 val advancement = createAdvancement(
                     parent, "${tier.title.lowercase()}_$level",
                     AdvancementDisplay(
                         tier.icon, "<b>${tier.title} $romanNumeral</b>".fireFmt(),
-                        description.toString().mangoFmt(),
+                        description.mangoFmt(),
                         AdvancementDisplay.AdvancementFrame.TASK,
                         AdvancementVisibility.ALWAYS
                     )

@@ -12,11 +12,11 @@ import org.bukkit.Material
  * @property icon The material icon representing the tier.
  * @property title The title of the tier.
  * @property requirement The requirement to achieve this tier.
- * @property reward The reward for completing this tier, if any.
+ * @property reward The reward for completing this tier.
  */
 data class Tier(
     val icon: Material,
     val title: String,
     val requirement: String,
-    val reward: String? = null
+    val reward: String
 )
