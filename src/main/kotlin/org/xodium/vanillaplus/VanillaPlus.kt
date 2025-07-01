@@ -10,6 +10,7 @@ import org.xodium.vanillaplus.managers.ModuleManager
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 
+
 /** Main class of the plugin. */
 class VanillaPlus : JavaPlugin() {
     companion object {
