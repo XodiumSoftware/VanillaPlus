@@ -5,15 +5,13 @@
 
 package org.xodium.vanillaplus.modules
 
-import com.fren_gor.ultimateAdvancementAPI.AdvancementTab
-import com.fren_gor.ultimateAdvancementAPI.advancement.RootAdvancement
-import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDisplay
-import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementFrameType
-import com.fren_gor.ultimateAdvancementAPI.events.PlayerLoadingCompletedEvent
+import eu.endercentral.crazy_advancements.NameKey
+import eu.endercentral.crazy_advancements.advancement.Advancement
+import eu.endercentral.crazy_advancements.advancement.AdvancementDisplay
+import eu.endercentral.crazy_advancements.advancement.AdvancementVisibility
+import eu.endercentral.crazy_advancements.manager.AdvancementManager
 import org.bukkit.Material
-import org.bukkit.event.EventHandler
-import org.bukkit.event.EventPriority
-import org.xodium.vanillaplus.VanillaPlus.Companion.advancementAPI
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 
 class QuestModule : ModuleInterface<QuestModule.Config> {
@@ -21,21 +19,28 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
 
     override fun enabled(): Boolean = config.enabled
 
-    private val advancementTab: AdvancementTab = advancementAPI.createAdvancementTab("your_tab_name")
-    private val advancementDisplay =
-        AdvancementDisplay(Material.GRASS_BLOCK, "", AdvancementFrameType.TASK, true, true, 0f, 0f, "")
-    private val advancementRoot =
-        RootAdvancement(advancementTab, "root", advancementDisplay, "textures/block/stone.png")
-
-
     init {
-        if (enabled()) advancementTab.registerAdvancements(advancementRoot)
-    }
+        if (enabled()) {
+            val advancementManager = AdvancementManager(
+                NameKey(
+                    instance::class.simpleName!!.lowercase(),
+                    QuestModule::class.simpleName!!.lowercase()
+                ),
+            )
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    fun on(event: PlayerLoadingCompletedEvent) {
-        if (!enabled()) return
-        advancementTab.showTab(event.player)
+            val rootDisplay = AdvancementDisplay(
+                Material.GRASS_BLOCK,
+                "Quests",
+                "All your quests in one place",
+                AdvancementDisplay.AdvancementFrame.TASK,
+                AdvancementVisibility.ALWAYS
+            )
+
+            rootDisplay.backgroundTexture = "textures/gui/advancements/backgrounds/stone.png"
+
+            val rootAdvancement = Advancement(null, NameKey("vanillaplus", "quests/root"), rootDisplay)
+            advancementManager.addAdvancement(rootAdvancement)
+        }
     }
 
     data class Config(
