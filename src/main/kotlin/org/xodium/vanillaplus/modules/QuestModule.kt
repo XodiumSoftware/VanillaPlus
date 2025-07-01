@@ -7,6 +7,7 @@ package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.ItemLore
 import org.bukkit.Material
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
@@ -49,32 +50,35 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
 
     private fun quests(): Inventory {
         return instance.server.createInventory(null, InventoryType.DROPPER, "Quests".fireFmt().mm()).apply {
-            setItem(0, easyQuestItem())
-            setItem(1, easyQuestItem())
-            setItem(2, mediumQuestItem())
-            setItem(3, mediumQuestItem())
-            setItem(4, hardQuestItem())
+            setItem(0, easyQuestItem(TODO()))
+            setItem(1, easyQuestItem(TODO()))
+            setItem(2, mediumQuestItem(TODO()))
+            setItem(3, mediumQuestItem(TODO()))
+            setItem(4, hardQuestItem(TODO()))
         }
     }
 
-    private fun easyQuestItem(): ItemStack {
+    private fun easyQuestItem(lore: List<String>): ItemStack {
+        @Suppress("UnstableApiUsage")
         return ItemStack.of(Material.ENCHANTED_BOOK).apply {
-            @Suppress("UnstableApiUsage")
             setData(DataComponentTypes.ITEM_NAME, "Easy Quest".fireFmt().mm())
+            setData(DataComponentTypes.LORE, ItemLore.lore(lore.mm()))
         }
     }
 
-    private fun mediumQuestItem(): ItemStack {
+    private fun mediumQuestItem(lore: List<String>): ItemStack {
+        @Suppress("UnstableApiUsage")
         return ItemStack.of(Material.ENCHANTED_BOOK).apply {
-            @Suppress("UnstableApiUsage")
             setData(DataComponentTypes.ITEM_NAME, "Medium Quest".fireFmt().mm())
+            setData(DataComponentTypes.LORE, ItemLore.lore(lore.mm()))
         }
     }
 
-    private fun hardQuestItem(): ItemStack {
+    private fun hardQuestItem(lore: List<String>): ItemStack {
+        @Suppress("UnstableApiUsage")
         return ItemStack.of(Material.ENCHANTED_BOOK).apply {
-            @Suppress("UnstableApiUsage")
             setData(DataComponentTypes.ITEM_NAME, "Hard Quest".fireFmt().mm())
+            setData(DataComponentTypes.LORE, ItemLore.lore(lore.mm()))
         }
     }
 
