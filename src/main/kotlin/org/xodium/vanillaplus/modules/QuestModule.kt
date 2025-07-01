@@ -93,16 +93,19 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
             var parent = root
             line.forEachIndexed { x, tier ->
                 val level = x + 1
-                val romanNumeral = toRoman(level)
                 val description = "Requirement: ${tier.requirement}\nReward: ${tier.reward}"
-
+                val frame = when {
+                    level >= 9 -> AdvancementDisplay.AdvancementFrame.CHALLENGE
+                    level >= 5 -> AdvancementDisplay.AdvancementFrame.GOAL
+                    else -> AdvancementDisplay.AdvancementFrame.TASK
+                }
                 val advancement = createAdvancement(
                     parent, "${tier.title.lowercase()}_$level",
                     AdvancementDisplay(
-                        tier.icon, "<b>${tier.title} $romanNumeral</b>".fireFmt(),
+                        tier.icon, "<b>${tier.title} ${toRoman(level)}</b>".fireFmt(),
                         description.mangoFmt(),
-                        AdvancementDisplay.AdvancementFrame.TASK,
-                        AdvancementVisibility.ALWAYS
+                        frame,
+                        AdvancementVisibility.VANILLA
                     )
                 ).apply {
                     display.x = level.toFloat()
