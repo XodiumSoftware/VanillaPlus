@@ -28,53 +28,133 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
 
     init {
         if (enabled()) {
-            // Lumberjack Advancements
-            val lumberjackRoot = createAdvancement(
-                null, "lumberjack_root",
-                AdvancementDisplay(
-                    Material.OAK_LOG, "<b>Lumberjack</b>".fireFmt(),
-                    "Break a log with your bare hands".mangoFmt(), AdvancementDisplay.AdvancementFrame.TASK,
-                    AdvancementVisibility.ALWAYS
-                )
-            ).apply { display.x = 0f }
-
-            val lumberjack1 = createAdvancement(
-                lumberjackRoot, "lumberjack_1",
-                AdvancementDisplay(
-                    Material.OAK_LOG, "<b>Lumberjack I</b>".fireFmt(),
-                    "Chop 1,000 logs".mangoFmt(), AdvancementDisplay.AdvancementFrame.TASK,
-                    AdvancementVisibility.ALWAYS
-                )
-            ).apply { display.x = 1f }
-
-            val lumberjack2 = createAdvancement(
-                lumberjack1, "lumberjack_2",
-                AdvancementDisplay(
-                    Material.SPRUCE_LOG, "<b>Lumberjack II</b>".fireFmt(),
-                    "Chop 2,500 logs".mangoFmt(), AdvancementDisplay.AdvancementFrame.TASK,
-                    AdvancementVisibility.ALWAYS
-                )
-            ).apply { display.x = 2f }
-
-            createAdvancement(
-                lumberjack2, "lumberjack_3",
-                AdvancementDisplay(
-                    Material.DARK_OAK_LOG, "<b>Lumberjack III</b>".fireFmt(),
-                    "Chop 5,000 logs".mangoFmt(), AdvancementDisplay.AdvancementFrame.TASK,
-                    AdvancementVisibility.ALWAYS
-                )
-            ).apply { display.x = 3f }
-
-            // Miner Advancement
-            createAdvancement(
-                null, "miner",
-                AdvancementDisplay(
-                    Material.STONE_PICKAXE, "<b>Miner</b>".fireFmt(),
-                    "Mine 1,000 ores".mangoFmt(), AdvancementDisplay.AdvancementFrame.TASK,
-                    AdvancementVisibility.ALWAYS
-                )
-            ).apply { display.x = 0f }
+            lumberjack()
+            miner()
         }
+    }
+
+    private fun lumberjack() {
+        val lumberjackRoot = createAdvancement(
+            null, "lumberjack_root",
+            AdvancementDisplay(
+                Material.STICK, "<b>Lumberjack</b>".fireFmt(),
+                "Break a log with your bare hands".mangoFmt(),
+                AdvancementDisplay.AdvancementFrame.TASK,
+                AdvancementVisibility.ALWAYS
+            )
+        ).apply { display.x = 0f }
+
+        val lumberjack1 = createAdvancement(
+            lumberjackRoot, "lumberjack_1",
+            AdvancementDisplay(
+                Material.OAK_LOG, "<b>Lumberjack I</b>".fireFmt(),
+                "Chop 1k logs".mangoFmt(),
+                AdvancementDisplay.AdvancementFrame.TASK,
+                AdvancementVisibility.ALWAYS
+            )
+        ).apply { display.x = 1f }
+
+        val lumberjack2 = createAdvancement(
+            lumberjack1, "lumberjack_2",
+            AdvancementDisplay(
+                Material.SPRUCE_LOG, "<b>Lumberjack II</b>".fireFmt(),
+                "Chop 2.5k logs".mangoFmt(),
+                AdvancementDisplay.AdvancementFrame.TASK,
+                AdvancementVisibility.ALWAYS
+            )
+        ).apply { display.x = 2f }
+
+        val lumberjack3 = createAdvancement(
+            lumberjack2, "lumberjack_3",
+            AdvancementDisplay(
+                Material.DARK_OAK_LOG, "<b>Lumberjack III</b>".fireFmt(),
+                "Chop 5k logs".mangoFmt(),
+                AdvancementDisplay.AdvancementFrame.TASK,
+                AdvancementVisibility.ALWAYS
+            )
+        ).apply { display.x = 3f }
+
+        val lumberjack4 = createAdvancement(
+            lumberjack3, "lumberjack_4",
+            AdvancementDisplay(
+                Material.BIRCH_LOG, "<b>Lumberjack IV</b>".fireFmt(),
+                "Chop 10k logs".mangoFmt(),
+                AdvancementDisplay.AdvancementFrame.TASK,
+                AdvancementVisibility.ALWAYS
+            )
+        ).apply { display.x = 4f }
+
+        val lumberjack5 = createAdvancement(
+            lumberjack4, "lumberjack_5",
+            AdvancementDisplay(
+                Material.JUNGLE_LOG, "<b>Lumberjack V</b>".fireFmt(),
+                "Chop 25k logs".mangoFmt(),
+                AdvancementDisplay.AdvancementFrame.TASK,
+                AdvancementVisibility.ALWAYS
+            )
+        ).apply { display.x = 5f }
+
+        val lumberjack6 = createAdvancement(
+            lumberjack5, "lumberjack_6",
+            AdvancementDisplay(
+                Material.ACACIA_LOG, "<b>Lumberjack VI</b>".fireFmt(),
+                "Chop 50k logs".mangoFmt(),
+                AdvancementDisplay.AdvancementFrame.TASK,
+                AdvancementVisibility.ALWAYS
+            )
+        ).apply { display.x = 6f }
+
+        val lumberjack7 = createAdvancement(
+            lumberjack6, "lumberjack_7",
+            AdvancementDisplay(
+                Material.CHERRY_LOG, "<b>Lumberjack VII</b>".fireFmt(),
+                "Chop 100k logs".mangoFmt(),
+                AdvancementDisplay.AdvancementFrame.TASK,
+                AdvancementVisibility.ALWAYS
+            )
+        ).apply { display.x = 7f }
+
+        val lumberjack8 = createAdvancement(
+            lumberjack7, "lumberjack_8",
+            AdvancementDisplay(
+                Material.MANGROVE_LOG, "<b>Lumberjack VIII</b>".fireFmt(),
+                "Chop 250k logs".mangoFmt(),
+                AdvancementDisplay.AdvancementFrame.TASK,
+                AdvancementVisibility.ALWAYS
+            )
+        ).apply { display.x = 8f }
+
+        val lumberjack9 = createAdvancement(
+            lumberjack8, "lumberjack_9",
+            AdvancementDisplay(
+                Material.CRIMSON_STEM, "<b>Lumberjack IX</b>".fireFmt(),
+                "Chop 500k logs".mangoFmt(),
+                AdvancementDisplay.AdvancementFrame.TASK,
+                AdvancementVisibility.ALWAYS
+            )
+        ).apply { display.x = 9f }
+
+        createAdvancement(
+            lumberjack9, "lumberjack_10",
+            AdvancementDisplay(
+                Material.WARPED_STEM, "<b>Lumberjack X</b>".fireFmt(),
+                "Chop 1m logs".mangoFmt(),
+                AdvancementDisplay.AdvancementFrame.TASK,
+                AdvancementVisibility.ALWAYS
+            )
+        ).apply { display.x = 10f }
+    }
+
+    private fun miner() {
+        createAdvancement(
+            null, "miner",
+            AdvancementDisplay(
+                Material.STONE_PICKAXE, "<b>Miner</b>".fireFmt(),
+                "Mine 1k ores".mangoFmt(),
+                AdvancementDisplay.AdvancementFrame.TASK,
+                AdvancementVisibility.ALWAYS
+            )
+        ).apply { display.x = 0f }
     }
 
     /**
