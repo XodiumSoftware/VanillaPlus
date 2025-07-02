@@ -68,13 +68,9 @@ class NicknameModule(private val tabListModule: TabListModule) : ModuleInterface
      * @param name The new nickname for the player.
      */
     private fun nickname(player: Player, name: String) {
-        if (name.isBlank()) {
-            PlayerData.removeNickname(player)
-            player.displayName(player.name.mm())
-        } else {
-            PlayerData.setNickname(player, name)
-            player.displayName(name.mm())
-        }
+        val newNickname = name.ifBlank { null }
+        PlayerData.update(player, PlayerData.get(player).copy(nickname = newNickname))
+        player.displayName((newNickname ?: player.name).mm())
         tabListModule.updatePlayerDisplayName(player)
     }
 

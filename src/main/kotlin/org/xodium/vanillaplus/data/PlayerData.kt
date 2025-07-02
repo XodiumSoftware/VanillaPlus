@@ -87,25 +87,5 @@ data class PlayerData(
             cache[player.uniqueId] = data
             save()
         }
-
-        /**
-         * Sets the nickname for a given player.
-         * @param player The player whose nickname is to be set.
-         * @param nickname The nickname to set.
-         */
-        fun setNickname(player: Player, nickname: String) {
-            update(player, get(player).copy(nickname = nickname))
-        }
-
-        /**
-         * Removes the nickname for a given player.
-         * @param player The player whose nickname is to be removed.
-         */
-        fun removeNickname(player: Player) {
-            val data = get(player)
-            if (data.nickname != null) {
-                update(player, data.copy(nickname = null))
-            }
-        }
     }
 }
