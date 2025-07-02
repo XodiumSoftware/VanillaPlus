@@ -46,4 +46,9 @@ object FmtUtils {
     /** Applies a dawn-themed gradient to the [String]. */
     fun String.dawnFmt(inverted: Boolean = false): String =
         gradient("#F3904F", "#3B4371", this, inverted)
+
+    /** Applies a glorp-themed gradient to the [String]. */
+    fun String.glorpFmt(inverted: Boolean = false): String =
+        gradient("#54F47F", "#B3E94A", this, inverted)
+
 }

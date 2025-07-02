@@ -22,6 +22,8 @@ import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
+import org.xodium.vanillaplus.utils.FmtUtils.glorpFmt
+import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.Utils.tryCatch
 
 /** Represents a module handling quests mechanics within the system. */
@@ -66,10 +68,10 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
      */
     private fun quests(): Inventory {
         return instance.server.createInventory(null, InventoryType.HOPPER, invTitle).apply {
-            setItem(0, questItem(Material.WRITABLE_BOOK, "Easy".fireFmt(), listOf()))
-            setItem(1, questItem(Material.WRITABLE_BOOK, "Easy".fireFmt(), listOf()))
-            setItem(2, questItem(Material.WRITABLE_BOOK, "Medium".fireFmt(), listOf()))
-            setItem(3, questItem(Material.WRITABLE_BOOK, "Medium".fireFmt(), listOf()))
+            setItem(0, questItem(Material.WRITABLE_BOOK, "Easy".glorpFmt(), listOf()))
+            setItem(1, questItem(Material.WRITABLE_BOOK, "Easy".glorpFmt(), listOf()))
+            setItem(2, questItem(Material.WRITABLE_BOOK, "Medium".mangoFmt(), listOf()))
+            setItem(3, questItem(Material.WRITABLE_BOOK, "Medium".mangoFmt(), listOf()))
             setItem(4, questItem(Material.WRITABLE_BOOK, "Hard".fireFmt(), listOf()))
         }
     }
