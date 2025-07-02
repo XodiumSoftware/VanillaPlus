@@ -147,11 +147,31 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
         val mediumQuests = config.questPool[QuestDifficulty.MEDIUM]!!.shuffled().take(2)
         val hardQuest = config.questPool[QuestDifficulty.HARD]!!.shuffled().take(1)
         return listOf(
-            QuestData(QuestDifficulty.EASY, easyQuests[0].first, createRewardDescription(easyQuests[0].second)),
-            QuestData(QuestDifficulty.EASY, easyQuests[1].first, createRewardDescription(easyQuests[1].second)),
-            QuestData(QuestDifficulty.MEDIUM, mediumQuests[0].first, createRewardDescription(mediumQuests[0].second)),
-            QuestData(QuestDifficulty.MEDIUM, mediumQuests[1].first, createRewardDescription(mediumQuests[1].second)),
-            QuestData(QuestDifficulty.HARD, hardQuest[0].first, createRewardDescription(hardQuest[0].second)),
+            QuestData(
+                QuestDifficulty.EASY,
+                createTaskDescription(easyQuests[0].first),
+                createRewardDescription(easyQuests[0].second)
+            ),
+            QuestData(
+                QuestDifficulty.EASY,
+                createTaskDescription(easyQuests[1].first),
+                createRewardDescription(easyQuests[1].second)
+            ),
+            QuestData(
+                QuestDifficulty.MEDIUM,
+                createTaskDescription(mediumQuests[0].first),
+                createRewardDescription(mediumQuests[0].second)
+            ),
+            QuestData(
+                QuestDifficulty.MEDIUM,
+                createTaskDescription(mediumQuests[1].first),
+                createRewardDescription(mediumQuests[1].second)
+            ),
+            QuestData(
+                QuestDifficulty.HARD,
+                createTaskDescription(hardQuest[0].first),
+                createRewardDescription(hardQuest[0].second)
+            ),
         )
     }
 
@@ -165,7 +185,19 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
         return "${reward.amount} $materialName${if (reward.amount > 1) "s" else ""}"
     }
 
-    // TODO: add createTaskDescription method to format task descriptions
+    /**
+     * Creates a formatted description for a quest task.
+     * @param task The [Config.QuestTask] to create the description for.
+     * @return a formatted string describing the task.
+     */
+    private fun createTaskDescription(task: Config.QuestTask): String {
+        val targetName = when (task.target) {
+            is Material -> task.target.name.replace('_', ' ').lowercase().replaceFirstChar { it.titlecase() }
+            is EntityType -> task.target.name.replace('_', ' ').lowercase().replaceFirstChar { it.titlecase() }
+            else -> task.target.toString()
+        }
+        return "${task.action} ${task.amount} $targetName${if (task.amount > 1) "s" else ""}"
+    }
 
     /**
      * Checks if the quests have expired based on the weekly reset schedule.
@@ -188,7 +220,7 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
      * @return The [Config.QuestReward] or null if not found.
      */
     private fun findRewardForQuest(quest: QuestData): Config.QuestReward? {
-        return config.questPool[quest.difficulty]?.find { it.first == quest.task }?.second
+        return config.questPool[quest.difficulty]?.find { createTaskDescription(it.first) == quest.task }?.second
     }
 
     data class Config(
@@ -216,7 +248,7 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
             )
         )
     ) : ModuleInterface.Config {
-        data class QuestTask(val action: String, val material: Material, val amount: Int)
+        data class QuestTask(val action: String, val target: Any, val amount: Int)
         data class QuestReward(val material: Material, val amount: Int)
     }
 }
