@@ -17,9 +17,9 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.inventory.CraftItemEvent
 import org.bukkit.event.inventory.InventoryClickEvent
-import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.MenuType
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -75,7 +75,7 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: InventoryClickEvent) {
         if (!enabled()) return
-        if (event.view.title() != config.inventoryTitle.mm()) return
+        if (event.view.title() != config.menuTitle.mm()) return
 
         event.isCancelled = true
 
@@ -136,9 +136,10 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
             PlayerData.update(player, playerData)
         }
 
-        return instance.server.createInventory(null, InventoryType.HOPPER, config.inventoryTitle.mm()).apply {
+        @Suppress("UnstableApiUsage")
+        return MenuType.HOPPER.create(player, config.menuTitle.mm()).apply {
             playerData.quests.list.forEachIndexed { index, quest -> setItem(index, questItem(quest)) }
-        }
+        }.topInventory
     }
 
     /**
@@ -318,7 +319,7 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
 
     data class Config(
         override var enabled: Boolean = true,
-        var inventoryTitle: String = "<b>Quests</b>".fireFmt(),
+        var menuTitle: String = "<b>Quests</b>".fireFmt(),
         var questPool: Map<QuestDifficulty, List<Pair<QuestTask, QuestReward>>> = mapOf(
             QuestDifficulty.EASY to listOf(
                 QuestTask("Mine", Material.COBBLESTONE, 64) to QuestReward(Material.EXPERIENCE_BOTTLE, 1),
