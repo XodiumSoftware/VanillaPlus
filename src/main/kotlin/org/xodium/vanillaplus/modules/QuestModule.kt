@@ -65,7 +65,9 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: InventoryClickEvent) {
         if (!enabled()) return
-        if (event.view.title() == config.inventoryTitle.mm()) event.isCancelled = true
+        if (event.view.title() != config.inventoryTitle.mm()) return
+
+        event.isCancelled = true
     }
 
     /**
