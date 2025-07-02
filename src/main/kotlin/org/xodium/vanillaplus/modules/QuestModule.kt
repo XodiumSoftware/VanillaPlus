@@ -126,7 +126,7 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
         when {
             quest.claimed -> lore.add("<b><green>✔</green> Reward Claimed</b>")
             quest.completed -> lore.add("<b><green>✔</green> Click to claim your reward!</b>")
-            else -> lore.add("<b><gray>✖</gray> In Progress</b>")
+            else -> lore.add("<b><gray>✖</gray> In Progress</b>") //TODO: adjust based on size task to display a bar.
         }
         lore.add("")
         lore.add("<b>❗</b> Quests reset on each Monday at 00:00".fireFmt())
@@ -191,6 +191,7 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
     data class Config(
         override var enabled: Boolean = true,
         var inventoryTitle: String = "<b>Quests</b>".fireFmt(),
+        //TODO: adjust task part to make it be used as desc and way to check.
         var questPool: Map<QuestDifficulty, List<Pair<String, QuestReward>>> = mapOf(
             QuestDifficulty.EASY to listOf(
                 "Mine 64 Cobblestone" to QuestReward(Material.EXPERIENCE_BOTTLE, 1),
