@@ -21,6 +21,7 @@ import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.PlayerData
+import org.xodium.vanillaplus.data.PlayerQuestsData
 import org.xodium.vanillaplus.data.QuestData
 import org.xodium.vanillaplus.enums.QuestDifficulty
 import org.xodium.vanillaplus.interfaces.ModuleInterface
@@ -28,6 +29,10 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.roseFmt
 import org.xodium.vanillaplus.utils.Utils.tryCatch
+import java.time.DayOfWeek
+import java.time.Instant
+import java.time.ZoneId
+import java.time.temporal.TemporalAdjusters
 
 /** Represents a module handling quests mechanics within the system. */
 class QuestModule : ModuleInterface<QuestModule.Config> {
@@ -68,6 +73,8 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
         if (event.view.title() != config.inventoryTitle.mm()) return
 
         event.isCancelled = true
+
+        if (event.isLeftClick) TODO("handle reward claiming")
     }
 
     /**
@@ -77,14 +84,15 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
      */
     private fun quests(player: Player): Inventory {
         var playerData = PlayerData.get(player)
-        if (playerData.quests.isEmpty()) {
+        if (playerData.quests.list.isEmpty() || areQuestsExpired(playerData.quests.timestamp)) {
             val newQuests = generateQuestsForPlayer()
-            playerData = playerData.copy(quests = newQuests)
+            val newPlayerQuests = PlayerQuestsData(list = newQuests, timestamp = System.currentTimeMillis())
+            playerData = playerData.copy(quests = newPlayerQuests)
             PlayerData.update(player, playerData)
         }
 
         return instance.server.createInventory(null, InventoryType.HOPPER, config.inventoryTitle.mm()).apply {
-            playerData.quests.forEachIndexed { index, quest -> setItem(index, questItem(quest)) }
+            playerData.quests.list.forEachIndexed { index, quest -> setItem(index, questItem(quest)) }
         }
     }
 
@@ -100,6 +108,8 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
         val lore = listOf(
             "<b>\uD83D\uDCDD</b> ${quest.task}".roseFmt(),
             "<b>\uD83C\uDF81</b> ${quest.reward}".roseFmt(),
+            "",
+            "<b>❗</b> Quests reset on each Monday at 00:00".fireFmt(),
         )
         return ItemStack.of(material).apply {
             setData(DataComponentTypes.ITEM_NAME, name.mm())
@@ -116,36 +126,63 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
         val mediumQuests = config.questPool[QuestDifficulty.MEDIUM]!!.shuffled().take(2)
         val hardQuest = config.questPool[QuestDifficulty.HARD]!!.shuffled().take(1)
         return listOf(
-            QuestData(QuestDifficulty.EASY, easyQuests[0].first, easyQuests[0].second),
-            QuestData(QuestDifficulty.EASY, easyQuests[1].first, easyQuests[1].second),
-            QuestData(QuestDifficulty.MEDIUM, mediumQuests[0].first, mediumQuests[0].second),
-            QuestData(QuestDifficulty.MEDIUM, mediumQuests[1].first, mediumQuests[1].second),
-            QuestData(QuestDifficulty.HARD, hardQuest[0].first, hardQuest[0].second),
+            QuestData(QuestDifficulty.EASY, easyQuests[0].first, createRewardDescription(easyQuests[0].second)),
+            QuestData(QuestDifficulty.EASY, easyQuests[1].first, createRewardDescription(easyQuests[1].second)),
+            QuestData(QuestDifficulty.MEDIUM, mediumQuests[0].first, createRewardDescription(mediumQuests[0].second)),
+            QuestData(QuestDifficulty.MEDIUM, mediumQuests[1].first, createRewardDescription(mediumQuests[1].second)),
+            QuestData(QuestDifficulty.HARD, hardQuest[0].first, createRewardDescription(hardQuest[0].second)),
         )
+    }
+
+    /**
+     * Creates a formatted description for a quest reward.
+     * @param reward The [Config.QuestReward] to create the description for.
+     * @return a formatted string describing the reward.
+     */
+    private fun createRewardDescription(reward: Config.QuestReward): String {
+        val materialName = reward.material.name.replace('_', ' ').lowercase().replaceFirstChar { it.titlecase() }
+        return "${reward.amount} $materialName${if (reward.amount > 1) "s" else ""}"
+    }
+
+    /**
+     * Checks if the quests have expired based on the weekly reset schedule.
+     * @param timestamp The timestamp when the quests were last generated.
+     * @return `true` if the quests should be reset, `false` otherwise.
+     */
+    private fun areQuestsExpired(timestamp: Long): Boolean {
+        if (timestamp <= 0) return true
+
+        val lastReset = Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()).toLocalDateTime()
+        val now = Instant.now().atZone(ZoneId.systemDefault()).toLocalDateTime()
+        val nextReset = lastReset.with(TemporalAdjusters.next(DayOfWeek.MONDAY)).withHour(0).withMinute(0).withSecond(0)
+
+        return now.isAfter(nextReset)
     }
 
     data class Config(
         override var enabled: Boolean = true,
         var inventoryTitle: String = "<b>Quests</b>".fireFmt(),
-        var questPool: Map<QuestDifficulty, List<Pair<String, String>>> = mapOf(
+        var questPool: Map<QuestDifficulty, List<Pair<String, QuestReward>>> = mapOf(
             QuestDifficulty.EASY to listOf(
-                "Mine 64 Cobblestone" to "1 Experience Bottle",
-                "Craft 5 Stone Swords" to "2 Experience Bottles",
-                "Harvest 32 Wheat" to "1 Experience Bottle",
-                "Smelt 10 Iron Ore" to "2 Experience Bottles",
+                "Mine 64 Cobblestone" to QuestReward(Material.EXPERIENCE_BOTTLE, 1),
+                "Craft 5 Stone Swords" to QuestReward(Material.EXPERIENCE_BOTTLE, 2),
+                "Harvest 32 Wheat" to QuestReward(Material.EXPERIENCE_BOTTLE, 1),
+                "Smelt 10 Iron Ore" to QuestReward(Material.EXPERIENCE_BOTTLE, 2),
             ),
             QuestDifficulty.MEDIUM to listOf(
-                "Kill 10 Zombies" to "5 Experience Bottles",
-                "Find a Diamond" to "4 Experience Bottles",
-                "Brew a Potion of Swiftness" to "6 Experience Bottles",
-                "Enter the Nether" to "8 Experience Bottles",
+                "Kill 10 Zombies" to QuestReward(Material.EXPERIENCE_BOTTLE, 5),
+                "Find a Diamond" to QuestReward(Material.EXPERIENCE_BOTTLE, 4),
+                "Brew a Potion of Swiftness" to QuestReward(Material.EXPERIENCE_BOTTLE, 6),
+                "Enter the Nether" to QuestReward(Material.EXPERIENCE_BOTTLE, 8),
             ),
             QuestDifficulty.HARD to listOf(
-                "Defeat the Ender Dragon" to "64 Experience Bottles",
-                "Obtain a Netherite Ingot" to "32 Experience Bottles",
-                "Cure a Zombie Villager" to "48 Experience Bottles",
-                "Defeat a Wither" to "50 Experience Bottles",
+                "Defeat the Ender Dragon" to QuestReward(Material.EXPERIENCE_BOTTLE, 64),
+                "Obtain a Netherite Ingot" to QuestReward(Material.EXPERIENCE_BOTTLE, 32),
+                "Cure a Zombie Villager" to QuestReward(Material.EXPERIENCE_BOTTLE, 48),
+                "Defeat a Wither" to QuestReward(Material.EXPERIENCE_BOTTLE, 50),
             )
         )
-    ) : ModuleInterface.Config
+    ) : ModuleInterface.Config {
+        data class QuestReward(val material: Material, val amount: Int)
+    }
 }
