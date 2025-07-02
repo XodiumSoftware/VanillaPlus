@@ -8,7 +8,6 @@ package org.xodium.vanillaplus.modules
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
-import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -67,26 +66,26 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
      */
     private fun quests(): Inventory {
         return instance.server.createInventory(null, InventoryType.HOPPER, invTitle).apply {
-            setItem(0, questItem()) // Easy Quest
-            setItem(1, questItem()) // Easy Quest
-            setItem(2, questItem()) // Medium Quest
-            setItem(3, questItem()) // Medium Quest
-            setItem(4, questItem()) // Hard Quest
+            setItem(0, questItem(Material.WRITABLE_BOOK, "Easy".fireFmt(), listOf()))
+            setItem(1, questItem(Material.WRITABLE_BOOK, "Easy".fireFmt(), listOf()))
+            setItem(2, questItem(Material.WRITABLE_BOOK, "Medium".fireFmt(), listOf()))
+            setItem(3, questItem(Material.WRITABLE_BOOK, "Medium".fireFmt(), listOf()))
+            setItem(4, questItem(Material.WRITABLE_BOOK, "Hard".fireFmt(), listOf()))
         }
     }
 
     /**
      * Creates a quest item with a specific material.
      * @param material the [Material] for the quest item.
-     * @param itemName the name of the quest item as a [Component].
-     * @param lore the lore of the quest item as [ItemLore].
+     * @param itemName the name of the quest item as a [String].
+     * @param lore the lore of the quest item as a [List] of [String]s.
      * @return an [ItemStack] representing the quest item.
      */
     @Suppress("UnstableApiUsage")
-    private fun questItem(material: Material, itemName: Component, lore: ItemLore): ItemStack {
+    private fun questItem(material: Material, itemName: String, lore: List<String>): ItemStack {
         return ItemStack.of(material).apply {
-            setData(DataComponentTypes.ITEM_NAME, itemName)
-            setData(DataComponentTypes.LORE, lore)
+            setData(DataComponentTypes.ITEM_NAME, itemName.mm())
+            setData(DataComponentTypes.LORE, ItemLore.lore(lore.mm()))
         }
     }
 
