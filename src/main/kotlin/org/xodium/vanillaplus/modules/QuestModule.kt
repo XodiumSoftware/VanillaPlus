@@ -320,8 +320,7 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
                 QuestTask("Kill", EntityType.ZOMBIE, 10) to QuestReward(Material.EXPERIENCE_BOTTLE, 5),
                 QuestTask("Find", Material.DIAMOND, 1) to QuestReward(Material.EXPERIENCE_BOTTLE, 4),
                 QuestTask("Brew", Material.POTION, 1) to QuestReward(Material.EXPERIENCE_BOTTLE, 6),
-                // TODO: replace these kind of tasks
-                QuestTask("Enter", "Nether", 1) to QuestReward(Material.EXPERIENCE_BOTTLE, 8),
+                QuestTask("Trade", EntityType.VILLAGER, 3) to QuestReward(Material.EXPERIENCE_BOTTLE, 3),
             ),
             QuestDifficulty.HARD to listOf(
                 QuestTask("Defeat", EntityType.ENDER_DRAGON, 1) to QuestReward(Material.EXPERIENCE_BOTTLE, 64),
