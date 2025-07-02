@@ -64,10 +64,6 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
         )
     }
 
-    init {
-        // Ensure player data is saved on module initialization
-    }
-
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: InventoryClickEvent) {
         if (!enabled()) return

@@ -18,9 +18,11 @@ import kotlin.io.path.writeText
 
 /**
  * Represents the data structure for player data.
+ * @param nickname The nickname of the player, if set.
  * @param quests A list of quests associated with the player.
  */
 data class PlayerData(
+    val nickname: String? = null,
     val quests: List<QuestData> = emptyList(),
 ) {
     companion object {
@@ -63,7 +65,7 @@ data class PlayerData(
          * @param player The player whose data is to be set.
          */
         fun set(player: Player) {
-            cache[player.uniqueId] = cache.getOrDefault(player.uniqueId, PlayerData())
+            cache.getOrPut(player.uniqueId) { PlayerData() }
             save()
         }
 
@@ -73,8 +75,7 @@ data class PlayerData(
          * @return The PlayerData associated with the player.
          */
         fun get(player: Player): PlayerData {
-            if (!cache.containsKey(player.uniqueId)) cache[player.uniqueId] = PlayerData()
-            return cache[player.uniqueId] ?: PlayerData()
+            return cache.getOrPut(player.uniqueId) { PlayerData() }
         }
 
         /**
@@ -85,6 +86,34 @@ data class PlayerData(
         fun update(player: Player, data: PlayerData) {
             cache[player.uniqueId] = data
             save()
+        }
+
+        /**
+         * Retrieves the nickname for a given player.
+         * @param player The player whose nickname is to be retrieved.
+         * @return The nickname if it exists, null otherwise.
+         */
+        fun getNickname(player: Player): String? = get(player).nickname
+
+        /**
+         * Sets the nickname for a given player.
+         * @param player The player whose nickname is to be set.
+         * @param nickname The nickname to set.
+         */
+        fun setNickname(player: Player, nickname: String) {
+            val data = get(player)
+            update(player, data.copy(nickname = nickname))
+        }
+
+        /**
+         * Removes the nickname for a given player.
+         * @param player The player whose nickname is to be removed.
+         */
+        fun removeNickname(player: Player) {
+            val data = get(player)
+            if (data.nickname != null) {
+                update(player, data.copy(nickname = null))
+            }
         }
     }
 }
