@@ -9,6 +9,7 @@ import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
 import org.bukkit.Material
+import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -191,28 +192,29 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
     data class Config(
         override var enabled: Boolean = true,
         var inventoryTitle: String = "<b>Quests</b>".fireFmt(),
-        //TODO: adjust task part to make it be used as desc and way to check.
-        var questPool: Map<QuestDifficulty, List<Pair<String, QuestReward>>> = mapOf(
+        var questPool: Map<QuestDifficulty, List<Pair<QuestTask, QuestReward>>> = mapOf(
             QuestDifficulty.EASY to listOf(
-                "Mine 64 Cobblestone" to QuestReward(Material.EXPERIENCE_BOTTLE, 1),
-                "Craft 5 Stone Swords" to QuestReward(Material.EXPERIENCE_BOTTLE, 2),
-                "Harvest 32 Wheat" to QuestReward(Material.EXPERIENCE_BOTTLE, 1),
-                "Smelt 10 Iron Ore" to QuestReward(Material.EXPERIENCE_BOTTLE, 2),
+                QuestTask("Mine", Material.COBBLESTONE, 64) to QuestReward(Material.EXPERIENCE_BOTTLE, 1),
+                QuestTask("Craft", Material.STONE_SWORD, 5) to QuestReward(Material.EXPERIENCE_BOTTLE, 2),
+                QuestTask("Harvest", Material.WHEAT, 32) to QuestReward(Material.EXPERIENCE_BOTTLE, 1),
+                QuestTask("Smelt", Material.IRON_ORE, 10) to QuestReward(Material.EXPERIENCE_BOTTLE, 2),
             ),
             QuestDifficulty.MEDIUM to listOf(
-                "Kill 10 Zombies" to QuestReward(Material.EXPERIENCE_BOTTLE, 5),
-                "Find a Diamond" to QuestReward(Material.EXPERIENCE_BOTTLE, 4),
-                "Brew a Potion of Swiftness" to QuestReward(Material.EXPERIENCE_BOTTLE, 6),
-                "Enter the Nether" to QuestReward(Material.EXPERIENCE_BOTTLE, 8),
+                QuestTask("Kill", EntityType.ZOMBIE, 10) to QuestReward(Material.EXPERIENCE_BOTTLE, 5),
+                QuestTask("Find", Material.DIAMOND, 1) to QuestReward(Material.EXPERIENCE_BOTTLE, 4),
+                QuestTask("Brew", Material.POTION, 1) to QuestReward(Material.EXPERIENCE_BOTTLE, 6),
+                // TODO: replace these kind of tasks
+                QuestTask("Enter", "Nether", 1) to QuestReward(Material.EXPERIENCE_BOTTLE, 8),
             ),
             QuestDifficulty.HARD to listOf(
-                "Defeat the Ender Dragon" to QuestReward(Material.EXPERIENCE_BOTTLE, 64),
-                "Obtain a Netherite Ingot" to QuestReward(Material.EXPERIENCE_BOTTLE, 32),
-                "Cure a Zombie Villager" to QuestReward(Material.EXPERIENCE_BOTTLE, 48),
-                "Defeat a Wither" to QuestReward(Material.EXPERIENCE_BOTTLE, 50),
+                QuestTask("Defeat", EntityType.ENDER_DRAGON, 1) to QuestReward(Material.EXPERIENCE_BOTTLE, 64),
+                QuestTask("Obtain", Material.NETHERITE_INGOT, 1) to QuestReward(Material.EXPERIENCE_BOTTLE, 32),
+                QuestTask("Cure", EntityType.ZOMBIE_VILLAGER, 1) to QuestReward(Material.EXPERIENCE_BOTTLE, 48),
+                QuestTask("Defeat", EntityType.WITHER, 1) to QuestReward(Material.EXPERIENCE_BOTTLE, 50),
             )
         )
     ) : ModuleInterface.Config {
+        data class QuestTask(val action: String, val material: Material, val amount: Int)
         data class QuestReward(val material: Material, val amount: Int)
     }
 }
