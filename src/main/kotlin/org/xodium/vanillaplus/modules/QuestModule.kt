@@ -37,6 +37,7 @@ import java.time.DayOfWeek
 import java.time.Instant
 import java.time.ZoneId
 import java.time.temporal.TemporalAdjusters
+import java.util.*
 
 /** Represents a module handling quests mechanics within the system. */
 class QuestModule : ModuleInterface<QuestModule.Config> {
@@ -180,27 +181,32 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
             QuestData(
                 QuestDifficulty.EASY,
                 createTaskDescription(easyQuests[0].first),
-                createRewardDescription(easyQuests[0].second)
+                createRewardDescription(easyQuests[0].second),
+                uuid = easyQuests[0].first.uuid,
             ),
             QuestData(
                 QuestDifficulty.EASY,
                 createTaskDescription(easyQuests[1].first),
-                createRewardDescription(easyQuests[1].second)
+                createRewardDescription(easyQuests[1].second),
+                uuid = easyQuests[1].first.uuid,
             ),
             QuestData(
                 QuestDifficulty.MEDIUM,
                 createTaskDescription(mediumQuests[0].first),
-                createRewardDescription(mediumQuests[0].second)
+                createRewardDescription(mediumQuests[0].second),
+                uuid = mediumQuests[0].first.uuid,
             ),
             QuestData(
                 QuestDifficulty.MEDIUM,
                 createTaskDescription(mediumQuests[1].first),
-                createRewardDescription(mediumQuests[1].second)
+                createRewardDescription(mediumQuests[1].second),
+                uuid = mediumQuests[1].first.uuid,
             ),
             QuestData(
                 QuestDifficulty.HARD,
                 createTaskDescription(hardQuest[0].first),
-                createRewardDescription(hardQuest[0].second)
+                createRewardDescription(hardQuest[0].second),
+                uuid = hardQuest[0].first.uuid,
             ),
         )
     }
@@ -250,7 +256,7 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
      * @return The [Config.QuestTask] or null if not found.
      */
     private fun findTaskForQuest(quest: QuestData): Config.QuestTask? {
-        return config.questPool[quest.difficulty]?.find { createTaskDescription(it.first) == quest.task }?.first
+        return config.questPool[quest.difficulty]?.find { it.first.uuid == quest.uuid }?.first
     }
 
     /**
@@ -259,7 +265,7 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
      * @return The [Config.QuestReward] or null if not found.
      */
     private fun findRewardForQuest(quest: QuestData): Config.QuestReward? {
-        return config.questPool[quest.difficulty]?.find { createTaskDescription(it.first) == quest.task }?.second
+        return config.questPool[quest.difficulty]?.find { it.first.uuid == quest.uuid }?.second
     }
 
     /**
@@ -330,7 +336,7 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
             )
         )
     ) : ModuleInterface.Config {
-        data class QuestTask(val action: String, val target: Any, val amount: Int)
+        data class QuestTask(val action: String, val target: Any, val amount: Int, val uuid: UUID = UUID.randomUUID())
         data class QuestReward(val material: Material, val amount: Int)
     }
 }
