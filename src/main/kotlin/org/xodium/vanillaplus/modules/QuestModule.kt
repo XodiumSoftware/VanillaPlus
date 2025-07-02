@@ -24,13 +24,14 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.glorpFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
+import org.xodium.vanillaplus.utils.FmtUtils.roseFmt
 import org.xodium.vanillaplus.utils.Utils.tryCatch
 
 /** Represents a module handling quests mechanics within the system. */
 class QuestModule : ModuleInterface<QuestModule.Config> {
     override val config: Config = Config()
 
-    private val invTitle = "Quests".fireFmt().mm()
+    private val invTitle = "<b>Quests</b>".fireFmt().mm()
 
     override fun enabled(): Boolean = config.enabled
 
@@ -68,12 +69,18 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
      */
     private fun quests(): Inventory {
         return instance.server.createInventory(null, InventoryType.HOPPER, invTitle).apply {
+            val task = null // TODO
+            val reward = null // TODO
             val itemMaterial = if (completed()) Material.ENCHANTED_BOOK else Material.WRITABLE_BOOK
-            setItem(0, questItem(itemMaterial, "Easy".glorpFmt(), listOf()))
-            setItem(1, questItem(itemMaterial, "Easy".glorpFmt(), listOf()))
-            setItem(2, questItem(itemMaterial, "Medium".mangoFmt(), listOf()))
-            setItem(3, questItem(itemMaterial, "Medium".mangoFmt(), listOf()))
-            setItem(4, questItem(itemMaterial, "Hard".fireFmt(), listOf()))
+            val itemLore = listOf(
+                "<b>Task:</b> $task".roseFmt(),
+                "<b>Reward:</b> $reward".roseFmt()
+            )
+            setItem(0, questItem(itemMaterial, "<b>Easy</b>".glorpFmt(), itemLore))
+            setItem(1, questItem(itemMaterial, "<b>Easy</b>".glorpFmt(), itemLore))
+            setItem(2, questItem(itemMaterial, "<b>Medium</b>".mangoFmt(), itemLore))
+            setItem(3, questItem(itemMaterial, "<b>Medium</b>".mangoFmt(), itemLore))
+            setItem(4, questItem(itemMaterial, "<b>Hard</b>".fireFmt(), itemLore))
         }
     }
 
