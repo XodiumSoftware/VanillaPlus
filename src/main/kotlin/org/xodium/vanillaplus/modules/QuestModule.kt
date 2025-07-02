@@ -6,6 +6,9 @@
 package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.command.brigadier.Commands
+import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.ItemLore
+import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
@@ -19,6 +22,7 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.Utils.tryCatch
 
+/** Represents a module handling quests mechanics within the system. */
 class QuestModule : ModuleInterface<QuestModule.Config> {
     override val config: Config = Config()
 
@@ -48,7 +52,7 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
 
     /**
      * Creates an inventory for quests.
-     * @return an Inventory with 5 slots, each containing a quest item.
+     * @return an [Inventory] with 5 slots, each containing a quest item.
      */
     private fun quests(): Inventory {
         return instance.server.createInventory(null, InventoryType.HOPPER, "Quests".fireFmt().mm()).apply {
@@ -62,11 +66,17 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
 
     /**
      * Creates a quest item with a specific material.
-     * @param material the Material for the quest item, defaults to STONE.
-     * @return an ItemStack representing the quest item.
+     * @param material the [Material] for the quest item.
+     * @param itemName the name of the quest item as a [Component].
+     * @param lore the lore of the quest item as [ItemLore].
+     * @return an [ItemStack] representing the quest item.
      */
-    private fun questItem(material: Material): ItemStack {
-        return ItemStack.of(material)
+    @Suppress("UnstableApiUsage")
+    private fun questItem(material: Material, itemName: Component, lore: ItemLore): ItemStack {
+        return ItemStack.of(material).apply {
+            setData(DataComponentTypes.ITEM_NAME, itemName)
+            setData(DataComponentTypes.LORE, lore)
+        }
     }
 
     data class Config(
