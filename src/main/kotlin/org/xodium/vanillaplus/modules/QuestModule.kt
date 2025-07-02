@@ -180,59 +180,60 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
         return listOf(
             QuestData(
                 QuestDifficulty.EASY,
-                createTaskDescription(easyQuests[0].first),
-                createRewardDescription(easyQuests[0].second),
+                createDescription(easyQuests[0].first),
+                createDescription(easyQuests[0].second),
                 uuid = easyQuests[0].first.uuid,
             ),
             QuestData(
                 QuestDifficulty.EASY,
-                createTaskDescription(easyQuests[1].first),
-                createRewardDescription(easyQuests[1].second),
+                createDescription(easyQuests[1].first),
+                createDescription(easyQuests[1].second),
                 uuid = easyQuests[1].first.uuid,
             ),
             QuestData(
                 QuestDifficulty.MEDIUM,
-                createTaskDescription(mediumQuests[0].first),
-                createRewardDescription(mediumQuests[0].second),
+                createDescription(mediumQuests[0].first),
+                createDescription(mediumQuests[0].second),
                 uuid = mediumQuests[0].first.uuid,
             ),
             QuestData(
                 QuestDifficulty.MEDIUM,
-                createTaskDescription(mediumQuests[1].first),
-                createRewardDescription(mediumQuests[1].second),
+                createDescription(mediumQuests[1].first),
+                createDescription(mediumQuests[1].second),
                 uuid = mediumQuests[1].first.uuid,
             ),
             QuestData(
                 QuestDifficulty.HARD,
-                createTaskDescription(hardQuest[0].first),
-                createRewardDescription(hardQuest[0].second),
+                createDescription(hardQuest[0].first),
+                createDescription(hardQuest[0].second),
                 uuid = hardQuest[0].first.uuid,
             ),
         )
     }
 
-    /**
-     * Creates a formatted description for a quest reward.
-     * @param reward The [Config.QuestReward] to create the description for.
-     * @return a formatted string describing the reward.
-     */
-    private fun createRewardDescription(reward: Config.QuestReward): String {
-        val materialName = reward.material.name.replace('_', ' ').lowercase().replaceFirstChar { it.titlecase() }
-        return "${reward.amount} $materialName${if (reward.amount > 1) "s" else ""}"
-    }
 
     /**
-     * Creates a formatted description for a quest task.
-     * @param task The [Config.QuestTask] to create the description for.
-     * @return a formatted string describing the task.
+     * Creates a formatted description for a quest task or reward.
+     * @param item The [Config.QuestTask] or [Config.QuestReward] to create the description for.
+     * @return a formatted string describing the item.
      */
-    private fun createTaskDescription(task: Config.QuestTask): String {
-        val targetName = when (task.target) {
-            is Material -> task.target.name.replace('_', ' ').lowercase().replaceFirstChar { it.titlecase() }
-            is EntityType -> task.target.name.replace('_', ' ').lowercase().replaceFirstChar { it.titlecase() }
-            else -> task.target.toString()
+    private fun createDescription(item: Any): String {
+        val (action, amount, target) = when (item) {
+            is Config.QuestTask -> Triple(item.action, item.amount, item.target)
+            is Config.QuestReward -> Triple(null, item.amount, item.material)
+            else -> return ""
         }
-        return "${task.action} ${task.amount} $targetName${if (task.amount > 1) "s" else ""}"
+        val targetName = when (target) {
+            is Material -> target.name.replace('_', ' ').lowercase()
+            is EntityType -> target.name.replace('_', ' ').lowercase()
+            else -> target.toString()
+        }
+        val plural = if (amount > 1) "s" else ""
+        return if (action != null) {
+            "$action $amount $targetName$plural"
+        } else {
+            "$amount $targetName$plural"
+        }
     }
 
     /**
