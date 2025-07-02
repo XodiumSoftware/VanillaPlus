@@ -165,6 +165,8 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
         return "${reward.amount} $materialName${if (reward.amount > 1) "s" else ""}"
     }
 
+    // TODO: add createTaskDescription method to format task descriptions
+
     /**
      * Checks if the quests have expired based on the weekly reset schedule.
      * @param timestamp The timestamp when the quests were last generated.
