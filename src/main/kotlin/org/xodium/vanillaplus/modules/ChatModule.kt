@@ -201,7 +201,9 @@ class ChatModule : ModuleInterface<ChatModule.Config> {
         <image>${"⯈".mangoFmt(true)}
         <image>${"⯈".mangoFmt(true)} ${"Check out".fireFmt()}<gray>: ${
                 "/rules".clickRunCmd("Click Me!".fireFmt()).skylineFmt()
-            } <gray>🟅 ${"/guide".clickRunCmd("Click Me!".fireFmt()).skylineFmt()}
+            } <gray>🟅 ${
+                "/guide".clickRunCmd("Click Me!".fireFmt()).skylineFmt()
+            } <gray>🟅 ${"/quests".clickRunCmd("Click Me!".fireFmt()).skylineFmt()}
         <image>${"⯈".mangoFmt(true)}
         <image>${"⯈".mangoFmt(true)}
         ${"]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)}
