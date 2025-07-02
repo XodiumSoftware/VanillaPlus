@@ -33,8 +33,6 @@ import org.xodium.vanillaplus.utils.Utils.tryCatch
 class QuestModule : ModuleInterface<QuestModule.Config> {
     override val config: Config = Config()
 
-    private val invTitle = "<b>Quests</b>".fireFmt().mm()
-
     override fun enabled(): Boolean = config.enabled
 
     override fun cmds(): CommandData? {
@@ -67,7 +65,7 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: InventoryClickEvent) {
         if (!enabled()) return
-        if (event.view.title() == invTitle) event.isCancelled = true
+        if (event.view.title() == config.inventoryTitle.mm()) event.isCancelled = true
     }
 
     /**
@@ -83,7 +81,7 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
             PlayerData.update(player, playerData)
         }
 
-        return instance.server.createInventory(null, InventoryType.HOPPER, invTitle).apply {
+        return instance.server.createInventory(null, InventoryType.HOPPER, config.inventoryTitle.mm()).apply {
             playerData.quests.forEachIndexed { index, quest -> setItem(index, questItem(quest)) }
         }
     }
@@ -98,8 +96,8 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
         val material = if (quest.completed) Material.ENCHANTED_BOOK else Material.WRITABLE_BOOK
         val name = quest.difficulty.title
         val lore = listOf(
-            "${"<b>\uD83D\uDCDD</b>".fireFmt()} ${quest.task}".roseFmt(),
-            "${"<b>\uD83C\uDF81</b>".fireFmt()} ${quest.reward}".roseFmt(),
+            "<b>\uD83D\uDCDD</b> ${quest.task}".roseFmt(),
+            "<b>\uD83C\uDF81</b> ${quest.reward}".roseFmt(),
         )
         return ItemStack.of(material).apply {
             setData(DataComponentTypes.ITEM_NAME, name.mm())
@@ -112,24 +110,40 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
      * @return a list of [QuestData] representing the player's quests.
      */
     private fun generateQuestsForPlayer(): List<QuestData> {
-        val easyTasks = listOf("Mine 64 Cobblestone", "Craft 5 Stone Swords")
-        val mediumTasks = listOf("Kill 10 Zombies", "Find a Diamond")
-        val hardTasks = listOf("Defeat the Ender Dragon", "Obtain a Netherite Ingot")
-
-        val easyRewards = listOf("16 Bread", "5 Iron Ingots")
-        val mediumRewards = listOf("1 Diamond", "32 Arrows")
-        val hardRewards = listOf("1 Elytra", "1 Dragon Egg")
-
+        val easyQuests = config.questPool[QuestDifficulty.EASY]!!.shuffled().take(2)
+        val mediumQuests = config.questPool[QuestDifficulty.MEDIUM]!!.shuffled().take(2)
+        val hardQuest = config.questPool[QuestDifficulty.HARD]!!.shuffled().take(1)
         return listOf(
-            QuestData(QuestDifficulty.EASY, easyTasks.random(), easyRewards.random()),
-            QuestData(QuestDifficulty.EASY, easyTasks.random(), easyRewards.random()),
-            QuestData(QuestDifficulty.MEDIUM, mediumTasks.random(), mediumRewards.random()),
-            QuestData(QuestDifficulty.MEDIUM, mediumTasks.random(), mediumRewards.random()),
-            QuestData(QuestDifficulty.HARD, hardTasks.random(), hardRewards.random())
+            QuestData(QuestDifficulty.EASY, easyQuests[0].first, easyQuests[0].second),
+            QuestData(QuestDifficulty.EASY, easyQuests[1].first, easyQuests[1].second),
+            QuestData(QuestDifficulty.MEDIUM, mediumQuests[0].first, mediumQuests[0].second),
+            QuestData(QuestDifficulty.MEDIUM, mediumQuests[1].first, mediumQuests[1].second),
+            QuestData(QuestDifficulty.HARD, hardQuest[0].first, hardQuest[0].second),
         )
     }
 
     data class Config(
-        override var enabled: Boolean = true
+        override var enabled: Boolean = true,
+        var inventoryTitle: String = "<b>Quests</b>".fireFmt(),
+        var questPool: Map<QuestDifficulty, List<Pair<String, String>>> = mapOf(
+            QuestDifficulty.EASY to listOf(
+                "Mine 64 Cobblestone" to "1 Experience Bottle",
+                "Craft 5 Stone Swords" to "2 Experience Bottles",
+                "Harvest 32 Wheat" to "1 Experience Bottle",
+                "Smelt 10 Iron Ore" to "2 Experience Bottles",
+            ),
+            QuestDifficulty.MEDIUM to listOf(
+                "Kill 10 Zombies" to "5 Experience Bottles",
+                "Find a Diamond" to "4 Experience Bottles",
+                "Brew a Potion of Swiftness" to "6 Experience Bottles",
+                "Enter the Nether" to "8 Experience Bottles",
+            ),
+            QuestDifficulty.HARD to listOf(
+                "Defeat the Ender Dragon" to "64 Experience Bottles",
+                "Obtain a Netherite Ingot" to "32 Experience Bottles",
+                "Cure a Zombie Villager" to "48 Experience Bottles",
+                "Defeat a Wither" to "50 Experience Bottles",
+            )
+        )
     ) : ModuleInterface.Config
 }
