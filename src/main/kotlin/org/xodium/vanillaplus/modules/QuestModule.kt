@@ -157,7 +157,7 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
                 val progress = quest.progress
                 val required = task?.amount ?: 0
                 val progressBar = createProgressBar(progress, required)
-                lore.add("<b>Progress:</b> $progressBar <b>($progress/$required)</b>") //FIX
+                lore.add("<b>⏳</b> $progressBar ($progress/$required)".roseFmt())
             }
         }
         lore.add("")
