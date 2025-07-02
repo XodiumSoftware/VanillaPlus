@@ -96,7 +96,7 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    fun onEntityDeath(event: EntityDeathEvent) {
+    fun on(event: EntityDeathEvent) {
         if (event.entity.killer == null) return
         val player = event.entity.killer!!
         handleQuestProgress(player, "Kill", event.entityType)
@@ -104,14 +104,14 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    fun onBlockBreak(event: BlockBreakEvent) {
+    fun on(event: BlockBreakEvent) {
         val player = event.player
         handleQuestProgress(player, "Mine", event.block.type)
         handleQuestProgress(player, "Harvest", event.block.type)
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    fun onCraftItem(event: CraftItemEvent) {
+    fun on(event: CraftItemEvent) {
         val player = event.whoClicked as Player
         handleQuestProgress(player, "Craft", event.recipe.result.type, event.recipe.result.amount)
     }
