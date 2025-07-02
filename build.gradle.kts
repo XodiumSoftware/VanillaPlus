@@ -30,8 +30,7 @@ repositories {
 dependencies {
     compileOnly("io.papermc.paper:paper-api:$apiVersion-R0.1-SNAPSHOT")
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.15-SNAPSHOT") //TODO("Move away from WorldEdit")
-    compileOnly(files("libs/CrazyAdvancementsAPI-2.21.7.jar"))
-    
+
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.1")

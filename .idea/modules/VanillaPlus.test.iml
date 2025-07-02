@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module external.linked.project.id="vanillaplus:test" external.linked.project.path="$MODULE_DIR$/../.." external.root.project.path="$MODULE_DIR$/../.." external.system.id="GRADLE" external.system.module.group="org.xodium.vanillaplus" external.system.module.type="sourceSet" external.system.module.version="1.14.0" type="JAVA_MODULE" version="4">
+<module external.linked.project.id="VanillaPlus:test" external.linked.project.path="$MODULE_DIR$/../.." external.root.project.path="$MODULE_DIR$/../.." external.system.id="GRADLE" external.system.module.group="org.xodium.vanillaplus" external.system.module.type="sourceSet" external.system.module.version="1.14.0" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet external-system-id="GRADLE" type="kotlin-language" name="Kotlin">
-      <configuration version="5" platform="JVM 21" allPlatforms="JVM [21]" useProjectSettings="false" pureKotlinSourceFolders="$MODULE_DIR$/../../src/test/kotlin;/media/hdd/intellij/vanillaplus/src/main/kotlin">
-        <additionalVisibleModuleNames>vanillaplus:main</additionalVisibleModuleNames>
+      <configuration version="5" platform="JVM 21" allPlatforms="JVM [21]" useProjectSettings="false" pureKotlinSourceFolders="$MODULE_DIR$/../../src/test/kotlin;/home/illyrius/.jetbrains/VanillaPlus/src/main/kotlin">
+        <additionalVisibleModuleNames>VanillaPlus:main</additionalVisibleModuleNames>
         <compilerSettings />
         <compilerArguments>
           <flagArguments>
@@ -14,7 +14,7 @@
           <stringArguments>
             <stringArg name="destination" arg="$MODULE_DIR$/../../build/classes/kotlin/test" />
             <stringArg name="jvmTarget" arg="21" />
-            <stringArg name="moduleName" arg="vanillaplus_test" />
+            <stringArg name="moduleName" arg="VanillaPlus_test" />
             <stringArg name="apiVersion" arg="2.2" />
             <stringArg name="languageVersion" arg="2.2" />
           </stringArguments>
@@ -38,9 +38,9 @@
     <output-test url="file://$MODULE_DIR$/../../build/classes/java/test" />
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../src/test" />
-    <orderEntry type="jdk" jdkName="jbr-21" jdkType="JavaSDK" />
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="vanillaplus.main" />
+    <orderEntry type="module" module-name="VanillaPlus.main" />
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.1" level="project" />
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.module:jackson-module-kotlin:2.19.1" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-reflect:2.2.0" level="project" />
@@ -52,5 +52,5 @@
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.2.0" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains:annotations:13.0" level="project" />
   </component>
-  <component name="TestModuleProperties" production-module="vanillaplus.main" />
+  <component name="TestModuleProperties" production-module="VanillaPlus.main" />
 </module>
