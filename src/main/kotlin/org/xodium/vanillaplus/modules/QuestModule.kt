@@ -12,10 +12,6 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
 
     override fun enabled(): Boolean = config.enabled
 
-    init {
-        if (enabled())
-    }
-
     data class Config(
         override var enabled: Boolean = true
     ) : ModuleInterface.Config
