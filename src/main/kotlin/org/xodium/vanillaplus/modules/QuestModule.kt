@@ -91,6 +91,27 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
         }
     }
 
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun onEntityDeath(event: EntityDeathEvent) {
+        if (event.entity.killer == null) return
+        val player = event.entity.killer!!
+        handleQuestProgress(player, "Kill", event.entityType)
+        handleQuestProgress(player, "Defeat", event.entityType)
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun onBlockBreak(event: BlockBreakEvent) {
+        val player = event.player
+        handleQuestProgress(player, "Mine", event.block.type)
+        handleQuestProgress(player, "Harvest", event.block.type)
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun onCraftItem(event: CraftItemEvent) {
+        val player = event.whoClicked as Player
+        handleQuestProgress(player, "Craft", event.recipe.result.type, event.recipe.result.amount)
+    }
+
     /**
      * Creates an inventory for quests.
      * @param player the [Player] for whom the inventory is created.
@@ -215,12 +236,49 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
     }
 
     /**
+     * Finds the original QuestTask object for a given quest.
+     * @param quest The quest to find the task for.
+     * @return The [Config.QuestTask] or null if not found.
+     */
+    private fun findTaskForQuest(quest: QuestData): Config.QuestTask? {
+        return config.questPool[quest.difficulty]?.find { createTaskDescription(it.first) == quest.task }?.first
+    }
+
+    /**
      * Finds the configured reward for a given quest.
      * @param quest The quest to find the reward for.
      * @return The [Config.QuestReward] or null if not found.
      */
     private fun findRewardForQuest(quest: QuestData): Config.QuestReward? {
         return config.questPool[quest.difficulty]?.find { createTaskDescription(it.first) == quest.task }?.second
+    }
+
+    /**
+     * Handles quest progress for a player based on an action.
+     * @param player The player performing the action.
+     * @param action The action performed (e.g., "Kill", "Mine").
+     * @param target The target of the action (e.g., [EntityType.ZOMBIE], [Material.COBBLESTONE]).
+     * @param amount The amount to add to the progress.
+     */
+    private fun handleQuestProgress(player: Player, action: String, target: Any, amount: Int = 1) {
+        val playerData = PlayerData.get(player)
+        var questsUpdated = false
+
+        playerData.quests.list.forEach { quest ->
+            if (!quest.completed) {
+                val questTask = findTaskForQuest(quest) ?: return@forEach
+                if (questTask.action == action && questTask.target == target) {
+                    quest.progress += amount
+                    if (quest.progress >= questTask.amount) {
+                        quest.completed = true
+                        player.openInventory(quests(player))
+                    }
+                    questsUpdated = true
+                }
+            }
+        }
+
+        if (questsUpdated) PlayerData.update(player, playerData)
     }
 
     data class Config(
