@@ -58,7 +58,7 @@ class NicknameModule(private val tabListModule: TabListModule) : ModuleInterface
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
         if (!enabled()) return
-        val nickname = PlayerData.getNickname(event.player)
+        val nickname = PlayerData.get(event.player).nickname
         if (nickname != null) event.player.displayName(nickname.mm())
     }
 

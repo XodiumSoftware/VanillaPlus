@@ -89,20 +89,12 @@ data class PlayerData(
         }
 
         /**
-         * Retrieves the nickname for a given player.
-         * @param player The player whose nickname is to be retrieved.
-         * @return The nickname if it exists, null otherwise.
-         */
-        fun getNickname(player: Player): String? = get(player).nickname
-
-        /**
          * Sets the nickname for a given player.
          * @param player The player whose nickname is to be set.
          * @param nickname The nickname to set.
          */
         fun setNickname(player: Player, nickname: String) {
-            val data = get(player)
-            update(player, data.copy(nickname = nickname))
+            update(player, get(player).copy(nickname = nickname))
         }
 
         /**
