@@ -291,10 +291,7 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
                 val questTask = findTaskForQuest(quest) ?: return@forEach
                 if (questTask.action == action && questTask.target == target) {
                     quest.progress += amount
-                    if (quest.progress >= questTask.amount) {
-                        quest.completed = true
-                        player.openInventory(quests(player))
-                    }
+                    if (quest.progress >= questTask.amount) quest.completed = true
                     questsUpdated = true
                 }
             }
