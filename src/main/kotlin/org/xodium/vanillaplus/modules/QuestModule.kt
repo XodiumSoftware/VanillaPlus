@@ -13,6 +13,9 @@ import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
+import org.bukkit.event.block.BlockBreakEvent
+import org.bukkit.event.entity.EntityDeathEvent
+import org.bukkit.event.inventory.CraftItemEvent
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
@@ -140,6 +143,7 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
     private fun questItem(quest: QuestData): ItemStack {
         val material = if (quest.completed) Material.ENCHANTED_BOOK else Material.WRITABLE_BOOK
         val name = quest.difficulty.title
+        val task = findTaskForQuest(quest)
         val lore = mutableListOf(
             "<b>\uD83D\uDCDD</b> ${quest.task}".roseFmt(),
             "<b>\uD83C\uDF81</b> ${quest.reward}".roseFmt(),
@@ -148,7 +152,12 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
         when {
             quest.claimed -> lore.add("<b><green>✔</green> Reward Claimed</b>")
             quest.completed -> lore.add("<b><green>✔</green> Click to claim your reward!</b>")
-            else -> lore.add("<b><gray>✖</gray> In Progress</b>") //TODO: adjust based on size task to display a bar.
+            else -> {
+                val progress = quest.progress
+                val required = task?.amount ?: 0
+                val progressBar = createProgressBar(progress, required)
+                lore.add("<b>Progress:</b> $progressBar <b>($progress/$required)</b>")
+            }
         }
         lore.add("")
         lore.add("<b>❗</b> Quests reset on each Monday at 00:00".fireFmt())
@@ -279,6 +288,22 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
         }
 
         if (questsUpdated) PlayerData.update(player, playerData)
+    }
+
+    /**
+     * Creates a progress bar string.
+     * @param current The current progress.
+     * @param max The maximum value for the progress.
+     * @param length The total length of the progress bar in characters.
+     * @return A formatted string representing the progress bar.
+     */
+    private fun createProgressBar(current: Int, max: Int, length: Int = 10): String {
+        if (max <= 0) return ""
+        val percentage = (current.toDouble() / max).coerceIn(0.0, 1.0)
+        val filledLength = (percentage * length).toInt()
+        val emptyLength = length - filledLength
+        val filledChar = "■"
+        return "<green>${filledChar.repeat(filledLength)}</green><gray>${filledChar.repeat(emptyLength)}</gray>"
     }
 
     data class Config(
