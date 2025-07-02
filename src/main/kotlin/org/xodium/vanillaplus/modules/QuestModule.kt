@@ -10,6 +10,9 @@ import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
+import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
+import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
@@ -25,6 +28,8 @@ import org.xodium.vanillaplus.utils.Utils.tryCatch
 /** Represents a module handling quests mechanics within the system. */
 class QuestModule : ModuleInterface<QuestModule.Config> {
     override val config: Config = Config()
+
+    private val invTitle = "Quests".fireFmt().mm()
 
     override fun enabled(): Boolean = config.enabled
 
@@ -50,17 +55,23 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
         )
     }
 
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun on(event: InventoryClickEvent) {
+        if (!enabled()) return
+        if (event.view.title() == invTitle) event.isCancelled = true
+    }
+
     /**
      * Creates an inventory for quests.
      * @return an [Inventory] with 5 slots, each containing a quest item.
      */
     private fun quests(): Inventory {
-        return instance.server.createInventory(null, InventoryType.HOPPER, "Quests".fireFmt().mm()).apply {
-            setItem(0, questItem())
-            setItem(1, questItem())
-            setItem(2, questItem())
-            setItem(3, questItem())
-            setItem(4, questItem())
+        return instance.server.createInventory(null, InventoryType.HOPPER, invTitle).apply {
+            setItem(0, questItem()) // Easy Quest
+            setItem(1, questItem()) // Easy Quest
+            setItem(2, questItem()) // Medium Quest
+            setItem(3, questItem()) // Medium Quest
+            setItem(4, questItem()) // Hard Quest
         }
     }
 
