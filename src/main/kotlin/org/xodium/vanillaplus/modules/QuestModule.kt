@@ -20,6 +20,7 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
+import org.xodium.vanillaplus.data.PlayerData
 import org.xodium.vanillaplus.data.QuestData
 import org.xodium.vanillaplus.enums.QuestDifficulty
 import org.xodium.vanillaplus.interfaces.ModuleInterface
@@ -27,14 +28,12 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.roseFmt
 import org.xodium.vanillaplus.utils.Utils.tryCatch
-import java.util.*
 
 /** Represents a module handling quests mechanics within the system. */
 class QuestModule : ModuleInterface<QuestModule.Config> {
     override val config: Config = Config()
 
     private val invTitle = "<b>Quests</b>".fireFmt().mm()
-    private val playerQuests = mutableMapOf<UUID, List<QuestData>>()
 
     override fun enabled(): Boolean = config.enabled
 
@@ -65,6 +64,10 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
         )
     }
 
+    init {
+        // Ensure player data is saved on module initialization
+    }
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: InventoryClickEvent) {
         if (!enabled()) return
@@ -77,9 +80,15 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
      * @return an [Inventory] with 5 slots, each containing a quest item.
      */
     private fun quests(player: Player): Inventory {
-        val quests = playerQuests.computeIfAbsent(player.uniqueId) { generateQuestsForPlayer() }
+        var playerData = PlayerData.get(player)
+        if (playerData.quests.isEmpty()) {
+            val newQuests = generateQuestsForPlayer()
+            playerData = playerData.copy(quests = newQuests)
+            PlayerData.update(player, playerData)
+        }
+
         return instance.server.createInventory(null, InventoryType.HOPPER, invTitle).apply {
-            quests.forEachIndexed { index, quest -> setItem(index, questItem(quest)) }
+            playerData.quests.forEachIndexed { index, quest -> setItem(index, questItem(quest)) }
         }
     }
 
@@ -102,6 +111,10 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
         }
     }
 
+    /**
+     * Generates a list of quests for the player.
+     * @return a list of [QuestData] representing the player's quests.
+     */
     private fun generateQuestsForPlayer(): List<QuestData> {
         val easyTasks = listOf("Mine 64 Cobblestone", "Craft 5 Stone Swords")
         val mediumTasks = listOf("Kill 10 Zombies", "Find a Diamond")
