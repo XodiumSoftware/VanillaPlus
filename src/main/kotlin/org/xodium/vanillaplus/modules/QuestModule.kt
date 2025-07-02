@@ -74,7 +74,20 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
 
         event.isCancelled = true
 
-        if (event.isLeftClick) TODO("handle reward claiming")
+        if (event.isLeftClick) {
+            val player = event.whoClicked as Player
+            val playerData = PlayerData.get(player)
+            val quest = playerData.quests.list.getOrNull(event.slot) ?: return
+            if (quest.completed && !quest.claimed) {
+                val reward = findRewardForQuest(quest)
+                if (reward != null) {
+                    player.inventory.addItem(ItemStack.of(reward.material, reward.amount))
+                    quest.claimed = true
+                    PlayerData.update(player, playerData)
+                    player.openInventory(quests(player))
+                }
+            }
+        }
     }
 
     /**
@@ -105,12 +118,19 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
     private fun questItem(quest: QuestData): ItemStack {
         val material = if (quest.completed) Material.ENCHANTED_BOOK else Material.WRITABLE_BOOK
         val name = quest.difficulty.title
-        val lore = listOf(
+        val lore = mutableListOf(
             "<b>\uD83D\uDCDD</b> ${quest.task}".roseFmt(),
             "<b>\uD83C\uDF81</b> ${quest.reward}".roseFmt(),
-            "",
-            "<b>❗</b> Quests reset on each Monday at 00:00".fireFmt(),
+            ""
         )
+        when {
+            quest.claimed -> lore.add("<b><green>✔</green> Reward Claimed</b>")
+            quest.completed -> lore.add("<b><green>✔</green> Click to claim your reward!</b>")
+            else -> lore.add("<b><gray>✖</gray> In Progress</b>")
+        }
+        lore.add("")
+        lore.add("<b>❗</b> Quests reset on each Monday at 00:00".fireFmt())
+
         return ItemStack.of(material).apply {
             setData(DataComponentTypes.ITEM_NAME, name.mm())
             setData(DataComponentTypes.LORE, ItemLore.lore(lore.mm()))
@@ -157,6 +177,15 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
         val nextReset = lastReset.with(TemporalAdjusters.next(DayOfWeek.MONDAY)).withHour(0).withMinute(0).withSecond(0)
 
         return now.isAfter(nextReset)
+    }
+
+    /**
+     * Finds the configured reward for a given quest.
+     * @param quest The quest to find the reward for.
+     * @return The [Config.QuestReward] or null if not found.
+     */
+    private fun findRewardForQuest(quest: QuestData): Config.QuestReward? {
+        return config.questPool[quest.difficulty]?.find { it.first == quest.task }?.second
     }
 
     data class Config(
