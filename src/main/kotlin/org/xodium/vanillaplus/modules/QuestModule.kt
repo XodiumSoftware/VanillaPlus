@@ -98,8 +98,8 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
         val material = if (quest.completed) Material.ENCHANTED_BOOK else Material.WRITABLE_BOOK
         val name = quest.difficulty.title
         val lore = listOf(
-            "<b>Task:</b> ${quest.task}".roseFmt(),
-            "<b>Reward:</b> ${quest.reward}".roseFmt(),
+            "${"<b>\uD83D\uDCDD</b>".fireFmt()} ${quest.task}".roseFmt(),
+            "${"<b>\uD83C\uDF81</b>".fireFmt()} ${quest.reward}".roseFmt(),
         )
         return ItemStack.of(material).apply {
             setData(DataComponentTypes.ITEM_NAME, name.mm())

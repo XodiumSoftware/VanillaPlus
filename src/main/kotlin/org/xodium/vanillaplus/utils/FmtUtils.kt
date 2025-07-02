@@ -49,6 +49,5 @@ object FmtUtils {
 
     /** Applies a glorp-themed gradient to the [String]. */
     fun String.glorpFmt(inverted: Boolean = false): String =
-        gradient("#54F47F", "#B3E94A", this, inverted)
-
+        gradient("#B3E94A", "#54F47F", this, inverted)
 }
