@@ -28,6 +28,7 @@ object ModuleManager {
     val petModule: PetModule = PetModule()
     val recipiesModule: RecipiesModule = RecipiesModule()
     val signModule: SignModule = SignModule()
+    val sitModule: SitModule = SitModule()
     val tabListModule: TabListModule = TabListModule()
     val nicknameModule: NicknameModule = NicknameModule(tabListModule)
     val treesModule: TreesModule = TreesModule()
@@ -46,6 +47,7 @@ object ModuleManager {
         petModule,
         recipiesModule,
         signModule,
+        sitModule,
         tabListModule,
         treesModule,
         trowelModule
