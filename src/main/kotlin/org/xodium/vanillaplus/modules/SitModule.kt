@@ -62,7 +62,7 @@ class SitModule : ModuleInterface<SitModule.Config> {
 
         val player = event.entity as Player
         sittingPlayers.remove(player.uniqueId)?.let { armorStand ->
-            val safeLocation = armorStand.location.clone().add(0.0, 1.2, 0.0)
+            val safeLocation = armorStand.location.clone().add(0.0, 0.5, 0.0)
             safeLocation.yaw = player.location.yaw
             safeLocation.pitch = player.location.pitch
             player.teleport(safeLocation)
