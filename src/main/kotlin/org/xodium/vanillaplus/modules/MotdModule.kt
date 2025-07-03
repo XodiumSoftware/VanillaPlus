@@ -19,7 +19,7 @@ class MotdModule : ModuleInterface<MotdModule.Config> {
 
     override fun enabled(): Boolean = config.enabled
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.HIGH)
     fun on(event: ServerListPingEvent) {
         if (!enabled()) return
         event.motd(config.motd.joinToString("\n").mm())
@@ -29,7 +29,7 @@ class MotdModule : ModuleInterface<MotdModule.Config> {
         override var enabled: Boolean = true,
         val motd: List<String> = listOf(
             "<b>Ultimate Private SMP</b>".fireFmt(),
-            "<b>➤ WELCOME BACK LADS!</b>".mangoFmt()
+            "<b>➤ WELCOME BACK LADS!</b>".mangoFmt(),
         )
     ) : ModuleInterface.Config
 }

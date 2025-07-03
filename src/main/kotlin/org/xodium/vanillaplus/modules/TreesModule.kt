@@ -55,7 +55,7 @@ class TreesModule : ModuleInterface<TreesModule.Config> {
      * Handle the StructureGrowEvent.
      * @param event The StructureGrowEvent.
      */
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: StructureGrowEvent) {
         if (!enabled()) return
         event.location.block.takeIf {

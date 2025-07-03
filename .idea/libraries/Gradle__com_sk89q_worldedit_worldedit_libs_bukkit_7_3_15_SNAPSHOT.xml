@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: com.sk89q.worldedit.worldedit-libs:bukkit:7.3.15-SNAPSHOT" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="com.sk89q.worldedit.worldedit-libs" artifactId="bukkit" version="7.3.15-SNAPSHOT" baseVersion="7.3.15-SNAPSHOT" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.sk89q.worldedit.worldedit-libs/bukkit/7.3.15-SNAPSHOT/fc6bea5d1d8a161492068daa51ecdcca353cb5ca/bukkit-7.3.15-SNAPSHOT.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.sk89q.worldedit.worldedit-libs/bukkit/7.3.15-SNAPSHOT/10864ae3610aa76a55cc86879655fc3969953780/bukkit-7.3.15-SNAPSHOT-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -35,7 +35,7 @@ class DimensionsModule : ModuleInterface<DimensionsModule.Config> {
         )
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerPortalEvent) {
         if (!enabled()) return
 
@@ -63,14 +63,14 @@ class DimensionsModule : ModuleInterface<DimensionsModule.Config> {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH)
     fun on(event: EntityPortalEvent) {
         if (!enabled()) return
 
         event.canCreatePortal = false
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: BlockIgniteEvent) {
         if (!enabled()) return
 

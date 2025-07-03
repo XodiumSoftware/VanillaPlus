@@ -5,26 +5,16 @@
 
 package org.xodium.vanillaplus.utils
 
-import com.mojang.brigadier.Command
-import com.mojang.brigadier.context.CommandContext
-import io.papermc.paper.command.brigadier.CommandSourceStack
 import org.bukkit.*
 import org.bukkit.block.*
 import org.bukkit.entity.Player
-import org.bukkit.event.EventHandler
-import org.bukkit.event.block.Action
-import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.EnchantmentStorageMeta
 import org.bukkit.util.BoundingBox
 import org.bukkit.util.Vector
-import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
-import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.managers.ChestAccessManager
 import org.xodium.vanillaplus.managers.ModuleManager
 import org.xodium.vanillaplus.registries.MaterialRegistry
-import org.xodium.vanillaplus.utils.ExtUtils.mm
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -33,23 +23,6 @@ object Utils {
     private val unloads = ConcurrentHashMap<Location, MutableMap<Material, Int>>()
     val lastUnloads: ConcurrentHashMap<UUID, List<Block>> = ConcurrentHashMap()
     val activeVisualizations: ConcurrentHashMap<UUID, Int> = ConcurrentHashMap()
-
-    /**
-     * A helper function to wrap command execution with standardised error handling.
-     * @param ctx The CommandContext used to get the CommandSourceStack.
-     * @param action The action to execute, receiving a CommandSourceStack as a parameter.
-     * @return Command.SINGLE_SUCCESS after execution.
-     */
-    fun tryCatch(ctx: CommandContext<CommandSourceStack>, action: (CommandSourceStack) -> Unit): Int {
-        try {
-            action(ctx.source)
-        } catch (e: Exception) {
-            instance.logger.severe("An Error has occurred: ${e.message}")
-            e.printStackTrace()
-            (ctx.source.sender as Player).sendMessage("$PREFIX <red>An Error has occurred. Check server logs for details.".mm())
-        }
-        return Command.SINGLE_SUCCESS
-    }
 
     /**
      * Checks if two ItemStacks have matching enchantments.
@@ -76,20 +49,6 @@ object Utils {
         if (firstMeta.hasEnchants() != secondMeta.hasEnchants()) return false
 
         return firstMeta.enchants == secondMeta.enchants
-    }
-
-    @EventHandler
-    fun on(event: PlayerInteractEvent) {
-        val block = event.clickedBlock
-        val player = event.player
-        if (event.action == Action.RIGHT_CLICK_BLOCK && block != null) {
-            val key = NamespacedKey(instance, "denied_chest")
-            if (block.type.name.contains("CHEST")) {
-                ChestAccessManager.deny(player, key, block)
-            } else {
-                ChestAccessManager.allow(player, key, block)
-            }
-        }
     }
 
     /**

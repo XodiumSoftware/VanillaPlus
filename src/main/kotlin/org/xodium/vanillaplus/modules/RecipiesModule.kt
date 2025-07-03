@@ -18,7 +18,7 @@ class RecipiesModule : ModuleInterface<RecipiesModule.Config> {
 
     override fun enabled(): Boolean = config.enabled
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
         if (!enabled()) return
         event.player.discoverRecipes(
@@ -27,6 +27,6 @@ class RecipiesModule : ModuleInterface<RecipiesModule.Config> {
     }
 
     data class Config(
-        override var enabled: Boolean = true
+        override var enabled: Boolean = true,
     ) : ModuleInterface.Config
 }

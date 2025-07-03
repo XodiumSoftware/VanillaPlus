@@ -65,7 +65,7 @@ class DoorsModule : ModuleInterface<DoorsModule.Config> {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerInteractEvent) {
         if (!enabled()) return
 

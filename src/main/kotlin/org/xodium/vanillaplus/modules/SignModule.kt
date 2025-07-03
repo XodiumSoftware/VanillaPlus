@@ -17,17 +17,15 @@ class SignModule : ModuleInterface<SignModule.Config> {
 
     override fun enabled(): Boolean = config.enabled
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: SignChangeEvent) {
         if (!enabled()) return
 
         val lines = event.lines()
-        for (i in lines.indices) {
-            lines[i] = PlainTextComponentSerializer.plainText().serialize(lines[i]).mm()
-        }
+        for (i in lines.indices) lines[i] = PlainTextComponentSerializer.plainText().serialize(lines[i]).mm()
     }
 
     data class Config(
-        override var enabled: Boolean = true
+        override var enabled: Boolean = true,
     ) : ModuleInterface.Config
 }

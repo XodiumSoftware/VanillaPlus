@@ -23,9 +23,9 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.SoundData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.managers.ChestAccessManager
 import org.xodium.vanillaplus.managers.CooldownManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.Utils
@@ -42,7 +42,7 @@ class InvUnloadModule : ModuleInterface<InvUnloadModule.Config> {
             listOf(
                 Commands.literal("invunload")
                     .requires { it.sender.hasPermission(perms()[0]) }
-                    .executes { ctx -> Utils.tryCatch(ctx) { unload(it.sender as Player) } }
+                    .executes { ctx -> ctx.tryCatch { unload(it.sender as Player) } }
             ),
             "Allows players to unload their inventory into nearby chests.",
             listOf("unload", "unloadinv", "invu")
@@ -59,7 +59,7 @@ class InvUnloadModule : ModuleInterface<InvUnloadModule.Config> {
         )
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: PlayerQuitEvent) {
         if (!enabled()) return
 
@@ -83,18 +83,13 @@ class InvUnloadModule : ModuleInterface<InvUnloadModule.Config> {
         val startSlot = 9
         val endSlot = 35
         val chests = Utils.findBlocksInRadius(player.location, config.unloadRadius)
+            .filter { it.state is Container }
         if (chests.isEmpty()) {
             return player.sendActionBar("No chests found nearby".fireFmt().mm())
         }
 
-        val deniedChestKey = NamespacedKey(instance, "denied_chest")
-        val useableChests = chests.filter { ChestAccessManager.isAllowed(player, deniedChestKey, it) }
-        if (useableChests.isEmpty()) {
-            return player.sendActionBar("No usable chests found nearby".fireFmt().mm())
-        }
-
         val affectedChests = mutableListOf<Block>()
-        for (block in useableChests) {
+        for (block in chests) {
             val inv = (block.state as Container).inventory
             if (stuffInventoryIntoAnother(player, inv, true, startSlot, endSlot)) {
                 affectedChests.add(block)
@@ -168,6 +163,6 @@ class InvUnloadModule : ModuleInterface<InvUnloadModule.Config> {
         var soundOnUnload: SoundData = SoundData(
             BukkitSound.ENTITY_PLAYER_LEVELUP,
             Sound.Source.PLAYER
-        )
+        ),
     ) : ModuleInterface.Config
 }

@@ -15,10 +15,10 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
-import org.xodium.vanillaplus.data.NicknameData
+import org.xodium.vanillaplus.data.PlayerData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.Utils
+import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 
 class NicknameModule(private val tabListModule: TabListModule) : ModuleInterface<NicknameModule.Config> {
     override val config: Config = Config()
@@ -30,11 +30,11 @@ class NicknameModule(private val tabListModule: TabListModule) : ModuleInterface
             listOf(
                 Commands.literal("nickname")
                     .requires { it.sender.hasPermission(perms()[0]) }
-                    .executes { ctx -> Utils.tryCatch(ctx) { nickname(it.sender as Player, "") } }
+                    .executes { ctx -> ctx.tryCatch { nickname(it.sender as Player, "") } }
                     .then(
                         Commands.argument("name", StringArgumentType.greedyString())
                             .executes { ctx ->
-                                Utils.tryCatch(ctx) {
+                                ctx.tryCatch {
                                     nickname(it.sender as Player, StringArgumentType.getString(ctx, "name"))
                                 }
                             }
@@ -55,10 +55,10 @@ class NicknameModule(private val tabListModule: TabListModule) : ModuleInterface
         )
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
         if (!enabled()) return
-        val nickname = NicknameData.get(event.player.uniqueId)
+        val nickname = PlayerData.get(event.player).nickname
         if (nickname != null) event.player.displayName(nickname.mm())
     }
 
@@ -68,17 +68,13 @@ class NicknameModule(private val tabListModule: TabListModule) : ModuleInterface
      * @param name The new nickname for the player.
      */
     private fun nickname(player: Player, name: String) {
-        if (name.isBlank()) {
-            NicknameData.remove(player.uniqueId)
-            player.displayName(player.name.mm())
-        } else {
-            NicknameData.set(player.uniqueId, name)
-            player.displayName(name.mm())
-        }
+        val newNickname = name.ifBlank { null }
+        PlayerData.update(player, PlayerData.get(player).copy(nickname = newNickname))
+        player.displayName((newNickname ?: player.name).mm())
         tabListModule.updatePlayerDisplayName(player)
     }
 
     data class Config(
-        override var enabled: Boolean = true
+        override var enabled: Boolean = true,
     ) : ModuleInterface.Config
 }

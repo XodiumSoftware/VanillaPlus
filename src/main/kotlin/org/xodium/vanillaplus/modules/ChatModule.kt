@@ -24,12 +24,12 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.clickRunCmd
+import org.xodium.vanillaplus.utils.ExtUtils.face
 import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.FmtUtils.skylineFmt
-import org.xodium.vanillaplus.utils.SkinUtils.faceToMM
-import org.xodium.vanillaplus.utils.Utils
 import java.util.concurrent.CompletableFuture
 
 class ChatModule : ModuleInterface<ChatModule.Config> {
@@ -54,7 +54,7 @@ class ChatModule : ModuleInterface<ChatModule.Config> {
                             .then(
                                 Commands.argument("message", StringArgumentType.greedyString())
                                     .executes { ctx ->
-                                        Utils.tryCatch(ctx) {
+                                        ctx.tryCatch {
                                             whisper(
                                                 it.sender as Player,
                                                 instance.server.getPlayer(
@@ -87,7 +87,7 @@ class ChatModule : ModuleInterface<ChatModule.Config> {
         )
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: AsyncChatEvent) {
         if (!config.enabled) return
         event.renderer { source, displayName, message, _ ->
@@ -103,7 +103,7 @@ class ChatModule : ModuleInterface<ChatModule.Config> {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
         if (!config.enabled) return
 
@@ -120,25 +120,22 @@ class ChatModule : ModuleInterface<ChatModule.Config> {
                 )
             }
 
-        val faceLines = player.faceToMM().lines()
         var imageIndex = 1
-        val welcomeText =
-            Regex("<image>").replace(config.welcomeText) { "<image${imageIndex++}>" }
-        val imageResolvers = faceLines.mapIndexed { i, line -> Placeholder.component("image${i + 1}", line.mm()) }
-        val playerComponent = player
-            .displayName()
-            .clickEvent(ClickEvent.suggestCommand("/nickname ${player.name}"))
-            .hoverEvent(HoverEvent.showText("Click Me!".fireFmt().mm()))
-
         player.sendMessage(
-            welcomeText.mm(
-                Placeholder.component("player", playerComponent),
-                *imageResolvers.toTypedArray()
+            Regex("<image>").replace(config.welcomeText) { "<image${imageIndex++}>" }.mm(
+                Placeholder.component(
+                    "player", player
+                        .displayName()
+                        .clickEvent(ClickEvent.suggestCommand("/nickname ${player.name}"))
+                        .hoverEvent(HoverEvent.showText("Click Me!".fireFmt().mm()))
+                ),
+                *player.face().lines().mapIndexed { i, line -> Placeholder.component("image${i + 1}", line.mm()) }
+                    .toTypedArray()
             )
         )
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH)
     fun on(event: PlayerQuitEvent) {
         if (!config.enabled) return
 
@@ -201,7 +198,9 @@ class ChatModule : ModuleInterface<ChatModule.Config> {
         <image>${"⯈".mangoFmt(true)}
         <image>${"⯈".mangoFmt(true)} ${"Check out".fireFmt()}<gray>: ${
                 "/rules".clickRunCmd("Click Me!".fireFmt()).skylineFmt()
-            } <gray>🟅 ${"/guide".clickRunCmd("Click Me!".fireFmt()).skylineFmt()}
+            } <gray>🟅 ${
+                "/guide".clickRunCmd("Click Me!".fireFmt()).skylineFmt()
+            } <gray>🟅 ${"/quests".clickRunCmd("Click Me!".fireFmt()).skylineFmt()}
         <image>${"⯈".mangoFmt(true)}
         <image>${"⯈".mangoFmt(true)}
         ${"]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)}

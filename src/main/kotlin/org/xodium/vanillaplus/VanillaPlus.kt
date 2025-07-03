@@ -10,10 +10,11 @@ import org.xodium.vanillaplus.managers.ModuleManager
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 
+
 /** Main class of the plugin. */
 class VanillaPlus : JavaPlugin() {
     companion object {
-        private const val SUPPORTED_VERSION = "1.21.6"
+        private const val SUPPORTED_VERSION = "1.21.7"
         private const val SUPPORTED_PLATFORM = "Paper"
         private const val UNSUPPORTED_PLATFORM_MSG =
             "This plugin requires a supported server platform. Supported platforms: ${SUPPORTED_PLATFORM}."
