@@ -7,7 +7,6 @@ package org.xodium.vanillaplus.modules
 
 import org.bukkit.Keyed
 import org.bukkit.event.EventHandler
-import org.bukkit.event.EventPriority
 import org.bukkit.event.player.PlayerJoinEvent
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
@@ -18,7 +17,7 @@ class RecipiesModule : ModuleInterface<RecipiesModule.Config> {
 
     override fun enabled(): Boolean = config.enabled
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler
     fun on(event: PlayerJoinEvent) {
         if (!enabled()) return
         event.player.discoverRecipes(

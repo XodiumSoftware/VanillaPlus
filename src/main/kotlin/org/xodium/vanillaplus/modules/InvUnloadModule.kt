@@ -14,7 +14,6 @@ import org.bukkit.block.Container
 import org.bukkit.block.ShulkerBox
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
-import org.bukkit.event.EventPriority
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.permissions.Permission
@@ -60,7 +59,7 @@ class InvUnloadModule : ModuleInterface<InvUnloadModule.Config> {
         )
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler
     fun on(event: PlayerQuitEvent) {
         if (!enabled()) return
 

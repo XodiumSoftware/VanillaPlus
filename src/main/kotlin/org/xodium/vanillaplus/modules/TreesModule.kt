@@ -17,7 +17,6 @@ import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.block.Block
 import org.bukkit.event.EventHandler
-import org.bukkit.event.EventPriority
 import org.bukkit.event.world.StructureGrowEvent
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
@@ -55,7 +54,7 @@ class TreesModule : ModuleInterface<TreesModule.Config> {
      * Handle the StructureGrowEvent.
      * @param event The StructureGrowEvent.
      */
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler
     fun on(event: StructureGrowEvent) {
         if (!enabled()) return
         event.location.block.takeIf {

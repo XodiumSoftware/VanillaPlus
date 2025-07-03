@@ -6,7 +6,6 @@
 package org.xodium.vanillaplus.modules
 
 import org.bukkit.event.EventHandler
-import org.bukkit.event.EventPriority
 import org.bukkit.event.server.ServerListPingEvent
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
@@ -19,7 +18,7 @@ class MotdModule : ModuleInterface<MotdModule.Config> {
 
     override fun enabled(): Boolean = config.enabled
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler
     fun on(event: ServerListPingEvent) {
         if (!enabled()) return
         event.motd(config.motd.joinToString("\n").mm())

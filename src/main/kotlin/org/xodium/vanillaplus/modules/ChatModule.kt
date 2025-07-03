@@ -103,7 +103,7 @@ class ChatModule : ModuleInterface<ChatModule.Config> {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler
     fun on(event: PlayerJoinEvent) {
         if (!config.enabled) return
 
@@ -138,7 +138,7 @@ class ChatModule : ModuleInterface<ChatModule.Config> {
         )
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler
     fun on(event: PlayerQuitEvent) {
         if (!config.enabled) return
 

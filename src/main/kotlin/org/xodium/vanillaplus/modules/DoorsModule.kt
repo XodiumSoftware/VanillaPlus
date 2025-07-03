@@ -19,7 +19,6 @@ import org.bukkit.block.data.type.TrapDoor
 import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import org.bukkit.event.EventHandler
-import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
@@ -65,7 +64,7 @@ class DoorsModule : ModuleInterface<DoorsModule.Config> {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler
     fun on(event: PlayerInteractEvent) {
         if (!enabled()) return
 

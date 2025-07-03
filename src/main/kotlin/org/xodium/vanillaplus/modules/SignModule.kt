@@ -7,7 +7,6 @@ package org.xodium.vanillaplus.modules
 
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.event.EventHandler
-import org.bukkit.event.EventPriority
 import org.bukkit.event.block.SignChangeEvent
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
@@ -17,7 +16,7 @@ class SignModule : ModuleInterface<SignModule.Config> {
 
     override fun enabled(): Boolean = config.enabled
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler
     fun on(event: SignChangeEvent) {
         if (!enabled()) return
 

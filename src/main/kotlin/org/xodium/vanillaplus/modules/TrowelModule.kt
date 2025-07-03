@@ -53,7 +53,7 @@ class TrowelModule : ModuleInterface<TrowelModule.Config> {
         )
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerInteractEvent) {
         if (!enabled() || event.hand != EquipmentSlot.HAND || event.action != Action.RIGHT_CLICK_BLOCK) return
 
