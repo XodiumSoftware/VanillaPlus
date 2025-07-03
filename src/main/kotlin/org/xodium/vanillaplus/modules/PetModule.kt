@@ -11,6 +11,7 @@ import org.bukkit.entity.Player
 import org.bukkit.entity.Tameable
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractEntityEvent
+import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
@@ -31,9 +32,10 @@ class PetModule : ModuleInterface<PetModule.Config> {
         if (source == target) return
         if (source.inventory.itemInMainHand.type != Material.LEAD) return
 
-        val leashedEntity = source.getNearbyEntities(10.0, 10.0, 10.0).firstOrNull {
-            it is LivingEntity && it.isLeashed && it.leashHolder == source
-        }
+        val leashedEntity =
+            source.getNearbyEntities(config.transferRadius, config.transferRadius, config.transferRadius).firstOrNull {
+                it is LivingEntity && it.isLeashed && it.leashHolder == source
+            }
 
         if (leashedEntity == null) return
         if (leashedEntity !is Tameable) return
@@ -42,6 +44,8 @@ class PetModule : ModuleInterface<PetModule.Config> {
         leashedEntity.owner = target
         leashedEntity.setLeashHolder(null)
 
+        source.inventory.addItem(ItemStack.of(Material.LEAD))
+
         source.sendActionBar("You have transferred your pet to ".fireFmt().mm().append(target.displayName()))
         target.sendActionBar(source.displayName().append(" has transferred their pet to you".fireFmt().mm()))
 
@@ -49,6 +53,7 @@ class PetModule : ModuleInterface<PetModule.Config> {
     }
 
     data class Config(
-        override var enabled: Boolean = true
+        override var enabled: Boolean = true,
+        var transferRadius: Double = 10.0,
     ) : ModuleInterface.Config
 }
