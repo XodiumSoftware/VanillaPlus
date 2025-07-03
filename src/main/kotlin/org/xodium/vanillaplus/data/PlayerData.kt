@@ -7,6 +7,8 @@ package org.xodium.vanillaplus.data
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect
 import com.fasterxml.jackson.annotation.PropertyAccessor
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.bukkit.entity.Player
@@ -29,6 +31,8 @@ data class PlayerData(
 ) {
     companion object {
         private val mapper = jacksonObjectMapper()
+            .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
             .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
         private val filePath = instance.dataFolder.toPath().resolve("playerdata.json")
         private val cache = mutableMapOf<UUID, PlayerData>()
