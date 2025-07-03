@@ -13,6 +13,7 @@ import org.bukkit.*
 import org.bukkit.block.*
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.Inventory
@@ -80,7 +81,7 @@ object Utils {
         return firstMeta.enchants == secondMeta.enchants
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerInteractEvent) {
         val block = event.clickedBlock
         val player = event.player
