@@ -103,7 +103,7 @@ class ChatModule : ModuleInterface<ChatModule.Config> {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
         if (!config.enabled) return
 
