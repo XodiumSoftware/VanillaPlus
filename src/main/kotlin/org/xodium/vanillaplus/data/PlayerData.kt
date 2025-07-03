@@ -45,6 +45,7 @@ data class PlayerData(
                 try {
                     cache.clear()
                     cache.putAll(mapper.readValue(filePath.toFile()))
+                    save()
                 } catch (e: IOException) {
                     instance.logger.severe("Failed to load player data: ${e.printStackTrace()}")
                 }
