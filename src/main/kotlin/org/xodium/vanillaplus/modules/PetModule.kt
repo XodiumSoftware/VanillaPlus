@@ -40,8 +40,8 @@ class PetModule : ModuleInterface<PetModule.Config> {
         leashedEntity.owner = target
         leashedEntity.setLeashHolder(null)
 
-        source.sendActionBar("You have transferred your pet to ${target.name}.".fireFmt().mm())
-        target.sendActionBar("${source.name} has transferred their pet to you.".fireFmt().mm())
+        source.sendActionBar("You have transferred your pet to".fireFmt().mm().append(target.displayName()))
+        target.sendActionBar(source.displayName().append(" has transferred their pet to you".fireFmt().mm()))
 
         event.isCancelled = true
     }
