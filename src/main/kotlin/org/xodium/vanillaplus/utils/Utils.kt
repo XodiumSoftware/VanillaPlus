@@ -6,9 +6,6 @@
 package org.xodium.vanillaplus.utils
 
 import com.google.gson.JsonParser
-import com.mojang.brigadier.Command
-import com.mojang.brigadier.context.CommandContext
-import io.papermc.paper.command.brigadier.CommandSourceStack
 import org.bukkit.*
 import org.bukkit.block.*
 import org.bukkit.entity.Player
@@ -17,11 +14,8 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.EnchantmentStorageMeta
 import org.bukkit.util.BoundingBox
 import org.bukkit.util.Vector
-import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
-import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.managers.ModuleManager
 import org.xodium.vanillaplus.registries.MaterialRegistry
-import org.xodium.vanillaplus.utils.ExtUtils.mm
 import java.net.URI
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -32,22 +26,6 @@ object Utils {
     private val unloads = ConcurrentHashMap<Location, MutableMap<Material, Int>>()
     val lastUnloads: ConcurrentHashMap<UUID, List<Block>> = ConcurrentHashMap()
     val activeVisualizations: ConcurrentHashMap<UUID, Int> = ConcurrentHashMap()
-
-    /**
-     * A helper function to wrap command execution with standardised error handling.
-     * @param action The action to execute, receiving a CommandSourceStack as a parameter.
-     * @return Command.SINGLE_SUCCESS after execution.
-     */
-    fun CommandContext<CommandSourceStack>.tryCatch(action: (CommandSourceStack) -> Unit): Int {
-        try {
-            action(this.source)
-        } catch (e: Exception) {
-            instance.logger.severe("An Error has occurred: ${e.message}")
-            e.printStackTrace()
-            (this.source.sender as Player).sendMessage("$PREFIX <red>An Error has occurred. Check server logs for details.".mm())
-        }
-        return Command.SINGLE_SUCCESS
-    }
 
     /**
      * Checks if two ItemStacks have matching enchantments.

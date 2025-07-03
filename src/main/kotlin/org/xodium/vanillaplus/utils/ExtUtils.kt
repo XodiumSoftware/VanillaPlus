@@ -7,12 +7,18 @@
 
 package org.xodium.vanillaplus.utils
 
+import com.mojang.brigadier.Command
+import com.mojang.brigadier.context.CommandContext
+import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.datacomponent.item.CustomModelData
 import io.papermc.paper.datacomponent.item.ItemLore
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import org.bukkit.Color
+import org.bukkit.entity.Player
+import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 
 /** Extension utilities. */
 object ExtUtils {
@@ -109,5 +115,21 @@ object ExtUtils {
         } else {
             "<click:suggest_command:'$this'>$this</click>"
         }
+    }
+
+    /**
+     * A helper function to wrap command execution with standardised error handling.
+     * @param action The action to execute, receiving a CommandSourceStack as a parameter.
+     * @return Command.SINGLE_SUCCESS after execution.
+     */
+    fun CommandContext<CommandSourceStack>.tryCatch(action: (CommandSourceStack) -> Unit): Int {
+        try {
+            action(this.source)
+        } catch (e: Exception) {
+            instance.logger.severe("An Error has occurred: ${e.message}")
+            e.printStackTrace()
+            (this.source.sender as Player).sendMessage("$PREFIX <red>An Error has occurred. Check server logs for details.".mm())
+        }
+        return Command.SINGLE_SUCCESS
     }
 }

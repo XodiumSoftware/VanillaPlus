@@ -13,9 +13,9 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.BookData
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.skylineFmt
-import org.xodium.vanillaplus.utils.Utils.tryCatch
 
 /** Represents a module handling book mechanics within the system. */
 class BooksModule : ModuleInterface<BooksModule.Config> {

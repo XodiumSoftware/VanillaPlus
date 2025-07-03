@@ -15,9 +15,9 @@ import org.xodium.vanillaplus.data.BossBarData
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.TimeUtils
-import org.xodium.vanillaplus.utils.Utils.tryCatch
 import java.time.LocalTime
 import java.time.temporal.ChronoUnit
 
