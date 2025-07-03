@@ -34,14 +34,8 @@ class PetModule : ModuleInterface<PetModule.Config> {
         }
 
         if (leashedEntity == null) return
-
-        if (leashedEntity !is Tameable) {
-            return source.sendActionBar("The leashed entity is not a pet.".fireFmt().mm())
-        }
-
-        if (!leashedEntity.isTamed || leashedEntity.owner != source) {
-            return source.sendActionBar("You don't own this pet.".fireFmt().mm())
-        }
+        if (leashedEntity !is Tameable) return
+        if (!leashedEntity.isTamed || leashedEntity.owner != source) return
 
         leashedEntity.owner = target
         leashedEntity.setLeashHolder(null)
