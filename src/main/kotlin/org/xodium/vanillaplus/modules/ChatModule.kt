@@ -87,7 +87,7 @@ class ChatModule : ModuleInterface<ChatModule.Config> {
         )
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: AsyncChatEvent) {
         if (!config.enabled) return
         event.renderer { source, displayName, message, _ ->
@@ -103,7 +103,7 @@ class ChatModule : ModuleInterface<ChatModule.Config> {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
         if (!config.enabled) return
 
@@ -138,7 +138,7 @@ class ChatModule : ModuleInterface<ChatModule.Config> {
         )
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     fun on(event: PlayerQuitEvent) {
         if (!config.enabled) return
 

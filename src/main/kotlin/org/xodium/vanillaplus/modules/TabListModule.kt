@@ -11,6 +11,7 @@ import net.kyori.adventure.text.JoinConfiguration
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.weather.ThunderChangeEvent
 import org.bukkit.event.weather.WeatherChangeEvent
@@ -44,20 +45,20 @@ class TabListModule : ModuleInterface<TabListModule.Config> {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
         if (!enabled()) return
         updateTabList(event.player)
         updatePlayerDisplayName(event.player)
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: WeatherChangeEvent) {
         if (!enabled()) return
         event.world.players.forEach { updateTabList(it) }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: ThunderChangeEvent) {
         if (!enabled()) return
         event.world.players.forEach { updateTabList(it) }
