@@ -72,7 +72,7 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
         )
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: InventoryClickEvent) {
         if (!enabled()) return
         if (event.view.title() != config.menuTitle.mm()) return
