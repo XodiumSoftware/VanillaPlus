@@ -215,6 +215,9 @@ object Utils {
 
         // 2. load and crop
         val fullImg = ImageIO.read(URI.create(skinUrl).toURL())
+        if (fullImg == null) {
+            throw IllegalStateException("Failed to load skin image from URL: $skinUrl")
+        }
         val face = fullImg.getSubimage(8, 8, 8, 8)
 
         // 3. scale & build MiniMessage
