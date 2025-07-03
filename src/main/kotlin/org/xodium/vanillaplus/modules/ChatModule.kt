@@ -120,20 +120,17 @@ class ChatModule : ModuleInterface<ChatModule.Config> {
                 )
             }
 
-        val faceLines = player.face().lines()
         var imageIndex = 1
-        val welcomeText =
-            Regex("<image>").replace(config.welcomeText) { "<image${imageIndex++}>" }
-        val imageResolvers = faceLines.mapIndexed { i, line -> Placeholder.component("image${i + 1}", line.mm()) }
-        val playerComponent = player
-            .displayName()
-            .clickEvent(ClickEvent.suggestCommand("/nickname ${player.name}"))
-            .hoverEvent(HoverEvent.showText("Click Me!".fireFmt().mm()))
-
         player.sendMessage(
-            welcomeText.mm(
-                Placeholder.component("player", playerComponent),
-                *imageResolvers.toTypedArray()
+            Regex("<image>").replace(config.welcomeText) { "<image${imageIndex++}>" }.mm(
+                Placeholder.component(
+                    "player", player
+                        .displayName()
+                        .clickEvent(ClickEvent.suggestCommand("/nickname ${player.name}"))
+                        .hoverEvent(HoverEvent.showText("Click Me!".fireFmt().mm()))
+                ),
+                *player.face().lines().mapIndexed { i, line -> Placeholder.component("image${i + 1}", line.mm()) }
+                    .toTypedArray()
             )
         )
     }
