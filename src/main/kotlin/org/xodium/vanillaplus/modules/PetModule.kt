@@ -26,9 +26,11 @@ class PetModule : ModuleInterface<PetModule.Config> {
 
         val source = event.player
         if (event.rightClicked !is Player) return
-        if (source.inventory.itemInMainHand.type != Material.LEAD) return
 
         val target = event.rightClicked as Player
+        if (source == target) return
+        if (source.inventory.itemInMainHand.type != Material.LEAD) return
+
         val leashedEntity = source.getNearbyEntities(10.0, 10.0, 10.0).firstOrNull {
             it is LivingEntity && it.isLeashed && it.leashHolder == source
         }
