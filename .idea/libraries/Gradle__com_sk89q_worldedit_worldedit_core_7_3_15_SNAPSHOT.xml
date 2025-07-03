@@ -2,11 +2,11 @@
   <library name="Gradle: com.sk89q.worldedit:worldedit-core:7.3.15-SNAPSHOT" type="java-imported" external-system-id="GRADLE">
     <properties groupId="com.sk89q.worldedit" artifactId="worldedit-core" version="7.3.15-SNAPSHOT" baseVersion="7.3.15-SNAPSHOT" />
     <CLASSES>
-      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.sk89q.worldedit/worldedit-core/7.3.15-SNAPSHOT/b940e5edbce3166170a62674e54e8397187b9d38/worldedit-core-7.3.15-SNAPSHOT.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.sk89q.worldedit/worldedit-core/7.3.15-SNAPSHOT/d53b0623fc9e575f9c250e841dde5780b070ada7/worldedit-core-7.3.15-SNAPSHOT.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
-      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.sk89q.worldedit/worldedit-core/7.3.15-SNAPSHOT/9557a0f774351d9ec4bd5c5bb71aef36254103b9/worldedit-core-7.3.15-SNAPSHOT-sources.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.sk89q.worldedit/worldedit-core/7.3.15-SNAPSHOT/ed89e8c4f7f8310f150764a1f5672c7e4eefa86f/worldedit-core-7.3.15-SNAPSHOT-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

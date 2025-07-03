@@ -17,9 +17,9 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.inventory.CraftItemEvent
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.MenuType
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -76,7 +76,6 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
     fun on(event: InventoryClickEvent) {
         if (!enabled()) return
         if (event.view.title() != config.menuTitle.mm()) return
-        if (event.clickedInventory != event.view.topInventory) return
 
         event.isCancelled = true
 
@@ -137,10 +136,9 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
             PlayerData.update(player, playerData)
         }
 
-        @Suppress("UnstableApiUsage")
-        return MenuType.HOPPER.create(player, config.menuTitle.mm()).apply {
+        return instance.server.createInventory(null, InventoryType.HOPPER, config.menuTitle.mm()).apply {
             playerData.quests.list.forEachIndexed { index, quest -> setItem(index, questItem(quest)) }
-        }.topInventory
+        }
     }
 
     /**
