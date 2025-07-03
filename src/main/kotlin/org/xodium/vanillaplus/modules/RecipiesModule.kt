@@ -27,6 +27,6 @@ class RecipiesModule : ModuleInterface<RecipiesModule.Config> {
     }
 
     data class Config(
-        override var enabled: Boolean = true
+        override var enabled: Boolean = true,
     ) : ModuleInterface.Config
 }

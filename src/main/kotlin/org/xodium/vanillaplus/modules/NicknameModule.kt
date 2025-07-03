@@ -75,6 +75,6 @@ class NicknameModule(private val tabListModule: TabListModule) : ModuleInterface
     }
 
     data class Config(
-        override var enabled: Boolean = true
+        override var enabled: Boolean = true,
     ) : ModuleInterface.Config
 }

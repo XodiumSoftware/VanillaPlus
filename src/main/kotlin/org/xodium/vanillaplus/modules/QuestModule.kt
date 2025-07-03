@@ -338,7 +338,7 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
                 QuestTask("Cure", EntityType.ZOMBIE_VILLAGER, 1) to QuestReward(Material.EXPERIENCE_BOTTLE, 48),
                 QuestTask("Defeat", EntityType.WITHER, 1) to QuestReward(Material.EXPERIENCE_BOTTLE, 50),
             )
-        )
+        ),
     ) : ModuleInterface.Config {
         data class QuestTask(val action: String, val target: Any, val amount: Int, val uuid: UUID = UUID.randomUUID())
         data class QuestReward(val material: Material, val amount: Int)

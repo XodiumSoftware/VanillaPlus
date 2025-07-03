@@ -169,6 +169,6 @@ class InvUnloadModule : ModuleInterface<InvUnloadModule.Config> {
         var soundOnUnload: SoundData = SoundData(
             BukkitSound.ENTITY_PLAYER_LEVELUP,
             Sound.Source.PLAYER
-        )
+        ),
     ) : ModuleInterface.Config
 }

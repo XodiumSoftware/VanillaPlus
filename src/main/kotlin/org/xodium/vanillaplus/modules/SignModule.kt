@@ -28,6 +28,6 @@ class SignModule : ModuleInterface<SignModule.Config> {
     }
 
     data class Config(
-        override var enabled: Boolean = true
+        override var enabled: Boolean = true,
     ) : ModuleInterface.Config
 }
