@@ -52,7 +52,7 @@ class SitModule : ModuleInterface<SitModule.Config> {
         if (!blockAbove.type.isAir || !blockAbove.getRelative(BlockFace.UP).type.isAir) return
 
         event.isCancelled = true
-        sit(player, block.location.add(0.5, -1.2, 0.5))
+        sit(player, block.location.add(0.5, 0.5, 0.5))
     }
 
     @EventHandler
@@ -60,7 +60,14 @@ class SitModule : ModuleInterface<SitModule.Config> {
         if (!enabled()) return
         if (event.entity !is Player) return
 
-        sittingPlayers.remove((event.entity as Player).uniqueId)?.remove()
+        val player = event.entity as Player
+        sittingPlayers.remove(player.uniqueId)?.let { armorStand ->
+            val safeLocation = armorStand.location.clone().add(0.0, 1.2, 0.0)
+            safeLocation.yaw = player.location.yaw
+            safeLocation.pitch = player.location.pitch
+            player.teleport(safeLocation)
+            armorStand.remove()
+        }
     }
 
     @EventHandler
