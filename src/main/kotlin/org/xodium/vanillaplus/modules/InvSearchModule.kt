@@ -24,7 +24,6 @@ import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.managers.ChestAccessManager
 import org.xodium.vanillaplus.managers.CooldownManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
@@ -105,9 +104,8 @@ class InvSearchModule : ModuleInterface<InvSearchModule.Config> {
         }
         CooldownManager.setCooldown(player, cooldownKey, System.currentTimeMillis())
 
-        val deniedChestKey = NamespacedKey(instance, "denied_chest")
         val chests = Utils.findBlocksInRadius(player.location, config.searchRadius)
-            .filter { ChestAccessManager.isAllowed(player, deniedChestKey, it) }
+            .filter { it.state is Container }
         if (chests.isEmpty()) {
             return player.sendActionBar("No usable chests found for ${"$material".roseFmt()}".fireFmt().mm())
         }

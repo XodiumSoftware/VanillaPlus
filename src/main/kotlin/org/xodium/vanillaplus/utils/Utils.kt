@@ -12,10 +12,6 @@ import io.papermc.paper.command.brigadier.CommandSourceStack
 import org.bukkit.*
 import org.bukkit.block.*
 import org.bukkit.entity.Player
-import org.bukkit.event.EventHandler
-import org.bukkit.event.EventPriority
-import org.bukkit.event.block.Action
-import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.EnchantmentStorageMeta
@@ -23,7 +19,6 @@ import org.bukkit.util.BoundingBox
 import org.bukkit.util.Vector
 import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.managers.ChestAccessManager
 import org.xodium.vanillaplus.managers.ModuleManager
 import org.xodium.vanillaplus.registries.MaterialRegistry
 import org.xodium.vanillaplus.utils.ExtUtils.mm
@@ -79,20 +74,6 @@ object Utils {
         if (firstMeta.hasEnchants() != secondMeta.hasEnchants()) return false
 
         return firstMeta.enchants == secondMeta.enchants
-    }
-
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    fun on(event: PlayerInteractEvent) {
-        val block = event.clickedBlock
-        val player = event.player
-        if (event.action == Action.RIGHT_CLICK_BLOCK && block != null) {
-            val key = NamespacedKey(instance, "denied_chest")
-            if (block.type.name.contains("CHEST")) {
-                ChestAccessManager.deny(player, key, block)
-            } else {
-                ChestAccessManager.allow(player, key, block)
-            }
-        }
     }
 
     /**

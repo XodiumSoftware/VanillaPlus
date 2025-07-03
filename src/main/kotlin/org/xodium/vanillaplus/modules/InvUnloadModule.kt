@@ -23,7 +23,6 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.SoundData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.managers.ChestAccessManager
 import org.xodium.vanillaplus.managers.CooldownManager
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
@@ -84,18 +83,13 @@ class InvUnloadModule : ModuleInterface<InvUnloadModule.Config> {
         val startSlot = 9
         val endSlot = 35
         val chests = Utils.findBlocksInRadius(player.location, config.unloadRadius)
+            .filter { it.state is Container }
         if (chests.isEmpty()) {
             return player.sendActionBar("No chests found nearby".fireFmt().mm())
         }
 
-        val deniedChestKey = NamespacedKey(instance, "denied_chest")
-        val useableChests = chests.filter { ChestAccessManager.isAllowed(player, deniedChestKey, it) }
-        if (useableChests.isEmpty()) {
-            return player.sendActionBar("No usable chests found nearby".fireFmt().mm())
-        }
-
         val affectedChests = mutableListOf<Block>()
-        for (block in useableChests) {
+        for (block in chests) {
             val inv = (block.state as Container).inventory
             if (stuffInventoryIntoAnother(player, inv, true, startSlot, endSlot)) {
                 affectedChests.add(block)
