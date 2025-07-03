@@ -29,7 +29,7 @@ class BooksModule : ModuleInterface<BooksModule.Config> {
             config.books.map { book ->
                 Commands.literal(book.cmd.lowercase())
                     .requires { it.sender.hasPermission("$permPrefix.${book.cmd.lowercase()}") }
-                    .executes { ctx -> ctx.tryCatch { (ctx.source.sender as Player).openBook(book.toBook()) } }
+                    .executes { ctx -> ctx.tryCatch { (it.sender as Player).openBook(book.toBook()) } }
             },
             "Provides commands to open predefined books.",
             emptyList()
