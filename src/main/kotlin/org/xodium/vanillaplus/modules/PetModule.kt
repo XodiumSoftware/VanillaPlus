@@ -41,14 +41,26 @@ class PetModule : ModuleInterface<PetModule.Config> {
         if (leashedEntity !is Tameable) return
         if (!leashedEntity.isTamed || leashedEntity.owner != source) return
 
+        val petName = leashedEntity.customName() ?: leashedEntity.name.mm()
+
         leashedEntity.owner = target
         leashedEntity.setLeashHolder(null)
 
         source.inventory.addItem(ItemStack.of(Material.LEAD))
 
-        source.sendActionBar("You have transferred your pet to ".fireFmt().mm().append(target.displayName()))
-        target.sendActionBar(source.displayName().append(" has transferred their pet to you".fireFmt().mm()))
+        source.sendActionBar(
+            "You have transferred ".fireFmt().mm()
+                .append(petName)
+                .append(" to ".fireFmt().mm())
+                .append(target.displayName())
+        )
+        target.sendActionBar(
+            source.displayName()
+                .append(" has transferred ".fireFmt().mm())
+                .append(petName)
+                .append(" to you".fireFmt().mm())
 
+        )
         event.isCancelled = true
     }
 
