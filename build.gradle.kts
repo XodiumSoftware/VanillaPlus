@@ -36,6 +36,14 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.1")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.1")
+
+    testImplementation("io.papermc.paper:paper-api:$apiVersion-R0.1-SNAPSHOT")
+    testImplementation(platform("org.junit:junit-bom:5.13.2"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.mockito:mockito-core:5.18.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
+
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 java { toolchain.languageVersion.set(JavaLanguageVersion.of(21)) }
@@ -67,6 +75,7 @@ tasks {
     }
     jar { enabled = false }
     withType<JavaCompile> { options.encoding = "UTF-8" }
+    withType<Test> { useJUnitPlatform() }
     register("printVersion") { doLast { println(version) } }
     register<Download>("downloadServerJar") {
         group = "application"
