@@ -75,7 +75,10 @@ tasks {
     }
     jar { enabled = false }
     withType<JavaCompile> { options.encoding = "UTF-8" }
-    withType<Test> { useJUnitPlatform() }
+    withType<Test> {
+        useJUnitPlatform()
+        jvmArgs("-XX:+EnableDynamicAgentLoading")
+    }
     register("printVersion") { doLast { println(version) } }
     register<Download>("downloadServerJar") {
         group = "application"
