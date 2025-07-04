@@ -47,7 +47,8 @@ data class PlayerData(
                     cache.putAll(mapper.readValue(filePath.toFile()))
                     save()
                 } catch (e: IOException) {
-                    instance.logger.severe("Failed to load player data: ${e.printStackTrace()}")
+                    instance.logger.severe("Failed to load player data: ${e.message}")
+                    e.printStackTrace()
                 }
             }
         }
@@ -59,7 +60,8 @@ data class PlayerData(
                     filePath.parent.createDirectories()
                     filePath.writeText(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(cache))
                 } catch (e: IOException) {
-                    instance.logger.severe("Failed to write ${PlayerData::class.simpleName} to file: ${e.printStackTrace()}")
+                    instance.logger.severe("Failed to write ${PlayerData::class.simpleName} to file: ${e.message}")
+                    e.printStackTrace()
                 }
             })
         }
