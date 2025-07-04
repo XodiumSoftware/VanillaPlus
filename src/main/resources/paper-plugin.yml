@@ -10,7 +10,3 @@ dependencies:
       load: BEFORE
       required: false
       join-classpath: true
-    CrazyAdvancementsAPI:
-      load: BEFORE
-      required: false
-      join-classpath: true
