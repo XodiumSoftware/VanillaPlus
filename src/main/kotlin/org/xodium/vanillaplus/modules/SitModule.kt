@@ -28,6 +28,8 @@ class SitModule : ModuleInterface<SitModule.Config> {
     override fun enabled(): Boolean = config.enabled
 
     private val sittingPlayers = mutableMapOf<UUID, ArmorStand>()
+    private val blockCenterOffset = Location(null, 0.5, 0.5, 0.5)
+    private val playerStandUpOffset = Location(null, 0.0, 0.5, 0.0)
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun on(event: PlayerInteractEvent) {
@@ -52,7 +54,7 @@ class SitModule : ModuleInterface<SitModule.Config> {
         if (!blockAbove.type.isAir || !blockAbove.getRelative(BlockFace.UP).type.isAir) return
 
         event.isCancelled = true
-        sit(player, block.location.add(BLOCK_CENTER_OFFSET, BLOCK_CENTER_OFFSET, BLOCK_CENTER_OFFSET))
+        sit(player, block.location.add(blockCenterOffset))
     }
 
     @EventHandler
@@ -62,7 +64,7 @@ class SitModule : ModuleInterface<SitModule.Config> {
 
         val player = event.entity as Player
         sittingPlayers.remove(player.uniqueId)?.let { armorStand ->
-            val safeLocation = armorStand.location.clone().add(0.0, 0.5, 0.0)
+            val safeLocation = armorStand.location.clone().add(playerStandUpOffset)
             safeLocation.yaw = player.location.yaw
             safeLocation.pitch = player.location.pitch
             player.teleport(safeLocation)
