@@ -52,7 +52,7 @@ class SitModule : ModuleInterface<SitModule.Config> {
         if (!blockAbove.type.isAir || !blockAbove.getRelative(BlockFace.UP).type.isAir) return
 
         event.isCancelled = true
-        sit(player, block.location.add(0.5, 0.5, 0.5))
+        sit(player, block.location.add(BLOCK_CENTER_OFFSET, BLOCK_CENTER_OFFSET, BLOCK_CENTER_OFFSET))
     }
 
     @EventHandler
