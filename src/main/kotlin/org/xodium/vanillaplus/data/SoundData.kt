@@ -12,11 +12,11 @@ import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 
 /**
- * Represents sound data with its properties such as name, source, volume, and pitch.
- * @property name The name of the sound.
- * @property source The source of the sound. Defaults to [Sound.Source.MASTER].
- * @property volume The volume of the sound. Defaults to 1.0f.
- * @property pitch The pitch of the sound. Defaults to 1.0f.
+ * Represents sound data with its properties such as [name], [source], [volume], and [pitch].
+ * @property name The [name] of the sound.
+ * @property source The [source] of the sound. Defaults to [Sound.Source.MASTER].
+ * @property volume The [volume] of the sound. Defaults to 1.0f.
+ * @property pitch The [pitch] of the sound. Defaults to 1.0f.
  */
 data class SoundData(
     @get:JsonSerialize(converter = SoundTypeToString::class)
@@ -45,8 +45,8 @@ data class SoundData(
     }
 
     /**
-     * Converts this SoundData instance to a Sound instance.
-     * @return A Sound instance with the properties of this SoundData.
+     * Converts this [SoundData] instance to a [Sound] instance.
+     * @return A [Sound] instance with the properties of this [SoundData].
      */
     fun toSound(): Sound = Sound.sound(name, source, volume, pitch)
 }

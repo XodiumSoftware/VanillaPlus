@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module external.linked.project.id="vanillaplus:main" external.linked.project.path="$MODULE_DIR$/../.." external.root.project.path="$MODULE_DIR$/../.." external.system.id="GRADLE" external.system.module.group="org.xodium.vanillaplus" external.system.module.type="sourceSet" external.system.module.version="1.14.3" type="JAVA_MODULE" version="4">
+<module external.linked.project.id="VanillaPlus:main" external.linked.project.path="$MODULE_DIR$/../.." external.root.project.path="$MODULE_DIR$/../.." external.system.id="GRADLE" external.system.module.group="org.xodium.vanillaplus" external.system.module.type="sourceSet" external.system.module.version="1.14.3" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet type="minecraft" name="Minecraft">
       <configuration>
@@ -11,7 +11,7 @@
       </configuration>
     </facet>
     <facet external-system-id="GRADLE" type="kotlin-language" name="Kotlin">
-      <configuration version="5" platform="JVM 21" allPlatforms="JVM [21]" useProjectSettings="false" pureKotlinSourceFolders="$MODULE_DIR$/../../src/test/kotlin;/media/hdd/intellij/vanillaplus/src/main/kotlin">
+      <configuration version="5" platform="JVM 21" allPlatforms="JVM [21]" useProjectSettings="false" pureKotlinSourceFolders="$MODULE_DIR$/../../src/test/kotlin;/home/illyrius/.jetbrains/VanillaPlus/src/main/kotlin">
         <compilerSettings />
         <compilerArguments>
           <flagArguments>
@@ -22,7 +22,7 @@
           <stringArguments>
             <stringArg name="destination" arg="$MODULE_DIR$/../../build/classes/kotlin/main" />
             <stringArg name="jvmTarget" arg="21" />
-            <stringArg name="moduleName" arg="vanillaplus" />
+            <stringArg name="moduleName" arg="VanillaPlus" />
             <stringArg name="apiVersion" arg="2.2" />
             <stringArg name="languageVersion" arg="2.2" />
           </stringArguments>
@@ -49,7 +49,7 @@
       <sourceFolder url="file://$MODULE_DIR$/../../src/main/kotlin" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../src/main/resources" type="java-resource" />
     </content>
-    <orderEntry type="jdk" jdkName="jbr-21" jdkType="JavaSDK" />
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: io.papermc.paper:paper-api:1.21.7-R0.1-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: com.sk89q.worldedit:worldedit-bukkit:7.3.15-SNAPSHOT" level="project" />

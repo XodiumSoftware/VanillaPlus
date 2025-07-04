@@ -9,13 +9,14 @@ import java.net.URI
 
 plugins {
     id("java")
+    id("idea")
     kotlin("jvm") version "2.2.0"
     id("com.gradleup.shadow") version "9.0.0-rc1"
     id("de.undercouch.download") version "5.6.0"
 }
 
 group = "org.xodium.vanillaplus"
-version = "1.14.1"
+version = "1.14.3"
 description = "Minecraft plugin that enhances the base gameplay."
 
 var author: String = "Xodium"
@@ -113,3 +114,4 @@ tasks {
     }
 }
 
+idea { module { excludeDirs.add(file(".server")) } }
