@@ -44,7 +44,8 @@ object ConfigManager {
                 return null
             }
         } catch (e: IOException) {
-            instance.logger.severe("Config: Failed to load config file: ${e.printStackTrace()}")
+            instance.logger.severe("Config: Failed to load config file: ${e.message}")
+            e.printStackTrace()
             return null
         }
     }
@@ -60,7 +61,8 @@ object ConfigManager {
             configPath.writeText(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(data))
             instance.logger.info("Config: Settings saved successfully.")
         } catch (e: IOException) {
-            instance.logger.severe("Config: Failed to save config file: ${e.printStackTrace()}")
+            instance.logger.severe("Config: Failed to save config file: ${e.message}")
+            e.printStackTrace()
         }
     }
 }
