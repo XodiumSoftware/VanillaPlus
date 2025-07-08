@@ -20,13 +20,11 @@ import kotlin.io.path.writeText
 
 /**
  * Represents the data structure for player data.
- * @param nickname The nickname of the player, if set.
- * @param quests The quests data associated with the player.
- * @param trowel Indicates whether the player has the trowel mode active.
+ * @param nickname The [nickname] of the player, if set.
+ * @param trowel Indicates whether the player has the [trowel] mode active.
  */
 data class PlayerData(
     val nickname: String? = null,
-    val quests: PlayerQuestsData = PlayerQuestsData(),
     val trowel: Boolean = false,
 ) {
     companion object {
@@ -41,19 +39,21 @@ data class PlayerData(
             load()
         }
 
-        /** Initializes the PlayerData cache and loads existing data from the file. */
+        /** Initializes the [PlayerData] cache and loads existing data from the file. */
         private fun load() {
             if (filePath.toFile().exists()) {
                 try {
                     cache.clear()
                     cache.putAll(mapper.readValue(filePath.toFile()))
+                    save()
                 } catch (e: IOException) {
                     instance.logger.severe("Failed to load player data: ${e.message}")
+                    e.printStackTrace()
                 }
             }
         }
 
-        /** Saves the current state of the PlayerData cache to the file asynchronously. */
+        /** Saves the current state of the [PlayerData] cache to the file asynchronously. */
         private fun save() {
             instance.server.scheduler.runTaskAsynchronously(instance, Runnable {
                 try {
@@ -67,8 +67,8 @@ data class PlayerData(
         }
 
         /**
-         * Sets the player data for a specific player.
-         * @param player The player whose data is to be set.
+         * Sets the [player] data for a specific [player].
+         * @param player The [player] whose data is to be set.
          */
         fun set(player: Player) {
             cache.getOrPut(player.uniqueId) { PlayerData() }
@@ -76,18 +76,18 @@ data class PlayerData(
         }
 
         /**
-         * Retrieves the player data for a specific player.
-         * @param player The player whose data is to be retrieved.
-         * @return The PlayerData associated with the player.
+         * Retrieves the [player] data for a specific [player].
+         * @param player The [player] whose data is to be retrieved.
+         * @return The [PlayerData] associated with the [player].
          */
         fun get(player: Player): PlayerData {
             return cache.getOrPut(player.uniqueId) { PlayerData() }
         }
 
         /**
-         * Updates the player data for a specific player.
-         * @param player The player whose data is to be updated.
-         * @param data The new PlayerData to set for the player.
+         * Updates the [player] data for a specific [player].
+         * @param player The [player] whose data is to be updated.
+         * @param data The new [PlayerData] to set for the [player].
          */
         fun update(player: Player, data: PlayerData) {
             cache[player.uniqueId] = data

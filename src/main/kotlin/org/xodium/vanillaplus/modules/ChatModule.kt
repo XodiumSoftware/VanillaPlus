@@ -24,12 +24,12 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.clickRunCmd
+import org.xodium.vanillaplus.utils.ExtUtils.face
 import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.FmtUtils.skylineFmt
-import org.xodium.vanillaplus.utils.Utils.face
-import org.xodium.vanillaplus.utils.Utils.tryCatch
 import java.util.concurrent.CompletableFuture
 
 class ChatModule : ModuleInterface<ChatModule.Config> {
@@ -103,7 +103,7 @@ class ChatModule : ModuleInterface<ChatModule.Config> {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
         if (!config.enabled) return
 
@@ -120,20 +120,17 @@ class ChatModule : ModuleInterface<ChatModule.Config> {
                 )
             }
 
-        val faceLines = player.face().lines()
         var imageIndex = 1
-        val welcomeText =
-            Regex("<image>").replace(config.welcomeText) { "<image${imageIndex++}>" }
-        val imageResolvers = faceLines.mapIndexed { i, line -> Placeholder.component("image${i + 1}", line.mm()) }
-        val playerComponent = player
-            .displayName()
-            .clickEvent(ClickEvent.suggestCommand("/nickname ${player.name}"))
-            .hoverEvent(HoverEvent.showText("Click Me!".fireFmt().mm()))
-
         player.sendMessage(
-            welcomeText.mm(
-                Placeholder.component("player", playerComponent),
-                *imageResolvers.toTypedArray()
+            Regex("<image>").replace(config.welcomeText.joinToString("\n")) { "<image${imageIndex++}>" }.mm(
+                Placeholder.component(
+                    "player", player
+                        .displayName()
+                        .clickEvent(ClickEvent.suggestCommand("/nickname ${player.name}"))
+                        .hoverEvent(HoverEvent.showText("Click Me!".fireFmt().mm()))
+                ),
+                *player.face().lines().mapIndexed { i, line -> Placeholder.component("image${i + 1}", line.mm()) }
+                    .toTypedArray()
             )
         )
     }
@@ -191,23 +188,22 @@ class ChatModule : ModuleInterface<ChatModule.Config> {
     data class Config(
         override var enabled: Boolean = true,
         var chatFormat: String = "<player> <reset>${"›".mangoFmt(true)} <message>",
-        var welcomeText: String =
-            """
-        ${"]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)}
-        <image>${"⯈".mangoFmt(true)}
-        <image>${"⯈".mangoFmt(true)}
-        <image>${"⯈".mangoFmt(true)} ${"Welcome".fireFmt()} <player>
-        <image>${"⯈".mangoFmt(true)}
-        <image>${"⯈".mangoFmt(true)}
-        <image>${"⯈".mangoFmt(true)} ${"Check out".fireFmt()}<gray>: ${
+        var welcomeText: List<String> = listOf(
+            "]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true),
+            "<image>${"⯈".mangoFmt(true)}",
+            "<image>${"⯈".mangoFmt(true)}",
+            "<image>${"⯈".mangoFmt(true)} ${"Welcome".fireFmt()} <player>",
+            "<image>${"⯈".mangoFmt(true)}",
+            "<image>${"⯈".mangoFmt(true)}",
+            "<image>${"⯈".mangoFmt(true)} ${"Check out".fireFmt()}<gray>: ${
                 "/rules".clickRunCmd("Click Me!".fireFmt()).skylineFmt()
             } <gray>🟅 ${
                 "/guide".clickRunCmd("Click Me!".fireFmt()).skylineFmt()
-            } <gray>🟅 ${"/quests".clickRunCmd("Click Me!".fireFmt()).skylineFmt()}
-        <image>${"⯈".mangoFmt(true)}
-        <image>${"⯈".mangoFmt(true)}
-        ${"]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)}
-        """.trimIndent(),
+            }",
+            "<image>${"⯈".mangoFmt(true)}",
+            "<image>${"⯈".mangoFmt(true)}",
+            "]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)
+        ),
         var joinMessage: String = "<green>➕<reset> ${"›".mangoFmt(true)} <player>",
         var quitMessage: String = "<red>➖<reset> ${"›".mangoFmt(true)} <player>",
         var whisperToFormat: String = "${"You".skylineFmt()} ${"➛".mangoFmt(true)} <player> <reset>${"›".mangoFmt(true)} <message>",

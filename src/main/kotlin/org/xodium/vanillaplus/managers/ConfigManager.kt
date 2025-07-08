@@ -15,8 +15,8 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import java.io.IOException
-import java.nio.file.Files
-import java.nio.file.StandardOpenOption
+import kotlin.io.path.createDirectories
+import kotlin.io.path.writeText
 
 /** Represents the config manager within the system. */
 object ConfigManager {
@@ -34,9 +34,9 @@ object ConfigManager {
      */
     fun load(silent: Boolean = false): JsonNode? {
         try {
-            if (Files.exists(configPath)) {
+            if (configPath.toFile().exists()) {
                 if (!silent) instance.logger.info("Config: Loading settings.")
-                val node = objectMapper.readTree(Files.readString(configPath))
+                val node = objectMapper.readTree(configPath.toFile().readText())
                 if (!silent) instance.logger.info("Config: Settings loaded successfully.")
                 return node
             } else {
@@ -44,7 +44,8 @@ object ConfigManager {
                 return null
             }
         } catch (e: IOException) {
-            instance.logger.severe("Config: Failed to load config file: ${e.printStackTrace()}")
+            instance.logger.severe("Config: Failed to load config file: ${e.message}")
+            e.printStackTrace()
             return null
         }
     }
@@ -56,16 +57,12 @@ object ConfigManager {
     fun save(data: Map<String, ModuleInterface.Config>) {
         try {
             instance.logger.info("Config: Saving settings.")
-            Files.createDirectories(configPath.parent)
-            Files.writeString(
-                configPath,
-                objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(data),
-                StandardOpenOption.CREATE,
-                StandardOpenOption.TRUNCATE_EXISTING
-            )
+            configPath.parent.createDirectories()
+            configPath.writeText(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(data))
             instance.logger.info("Config: Settings saved successfully.")
         } catch (e: IOException) {
-            instance.logger.severe("Config: Failed to save config file: ${e.printStackTrace()}")
+            instance.logger.severe("Config: Failed to save config file: ${e.message}")
+            e.printStackTrace()
         }
     }
 }

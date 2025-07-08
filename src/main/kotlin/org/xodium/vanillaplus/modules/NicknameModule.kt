@@ -18,7 +18,7 @@ import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.PlayerData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.Utils.tryCatch
+import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 
 class NicknameModule(private val tabListModule: TabListModule) : ModuleInterface<NicknameModule.Config> {
     override val config: Config = Config()

@@ -22,8 +22,8 @@ import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.PlayerData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
-import org.xodium.vanillaplus.utils.Utils.tryCatch
 
 /** Represents a module handling trowel mechanics within the system. */
 class TrowelModule : ModuleInterface<TrowelModule.Config> {

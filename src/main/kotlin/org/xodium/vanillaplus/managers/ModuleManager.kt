@@ -25,8 +25,10 @@ object ModuleManager {
     val invSearchModule: InvSearchModule = InvSearchModule()
     val invUnloadModule: InvUnloadModule = InvUnloadModule()
     val motdModule: MotdModule = MotdModule()
+    val petModule: PetModule = PetModule()
     val recipiesModule: RecipiesModule = RecipiesModule()
     val signModule: SignModule = SignModule()
+    val sitModule: SitModule = SitModule()
     val tabListModule: TabListModule = TabListModule()
     val nicknameModule: NicknameModule = NicknameModule(tabListModule)
     val questModule: QuestModule = QuestModule()
@@ -43,8 +45,10 @@ object ModuleManager {
         invUnloadModule,
         motdModule,
         nicknameModule,
+        petModule,
         recipiesModule,
         signModule,
+        sitModule,
         tabListModule,
         questModule,
         treesModule,

@@ -22,9 +22,7 @@ class SignModule : ModuleInterface<SignModule.Config> {
         if (!enabled()) return
 
         val lines = event.lines()
-        for (i in lines.indices) {
-            lines[i] = PlainTextComponentSerializer.plainText().serialize(lines[i]).mm()
-        }
+        for (i in lines.indices) lines[i] = PlainTextComponentSerializer.plainText().serialize(lines[i]).mm()
     }
 
     data class Config(
