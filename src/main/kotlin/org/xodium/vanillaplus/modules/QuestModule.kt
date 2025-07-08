@@ -127,7 +127,7 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
             instance.server.onlinePlayers.forEach { player ->
                 val playerData = PlayerData.get(player)
                 PlayerData.update(player, playerData.copy(quests = generateQuestsForPlayer()))
-            } //TODO: check for offlineplayers instead since we want to reset quests for all players
+            } //TODO: check for offline players instead since we want to reset quests for all players
             config.lastReset = System.currentTimeMillis()
         }
 

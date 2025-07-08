@@ -35,7 +35,7 @@ data class PlayerData(
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
             .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
         private val filePath = instance.dataFolder.toPath().resolve("playerdata.json")
-        val cache = mutableMapOf<UUID, PlayerData>()
+        private val cache = mutableMapOf<UUID, PlayerData>()
 
         init {
             load()
@@ -93,11 +93,6 @@ data class PlayerData(
          */
         fun update(player: Player, data: PlayerData) {
             cache[player.uniqueId] = data
-            save()
-        }
-
-        fun updateByUUID(uuid: UUID, data: PlayerData) {
-            cache[uuid] = data
             save()
         }
     }
