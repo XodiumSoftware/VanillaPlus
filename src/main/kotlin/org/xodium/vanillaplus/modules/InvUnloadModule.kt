@@ -29,7 +29,6 @@ import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.Utils
-import org.xodium.vanillaplus.utils.Utils.tryCatch
 import org.bukkit.Sound as BukkitSound
 
 /** Represents a module handling inv-unload mechanics within the system. */

@@ -31,7 +31,6 @@ import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.roseFmt
 import org.xodium.vanillaplus.utils.TimeUtils
 import org.xodium.vanillaplus.utils.Utils
-import org.xodium.vanillaplus.utils.Utils.tryCatch
 import java.util.concurrent.CompletableFuture
 
 /** Represents a module handling inv-search mechanics within the system. */
