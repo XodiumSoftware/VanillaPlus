@@ -141,6 +141,11 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
         }
     }
 
+    /**
+     * Checks if quests should be reset based on the last reset time.
+     * Resets quests every Monday at 00:00.
+     * @return true if quests should be reset, false otherwise.
+     */
     private fun shouldResetQuests(): Boolean {
         val now = Instant.now().atZone(ZoneId.systemDefault()).toLocalDateTime()
         val last = Instant.ofEpochMilli(config.lastReset).atZone(ZoneId.systemDefault()).toLocalDateTime()
@@ -204,21 +209,6 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
                 reward = QuestRewardData(reward.material, reward.amount)
             )
         }
-    }
-
-    /**
-     * Checks if the quests have expired based on the weekly reset schedule.
-     * @param timestamp The timestamp when the quests were last generated.
-     * @return `true` if the quests should be reset, `false` otherwise.
-     */
-    private fun areQuestsExpired(timestamp: Long): Boolean {
-        if (timestamp <= 0) return true
-
-        val lastReset = Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()).toLocalDateTime()
-        val now = Instant.now().atZone(ZoneId.systemDefault()).toLocalDateTime()
-        val nextReset = lastReset.with(TemporalAdjusters.next(DayOfWeek.MONDAY)).withHour(0).withMinute(0).withSecond(0)
-
-        return now.isAfter(nextReset)
     }
 
     /**
