@@ -2,11 +2,9 @@
   <library name="Gradle: com.sk89q.worldedit.worldedit-libs:core:7.3.15-SNAPSHOT" type="java-imported" external-system-id="GRADLE">
     <properties groupId="com.sk89q.worldedit.worldedit-libs" artifactId="core" version="7.3.15-SNAPSHOT" baseVersion="7.3.15-SNAPSHOT" />
     <CLASSES>
-      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.sk89q.worldedit.worldedit-libs/core/7.3.15-SNAPSHOT/455a977eed2b8877bb4679e34ed07cc5186a9829/core-7.3.15-SNAPSHOT.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.sk89q.worldedit.worldedit-libs/core/7.3.15-SNAPSHOT/fb10d5b192fd9b266715659e997d3194fe44a782/core-7.3.15-SNAPSHOT.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES>
-      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.sk89q.worldedit.worldedit-libs/core/7.3.15-SNAPSHOT/a67f8979d6bd69c75caf8fef65a41b29824316dc/core-7.3.15-SNAPSHOT-sources.jar!/" />
-    </SOURCES>
+    <SOURCES />
   </library>
 </component>
