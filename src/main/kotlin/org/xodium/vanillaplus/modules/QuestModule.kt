@@ -23,10 +23,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.data.CommandData
-import org.xodium.vanillaplus.data.PlayerData
-import org.xodium.vanillaplus.data.PlayerQuestsData
-import org.xodium.vanillaplus.data.QuestData
+import org.xodium.vanillaplus.data.*
 import org.xodium.vanillaplus.enums.QuestDifficulty
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
@@ -37,7 +34,6 @@ import java.time.DayOfWeek
 import java.time.Instant
 import java.time.ZoneId
 import java.time.temporal.TemporalAdjusters
-import java.util.*
 
 /** Represents a module handling quests mechanics within the system. */
 class QuestModule : ModuleInterface<QuestModule.Config> {
@@ -84,13 +80,11 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
             val playerData = PlayerData.get(player)
             val quest = playerData.quests.list.getOrNull(event.slot) ?: return
             if (quest.completed && !quest.claimed) {
-                val reward = findRewardForQuest(quest)
-                if (reward != null) {
-                    player.inventory.addItem(ItemStack.of(reward.material, reward.amount))
-                    quest.claimed = true
-                    PlayerData.update(player, playerData)
-                    player.openInventory(quests(player))
-                }
+                val reward = quest.reward
+                player.inventory.addItem(ItemStack.of(reward.material, reward.amount))
+                quest.claimed = true
+                PlayerData.update(player, playerData)
+                player.openInventory(quests(player))
             }
         }
     }
@@ -150,7 +144,6 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
     private fun questItem(quest: QuestData): ItemStack {
         val material = if (quest.completed) Material.ENCHANTED_BOOK else Material.WRITABLE_BOOK
         val name = quest.difficulty.title
-        val task = findTaskForQuest(quest)
         val lore = mutableListOf(
             "<b>\uD83D\uDCDD</b> ${quest.task}".roseFmt(),
             "<b>\uD83C\uDF81</b> ${quest.reward}".roseFmt(),
@@ -161,7 +154,7 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
             quest.completed -> lore.add("<b><green>✔</green> Click to claim your reward!</b>")
             else -> {
                 val progress = quest.progress
-                val required = task?.amount ?: 0
+                val required = quest.task.amount
                 val progressBar = createProgressBar(progress, required)
                 lore.add("<b>⏳</b> $progressBar ($progress/$required)".roseFmt())
             }
@@ -183,62 +176,20 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
         val easyQuests = config.questPool[QuestDifficulty.EASY]!!.shuffled().take(2)
         val mediumQuests = config.questPool[QuestDifficulty.MEDIUM]!!.shuffled().take(2)
         val hardQuest = config.questPool[QuestDifficulty.HARD]!!.shuffled().take(1)
-        return listOf(
-            QuestData(
-                QuestDifficulty.EASY,
-                createDescription(easyQuests[0].first),
-                createDescription(easyQuests[0].second),
-                uuid = easyQuests[0].first.uuid,
-            ),
-            QuestData(
-                QuestDifficulty.EASY,
-                createDescription(easyQuests[1].first),
-                createDescription(easyQuests[1].second),
-                uuid = easyQuests[1].first.uuid,
-            ),
-            QuestData(
-                QuestDifficulty.MEDIUM,
-                createDescription(mediumQuests[0].first),
-                createDescription(mediumQuests[0].second),
-                uuid = mediumQuests[0].first.uuid,
-            ),
-            QuestData(
-                QuestDifficulty.MEDIUM,
-                createDescription(mediumQuests[1].first),
-                createDescription(mediumQuests[1].second),
-                uuid = mediumQuests[1].first.uuid,
-            ),
-            QuestData(
-                QuestDifficulty.HARD,
-                createDescription(hardQuest[0].first),
-                createDescription(hardQuest[0].second),
-                uuid = hardQuest[0].first.uuid,
-            ),
+
+        val allQuests = easyQuests + mediumQuests + hardQuest
+        val difficulties = listOf(
+            QuestDifficulty.EASY, QuestDifficulty.EASY,
+            QuestDifficulty.MEDIUM, QuestDifficulty.MEDIUM,
+            QuestDifficulty.HARD
         )
-    }
 
-
-    /**
-     * Creates a formatted description for a quest task or reward.
-     * @param item The [Config.QuestTask] or [Config.QuestReward] to create the description for.
-     * @return a formatted string describing the item.
-     */
-    private fun createDescription(item: Any): String {
-        val (action, amount, target) = when (item) {
-            is Config.QuestTask -> Triple(item.action, item.amount, item.target)
-            is Config.QuestReward -> Triple(null, item.amount, item.material)
-            else -> return ""
-        }
-        val targetName = when (target) {
-            is Material -> target.name.replace('_', ' ').lowercase()
-            is EntityType -> target.name.replace('_', ' ').lowercase()
-            else -> target.toString()
-        }
-        val plural = if (amount > 1) "s" else ""
-        return if (action != null) {
-            "$action $amount $targetName$plural"
-        } else {
-            "$amount $targetName$plural"
+        return allQuests.mapIndexed { index, (task, reward) ->
+            QuestData(
+                difficulty = difficulties[index],
+                task = QuestTaskData(task.action, task.target, task.amount, task.uuid),
+                reward = QuestRewardData(reward.material, reward.amount)
+            )
         }
     }
 
@@ -258,24 +209,6 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
     }
 
     /**
-     * Finds the original QuestTask object for a given quest.
-     * @param quest The quest to find the task for.
-     * @return The [Config.QuestTask] or null if not found.
-     */
-    private fun findTaskForQuest(quest: QuestData): Config.QuestTask? {
-        return config.questPool[quest.difficulty]?.find { it.first.uuid == quest.uuid }?.first
-    }
-
-    /**
-     * Finds the configured reward for a given quest.
-     * @param quest The quest to find the reward for.
-     * @return The [Config.QuestReward] or null if not found.
-     */
-    private fun findRewardForQuest(quest: QuestData): Config.QuestReward? {
-        return config.questPool[quest.difficulty]?.find { it.first.uuid == quest.uuid }?.second
-    }
-
-    /**
      * Handles quest progress for a player based on an action.
      * @param player The player performing the action.
      * @param action The action performed (e.g., "Kill", "Mine").
@@ -288,7 +221,7 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
 
         playerData.quests.list.forEach { quest ->
             if (!quest.completed) {
-                val questTask = findTaskForQuest(quest) ?: return@forEach
+                val questTask = quest.task
                 if (questTask.action == action && questTask.target == target) {
                     quest.progress += amount
                     if (quest.progress >= questTask.amount) quest.completed = true
@@ -319,28 +252,25 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
     data class Config(
         override var enabled: Boolean = true,
         var menuTitle: String = "<b>Quests</b>".fireFmt(),
-        var questPool: Map<QuestDifficulty, List<Pair<QuestTask, QuestReward>>> = mapOf(
+        var questPool: Map<QuestDifficulty, List<Pair<QuestTaskData, QuestRewardData>>> = mapOf(
             QuestDifficulty.EASY to listOf(
-                QuestTask("Mine", Material.COBBLESTONE, 64) to QuestReward(Material.EXPERIENCE_BOTTLE, 1),
-                QuestTask("Craft", Material.STONE_SWORD, 5) to QuestReward(Material.EXPERIENCE_BOTTLE, 2),
-                QuestTask("Harvest", Material.WHEAT, 32) to QuestReward(Material.EXPERIENCE_BOTTLE, 1),
-                QuestTask("Smelt", Material.IRON_ORE, 10) to QuestReward(Material.EXPERIENCE_BOTTLE, 2),
+                QuestTaskData("Mine", Material.COBBLESTONE, 64) to QuestRewardData(Material.EXPERIENCE_BOTTLE, 1),
+                QuestTaskData("Craft", Material.STONE_SWORD, 5) to QuestRewardData(Material.EXPERIENCE_BOTTLE, 2),
+                QuestTaskData("Harvest", Material.WHEAT, 32) to QuestRewardData(Material.EXPERIENCE_BOTTLE, 1),
+                QuestTaskData("Smelt", Material.IRON_ORE, 10) to QuestRewardData(Material.EXPERIENCE_BOTTLE, 2),
             ),
             QuestDifficulty.MEDIUM to listOf(
-                QuestTask("Kill", EntityType.ZOMBIE, 10) to QuestReward(Material.EXPERIENCE_BOTTLE, 5),
-                QuestTask("Find", Material.DIAMOND, 1) to QuestReward(Material.EXPERIENCE_BOTTLE, 4),
-                QuestTask("Brew", Material.POTION, 1) to QuestReward(Material.EXPERIENCE_BOTTLE, 6),
-                QuestTask("Trade", EntityType.VILLAGER, 3) to QuestReward(Material.EXPERIENCE_BOTTLE, 3),
+                QuestTaskData("Kill", EntityType.ZOMBIE, 10) to QuestRewardData(Material.EXPERIENCE_BOTTLE, 5),
+                QuestTaskData("Find", Material.DIAMOND, 1) to QuestRewardData(Material.EXPERIENCE_BOTTLE, 4),
+                QuestTaskData("Brew", Material.POTION, 1) to QuestRewardData(Material.EXPERIENCE_BOTTLE, 6),
+                QuestTaskData("Trade", EntityType.VILLAGER, 3) to QuestRewardData(Material.EXPERIENCE_BOTTLE, 3),
             ),
             QuestDifficulty.HARD to listOf(
-                QuestTask("Defeat", EntityType.ENDER_DRAGON, 1) to QuestReward(Material.EXPERIENCE_BOTTLE, 64),
-                QuestTask("Obtain", Material.NETHERITE_INGOT, 1) to QuestReward(Material.EXPERIENCE_BOTTLE, 32),
-                QuestTask("Cure", EntityType.ZOMBIE_VILLAGER, 1) to QuestReward(Material.EXPERIENCE_BOTTLE, 48),
-                QuestTask("Defeat", EntityType.WITHER, 1) to QuestReward(Material.EXPERIENCE_BOTTLE, 50),
+                QuestTaskData("Defeat", EntityType.ENDER_DRAGON, 1) to QuestRewardData(Material.EXPERIENCE_BOTTLE, 64),
+                QuestTaskData("Obtain", Material.NETHERITE_INGOT, 1) to QuestRewardData(Material.EXPERIENCE_BOTTLE, 32),
+                QuestTaskData("Cure", EntityType.ZOMBIE_VILLAGER, 1) to QuestRewardData(Material.EXPERIENCE_BOTTLE, 48),
+                QuestTaskData("Defeat", EntityType.WITHER, 1) to QuestRewardData(Material.EXPERIENCE_BOTTLE, 50),
             )
         ),
-    ) : ModuleInterface.Config {
-        data class QuestTask(val action: String, val target: Any, val amount: Int, val uuid: UUID = UUID.randomUUID())
-        data class QuestReward(val material: Material, val amount: Int)
-    }
+    ) : ModuleInterface.Config
 }
