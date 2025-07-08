@@ -30,9 +30,9 @@ import org.xodium.vanillaplus.data.QuestData
 import org.xodium.vanillaplus.enums.QuestDifficulty
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.roseFmt
-import org.xodium.vanillaplus.utils.Utils.tryCatch
 import java.time.DayOfWeek
 import java.time.Instant
 import java.time.ZoneId
