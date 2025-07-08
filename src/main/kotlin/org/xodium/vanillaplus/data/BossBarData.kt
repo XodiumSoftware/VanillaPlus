@@ -21,7 +21,7 @@ data class BossBarData(
     private val progress: Float,
     private val color: BossBar.Color,
     private val style: BossBar.Overlay,
-    private val flags: Set<BossBar.Flag> = emptySet()
+    private val flags: Set<BossBar.Flag> = emptySet(),
 ) {
     /**
      * Converts this [BossBarData] instance to a [BossBar] instance.

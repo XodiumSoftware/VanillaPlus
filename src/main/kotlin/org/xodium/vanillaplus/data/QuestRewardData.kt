@@ -9,5 +9,5 @@ import org.bukkit.Material
 
 data class QuestRewardData(
     val material: Material,
-    val amount: Int
+    val amount: Int,
 )

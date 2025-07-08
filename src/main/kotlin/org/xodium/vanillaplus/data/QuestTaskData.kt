@@ -8,8 +8,8 @@ package org.xodium.vanillaplus.data
 import java.util.*
 
 data class QuestTaskData(
+    val uuid: UUID = UUID.randomUUID(),
     val action: String,
     val target: Any,
     val amount: Int,
-    val uuid: UUID = UUID.randomUUID()
 )
