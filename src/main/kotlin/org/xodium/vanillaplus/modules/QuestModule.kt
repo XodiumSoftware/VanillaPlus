@@ -78,7 +78,7 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
         if (event.isLeftClick) {
             val player = event.whoClicked as Player
             val playerData = PlayerData.get(player)
-            val quest = playerData.quests.list.getOrNull(event.slot) ?: return
+            val quest = playerData.quests.getOrNull(event.slot) ?: return
             if (quest.completed && !quest.claimed) {
                 val reward = quest.reward
                 player.inventory.addItem(ItemStack.of(reward.material, reward.amount))
@@ -123,16 +123,29 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
      */
     private fun quests(player: Player): Inventory {
         var playerData = PlayerData.get(player)
-        if (playerData.quests.list.isEmpty() || areQuestsExpired(playerData.quests.timestamp)) {
-            val newQuests = generateQuestsForPlayer()
-            val newPlayerQuests = PlayerQuestsData(list = newQuests, timestamp = System.currentTimeMillis())
-            playerData = playerData.copy(quests = newPlayerQuests)
+        if (shouldResetQuests()) {
+            instance.server.onlinePlayers.forEach { player ->
+                val playerData = PlayerData.get(player)
+                PlayerData.update(player, playerData.copy(quests = generateQuestsForPlayer()))
+            } //TODO: check for offlineplayers instead since we want to reset quests for all players
+            config.lastReset = System.currentTimeMillis()
+        }
+
+        if (playerData.quests.isEmpty()) {
+            playerData = playerData.copy(quests = generateQuestsForPlayer())
             PlayerData.update(player, playerData)
         }
 
         return instance.server.createInventory(null, InventoryType.HOPPER, config.menuTitle.mm()).apply {
-            playerData.quests.list.forEachIndexed { index, quest -> setItem(index, questItem(quest)) }
+            playerData.quests.forEachIndexed { index, quest -> setItem(index, questItem(quest)) }
         }
+    }
+
+    private fun shouldResetQuests(): Boolean {
+        val now = Instant.now().atZone(ZoneId.systemDefault()).toLocalDateTime()
+        val last = Instant.ofEpochMilli(config.lastReset).atZone(ZoneId.systemDefault()).toLocalDateTime()
+        val nextReset = last.with(TemporalAdjusters.next(DayOfWeek.MONDAY)).withHour(0).withMinute(0).withSecond(0)
+        return now.isAfter(nextReset)
     }
 
     /**
@@ -219,7 +232,7 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
         val playerData = PlayerData.get(player)
         var questsUpdated = false
 
-        playerData.quests.list.forEach { quest ->
+        playerData.quests.forEach { quest ->
             if (!quest.completed) {
                 val questTask = quest.task
                 if (questTask.action == action && questTask.target == target) {
@@ -252,6 +265,7 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
     data class Config(
         override var enabled: Boolean = true,
         var menuTitle: String = "<b>Quests</b>".fireFmt(),
+        var lastReset: Long = 0L,
         var questPool: Map<QuestDifficulty, List<Pair<QuestTaskData, QuestRewardData>>> = mapOf(
             QuestDifficulty.EASY to listOf(
                 QuestTaskData("Mine", Material.COBBLESTONE, 64) to QuestRewardData(Material.EXPERIENCE_BOTTLE, 1),

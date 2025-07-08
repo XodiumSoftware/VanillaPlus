@@ -22,12 +22,12 @@ import kotlin.io.path.writeText
  * Represents the data structure for player data.
  * @param nickname The [nickname] of the player, if set.
  * @param trowel Indicates whether the player has the [trowel] mode active.
- * @param quests A list of data representing the quests associated with the player.
+ * @param quests The list of [QuestData] associated with the player.
  */
 data class PlayerData(
     val nickname: String? = null,
     val trowel: Boolean = false,
-    val quests: PlayerQuestsData = PlayerQuestsData(),
+    val quests: List<QuestData> = emptyList(),
 ) {
     companion object {
         private val mapper = jacksonObjectMapper()
@@ -35,7 +35,7 @@ data class PlayerData(
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
             .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
         private val filePath = instance.dataFolder.toPath().resolve("playerdata.json")
-        private val cache = mutableMapOf<UUID, PlayerData>()
+        val cache = mutableMapOf<UUID, PlayerData>()
 
         init {
             load()
@@ -93,6 +93,11 @@ data class PlayerData(
          */
         fun update(player: Player, data: PlayerData) {
             cache[player.uniqueId] = data
+            save()
+        }
+
+        fun updateByUUID(uuid: UUID, data: PlayerData) {
+            cache[uuid] = data
             save()
         }
     }
