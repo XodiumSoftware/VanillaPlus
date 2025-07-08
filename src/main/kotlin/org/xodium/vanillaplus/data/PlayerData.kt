@@ -22,10 +22,12 @@ import kotlin.io.path.writeText
  * Represents the data structure for player data.
  * @param nickname The [nickname] of the player, if set.
  * @param trowel Indicates whether the player has the [trowel] mode active.
+ * @param quests A list of data representing the quests associated with the player.
  */
 data class PlayerData(
     val nickname: String? = null,
     val trowel: Boolean = false,
+    val quests: PlayerQuestsData = PlayerQuestsData(),
 ) {
     companion object {
         private val mapper = jacksonObjectMapper()
