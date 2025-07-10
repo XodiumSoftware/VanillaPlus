@@ -1,7 +1,5 @@
 package org.xodium.vanillaplus.modules
 
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Location
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.Display
@@ -13,8 +11,17 @@ import org.joml.AxisAngle4f
 import org.joml.Vector3f
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.ExtUtils.mm
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+
+data class TeamConfig(
+    val name: String? = null,
+    val realName: String? = null,
+    val tag: String? = null,
+    val prefix: String? = null,
+    val suffix: String? = null,
+)
 
 
 class NameTagModule : ModuleInterface<NameTagModule.Config> {
@@ -30,30 +37,29 @@ class NameTagModule : ModuleInterface<NameTagModule.Config> {
         val textDisplay: TextDisplay? = player.world.spawn(location, TextDisplay::class.java) { entity ->
             entity.billboard = Display.Billboard.CENTER
             entity.isPersistent = false
-            entity.text(deserialize(config.prefix() + config.tag() + player.name + config.suffix()))
+            entity.text((config.prefix + config.tag + player.name + config.suffix).mm())
             entity.transformation = getDisplayTransformation()
             entity.isShadowed = true
             entity.isDefaultBackground = true
             entity.persistentDataContainer.set(
-                NamespacedKey.fromString("player_display"),
+                NamespacedKey(instance, "player_display"),
                 PersistentDataType.STRING,
                 player.uniqueId.toString()
             )
         }
         activeTags.put(player.uniqueId, textDisplay)
-        player.addPassenger(textDisplay)
-        player.hideEntity(instance, textDisplay)
+        if (textDisplay != null) {
+            player.addPassenger(textDisplay)
+            player.hideEntity(instance, textDisplay)
+        }
     }
 
-    fun remove(player: Player) {
-        val textDisplay = activeTags.remove(player.uniqueId)
-        textDisplay?.remove()
-    }
+    fun remove(player: Player) = activeTags.remove(player.uniqueId)?.remove()
 
     fun update(player: Player, config: TeamConfig?) {
         val textDisplay = activeTags[player.uniqueId]
         if (textDisplay != null && config != null) {
-            textDisplay.text(deserialize((config.prefix() + config.tag()).toString() + player.name + config.suffix()))
+            textDisplay.text(((config.prefix + config.tag) + player.name + config.suffix).mm())
             textDisplay.transformation = getDisplayTransformation()
         }
     }
@@ -68,8 +74,6 @@ class NameTagModule : ModuleInterface<NameTagModule.Config> {
     }
 
     fun getTextDisplay(player: Player): TextDisplay? = activeTags[player.uniqueId]
-
-    private fun deserialize(text: String): Component = MiniMessage.miniMessage().deserialize(text)
 
     data class Config(
         override var enabled: Boolean = true
