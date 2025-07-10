@@ -1,8 +1,3 @@
-/*
- *  Copyright (c) 2025. Xodium.
- *  All rights reserved.
- */
-
 import de.undercouch.gradle.tasks.download.Download
 import groovy.json.JsonSlurper
 import java.net.URI

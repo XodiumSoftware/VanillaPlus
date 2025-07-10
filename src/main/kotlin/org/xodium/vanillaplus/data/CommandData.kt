@@ -1,8 +1,3 @@
-/*
- *  Copyright (c) 2025. Xodium.
- *  All rights reserved.
- */
-
 package org.xodium.vanillaplus.data
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
