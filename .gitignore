@@ -15,3 +15,5 @@ Thumbs.db
 
 # Dev server files
 .server
+
+bin/
