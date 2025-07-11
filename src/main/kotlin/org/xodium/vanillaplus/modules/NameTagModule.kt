@@ -16,7 +16,7 @@ class NameTagModule : ModuleInterface<NameTagModule.Config> {
         return ProtocolLibHook.getPlugin("ProtocolLib not found, disabling NameTagModule")
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.HIGHEST)
     fun on(event: PlayerJoinEvent) {
         if (!enabled()) return
         ProtocolLibHook.nametag(event.player)

@@ -36,7 +36,7 @@ object ProtocolLibHook {
                 val packet = event.packet
                 val playerInfoDataList = packet.playerInfoDataLists.read(0)
                 playerInfoDataList.forEachIndexed { index, data ->
-                    if (data.profile.name == player.name) {
+                    if (data != null && data.profile.name == player.name) {
                         val newData = PlayerInfoData(
                             data.profile,
                             data.latency,
