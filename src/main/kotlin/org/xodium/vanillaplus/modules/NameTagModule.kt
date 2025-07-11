@@ -1,8 +1,5 @@
 package org.xodium.vanillaplus.modules
 
-import org.bukkit.event.EventHandler
-import org.bukkit.event.EventPriority
-import org.bukkit.event.player.PlayerJoinEvent
 import org.xodium.vanillaplus.hooks.ProtocolLibHook
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 
@@ -16,10 +13,8 @@ class NameTagModule : ModuleInterface<NameTagModule.Config> {
         return ProtocolLibHook.getPlugin("ProtocolLib not found, disabling NameTagModule")
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    fun on(event: PlayerJoinEvent) {
-        if (!enabled()) return
-        ProtocolLibHook.nametag(event.player)
+    init {
+        if (enabled()) ProtocolLibHook.nametag()
     }
 
     data class Config(
