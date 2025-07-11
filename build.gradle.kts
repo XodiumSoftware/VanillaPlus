@@ -27,7 +27,7 @@ repositories {
 dependencies {
     compileOnly("io.papermc.paper:paper-api:$apiVersion-R0.1-SNAPSHOT")
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.15-SNAPSHOT") //TODO("Move away from WorldEdit")
-    compileOnly("com.comphenix.protocol:ProtocolLib:5.4.0")
+    compileOnly("com.comphenix.protocol:ProtocolLib:5.3.0")
 
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlin:kotlin-reflect")
