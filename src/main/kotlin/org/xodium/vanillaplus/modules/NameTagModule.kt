@@ -19,6 +19,7 @@ class NameTagModule : ModuleInterface<NameTagModule.Config> {
     @EventHandler(priority = EventPriority.NORMAL)
     fun on(event: PlayerJoinEvent) {
         if (!enabled()) return
+        ProtocolLibHook.nametag(event.player)
     }
 
     data class Config(

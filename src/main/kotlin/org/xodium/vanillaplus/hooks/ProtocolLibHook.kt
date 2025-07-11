@@ -5,6 +5,7 @@ import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.ProtocolManager
 import com.comphenix.protocol.events.PacketAdapter
 import com.comphenix.protocol.events.PacketEvent
+import com.comphenix.protocol.wrappers.PlayerInfoData
 import com.comphenix.protocol.wrappers.WrappedChatComponent
 import org.bukkit.entity.Player
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -34,9 +35,15 @@ object ProtocolLibHook {
             override fun onPacketSending(event: PacketEvent) {
                 val packet = event.packet
                 val playerInfoDataList = packet.playerInfoDataLists.read(0)
-                playerInfoDataList.forEach { data ->
+                playerInfoDataList.forEachIndexed { index, data ->
                     if (data.profile.name == player.name) {
-                        data.displayName = WrappedChatComponent.fromText(player.displayName().toString())
+                        val newData = PlayerInfoData(
+                            data.profile,
+                            data.latency,
+                            data.gameMode,
+                            WrappedChatComponent.fromText(player.displayName().toString())
+                        )
+                        playerInfoDataList[index] = newData
                     }
                 }
             }
