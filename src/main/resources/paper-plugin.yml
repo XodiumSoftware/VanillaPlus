@@ -10,7 +10,7 @@ dependencies:
       load: BEFORE
       required: false
       join-classpath: true
-    CrazyAdvancementsAPI:
+    ProtocolLib:
       load: BEFORE
       required: false
       join-classpath: true

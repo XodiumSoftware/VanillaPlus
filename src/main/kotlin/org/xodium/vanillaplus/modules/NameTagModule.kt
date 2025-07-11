@@ -2,6 +2,7 @@ package org.xodium.vanillaplus.modules
 
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.scoreboard.Scoreboard
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -12,13 +13,20 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 class NameTagModule : ModuleInterface<NameTagModule.Config> {
     override val config: Config = Config()
 
-    override fun enabled(): Boolean = config.enabled
+    override fun enabled(): Boolean {
+        if (!config.enabled) return false
 
-    @EventHandler
+        val protocollib = instance.server.pluginManager.getPlugin("ProtocolLib") != null
+        if (!protocollib) instance.logger.warning("ProtocolLib not found, disabling NameTagModule")
+
+        return protocollib
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
     fun on(event: PlayerJoinEvent) {
         if (!enabled()) return
         val player = event.player
-        player.nametag("test", "test")
+        player.nametag("test ", " test")
         player.nametag()
     }
 
