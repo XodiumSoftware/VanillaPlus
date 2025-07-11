@@ -103,7 +103,6 @@ tasks {
             .get().executablePath.asFile.absolutePath
         commandLine = listOf(
             javaExec,
-            "-XX:+AllowEnhancedClassRedefinition",
             "-jar", "server.jar", "nogui"
         )
     }
