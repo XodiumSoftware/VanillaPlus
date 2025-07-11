@@ -7,6 +7,7 @@ import com.comphenix.protocol.events.PacketAdapter
 import com.comphenix.protocol.events.PacketEvent
 import com.comphenix.protocol.wrappers.PlayerInfoData
 import com.comphenix.protocol.wrappers.WrappedChatComponent
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import org.bukkit.entity.Player
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 
@@ -33,17 +34,17 @@ object ProtocolLibHook {
     fun nametag(player: Player) {
         protocolManager.addPacketListener(object : PacketAdapter(instance, PacketType.Play.Server.PLAYER_INFO) {
             override fun onPacketSending(event: PacketEvent) {
-                val packet = event.packet
-                val playerInfoDataList = packet.playerInfoDataLists.read(0)
+                val playerInfoDataList = event.packet.playerInfoDataLists.read(0)
                 playerInfoDataList.forEachIndexed { index, data ->
                     if (data != null && data.profile.name == player.name) {
-                        val newData = PlayerInfoData(
+                        playerInfoDataList[index] = PlayerInfoData(
                             data.profile,
                             data.latency,
                             data.gameMode,
-                            WrappedChatComponent.fromText(player.displayName().toString())
+                            WrappedChatComponent.fromJson(
+                                GsonComponentSerializer.gson().serialize(player.displayName())
+                            )
                         )
-                        playerInfoDataList[index] = newData
                     }
                 }
             }
