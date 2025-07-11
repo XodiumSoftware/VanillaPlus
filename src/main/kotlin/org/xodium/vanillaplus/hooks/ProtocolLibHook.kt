@@ -7,7 +7,8 @@ import com.comphenix.protocol.events.ListenerPriority
 import com.comphenix.protocol.events.PacketAdapter
 import com.comphenix.protocol.events.PacketEvent
 import com.comphenix.protocol.wrappers.WrappedChatComponent
-import com.comphenix.protocol.wrappers.WrappedWatchableObject
+import com.comphenix.protocol.wrappers.WrappedDataValue
+import com.comphenix.protocol.wrappers.WrappedDataWatcher
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 
 /** A utility object to check for ProtocolLib. */
@@ -32,20 +33,25 @@ object ProtocolLibHook {
             PacketAdapter(instance, ListenerPriority.HIGHEST, PacketType.Play.Server.ENTITY_METADATA) {
             override fun onPacketSending(event: PacketEvent) {
                 val entityId = event.packet.integers.read(0)
-                val player = instance.server.getPlayer(event.player.uniqueId)
-                if (player != null && player.entityId == entityId) {
-                    val metadata = event.packet.watchableCollectionModifier.read(0)
-                    val customNameIndex = 3
-                    val customName = WrappedChatComponent.fromJson("{\"text\":\"Your Custom Name\"}")
-                    val newMetadata = metadata.map { watcher ->
-                        if (watcher.index == customNameIndex) {
-                            WrappedWatchableObject(customNameIndex, customName)
-                        } else {
-                            watcher
-                        }
-                    }
-                    event.packet.watchableCollectionModifier.write(0, newMetadata)
+                if (entityId != event.player.entityId) return
+
+                val metadata = try {
+                    event.packet.dataValueCollectionModifier.read(0)
+                } catch (e: Exception) {
+                    instance.logger.warning("Failed to read metadata for entity $entityId: ${e.message}")
+                    return
                 }
+
+                val customNameIndex = 2
+                metadata.removeIf { it.index == customNameIndex }
+
+                val customNameJson = "{\"text\":\"TEST\"}"
+                val customNameComponent = WrappedChatComponent.fromJson(customNameJson)
+                val serializer = WrappedDataWatcher.Registry.getChatComponentSerializer()
+                metadata.add(WrappedDataValue(customNameIndex, serializer, customNameComponent.handle))
+
+                event.packet.dataValueCollectionModifier.write(0, metadata)
+                instance.logger.info("Set custom name for player ${event.player.name} on entity $entityId")
             }
         })
     }
