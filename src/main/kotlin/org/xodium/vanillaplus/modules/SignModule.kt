@@ -28,8 +28,9 @@ class SignModule : ModuleInterface<SignModule.Config> {
      * @param component the component to inspect for MiniMessage tags in its plaintext form
      * @return true if MiniMessage tags are found, false otherwise
      */
-    private fun containsMiniMessageTags(component: Component): Boolean =
-        "<[a-z0-9_]+>".toRegex().containsMatchIn(component.pt())
+    private fun containsMiniMessageTags(component: Component): Boolean {
+        return "</?[a-zA-Z0-9_#:-]+.*?>".toRegex().containsMatchIn(component.pt())
+    }
 
     data class Config(
         override var enabled: Boolean = true,
