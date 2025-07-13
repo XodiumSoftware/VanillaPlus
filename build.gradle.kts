@@ -96,7 +96,7 @@ tasks {
         group = "application"
         description = "Run Development Server"
         dependsOn("shadowJar", "downloadServerJar", "acceptEula")
-        workingDir = file(".server/")
+        workingDir = file(".server/").apply { mkdirs() }
         standardInput = System.`in`
         val javaExec = project.extensions.getByType(JavaToolchainService::class.java)
             .launcherFor { languageVersion.set(JavaLanguageVersion.of(21)) }
