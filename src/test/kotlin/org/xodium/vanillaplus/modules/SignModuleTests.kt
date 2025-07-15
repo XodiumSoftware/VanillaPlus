@@ -10,6 +10,7 @@ import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.event.block.SignChangeEvent
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -30,7 +31,8 @@ class SignModuleTests {
     }
 
     @Test
-    fun `onSignChangeEvent should parse MiniMessage when module is enabled`() {
+    @DisplayName("onSignChangeEvent should parse MiniMessage when module is enabled")
+    fun onSignChangeEvent_shouldParseMiniMessageWhenModuleIsEnabled() {
         // Arrange
         signModule.config.enabled = true
         val initialLines = mutableListOf<Component>(
@@ -53,7 +55,8 @@ class SignModuleTests {
     }
 
     @Test
-    fun `onSignChangeEvent should not do anything when module is disabled`() {
+    @DisplayName("onSignChangeEvent should not do anything when module is disabled")
+    fun onSignChangeEvent_shouldNotDoAnythingWhenModuleIsDisabled() {
         // Arrange
         signModule.config.enabled = false
         val initialLines = mutableListOf<Component>(
