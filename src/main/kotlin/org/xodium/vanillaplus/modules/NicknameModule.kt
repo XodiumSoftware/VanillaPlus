@@ -15,6 +15,7 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 
+/** Represents a module handling nickname mechanics within the system. */
 class NicknameModule(private val tabListModule: TabListModule) : ModuleInterface<NicknameModule.Config> {
     override val config: Config = Config()
 

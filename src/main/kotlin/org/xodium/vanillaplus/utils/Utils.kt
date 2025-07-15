@@ -83,9 +83,9 @@ object Utils {
     }
 
     /**
-     * Get the center of a block.
-     * @param block The block to get the center of.
-     * @return The center location of the block.
+     * Get the centre of a block.
+     * @param block The block to get the centre of.
+     * @return The centre location of the block.
      */
     fun getCenterOfBlock(block: Block): Location {
         val baseLoc = block.location.clone()

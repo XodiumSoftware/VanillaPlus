@@ -11,6 +11,7 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 
+/** Represents a module handling pet mechanics within the system. */
 class PetModule : ModuleInterface<PetModule.Config> {
     override val config: Config = Config()
 
