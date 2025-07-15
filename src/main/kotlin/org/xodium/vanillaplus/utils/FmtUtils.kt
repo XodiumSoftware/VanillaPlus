@@ -1,8 +1,3 @@
-/*
- *  Copyright (c) 2025. Xodium.
- *  All rights reserved.
- */
-
 @file:Suppress("unused")
 
 package org.xodium.vanillaplus.utils
@@ -10,11 +5,11 @@ package org.xodium.vanillaplus.utils
 /** Formatting utilities. */
 object FmtUtils {
     /**
-     * Applies a gradient to the given text using the specified colors.
-     * @param color1 The starting color of the gradient.
-     * @param color2 The ending color of the gradient.
+     * Applies a gradient to the given text using the specified colours.
+     * @param color1 The starting colour of the gradient.
+     * @param color2 The ending colour of the gradient.
      * @param text The text to apply the gradient to.
-     * @param inverted Whether to invert the gradient colors.
+     * @param inverted Whether to invert the gradient colours.
      * @return The formatted [String] with the gradient applied.
      */
     private fun gradient(color1: String, color2: String, text: String, inverted: Boolean): String {

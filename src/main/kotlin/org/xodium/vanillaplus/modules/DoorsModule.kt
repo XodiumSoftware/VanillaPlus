@@ -1,8 +1,3 @@
-/*
- *  Copyright (c) 2025. Xodium.
- *  All rights reserved.
- */
-
 package org.xodium.vanillaplus.modules
 
 import net.kyori.adventure.sound.Sound
@@ -126,7 +121,7 @@ class DoorsModule : ModuleInterface<DoorsModule.Config> {
 
     /**
      * Checks if the interaction event is valid for processing.
-     * @param event The player interact event.
+     * @param event The `player interact event`.
      * @return True if the interaction is valid, false otherwise.
      */
     private fun isValidInteraction(event: PlayerInteractEvent): Boolean {
@@ -137,7 +132,7 @@ class DoorsModule : ModuleInterface<DoorsModule.Config> {
 
     /**
      * Handles the left-click interaction with doors and gates, playing a knock sound if applicable.
-     * @param event The player interact event.
+     * @param event The `player interact event`.
      * @param block The block representing the door or gate being interacted with.
      */
     private fun handleLeftClick(event: PlayerInteractEvent, block: Block) {
@@ -174,7 +169,7 @@ class DoorsModule : ModuleInterface<DoorsModule.Config> {
 
     /**
      * Checks if the player can knock on the block based on their game mode and interaction conditions.
-     * @param event The player interact event.
+     * @param event The `player interact event`.
      * @param player The player attempting to knock.
      * @return True if the player can knock, false otherwise.
      */

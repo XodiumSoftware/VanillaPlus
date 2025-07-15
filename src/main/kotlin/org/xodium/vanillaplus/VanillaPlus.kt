@@ -1,15 +1,9 @@
-/*
- *  Copyright (c) 2025. Xodium.
- *  All rights reserved.
- */
-
 package org.xodium.vanillaplus
 
 import org.bukkit.plugin.java.JavaPlugin
 import org.xodium.vanillaplus.managers.ModuleManager
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
-
 
 /** Main class of the plugin. */
 class VanillaPlus : JavaPlugin() {

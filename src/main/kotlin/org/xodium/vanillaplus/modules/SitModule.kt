@@ -1,8 +1,3 @@
-/*
- *  Copyright (c) 2025. Xodium.
- *  All rights reserved.
- */
-
 package org.xodium.vanillaplus.modules
 
 import org.bukkit.Location
@@ -19,17 +14,19 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.entity.EntityDismountEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerQuitEvent
+import org.bukkit.util.Vector
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import java.util.*
 
+/** Represents a module handling sit mechanics within the system. */
 class SitModule : ModuleInterface<SitModule.Config> {
     override val config: Config = Config()
 
     override fun enabled(): Boolean = config.enabled
 
     private val sittingPlayers = mutableMapOf<UUID, ArmorStand>()
-    private val blockCenterOffset = Location(null, 0.5, 0.5, 0.5)
-    private val playerStandUpOffset = Location(null, 0.0, 0.5, 0.0)
+    private val blockCenterOffset = Vector(0.5, 0.5, 0.5)
+    private val playerStandUpOffset = Vector(0.0, 0.5, 0.0)
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun on(event: PlayerInteractEvent) {
