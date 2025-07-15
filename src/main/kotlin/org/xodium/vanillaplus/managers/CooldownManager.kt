@@ -1,8 +1,3 @@
-/*
- *  Copyright (c) 2025. Xodium.
- *  All rights reserved.
- */
-
 package org.xodium.vanillaplus.managers
 
 import org.bukkit.NamespacedKey
@@ -15,7 +10,7 @@ object CooldownManager {
      * Gets the cooldown timestamp for a player and a specific cooldown key.
      * @param player The player to get the cooldown for.
      * @param key The NamespacedKey for the cooldown.
-     * @return The timestamp, or 0L if not set.
+     * @return The timestamp, or `0L` if not set.
      */
     private fun getCooldown(player: Player, key: NamespacedKey): Long {
         return player.persistentDataContainer.get(key, PersistentDataType.LONG) ?: 0L

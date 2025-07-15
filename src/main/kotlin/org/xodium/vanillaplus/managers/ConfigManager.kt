@@ -1,8 +1,3 @@
-/*
- *  Copyright (c) 2025. Xodium.
- *  All rights reserved.
- */
-
 package org.xodium.vanillaplus.managers
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect
@@ -30,7 +25,7 @@ object ConfigManager {
     /**
      * Loads settings from the config file.
      * @param silent If true, suppresses logging messages during loading.
-     * @return A JsonNode representing the configuration, or null on failure or if file doesn't exist.
+     * @return A JsonNode representing the configuration, or null on failure or if the file doesn't exist.
      */
     fun load(silent: Boolean = false): JsonNode? {
         try {

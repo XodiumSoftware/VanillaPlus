@@ -1,8 +1,3 @@
-/*
- *  Copyright (c) 2025. Xodium.
- *  All rights reserved.
- */
-
 package org.xodium.vanillaplus.modules
 
 import com.mojang.brigadier.arguments.StringArgumentType
@@ -122,7 +117,7 @@ class ChatModule : ModuleInterface<ChatModule.Config> {
 
         var imageIndex = 1
         player.sendMessage(
-            Regex("<image>").replace(config.welcomeText) { "<image${imageIndex++}>" }.mm(
+            Regex("<image>").replace(config.welcomeText.joinToString("\n")) { "<image${imageIndex++}>" }.mm(
                 Placeholder.component(
                     "player", player
                         .displayName()
@@ -188,23 +183,22 @@ class ChatModule : ModuleInterface<ChatModule.Config> {
     data class Config(
         override var enabled: Boolean = true,
         var chatFormat: String = "<player> <reset>${"›".mangoFmt(true)} <message>",
-        var welcomeText: String =
-            """
-        ${"]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)}
-        <image>${"⯈".mangoFmt(true)}
-        <image>${"⯈".mangoFmt(true)}
-        <image>${"⯈".mangoFmt(true)} ${"Welcome".fireFmt()} <player>
-        <image>${"⯈".mangoFmt(true)}
-        <image>${"⯈".mangoFmt(true)}
-        <image>${"⯈".mangoFmt(true)} ${"Check out".fireFmt()}<gray>: ${
+        var welcomeText: List<String> = listOf(
+            "]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true),
+            "<image>${"⯈".mangoFmt(true)}",
+            "<image>${"⯈".mangoFmt(true)}",
+            "<image>${"⯈".mangoFmt(true)} ${"Welcome".fireFmt()} <player>",
+            "<image>${"⯈".mangoFmt(true)}",
+            "<image>${"⯈".mangoFmt(true)}",
+            "<image>${"⯈".mangoFmt(true)} ${"Check out".fireFmt()}<gray>: ${
                 "/rules".clickRunCmd("Click Me!".fireFmt()).skylineFmt()
             } <gray>🟅 ${
                 "/guide".clickRunCmd("Click Me!".fireFmt()).skylineFmt()
-            } <gray>🟅 ${"/quests".clickRunCmd("Click Me!".fireFmt()).skylineFmt()}
-        <image>${"⯈".mangoFmt(true)}
-        <image>${"⯈".mangoFmt(true)}
-        ${"]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)}
-        """.trimIndent(),
+            }",
+            "<image>${"⯈".mangoFmt(true)}",
+            "<image>${"⯈".mangoFmt(true)}",
+            "]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)
+        ),
         var joinMessage: String = "<green>➕<reset> ${"›".mangoFmt(true)} <player>",
         var quitMessage: String = "<red>➖<reset> ${"›".mangoFmt(true)} <player>",
         var whisperToFormat: String = "${"You".skylineFmt()} ${"➛".mangoFmt(true)} <player> <reset>${"›".mangoFmt(true)} <message>",
