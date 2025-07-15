@@ -2,19 +2,17 @@ package org.xodium.vanillaplus.hooks
 
 import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.ProtocolLibrary
-import com.comphenix.protocol.ProtocolManager
 import com.comphenix.protocol.events.ListenerPriority
 import com.comphenix.protocol.events.PacketAdapter
 import com.comphenix.protocol.events.PacketEvent
-import com.comphenix.protocol.wrappers.WrappedChatComponent
 import com.comphenix.protocol.wrappers.WrappedDataValue
-import com.comphenix.protocol.wrappers.WrappedDataWatcher
+import org.bukkit.entity.Player
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 
 /** A utility object to check for ProtocolLib. */
 object ProtocolLibHook {
     /** The ProtocolManager instance from ProtocolLib. */
-    val protocolManager: ProtocolManager = ProtocolLibrary.getProtocolManager()
+    private val protocolManager = ProtocolLibrary.getProtocolManager()
 
     /**
      * Checks if ProtocolLib is installed on the server.
@@ -27,14 +25,17 @@ object ProtocolLibHook {
         return plugin
     }
 
-    /** Sets a custom nametag for a player. */
-    fun nametag() {
+    /**
+     * Registers a metadata packet listener for entity metadata modifications.
+     * @param callback Function to handle metadata modification
+     */
+    fun registerMetadataListener(
+        callback: (entityId: Int, player: Player, metadata: MutableList<WrappedDataValue>) -> Unit
+    ) {
         protocolManager.addPacketListener(object :
             PacketAdapter(instance, ListenerPriority.HIGHEST, PacketType.Play.Server.ENTITY_METADATA) {
             override fun onPacketSending(event: PacketEvent) {
                 val entityId = event.packet.integers.read(0)
-                if (entityId != event.player.entityId) return
-
                 val metadata = try {
                     event.packet.dataValueCollectionModifier.read(0)
                 } catch (e: Exception) {
@@ -42,16 +43,8 @@ object ProtocolLibHook {
                     return
                 }
 
-                val customNameIndex = 2
-                metadata.removeIf { it.index == customNameIndex }
-
-                val customNameJson = "{\"text\":\"TEST\"}"
-                val customNameComponent = WrappedChatComponent.fromJson(customNameJson)
-                val serializer = WrappedDataWatcher.Registry.getChatComponentSerializer()
-                metadata.add(WrappedDataValue(customNameIndex, serializer, customNameComponent.handle))
-
+                callback(entityId, event.player, metadata)
                 event.packet.dataValueCollectionModifier.write(0, metadata)
-                instance.logger.info("Set custom name for player ${event.player.name} on entity $entityId")
             }
         })
     }
