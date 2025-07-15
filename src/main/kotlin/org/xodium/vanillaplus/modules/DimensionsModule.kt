@@ -1,8 +1,3 @@
-/*
- *  Copyright (c) 2025. Xodium.
- *  All rights reserved.
- */
-
 package org.xodium.vanillaplus.modules
 
 import org.bukkit.Location
@@ -115,7 +110,7 @@ class DimensionsModule : ModuleInterface<DimensionsModule.Config> {
     }
 
     /**
-     * Checks if there's a portal near the specified coordinates.
+     * Checks if there is a portal near the specified coordinates.
      * @param world The world to check in.
      * @param x The x coordinate.
      * @param y The y coordinate.

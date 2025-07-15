@@ -1,8 +1,3 @@
-/*
- *  Copyright (c) 2025. Xodium.
- *  All rights reserved.
- */
-
 package org.xodium.vanillaplus.modules
 
 import com.mojang.brigadier.arguments.StringArgumentType
@@ -160,7 +155,7 @@ class InvSearchModule : ModuleInterface<InvSearchModule.Config> {
     /**
      * Creates a laser effect for the specified player and chests.
      * @param player The player to play the effect for.
-     * @param affectedChests The list of chests to affect. If null, uses the last unloaded chests.
+     * @param affectedChests The list of chests to affect. If null, will use the last unloaded chests.
      */
     private fun laserEffectSchedule(player: Player, affectedChests: List<Block>? = null) {
         val chests = affectedChests ?: Utils.lastUnloads[player.uniqueId] ?: return
@@ -203,17 +198,29 @@ class InvSearchModule : ModuleInterface<InvSearchModule.Config> {
         speed: Double,
         maxDistance: Int
     ) {
+        require(destinations.isNotEmpty()) { "Destinations list cannot be empty" }
+        require(interval > 0) { "Interval must be positive" }
+        require(count > 0) { "Count must be positive" }
+        require(speed >= 0) { "Speed must be non-negative" }
+        require(maxDistance > 0) { "Max distance must be positive" }
+
+        val playerLocation = player.location
+
         destinations.forEach { destination ->
-            val start = player.location.clone()
+            val start = playerLocation.clone()
             val end = Utils.getCenterOfBlock(destination).add(0.0, -0.5, 0.0)
             val direction = end.toVector().subtract(start.toVector()).normalize()
             val distance = start.distance(destination.location)
+
             if (distance < maxDistance) {
-                var i = 1.0
-                while (i <= distance) {
-                    val point = start.clone().add(direction.clone().multiply(i))
+                var currentDistance = 1.0
+                val steps = (distance / interval).toInt()
+
+                repeat(steps) {
+                    val point = start.clone().add(direction.multiply(currentDistance))
                     player.spawnParticle(particle, point, count, 0.0, 0.0, 0.0, speed)
-                    i += interval
+                    direction.normalize()
+                    currentDistance += interval
                 }
             }
         }

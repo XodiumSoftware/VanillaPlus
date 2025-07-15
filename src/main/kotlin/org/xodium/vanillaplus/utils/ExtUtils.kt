@@ -1,8 +1,3 @@
-/*
- *  Copyright (c) 2025. Xodium.
- *  All rights reserved.
- */
-
 @file:Suppress("unused", "UnstableApiUsage")
 
 package org.xodium.vanillaplus.utils
@@ -16,6 +11,7 @@ import io.papermc.paper.datacomponent.item.ItemLore
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.Color
 import org.bukkit.entity.Player
 import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
@@ -46,12 +42,15 @@ object ExtUtils {
     fun List<String>.mm(vararg resolvers: TagResolver): List<Component> =
         this.map { it.mm(*resolvers) }
 
-    /** Serializes a [Component] into a [MiniMessage] [String]. */
+    /** Serializes a [Component] into a String. */
     fun Component.mm(): String = MM.serialize(this)
 
     /** Deserializes a list of [MiniMessage] strings into a list of Components. */
     @JvmName("mmComponentList")
     fun List<Component>.mm(): List<String> = this.map { it.mm() }
+
+    /** Serializes a [Component] into plaintext. */
+    fun Component.pt(): String = PlainTextComponentSerializer.plainText().serialize(this)
 
     /** Creates an [ItemLore] object from a single [MiniMessage] [String]. */
     fun String.il(): ItemLore.Builder = ItemLore.lore().addLine(this.mm())
@@ -91,7 +90,7 @@ object ExtUtils {
     /** Creates a [CustomModelData] object from a single [Color]. */
     fun Color.cmd(): CustomModelData.Builder = CustomModelData.customModelData().addColor(this)
 
-    /** Creates a [CustomModelData] object from a list of colors. */
+    /** Creates a [CustomModelData] object from a list of colours. */
     @JvmName("cmdColorList")
     fun List<Color>.cmd(): CustomModelData.Builder = CustomModelData.customModelData().addColors(this)
 
@@ -122,7 +121,7 @@ object ExtUtils {
     }
 
     /**
-     * A helper function to wrap command execution with standardised error handling.
+     * A helper function to wrap command execution with standardized error handling.
      * @param action The action to execute, receiving a CommandSourceStack as a parameter.
      * @return Command.SINGLE_SUCCESS after execution.
      */
