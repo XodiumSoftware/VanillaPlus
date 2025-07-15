@@ -143,11 +143,13 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
     </task>
+    <task>
       <option name="closed" value="true" />
       <option name="number" value="00001" />
       <option name="presentableId" value="LOCAL-00001" />
       <option name="project" value="LOCAL" />
     </task>
+    <task>
       <option name="closed" value="true" />
       <option name="number" value="00002" />
       <option name="presentableId" value="LOCAL-00002" />
