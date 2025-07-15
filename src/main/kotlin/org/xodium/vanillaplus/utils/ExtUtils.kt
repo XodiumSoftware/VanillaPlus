@@ -90,7 +90,7 @@ object ExtUtils {
     /** Creates a [CustomModelData] object from a single [Color]. */
     fun Color.cmd(): CustomModelData.Builder = CustomModelData.customModelData().addColor(this)
 
-    /** Creates a [CustomModelData] object from a list of colors. */
+    /** Creates a [CustomModelData] object from a list of colours. */
     @JvmName("cmdColorList")
     fun List<Color>.cmd(): CustomModelData.Builder = CustomModelData.customModelData().addColors(this)
 
@@ -121,7 +121,7 @@ object ExtUtils {
     }
 
     /**
-     * A helper function to wrap command execution with standardised error handling.
+     * A helper function to wrap command execution with standardized error handling.
      * @param action The action to execute, receiving a CommandSourceStack as a parameter.
      * @return Command.SINGLE_SUCCESS after execution.
      */

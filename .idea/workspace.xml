@@ -4,6 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
+    <list default="true" id="21a05071-01eb-4183-b991-bb8bb740a89e" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/InvSearchModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/InvSearchModule.kt" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -53,8 +57,7 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
-      <map>
-      </map>
+      <map />
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -76,26 +79,31 @@
   <component name="OptimizeOnSaveOptions">
     <option name="myRunOnSave" value="true" />
   </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 3
 }</component>
+  <component name="ProjectId" id="2zu1J9Y3NA43tX2sw36oTSBqoXd" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "Gradle.VanillaPlus [runDevServer].executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "code.cleanup.on.save": "true",
-    "rearrange.code.on.save": "true",
+    "git-widget-placeholder": "#159 on dev",
+    "project.structure.last.edited": "Libraries",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "settings.editor.selected.configurable": "reference.settings.grazie.pro.in.ai.assistant"
   }
 }]]></component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-    </key>
+    <key name="MoveFile.RECENT_KEYS" />
   </component>
   <component name="RunManager">
     <configuration name="VanillaPlus [runDevServer]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
@@ -140,26 +148,37 @@
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
+      <changelist id="21a05071-01eb-4183-b991-bb8bb740a89e" name="Changes" comment="" />
+      <created>1752566486650</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
+      <updated>1752566486650</updated>
+      <workItem from="1752566794666" duration="931000" />
     </task>
     <task>
       <option name="closed" value="true" />
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-    </task>
-    <task>
-      <option name="closed" value="true" />
+      <created>1752566486650</created>
       <option name="number" value="00002" />
       <option name="presentableId" value="LOCAL-00002" />
       <option name="project" value="LOCAL" />
+      <updated>1752566486650</updated>
     </task>
+    <task id="LOCAL-00001" summary="update workspace.xml to include new task configurations">
+      <option name="closed" value="true" />
+      <created>1752566486650</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1752566486650</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+    <MESSAGE value="update workspace.xml to include new task configurations" />
+    <option name="LAST_COMMIT_MESSAGE" value="update workspace.xml to include new task configurations" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

@@ -8,6 +8,7 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.pt
 
+/** Represents a module handling sign mechanics within the system. */
 class SignModule : ModuleInterface<SignModule.Config> {
     override val config: Config = Config()
 
