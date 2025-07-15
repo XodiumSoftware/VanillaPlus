@@ -4,21 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="03291457-e46b-4ecc-9dcb-075e17a9ddea" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_sk89q_worldedit_worldedit_bukkit_7_3_15.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_sk89q_worldedit_worldedit_core_7_3_15.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_sk89q_worldedit_worldedit_libs_bukkit_7_3_15.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_sk89q_worldedit_worldedit_libs_core_7_3_15.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__io_papermc_paper_paper_api_1_21_7_R0_1_SNAPSHOT.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/VanillaPlus.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/VanillaPlus.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/VanillaPlus.main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/VanillaPlus.main.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/VanillaPlus.test.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/VanillaPlus.test.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
-    </list>
+    <list default="true" id="03291457-e46b-4ecc-9dcb-075e17a9ddea" name="Changes" comment="woops" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
@@ -33,10 +28,31 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "git-widget-placeholder": "#160 on Merging feat/UnitTests"
+    "git-widget-placeholder": "#160 on feat/UnitTests"
   }
 }]]></component>
   <component name="TaskManager">
+    <task id="LOCAL-00001" summary="woops">
+      <option name="closed" value="true" />
+      <created>1752585632634</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1752585632634</updated>
+    </task>
+    <task id="LOCAL-00002" summary="woops">
+      <option name="closed" value="true" />
+      <created>1752585638287</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1752585638287</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="woops" />
+    <option name="LAST_COMMIT_MESSAGE" value="woops" />
   </component>
 </project>
