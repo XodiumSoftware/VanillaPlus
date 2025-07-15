@@ -25,7 +25,7 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:$apiVersion-R0.1-SNAPSHOT")
-    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.15-SNAPSHOT") //TODO("Move away from WorldEdit")
+    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.15") //TODO("Move away from WorldEdit")
 
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -96,7 +96,7 @@ tasks {
         group = "application"
         description = "Run Development Server"
         dependsOn("shadowJar", "downloadServerJar", "acceptEula")
-        workingDir = file(".server/")
+        workingDir = file(".server/").apply { mkdirs() }
         standardInput = System.`in`
         val javaExec = project.extensions.getByType(JavaToolchainService::class.java)
             .launcherFor { languageVersion.set(JavaLanguageVersion.of(21)) }

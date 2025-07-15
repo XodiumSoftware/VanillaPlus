@@ -11,6 +11,7 @@ import io.papermc.paper.datacomponent.item.ItemLore
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.Color
 import org.bukkit.entity.Player
 import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
@@ -41,12 +42,15 @@ object ExtUtils {
     fun List<String>.mm(vararg resolvers: TagResolver): List<Component> =
         this.map { it.mm(*resolvers) }
 
-    /** Serializes a [Component] into a [MiniMessage] [String]. */
+    /** Serializes a [Component] into a String. */
     fun Component.mm(): String = MM.serialize(this)
 
     /** Deserializes a list of [MiniMessage] strings into a list of Components. */
     @JvmName("mmComponentList")
     fun List<Component>.mm(): List<String> = this.map { it.mm() }
+
+    /** Serializes a [Component] into plaintext. */
+    fun Component.pt(): String = PlainTextComponentSerializer.plainText().serialize(this)
 
     /** Creates an [ItemLore] object from a single [MiniMessage] [String]. */
     fun String.il(): ItemLore.Builder = ItemLore.lore().addLine(this.mm())
