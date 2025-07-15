@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: com.comphenix.protocol:ProtocolLib:5.3.0" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="com.comphenix.protocol" artifactId="ProtocolLib" version="5.3.0" baseVersion="5.3.0" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.comphenix.protocol/ProtocolLib/5.3.0/c35d4c68da2667303ffb8669b071e1ef5c5a13ef/ProtocolLib-5.3.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.comphenix.protocol/ProtocolLib/5.3.0/fbaafa3b640e2321bb77049f6de9642a242da826/ProtocolLib-5.3.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
