@@ -24,7 +24,7 @@ jobs:
 
       - id: setup_gradle
         name: Setup Gradle
-        uses: gradle/actions/setup-gradle@ac638b010cf58a27ee6c972d7336334ccaf61c96
+        uses: gradle/actions/setup-gradle@f0f3bec6f757678c253ff3e5274c926fbf6d0c9c
 
       - id: get_artifact_version
         name: Get Artifact Version
