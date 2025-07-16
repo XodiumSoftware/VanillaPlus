@@ -4,12 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="21a05071-01eb-4183-b991-bb8bb740a89e" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/modules/VanillaPlus.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/VanillaPlus.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/VanillaPlus.main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/VanillaPlus.main.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/VanillaPlus.test.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/VanillaPlus.test.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="21a05071-01eb-4183-b991-bb8bb740a89e" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -67,7 +62,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="dev" />
+        <entry key="$PROJECT_DIR$" value="fix/DoorsModule" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -115,7 +110,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "code.cleanup.on.save": "true",
-    "git-widget-placeholder": "fix/DoorsModule",
+    "git-widget-placeholder": "#161 on dev",
     "project.structure.last.edited": "SDKs",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.2",
@@ -159,6 +154,7 @@
       <list>
         <item itemvalue="Gradle.VanillaPlus [runDevServer]" />
         <item itemvalue="Gradle.VanillaPlus [runDevServer]" />
+        <item itemvalue="Gradle.VanillaPlus [runDevServer]" />
       </list>
     </recent_temporary>
   </component>
@@ -178,7 +174,7 @@
       <updated>1752566486650</updated>
       <workItem from="1752566794666" duration="931000" />
       <workItem from="1752646133509" duration="314000" />
-      <workItem from="1752646458917" duration="6553000" />
+      <workItem from="1752646458917" duration="6926000" />
     </task>
     <task>
       <option name="closed" value="true" />
@@ -268,7 +264,15 @@
       <option name="project" value="LOCAL" />
       <updated>1752652845651</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="updated DoorsModule to play sounds only for nearby players and bumped module version to 1.15.0">
+      <option name="closed" value="true" />
+      <created>1752653882320</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1752653882320</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -284,7 +288,8 @@
     <MESSAGE value="formatted hex values in LocatorModule for color handling logic" />
     <MESSAGE value="streamlined color handling in LocatorModule and removed redundant hex suggestions" />
     <MESSAGE value="v+" />
-    <option name="LAST_COMMIT_MESSAGE" value="v+" />
+    <MESSAGE value="updated DoorsModule to play sounds only for nearby players and bumped module version to 1.15.0" />
+    <option name="LAST_COMMIT_MESSAGE" value="updated DoorsModule to play sounds only for nearby players and bumped module version to 1.15.0" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
