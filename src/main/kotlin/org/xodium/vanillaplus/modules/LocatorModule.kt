@@ -117,7 +117,6 @@ class LocatorModule : ModuleInterface<LocatorModule.Config> {
         return playerColors[player.uniqueId] ?: NamedTextColor.WHITE.toString()
     }
 
-
     data class Config(
         override var enabled: Boolean = true,
     ) : ModuleInterface.Config
