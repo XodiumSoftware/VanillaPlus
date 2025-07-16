@@ -53,8 +53,9 @@ class BooksModule : ModuleInterface<BooksModule.Config> {
                     listOf(
                         "<b><u>${"Tips & Tricks".fireFmt()}",
                         "",
-                        "<gold>▶ ${"/skills".skylineFmt()}",
-                        "<dark_gray>Opens up the Skills GUI",
+                        "<gold>▶ ${"/trowel".skylineFmt()}",
+                        "<dark_gray>Toggles trowel mode",
+                        "<dark_gray>random picks item from hotbar to place",
                         "",
                         "<gold>▶ ${"/invu".skylineFmt()}",
                         "<dark_gray>Unloads your inventory into nearby chests",
@@ -66,7 +67,7 @@ class BooksModule : ModuleInterface<BooksModule.Config> {
                     listOf(
                         "<gold>▶ ${"/nick <formatted_name>".skylineFmt()}",
                         "<dark_gray>Change your nickname, Visit: <b>birdflop.com</b>,",
-                        "<dark_gray>Color Format: MiniMessage,",
+                        "<dark_gray>Color Format: <b>MiniMessage</b>,",
                         "<dark_gray>Copy output into <formatted_name>",
                         "",
                         "<gold>▶ ${"Enchantment max level".skylineFmt()}",
