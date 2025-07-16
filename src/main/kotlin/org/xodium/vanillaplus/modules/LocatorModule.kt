@@ -10,9 +10,7 @@ import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
-import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import java.util.concurrent.CompletableFuture
 
 /** Represents a module handling locator mechanics within the system. */
@@ -39,32 +37,33 @@ class LocatorModule : ModuleInterface<LocatorModule.Config> {
                                     .forEach(builder::suggest)
                                 CompletableFuture.completedFuture(builder.build())
                             }
-                            .then(
-                                Commands.argument("hex", ArgumentTypes.hexColor())
-                                    .suggests { ctx, builder ->
-                                        if (builder.remaining.isEmpty()) builder.suggest("<#RRGGBB>")
-                                        CompletableFuture.completedFuture(builder.build())
-                                    }
-                                    .executes { ctx ->
-                                        ctx.tryCatch {
-                                            locator(
-                                                (it.sender as Player),
-                                                hex = ctx.getArgument("hex", TextColor::class.java)
-                                            )
-                                        }
-                                    }
-                            )
-                            .then(
-                                Commands.literal("reset")
-                                    .executes { ctx -> ctx.tryCatch { locator((it.sender as Player)) } })
                             .executes { ctx ->
                                 ctx.tryCatch {
                                     locator(
                                         (it.sender as Player),
-                                        color = ctx.getArgument("color", NamedTextColor::class.java)
+                                        colour = ctx.getArgument("color", NamedTextColor::class.java)
                                     )
                                 }
                             }
+                    )
+                    .then(
+                        Commands.argument("hex", ArgumentTypes.hexColor())
+                            .suggests { ctx, builder ->
+                                if (builder.remaining.isEmpty()) builder.suggest("<#RRGGBB>")
+                                CompletableFuture.completedFuture(builder.build())
+                            }
+                            .executes { ctx ->
+                                ctx.tryCatch {
+                                    locator(
+                                        (it.sender as Player),
+                                        hex = ctx.getArgument("hex", TextColor::class.java)
+                                    )
+                                }
+                            }
+                    )
+                    .then(
+                        Commands.literal("reset")
+                            .executes { ctx -> ctx.tryCatch { locator((it.sender as Player)) } }
                     )
             ),
             "Allows players to personalise their locator bar.",
@@ -82,23 +81,24 @@ class LocatorModule : ModuleInterface<LocatorModule.Config> {
         )
     }
 
-    private fun locator(player: Player, color: NamedTextColor? = null, hex: TextColor? = null) {
-        val cmd = "waypoint modify ${player.name} "
+    /**
+     * Modifies the colour of a player's waypoint based on the specified parameters.
+     * If a `colour` is provided, sets the waypoint to the specified named colour.
+     * If a `hex` is provided instead, sets the waypoint to the specified hex colour.
+     * If neither is provided, resets the waypoint colour to default.
+     *
+     * @param player The player whose waypoint is being modified.
+     * @param colour The optional named colour to apply to the waypoint.
+     * @param hex The optional hex colour to apply to the waypoint.
+     */
+    private fun locator(player: Player, colour: NamedTextColor? = null, hex: TextColor? = null) {
+        val cmd = "waypoint modify ${player.name}"
         when {
-            color != null -> {
-                instance.server.dispatchCommand(player, "$cmd color $color")
-                player.sendActionBar("Locator Waypoint colour has been changed to: ${""}".fireFmt().mm())
-            }
+            colour != null -> instance.server.dispatchCommand(player, "$cmd color $colour")
 
-            hex != null -> {
-                instance.server.dispatchCommand(player, "$cmd hex $hex")
-                player.sendActionBar("Locator Waypoint colour has been changed to: ${""}".fireFmt().mm())
-            }
+            hex != null -> instance.server.dispatchCommand(player, "$cmd color hex $hex")
 
-            else -> {
-                instance.server.dispatchCommand(player, "$cmd reset")
-                player.sendActionBar("Locator Waypoint colour has been reset".fireFmt().mm())
-            }
+            else -> instance.server.dispatchCommand(player, "$cmd color reset")
         }
     }
 
