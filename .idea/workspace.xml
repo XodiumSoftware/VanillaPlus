@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="21a05071-01eb-4183-b991-bb8bb740a89e" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/LocatorModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/LocatorModule.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,13 +52,20 @@
       </state>
     </system>
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Kotlin Xodium Module Class" />
+      </list>
+    </option>
+  </component>
   <component name="FormatOnSaveOptions">
     <option name="myRunOnSave" value="true" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="main" />
+        <entry key="$PROJECT_DIR$" value="dev" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -91,6 +99,7 @@
   <component name="ProjectId" id="2zu1J9Y3NA43tX2sw36oTSBqoXd" />
   <component name="ProjectLevelVcsManager">
     <OptionsSetting value="false" id="Update" />
+    <ConfirmationsSetting value="2" id="Add" />
   </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -98,14 +107,19 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Gradle.Build VanillaPlus.executor": "Run",
+    "Gradle.VanillaPlus [runDevServer].executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "dev",
-    "project.structure.last.edited": "Libraries",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "code.cleanup.on.save": "true",
+    "git-widget-placeholder": "feat/LocatorModule",
+    "project.structure.last.edited": "SDKs",
     "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
+    "project.structure.side.proportion": "0.2",
+    "rearrange.code.on.save": "true",
     "run.code.analysis.last.selected.profile": "pProject Default",
-    "settings.editor.selected.configurable": "reference.settings.grazie.pro.in.ai.assistant"
+    "settings.editor.selected.configurable": "actions.on.save"
   }
 }]]></component>
   <component name="RecentsManager">
@@ -160,6 +174,8 @@
       <option name="presentableId" value="Default" />
       <updated>1752566486650</updated>
       <workItem from="1752566794666" duration="931000" />
+      <workItem from="1752646133509" duration="314000" />
+      <workItem from="1752646458917" duration="5338000" />
     </task>
     <task>
       <option name="closed" value="true" />
@@ -193,7 +209,47 @@
       <option name="project" value="LOCAL" />
       <updated>1752586967870</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="updated workspace.xml and dynamic PREFIX formatting in VanillaPlus class">
+      <option name="closed" value="true" />
+      <created>1752587218567</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1752587218567</updated>
+    </task>
+    <task id="LOCAL-00005" summary="init">
+      <option name="closed" value="true" />
+      <created>1752648160323</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1752648160323</updated>
+    </task>
+    <task id="LOCAL-00006" summary="+">
+      <option name="closed" value="true" />
+      <created>1752649414113</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1752649414113</updated>
+    </task>
+    <task id="LOCAL-00007" summary="refactored LocatorModule command structure and improved color handling logic">
+      <option name="closed" value="true" />
+      <created>1752651227263</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1752651227263</updated>
+    </task>
+    <task id="LOCAL-00008" summary="formatted hex values in LocatorModule for color handling logic">
+      <option name="closed" value="true" />
+      <created>1752651994874</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1752651994874</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -202,7 +258,12 @@
     <MESSAGE value="update workspace.xml to include new task configurations" />
     <MESSAGE value="woops" />
     <MESSAGE value="removed unused libraries and optimized message serialization in ChatModule" />
-    <option name="LAST_COMMIT_MESSAGE" value="removed unused libraries and optimized message serialization in ChatModule" />
+    <MESSAGE value="updated workspace.xml and dynamic PREFIX formatting in VanillaPlus class" />
+    <MESSAGE value="init" />
+    <MESSAGE value="+" />
+    <MESSAGE value="refactored LocatorModule command structure and improved color handling logic" />
+    <MESSAGE value="formatted hex values in LocatorModule for color handling logic" />
+    <option name="LAST_COMMIT_MESSAGE" value="formatted hex values in LocatorModule for color handling logic" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
