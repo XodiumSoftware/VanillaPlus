@@ -17,11 +17,7 @@ import java.util.concurrent.CompletableFuture
 class LocatorModule : ModuleInterface<LocatorModule.Config> {
     override val config: Config = Config()
 
-    private val colors = listOf(
-        "black", "dark_blue", "dark_green", "dark_aqua", "dark_red", "dark_purple",
-        "gold", "gray", "dark_gray", "blue", "green", "aqua", "red", "light_purple",
-        "yellow", "white", "hex", "reset"
-    )
+    private val colors = NamedTextColor.NAMES.keys().map { it.toString() } + listOf("<RRGGBB>", "reset")
 
     override fun enabled(): Boolean = config.enabled
 
@@ -48,10 +44,6 @@ class LocatorModule : ModuleInterface<LocatorModule.Config> {
                     )
                     .then(
                         Commands.argument("hex", ArgumentTypes.hexColor())
-                            .suggests { ctx, builder ->
-                                if (builder.remaining.isEmpty()) builder.suggest("<#RRGGBB>")
-                                CompletableFuture.completedFuture(builder.build())
-                            }
                             .executes { ctx ->
                                 ctx.tryCatch {
                                     locator(
