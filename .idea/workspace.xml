@@ -4,7 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="21a05071-01eb-4183-b991-bb8bb740a89e" name="Changes" comment="" />
+    <list default="true" id="21a05071-01eb-4183-b991-bb8bb740a89e" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/modules/VanillaPlus.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/VanillaPlus.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/VanillaPlus.main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/VanillaPlus.main.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/VanillaPlus.test.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/VanillaPlus.test.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -110,7 +115,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "code.cleanup.on.save": "true",
-    "git-widget-placeholder": "feat/LocatorModule",
+    "git-widget-placeholder": "fix/DoorsModule",
     "project.structure.last.edited": "SDKs",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.2",
@@ -173,7 +178,7 @@
       <updated>1752566486650</updated>
       <workItem from="1752566794666" duration="931000" />
       <workItem from="1752646133509" duration="314000" />
-      <workItem from="1752646458917" duration="5648000" />
+      <workItem from="1752646458917" duration="6553000" />
     </task>
     <task>
       <option name="closed" value="true" />
@@ -255,7 +260,15 @@
       <option name="project" value="LOCAL" />
       <updated>1752652544278</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="v+">
+      <option name="closed" value="true" />
+      <created>1752652845651</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1752652845651</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -270,7 +283,8 @@
     <MESSAGE value="refactored LocatorModule command structure and improved color handling logic" />
     <MESSAGE value="formatted hex values in LocatorModule for color handling logic" />
     <MESSAGE value="streamlined color handling in LocatorModule and removed redundant hex suggestions" />
-    <option name="LAST_COMMIT_MESSAGE" value="streamlined color handling in LocatorModule and removed redundant hex suggestions" />
+    <MESSAGE value="v+" />
+    <option name="LAST_COMMIT_MESSAGE" value="v+" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
