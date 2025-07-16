@@ -1,13 +1,18 @@
 package org.xodium.vanillaplus.modules
 
-import com.mojang.brigadier.arguments.StringArgumentType
 import io.papermc.paper.command.brigadier.Commands
+import io.papermc.paper.command.brigadier.argument.ArgumentTypes
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextColor
+import org.bukkit.entity.Player
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
+import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import java.util.concurrent.CompletableFuture
 
 /** Represents a module handling locator mechanics within the system. */
@@ -28,28 +33,36 @@ class LocatorModule : ModuleInterface<LocatorModule.Config> {
                 Commands.literal("locator")
                     .requires { it.sender.hasPermission(perms()[0]) }
                     .then(
-                        Commands.argument("color", StringArgumentType.word())
+                        Commands.argument("color", ArgumentTypes.namedColor())
                             .suggests { ctx, builder ->
                                 colors.filter { it.startsWith(builder.remaining.lowercase()) }
                                     .forEach(builder::suggest)
                                 CompletableFuture.completedFuture(builder.build())
                             }
                             .then(
-                                Commands.argument("hex", StringArgumentType.word())
+                                Commands.argument("hex", ArgumentTypes.hexColor())
                                     .suggests { ctx, builder ->
                                         if (builder.remaining.isEmpty()) builder.suggest("<#RRGGBB>")
                                         CompletableFuture.completedFuture(builder.build())
                                     }
                                     .executes { ctx ->
                                         ctx.tryCatch {
-                                            locator(hex = StringArgumentType.getString(ctx, "hex"))
+                                            locator(
+                                                (it.sender as Player),
+                                                hex = ctx.getArgument("hex", TextColor::class.java)
+                                            )
                                         }
                                     }
                             )
-                            .then(Commands.literal("reset").executes { ctx -> ctx.tryCatch { locator() } })
+                            .then(
+                                Commands.literal("reset")
+                                    .executes { ctx -> ctx.tryCatch { locator((it.sender as Player)) } })
                             .executes { ctx ->
                                 ctx.tryCatch {
-                                    locator(color = StringArgumentType.getString(ctx, "color"))
+                                    locator(
+                                        (it.sender as Player),
+                                        color = ctx.getArgument("color", NamedTextColor::class.java)
+                                    )
                                 }
                             }
                     )
@@ -69,18 +82,23 @@ class LocatorModule : ModuleInterface<LocatorModule.Config> {
         )
     }
 
-    /**
-     * Handles colour or hex-based logic for setting and resetting configurations.
-     * @param color Optional named colour representation.
-     * @param hex Optional hexadecimal color code representation.
-     */
-    private fun locator(color: String? = null, hex: String? = null) {
-        if (color != null) {
-            // colour handling (mc named colours)
-        } else if (hex != null) {
-            // hex handling
-        } else {
-            //TODO: reset mechanism
+    private fun locator(player: Player, color: NamedTextColor? = null, hex: TextColor? = null) {
+        val cmd = "waypoint modify ${player.name} "
+        when {
+            color != null -> {
+                instance.server.dispatchCommand(player, "$cmd color $color")
+                player.sendActionBar("Locator Waypoint colour has been changed to: ${""}".fireFmt().mm())
+            }
+
+            hex != null -> {
+                instance.server.dispatchCommand(player, "$cmd hex $hex")
+                player.sendActionBar("Locator Waypoint colour has been changed to: ${""}".fireFmt().mm())
+            }
+
+            else -> {
+                instance.server.dispatchCommand(player, "$cmd reset")
+                player.sendActionBar("Locator Waypoint colour has been reset".fireFmt().mm())
+            }
         }
     }
 
