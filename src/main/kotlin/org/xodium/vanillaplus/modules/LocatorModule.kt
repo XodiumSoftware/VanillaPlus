@@ -96,7 +96,10 @@ class LocatorModule : ModuleInterface<LocatorModule.Config> {
         when {
             colour != null -> instance.server.dispatchCommand(player, "$cmd color $colour")
 
-            hex != null -> instance.server.dispatchCommand(player, "$cmd color hex $hex")
+            hex != null -> instance.server.dispatchCommand(
+                player,
+                "$cmd color hex ${String.format("%06X", hex.value())}"
+            )
 
             else -> instance.server.dispatchCommand(player, "$cmd color reset")
         }
