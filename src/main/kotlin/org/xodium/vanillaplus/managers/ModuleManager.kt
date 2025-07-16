@@ -19,11 +19,13 @@ object ModuleManager {
     val doorsModule: DoorsModule = DoorsModule()
     val invSearchModule: InvSearchModule = InvSearchModule()
     val invUnloadModule: InvUnloadModule = InvUnloadModule()
+    val locatorModule: LocatorModule = LocatorModule()
     val motdModule: MotdModule = MotdModule()
     val petModule: PetModule = PetModule()
     val recipiesModule: RecipiesModule = RecipiesModule()
     val signModule: SignModule = SignModule()
     val sitModule: SitModule = SitModule()
+    val sleepModule: SleepModule = SleepModule()
     val tabListModule: TabListModule = TabListModule()
     val nicknameModule: NicknameModule = NicknameModule(tabListModule)
     val treesModule: TreesModule = TreesModule()
@@ -37,12 +39,14 @@ object ModuleManager {
         doorsModule,
         invSearchModule,
         invUnloadModule,
+        locatorModule,
         motdModule,
         nicknameModule,
         petModule,
         recipiesModule,
         signModule,
         sitModule,
+        sleepModule,
         tabListModule,
         treesModule,
         trowelModule

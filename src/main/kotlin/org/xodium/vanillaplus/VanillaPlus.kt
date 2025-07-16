@@ -15,7 +15,8 @@ class VanillaPlus : JavaPlugin() {
         private const val UNSUPPORTED_VERSION_MSG =
             "This plugin requires a supported server version. Supported versions: ${SUPPORTED_VERSION}."
 
-        val PREFIX: String = "${"[".mangoFmt(true)}${"VanillaPlus".fireFmt()}${"]".mangoFmt()}"
+        val PREFIX: String =
+            "${"[".mangoFmt(true)}${VanillaPlus::class.simpleName.toString().fireFmt()}${"]".mangoFmt()}"
 
         @JvmStatic
         val instance: VanillaPlus by lazy { getPlugin(VanillaPlus::class.java) }

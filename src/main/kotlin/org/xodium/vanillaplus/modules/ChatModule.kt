@@ -6,7 +6,6 @@ import io.papermc.paper.event.player.AsyncChatEvent
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -21,6 +20,7 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.clickRunCmd
 import org.xodium.vanillaplus.utils.ExtUtils.face
 import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.ExtUtils.pt
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
@@ -93,7 +93,7 @@ class ChatModule : ModuleInterface<ChatModule.Config> {
                         .clickEvent(ClickEvent.suggestCommand("/w ${source.name} "))
                         .hoverEvent(HoverEvent.showText("Click to Whisper".fireFmt().mm()))
                 ),
-                Placeholder.component("message", PlainTextComponentSerializer.plainText().serialize(message).mm()),
+                Placeholder.component("message", message.pt().mm()),
             )
         }
     }

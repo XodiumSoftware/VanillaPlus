@@ -109,15 +109,18 @@ class DoorsModule : ModuleInterface<DoorsModule.Config> {
      */
     private fun handleDoorClose(block: Block, door: Door) {
         getOtherPart(door, block)?.let { toggleOtherDoor(block, it, false) }
-        block.world.playSound(config.soundDoorClose.toSound())
+        val proximity = block.world.getNearbyPlayers(block.location, config.soundProximityRadius)
+        for (player in proximity) player.playSound(config.soundDoorClose.toSound())
     }
 
     /**
      * Handles the sound effect for closing a gate.
      * @param block The block representing the gate being closed.
      */
-    private fun handleGateClose(block: Block) =
-        block.world.playSound(config.soundGateClose.toSound())
+    private fun handleGateClose(block: Block) {
+        val proximity = block.world.getNearbyPlayers(block.location, config.soundProximityRadius)
+        for (player in proximity) player.playSound(config.soundGateClose.toSound())
+    }
 
     /**
      * Checks if the interaction event is valid for processing.
@@ -137,7 +140,8 @@ class DoorsModule : ModuleInterface<DoorsModule.Config> {
      */
     private fun handleLeftClick(event: PlayerInteractEvent, block: Block) {
         if (canKnock(event, event.player) && isKnockableBlock(block.blockData)) {
-            block.world.playSound(config.soundKnock.toSound())
+            val proximity = block.world.getNearbyPlayers(block.location, config.soundProximityRadius)
+            for (player in proximity) player.playSound(config.soundKnock.toSound())
         }
     }
 
@@ -280,5 +284,6 @@ class DoorsModule : ModuleInterface<DoorsModule.Config> {
             BukkitSound.ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR,
             Sound.Source.HOSTILE
         ),
+        var soundProximityRadius: Double = 10.0,
     ) : ModuleInterface.Config
 }
