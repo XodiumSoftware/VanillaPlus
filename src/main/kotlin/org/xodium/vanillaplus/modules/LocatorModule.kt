@@ -11,12 +11,14 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
+import java.util.*
 import java.util.concurrent.CompletableFuture
 
 /** Represents a module handling locator mechanics within the system. */
 class LocatorModule : ModuleInterface<LocatorModule.Config> {
     override val config: Config = Config()
 
+    private val playerColors = mutableMapOf<UUID, String>()
     private val colors = NamedTextColor.NAMES.keys().map { it.toString() } + listOf("<RRGGBB>", "reset")
 
     override fun enabled(): Boolean = config.enabled
@@ -86,16 +88,35 @@ class LocatorModule : ModuleInterface<LocatorModule.Config> {
     private fun locator(player: Player, colour: NamedTextColor? = null, hex: TextColor? = null) {
         val cmd = "waypoint modify ${player.name}"
         when {
-            colour != null -> instance.server.dispatchCommand(player, "$cmd color $colour")
+            colour != null -> {
+                instance.server.dispatchCommand(player, "$cmd color $colour")
+                playerColors[player.uniqueId] = colour.toString()
+            }
 
-            hex != null -> instance.server.dispatchCommand(
-                player,
-                "$cmd color hex ${String.format("%06X", hex.value())}"
-            )
+            hex != null -> {
+                instance.server.dispatchCommand(
+                    player,
+                    "$cmd color hex ${String.format("%06X", hex.value())}"
+                )
+                playerColors[player.uniqueId] = String.format("#%06x", hex.value())
+            }
 
-            else -> instance.server.dispatchCommand(player, "$cmd color reset")
+            else -> {
+                instance.server.dispatchCommand(player, "$cmd color reset")
+                playerColors.remove(player.uniqueId)
+            }
         }
     }
+
+    /**
+     * Retrieves the waypoint colour for a given player.
+     * @param player The player to get the waypoint colour for.
+     * @return The colour as a string (for example, "red" or "#FF0000"), or "white" if not set.
+     */
+    fun getWaypointColor(player: Player): String {
+        return playerColors[player.uniqueId] ?: NamedTextColor.WHITE.toString()
+    }
+
 
     data class Config(
         override var enabled: Boolean = true,

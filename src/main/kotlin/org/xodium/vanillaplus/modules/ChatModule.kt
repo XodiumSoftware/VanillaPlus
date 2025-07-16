@@ -27,10 +27,10 @@ import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.FmtUtils.skylineFmt
 import java.util.concurrent.CompletableFuture
 
-class ChatModule : ModuleInterface<ChatModule.Config> {
+class ChatModule(private val locatorModule: LocatorModule) : ModuleInterface<ChatModule.Config> {
     override val config: Config = Config()
 
-    override fun enabled(): Boolean = config.enabled
+    override fun enabled(): Boolean = config.enabled && locatorModule.enabled()
 
     override fun cmds(): CommandData? {
         return CommandData(
@@ -124,8 +124,15 @@ class ChatModule : ModuleInterface<ChatModule.Config> {
                         .clickEvent(ClickEvent.suggestCommand("/nickname ${player.name}"))
                         .hoverEvent(HoverEvent.showText("Click Me!".fireFmt().mm()))
                 ),
+                Placeholder.component(
+                    "wp_colour", "<${locatorModule.getWaypointColor(player)}>"
+                        .plus("⬤")
+                        .plus("</${locatorModule.getWaypointColor(player)}>").mm()
+                        .clickEvent(ClickEvent.suggestCommand("/locator"))
+                        .hoverEvent(HoverEvent.showText("Click Me!".fireFmt().mm()))
+                ),
                 *player.face().lines().mapIndexed { i, line -> Placeholder.component("image${i + 1}", line.mm()) }
-                    .toTypedArray()
+                    .toTypedArray(),
             )
         )
     }
@@ -187,7 +194,7 @@ class ChatModule : ModuleInterface<ChatModule.Config> {
             "]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true),
             "<image>${"⯈".mangoFmt(true)}",
             "<image>${"⯈".mangoFmt(true)}",
-            "<image>${"⯈".mangoFmt(true)} ${"Welcome".fireFmt()} <player>",
+            "<image>${"⯈".mangoFmt(true)} ${"Welcome".fireFmt()} <player> <wp_colour>",
             "<image>${"⯈".mangoFmt(true)}",
             "<image>${"⯈".mangoFmt(true)}",
             "<image>${"⯈".mangoFmt(true)} ${"Check out".fireFmt()}<gray>: ${
