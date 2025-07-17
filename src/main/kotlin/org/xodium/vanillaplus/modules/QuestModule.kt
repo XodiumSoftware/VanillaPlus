@@ -70,7 +70,10 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
                     val completed = quest.completed
                     val name = "${difficulty.name.lowercase().replaceFirstChar { it.uppercase() }} Quest".mangoFmt()
                     val material = if (completed) Material.WRITABLE_BOOK else Material.ENCHANTED_BOOK
-                    val lore = if (completed) listOf("Completed".mangoFmt()) else listOf("Click to open".fireFmt())
+                    val lore = if (completed) listOf("Completed".mangoFmt()) else listOf(
+                        "Task: ${quest.task}".fireFmt(),
+                        "Reward: ${quest.reward}".mangoFmt()
+                    )
                     return guiItemStack(material, name, lore)
                 }
 
