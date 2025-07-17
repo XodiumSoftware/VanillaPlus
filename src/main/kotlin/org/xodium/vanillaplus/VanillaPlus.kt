@@ -1,12 +1,19 @@
 package org.xodium.vanillaplus
 
+import com.fren_gor.ultimateAdvancementAPI.AdvancementMain
+import com.fren_gor.ultimateAdvancementAPI.database.impl.SQLite
 import org.bukkit.plugin.java.JavaPlugin
 import org.xodium.vanillaplus.managers.ModuleManager
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
+import java.io.File
+
 
 /** Main class of the plugin. */
 class VanillaPlus : JavaPlugin() {
+
+    private lateinit var advancementMain: AdvancementMain
+
     companion object {
         private const val SUPPORTED_VERSION = "1.21.7"
         private const val SUPPORTED_PLATFORM = "Paper"
@@ -22,14 +29,21 @@ class VanillaPlus : JavaPlugin() {
         val instance: VanillaPlus by lazy { getPlugin(VanillaPlus::class.java) }
     }
 
-    /** Called when the plugin is enabled. */
+    override fun onLoad() {
+        advancementMain = AdvancementMain(this)
+        advancementMain.load()
+    }
+
     override fun onEnable() {
+        advancementMain.enable { SQLite(advancementMain, File(dataFolder, "advancements.db")) }
         when {
             !server.version.contains(SUPPORTED_VERSION) -> disablePlugin(UNSUPPORTED_VERSION_MSG)
             !server.name.contains(SUPPORTED_PLATFORM) -> disablePlugin(UNSUPPORTED_PLATFORM_MSG)
             else -> ModuleManager
         }
     }
+
+    override fun onDisable() = advancementMain.disable()
 
     /**
      * Disable the plugin and log the message.
