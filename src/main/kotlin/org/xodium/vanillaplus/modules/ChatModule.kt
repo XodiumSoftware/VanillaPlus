@@ -198,6 +198,8 @@ class ChatModule : ModuleInterface<ChatModule.Config> {
                 "/rules".clickRunCmd("Click Me!".fireFmt()).skylineFmt()
             } <gray>🟅 ${
                 "/guide".clickRunCmd("Click Me!".fireFmt()).skylineFmt()
+            } <gray>🟅 ${
+                "/quests".clickRunCmd("Click Me!".fireFmt()).skylineFmt()
             }",
             "<image>${"⯈".mangoFmt(true)}",
             "<image>${"⯈".mangoFmt(true)}",

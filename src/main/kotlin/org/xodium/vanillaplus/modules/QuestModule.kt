@@ -88,6 +88,6 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
     data class Config(
         override var enabled: Boolean = true,
         var spamPreventionDuration: Duration = 1.seconds,
-        var guiTitle: String = "Quests".fireFmt(),
+        var guiTitle: String = "<b>Quests</b>".fireFmt(),
     ) : ModuleInterface.Config
 }
