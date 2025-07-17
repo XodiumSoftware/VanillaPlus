@@ -27,7 +27,7 @@ repositories {
 dependencies {
     compileOnly("io.papermc.paper:paper-api:$apiVersion-R0.1-SNAPSHOT")
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.15") //TODO("Move away from WorldEdit")
-    compileOnly("com.frengor:ultimateadvancementapi:2.5.2")
+    compileOnly("com.frengor:ultimateadvancementapi-shadeable:2.5.2:mojang-mapped")
 
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -54,7 +54,11 @@ tasks {
         archiveClassifier.set("")
         destinationDirectory.set(file(".server/plugins/update"))
         relocate("com.fasterxml.jackson", "org.xodium.vanillaplus.jackson")
-        minimize { exclude(dependency("org.jetbrains.kotlin:kotlin-reflect:.*")) }
+        relocate("com.frengor:ultimateadvancementapi-shadeable", "org.xodium.advancements")
+        minimize {
+            exclude(dependency("org.jetbrains.kotlin:kotlin-reflect:.*"))
+            exclude(dependency("com.frengor:ultimateadvancementapi-shadeable:.*"))
+        }
         doLast {
             copy {
                 from(archiveFile)
