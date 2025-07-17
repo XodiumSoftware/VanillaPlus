@@ -22,7 +22,7 @@ class AutoRestartModule : ModuleInterface<AutoRestartModule.Config> {
 
     override fun enabled(): Boolean = config.enabled
 
-    override fun cmds(): CommandData? {
+    override fun cmds(): CommandData {
         return CommandData(
             listOf(
                 Commands.literal("autorestart")

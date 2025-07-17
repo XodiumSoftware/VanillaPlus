@@ -19,7 +19,7 @@ class BooksModule : ModuleInterface<BooksModule.Config> {
 
     override fun enabled(): Boolean = config.enabled
 
-    override fun cmds(): CommandData? {
+    override fun cmds(): CommandData {
         return CommandData(
             config.books.map { book ->
                 Commands.literal(book.cmd.lowercase())
