@@ -4,11 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="21a05071-01eb-4183-b991-bb8bb740a89e" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/modules/VanillaPlus.main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/VanillaPlus.main.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
-    </list>
+    <list default="true" id="21a05071-01eb-4183-b991-bb8bb740a89e" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -181,7 +177,7 @@
       <workItem from="1752669310814" duration="4099000" />
       <workItem from="1752673520756" duration="30000" />
       <workItem from="1752729488789" duration="1097000" />
-      <workItem from="1752730605282" duration="854000" />
+      <workItem from="1752730605282" duration="1211000" />
     </task>
     <task>
       <option name="closed" value="true" />
@@ -247,7 +243,23 @@
       <option name="project" value="LOCAL" />
       <updated>1752731079793</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="updated ultimateadvancementapi dependency to shadeable mojang-mapped version">
+      <option name="closed" value="true" />
+      <created>1752731472255</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1752731472255</updated>
+    </task>
+    <task id="LOCAL-00009" summary="integrated UltimateAdvancementAPI with SQLite database and added lifecycle management">
+      <option name="closed" value="true" />
+      <created>1752731818582</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1752731818582</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -259,7 +271,9 @@
     <MESSAGE value="updated workspace.xml, added new Ghast enchantment logic, and Jackson library configurations" />
     <MESSAGE value="idk what iam doing" />
     <MESSAGE value="init" />
-    <option name="LAST_COMMIT_MESSAGE" value="" />
+    <MESSAGE value="updated ultimateadvancementapi dependency to shadeable mojang-mapped version" />
+    <MESSAGE value="integrated UltimateAdvancementAPI with SQLite database and added lifecycle management" />
+    <option name="LAST_COMMIT_MESSAGE" value="integrated UltimateAdvancementAPI with SQLite database and added lifecycle management" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
