@@ -5,7 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="21a05071-01eb-4183-b991-bb8bb740a89e" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/QuestModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/QuestModule.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,7 +54,6 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Kotlin Data Class" />
         <option value="Kotlin Xodium Module Class" />
       </list>
     </option>
@@ -107,17 +106,19 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "Gradle.Download Sources.executor": "Run",
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Gradle.Build VanillaPlus.executor": "Run",
     "Gradle.VanillaPlus [runDevServer].executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "feat/QuestModule",
-    "project.structure.last.edited": "Libraries",
+    "code.cleanup.on.save": "true",
+    "git-widget-placeholder": "#168 on feat/QuestModule",
+    "project.structure.last.edited": "SDKs",
     "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
+    "project.structure.side.proportion": "0.2",
+    "rearrange.code.on.save": "true",
     "run.code.analysis.last.selected.profile": "pProject Default",
-    "settings.editor.selected.configurable": "reference.settings.grazie.pro.in.ai.assistant"
+    "settings.editor.selected.configurable": "fileTemplates"
   }
 }]]></component>
   <component name="RecentsManager">
@@ -156,6 +157,8 @@
         <item itemvalue="Gradle.VanillaPlus [runDevServer]" />
         <item itemvalue="Gradle.VanillaPlus [runDevServer]" />
         <item itemvalue="Gradle.VanillaPlus [runDevServer]" />
+        <item itemvalue="Gradle.VanillaPlus [runDevServer]" />
+        <item itemvalue="Gradle.VanillaPlus [runDevServer]" />
       </list>
     </recent_temporary>
   </component>
@@ -174,13 +177,8 @@
       <option name="presentableId" value="Default" />
       <updated>1752566486650</updated>
       <workItem from="1752566794666" duration="931000" />
-      <workItem from="1752657035930" duration="47000" />
-      <workItem from="1752657095117" duration="2311000" />
-      <workItem from="1752669226545" duration="73000" />
-      <workItem from="1752669310814" duration="4099000" />
-      <workItem from="1752673520756" duration="30000" />
-      <workItem from="1752729488789" duration="1097000" />
-      <workItem from="1752730605282" duration="4116000" />
+      <workItem from="1752646133509" duration="314000" />
+      <workItem from="1752646458917" duration="7938000" />
     </task>
     <task>
       <option name="closed" value="true" />
@@ -198,121 +196,130 @@
       <option name="project" value="LOCAL" />
       <updated>1752566486650</updated>
     </task>
-    <task id="LOCAL-00002" summary="removed unused Gradle library files">
+    <task id="LOCAL-00002" summary="woops">
       <option name="closed" value="true" />
-      <created>1752658124389</created>
+      <created>1752586822355</created>
       <option name="number" value="00002" />
       <option name="presentableId" value="LOCAL-00002" />
       <option name="project" value="LOCAL" />
-      <updated>1752658124389</updated>
+      <updated>1752586822355</updated>
     </task>
-    <task id="LOCAL-00003" summary="update workspace.xml to reflect recent configuration changes">
+    <task id="LOCAL-00003" summary="removed unused libraries and optimized message serialization in ChatModule">
       <option name="closed" value="true" />
-      <created>1752658810012</created>
+      <created>1752586967870</created>
       <option name="number" value="00003" />
       <option name="presentableId" value="LOCAL-00003" />
       <option name="project" value="LOCAL" />
-      <updated>1752658810012</updated>
+      <updated>1752586967870</updated>
     </task>
-    <task id="LOCAL-00004" summary="init">
+    <task id="LOCAL-00004" summary="updated workspace.xml and dynamic PREFIX formatting in VanillaPlus class">
       <option name="closed" value="true" />
-      <created>1752669423875</created>
+      <created>1752587218567</created>
       <option name="number" value="00004" />
       <option name="presentableId" value="LOCAL-00004" />
       <option name="project" value="LOCAL" />
-      <updated>1752669423875</updated>
+      <updated>1752587218567</updated>
     </task>
-    <task id="LOCAL-00005" summary="updated workspace.xml, added new Ghast enchantment logic, and Jackson library configurations">
+    <task id="LOCAL-00005" summary="init">
       <option name="closed" value="true" />
-      <created>1752672291138</created>
+      <created>1752648160323</created>
       <option name="number" value="00005" />
       <option name="presentableId" value="LOCAL-00005" />
       <option name="project" value="LOCAL" />
-      <updated>1752672291138</updated>
+      <updated>1752648160323</updated>
     </task>
-    <task id="LOCAL-00006" summary="idk what iam doing">
+    <task id="LOCAL-00006" summary="+">
       <option name="closed" value="true" />
-      <created>1752673420106</created>
+      <created>1752649414113</created>
       <option name="number" value="00006" />
       <option name="presentableId" value="LOCAL-00006" />
       <option name="project" value="LOCAL" />
-      <updated>1752673420106</updated>
+      <updated>1752649414113</updated>
     </task>
-    <task id="LOCAL-00007" summary="init">
+    <task id="LOCAL-00007" summary="refactored LocatorModule command structure and improved color handling logic">
       <option name="closed" value="true" />
-      <created>1752731079793</created>
+      <created>1752651227263</created>
       <option name="number" value="00007" />
       <option name="presentableId" value="LOCAL-00007" />
       <option name="project" value="LOCAL" />
-      <updated>1752731079793</updated>
+      <updated>1752651227263</updated>
     </task>
-    <task id="LOCAL-00008" summary="updated ultimateadvancementapi dependency to shadeable mojang-mapped version">
+    <task id="LOCAL-00008" summary="formatted hex values in LocatorModule for color handling logic">
       <option name="closed" value="true" />
-      <created>1752731472255</created>
+      <created>1752651994874</created>
       <option name="number" value="00008" />
       <option name="presentableId" value="LOCAL-00008" />
       <option name="project" value="LOCAL" />
-      <updated>1752731472255</updated>
+      <updated>1752651994874</updated>
     </task>
-    <task id="LOCAL-00009" summary="integrated UltimateAdvancementAPI with SQLite database and added lifecycle management">
+    <task id="LOCAL-00009" summary="streamlined color handling in LocatorModule and removed redundant hex suggestions">
       <option name="closed" value="true" />
-      <created>1752731818582</created>
+      <created>1752652544278</created>
       <option name="number" value="00009" />
       <option name="presentableId" value="LOCAL-00009" />
       <option name="project" value="LOCAL" />
-      <updated>1752731818582</updated>
+      <updated>1752652544278</updated>
     </task>
-    <task id="LOCAL-00010" summary="integrated UltimateAdvancementAPI with QuestModule, added player advancement handling and tab creation logic">
+    <task id="LOCAL-00010" summary="v+">
       <option name="closed" value="true" />
-      <created>1752732296111</created>
+      <created>1752652845651</created>
       <option name="number" value="00010" />
       <option name="presentableId" value="LOCAL-00010" />
       <option name="project" value="LOCAL" />
-      <updated>1752732296111</updated>
+      <updated>1752652845651</updated>
     </task>
-    <task id="LOCAL-00011" summary="migrated from UltimateAdvancementAPI to Triumph GUI framework, updated dependencies and adjusted module configurations">
+    <task id="LOCAL-00011" summary="updated DoorsModule to play sounds only for nearby players and bumped module version to 1.15.0">
       <option name="closed" value="true" />
-      <created>1752733032763</created>
+      <created>1752653882320</created>
       <option name="number" value="00011" />
       <option name="presentableId" value="LOCAL-00011" />
       <option name="project" value="LOCAL" />
-      <updated>1752733032763</updated>
+      <updated>1752653882320</updated>
     </task>
-    <task id="LOCAL-00012" summary="Removed nullable CommandData overrides across modules and introduced command handling for QuestModule utilizing Triumph GUI.">
+    <task id="LOCAL-00012" summary="Use configurable proximity radius for door-related sounds in DoorsModule.">
       <option name="closed" value="true" />
-      <created>1752733488874</created>
+      <created>1752654195170</created>
       <option name="number" value="00012" />
       <option name="presentableId" value="LOCAL-00012" />
       <option name="project" value="LOCAL" />
-      <updated>1752733488874</updated>
+      <updated>1752654195170</updated>
     </task>
-    <task id="LOCAL-00013" summary="Added command registration and permissions to ConfigManager; refactored ModuleManager for modular config handling and reload functionality.">
+    <task id="LOCAL-00013" summary="init">
       <option name="closed" value="true" />
-      <created>1752734569877</created>
+      <created>1752654283725</created>
       <option name="number" value="00013" />
       <option name="presentableId" value="LOCAL-00013" />
       <option name="project" value="LOCAL" />
-      <updated>1752734569877</updated>
+      <updated>1752654283725</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="removed `Utils.kt` and merged utility methods into `InvModule`">
+      <option name="closed" value="true" />
+      <created>1752736094478</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1752736094478</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
     <MESSAGE value="update workspace.xml to include new task configurations" />
-    <MESSAGE value="removed unused Gradle library files" />
-    <MESSAGE value="update workspace.xml to reflect recent configuration changes" />
-    <MESSAGE value="updated workspace.xml, added new Ghast enchantment logic, and Jackson library configurations" />
-    <MESSAGE value="idk what iam doing" />
+    <MESSAGE value="woops" />
+    <MESSAGE value="removed unused libraries and optimized message serialization in ChatModule" />
+    <MESSAGE value="updated workspace.xml and dynamic PREFIX formatting in VanillaPlus class" />
+    <MESSAGE value="+" />
+    <MESSAGE value="refactored LocatorModule command structure and improved color handling logic" />
+    <MESSAGE value="formatted hex values in LocatorModule for color handling logic" />
+    <MESSAGE value="streamlined color handling in LocatorModule and removed redundant hex suggestions" />
+    <MESSAGE value="v+" />
+    <MESSAGE value="updated DoorsModule to play sounds only for nearby players and bumped module version to 1.15.0" />
+    <MESSAGE value="Use configurable proximity radius for door-related sounds in DoorsModule." />
     <MESSAGE value="init" />
-    <MESSAGE value="updated ultimateadvancementapi dependency to shadeable mojang-mapped version" />
-    <MESSAGE value="integrated UltimateAdvancementAPI with SQLite database and added lifecycle management" />
-    <MESSAGE value="integrated UltimateAdvancementAPI with QuestModule, added player advancement handling and tab creation logic" />
-    <MESSAGE value="migrated from UltimateAdvancementAPI to Triumph GUI framework, updated dependencies and adjusted module configurations" />
-    <MESSAGE value="Removed nullable CommandData overrides across modules and introduced command handling for QuestModule utilizing Triumph GUI." />
-    <MESSAGE value="Added command registration and permissions to ConfigManager; refactored ModuleManager for modular config handling and reload functionality." />
-    <option name="LAST_COMMIT_MESSAGE" value="Added command registration and permissions to ConfigManager; refactored ModuleManager for modular config handling and reload functionality." />
+    <MESSAGE value="removed `Utils.kt` and merged utility methods into `InvModule`" />
+    <option name="LAST_COMMIT_MESSAGE" value="removed `Utils.kt` and merged utility methods into `InvModule`" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

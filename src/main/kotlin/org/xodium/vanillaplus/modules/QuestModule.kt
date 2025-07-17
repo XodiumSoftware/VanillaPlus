@@ -5,8 +5,11 @@ import dev.triumphteam.gui.paper.builder.item.ItemBuilder
 import dev.triumphteam.gui.paper.kotlin.builder.buildGui
 import dev.triumphteam.gui.paper.kotlin.builder.chestContainer
 import io.papermc.paper.command.brigadier.Commands
+import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.ItemLore
 import org.bukkit.Material
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -46,14 +49,34 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
         )
     }
 
+    /**
+     * Constructs and configures a GUI for the associated module.
+     * @return A fully configured `Gui` instance with the specified properties and components.
+     */
     private fun gui(): Gui {
         return buildGui {
             spamPreventionDuration = config.spamPreventionDuration
             containerType = chestContainer { rows = 1 }
             title(config.guiTitle.mm())
             statelessComponent {
-                it[1, 5] = ItemBuilder.from(Material.WRITABLE_BOOK).name("".mm()).asGuiItem()
+                it[1, 5] = ItemBuilder.from(guiItemStack()).asGuiItem()
             }
+        }
+    }
+
+    /**
+     * Creates an instance of an ItemStack with the specified material, name, and lore,
+     * and applies the desired display properties to it.
+     * @param material The material of the ItemStack.
+     * @param itemName The display name of the ItemStack, parsed as a MiniMessage component.
+     * @param itemLore The lore of the ItemStack, parsed as a list of MiniMessage components.
+     * @return An ItemStack configured with the provided material, name, and lore.
+     */
+    private fun guiItemStack(material: Material, itemName: String, itemLore: List<String>): ItemStack {
+        @Suppress("UnstableApiUsage")
+        return ItemStack.of(material).apply {
+            setData(DataComponentTypes.ITEM_NAME, itemName.mm())
+            setData(DataComponentTypes.LORE, ItemLore.lore(itemLore.mm()))
         }
     }
 

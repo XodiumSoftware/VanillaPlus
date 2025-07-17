@@ -5,6 +5,8 @@
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/dev.triumphteam/triumph-gui-kotlin/4.0.0-SNAPSHOT/dd8626337c4061ccd558ca041e3b9f453882e7fd/triumph-gui-kotlin-4.0.0-SNAPSHOT.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/dev.triumphteam/triumph-gui-kotlin/4.0.0-SNAPSHOT/2c3a7fc631029b51a63e259c8b4fd187ef35b4a2/triumph-gui-kotlin-4.0.0-SNAPSHOT-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>
