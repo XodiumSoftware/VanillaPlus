@@ -2,8 +2,8 @@ package org.xodium.vanillaplus.modules
 
 import dev.triumphteam.gui.paper.Gui
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder
+import dev.triumphteam.gui.paper.container.type.PaperContainerType.hopper
 import dev.triumphteam.gui.paper.kotlin.builder.buildGui
-import dev.triumphteam.gui.paper.kotlin.builder.chestContainer
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
@@ -60,7 +60,7 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
     private fun gui(): Gui {
         return buildGui {
             spamPreventionDuration = config.spamPreventionDuration
-            containerType = chestContainer { rows = 1 }
+            containerType = hopper()
             title(config.guiTitle.mm())
             statelessComponent { container ->
                 val easyQuests = config.quests[QuestDifficultyEnum.EASY].orEmpty().shuffled()
