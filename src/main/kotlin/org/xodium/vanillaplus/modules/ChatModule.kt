@@ -110,7 +110,11 @@ class ChatModule : ModuleInterface<ChatModule.Config> {
             .forEach {
                 it.sendMessage(
                     config.joinMessage.mm(
-                        Placeholder.component("player", player.displayName())
+                        Placeholder.component(
+                            "player", player.displayName()
+                                .clickEvent(ClickEvent.suggestCommand("/w ${player.name} "))
+                                .hoverEvent(HoverEvent.showText("Click to Whisper".fireFmt().mm()))
+                        )
                     )
                 )
             }
