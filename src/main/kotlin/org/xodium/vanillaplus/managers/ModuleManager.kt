@@ -17,7 +17,7 @@ object ModuleManager {
     val chatModule: ChatModule = ChatModule()
     val dimensionsModule: DimensionsModule = DimensionsModule()
     val doorsModule: DoorsModule = DoorsModule()
-    val invSearchModule: InvModule = InvModule()
+    val invModule: InvModule = InvModule()
     val locatorModule: LocatorModule = LocatorModule()
     val motdModule: MotdModule = MotdModule()
     val petModule: PetModule = PetModule()
@@ -36,7 +36,7 @@ object ModuleManager {
         chatModule,
         dimensionsModule,
         doorsModule,
-        invSearchModule,
+        invModule,
         locatorModule,
         motdModule,
         nicknameModule,
