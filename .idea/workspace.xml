@@ -5,10 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="21a05071-01eb-4183-b991-bb8bb740a89e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/enums/QuestDifficultyEnum.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dictionaries/project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/project.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/data/QuestData.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/data/QuestData.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/QuestModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/QuestModule.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -354,7 +352,23 @@
       <option name="project" value="LOCAL" />
       <updated>1752739320739</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="Added QuestDifficultyEnum and updated QuestModule to categorize quests by difficulty; implemented dynamic quest item generation in GUI based on difficulty levels.">
+      <option name="closed" value="true" />
+      <created>1752740476973</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1752740476973</updated>
+    </task>
+    <task id="LOCAL-00022" summary="Enhanced QuestModule GUI to display task and reward details dynamically for quests.">
+      <option name="closed" value="true" />
+      <created>1752740577227</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1752740577227</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -379,7 +393,9 @@
     <MESSAGE value="Enhanced ChatModule with `/quests` command and updated QuestModule GUI title formatting." />
     <MESSAGE value="Removed `.idea/shelf` and updated `workspace.xml` to reflect task" />
     <MESSAGE value="Added QuestData class and integrated it into QuestModule to support" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added QuestData class and integrated it into QuestModule to support" />
+    <MESSAGE value="Added QuestDifficultyEnum and updated QuestModule to categorize quests by difficulty; implemented dynamic quest item generation in GUI based on difficulty levels." />
+    <MESSAGE value="Enhanced QuestModule GUI to display task and reward details dynamically for quests." />
+    <option name="LAST_COMMIT_MESSAGE" value="Enhanced QuestModule GUI to display task and reward details dynamically for quests." />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

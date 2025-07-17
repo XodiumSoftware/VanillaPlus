@@ -21,6 +21,7 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
+import org.xodium.vanillaplus.utils.FmtUtils.skylineFmt
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
@@ -68,11 +69,19 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
 
                 fun questItem(quest: QuestData, difficulty: QuestDifficultyEnum): ItemStack {
                     val completed = quest.completed
-                    val name = "${difficulty.name.lowercase().replaceFirstChar { it.uppercase() }} Quest".mangoFmt()
+                    val difficultyColor = when (difficulty) {
+                        QuestDifficultyEnum.EASY -> "<green>"
+                        QuestDifficultyEnum.MEDIUM -> "<yellow>"
+                        QuestDifficultyEnum.HARD -> "<red>"
+                    }
+                    val name =
+                        "<b>$difficultyColor${
+                            difficulty.name.lowercase().replaceFirstChar { it.uppercase() }
+                        } ${"Quest".skylineFmt()}"
                     val material = if (completed) Material.WRITABLE_BOOK else Material.ENCHANTED_BOOK
                     val lore = if (completed) listOf("Completed".mangoFmt()) else listOf(
-                        "Task: ${quest.task}".fireFmt(),
-                        "Reward: ${quest.reward}".mangoFmt()
+                        "${"<b>Task ➛</b>".fireFmt()} ${quest.task.fireFmt(true)}",
+                        "${"<b>Reward ➛</b>".mangoFmt()} ${quest.reward.mangoFmt(true)}"
                     )
                     return guiItemStack(material, name, lore)
                 }
