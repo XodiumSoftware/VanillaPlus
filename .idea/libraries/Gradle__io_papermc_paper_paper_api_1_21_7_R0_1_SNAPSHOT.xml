@@ -2,7 +2,7 @@
   <library name="Gradle: io.papermc.paper:paper-api:1.21.7-R0.1-SNAPSHOT" type="java-imported" external-system-id="GRADLE">
     <properties groupId="io.papermc.paper" artifactId="paper-api" version="1.21.7-R0.1-SNAPSHOT" baseVersion="1.21.7-R0.1-SNAPSHOT" />
     <CLASSES>
-      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.papermc.paper/paper-api/1.21.7-R0.1-SNAPSHOT/70dd80733c50bd97001ade456ffa0db06343d5b1/paper-api-1.21.7-R0.1-SNAPSHOT.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.papermc.paper/paper-api/1.21.7-R0.1-SNAPSHOT/46443b00829ecb9c76747057366b57da985b09ea/paper-api-1.21.7-R0.1-SNAPSHOT.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

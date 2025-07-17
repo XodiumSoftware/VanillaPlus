@@ -21,18 +21,18 @@ repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://maven.enginehub.org/repo/")
-    maven("https://nexus.frengor.com/repository/public/")
+    maven("https://repo.triumphteam.dev/snapshots")
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:$apiVersion-R0.1-SNAPSHOT")
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.15") //TODO("Move away from WorldEdit")
-    compileOnly("com.frengor:ultimateadvancementapi-shadeable:2.5.2:mojang-mapped")
 
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.1")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.1")
+    implementation("dev.triumphteam:triumph-gui-paper-kotlin:4.0.0-SNAPSHOT") { exclude("com.google.guava") }
 }
 
 java { toolchain.languageVersion.set(JavaLanguageVersion.of(21)) }
@@ -54,11 +54,8 @@ tasks {
         archiveClassifier.set("")
         destinationDirectory.set(file(".server/plugins/update"))
         relocate("com.fasterxml.jackson", "org.xodium.vanillaplus.jackson")
-        relocate("com.frengor:ultimateadvancementapi-shadeable", "org.xodium.advancements")
-        minimize {
-            exclude(dependency("org.jetbrains.kotlin:kotlin-reflect:.*"))
-            exclude(dependency("com.frengor:ultimateadvancementapi-shadeable:.*"))
-        }
+        relocate("dev.triumphteam.gui", "org.xodium.vanillaplus.gui")
+        minimize { exclude(dependency("org.jetbrains.kotlin:kotlin-reflect:.*")) }
         doLast {
             copy {
                 from(archiveFile)
