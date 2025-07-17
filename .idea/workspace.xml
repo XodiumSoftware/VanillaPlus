@@ -5,11 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="21a05071-01eb-4183-b991-bb8bb740a89e" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_16_07_2025_15_45_[Changes]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_16_07_2025_15_45__Changes_.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_17_07_2025_09_29_[Changes]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_17_07_2025_09_29__Changes_.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_17_07_2025_09_07__Changes_.xml" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/enums/QuestDifficultyEnum.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/project.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/data/QuestData.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/data/QuestData.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/QuestModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/QuestModule.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,6 +59,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Kotlin Xodium Module Class" />
+        <option value="Kotlin Data Class" />
+        <option value="Kotlin Enum" />
       </list>
     </option>
   </component>
@@ -336,7 +338,23 @@
       <option name="project" value="LOCAL" />
       <updated>1752738759722</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="Removed `.idea/shelf` and updated `workspace.xml` to reflect task adjustments.">
+      <option name="closed" value="true" />
+      <created>1752738885325</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1752738885325</updated>
+    </task>
+    <task id="LOCAL-00020" summary="Added QuestData class and integrated it into QuestModule to support configurable quest details including tasks, rewards, and completion state.">
+      <option name="closed" value="true" />
+      <created>1752739320739</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1752739320739</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -359,7 +377,9 @@
     <MESSAGE value="Updated QuestModule to support quest completion state with dynamic item properties." />
     <MESSAGE value="Enhanced ChatModule to add clickable whisper command and hover text on player join messages." />
     <MESSAGE value="Enhanced ChatModule with `/quests` command and updated QuestModule GUI title formatting." />
-    <option name="LAST_COMMIT_MESSAGE" value="Enhanced ChatModule with `/quests` command and updated QuestModule GUI title formatting." />
+    <MESSAGE value="Removed `.idea/shelf` and updated `workspace.xml` to reflect task" />
+    <MESSAGE value="Added QuestData class and integrated it into QuestModule to support" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added QuestData class and integrated it into QuestModule to support" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
