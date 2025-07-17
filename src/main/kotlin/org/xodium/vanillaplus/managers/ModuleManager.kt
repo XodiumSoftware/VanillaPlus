@@ -55,22 +55,12 @@ object ModuleManager {
     )
 
     init {
-        val allConfigsNode: JsonNode? = ConfigManager.load()
-        val configsToSave = mutableMapOf<String, ModuleInterface.Config>()
-        modules.forEach { module ->
-            val configKey = module::class.simpleName!!.removeSuffix("Module").replaceFirstChar { it.lowercase() }
-            allConfigsNode?.get(configKey)?.let { moduleConfigNode ->
-                try {
-                    ConfigManager.objectMapper.readerForUpdating(module.config).readValue(moduleConfigNode)
-                } catch (e: Exception) {
-                    instance.logger.warning("Failed to parse config for ${module::class.simpleName}. Using defaults. Error: ${e.message}")
-                }
-            }
-            configsToSave[configKey] = module.config
-        }
-        ConfigManager.save(configsToSave)
+        ConfigManager.save(loadModuleConfigs())
 
         val commandsToRegister = mutableListOf<CommandData>()
+        commandsToRegister.add(ConfigManager.cmds())
+        @Suppress("UnstableApiUsage")
+        instance.server.pluginManager.addPermissions(ConfigManager.perms())
         modules.filter { it.enabled() }.forEach { module ->
             instance.logger.info(
                 "Loaded: ${module::class.simpleName} | Took ${
@@ -97,5 +87,38 @@ object ModuleManager {
                 }
             }
         }
+    }
+
+    /**
+     * Loads configs from a file into the modules and returns the map to save.
+     * @return A map of module configs to persist.
+     */
+    private fun loadModuleConfigs(): Map<String, ModuleInterface.Config> {
+        val allConfigsNode: JsonNode? = ConfigManager.load()
+        val configsToSave = mutableMapOf<String, ModuleInterface.Config>()
+
+        modules.forEach { module ->
+            val configKey = module::class.simpleName!!
+                .removeSuffix("Module")
+                .replaceFirstChar { it.lowercase() }
+
+            allConfigsNode?.get(configKey)?.let { moduleConfigNode ->
+                try {
+                    ConfigManager.objectMapper.readerForUpdating(module.config).readValue(moduleConfigNode)
+                } catch (e: Exception) {
+                    instance.logger.warning("Failed to parse config for ${module::class.simpleName}. Using defaults. Error: ${e.message}")
+                }
+            }
+            configsToSave[configKey] = module.config
+        }
+        return configsToSave
+    }
+
+
+    /** Reloads all module configs and updates event listeners and commands. */
+    fun reload() {
+        ConfigManager.save(loadModuleConfigs())
+
+        instance.logger.info("ModuleManager: Configs reloaded successfully.")
     }
 }
