@@ -5,9 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="21a05071-01eb-4183-b991-bb8bb740a89e" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/managers/ConfigManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/managers/ConfigManager.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/managers/ModuleManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/managers/ModuleManager.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/QuestModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/QuestModule.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -182,7 +180,7 @@
       <workItem from="1752669310814" duration="4099000" />
       <workItem from="1752673520756" duration="30000" />
       <workItem from="1752729488789" duration="1097000" />
-      <workItem from="1752730605282" duration="3681000" />
+      <workItem from="1752730605282" duration="4116000" />
     </task>
     <task>
       <option name="closed" value="true" />
@@ -288,7 +286,15 @@
       <option name="project" value="LOCAL" />
       <updated>1752733488874</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="Added command registration and permissions to ConfigManager; refactored ModuleManager for modular config handling and reload functionality.">
+      <option name="closed" value="true" />
+      <created>1752734569877</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1752734569877</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -305,7 +311,8 @@
     <MESSAGE value="integrated UltimateAdvancementAPI with QuestModule, added player advancement handling and tab creation logic" />
     <MESSAGE value="migrated from UltimateAdvancementAPI to Triumph GUI framework, updated dependencies and adjusted module configurations" />
     <MESSAGE value="Removed nullable CommandData overrides across modules and introduced command handling for QuestModule utilizing Triumph GUI." />
-    <option name="LAST_COMMIT_MESSAGE" value="Removed nullable CommandData overrides across modules and introduced command handling for QuestModule utilizing Triumph GUI." />
+    <MESSAGE value="Added command registration and permissions to ConfigManager; refactored ModuleManager for modular config handling and reload functionality." />
+    <option name="LAST_COMMIT_MESSAGE" value="Added command registration and permissions to ConfigManager; refactored ModuleManager for modular config handling and reload functionality." />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

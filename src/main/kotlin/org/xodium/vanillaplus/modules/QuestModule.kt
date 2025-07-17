@@ -15,6 +15,8 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 /** Represents a module handling quest mechanics within the system. */
 class QuestModule : ModuleInterface<QuestModule.Config> {
@@ -46,8 +48,9 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
 
     private fun gui(): Gui {
         return buildGui {
+            spamPreventionDuration = config.spamPreventionDuration
             containerType = chestContainer { rows = 1 }
-            title("Quests".fireFmt().mm())
+            title(config.guiTitle.mm())
             statelessComponent {
                 it[1, 5] = ItemBuilder.from(Material.WRITABLE_BOOK).name("".mm()).asGuiItem()
             }
@@ -56,5 +59,7 @@ class QuestModule : ModuleInterface<QuestModule.Config> {
 
     data class Config(
         override var enabled: Boolean = true,
+        var spamPreventionDuration: Duration = 1.seconds,
+        var guiTitle: String = "Quests".fireFmt(),
     ) : ModuleInterface.Config
 }
