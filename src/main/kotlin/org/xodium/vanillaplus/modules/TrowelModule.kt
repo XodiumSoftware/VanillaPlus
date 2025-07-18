@@ -26,15 +26,15 @@ class TrowelModule : ModuleInterface<TrowelModule.Config> {
 
     override fun enabled(): Boolean = config.enabled
 
-    override fun cmds(): CommandData? {
-        return CommandData(
-            listOf(
+    override fun cmds(): List<CommandData> {
+        return listOf(
+            CommandData(
                 Commands.literal("trowel")
                     .requires { it.sender.hasPermission(perms()[0]) }
-                    .executes { ctx -> ctx.tryCatch { toggle(it.sender as Player) } }
-            ),
-            "Allows players to toggle the trowel functionality.",
-            emptyList()
+                    .executes { ctx -> ctx.tryCatch { toggle(ctx.source.sender as Player) } },
+                "Allows players to toggle the trowel functionality.",
+                emptyList()
+            )
         )
     }
 

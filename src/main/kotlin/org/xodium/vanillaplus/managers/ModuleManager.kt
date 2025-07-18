@@ -74,22 +74,19 @@ object ModuleManager {
                         instance.server.pluginManager.registerEvents(module, instance)
                         @Suppress("UnstableApiUsage")
                         instance.server.pluginManager.addPermissions(module.perms())
-                        module.cmds()?.let { commandsToRegister.add(it) }
+                        commandsToRegister.addAll(module.cmds())
                     }.inWholeMilliseconds
                 }ms"
             )
         }
-        //TODO: check if we can make this more compact.
-        commandsToRegister.takeIf { it.isNotEmpty() }?.let {
+        commandsToRegister.takeIf { it.isNotEmpty() }?.let { cmds ->
             instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
-                it.forEach { commandData ->
-                    commandData.commands.forEach { command ->
-                        event.registrar().register(
-                            command.build(),
-                            commandData.description,
-                            commandData.aliases.toMutableList()
-                        )
-                    }
+                cmds.forEach { commandData ->
+                    event.registrar().register(
+                        commandData.builder.build(),
+                        commandData.description,
+                        commandData.aliases.toMutableList()
+                    )
                 }
             }
         }

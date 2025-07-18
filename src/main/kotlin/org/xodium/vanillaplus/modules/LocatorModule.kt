@@ -21,9 +21,9 @@ class LocatorModule : ModuleInterface<LocatorModule.Config> {
 
     override fun enabled(): Boolean = config.enabled
 
-    override fun cmds(): CommandData? {
-        return CommandData(
-            listOf(
+    override fun cmds(): List<CommandData> {
+        return listOf(
+            CommandData(
                 Commands.literal("locator")
                     .requires { it.sender.hasPermission(perms()[0]) }
                     .then(
@@ -35,10 +35,9 @@ class LocatorModule : ModuleInterface<LocatorModule.Config> {
                             }
                             .executes { ctx ->
                                 ctx.tryCatch {
-                                    locator(
-                                        (it.sender as Player),
-                                        colour = ctx.getArgument("color", NamedTextColor::class.java)
-                                    )
+                                    val player = ctx.source.sender as Player
+                                    val color = ctx.getArgument("color", NamedTextColor::class.java)
+                                    locator(player, colour = color)
                                 }
                             }
                     )
@@ -46,20 +45,24 @@ class LocatorModule : ModuleInterface<LocatorModule.Config> {
                         Commands.argument("hex", ArgumentTypes.hexColor())
                             .executes { ctx ->
                                 ctx.tryCatch {
-                                    locator(
-                                        (it.sender as Player),
-                                        hex = ctx.getArgument("hex", TextColor::class.java)
-                                    )
+                                    val player = ctx.source.sender as Player
+                                    val hex = ctx.getArgument("hex", TextColor::class.java)
+                                    locator(player, hex = hex)
                                 }
                             }
                     )
                     .then(
                         Commands.literal("reset")
-                            .executes { ctx -> ctx.tryCatch { locator((it.sender as Player)) } }
-                    )
-            ),
-            "Allows players to personalise their locator bar.",
-            listOf("lc")
+                            .executes { ctx ->
+                                ctx.tryCatch {
+                                    val player = ctx.source.sender as Player
+                                    locator(player)
+                                }
+                            }
+                    ),
+                "Allows players to personalise their locator bar.",
+                listOf("lc")
+            )
         )
     }
 

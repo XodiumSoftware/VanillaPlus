@@ -22,15 +22,15 @@ class AutoRestartModule : ModuleInterface<AutoRestartModule.Config> {
 
     override fun enabled(): Boolean = config.enabled
 
-    override fun cmds(): CommandData? {
-        return CommandData(
-            listOf(
+    override fun cmds(): List<CommandData> {
+        return listOf(
+            CommandData(
                 Commands.literal("autorestart")
                     .requires { it.sender.hasPermission(perms()[0]) }
-                    .executes { ctx -> ctx.tryCatch { countdown() } }
-            ),
-            "Triggers a countdown for the server restart.",
-            emptyList()
+                    .executes { ctx -> ctx.tryCatch { countdown() } },
+                "Triggers a countdown for the server restart.",
+                listOf("ar")
+            )
         )
     }
 

@@ -21,23 +21,26 @@ class NicknameModule(private val tabListModule: TabListModule) : ModuleInterface
 
     override fun enabled(): Boolean = config.enabled && tabListModule.enabled()
 
-    override fun cmds(): CommandData? {
-        return CommandData(
-            listOf(
+    override fun cmds(): List<CommandData> {
+        return listOf(
+            CommandData(
                 Commands.literal("nickname")
                     .requires { it.sender.hasPermission(perms()[0]) }
-                    .executes { ctx -> ctx.tryCatch { nickname(it.sender as Player, "") } }
+                    .executes { ctx ->
+                        ctx.tryCatch { nickname(ctx.source.sender as Player, "") }
+                    }
                     .then(
                         Commands.argument("name", StringArgumentType.greedyString())
                             .executes { ctx ->
                                 ctx.tryCatch {
-                                    nickname(it.sender as Player, StringArgumentType.getString(ctx, "name"))
+                                    val name = StringArgumentType.getString(ctx, "name")
+                                    nickname(ctx.source.sender as Player, name)
                                 }
                             }
-                    )
-            ),
-            "Allows players to set or remove their nickname.",
-            listOf("nick")
+                    ),
+                "Allows players to set or remove their nickname.",
+                listOf("nick")
+            )
         )
     }
 

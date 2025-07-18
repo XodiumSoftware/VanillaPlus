@@ -46,9 +46,9 @@ class InvModule : ModuleInterface<InvModule.Config> {
 
     override fun enabled(): Boolean = config.enabled
 
-    override fun cmds(): CommandData? {
-        return CommandData(
-            listOf(
+    override fun cmds(): List<CommandData> {
+        return listOf(
+            CommandData(
                 Commands.literal("invsearch")
                     .requires { it.sender.hasPermission(perms()[0]) }
                     .then(
@@ -63,12 +63,16 @@ class InvModule : ModuleInterface<InvModule.Config> {
                             .executes { ctx -> ctx.tryCatch { handleSearch(ctx) } }
                     )
                     .executes { ctx -> ctx.tryCatch { handleSearch(ctx) } },
+                "Search nearby chests for specific items",
+                listOf("search", "searchinv", "invs")
+            ),
+            CommandData(
                 Commands.literal("invunload")
                     .requires { it.sender.hasPermission(perms()[1]) }
                     .executes { ctx -> ctx.tryCatch { unload(it.sender as Player) } },
+                "Unload your inventory into nearby chests",
+                listOf("unload", "unloadinv", "invu")
             ),
-            "Commands for Inventory ",
-            listOf("search", "searchinv", "invs")
         )
     }
 
