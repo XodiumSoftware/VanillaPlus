@@ -32,9 +32,9 @@ class ChatModule(private val locatorModule: LocatorModule) : ModuleInterface<Cha
 
     override fun enabled(): Boolean = config.enabled && locatorModule.enabled()
 
-    override fun cmds(): CommandData? {
-        return CommandData(
-            listOf(
+    override fun cmds(): List<CommandData> {
+        return listOf(
+            CommandData(
                 Commands.literal("whisper")
                     .requires { it.sender.hasPermission(perms()[0]) }
                     .then(
@@ -50,25 +50,21 @@ class ChatModule(private val locatorModule: LocatorModule) : ModuleInterface<Cha
                                 Commands.argument("message", StringArgumentType.greedyString())
                                     .executes { ctx ->
                                         ctx.tryCatch {
-                                            whisper(
-                                                it.sender as Player,
-                                                instance.server.getPlayer(
-                                                    ctx.getArgument(
-                                                        "target",
-                                                        String::class.java
-                                                    )
-                                                ) ?: return@tryCatch it.sender.sendMessage(
+                                            val sender = ctx.source.sender as Player
+                                            val targetName = ctx.getArgument("target", String::class.java)
+                                            val target = instance.server.getPlayer(targetName)
+                                                ?: return@tryCatch sender.sendMessage(
                                                     "$PREFIX Player is not Online!".fireFmt().mm()
-                                                ),
-                                                ctx.getArgument("message", String::class.java)
-                                            )
+                                                )
+                                            val message = ctx.getArgument("message", String::class.java)
+                                            whisper(sender, target, message)
                                         }
                                     }
                             )
-                    )
-            ),
-            "This command allows you to whisper to players.",
-            listOf("w")
+                    ),
+                "This command allows you to whisper to players.",
+                listOf("w")
+            )
         )
     }
 

@@ -27,10 +27,10 @@ interface ModuleInterface<out T : ModuleInterface.Config> : Listener {
     fun enabled(): Boolean
 
     /**
-     * Retrieves the command data for this module.
-     * @return A [CommandData] object containing commands, description, and aliases.
+     * Retrieves a list of command data associated with the module.
+     * @return A list of [CommandData] objects representing the commands for the module.
      */
-    fun cmds(): CommandData? = null
+    fun cmds(): List<CommandData> = emptyList()
 
     /**
      * Retrieves a list of permissions associated with this module.

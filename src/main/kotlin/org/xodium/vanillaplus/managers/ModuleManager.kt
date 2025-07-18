@@ -14,12 +14,11 @@ import kotlin.time.measureTime
 object ModuleManager {
     val autoRestartModule: AutoRestartModule = AutoRestartModule()
     val booksModule: BooksModule = BooksModule()
-    val locatorModule: LocatorModule = LocatorModule()
-    val chatModule: ChatModule = ChatModule(locatorModule)
+    val chatModule: ChatModule = ChatModule()
     val dimensionsModule: DimensionsModule = DimensionsModule()
     val doorsModule: DoorsModule = DoorsModule()
-    val invSearchModule: InvSearchModule = InvSearchModule()
-    val invUnloadModule: InvUnloadModule = InvUnloadModule()
+    val invModule: InvModule = InvModule()
+    val locatorModule: LocatorModule = LocatorModule()
     val motdModule: MotdModule = MotdModule()
     val petModule: PetModule = PetModule()
     val recipiesModule: RecipiesModule = RecipiesModule()
@@ -37,8 +36,7 @@ object ModuleManager {
         chatModule,
         dimensionsModule,
         doorsModule,
-        invSearchModule,
-        invUnloadModule,
+        invModule,
         locatorModule,
         motdModule,
         nicknameModule,
@@ -76,22 +74,19 @@ object ModuleManager {
                         instance.server.pluginManager.registerEvents(module, instance)
                         @Suppress("UnstableApiUsage")
                         instance.server.pluginManager.addPermissions(module.perms())
-                        module.cmds()?.let { commandsToRegister.add(it) }
+                        commandsToRegister.addAll(module.cmds())
                     }.inWholeMilliseconds
                 }ms"
             )
         }
-        //TODO: check if we can make this more compact.
-        commandsToRegister.takeIf { it.isNotEmpty() }?.let {
+        commandsToRegister.takeIf { it.isNotEmpty() }?.let { cmds ->
             instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
-                it.forEach { commandData ->
-                    commandData.commands.forEach { command ->
-                        event.registrar().register(
-                            command.build(),
-                            commandData.description,
-                            commandData.aliases.toMutableList()
-                        )
-                    }
+                cmds.forEach { commandData ->
+                    event.registrar().register(
+                        commandData.builder.build(),
+                        commandData.description,
+                        commandData.aliases.toMutableList()
+                    )
                 }
             }
         }
