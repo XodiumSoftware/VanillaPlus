@@ -67,6 +67,9 @@ object ModuleManager {
         ConfigManager.save(configsToSave)
 
         val commandsToRegister = mutableListOf<CommandData>()
+        commandsToRegister.addAll(ConfigManager.cmds())
+        @Suppress("UnstableApiUsage")
+        instance.server.pluginManager.addPermissions(ConfigManager.perms())
         modules.filter { it.enabled() }.forEach { module ->
             instance.logger.info(
                 "Loaded: ${module::class.simpleName} | Took ${
