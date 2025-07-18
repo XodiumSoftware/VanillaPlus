@@ -29,7 +29,7 @@ dependencies {
 
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.1")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.2")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.1")
 }
 
