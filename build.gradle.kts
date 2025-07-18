@@ -11,11 +11,11 @@ plugins {
 }
 
 group = "org.xodium.vanillaplus"
-version = "1.15.0"
+version = "1.16.0"
 description = "Minecraft plugin that enhances the base gameplay."
 
 var author: String = "Xodium"
-var apiVersion: String = "1.21.7"
+var apiVersion: String = "1.21.8"
 
 repositories {
     mavenCentral()
