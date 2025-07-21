@@ -22,6 +22,7 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.world.StructureGrowEvent
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
+import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
@@ -29,6 +30,7 @@ import org.xodium.vanillaplus.registries.MaterialRegistry
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
+import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import java.io.IOException
 import java.nio.channels.Channels
 import java.nio.channels.ReadableByteChannel
@@ -232,10 +234,10 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
             val actor = BukkitAdapter.adapt(player)
             val session = WorldEdit.getInstance().sessionManager.get(actor)
             session.clipboard = ClipboardHolder(clipboard)
-            player.sendActionBar("Loaded $typeName tree into clipboard! Use //paste to place it.".fireFmt().mm())
+            player.sendMessage("$PREFIX Loaded $typeName tree into clipboard! Use //paste to place it.".mangoFmt().mm())
         } catch (ex: Exception) {
             instance.logger.severe("Error while setting clipboard: ${ex.message}")
-            player.sendActionBar("Failed to load schematic into clipboard".fireFmt().mm())
+            player.sendMessage("$PREFIX Failed to load schematic into clipboard".fireFmt().mm())
         }
     }
 
