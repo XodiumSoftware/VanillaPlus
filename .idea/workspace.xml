@@ -5,39 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="21a05071-01eb-4183-b991-bb8bb740a89e" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_fasterxml_jackson_core_jackson_annotations_2_19_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_fasterxml_jackson_core_jackson_core_2_19_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_fasterxml_jackson_core_jackson_databind_2_19_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_fasterxml_jackson_datatype_jackson_datatype_jsr310_2_19_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_fasterxml_jackson_module_jackson_module_kotlin_2_19_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__io_papermc_paper_paper_api_1_21_8_R0_1_SNAPSHOT.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_fasterxml_jackson_core_jackson_annotations_2_19_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_fasterxml_jackson_datatype_jackson_datatype_jsr310_2_19_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_fasterxml_jackson_module_jackson_module_kotlin_2_19_1.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/VanillaPlus.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/VanillaPlus.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/data/AdjacentBlockData.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/data/AdjacentBlockData.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/data/BookData.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/data/BookData.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/data/BossBarData.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/data/BossBarData.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/data/CommandData.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/data/CommandData.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/data/PlayerData.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/data/PlayerData.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/data/SoundData.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/data/SoundData.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/interfaces/ModuleInterface.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/interfaces/ModuleInterface.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/managers/ConfigManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/managers/ConfigManager.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/managers/CooldownManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/managers/CooldownManager.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/managers/ModuleManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/managers/ModuleManager.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/AutoRestartModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/AutoRestartModule.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/BooksModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/BooksModule.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/ChatModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/ChatModule.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/DimensionsModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/DimensionsModule.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/DoorsModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/DoorsModule.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/InvModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/InvModule.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/LocatorModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/LocatorModule.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/MotdModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/MotdModule.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/NicknameModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/NicknameModule.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/PetModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/PetModule.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/RecipiesModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/RecipiesModule.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/SignModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/SignModule.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/SitModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/SitModule.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/SleepModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/SleepModule.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/TabListModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/TabListModule.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/TreesModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/TreesModule.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/TrowelModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/TrowelModule.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/registries/MaterialRegistry.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/registries/MaterialRegistry.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/utils/ExtUtils.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/utils/ExtUtils.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/utils/FmtUtils.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/utils/FmtUtils.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/utils/TimeUtils.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/utils/TimeUtils.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -96,7 +75,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="dev" />
+        <entry key="$PROJECT_DIR$" value="feat/VanishModule" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -122,7 +101,7 @@
     <option name="myRunOnSave" value="true" />
   </component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="CurrentFile" />
+    <option name="selectedTabId" value="ProjectErrors" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 3
@@ -144,8 +123,9 @@
     "Gradle.VanillaPlus [runDevServer].executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "code.cleanup.on.save": "true",
-    "git-widget-placeholder": "fix/DimensionsModule",
+    "git-widget-placeholder": "#174 on dev",
     "project.structure.last.edited": "SDKs",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.2",
@@ -213,7 +193,7 @@
       <workItem from="1752646133509" duration="314000" />
       <workItem from="1752646458917" duration="7938000" />
       <workItem from="1752825278409" duration="356000" />
-      <workItem from="1752840312694" duration="565000" />
+      <workItem from="1753088759437" duration="864000" />
     </task>
     <task>
       <option name="closed" value="true" />
@@ -351,79 +331,7 @@
       <option name="project" value="LOCAL" />
       <updated>1752831730135</updated>
     </task>
-    <task id="LOCAL-00017" summary="added config reload cmd">
-      <option name="closed" value="true" />
-      <created>1752832175878</created>
-      <option name="number" value="00017" />
-      <option name="presentableId" value="LOCAL-00017" />
-      <option name="project" value="LOCAL" />
-      <updated>1752832175878</updated>
-    </task>
-    <task id="LOCAL-00018" summary="cancel portal ignite when trying to create new portal in nether">
-      <option name="closed" value="true" />
-      <created>1753078383327</created>
-      <option name="number" value="00018" />
-      <option name="presentableId" value="LOCAL-00018" />
-      <option name="project" value="LOCAL" />
-      <updated>1753078383327</updated>
-    </task>
-    <task id="LOCAL-00019" summary="make it so portals can we lit again in the nether if there exist a corresponding portal in the overworld">
-      <option name="closed" value="true" />
-      <created>1753079007966</created>
-      <option name="number" value="00019" />
-      <option name="presentableId" value="LOCAL-00019" />
-      <option name="project" value="LOCAL" />
-      <updated>1753079007966</updated>
-    </task>
-    <task id="LOCAL-00020" summary="refactoring sending the player a message about portal creation">
-      <option name="closed" value="true" />
-      <created>1753079515017</created>
-      <option name="number" value="00020" />
-      <option name="presentableId" value="LOCAL-00020" />
-      <option name="project" value="LOCAL" />
-      <updated>1753079515017</updated>
-    </task>
-    <task id="LOCAL-00021" summary="refactor hasLinkedOverworldPortal">
-      <option name="closed" value="true" />
-      <created>1753079826204</created>
-      <option name="number" value="00021" />
-      <option name="presentableId" value="LOCAL-00021" />
-      <option name="project" value="LOCAL" />
-      <updated>1753079826204</updated>
-    </task>
-    <task id="LOCAL-00022" summary="cleanup">
-      <option name="closed" value="true" />
-      <created>1753083419603</created>
-      <option name="number" value="00022" />
-      <option name="presentableId" value="LOCAL-00022" />
-      <option name="project" value="LOCAL" />
-      <updated>1753083419603</updated>
-    </task>
-    <task id="LOCAL-00023" summary="added mechanics to find corresponding active portal in the overworld in case the portal in the nether cancells.">
-      <option name="closed" value="true" />
-      <created>1753086670437</created>
-      <option name="number" value="00023" />
-      <option name="presentableId" value="LOCAL-00023" />
-      <option name="project" value="LOCAL" />
-      <updated>1753086670437</updated>
-    </task>
-    <task id="LOCAL-00024" summary="v+">
-      <option name="closed" value="true" />
-      <created>1753087014345</created>
-      <option name="number" value="00024" />
-      <option name="presentableId" value="LOCAL-00024" />
-      <option name="project" value="LOCAL" />
-      <updated>1753087014345</updated>
-    </task>
-    <task id="LOCAL-00025" summary="some refactoring">
-      <option name="closed" value="true" />
-      <created>1753087979749</created>
-      <option name="number" value="00025" />
-      <option name="presentableId" value="LOCAL-00025" />
-      <option name="project" value="LOCAL" />
-      <updated>1753087979749</updated>
-    </task>
-    <option name="localTasksCounter" value="26" />
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -439,18 +347,10 @@
     <MESSAGE value="updated DoorsModule to play sounds only for nearby players and bumped module version to 1.15.0" />
     <MESSAGE value="Use configurable proximity radius for door-related sounds in DoorsModule." />
     <MESSAGE value="init" />
+    <MESSAGE value="v+" />
     <MESSAGE value="+" />
     <MESSAGE value="fix commandstructure" />
-    <MESSAGE value="added config reload cmd" />
-    <MESSAGE value="cancel portal ignite when trying to create new portal in nether" />
-    <MESSAGE value="make it so portals can we lit again in the nether if there exist a corresponding portal in the overworld" />
-    <MESSAGE value="refactoring sending the player a message about portal creation" />
-    <MESSAGE value="refactor hasLinkedOverworldPortal" />
-    <MESSAGE value="cleanup" />
-    <MESSAGE value="added mechanics to find corresponding active portal in the overworld in case the portal in the nether cancells." />
-    <MESSAGE value="v+" />
-    <MESSAGE value="some refactoring" />
-    <option name="LAST_COMMIT_MESSAGE" value="some refactoring" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix commandstructure" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

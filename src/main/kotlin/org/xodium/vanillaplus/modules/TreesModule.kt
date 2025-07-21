@@ -1,5 +1,6 @@
 package org.xodium.vanillaplus.modules
 
+import com.mojang.brigadier.arguments.StringArgumentType
 import com.sk89q.worldedit.WorldEdit
 import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldedit.extent.clipboard.Clipboard
@@ -8,15 +9,23 @@ import com.sk89q.worldedit.function.mask.BlockTypeMask
 import com.sk89q.worldedit.function.operation.Operations
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.session.ClipboardHolder
+import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.block.Block
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.world.StructureGrowEvent
+import org.bukkit.permissions.Permission
+import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.registries.MaterialRegistry
+import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
+import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import java.io.IOException
 import java.nio.channels.Channels
 import java.nio.channels.ReadableByteChannel
@@ -37,6 +46,49 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
         if (!worldEdit) instance.logger.warning("WorldEdit not found, disabling TreesModule")
 
         return worldEdit
+    }
+
+    override fun cmds(): List<CommandData> {
+        return listOf(
+            CommandData(
+                Commands.literal("tree")
+                    .requires { it.sender.hasPermission(perms()[0]) }
+                    .then(
+                        Commands.argument("type", StringArgumentType.string())
+                            .suggests { ctx, builder ->
+                                config.saplingLink.keys.forEach { material ->
+                                    builder.suggest(material.name.lowercase())
+                                }
+                                builder.buildFuture()
+                            }
+                            .executes { ctx ->
+                                ctx.tryCatch {
+                                    val player = it.sender as Player
+                                    val typeName = StringArgumentType.getString(ctx, "type")
+                                    val material = Material.matchMaterial(typeName.uppercase()) ?: return@tryCatch
+                                    val location = player.eyeLocation.clone()
+                                        .add(player.eyeLocation.direction.multiply(2))
+                                        .toBlockLocation()
+                                    val block = location.block
+                                    if (!pasteSchematic(block.apply { type = material })) block.type = Material.AIR
+                                    player.sendMessage("Successfully spawned $typeName tree!".fireFmt().mm())
+                                }
+                            }
+                    ),
+                "Triggers the spawning of a tree",
+                listOf("tr")
+            )
+        )
+    }
+
+    override fun perms(): List<Permission> {
+        return listOf(
+            Permission(
+                "${instance::class.simpleName}.tree.use".lowercase(),
+                "Allows use of the tree command",
+                PermissionDefault.OP
+            )
+        )
     }
 
     /** A map of sapling materials to a list of schematics. */
