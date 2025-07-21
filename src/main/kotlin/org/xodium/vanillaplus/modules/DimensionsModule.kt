@@ -3,6 +3,7 @@ package org.xodium.vanillaplus.modules
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.World
+import org.bukkit.block.BlockState
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -50,13 +51,7 @@ class DimensionsModule : ModuleInterface<DimensionsModule.Config> {
         if (event.world.environment == World.Environment.NETHER
             && event.reason == PortalCreateEvent.CreateReason.FIRE
         ) {
-            val overworld = instance.server.getWorld("world") ?: return
-            val portalCenter = event.blocks
-                .map { it.location }
-                .reduce { acc, loc -> acc.add(loc) }
-                .multiply(1.0 / event.blocks.size)
-            val existingPortal = findCorrespondingPortal(portalCenter, overworld)
-            if (existingPortal == null) {
+            if (findCorrespondingPortal(calcPortalCentre(event.blocks), getOverworld()) == null) {
                 event.isCancelled = true
                 val player = event.entity as? Player ?: return
                 player.sendActionBar("No corresponding active portal found in the Overworld!".fireFmt().mm())
@@ -114,6 +109,27 @@ class DimensionsModule : ModuleInterface<DimensionsModule.Config> {
      */
     private fun distance2D(x1: Double, z1: Double, x2: Double, z2: Double): Double {
         return sqrt((x1 - x2).pow(2) + (z1 - z2).pow(2))
+    }
+
+    /**
+     * Calculates the centre point of a portal structure by averaging the positions of its constituent blocks.
+     * @param blockStates The list of [BlockState]s representing the portal frame and portal blocks.
+     * @return The [Location] representing the geometric centre of the portal.
+     */
+    private fun calcPortalCentre(blockStates: List<BlockState>): Location {
+        return blockStates
+            .map { it.location }
+            .reduce { acc, loc -> acc.add(loc) }
+            .multiply(1.0 / blockStates.size)
+    }
+
+    /**
+     * Retrieves the Overworld instance or throws if not found.
+     * @return The Overworld [World] object.
+     * @throws IllegalStateException if the Overworld is not loaded.
+     */
+    private fun getOverworld(): World {
+        return instance.server.getWorld("world") ?: throw IllegalStateException("Overworld (world) is not loaded.")
     }
 
     data class Config(
