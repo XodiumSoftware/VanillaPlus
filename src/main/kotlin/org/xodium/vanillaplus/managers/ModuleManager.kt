@@ -11,7 +11,7 @@ import kotlin.time.measureTime
 
 /** Represents the module manager within the system. */
 @Suppress("MemberVisibilityCanBePrivate")
-object ModuleManager {
+internal object ModuleManager {
     val autoRestartModule: AutoRestartModule = AutoRestartModule()
     val booksModule: BooksModule = BooksModule()
     val chatModule: ChatModule = ChatModule()

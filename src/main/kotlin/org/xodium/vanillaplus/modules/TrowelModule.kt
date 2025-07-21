@@ -21,7 +21,7 @@ import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 
 /** Represents a module handling trowel mechanics within the system. */
-class TrowelModule : ModuleInterface<TrowelModule.Config> {
+internal class TrowelModule : ModuleInterface<TrowelModule.Config> {
     override val config: Config = Config()
 
     override fun enabled(): Boolean = config.enabled

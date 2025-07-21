@@ -14,7 +14,7 @@ import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import java.util.concurrent.CompletableFuture
 
 /** Represents a module handling locator mechanics within the system. */
-class LocatorModule : ModuleInterface<LocatorModule.Config> {
+internal class LocatorModule : ModuleInterface<LocatorModule.Config> {
     override val config: Config = Config()
 
     private val colors = NamedTextColor.NAMES.keys().map { it.toString() } + listOf("<RRGGBB>", "reset")

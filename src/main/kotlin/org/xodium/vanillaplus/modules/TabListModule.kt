@@ -19,7 +19,7 @@ import org.xodium.vanillaplus.utils.TimeUtils
 import kotlin.math.roundToInt
 
 /** Represents a module handling tab-list mechanics within the system. */
-class TabListModule : ModuleInterface<TabListModule.Config> {
+internal class TabListModule : ModuleInterface<TabListModule.Config> {
     override val config: Config = Config()
 
     override fun enabled(): Boolean = config.enabled

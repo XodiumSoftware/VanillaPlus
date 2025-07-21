@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "org.xodium.vanillaplus"
-version = "1.16.0"
+version = "1.16.1"
 description = "Minecraft plugin that enhances the base gameplay."
 
 var author: String = "Xodium"
@@ -29,8 +29,8 @@ dependencies {
 
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.1")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.1")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.2")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.2")
 }
 
 java { toolchain.languageVersion.set(JavaLanguageVersion.of(21)) }

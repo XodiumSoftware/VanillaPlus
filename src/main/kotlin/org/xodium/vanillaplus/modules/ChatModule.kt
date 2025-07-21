@@ -27,7 +27,7 @@ import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.FmtUtils.skylineFmt
 import java.util.concurrent.CompletableFuture
 
-class ChatModule : ModuleInterface<ChatModule.Config> {
+internal class ChatModule : ModuleInterface<ChatModule.Config> {
     override val config: Config = Config()
 
     override fun enabled(): Boolean = config.enabled

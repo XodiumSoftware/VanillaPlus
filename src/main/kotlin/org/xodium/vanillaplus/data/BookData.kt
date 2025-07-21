@@ -10,7 +10,7 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
  * @property author The [author] of the book.
  * @property pages The content of the book, represented as a list of [pages], where each page is a list of lines.
  */
-data class BookData(
+internal data class BookData(
     val cmd: String,
     private val title: String,
     private val author: String,
