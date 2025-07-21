@@ -5,6 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="21a05071-01eb-4183-b991-bb8bb740a89e" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_sk89q_worldedit_worldedit_core_7_3_15.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_sk89q_worldedit_worldedit_core_7_3_15.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/TreesModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/TreesModule.kt" afterDir="false" />
     </list>
@@ -65,7 +66,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="feat/VanishModule" />
+        <entry key="$PROJECT_DIR$" value="dev" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -110,12 +111,12 @@
     "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "Gradle.Build VanillaPlus.executor": "Run",
     "Gradle.Download Sources.executor": "Run",
-    "Gradle.VanillaPlus [runDevServer].executor": "Run",
+    "Gradle.VanillaPlus [runDevServer].executor": "Debug",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "code.cleanup.on.save": "true",
-    "git-widget-placeholder": "#174 on dev",
+    "git-widget-placeholder": "enhance/TreesModule",
     "last_opened_file_path": "C:/Users/admin/Documents/vscode/VanillaPlus/.server/plugins",
     "project.structure.last.edited": "SDKs",
     "project.structure.proportion": "0.0",
@@ -187,7 +188,7 @@
       <workItem from="1752646133509" duration="314000" />
       <workItem from="1752646458917" duration="7938000" />
       <workItem from="1752825278409" duration="356000" />
-      <workItem from="1753088759437" duration="2983000" />
+      <workItem from="1753088759437" duration="4029000" />
     </task>
     <task>
       <option name="closed" value="true" />
@@ -333,7 +334,15 @@
       <option name="project" value="LOCAL" />
       <updated>1753089893510</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="init">
+      <option name="closed" value="true" />
+      <created>1753091952673</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1753091952673</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -348,12 +357,12 @@
     <MESSAGE value="streamlined color handling in LocatorModule and removed redundant hex suggestions" />
     <MESSAGE value="updated DoorsModule to play sounds only for nearby players and bumped module version to 1.15.0" />
     <MESSAGE value="Use configurable proximity radius for door-related sounds in DoorsModule." />
-    <MESSAGE value="init" />
     <MESSAGE value="v+" />
     <MESSAGE value="+" />
     <MESSAGE value="fix commandstructure" />
     <MESSAGE value="added tree command for OP purposes" />
-    <option name="LAST_COMMIT_MESSAGE" value="added tree command for OP purposes" />
+    <MESSAGE value="init" />
+    <option name="LAST_COMMIT_MESSAGE" value="init" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

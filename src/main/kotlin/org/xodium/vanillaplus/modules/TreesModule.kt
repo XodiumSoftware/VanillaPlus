@@ -48,6 +48,8 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
         }
     }
 
+    //TODO: adjust the command to instead of pasting it, it will load into worldedit clipboard. This since it would make it easy to edit it (rotation etc)
+
     override fun enabled(): Boolean {
         if (!config.enabled) return false
 
@@ -79,7 +81,7 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
                             .then(
                                 Commands.argument("index", StringArgumentType.string())
                                     .suggests { ctx, builder ->
-                                        findMaterial(StringArgumentType.getString(ctx, "type"))?.let { material ->
+                                        StringArgumentType.getString(ctx, "type").toMaterial()?.let { material ->
                                             schematicCache[material]?.let { schematics ->
                                                 schematics.indices.forEach { index ->
                                                     builder.suggest(index.toString())
@@ -194,6 +196,7 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
                                 ClipboardHolder(clipboard)
                                     .createPaste(editSession)
                                     .to(BlockVector3.at(block.x, block.y, block.z))
+                                    .also { it.rotateY(getRandomRotation()) }
                                     .copyBiomes(config.copyBiomes)
                                     .copyEntities(config.copyEntities)
                                     .ignoreAirBlocks(config.ignoreAirBlocks)
@@ -216,7 +219,7 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
      */
     private fun handleTreeCmd(player: Player, ctx: CommandContext<CommandSourceStack>, hasIndex: Boolean) {
         val typeName = StringArgumentType.getString(ctx, "type")
-        val material = findMaterial(typeName) ?: return
+        val material = typeName.toMaterial() ?: return
         val clipboards = schematicCache[material] ?: return
         val clipboard = if (hasIndex) {
             val index = StringArgumentType.getString(ctx, "index").toInt()
@@ -238,16 +241,24 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
     }
 
     /**
-     * Attempts to find a matching [Material] based on the provided [typeName].
-     * @param typeName The name of the material to search for.
-     * @return The matching [Material] if found, or `null` if no match is found.
+     * Attempts to resolve this [String] as a [Material], optionally trying suffixes
+     * like "_SAPLING", "_PROPAGULE", and "_FUNGUS" if a direct match fails.
+     * @receiver The material name to search for.
+     * @return The matching [Material], or `null` if no match is found.
      */
-    private fun findMaterial(typeName: String): Material? {
-        return Material.matchMaterial(typeName.uppercase())
-            ?: Material.matchMaterial("${typeName.uppercase()}_SAPLING")
-            ?: Material.matchMaterial("${typeName.uppercase()}_PROPAGULE")
-            ?: Material.matchMaterial("${typeName.uppercase()}_FUNGUS")
+    private fun String.toMaterial(): Material? {
+        val name = this.uppercase()
+        return Material.matchMaterial(name)
+            ?: Material.matchMaterial("${name}_SAPLING")
+            ?: Material.matchMaterial("${name}_PROPAGULE")
+            ?: Material.matchMaterial("${name}_FUNGUS")
     }
+
+    /**
+     * Returns a random rotation angle from the set {0, 90, 180, 270}.
+     * @return An integer representing a rotation angle in degrees.
+     */
+    private fun getRandomRotation() = listOf(0, 90, 180, 270).random()
 
     data class Config(
         override var enabled: Boolean = true,
