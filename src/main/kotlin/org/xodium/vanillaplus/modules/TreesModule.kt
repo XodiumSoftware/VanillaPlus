@@ -237,7 +237,7 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
             player.sendMessage("$PREFIX ${"Loaded $typeName tree into clipboard! Use //paste to place it".mangoFmt(true)}".mm())
         } catch (ex: Exception) {
             instance.logger.severe("Error while setting clipboard: ${ex.message}")
-            player.sendMessage("$PREFIX ${"Failed to load schematic into clipboard".fireFmt()}".mm())
+            player.sendMessage("$PREFIX ${"Error Occurred, Check Console!".fireFmt()}".mm())
         }
     }
 
