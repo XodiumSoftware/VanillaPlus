@@ -5,16 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="21a05071-01eb-4183-b991-bb8bb740a89e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_fasterxml_jackson_core_jackson_annotations_2_19_2.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_fasterxml_jackson_core_jackson_core_2_19_2.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_fasterxml_jackson_core_jackson_databind_2_19_2.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_fasterxml_jackson_datatype_jackson_datatype_jsr310_2_19_2.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_fasterxml_jackson_module_jackson_module_kotlin_2_19_2.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__io_papermc_paper_paper_api_1_21_8_R0_1_SNAPSHOT.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_fasterxml_jackson_core_jackson_annotations_2_19_1.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_fasterxml_jackson_datatype_jackson_datatype_jsr310_2_19_1.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_fasterxml_jackson_module_jackson_module_kotlin_2_19_1.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/TreesModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/TreesModule.kt" afterDir="false" />
     </list>
@@ -126,6 +116,7 @@
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "code.cleanup.on.save": "true",
     "git-widget-placeholder": "#174 on dev",
+    "last_opened_file_path": "C:/Users/admin/Documents/vscode/VanillaPlus/.server/plugins",
     "project.structure.last.edited": "SDKs",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.2",
@@ -135,6 +126,9 @@
   }
 }]]></component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\admin\Documents\vscode\VanillaPlus\.server\plugins" />
+    </key>
     <key name="MoveFile.RECENT_KEYS" />
   </component>
   <component name="RunManager">
@@ -193,7 +187,7 @@
       <workItem from="1752646133509" duration="314000" />
       <workItem from="1752646458917" duration="7938000" />
       <workItem from="1752825278409" duration="356000" />
-      <workItem from="1753088759437" duration="864000" />
+      <workItem from="1753088759437" duration="2983000" />
     </task>
     <task>
       <option name="closed" value="true" />
@@ -331,7 +325,15 @@
       <option name="project" value="LOCAL" />
       <updated>1752831730135</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="added tree command for OP purposes">
+      <option name="closed" value="true" />
+      <created>1753089893510</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1753089893510</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -350,7 +352,8 @@
     <MESSAGE value="v+" />
     <MESSAGE value="+" />
     <MESSAGE value="fix commandstructure" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix commandstructure" />
+    <MESSAGE value="added tree command for OP purposes" />
+    <option name="LAST_COMMIT_MESSAGE" value="added tree command for OP purposes" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
