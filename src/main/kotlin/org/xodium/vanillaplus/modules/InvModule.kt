@@ -37,7 +37,7 @@ import java.util.concurrent.ConcurrentHashMap
 import org.bukkit.Sound as BukkitSound
 
 /** Represents a module handling inv mechanics within the system. */
-class InvModule : ModuleInterface<InvModule.Config> {
+internal class InvModule : ModuleInterface<InvModule.Config> {
     override val config: Config = Config()
 
     private val unloads = ConcurrentHashMap<Location, MutableMap<Material, Int>>()

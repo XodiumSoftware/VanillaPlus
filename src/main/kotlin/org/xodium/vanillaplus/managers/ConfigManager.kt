@@ -19,7 +19,7 @@ import kotlin.io.path.createDirectories
 import kotlin.io.path.writeText
 
 /** Represents the config manager within the system. */
-object ConfigManager {
+internal object ConfigManager {
     private val configPath = instance.dataFolder.toPath().resolve("config.json")
     internal val objectMapper = jacksonObjectMapper()
         .registerModules(JavaTimeModule())

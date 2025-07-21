@@ -4,7 +4,7 @@ import org.bukkit.Material
 import java.util.*
 
 /** Registry for materials. */
-object MaterialRegistry {
+internal object MaterialRegistry {
     val CONTAINER_TYPES: EnumSet<Material> = EnumSet.copyOf(
         Material.entries.filter {
             it.name.endsWith("BARREL") ||

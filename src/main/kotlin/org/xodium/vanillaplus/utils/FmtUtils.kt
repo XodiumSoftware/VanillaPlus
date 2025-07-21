@@ -3,7 +3,7 @@
 package org.xodium.vanillaplus.utils
 
 /** Formatting utilities. */
-object FmtUtils {
+internal object FmtUtils {
     /**
      * Applies a gradient to the given text using the specified colours.
      * @param color1 The starting colour of the gradient.

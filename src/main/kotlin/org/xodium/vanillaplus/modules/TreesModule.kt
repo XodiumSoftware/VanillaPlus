@@ -27,7 +27,7 @@ import java.nio.file.StandardOpenOption
 import java.util.stream.Collectors
 
 /** Represents a module handling tree mechanics within the system. */
-class TreesModule : ModuleInterface<TreesModule.Config> {
+internal class TreesModule : ModuleInterface<TreesModule.Config> {
     override val config: Config = Config()
 
     override fun enabled(): Boolean {

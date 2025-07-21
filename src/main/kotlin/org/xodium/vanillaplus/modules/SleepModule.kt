@@ -7,7 +7,7 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import kotlin.math.ceil
 
 /** Represents a module handling sleeping mechanics within the system. */
-class SleepModule : ModuleInterface<SleepModule.Config> {
+internal class SleepModule : ModuleInterface<SleepModule.Config> {
     override val config: Config = Config()
 
     override fun enabled(): Boolean = config.enabled

@@ -3,7 +3,7 @@
 package org.xodium.vanillaplus.utils
 
 /** Time utilities. */
-object TimeUtils {
+internal object TimeUtils {
     private const val SECONDS: Long = 20L // 20L
     private const val MINUTES: Long = SECONDS * 60L // 1200L
     private const val HOURS: Long = MINUTES * 60L // 72000L

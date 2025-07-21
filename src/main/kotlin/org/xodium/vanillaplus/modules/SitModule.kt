@@ -19,7 +19,7 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import java.util.*
 
 /** Represents a module handling sit mechanics within the system. */
-class SitModule : ModuleInterface<SitModule.Config> {
+internal class SitModule : ModuleInterface<SitModule.Config> {
     override val config: Config = Config()
 
     override fun enabled(): Boolean = config.enabled

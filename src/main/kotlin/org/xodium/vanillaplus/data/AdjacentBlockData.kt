@@ -13,11 +13,11 @@ import org.bukkit.block.data.type.Door.Hinge
  *                   A positive value indicates the block is farther to the south,
  *                   and a negative value indicates it is farther to the north.
  * @property hinge Indicates the [Hinge] position when the block represents a door, useful for determining
- *                 how the door opens (e.g. LEFT, RIGHT).
+ *                 how the door opens (for example, LEFT, RIGHT).
  * @property facing The direction that the adjacent block is facing, represented by the [BlockFace] enum
- *                  (e.g., NORTH, EAST, SOUTH, WEST).
+ *                  (for example, NORTH, EAST, SOUTH, WEST).
  */
-data class AdjacentBlockData(
+internal data class AdjacentBlockData(
     val offsetX: Int,
     val offsetZ: Int,
     private val hinge: Hinge,

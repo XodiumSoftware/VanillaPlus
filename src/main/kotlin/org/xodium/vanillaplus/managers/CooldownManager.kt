@@ -5,7 +5,7 @@ import org.bukkit.entity.Player
 import org.bukkit.persistence.PersistentDataType
 
 /** Represents the cooldown manager within the system. */
-object CooldownManager {
+internal object CooldownManager {
     /**
      * Gets the cooldown timestamp for a player and a specific cooldown key.
      * @param player The player to get the cooldown for.
