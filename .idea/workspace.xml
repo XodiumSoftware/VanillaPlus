@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="21a05071-01eb-4183-b991-bb8bb740a89e" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/DimensionsModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/DimensionsModule.kt" afterDir="false" />
-    </list>
+    <list default="true" id="21a05071-01eb-4183-b991-bb8bb740a89e" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -368,7 +365,15 @@
       <option name="project" value="LOCAL" />
       <updated>1753083419603</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="added mechanics to find corresponding active portal in the overworld in case the portal in the nether cancells.">
+      <option name="closed" value="true" />
+      <created>1753086670437</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1753086670437</updated>
+    </task>
+    <option name="localTasksCounter" value="24" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -393,7 +398,8 @@
     <MESSAGE value="refactoring sending the player a message about portal creation" />
     <MESSAGE value="refactor hasLinkedOverworldPortal" />
     <MESSAGE value="cleanup" />
-    <option name="LAST_COMMIT_MESSAGE" value="cleanup" />
+    <MESSAGE value="added mechanics to find corresponding active portal in the overworld in case the portal in the nether cancells." />
+    <option name="LAST_COMMIT_MESSAGE" value="added mechanics to find corresponding active portal in the overworld in case the portal in the nether cancells." />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
