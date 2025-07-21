@@ -184,7 +184,7 @@
       <workItem from="1752646133509" duration="314000" />
       <workItem from="1752646458917" duration="7938000" />
       <workItem from="1752825278409" duration="356000" />
-      <workItem from="1753088759437" duration="5000000" />
+      <workItem from="1753088759437" duration="5342000" />
     </task>
     <task>
       <option name="closed" value="true" />
@@ -354,14 +354,45 @@
       <option name="project" value="LOCAL" />
       <updated>1753093656543</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="adjusted the messages the player receives">
+      <option name="closed" value="true" />
+      <created>1753093882058</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1753093882058</updated>
+    </task>
+    <task id="LOCAL-00022" summary="woops">
+      <option name="closed" value="true" />
+      <created>1753094062339</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1753094062339</updated>
+    </task>
+    <task id="LOCAL-00023" summary="woopsie poopsie">
+      <option name="closed" value="true" />
+      <created>1753094102466</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1753094102466</updated>
+    </task>
+    <task id="LOCAL-00024" summary="change error msg">
+      <option name="closed" value="true" />
+      <created>1753094146533</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1753094146533</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
     <MESSAGE value="update workspace.xml to include new task configurations" />
-    <MESSAGE value="woops" />
     <MESSAGE value="removed unused libraries and optimized message serialization in ChatModule" />
     <MESSAGE value="updated workspace.xml and dynamic PREFIX formatting in VanillaPlus class" />
     <MESSAGE value="refactored LocatorModule command structure and improved color handling logic" />
@@ -376,7 +407,11 @@
     <MESSAGE value="init" />
     <MESSAGE value="refactoring findMaterial into ext fun, adding random rotation to trees" />
     <MESSAGE value="adjusting the tree command to use worldedit commands to edit it. now we just copy it to the session clipboard and then the user has to use worldedit commands to continue further" />
-    <option name="LAST_COMMIT_MESSAGE" value="adjusting the tree command to use worldedit commands to edit it. now we just copy it to the session clipboard and then the user has to use worldedit commands to continue further" />
+    <MESSAGE value="adjusted the messages the player receives" />
+    <MESSAGE value="woops" />
+    <MESSAGE value="woopsie poopsie" />
+    <MESSAGE value="change error msg" />
+    <option name="LAST_COMMIT_MESSAGE" value="change error msg" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
