@@ -360,7 +360,15 @@
       <option name="project" value="LOCAL" />
       <updated>1753079826204</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="cleanup">
+      <option name="closed" value="true" />
+      <created>1753083419603</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1753083419603</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -384,7 +392,8 @@
     <MESSAGE value="make it so portals can we lit again in the nether if there exist a corresponding portal in the overworld" />
     <MESSAGE value="refactoring sending the player a message about portal creation" />
     <MESSAGE value="refactor hasLinkedOverworldPortal" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactor hasLinkedOverworldPortal" />
+    <MESSAGE value="cleanup" />
+    <option name="LAST_COMMIT_MESSAGE" value="cleanup" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
