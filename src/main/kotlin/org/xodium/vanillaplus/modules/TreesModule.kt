@@ -234,10 +234,10 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
             val actor = BukkitAdapter.adapt(player)
             val session = WorldEdit.getInstance().sessionManager.get(actor)
             session.clipboard = ClipboardHolder(clipboard)
-            player.sendMessage("$PREFIX Loaded $typeName tree into clipboard! Use //paste to place it.".mangoFmt().mm())
+            player.sendMessage("$PREFIX ${"Loaded $typeName tree into clipboard! Use //paste to place it".mangoFmt()}".mm())
         } catch (ex: Exception) {
             instance.logger.severe("Error while setting clipboard: ${ex.message}")
-            player.sendMessage("$PREFIX Failed to load schematic into clipboard".fireFmt().mm())
+            player.sendMessage("$PREFIX ${"Failed to load schematic into clipboard".fireFmt()}".mm())
         }
     }
 
