@@ -9,6 +9,7 @@ import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats
 import com.sk89q.worldedit.function.mask.BlockTypeMask
 import com.sk89q.worldedit.function.operation.Operations
 import com.sk89q.worldedit.math.BlockVector3
+import com.sk89q.worldedit.math.transform.AffineTransform
 import com.sk89q.worldedit.session.ClipboardHolder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
@@ -47,8 +48,6 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
             dirs.flatMap { dir -> loadSchematics("/schematics/$dir") }
         }
     }
-
-    //TODO: adjust the command to instead of pasting it, it will load into worldedit clipboard. This since it would make it easy to edit it (rotation etc)
 
     override fun enabled(): Boolean {
         if (!config.enabled) return false
@@ -192,17 +191,18 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
                             editSession.mask = BlockTypeMask(
                                 editSession,
                                 MaterialRegistry.TREE_MASK.map { BukkitAdapter.asBlockType(it) })
-                            Operations.complete(
-                                ClipboardHolder(clipboard)
-                                    .createPaste(editSession)
-                                    .to(BlockVector3.at(block.x, block.y, block.z))
-                                    .also { it.rotateY(getRandomRotation()) }
-                                    .copyBiomes(config.copyBiomes)
-                                    .copyEntities(config.copyEntities)
-                                    .ignoreAirBlocks(config.ignoreAirBlocks)
-                                    .ignoreStructureVoidBlocks(config.ignoreStructureVoidBlocks)
-                                    .build()
-                            )
+                            ClipboardHolder(clipboard).apply {
+                                transform = transform.combine(AffineTransform().rotateY(getRandomRotation().toDouble()))
+                                Operations.complete(
+                                    createPaste(editSession)
+                                        .to(BlockVector3.at(block.x, block.y, block.z))
+                                        .copyBiomes(config.copyBiomes)
+                                        .copyEntities(config.copyEntities)
+                                        .ignoreAirBlocks(config.ignoreAirBlocks)
+                                        .ignoreStructureVoidBlocks(config.ignoreStructureVoidBlocks)
+                                        .build()
+                                )
+                            }
                         }
                 } catch (ex: Exception) {
                     instance.logger.severe("Error while pasting schematic: ${ex.message}")
@@ -228,16 +228,15 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
         } else {
             clipboards.random()
         }
-        val location = player.eyeLocation.clone()
-            .add(player.eyeLocation.direction.multiply(2))
-            .toBlockLocation()
-        val block = location.block
-        if (!pasteSchematic(block.apply { type = material }, clipboard)) {
-            block.type = Material.AIR
-            return
+        try {
+            val actor = BukkitAdapter.adapt(player)
+            val session = WorldEdit.getInstance().sessionManager.get(actor)
+            session.clipboard = ClipboardHolder(clipboard)
+            player.sendActionBar("Loaded $typeName tree into clipboard! Use //paste to place it.".fireFmt().mm())
+        } catch (ex: Exception) {
+            instance.logger.severe("Error while setting clipboard: ${ex.message}")
+            player.sendActionBar("Failed to load schematic into clipboard".fireFmt().mm())
         }
-
-        player.sendActionBar("Successfully spawned $typeName tree!".fireFmt().mm())
     }
 
     /**
