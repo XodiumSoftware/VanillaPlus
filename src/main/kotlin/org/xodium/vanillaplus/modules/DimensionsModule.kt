@@ -73,18 +73,18 @@ class DimensionsModule : ModuleInterface<DimensionsModule.Config> {
      * @return True if a linked portal exists, false otherwise.
      */
     private fun hasLinkedOverworldPortal(overworld: World, netherLocation: Location): Boolean {
-        val overworldLoc = Location(overworld, netherLocation.x * 8, netherLocation.y, netherLocation.z * 8)
+        val overworldX = netherLocation.blockX * 8
+        val overworldZ = netherLocation.blockZ * 8
         val searchRadius = 16
-        for (x in (overworldLoc.blockX - searchRadius)..(overworldLoc.blockX + searchRadius)) {
-            for (z in (overworldLoc.blockZ - searchRadius)..(overworldLoc.blockZ + searchRadius)) {
-                for (y in overworld.minHeight until overworld.maxHeight) {
-                    if (overworld.getBlockAt(x, y, z).type == Material.NETHER_PORTAL) {
-                        return true
+        return sequence {
+            for (x in (overworldX - searchRadius)..(overworldX + searchRadius)) {
+                for (z in (overworldZ - searchRadius)..(overworldZ + searchRadius)) {
+                    for (y in overworld.minHeight until overworld.maxHeight) {
+                        yield(overworld.getBlockAt(x, y, z))
                     }
                 }
             }
-        }
-        return false
+        }.any { it.type == Material.NETHER_PORTAL }
     }
 
     data class Config(

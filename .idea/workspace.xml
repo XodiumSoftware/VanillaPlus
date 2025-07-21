@@ -5,7 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="21a05071-01eb-4183-b991-bb8bb740a89e" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/DimensionsModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/modules/DimensionsModule.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -344,7 +343,15 @@
       <option name="project" value="LOCAL" />
       <updated>1753079007966</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="refactoring sending the player a message about portal creation">
+      <option name="closed" value="true" />
+      <created>1753079515017</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1753079515017</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -366,7 +373,8 @@
     <MESSAGE value="added config reload cmd" />
     <MESSAGE value="cancel portal ignite when trying to create new portal in nether" />
     <MESSAGE value="make it so portals can we lit again in the nether if there exist a corresponding portal in the overworld" />
-    <option name="LAST_COMMIT_MESSAGE" value="make it so portals can we lit again in the nether if there exist a corresponding portal in the overworld" />
+    <MESSAGE value="refactoring sending the player a message about portal creation" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactoring sending the player a message about portal creation" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
