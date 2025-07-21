@@ -9,7 +9,7 @@ import io.papermc.paper.command.brigadier.CommandSourceStack
  * @property description A [description] of the command, providing context or information about its purpose.
  * @property aliases A list of [aliases] that can be used as alternative command triggers.
  */
-data class CommandData(
+internal data class CommandData(
     val builder: LiteralArgumentBuilder<CommandSourceStack>,
     val description: String,
     val aliases: List<String>

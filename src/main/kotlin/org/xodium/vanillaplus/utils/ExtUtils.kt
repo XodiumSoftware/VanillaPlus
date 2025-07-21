@@ -21,7 +21,7 @@ import java.util.*
 import javax.imageio.ImageIO
 
 /** Extension utilities. */
-object ExtUtils {
+internal object ExtUtils {
     private val MM: MiniMessage = MiniMessage.miniMessage()
 
     /**
@@ -121,7 +121,7 @@ object ExtUtils {
     }
 
     /**
-     * A helper function to wrap command execution with standardized error handling.
+     * A helper  function to wrap command execution with standardized error handling.
      * @param action The action to execute, receiving a CommandSourceStack as a parameter.
      * @return Command.SINGLE_SUCCESS after execution.
      */

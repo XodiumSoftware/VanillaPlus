@@ -8,7 +8,7 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 
 /** Represents a module handling recipe mechanics within the system. */
-class RecipiesModule : ModuleInterface<RecipiesModule.Config> {
+internal class RecipiesModule : ModuleInterface<RecipiesModule.Config> {
     override val config: Config = Config()
 
     override fun enabled(): Boolean = config.enabled

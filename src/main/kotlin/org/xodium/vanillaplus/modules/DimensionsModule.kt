@@ -19,7 +19,7 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 /** Represents a module handling dimension mechanics within the system. */
-class DimensionsModule : ModuleInterface<DimensionsModule.Config> {
+internal class DimensionsModule : ModuleInterface<DimensionsModule.Config> {
     override val config: Config = Config()
 
     override fun enabled(): Boolean = config.enabled
@@ -54,7 +54,7 @@ class DimensionsModule : ModuleInterface<DimensionsModule.Config> {
             if (findCorrespondingPortal(calcPortalCentre(event.blocks), getOverworld()) == null) {
                 event.isCancelled = true
                 val player = event.entity as? Player ?: return
-                player.sendActionBar("No corresponding active portal found in the Overworld!".fireFmt().mm())
+                player.sendActionBar(config.portalCreationDeniedMsg.mm())
             }
         }
     }
@@ -135,5 +135,6 @@ class DimensionsModule : ModuleInterface<DimensionsModule.Config> {
     data class Config(
         override var enabled: Boolean = true,
         var portalSearchRadius: Int = 128,
+        var portalCreationDeniedMsg: String = "No corresponding active portal found in the Overworld!".fireFmt()
     ) : ModuleInterface.Config
 }

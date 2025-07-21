@@ -5,7 +5,7 @@ import org.bukkit.permissions.Permission
 import org.xodium.vanillaplus.data.CommandData
 
 /** Represents a contract for a module within the system. */
-interface ModuleInterface<out T : ModuleInterface.Config> : Listener {
+internal interface ModuleInterface<out T : ModuleInterface.Config> : Listener {
     /**
      * Represents the configuration settings for a module.
      * @property enabled Indicates whether the module is enabled or not.

@@ -6,7 +6,7 @@ import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 
 /** Main class of the plugin. */
-class VanillaPlus : JavaPlugin() {
+internal class VanillaPlus : JavaPlugin() {
     companion object {
         private const val SUPPORTED_VERSION = "1.21.8"
         private const val SUPPORTED_PLATFORM = "Paper"

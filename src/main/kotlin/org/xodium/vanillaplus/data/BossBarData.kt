@@ -11,7 +11,7 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
  * @property style The [style] of the boss bar overlay.
  * @property flags Additional [flags] for the boss bar, such as visibility or dark mode.
  */
-data class BossBarData(
+internal data class BossBarData(
     val name: String,
     private val progress: Float,
     private val color: BossBar.Color,

@@ -9,7 +9,7 @@ import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 
 /** Represents a module handling MOTD mechanics within the system. */
-class MotdModule : ModuleInterface<MotdModule.Config> {
+internal class MotdModule : ModuleInterface<MotdModule.Config> {
     override val config: Config = Config()
 
     override fun enabled(): Boolean = config.enabled

@@ -13,7 +13,7 @@ import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.skylineFmt
 
 /** Represents a module handling book mechanics within the system. */
-class BooksModule : ModuleInterface<BooksModule.Config> {
+internal class BooksModule : ModuleInterface<BooksModule.Config> {
     override val config: Config = Config()
     private val permPrefix: String = "${instance::class.simpleName}.book".lowercase()
 

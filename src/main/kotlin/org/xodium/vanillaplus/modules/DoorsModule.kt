@@ -25,7 +25,7 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.bukkit.Sound as BukkitSound
 
 /** Represents a module handling door mechanics within the system. */
-class DoorsModule : ModuleInterface<DoorsModule.Config> {
+internal class DoorsModule : ModuleInterface<DoorsModule.Config> {
     override val config: Config = Config()
 
     override fun enabled(): Boolean = config.enabled

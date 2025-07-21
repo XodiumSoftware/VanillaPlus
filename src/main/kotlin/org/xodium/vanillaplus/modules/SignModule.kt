@@ -9,7 +9,7 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.pt
 
 /** Represents a module handling sign mechanics within the system. */
-class SignModule : ModuleInterface<SignModule.Config> {
+internal class SignModule : ModuleInterface<SignModule.Config> {
     override val config: Config = Config()
 
     override fun enabled(): Boolean = config.enabled
