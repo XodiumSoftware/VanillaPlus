@@ -336,7 +336,15 @@
       <option name="project" value="LOCAL" />
       <updated>1753078383327</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="make it so portals can we lit again in the nether if there exist a corresponding portal in the overworld">
+      <option name="closed" value="true" />
+      <created>1753079007966</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1753079007966</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -357,7 +365,8 @@
     <MESSAGE value="fix commandstructure" />
     <MESSAGE value="added config reload cmd" />
     <MESSAGE value="cancel portal ignite when trying to create new portal in nether" />
-    <option name="LAST_COMMIT_MESSAGE" value="cancel portal ignite when trying to create new portal in nether" />
+    <MESSAGE value="make it so portals can we lit again in the nether if there exist a corresponding portal in the overworld" />
+    <option name="LAST_COMMIT_MESSAGE" value="make it so portals can we lit again in the nether if there exist a corresponding portal in the overworld" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

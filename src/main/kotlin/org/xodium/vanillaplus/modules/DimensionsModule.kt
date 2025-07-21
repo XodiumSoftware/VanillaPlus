@@ -57,7 +57,8 @@ class DimensionsModule : ModuleInterface<DimensionsModule.Config> {
             if (!hasLinkedOverworldPortal(overworld, portalLocation)) {
                 event.isCancelled = true
 
-                findFirstPlayerNear(portalLocation, 8.0)?.sendActionBar(
+                val player = event.entity as? Player
+                player?.sendActionBar(
                     "You can only light a portal in the Nether if a corresponding portal already exists in the Overworld".fireFmt()
                         .mm()
                 )
@@ -84,18 +85,6 @@ class DimensionsModule : ModuleInterface<DimensionsModule.Config> {
             }
         }
         return false
-    }
-
-    /**
-     * Finds the first player near a given location within the specified radius.
-     * @param location The centre location to search around.
-     * @param radius The search radius.
-     * @return The first nearby player, or null if none found.
-     */
-    private fun findFirstPlayerNear(location: Location, radius: Double): Player? {
-        return location.world.getNearbyEntities(location, radius, radius, radius)
-            .filterIsInstance<Player>()
-            .firstOrNull()
     }
 
     data class Config(
