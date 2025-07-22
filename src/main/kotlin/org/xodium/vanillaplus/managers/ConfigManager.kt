@@ -43,7 +43,7 @@ internal object ConfigManager {
                         ctx.tryCatch {
                             load(true)
                             instance.logger.info("Config: Reloaded successfully")
-                            (it.sender as Player).sendMessage("$PREFIX <pink>Config reloaded successfully".mm())
+                            (it.sender as Player).sendMessage("$PREFIX <#FF55FF>Config reloaded successfully".mm())
                         }
                     },
                 "Reloads the VanillaPlus Config file.",
