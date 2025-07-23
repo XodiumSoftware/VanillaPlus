@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="21a05071-01eb-4183-b991-bb8bb740a89e" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/managers/SettingsManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/managers/SettingsManager.kt" afterDir="false" />
-    </list>
+    <list default="true" id="21a05071-01eb-4183-b991-bb8bb740a89e" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -215,7 +212,7 @@
       <workItem from="1753165772052" duration="34000" />
       <workItem from="1753252978776" duration="8879000" />
       <workItem from="1753263373149" duration="1512000" />
-      <workItem from="1753269390989" duration="632000" />
+      <workItem from="1753269390989" duration="936000" />
     </task>
     <task>
       <option name="closed" value="true" />
@@ -481,13 +478,20 @@
       <option name="project" value="LOCAL" />
       <updated>1753264885044</updated>
     </task>
-    <option name="localTasksCounter" value="33" />
+    <task id="LOCAL-00033" summary="fixed openning module specific settings">
+      <option name="closed" value="true" />
+      <created>1753270283739</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1753270283740</updated>
+    </task>
+    <option name="localTasksCounter" value="34" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="removed unused libraries and optimized message serialization in ChatModule" />
     <MESSAGE value="updated workspace.xml and dynamic PREFIX formatting in VanillaPlus class" />
     <MESSAGE value="refactored LocatorModule command structure and improved color handling logic" />
     <MESSAGE value="formatted hex values in LocatorModule for color handling logic" />
@@ -512,7 +516,8 @@
     <MESSAGE value="debug" />
     <MESSAGE value="fixed if loop" />
     <MESSAGE value="fixed key issues" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed key issues" />
+    <MESSAGE value="fixed openning module specific settings" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed openning module specific settings" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

@@ -71,20 +71,6 @@ internal object SettingsManager : Listener {
 
     @Suppress("UnstableApiUsage")
     fun settings(): Dialog {
-        val modules = ModuleManager.modules
-        val buttons = modules.map { module ->
-            val moduleName = module::class.simpleName.toString()
-            val key = "${instance::class.simpleName.toString()}.dialog.${moduleName}".lowercase()
-            ActionButton.builder(moduleName.fireFmt().mm())
-                .action(
-                    DialogAction.customClick(
-                        Key.key(key),
-                        null
-                    )
-                )
-                .build()
-        }
-
         return Dialog.create { builder ->
             builder.empty()
                 .base(
@@ -93,7 +79,17 @@ internal object SettingsManager : Listener {
                         .build()
                 )
                 .type(
-                    DialogType.multiAction(buttons)
+                    DialogType.multiAction(ModuleManager.modules.map { module ->
+                        val moduleName = module::class.simpleName.toString()
+                        ActionButton.builder(moduleName.fireFmt().mm())
+                            .action(
+                                DialogAction.customClick(
+                                    Key.key("${instance::class.simpleName.toString()}.dialog.${moduleName}".lowercase()),
+                                    null
+                                )
+                            )
+                            .build()
+                    })
                         .columns(4)
                         .build()
                 )
@@ -106,7 +102,7 @@ internal object SettingsManager : Listener {
         val config = module.config
         return Dialog.create { builder ->
             val inputs = mutableListOf<DialogInput>()
-            (config as Any).javaClass.declaredFields.forEach { field ->
+            config.javaClass.declaredFields.forEach { field ->
                 field.isAccessible = true
                 val value = field.get(config)
                 val input = when (field.type) {
@@ -122,6 +118,15 @@ internal object SettingsManager : Listener {
                             "test2", //FIX
                             field.name.fireFmt().mm()
                         ).initial(value as String).build()
+                    }
+
+                    Float::class.java -> {
+                        DialogInput.numberRange(
+                            "test3", //FIX
+                            field.name.fireFmt().mm(),
+                            0f,
+                            100f,
+                        ).initial(value as Float).build()
                     }
 
                     else -> null
