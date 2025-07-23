@@ -75,7 +75,7 @@ internal object SettingsManager : Listener {
             ActionButton.builder("Module ${index + 1}".mm())
                 .action(
                     DialogAction.customClick(
-                        Key.key("${instance::class.simpleName}.dialog.module.$index"),
+                        Key.key("${instance::class.simpleName.toString().lowercase()}.dialog.module.$index"),
                         null
                     )
                 )
@@ -137,7 +137,7 @@ internal object SettingsManager : Listener {
                         ActionButton.builder("Save".mm())
                             .action(
                                 DialogAction.customClick(
-                                    Key.key("${instance::class.simpleName}.dialog.save"),
+                                    Key.key("${instance::class.simpleName.toString().lowercase()}.dialog.save"),
                                     null
                                 )
                             )

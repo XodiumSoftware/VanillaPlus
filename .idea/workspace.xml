@@ -6,8 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="21a05071-01eb-4183-b991-bb8bb740a89e" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/managers/ModuleManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/managers/ModuleManager.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/managers/SettingsManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/managers/SettingsManager.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -135,7 +133,7 @@
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS" />
   </component>
-  <component name="RunManager" selected="Gradle.VanillaPlus [shadowJar]">
+  <component name="RunManager" selected="Gradle.VanillaPlus [runDevServer]">
     <configuration name="VanillaPlus [runDevServer]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -187,8 +185,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Gradle.VanillaPlus [shadowJar]" />
         <item itemvalue="Gradle.VanillaPlus [runDevServer]" />
+        <item itemvalue="Gradle.VanillaPlus [shadowJar]" />
         <item itemvalue="Gradle.VanillaPlus [runDevServer]" />
         <item itemvalue="Gradle.VanillaPlus [runDevServer]" />
         <item itemvalue="Gradle.VanillaPlus [runDevServer]" />
@@ -214,7 +212,7 @@
       <workItem from="1752646458917" duration="7938000" />
       <workItem from="1752825278409" duration="356000" />
       <workItem from="1753165772052" duration="34000" />
-      <workItem from="1753252978776" duration="7394000" />
+      <workItem from="1753252978776" duration="7705000" />
     </task>
     <task>
       <option name="closed" value="true" />
@@ -376,7 +374,15 @@
       <option name="project" value="LOCAL" />
       <updated>1753259686733</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="test 1">
+      <option name="closed" value="true" />
+      <created>1753261351927</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1753261351927</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -397,7 +403,8 @@
     <MESSAGE value="finished config reload cmd" />
     <MESSAGE value="oops" />
     <MESSAGE value="init" />
-    <option name="LAST_COMMIT_MESSAGE" value="init" />
+    <MESSAGE value="test 1" />
+    <option name="LAST_COMMIT_MESSAGE" value="test 1" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
