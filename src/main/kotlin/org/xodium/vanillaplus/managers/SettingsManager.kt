@@ -71,11 +71,16 @@ internal object SettingsManager : Listener {
     @Suppress("UnstableApiUsage")
     fun dialog(): Dialog {
         val modules = ModuleManager.modules
-        val buttons = modules.mapIndexed { index, _ ->
-            ActionButton.builder("Module ${index + 1}".mm())
+        val buttons = modules.map { module ->
+            val moduleName = module::class.simpleName.toString()
+            ActionButton.builder(moduleName.fireFmt().mm())
                 .action(
                     DialogAction.customClick(
-                        Key.key("${instance::class.simpleName.toString().lowercase()}.dialog.module.$index"),
+                        Key.key(
+                            "${instance::class.simpleName.toString().lowercase()}.dialog.module.${
+                                modules.indexOf(module)
+                            }"
+                        ),
                         null
                     )
                 )
