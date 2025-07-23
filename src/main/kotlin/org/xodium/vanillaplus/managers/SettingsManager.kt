@@ -27,9 +27,7 @@ internal object SettingsManager : Listener {
     @Suppress("UnstableApiUsage")
     @EventHandler
     fun on(event: PlayerCustomClickEvent) {
-        val identifier = "${instance::class.simpleName}.dialog."
-        instance.logger.info("SettingsManager: $identifier")
-        if (event.identifier.value().startsWith(identifier)) {
+        if (event.identifier.value().startsWith("${instance::class.simpleName}.dialog.")) {
             val connection = event.commonConnection
             if (connection !is PlayerGameConnection) return
             val player = connection.player
@@ -37,6 +35,7 @@ internal object SettingsManager : Listener {
             val module = ModuleManager.modules.first {
                 it::class.simpleName.toString().lowercase() == moduleName
             }
+            instance.logger.info("SettingsManager: $module")
             player.showDialog(moduleDialogFor(module))
             return
         }
@@ -51,7 +50,7 @@ internal object SettingsManager : Listener {
             CommandData(
                 Commands.literal("settings")
                     .requires { it.sender.hasPermission(perms()[0]) }
-                    .executes { ctx -> ctx.tryCatch { (it.sender as Player).showDialog(dialog()) } },
+                    .executes { ctx -> ctx.tryCatch { (it.sender as Player).showDialog(settings()) } },
                 "Opens up the settings.",
             )
         )
@@ -72,7 +71,7 @@ internal object SettingsManager : Listener {
     }
 
     @Suppress("UnstableApiUsage")
-    fun dialog(): Dialog {
+    fun settings(): Dialog {
         val modules = ModuleManager.modules
         val buttons = modules.map { module ->
             val moduleName = module::class.simpleName.toString()
