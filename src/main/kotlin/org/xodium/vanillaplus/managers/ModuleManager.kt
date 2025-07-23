@@ -68,8 +68,11 @@ internal object ModuleManager {
 
         val commandsToRegister = mutableListOf<CommandData>()
         commandsToRegister.addAll(ConfigManager.cmds())
+        commandsToRegister.addAll(SettingsManager.cmds())
         @Suppress("UnstableApiUsage")
         instance.server.pluginManager.addPermissions(ConfigManager.perms())
+        @Suppress("UnstableApiUsage")
+        instance.server.pluginManager.addPermissions(SettingsManager.perms())
         modules.filter { it.enabled() }.forEach { module ->
             instance.logger.info(
                 "Loaded: ${module::class.simpleName} | Took ${

@@ -9,33 +9,34 @@ import io.papermc.paper.registry.data.dialog.DialogBase
 import io.papermc.paper.registry.data.dialog.action.DialogAction
 import io.papermc.paper.registry.data.dialog.input.DialogInput
 import io.papermc.paper.registry.data.dialog.type.DialogType
-import io.papermc.paper.registry.set.RegistrySet
 import net.kyori.adventure.key.Key
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
+import org.bukkit.event.Listener
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
+import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 
-internal object SettingsManager {
+internal object SettingsManager : Listener {
 
     @Suppress("UnstableApiUsage")
     @EventHandler
     fun on(event: PlayerCustomClickEvent) {
-        if (event.identifier != Key.key("${instance::class.simpleName}.dialog.save")) return
-
-        event.dialogResponseView ?: return
-        val connection = event.commonConnection
-
-        if (connection !is PlayerGameConnection) return
-        val player = connection.player
-
-        //TODO: Here you would implement saving the modified values back to the config
-        player.sendMessage("Settings saved!".mm())
+        if (event.identifier.value().startsWith("${instance::class.simpleName}.dialog.module.")) {
+            val connection = event.commonConnection
+            if (connection !is PlayerGameConnection) return
+            val player = connection.player
+            val index = event.identifier.value().substringAfterLast(".").toIntOrNull() ?: return
+            ModuleManager.modules.getOrNull(index)?.let { module ->
+                player.showDialog(moduleDialogFor(module))
+            }
+            return
+        }
     }
 
     /**
@@ -67,66 +68,20 @@ internal object SettingsManager {
         )
     }
 
+    @Suppress("UnstableApiUsage")
     fun dialog(): Dialog {
         val modules = ModuleManager.modules
-        val dialogKeys = mutableListOf<Key>()
-
-        for (module in modules) {
-            val moduleName = module::class.simpleName.toString().lowercase()
-            val config = module.config
-            val dialogKey = Key.key("${instance::class.simpleName}", "settings_$moduleName")
-
-            @Suppress("UnstableApiUsage")
-            val moduleDialog = Dialog.create { builder ->
-                val inputs = mutableListOf<DialogInput>()
-                config.javaClass.declaredFields.forEach { field ->
-                    field.isAccessible = true
-                    val value = field.get(config)
-                    val input = when (field.type) {
-                        Boolean::class.java -> {
-                            DialogInput.bool(
-                                "${instance::class.simpleName}.${moduleName}.${field.name}",
-                                field.name.fireFmt().mm()
-                            ).initial(value as Boolean).build()
-                        }
-
-                        String::class.java -> {
-                            DialogInput.text(
-                                "${instance::class.simpleName}.${moduleName}.${field.name}",
-                                field.name.fireFmt().mm()
-                            ).initial(value as String).build()
-                        }
-
-                        else -> null
-                    }
-                    input?.let { inputs.add(it) }
-                }
-                builder.empty()
-                    .base(
-                        DialogBase.builder(moduleName.fireFmt().mm())
-                            .inputs(inputs)
-                            .build()
+        val buttons = modules.mapIndexed { index, _ ->
+            ActionButton.builder("Module ${index + 1}".mm())
+                .action(
+                    DialogAction.customClick(
+                        Key.key("${instance::class.simpleName}.dialog.module.$index"),
+                        null
                     )
-                    .type(
-                        DialogType.confirmation(
-                            ActionButton.builder("Save".mm())
-                                .action(
-                                    DialogAction.customClick(
-                                        Key.key("${instance::class.simpleName}.dialog.save"),
-                                        null
-                                    )
-                                )
-                                .build(),
-                            ActionButton.builder("Cancel".mm())
-                                .build()
-                        )
-                    )
-            }
-            instance.server.dialogRegistry.register(dialogKey, moduleDialog)
-            dialogKeys.add(dialogKey)
+                )
+                .build()
         }
 
-        @Suppress("UnstableApiUsage")
         return Dialog.create { builder ->
             builder.empty()
                 .base(
@@ -135,10 +90,60 @@ internal object SettingsManager {
                         .build()
                 )
                 .type(
-                    DialogType.dialogList(RegistrySet.keySet(*dialogKeys.toTypedArray()))
+                    DialogType.multiAction(buttons)
                         .columns(4)
-                        .buttonWidth(160)
                         .build()
+                )
+        }
+    }
+
+    @Suppress("UnstableApiUsage")
+    fun moduleDialogFor(module: ModuleInterface<*>): Dialog {
+        val moduleName = module::class.simpleName.toString().lowercase()
+        val config = module.config
+        return Dialog.create { builder ->
+            val inputs = mutableListOf<DialogInput>()
+            (config as Any).javaClass.declaredFields.forEach { field ->
+                field.isAccessible = true
+                val value = field.get(config)
+                val input = when (field.type) {
+                    Boolean::class.java -> {
+                        DialogInput.bool(
+                            "${instance::class.simpleName}.${moduleName}.${field.name}",
+                            field.name.fireFmt().mm()
+                        ).initial(value as Boolean).build()
+                    }
+
+                    String::class.java -> {
+                        DialogInput.text(
+                            "${instance::class.simpleName}.${moduleName}.${field.name}",
+                            field.name.fireFmt().mm()
+                        ).initial(value as String).build()
+                    }
+
+                    else -> null
+                }
+                input?.let { inputs.add(it) }
+            }
+
+            builder.empty()
+                .base(
+                    DialogBase.builder(moduleName.fireFmt().mm())
+                        .inputs(inputs)
+                        .build()
+                )
+                .type(
+                    DialogType.confirmation(
+                        ActionButton.builder("Save".mm())
+                            .action(
+                                DialogAction.customClick(
+                                    Key.key("${instance::class.simpleName}.dialog.save"),
+                                    null
+                                )
+                            )
+                            .build(),
+                        ActionButton.builder("Cancel".mm()).build()
+                    )
                 )
         }
     }
