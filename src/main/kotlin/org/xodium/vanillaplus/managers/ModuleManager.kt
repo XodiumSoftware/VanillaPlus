@@ -73,6 +73,7 @@ internal object ModuleManager {
         instance.server.pluginManager.addPermissions(ConfigManager.perms())
         @Suppress("UnstableApiUsage")
         instance.server.pluginManager.addPermissions(SettingsManager.perms())
+        instance.server.pluginManager.registerEvents(SettingsManager, instance)
         modules.filter { it.enabled() }.forEach { module ->
             instance.logger.info(
                 "Loaded: ${module::class.simpleName} | Took ${

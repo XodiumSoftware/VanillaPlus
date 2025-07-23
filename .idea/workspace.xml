@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="21a05071-01eb-4183-b991-bb8bb740a89e" name="Changes" comment="" />
+    <list default="true" id="21a05071-01eb-4183-b991-bb8bb740a89e" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/managers/SettingsManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/managers/SettingsManager.kt" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -211,6 +213,7 @@
       <workItem from="1752825278409" duration="356000" />
       <workItem from="1753165772052" duration="34000" />
       <workItem from="1753252978776" duration="8879000" />
+      <workItem from="1753263373149" duration="414000" />
     </task>
     <task>
       <option name="closed" value="true" />
@@ -428,14 +431,21 @@
       <option name="project" value="LOCAL" />
       <updated>1753262198178</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="woops">
+      <option name="closed" value="true" />
+      <created>1753263430398</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1753263430398</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
     <MESSAGE value="update workspace.xml to include new task configurations" />
-    <MESSAGE value="woops" />
     <MESSAGE value="removed unused libraries and optimized message serialization in ChatModule" />
     <MESSAGE value="updated workspace.xml and dynamic PREFIX formatting in VanillaPlus class" />
     <MESSAGE value="refactored LocatorModule command structure and improved color handling logic" />
@@ -455,7 +465,8 @@
     <MESSAGE value="fixed key uppercase -&gt; lowecase" />
     <MESSAGE value="added bold" />
     <MESSAGE value="oops" />
-    <option name="LAST_COMMIT_MESSAGE" value="oops" />
+    <MESSAGE value="woops" />
+    <option name="LAST_COMMIT_MESSAGE" value="woops" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

@@ -27,14 +27,16 @@ internal object SettingsManager : Listener {
     @Suppress("UnstableApiUsage")
     @EventHandler
     fun on(event: PlayerCustomClickEvent) {
-        if (event.identifier.value().startsWith("${instance::class.simpleName}.dialog.")) {
+        val identifier = "${instance::class.simpleName}.dialog."
+        instance.logger.info("SettingsManager: $identifier")
+        if (event.identifier.value().startsWith(identifier)) {
             val connection = event.commonConnection
             if (connection !is PlayerGameConnection) return
             val player = connection.player
             val moduleName = event.identifier.value().substringAfterLast(".")
-            val module = ModuleManager.modules.firstOrNull {
-                it::class.simpleName?.lowercase() == moduleName
-            } ?: return
+            val module = ModuleManager.modules.first {
+                it::class.simpleName.toString().lowercase() == moduleName
+            }
             player.showDialog(moduleDialogFor(module))
             return
         }
@@ -74,10 +76,12 @@ internal object SettingsManager : Listener {
         val modules = ModuleManager.modules
         val buttons = modules.map { module ->
             val moduleName = module::class.simpleName.toString()
-            ActionButton.builder("<b>$moduleName</b>".fireFmt().mm())
+            val key = "${instance::class.simpleName.toString()}.dialog.${moduleName}".lowercase()
+            instance.logger.info("SettingsManager: $key")
+            ActionButton.builder(moduleName.fireFmt().mm())
                 .action(
                     DialogAction.customClick(
-                        Key.key("${instance::class.simpleName.toString()}.dialog.${moduleName}".lowercase()),
+                        Key.key(key),
                         null
                     )
                 )
@@ -130,7 +134,7 @@ internal object SettingsManager : Listener {
 
             builder.empty()
                 .base(
-                    DialogBase.builder(moduleName.fireFmt().mm())
+                    DialogBase.builder("<b>$moduleName</b>".fireFmt().mm())
                         .inputs(inputs)
                         .build()
                 )
