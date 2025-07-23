@@ -27,13 +27,13 @@ internal object SettingsManager : Listener {
     @Suppress("UnstableApiUsage")
     @EventHandler
     fun on(event: PlayerCustomClickEvent) {
-        if (event.identifier.value().startsWith("${instance::class.simpleName.toString().lowercase()}.dialog.")) {
+        if (event.identifier.value().startsWith("${instance::class.simpleName.toString()}.dialog.".lowercase())) {
             val connection = event.commonConnection
             if (connection !is PlayerGameConnection) return
             val player = connection.player
             val moduleName = event.identifier.value().substringAfterLast(".")
             val module = ModuleManager.modules.first {
-                it::class.simpleName.toString().lowercase() == moduleName
+                it::class.simpleName.toString().lowercase() == moduleName.lowercase()
             }
             player.showDialog(moduleDialogFor(module))
             return
@@ -102,7 +102,7 @@ internal object SettingsManager : Listener {
 
     @Suppress("UnstableApiUsage")
     fun moduleDialogFor(module: ModuleInterface<*>): Dialog {
-        val moduleName = module::class.simpleName.toString().lowercase()
+        val moduleName = module::class.simpleName.toString()
         val config = module.config
         return Dialog.create { builder ->
             val inputs = mutableListOf<DialogInput>()
@@ -112,14 +112,14 @@ internal object SettingsManager : Listener {
                 val input = when (field.type) {
                     Boolean::class.java -> {
                         DialogInput.bool(
-                            "${instance::class.simpleName.toString().lowercase()}.${moduleName}.${field.name}",
+                            "test1", //FIX
                             field.name.fireFmt().mm()
                         ).initial(value as Boolean).build()
                     }
 
                     String::class.java -> {
                         DialogInput.text(
-                            "${instance::class.simpleName.toString().lowercase()}.${moduleName}.${field.name}",
+                            "test2", //FIX
                             field.name.fireFmt().mm()
                         ).initial(value as String).build()
                     }
