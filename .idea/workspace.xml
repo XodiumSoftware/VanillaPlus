@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="21a05071-01eb-4183-b991-bb8bb740a89e" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/managers/SettingsManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/managers/SettingsManager.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -72,7 +71,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="dev" />
+        <entry key="$PROJECT_DIR$" value="feat/SettingsManager" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -112,29 +111,29 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;Gradle.Build VanillaPlus.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.Download Sources.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.VanillaPlus [runDevServer].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.VanillaPlus [shadowJar].executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;code.cleanup.on.save&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feat/SettingsManager&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;SDKs&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;rearrange.code.on.save&quot;: &quot;true&quot;,
-    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;vcs.Git&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Gradle.Build VanillaPlus.executor": "Run",
+    "Gradle.Download Sources.executor": "Run",
+    "Gradle.VanillaPlus [runDevServer].executor": "Run",
+    "Gradle.VanillaPlus [shadowJar].executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "code.cleanup.on.save": "true",
+    "git-widget-placeholder": "dev",
+    "project.structure.last.edited": "SDKs",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.2",
+    "rearrange.code.on.save": "true",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "settings.editor.selected.configurable": "vcs.Git"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS" />
   </component>
-  <component name="RunManager" selected="Gradle.VanillaPlus [runDevServer]">
+  <component name="RunManager" selected="Gradle.VanillaPlus [shadowJar]">
     <configuration name="VanillaPlus [runDevServer]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -186,10 +185,10 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Gradle.VanillaPlus [runDevServer]" />
         <item itemvalue="Gradle.VanillaPlus [shadowJar]" />
         <item itemvalue="Gradle.VanillaPlus [runDevServer]" />
         <item itemvalue="Gradle.VanillaPlus [runDevServer]" />
+        <item itemvalue="Gradle.VanillaPlus [shadowJar]" />
         <item itemvalue="Gradle.VanillaPlus [runDevServer]" />
       </list>
     </recent_temporary>
@@ -497,13 +496,20 @@
       <option name="project" value="LOCAL" />
       <updated>1753270732862</updated>
     </task>
-    <option name="localTasksCounter" value="35" />
+    <task id="LOCAL-00035" summary="made SignModule.kt more configurable">
+      <option name="closed" value="true" />
+      <created>1753272680308</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1753272680308</updated>
+    </task>
+    <option name="localTasksCounter" value="36" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="refactored LocatorModule command structure and improved color handling logic" />
     <MESSAGE value="formatted hex values in LocatorModule for color handling logic" />
     <MESSAGE value="streamlined color handling in LocatorModule and removed redundant hex suggestions" />
     <MESSAGE value="updated DoorsModule to play sounds only for nearby players and bumped module version to 1.15.0" />
@@ -528,7 +534,8 @@
     <MESSAGE value="fixed key issues" />
     <MESSAGE value="fixed openning module specific settings" />
     <MESSAGE value="added Float" />
-    <option name="LAST_COMMIT_MESSAGE" value="added Float" />
+    <MESSAGE value="made SignModule.kt more configurable" />
+    <option name="LAST_COMMIT_MESSAGE" value="made SignModule.kt more configurable" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
