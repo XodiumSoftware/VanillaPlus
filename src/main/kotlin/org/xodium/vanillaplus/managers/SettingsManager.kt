@@ -21,7 +21,6 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
-import java.util.*
 
 internal object SettingsManager : Listener {
 
@@ -109,16 +108,16 @@ internal object SettingsManager : Listener {
                 val input = when (field.type) {
                     Boolean::class.java -> {
                         DialogInput.bool(
-                            UUID.randomUUID().toString(),
+                            "",
                             field.name.fireFmt().mm()
                         ).initial(value as Boolean).build()
                     }
 
                     String::class.java, Int::class.java, Float::class.java, Double::class.java -> {
                         DialogInput.text(
-                            UUID.randomUUID().toString(),
+                            "",
                             field.name.fireFmt().mm()
-                        ).initial(value as String).build()
+                        ).initial(value.toString()).build()
                     }
 
                     else -> null
