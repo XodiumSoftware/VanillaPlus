@@ -26,7 +26,6 @@ internal class BooksModule : ModuleInterface<BooksModule.Config> {
                     .requires { it.sender.hasPermission("$permPrefix.${book.cmd.lowercase()}") }
                     .executes { ctx -> ctx.tryCatch { (ctx.source.sender as Player).openBook(book.toBook()) } },
                 "Opens the predefined book '${book.cmd.lowercase()}'.",
-                emptyList()
             )
         }
     }

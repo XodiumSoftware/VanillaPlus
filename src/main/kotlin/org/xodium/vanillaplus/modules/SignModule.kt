@@ -8,6 +8,7 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.pt
 
+
 /** Represents a module handling sign mechanics within the system. */
 internal class SignModule : ModuleInterface<SignModule.Config> {
     override val config: Config = Config()
@@ -30,10 +31,11 @@ internal class SignModule : ModuleInterface<SignModule.Config> {
      * @return true if MiniMessage tags are found, false otherwise
      */
     private fun containsMiniMessageTags(component: Component): Boolean {
-        return "</?[a-zA-Z0-9_#:-]+.*?>".toRegex().containsMatchIn(component.pt())
+        return config.miniMessageTags.toRegex().containsMatchIn(component.pt())
     }
 
     data class Config(
         override var enabled: Boolean = true,
+        var miniMessageTags: String = "</?[a-zA-Z0-9_#:-]+.*?>",
     ) : ModuleInterface.Config
 }

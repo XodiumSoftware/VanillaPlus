@@ -30,7 +30,7 @@ internal object ModuleManager {
     val treesModule: TreesModule = TreesModule()
     val trowelModule: TrowelModule = TrowelModule()
 
-    private val modules = listOf(
+    val modules = listOf(
         autoRestartModule,
         booksModule,
         chatModule,

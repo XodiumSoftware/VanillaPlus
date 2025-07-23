@@ -33,7 +33,6 @@ internal class TrowelModule : ModuleInterface<TrowelModule.Config> {
                     .requires { it.sender.hasPermission(perms()[0]) }
                     .executes { ctx -> ctx.tryCatch { toggle(ctx.source.sender as Player) } },
                 "Allows players to toggle the trowel functionality.",
-                emptyList()
             )
         )
     }
