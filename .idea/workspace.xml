@@ -109,25 +109,25 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Gradle.Build VanillaPlus.executor": "Run",
-    "Gradle.Download Sources.executor": "Run",
-    "Gradle.VanillaPlus [runDevServer].executor": "Run",
-    "Gradle.VanillaPlus [shadowJar].executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "code.cleanup.on.save": "true",
-    "git-widget-placeholder": "feat/SettingsManager",
-    "project.structure.last.edited": "SDKs",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.2",
-    "rearrange.code.on.save": "true",
-    "run.code.analysis.last.selected.profile": "pProject Default",
-    "settings.editor.selected.configurable": "vcs.Git"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Gradle.Build VanillaPlus.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Download Sources.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.VanillaPlus [runDevServer].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.VanillaPlus [shadowJar].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;code.cleanup.on.save&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feat/SettingsManager&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;SDKs&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;rearrange.code.on.save&quot;: &quot;true&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;vcs.Git&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS" />
   </component>
@@ -210,7 +210,7 @@
       <workItem from="1752646458917" duration="7938000" />
       <workItem from="1752825278409" duration="356000" />
       <workItem from="1753165772052" duration="34000" />
-      <workItem from="1753252978776" duration="8395000" />
+      <workItem from="1753252978776" duration="8879000" />
     </task>
     <task>
       <option name="closed" value="true" />
@@ -420,7 +420,15 @@
       <option name="project" value="LOCAL" />
       <updated>1753262118197</updated>
     </task>
-    <option name="localTasksCounter" value="26" />
+    <task id="LOCAL-00026" summary="oops">
+      <option name="closed" value="true" />
+      <created>1753262198178</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1753262198178</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -439,7 +447,6 @@
     <MESSAGE value="+" />
     <MESSAGE value="fix commandstructure" />
     <MESSAGE value="finished config reload cmd" />
-    <MESSAGE value="oops" />
     <MESSAGE value="init" />
     <MESSAGE value="test 1" />
     <MESSAGE value="fixed: [11:03:59 ERROR]: [VanillaPlus] An Error has occurred: Non [a-z0-9_\-./]+ character in value of Key[minecraft:VanillaPlus.dialog.module.0] at index 0 ('V', bytes: [86])" />
@@ -447,7 +454,8 @@
     <MESSAGE value="using modulename as key too now" />
     <MESSAGE value="fixed key uppercase -&gt; lowecase" />
     <MESSAGE value="added bold" />
-    <option name="LAST_COMMIT_MESSAGE" value="added bold" />
+    <MESSAGE value="oops" />
+    <option name="LAST_COMMIT_MESSAGE" value="oops" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

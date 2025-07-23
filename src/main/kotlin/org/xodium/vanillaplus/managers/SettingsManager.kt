@@ -130,7 +130,7 @@ internal object SettingsManager : Listener {
 
             builder.empty()
                 .base(
-                    DialogBase.builder("<b>$moduleName</b>".fireFmt().mm())
+                    DialogBase.builder(moduleName.fireFmt().mm())
                         .inputs(inputs)
                         .build()
                 )
