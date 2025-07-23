@@ -112,14 +112,14 @@ internal object SettingsManager : Listener {
                 val input = when (field.type) {
                     Boolean::class.java -> {
                         DialogInput.bool(
-                            "${instance::class.simpleName}.${moduleName}.${field.name}",
+                            "${instance::class.simpleName.toString().lowercase()}.${moduleName}.${field.name}",
                             field.name.fireFmt().mm()
                         ).initial(value as Boolean).build()
                     }
 
                     String::class.java -> {
                         DialogInput.text(
-                            "${instance::class.simpleName}.${moduleName}.${field.name}",
+                            "${instance::class.simpleName.toString().lowercase()}.${moduleName}.${field.name}",
                             field.name.fireFmt().mm()
                         ).initial(value as String).build()
                     }
