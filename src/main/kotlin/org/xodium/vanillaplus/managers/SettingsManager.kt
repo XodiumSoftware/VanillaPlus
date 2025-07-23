@@ -77,7 +77,7 @@ internal object SettingsManager : Listener {
             ActionButton.builder(moduleName.fireFmt().mm())
                 .action(
                     DialogAction.customClick(
-                        Key.key("${instance::class.simpleName.toString().lowercase()}.dialog.$moduleName"),
+                        Key.key("${instance::class.simpleName.toString()}.dialog.${moduleName}".lowercase()),
                         null
                     )
                 )
