@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="21a05071-01eb-4183-b991-bb8bb740a89e" name="Changes" comment="" />
+    <list default="true" id="21a05071-01eb-4183-b991-bb8bb740a89e" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/managers/SettingsManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/managers/SettingsManager.kt" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -211,7 +213,7 @@
       <workItem from="1752825278409" duration="356000" />
       <workItem from="1753165772052" duration="34000" />
       <workItem from="1753252978776" duration="8879000" />
-      <workItem from="1753263373149" duration="724000" />
+      <workItem from="1753263373149" duration="1096000" />
     </task>
     <task>
       <option name="closed" value="true" />
@@ -445,7 +447,15 @@
       <option name="project" value="LOCAL" />
       <updated>1753264034020</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="small refactor">
+      <option name="closed" value="true" />
+      <created>1753264389459</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1753264389459</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -473,7 +483,8 @@
     <MESSAGE value="oops" />
     <MESSAGE value="woops" />
     <MESSAGE value="fixed some formatting and fixed settingsmanager events not registered in modulemanager" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed some formatting and fixed settingsmanager events not registered in modulemanager" />
+    <MESSAGE value="small refactor" />
+    <option name="LAST_COMMIT_MESSAGE" value="small refactor" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
