@@ -74,7 +74,7 @@ internal object SettingsManager : Listener {
         val modules = ModuleManager.modules
         val buttons = modules.map { module ->
             val moduleName = module::class.simpleName.toString()
-            ActionButton.builder(moduleName.fireFmt().mm())
+            ActionButton.builder("<b>$moduleName</b>".fireFmt().mm())
                 .action(
                     DialogAction.customClick(
                         Key.key("${instance::class.simpleName.toString()}.dialog.${moduleName}".lowercase()),

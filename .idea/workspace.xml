@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="21a05071-01eb-4183-b991-bb8bb740a89e" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/managers/SettingsManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/org/xodium/vanillaplus/managers/SettingsManager.kt" afterDir="false" />
-    </list>
+    <list default="true" id="21a05071-01eb-4183-b991-bb8bb740a89e" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -212,7 +210,7 @@
       <workItem from="1752646458917" duration="7938000" />
       <workItem from="1752825278409" duration="356000" />
       <workItem from="1753165772052" duration="34000" />
-      <workItem from="1753252978776" duration="8065000" />
+      <workItem from="1753252978776" duration="8395000" />
     </task>
     <task>
       <option name="closed" value="true" />
@@ -398,7 +396,31 @@
       <option name="project" value="LOCAL" />
       <updated>1753261766328</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="using modulename as key too now">
+      <option name="closed" value="true" />
+      <created>1753261867715</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1753261867715</updated>
+    </task>
+    <task id="LOCAL-00024" summary="fixed key uppercase -&gt; lowecase">
+      <option name="closed" value="true" />
+      <created>1753261980246</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1753261980246</updated>
+    </task>
+    <task id="LOCAL-00025" summary="added bold">
+      <option name="closed" value="true" />
+      <created>1753262118197</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1753262118197</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -422,7 +444,10 @@
     <MESSAGE value="test 1" />
     <MESSAGE value="fixed: [11:03:59 ERROR]: [VanillaPlus] An Error has occurred: Non [a-z0-9_\-./]+ character in value of Key[minecraft:VanillaPlus.dialog.module.0] at index 0 ('V', bytes: [86])" />
     <MESSAGE value="using named module buttons instead of indexed" />
-    <option name="LAST_COMMIT_MESSAGE" value="using named module buttons instead of indexed" />
+    <MESSAGE value="using modulename as key too now" />
+    <MESSAGE value="fixed key uppercase -&gt; lowecase" />
+    <MESSAGE value="added bold" />
+    <option name="LAST_COMMIT_MESSAGE" value="added bold" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
