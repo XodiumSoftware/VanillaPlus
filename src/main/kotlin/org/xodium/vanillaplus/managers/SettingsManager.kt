@@ -87,7 +87,7 @@ internal object SettingsManager : Listener {
         return Dialog.create { builder ->
             builder.empty()
                 .base(
-                    DialogBase.builder("VanillaPlus Settings".fireFmt().mm())
+                    DialogBase.builder("<b>VanillaPlus Settings</b>".fireFmt().mm())
                         .canCloseWithEscape(true)
                         .build()
                 )
@@ -130,7 +130,7 @@ internal object SettingsManager : Listener {
 
             builder.empty()
                 .base(
-                    DialogBase.builder(moduleName.fireFmt().mm())
+                    DialogBase.builder("<b>$moduleName</b>".fireFmt().mm())
                         .inputs(inputs)
                         .build()
                 )
