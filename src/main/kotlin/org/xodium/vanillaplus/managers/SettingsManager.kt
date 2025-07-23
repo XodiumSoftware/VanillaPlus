@@ -27,14 +27,15 @@ internal object SettingsManager : Listener {
     @Suppress("UnstableApiUsage")
     @EventHandler
     fun on(event: PlayerCustomClickEvent) {
-        if (event.identifier.value().startsWith("${instance::class.simpleName}.dialog.module.")) {
+        if (event.identifier.value().startsWith("${instance::class.simpleName}.dialog.")) {
             val connection = event.commonConnection
             if (connection !is PlayerGameConnection) return
             val player = connection.player
-            val index = event.identifier.value().substringAfterLast(".").toIntOrNull() ?: return
-            ModuleManager.modules.getOrNull(index)?.let { module ->
-                player.showDialog(moduleDialogFor(module))
-            }
+            val moduleName = event.identifier.value().substringAfterLast(".")
+            val module = ModuleManager.modules.firstOrNull {
+                it::class.simpleName?.lowercase() == moduleName
+            } ?: return
+            player.showDialog(moduleDialogFor(module))
             return
         }
     }
@@ -76,11 +77,7 @@ internal object SettingsManager : Listener {
             ActionButton.builder(moduleName.fireFmt().mm())
                 .action(
                     DialogAction.customClick(
-                        Key.key(
-                            "${instance::class.simpleName.toString().lowercase()}.dialog.module.${
-                                modules.indexOf(module)
-                            }"
-                        ),
+                        Key.key("${instance::class.simpleName.toString().lowercase()}.dialog.$moduleName"),
                         null
                     )
                 )
