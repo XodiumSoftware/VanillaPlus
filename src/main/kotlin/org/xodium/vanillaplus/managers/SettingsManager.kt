@@ -27,9 +27,7 @@ internal object SettingsManager : Listener {
     @Suppress("UnstableApiUsage")
     @EventHandler
     fun on(event: PlayerCustomClickEvent) {
-        instance.logger.info("SettingsManager: EVENT TEST: ${event.identifier.value()}")
-        if (event.identifier.value().startsWith("${instance::class.simpleName}.dialog.")) {
-            instance.logger.info("we passed the if statement")
+        if (event.identifier.value().startsWith("${instance::class.simpleName.toString().lowercase()}.dialog.")) {
             val connection = event.commonConnection
             if (connection !is PlayerGameConnection) return
             val player = connection.player
@@ -77,7 +75,6 @@ internal object SettingsManager : Listener {
         val buttons = modules.map { module ->
             val moduleName = module::class.simpleName.toString()
             val key = "${instance::class.simpleName.toString()}.dialog.${moduleName}".lowercase()
-            instance.logger.info("SettingsManager: KEY TEST: $key")
             ActionButton.builder(moduleName.fireFmt().mm())
                 .action(
                     DialogAction.customClick(
