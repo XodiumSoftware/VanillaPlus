@@ -31,11 +31,11 @@ internal class SignModule : ModuleInterface<SignModule.Config> {
      * @return true if MiniMessage tags are found, false otherwise
      */
     private fun containsMiniMessageTags(component: Component): Boolean {
-        return config.miniMessageTags.toRegex().containsMatchIn(component.pt())
+        return config.miniMessageRegex.toRegex().containsMatchIn(component.pt())
     }
 
     data class Config(
         override var enabled: Boolean = true,
-        var miniMessageTags: String = "</?[a-zA-Z0-9_#:-]+.*?>",
+        var miniMessageRegex: String = "</?[a-zA-Z0-9_#:-]+.*?>",
     ) : ModuleInterface.Config
 }

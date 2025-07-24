@@ -64,6 +64,7 @@
         <option value="Kotlin Object" />
         <option value="Kotlin Xodium Module Class" />
         <option value="Kotlin Class" />
+        <option value="Kotlin Object" />
       </list>
     </option>
   </component>
@@ -74,6 +75,7 @@
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
         <entry key="$PROJECT_DIR$" value="feat/GhastModule" />
+        <entry key="$PROJECT_DIR$" value="feat/SettingsManager" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -125,12 +127,15 @@
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "code.cleanup.on.save": "true",
     "git-widget-placeholder": "feat/SettingsManager",
+    "code.cleanup.on.save": "true",
+    "git-widget-placeholder": "dev",
     "project.structure.last.edited": "SDKs",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.2",
     "rearrange.code.on.save": "true",
     "run.code.analysis.last.selected.profile": "pProject Default",
     "settings.editor.selected.configurable": "fileTemplates"
+    "settings.editor.selected.configurable": "vcs.Git"
   }
 }]]></component>
   <component name="RecentsManager">
@@ -589,11 +594,22 @@
       <updated>1753278603735</updated>
     </task>
     <option name="localTasksCounter" value="46" />
+    <option name="localTasksCounter" value="36" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+    <MESSAGE value="formatted hex values in LocatorModule for color handling logic" />
+    <MESSAGE value="streamlined color handling in LocatorModule and removed redundant hex suggestions" />
+    <MESSAGE value="updated DoorsModule to play sounds only for nearby players and bumped module version to 1.15.0" />
+    <MESSAGE value="Use configurable proximity radius for door-related sounds in DoorsModule." />
+    <MESSAGE value="v+" />
+    <MESSAGE value="+" />
+    <MESSAGE value="fix commandstructure" />
+    <MESSAGE value="finished config reload cmd" />
+    <MESSAGE value="init" />
+    <MESSAGE value="test 1" />
     <MESSAGE value="fixed: [11:03:59 ERROR]: [VanillaPlus] An Error has occurred: Non [a-z0-9_\-./]+ character in value of Key[minecraft:VanillaPlus.dialog.module.0] at index 0 ('V', bytes: [86])" />
     <MESSAGE value="using named module buttons instead of indexed" />
     <MESSAGE value="using modulename as key too now" />
@@ -620,6 +636,7 @@
     <MESSAGE value="changed Ghast to HappyGhast, stupid mistake" />
     <MESSAGE value="trying to fix the Registry" />
     <option name="LAST_COMMIT_MESSAGE" value="trying to fix the Registry" />
+    <option name="LAST_COMMIT_MESSAGE" value="made SignModule.kt more configurable" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
