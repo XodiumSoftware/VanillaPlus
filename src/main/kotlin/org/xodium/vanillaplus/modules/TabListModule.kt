@@ -115,9 +115,9 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
     private fun getWeather(): String {
         val world = instance.server.worlds[0]
         return when {
-            world.isThundering -> "<red>\uD83C\uDF29<reset>"
-            world.hasStorm() -> "<yellow>\uD83C\uDF26<reset>"
-            else -> "<green>\uD83C\uDF24<reset>"
+            world.isThundering -> config.weatherThundering
+            world.hasStorm() -> config.weatherStorm
+            else -> config.weatherClear
         }
     }
 
@@ -139,5 +139,8 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
                 "]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)
             }"
         ),
+        var weatherThundering: String = "<red>\uD83C\uDF29<reset>",
+        var weatherStorm: String = "<yellow>\uD83C\uDF26<reset>",
+        var weatherClear: String = "<green>\uD83C\uDF24<reset>",
     ) : ModuleInterface.Config
 }

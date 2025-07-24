@@ -8,11 +8,14 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.papermc.paper.command.brigadier.Commands
+import org.bukkit.entity.Player
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
+import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import java.io.IOException
 import kotlin.io.path.createDirectories
@@ -36,7 +39,13 @@ internal object ConfigManager {
             CommandData(
                 Commands.literal("vanillaplus")
                     .requires { it.sender.hasPermission(perms()[0]) }
-                    .executes { ctx -> ctx.tryCatch { } },
+                    .executes { ctx ->
+                        ctx.tryCatch {
+                            load(true)
+                            instance.logger.info("Config: Reloaded successfully")
+                            (it.sender as Player).sendMessage("$PREFIX <#FF55FF>Config reloaded successfully".mm())
+                        }
+                    },
                 "Reloads the VanillaPlus Config file.",
                 listOf("vp")
             )

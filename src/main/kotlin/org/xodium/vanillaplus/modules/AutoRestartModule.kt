@@ -14,6 +14,7 @@ import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.TimeUtils
 import java.time.LocalTime
+import java.time.ZoneId
 import java.time.temporal.ChronoUnit
 
 /** Represents a module handling auto-restart mechanics within the system. */
@@ -49,8 +50,9 @@ internal class AutoRestartModule : ModuleInterface<AutoRestartModule.Config> {
             instance.server.scheduler.runTaskTimerAsynchronously(
                 instance,
                 Runnable {
+                    val zone = config.zoneId ?: ZoneId.systemDefault()
                     config.restartTimes.forEach {
-                        if (isTimeToStartCountdown(it)) {
+                        if (isTimeToStartCountdown(zone, it)) {
                             instance.server.scheduler.runTask(instance, Runnable { countdown() })
                         }
                     }
@@ -96,11 +98,12 @@ internal class AutoRestartModule : ModuleInterface<AutoRestartModule.Config> {
 
     /**
      * Returns true if the current time is equal to the time string in the plugin's configuration.
+     * @param zoneId the timezone to evaluate against.
      * @param restartTime the time to compare to the current time.
      * @return true if the current time is equal to the restart time.
      */
-    private fun isTimeToStartCountdown(restartTime: LocalTime): Boolean {
-        val now = LocalTime.now().truncatedTo(ChronoUnit.SECONDS)
+    private fun isTimeToStartCountdown(zoneId: ZoneId, restartTime: LocalTime): Boolean {
+        val now = LocalTime.now(zoneId).truncatedTo(ChronoUnit.SECONDS)
         val trigger = restartTime
             .minusMinutes(config.countdownStartMinutes.toLong())
             .truncatedTo(ChronoUnit.SECONDS)
@@ -109,6 +112,7 @@ internal class AutoRestartModule : ModuleInterface<AutoRestartModule.Config> {
 
     data class Config(
         override var enabled: Boolean = true,
+        var zoneId: ZoneId? = null,
         var restartTimes: MutableList<LocalTime> = mutableListOf(
             LocalTime.of(0, 0),
             LocalTime.of(6, 0),
