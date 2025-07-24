@@ -1,5 +1,6 @@
 package org.xodium.vanillaplus.modules
 
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Material
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
@@ -45,23 +46,26 @@ internal class PetModule : ModuleInterface<PetModule.Config> {
         source.inventory.addItem(ItemStack.of(Material.LEAD))
 
         source.sendActionBar(
-            "You have transferred ".fireFmt().mm()
-                .append(petName)
-                .append(" to ".fireFmt().mm())
-                .append(target.displayName())
+            config.sourceTransferMessage.mm(
+                Placeholder.component("<pet>", petName),
+                Placeholder.component("<target>", target.displayName())
+            )
         )
-        target.sendActionBar(
-            source.displayName()
-                .append(" has transferred ".fireFmt().mm())
-                .append(petName)
-                .append(" to you".fireFmt().mm())
 
+        target.sendActionBar(
+            config.targetTransferMessage.mm(
+                Placeholder.component("<pet>", petName),
+                Placeholder.component("<source>", source.displayName())
+            )
         )
+
         event.isCancelled = true
     }
 
     data class Config(
         override var enabled: Boolean = true,
         var transferRadius: Double = 10.0,
+        var sourceTransferMessage: String = "${"You have transferred".fireFmt()} <pet> ${"to".fireFmt()} <target>",
+        var targetTransferMessage: String = "<source> ${"has transferred".fireFmt()} <pet> ${"to you".fireFmt()}",
     ) : ModuleInterface.Config
 }
