@@ -61,8 +61,9 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Kotlin Xodium Module Class" />
         <option value="Kotlin Object" />
+        <option value="Kotlin Xodium Module Class" />
+        <option value="Kotlin Class" />
       </list>
     </option>
   </component>
@@ -72,7 +73,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="dev" />
+        <entry key="$PROJECT_DIR$" value="feat/GhastModule" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -112,25 +113,26 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;Gradle.Build VanillaPlus.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.Download Sources.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.VanillaPlus [runDevServer].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.VanillaPlus [shadowJar].executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;code.cleanup.on.save&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feat/SettingsManager&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;SDKs&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;rearrange.code.on.save&quot;: &quot;true&quot;,
-    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;vcs.Git&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Gradle.Build VanillaPlus.executor": "Run",
+    "Gradle.Download Sources.executor": "Run",
+    "Gradle.VanillaPlus [runDevServer].executor": "Run",
+    "Gradle.VanillaPlus [shadowJar].executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "code.cleanup.on.save": "true",
+    "git-widget-placeholder": "feat/SettingsManager",
+    "project.structure.last.edited": "SDKs",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.2",
+    "rearrange.code.on.save": "true",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "settings.editor.selected.configurable": "fileTemplates"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS" />
   </component>
@@ -186,10 +188,10 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Gradle.VanillaPlus [runDevServer]" />
         <item itemvalue="Gradle.VanillaPlus [shadowJar]" />
         <item itemvalue="Gradle.VanillaPlus [runDevServer]" />
         <item itemvalue="Gradle.VanillaPlus [runDevServer]" />
+        <item itemvalue="Gradle.VanillaPlus [shadowJar]" />
         <item itemvalue="Gradle.VanillaPlus [runDevServer]" />
       </list>
     </recent_temporary>
@@ -197,7 +199,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-fbdcb00ec9e3-intellij.indexing.shared.core-IU-251.26927.53" />
+        <option value="bundled-jdk-9823dce3aa75-fbdcb00ec9e3-intellij.indexing.shared.core-IU-251.27812.12" />
       </set>
     </attachedChunks>
   </component>
@@ -216,6 +218,7 @@
       <workItem from="1753252978776" duration="8879000" />
       <workItem from="1753263373149" duration="1512000" />
       <workItem from="1753269390989" duration="1688000" />
+      <workItem from="1753274758935" duration="4016000" />
     </task>
     <task>
       <option name="closed" value="true" />
@@ -497,23 +500,100 @@
       <option name="project" value="LOCAL" />
       <updated>1753270732862</updated>
     </task>
-    <option name="localTasksCounter" value="35" />
+    <task id="LOCAL-00035" summary="made SignModule.kt more configurable">
+      <option name="closed" value="true" />
+      <created>1753272680308</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1753272680308</updated>
+    </task>
+    <task id="LOCAL-00036" summary="made TabListModule.kt more configurable">
+      <option name="closed" value="true" />
+      <created>1753272977164</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1753272977164</updated>
+    </task>
+    <task id="LOCAL-00037" summary="cleanup">
+      <option name="closed" value="true" />
+      <created>1753273031137</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1753273031137</updated>
+    </task>
+    <task id="LOCAL-00038" summary="renaming">
+      <option name="closed" value="true" />
+      <created>1753273194732</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1753273194732</updated>
+    </task>
+    <task id="LOCAL-00039" summary="init">
+      <option name="closed" value="true" />
+      <created>1753273495876</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1753273495876</updated>
+    </task>
+    <task id="LOCAL-00040" summary="some changes">
+      <option name="closed" value="true" />
+      <created>1753274740767</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1753274740767</updated>
+    </task>
+    <task id="LOCAL-00041" summary="some more tweaking">
+      <option name="closed" value="true" />
+      <created>1753276728768</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1753276728768</updated>
+    </task>
+    <task id="LOCAL-00042" summary="setup bootstrap">
+      <option name="closed" value="true" />
+      <created>1753277217935</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1753277217935</updated>
+    </task>
+    <task id="LOCAL-00043" summary="some tweaking">
+      <option name="closed" value="true" />
+      <created>1753277862197</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1753277862197</updated>
+    </task>
+    <task id="LOCAL-00044" summary="changed Ghast to HappyGhast, stupid mistake">
+      <option name="closed" value="true" />
+      <created>1753278230061</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1753278230061</updated>
+    </task>
+    <task id="LOCAL-00045" summary="trying to fix the Registry">
+      <option name="closed" value="true" />
+      <created>1753278603735</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1753278603735</updated>
+    </task>
+    <option name="localTasksCounter" value="46" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="refactored LocatorModule command structure and improved color handling logic" />
-    <MESSAGE value="formatted hex values in LocatorModule for color handling logic" />
-    <MESSAGE value="streamlined color handling in LocatorModule and removed redundant hex suggestions" />
-    <MESSAGE value="updated DoorsModule to play sounds only for nearby players and bumped module version to 1.15.0" />
-    <MESSAGE value="Use configurable proximity radius for door-related sounds in DoorsModule." />
-    <MESSAGE value="v+" />
-    <MESSAGE value="+" />
-    <MESSAGE value="fix commandstructure" />
-    <MESSAGE value="finished config reload cmd" />
-    <MESSAGE value="init" />
-    <MESSAGE value="test 1" />
     <MESSAGE value="fixed: [11:03:59 ERROR]: [VanillaPlus] An Error has occurred: Non [a-z0-9_\-./]+ character in value of Key[minecraft:VanillaPlus.dialog.module.0] at index 0 ('V', bytes: [86])" />
     <MESSAGE value="using named module buttons instead of indexed" />
     <MESSAGE value="using modulename as key too now" />
@@ -528,7 +608,18 @@
     <MESSAGE value="fixed key issues" />
     <MESSAGE value="fixed openning module specific settings" />
     <MESSAGE value="added Float" />
-    <option name="LAST_COMMIT_MESSAGE" value="added Float" />
+    <MESSAGE value="made SignModule.kt more configurable" />
+    <MESSAGE value="made TabListModule.kt more configurable" />
+    <MESSAGE value="cleanup" />
+    <MESSAGE value="renaming" />
+    <MESSAGE value="init" />
+    <MESSAGE value="some changes" />
+    <MESSAGE value="some more tweaking" />
+    <MESSAGE value="setup bootstrap" />
+    <MESSAGE value="some tweaking" />
+    <MESSAGE value="changed Ghast to HappyGhast, stupid mistake" />
+    <MESSAGE value="trying to fix the Registry" />
+    <option name="LAST_COMMIT_MESSAGE" value="trying to fix the Registry" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
