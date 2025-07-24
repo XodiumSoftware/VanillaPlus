@@ -76,6 +76,11 @@ internal class SitModule : ModuleInterface<SitModule.Config> {
         sittingPlayers.remove(event.player.uniqueId)?.remove()
     }
 
+    /**
+     * Spawns an invisible, marker ArmorStand at the given location and makes the player sit on it.
+     * @param player The [Player] who will be made to sit.
+     * @param location The [Location] where the player should sit.
+     */
     private fun sit(player: Player, location: Location) {
         val world = location.world ?: return
         val armorStand = world.spawn(location, ArmorStand::class.java) {

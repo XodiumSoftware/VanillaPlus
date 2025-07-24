@@ -23,6 +23,7 @@ import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 
 @Suppress("UnstableApiUsage")
+/** Represents the settings manager within the system. */
 internal object SettingsManager : Listener {
 
     @EventHandler
