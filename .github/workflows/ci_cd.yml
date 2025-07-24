@@ -1,5 +1,4 @@
 name: Xodium CI/CD
-run-name: "Xodium CI/CD"
 
 on: { push: { branches: [ main ], paths: [ "src/**" ] }, workflow_dispatch: }
 
@@ -15,16 +14,16 @@ jobs:
     steps:
       - id: checkout
         name: Checkout
-        uses: actions/checkout@main
+        uses: actions/checkout@v4.2.2
 
       - id: setup_java
         name: Setup Java
-        uses: actions/setup-java@main
+        uses: actions/setup-java@v4.7.1
         with: { distribution: temurin, java-version: "21" }
 
       - id: setup_gradle
         name: Setup Gradle
-        uses: gradle/actions/setup-gradle@b7d91bc60ec15329f5761d9de99f657dbdf59b54
+        uses: gradle/actions/setup-gradle@v4.4.1
 
       - id: get_artifact_version
         name: Get Artifact Version
@@ -37,7 +36,7 @@ jobs:
 
       - id: upload_artifact
         name: Upload Artifact
-        uses: actions/upload-artifact@main
+        uses: actions/upload-artifact@v4.6.2
         with: { name: vanillaplus, path: build/libs/VanillaPlus-*.jar }
 
   release:
@@ -47,12 +46,12 @@ jobs:
     steps:
       - id: download_artifact
         name: Download Artifact
-        uses: actions/download-artifact@main
+        uses: actions/download-artifact@v4.3.0
         with: { name: vanillaplus }
 
       - id: release_artifact
         name: Release Artifact
-        uses: softprops/action-gh-release@f2352b97da0095b4dbbd885a81023e3deabf4fef
+        uses: softprops/action-gh-release@v2.3.2
         env: { GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}" }
         with:
           draft: ${{ contains(github.event.head_commit.message, '.draft') }}
@@ -60,3 +59,27 @@ jobs:
           prerelease: ${{ contains(github.event.head_commit.message, '.pre') }}
           tag_name: ${{ needs.build.outputs.VERSION }}
           files: VanillaPlus-*.jar
+
+  deploy:
+    needs:
+      - build
+      - release
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.ref_name }}
+    steps:
+      - id: download_artifact
+        name: Download Artifact
+        uses: actions/download-artifact@v4.3.0
+        with: { name: vanillaplus }
+
+      - id: uts
+        name: Upload to Server
+        uses: appleboy/scp-action@v1.0.0
+        with:
+          host: ${{ secrets.SFTP_HOST }}
+          username: ${{ secrets.SFTP_USER }}
+          password: ${{ secrets.SFTP_PASSWORD }}
+          port: ${{ secrets.SFTP_PORT }}
+          source: "VanillaPlus-*.jar"
+          target: ${{ secrets.SFTP_MCS_PLUGINS_UPDATE_FOLDER_PATH }}/
