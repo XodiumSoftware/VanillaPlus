@@ -28,7 +28,6 @@ internal object ModuleManager {
     val tabListModule: TabListModule = TabListModule()
     val nicknameModule: NicknameModule = NicknameModule(tabListModule)
     val treesModule: TreesModule = TreesModule()
-    val trowelModule: TrowelModule = TrowelModule()
 
     private val modules = listOf(
         autoRestartModule,
@@ -47,7 +46,6 @@ internal object ModuleManager {
         sleepModule,
         tabListModule,
         treesModule,
-        trowelModule
     )
 
     init {
