@@ -47,7 +47,7 @@ internal class NicknameModule(private val tabListModule: TabListModule) : Module
     override fun perms(): List<Permission> {
         return listOf(
             Permission(
-                "${instance::class.simpleName}.nickname.use".lowercase(),
+                "${instance::class.simpleName}.nickname".lowercase(),
                 "Allows use of the nickname command",
                 PermissionDefault.TRUE
             )

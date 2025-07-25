@@ -59,8 +59,8 @@ internal object ConfigManager {
     fun perms(): List<Permission> {
         return listOf(
             Permission(
-                "${instance::class.simpleName}.config.reload".lowercase(),
-                "Allows use of the config reload command",
+                "${instance::class.simpleName}.reload".lowercase(),
+                "Allows use of the vanillaplus command",
                 PermissionDefault.OP
             )
         )

@@ -69,7 +69,7 @@ internal class LocatorModule : ModuleInterface<LocatorModule.Config> {
     override fun perms(): List<Permission> {
         return listOf(
             Permission(
-                "${instance::class.simpleName}.locator.use".lowercase(),
+                "${instance::class.simpleName}.locator".lowercase(),
                 "Allows use of the locator command",
                 PermissionDefault.TRUE
             )

@@ -104,7 +104,7 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
     override fun perms(): List<Permission> {
         return listOf(
             Permission(
-                "${instance::class.simpleName}.tree.use".lowercase(),
+                "${instance::class.simpleName}.tree".lowercase(),
                 "Allows use of the tree command",
                 PermissionDefault.OP
             )

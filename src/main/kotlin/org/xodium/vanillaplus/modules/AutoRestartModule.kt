@@ -38,7 +38,7 @@ internal class AutoRestartModule : ModuleInterface<AutoRestartModule.Config> {
     override fun perms(): List<Permission> {
         return listOf(
             Permission(
-                "${instance::class.simpleName}.autorestart.use".lowercase(),
+                "${instance::class.simpleName}.autorestart".lowercase(),
                 "Allows use of the autorestart command",
                 PermissionDefault.OP
             )

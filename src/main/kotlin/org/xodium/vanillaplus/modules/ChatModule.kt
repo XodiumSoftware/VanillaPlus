@@ -71,7 +71,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
     override fun perms(): List<Permission> {
         return listOf(
             Permission(
-                "${instance::class.simpleName}.whisper.use".lowercase(),
+                "${instance::class.simpleName}.whisper".lowercase(),
                 "Allows use of the whisper command",
                 PermissionDefault.TRUE
             )
