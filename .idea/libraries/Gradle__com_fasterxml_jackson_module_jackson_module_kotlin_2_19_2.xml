@@ -5,8 +5,6 @@
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.module/jackson-module-kotlin/2.19.2/c052fdf35343bf6b4e132e75515243e0d497db64/jackson-module-kotlin-2.19.2.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES>
-      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.module/jackson-module-kotlin/2.19.2/d58a69da5d9b80e07a1d3b7aecdd3501793c7ac2/jackson-module-kotlin-2.19.2-sources.jar!/" />
-    </SOURCES>
+    <SOURCES />
   </library>
 </component>
