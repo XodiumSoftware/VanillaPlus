@@ -17,9 +17,6 @@ import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import java.util.*
 import kotlin.math.roundToInt
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.seconds
-import kotlin.time.DurationUnit
 
 /** Represents a module handling tab-list mechanics within the system. */
 internal class TabListModule : ModuleInterface<TabListModule.Config> {
@@ -45,8 +42,8 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
             instance.server.scheduler.runTaskTimer(
                 instance,
                 Runnable { instance.server.onlinePlayers.forEach { updateTabList(it) } },
-                config.initDelay,
-                config.interval.toLong(DurationUnit.SECONDS),
+                config.initDelayInTicks,
+                config.intervalInTicks,
             )
         }
     }
@@ -134,8 +131,8 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
 
     data class Config(
         override var enabled: Boolean = true,
-        var initDelay: Long = 0L,
-        var interval: Duration = 10.seconds,
+        var initDelayInTicks: Long = 0,
+        var intervalInTicks: Long = 10,
         var header: List<String> =
             listOf(
                 "${"]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt()}   ${"⚡ IllyriaRPG ⚡".fireFmt()}   ${

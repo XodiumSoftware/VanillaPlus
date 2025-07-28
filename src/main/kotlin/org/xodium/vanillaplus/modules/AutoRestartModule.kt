@@ -10,15 +10,11 @@ import org.xodium.vanillaplus.data.BossBarData
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.ExtUtils.toTicks
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.temporal.ChronoUnit
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.ZERO
-import kotlin.time.Duration.Companion.seconds
 
 /** Represents a module handling auto-restart mechanics within the system. */
 internal class AutoRestartModule : ModuleInterface<AutoRestartModule.Config> {
@@ -59,8 +55,8 @@ internal class AutoRestartModule : ModuleInterface<AutoRestartModule.Config> {
                         }
                     }
                 },
-                config.scheduleInitDelay.toTicks(),
-                config.scheduleInterval.toTicks(),
+                config.scheduleInitDelayInTicks,
+                config.scheduleIntervalInTicks,
             )
         }
     }
@@ -93,8 +89,8 @@ internal class AutoRestartModule : ModuleInterface<AutoRestartModule.Config> {
                     instance.server.restart()
                 }
             },
-            config.countdownInitDelay.toTicks(),
-            config.countdownInterval.toTicks(),
+            config.countdownInitDelay,
+            config.countdownInterval,
         )
     }
 
@@ -133,10 +129,10 @@ internal class AutoRestartModule : ModuleInterface<AutoRestartModule.Config> {
                 BossBar.Color.RED,
                 BossBar.Overlay.PROGRESS,
             ),
-        var scheduleInitDelay: Duration = ZERO,
-        var scheduleInterval: Duration = 1.seconds,
-        var countdownInitDelay: Duration = ZERO,
-        var countdownInterval: Duration = 1.seconds,
+        var scheduleInitDelayInTicks: Long = 0,
+        var scheduleIntervalInTicks: Long = 1,
+        var countdownInitDelay: Long = 0,
+        var countdownInterval: Long = 1,
         var countdownStartMinutes: Int = 5,
     ) : ModuleInterface.Config
 }

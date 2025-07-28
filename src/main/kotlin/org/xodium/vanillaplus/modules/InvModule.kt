@@ -28,7 +28,6 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.CooldownManager
 import org.xodium.vanillaplus.registries.MaterialRegistry
 import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.ExtUtils.toTicks
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
@@ -36,7 +35,6 @@ import org.xodium.vanillaplus.utils.FmtUtils.roseFmt
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.time.Duration.Companion.seconds
 import org.bukkit.Sound as BukkitSound
 
 /** Represents a module handling inv mechanics within the system. */
@@ -310,7 +308,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                     activeVisualizations.remove(player.uniqueId)
                 }
             },
-            5.seconds.toTicks(),
+            config.scheduleInitDelayInTicks,
         )
     }
 
@@ -517,7 +515,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
 
     data class Config(
         override var enabled: Boolean = true,
-        var cooldown: Long = 1L * 1000L,
+        var cooldown: Long = 1 * 1000,
         var searchRadius: Int = 5,
         var unloadRadius: Int = 5,
         var matchEnchantments: Boolean = true,
@@ -527,5 +525,6 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                 BukkitSound.ENTITY_PLAYER_LEVELUP,
                 Sound.Source.PLAYER,
             ),
+        var scheduleInitDelayInTicks: Long = 5,
     ) : ModuleInterface.Config
 }

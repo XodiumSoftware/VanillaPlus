@@ -19,7 +19,6 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import java.net.URI
 import java.util.*
 import javax.imageio.ImageIO
-import kotlin.time.Duration
 
 /** Extension utilities. */
 internal object ExtUtils {
@@ -204,6 +203,4 @@ internal object ExtUtils {
         }
         return builder.toString()
     }
-
-    fun Duration.toTicks(): Long = this.inWholeMilliseconds / MILLISECONDS_PER_TICK
 }
