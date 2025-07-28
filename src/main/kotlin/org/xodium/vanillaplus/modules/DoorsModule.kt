@@ -52,8 +52,8 @@ internal class DoorsModule : ModuleInterface<DoorsModule.Config> {
                         System.currentTimeMillis() >= time && handleAutoClose(block)
                     }
                 },
-                config.initDelay,
-                config.interval,
+                config.initDelayInTicks,
+                config.intervalInTicks,
             )
         }
     }
@@ -153,7 +153,8 @@ internal class DoorsModule : ModuleInterface<DoorsModule.Config> {
     }
 
     /**
-     * Handles the right-click interaction with doors and gates, toggling their state and handling auto-close functionality.
+     * Handles the right-click interaction with doors and gates,
+     * toggling their state and handling auto-close functionality.
      * @param block The block representing the door or gate being interacted with.
      */
     private fun handleRightClick(block: Block) {
@@ -162,7 +163,7 @@ internal class DoorsModule : ModuleInterface<DoorsModule.Config> {
         }
         if (config.allowAutoClose) {
             autoClose[block] =
-                System.currentTimeMillis() + config.autoCloseDelay
+                System.currentTimeMillis() + config.autoCloseDelayInMillis
         }
     }
 
@@ -176,7 +177,7 @@ internal class DoorsModule : ModuleInterface<DoorsModule.Config> {
         val secondDoor = door2Block.blockData as? Door ?: return
         toggleOtherDoor(block, door2Block, !secondDoor.isOpen)
         if (config.allowAutoClose) {
-            autoClose[door2Block] = System.currentTimeMillis() + config.autoCloseDelay
+            autoClose[door2Block] = System.currentTimeMillis() + config.autoCloseDelayInMillis
         }
     }
 
@@ -241,7 +242,7 @@ internal class DoorsModule : ModuleInterface<DoorsModule.Config> {
                 val door2 = block2.blockData as Door
                 if (door.isOpen != door2.isOpen) toggleDoor(block2, door2, open)
             },
-            config.initDelay,
+            config.initDelayInTicks,
         )
     }
 
@@ -283,8 +284,8 @@ internal class DoorsModule : ModuleInterface<DoorsModule.Config> {
 
     data class Config(
         override var enabled: Boolean = true,
-        var initDelay: Long = 1L,
-        var interval: Long = 1L,
+        var initDelayInTicks: Long = 1,
+        var intervalInTicks: Long = 1,
         var allowAutoClose: Boolean = true,
         var allowDoubleDoors: Boolean = true,
         var allowKnockingDoors: Boolean = true,
@@ -292,7 +293,7 @@ internal class DoorsModule : ModuleInterface<DoorsModule.Config> {
         var allowKnockingTrapdoors: Boolean = true,
         var knockingRequiresEmptyHand: Boolean = true,
         var knockingRequiresShifting: Boolean = true,
-        var autoCloseDelay: Long = 6L * 1000L,
+        var autoCloseDelayInMillis: Long = 6000,
         var soundDoorClose: SoundData =
             SoundData(
                 BukkitSound.BLOCK_IRON_DOOR_CLOSE,

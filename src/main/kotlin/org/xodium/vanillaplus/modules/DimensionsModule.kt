@@ -24,6 +24,10 @@ internal class DimensionsModule : ModuleInterface<DimensionsModule.Config> {
 
     override fun enabled(): Boolean = config.enabled
 
+    companion object {
+        private const val NETHER_TO_OVERWORLD_RATIO = 8
+    }
+
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerPortalEvent) {
         if (!enabled()) return
@@ -71,8 +75,8 @@ internal class DimensionsModule : ModuleInterface<DimensionsModule.Config> {
         overworld: World,
         searchRadius: Int = config.portalSearchRadius,
     ): Location? {
-        val targetX = netherPortal.x * 8
-        val targetZ = netherPortal.z * 8
+        val targetX = netherPortal.x * NETHER_TO_OVERWORLD_RATIO
+        val targetZ = netherPortal.z * NETHER_TO_OVERWORLD_RATIO
 
         var closestPortal: Location? = null
         var closestDistance = Double.MAX_VALUE
@@ -130,7 +134,7 @@ internal class DimensionsModule : ModuleInterface<DimensionsModule.Config> {
      * @return The Overworld [World] object.
      * @throws IllegalStateException if the Overworld is not loaded.
      */
-    private fun getOverworld(): World = instance.server.getWorld("world") ?: throw IllegalStateException("Overworld (world) is not loaded.")
+    private fun getOverworld(): World = instance.server.getWorld("world") ?: error("Overworld (world) is not loaded.")
 
     data class Config(
         override var enabled: Boolean = true,
