@@ -89,8 +89,8 @@ internal class AutoRestartModule : ModuleInterface<AutoRestartModule.Config> {
                     instance.server.restart()
                 }
             },
-            config.countdownInitDelay,
-            config.countdownInterval,
+            config.countdownInitDelayInTicks,
+            config.countdownIntervalInTicks,
         )
     }
 
@@ -131,8 +131,8 @@ internal class AutoRestartModule : ModuleInterface<AutoRestartModule.Config> {
             ),
         var scheduleInitDelayInTicks: Long = 0,
         var scheduleIntervalInTicks: Long = 1,
-        var countdownInitDelay: Long = 0,
-        var countdownInterval: Long = 1,
+        var countdownInitDelayInTicks: Long = 0,
+        var countdownIntervalInTicks: Long = 1,
         var countdownStartMinutes: Int = 5,
     ) : ModuleInterface.Config
 }
