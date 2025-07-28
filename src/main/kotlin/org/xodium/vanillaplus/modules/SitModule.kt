@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package org.xodium.vanillaplus.modules
 
 import org.bukkit.Location
@@ -39,11 +41,12 @@ internal class SitModule : ModuleInterface<SitModule.Config> {
         val block = event.clickedBlock ?: return
         val blockData = block.blockData
 
-        val isSitTarget = when {
-            config.useStairs && blockData is Stairs && blockData.half == Bisected.Half.BOTTOM -> true
-            config.useSlabs && blockData is Slab && blockData.type == Slab.Type.BOTTOM -> true
-            else -> false
-        }
+        val isSitTarget =
+            when {
+                config.useStairs && blockData is Stairs && blockData.half == Bisected.Half.BOTTOM -> true
+                config.useSlabs && blockData is Slab && blockData.type == Slab.Type.BOTTOM -> true
+                else -> false
+            }
 
         if (!isSitTarget) return
 
@@ -81,14 +84,18 @@ internal class SitModule : ModuleInterface<SitModule.Config> {
      * @param player The [Player] who will be made to sit.
      * @param location The [Location] where the player should sit.
      */
-    private fun sit(player: Player, location: Location) {
+    private fun sit(
+        player: Player,
+        location: Location,
+    ) {
         val world = location.world ?: return
-        val armorStand = world.spawn(location, ArmorStand::class.java) {
-            it.isVisible = false
-            it.setGravity(false)
-            it.isSmall = true
-            it.isMarker = true
-        }
+        val armorStand =
+            world.spawn(location, ArmorStand::class.java) {
+                it.isVisible = false
+                it.setGravity(false)
+                it.isSmall = true
+                it.isMarker = true
+            }
         armorStand.addPassenger(player)
         sittingPlayers[player.uniqueId] = armorStand
     }

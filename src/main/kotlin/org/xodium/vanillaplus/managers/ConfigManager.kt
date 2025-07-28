@@ -24,20 +24,22 @@ import kotlin.io.path.writeText
 /** Represents the config manager within the system. */
 internal object ConfigManager {
     private val configPath = instance.dataFolder.toPath().resolve("config.json")
-    internal val objectMapper = jacksonObjectMapper()
-        .registerModules(JavaTimeModule())
-        .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
-        .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-        .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
+    internal val objectMapper =
+        jacksonObjectMapper()
+            .registerModules(JavaTimeModule())
+            .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
 
     /**
      * Defines a list of commands for the VanillaPlus module.
      * @return A list of [CommandData] containing the command definition, description, and aliases for usage.
      */
-    fun cmds(): List<CommandData> {
-        return listOf(
+    fun cmds(): List<CommandData> =
+        listOf(
             CommandData(
-                Commands.literal("vanillaplus")
+                Commands
+                    .literal("vanillaplus")
                     .requires { it.sender.hasPermission(perms()[0]) }
                     .executes { ctx ->
                         ctx.tryCatch {
@@ -47,24 +49,22 @@ internal object ConfigManager {
                         }
                     },
                 "Reloads the VanillaPlus Config file.",
-                listOf("vp")
-            )
+                listOf("vp"),
+            ),
         )
-    }
 
     /**
      * Retrieves a list of permissions related to the module.
      * @return A list of [Permission] objects, each representing a specific permission required for module actions.
      */
-    fun perms(): List<Permission> {
-        return listOf(
+    fun perms(): List<Permission> =
+        listOf(
             Permission(
                 "${instance::class.simpleName}.reload".lowercase(),
                 "Allows use of the vanillaplus command",
-                PermissionDefault.OP
-            )
+                PermissionDefault.OP,
+            ),
         )
-    }
 
     /**
      * Loads settings from the config file.

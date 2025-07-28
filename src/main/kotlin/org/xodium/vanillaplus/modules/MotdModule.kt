@@ -22,9 +22,10 @@ internal class MotdModule : ModuleInterface<MotdModule.Config> {
 
     data class Config(
         override var enabled: Boolean = true,
-        val motd: List<String> = listOf(
-            "<b>Ultimate Private SMP</b>".fireFmt(),
-            "<b>➤ WELCOME BACK LADS!</b>".mangoFmt(),
-        )
+        val motd: List<String> =
+            listOf(
+                "<b>Ultimate Private SMP</b>".fireFmt(),
+                "<b>➤ WELCOME BACK LADS!</b>".mangoFmt(),
+            ),
     ) : ModuleInterface.Config
 }

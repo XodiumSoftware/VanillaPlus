@@ -12,9 +12,10 @@ internal object CooldownManager {
      * @param key The NamespacedKey for the cooldown.
      * @return The timestamp, or `0L` if not set.
      */
-    private fun getCooldown(player: Player, key: NamespacedKey): Long {
-        return player.persistentDataContainer.get(key, PersistentDataType.LONG) ?: 0L
-    }
+    private fun getCooldown(
+        player: Player,
+        key: NamespacedKey,
+    ): Long = player.persistentDataContainer.get(key, PersistentDataType.LONG) ?: 0L
 
     /**
      * Sets the cooldown timestamp for a player and a specific cooldown key.
@@ -22,7 +23,11 @@ internal object CooldownManager {
      * @param key The NamespacedKey for the cooldown.
      * @param timestamp The timestamp to set (usually System.currentTimeMillis()).
      */
-    fun setCooldown(player: Player, key: NamespacedKey, timestamp: Long) {
+    fun setCooldown(
+        player: Player,
+        key: NamespacedKey,
+        timestamp: Long,
+    ) {
         player.persistentDataContainer.set(key, PersistentDataType.LONG, timestamp)
     }
 
@@ -33,7 +38,9 @@ internal object CooldownManager {
      * @param cooldownDuration The cooldown duration in milliseconds.
      * @return True if the cooldown is active, false otherwise.
      */
-    fun isOnCooldown(player: Player, key: NamespacedKey, cooldownDuration: Long): Boolean {
-        return System.currentTimeMillis() < getCooldown(player, key) + cooldownDuration
-    }
+    fun isOnCooldown(
+        player: Player,
+        key: NamespacedKey,
+        cooldownDuration: Long,
+    ): Boolean = System.currentTimeMillis() < getCooldown(player, key) + cooldownDuration
 }

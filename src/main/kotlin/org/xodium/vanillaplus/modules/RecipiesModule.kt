@@ -17,7 +17,12 @@ internal class RecipiesModule : ModuleInterface<RecipiesModule.Config> {
     fun on(event: PlayerJoinEvent) {
         if (!enabled()) return
         event.player.discoverRecipes(
-            instance.server.recipeIterator().asSequence().filterIsInstance<Keyed>().map { it.key }.toList()
+            instance.server
+                .recipeIterator()
+                .asSequence()
+                .filterIsInstance<Keyed>()
+                .map { it.key }
+                .toList(),
         )
     }
 

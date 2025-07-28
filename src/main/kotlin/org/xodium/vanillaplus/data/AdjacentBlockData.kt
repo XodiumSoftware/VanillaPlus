@@ -21,5 +21,5 @@ internal data class AdjacentBlockData(
     val offsetX: Int,
     val offsetZ: Int,
     private val hinge: Hinge,
-    private val facing: BlockFace
+    private val facing: BlockFace,
 )

@@ -35,48 +35,50 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
     override fun cmds(): List<CommandData> {
         return listOf(
             CommandData(
-                Commands.literal("whisper")
+                Commands
+                    .literal("whisper")
                     .requires { it.sender.hasPermission(perms()[0]) }
                     .then(
-                        Commands.argument("target", StringArgumentType.string())
+                        Commands
+                            .argument("target", StringArgumentType.string())
                             .suggests { ctx, builder ->
                                 instance.server.onlinePlayers
                                     .map { it.name }
                                     .filter { it.lowercase().startsWith(builder.remaining.lowercase()) }
                                     .forEach(builder::suggest)
                                 CompletableFuture.completedFuture(builder.build())
-                            }
-                            .then(
-                                Commands.argument("message", StringArgumentType.greedyString())
+                            }.then(
+                                Commands
+                                    .argument("message", StringArgumentType.greedyString())
                                     .executes { ctx ->
                                         ctx.tryCatch {
                                             val sender = ctx.source.sender as Player
                                             val targetName = ctx.getArgument("target", String::class.java)
-                                            val target = instance.server.getPlayer(targetName)
-                                                ?: return@tryCatch sender.sendMessage(
-                                                    "$PREFIX Player is not Online!".fireFmt().mm()
-                                                )
+                                            val target =
+                                                instance.server.getPlayer(targetName)
+                                                    ?: return@tryCatch sender.sendMessage(
+                                                        "$PREFIX Player is not Online!".fireFmt().mm(),
+                                                    )
                                             val message = ctx.getArgument("message", String::class.java)
                                             whisper(sender, target, message)
                                         }
-                                    }
-                            )
+                                    },
+                            ),
                     ),
                 "This command allows you to whisper to players.",
-                listOf("w")
-            )
+                listOf("w"),
+            ),
         )
     }
 
-    override fun perms(): List<Permission> {
-        return listOf(
+    override fun perms(): List<Permission> =
+        listOf(
             Permission(
                 "${instance::class.simpleName}.whisper".lowercase(),
                 "Allows use of the whisper command",
-                PermissionDefault.TRUE
-            )
+                PermissionDefault.TRUE,
+            ),
         )
-    }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: AsyncChatEvent) {
@@ -87,7 +89,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
                     "player",
                     displayName
                         .clickEvent(ClickEvent.suggestCommand("/w ${source.name} "))
-                        .hoverEvent(HoverEvent.showText("Click to Whisper".fireFmt().mm()))
+                        .hoverEvent(HoverEvent.showText("Click to Whisper".fireFmt().mm())),
                 ),
                 Placeholder.component("message", message.pt().mm()),
             )
@@ -106,8 +108,8 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
             .forEach {
                 it.sendMessage(
                     config.joinMessage.mm(
-                        Placeholder.component("player", player.displayName())
-                    )
+                        Placeholder.component("player", player.displayName()),
+                    ),
                 )
             }
 
@@ -115,14 +117,18 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
         player.sendMessage(
             Regex("<image>").replace(config.welcomeText.joinToString("\n")) { "<image${imageIndex++}>" }.mm(
                 Placeholder.component(
-                    "player", player
+                    "player",
+                    player
                         .displayName()
                         .clickEvent(ClickEvent.suggestCommand("/nickname ${player.name}"))
-                        .hoverEvent(HoverEvent.showText("Click Me!".fireFmt().mm()))
+                        .hoverEvent(HoverEvent.showText("Click Me!".fireFmt().mm())),
                 ),
-                *player.face().lines().mapIndexed { i, line -> Placeholder.component("image${i + 1}", line.mm()) }
-                    .toTypedArray()
-            )
+                *player
+                    .face()
+                    .lines()
+                    .mapIndexed { i, line -> Placeholder.component("image${i + 1}", line.mm()) }
+                    .toTypedArray(),
+            ),
         )
     }
 
@@ -138,8 +144,8 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
             .forEach {
                 it.sendMessage(
                     config.quitMessage.mm(
-                        Placeholder.component("player", player.displayName())
-                    )
+                        Placeholder.component("player", player.displayName()),
+                    ),
                 )
             }
     }
@@ -150,51 +156,58 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
      * @param target The player to whom the message is being sent.
      * @param message The message to be sent.
      */
-    private fun whisper(sender: Player, target: Player, message: String) {
+    private fun whisper(
+        sender: Player,
+        target: Player,
+        message: String,
+    ) {
         sender.sendMessage(
             config.whisperToFormat.mm(
                 Placeholder.component(
                     "player",
-                    target.displayName()
+                    target
+                        .displayName()
                         .clickEvent(ClickEvent.suggestCommand("/w ${target.name} "))
-                        .hoverEvent(HoverEvent.showText("Click to Whisper".fireFmt().mm()))
+                        .hoverEvent(HoverEvent.showText("Click to Whisper".fireFmt().mm())),
                 ),
-                Placeholder.component("message", message.mm())
-            )
+                Placeholder.component("message", message.mm()),
+            ),
         )
 
         target.sendMessage(
             config.whisperFromFormat.mm(
                 Placeholder.component(
                     "player",
-                    sender.displayName()
+                    sender
+                        .displayName()
                         .clickEvent(ClickEvent.suggestCommand("/w ${sender.name} "))
-                        .hoverEvent(HoverEvent.showText("Click to Whisper".fireFmt().mm()))
+                        .hoverEvent(HoverEvent.showText("Click to Whisper".fireFmt().mm())),
                 ),
-                Placeholder.component("message", message.mm())
-            )
+                Placeholder.component("message", message.mm()),
+            ),
         )
     }
 
     data class Config(
         override var enabled: Boolean = true,
         var chatFormat: String = "<player> <reset>${"›".mangoFmt(true)} <message>",
-        var welcomeText: List<String> = listOf(
-            "]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true),
-            "<image>${"⯈".mangoFmt(true)}",
-            "<image>${"⯈".mangoFmt(true)}",
-            "<image>${"⯈".mangoFmt(true)} ${"Welcome".fireFmt()} <player>",
-            "<image>${"⯈".mangoFmt(true)}",
-            "<image>${"⯈".mangoFmt(true)}",
-            "<image>${"⯈".mangoFmt(true)} ${"Check out".fireFmt()}<gray>: ${
-                "/rules".clickRunCmd("Click Me!".fireFmt()).skylineFmt()
-            } <gray>🟅 ${
-                "/guide".clickRunCmd("Click Me!".fireFmt()).skylineFmt()
-            }",
-            "<image>${"⯈".mangoFmt(true)}",
-            "<image>${"⯈".mangoFmt(true)}",
-            "]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)
-        ),
+        var welcomeText: List<String> =
+            listOf(
+                "]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true),
+                "<image>${"⯈".mangoFmt(true)}",
+                "<image>${"⯈".mangoFmt(true)}",
+                "<image>${"⯈".mangoFmt(true)} ${"Welcome".fireFmt()} <player>",
+                "<image>${"⯈".mangoFmt(true)}",
+                "<image>${"⯈".mangoFmt(true)}",
+                "<image>${"⯈".mangoFmt(true)} ${"Check out".fireFmt()}<gray>: ${
+                    "/rules".clickRunCmd("Click Me!".fireFmt()).skylineFmt()
+                } <gray>🟅 ${
+                    "/guide".clickRunCmd("Click Me!".fireFmt()).skylineFmt()
+                }",
+                "<image>${"⯈".mangoFmt(true)}",
+                "<image>${"⯈".mangoFmt(true)}",
+                "]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true),
+            ),
         var joinMessage: String = "<green>➕<reset> ${"›".mangoFmt(true)} <player>",
         var quitMessage: String = "<red>➖<reset> ${"›".mangoFmt(true)} <player>",
         var whisperToFormat: String = "${"You".skylineFmt()} ${"➛".mangoFmt(true)} <player> <reset>${"›".mangoFmt(true)} <message>",

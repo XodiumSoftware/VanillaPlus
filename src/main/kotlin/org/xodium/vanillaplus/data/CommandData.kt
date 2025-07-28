@@ -12,5 +12,5 @@ import io.papermc.paper.command.brigadier.CommandSourceStack
 internal data class CommandData(
     val builder: LiteralArgumentBuilder<CommandSourceStack>,
     val description: String,
-    val aliases: List<String>
+    val aliases: List<String>,
 )

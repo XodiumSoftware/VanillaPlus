@@ -1,4 +1,4 @@
-@file:Suppress("unused", "UnstableApiUsage")
+@file:Suppress("UnstableApiUsage", "ktlint:standard:no-wildcard-imports", "unused")
 
 package org.xodium.vanillaplus.utils
 
@@ -30,8 +30,11 @@ internal object ExtUtils {
      * @return The deserialized [Component].
      */
     fun String.mm(vararg resolvers: TagResolver): Component =
-        if (resolvers.isEmpty()) MM.deserialize(this)
-        else MM.deserialize(this, TagResolver.resolver(*resolvers))
+        if (resolvers.isEmpty()) {
+            MM.deserialize(this)
+        } else {
+            MM.deserialize(this, TagResolver.resolver(*resolvers))
+        }
 
     /**
      * Deserializes a list of [MiniMessage] strings into a list of Components.
@@ -39,8 +42,7 @@ internal object ExtUtils {
      * @return The list of deserialized Components.
      */
     @JvmName("mmStringList")
-    fun List<String>.mm(vararg resolvers: TagResolver): List<Component> =
-        this.map { it.mm(*resolvers) }
+    fun List<String>.mm(vararg resolvers: TagResolver): List<Component> = this.map { it.mm(*resolvers) }
 
     /** Serializes a [Component] into a String. */
     fun Component.mm(): String = MM.serialize(this)
@@ -99,26 +101,24 @@ internal object ExtUtils {
      * @param hover Optional hover text for the command.
      * @return The formatted [String] with the command.
      */
-    fun String.clickRunCmd(hover: String? = null): String {
-        return if (hover != null) {
+    fun String.clickRunCmd(hover: String? = null): String =
+        if (hover != null) {
             "<hover:show_text:'$hover'><click:run_command:'$this'>$this</click></hover>"
         } else {
             "<click:run_command:'$this'>$this</click>"
         }
-    }
 
     /**
      * Suggests a command from a [String].
      * @param hover Optional hover text for the command.
      * @return The formatted [String] with the suggested command.
      */
-    fun String.clickSuggestCmd(hover: String? = null): String {
-        return if (hover != null) {
+    fun String.clickSuggestCmd(hover: String? = null): String =
+        if (hover != null) {
             "<hover:show_text:'$hover'><click:suggest_command:'$this'>$this</click></hover>"
         } else {
             "<click:suggest_command:'$this'>$this</click>"
         }
-    }
 
     /**
      * A helper  function to wrap command execution with standardized error handling.
@@ -143,15 +143,17 @@ internal object ExtUtils {
      */
     fun Player.face(size: Int = 8): String {
         // 1. fetch skin URL from the playerProfile
-        val texturesProp = playerProfile.properties
-            .firstOrNull { it.name == "textures" }
-            ?: throw IllegalStateException("Player has no skin texture")
+        val texturesProp =
+            playerProfile.properties
+                .firstOrNull { it.name == "textures" }
+                ?: throw IllegalStateException("Player has no skin texture")
         val json = JsonParser.parseString(String(Base64.getDecoder().decode(texturesProp.value))).asJsonObject
-        val skinUrl = json
-            .getAsJsonObject("textures")
-            .getAsJsonObject("SKIN")
-            .get("url")
-            .asString
+        val skinUrl =
+            json
+                .getAsJsonObject("textures")
+                .getAsJsonObject("SKIN")
+                .get("url")
+                .asString
 
         // 2. load and crop
         val fullImg = ImageIO.read(URI.create(skinUrl).toURL())
@@ -172,8 +174,11 @@ internal object ExtUtils {
                 val r = (rgb shr 16) and 0xFF
                 val g = (rgb shr 8) and 0xFF
                 val b = rgb and 0xFF
-                if (a == 0) builder.append("<color:#000000>█</color>")
-                else builder.append("<color:#%02x%02x%02x>█</color>".format(r, g, b))
+                if (a == 0) {
+                    builder.append("<color:#000000>█</color>")
+                } else {
+                    builder.append("<color:#%02x%02x%02x>█</color>".format(r, g, b))
+                }
             }
             builder.append("\n")
         }

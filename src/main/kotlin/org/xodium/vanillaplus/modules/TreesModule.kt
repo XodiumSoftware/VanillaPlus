@@ -59,13 +59,15 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
         return worldEdit
     }
 
-    override fun cmds(): List<CommandData> {
-        return listOf(
+    override fun cmds(): List<CommandData> =
+        listOf(
             CommandData(
-                Commands.literal("tree")
+                Commands
+                    .literal("tree")
                     .requires { it.sender.hasPermission(perms()[0]) }
                     .then(
-                        Commands.argument("type", StringArgumentType.string())
+                        Commands
+                            .argument("type", StringArgumentType.string())
                             .suggests { ctx, builder ->
                                 config.saplingLink.keys.forEach { material ->
                                     builder.suggest(
@@ -73,13 +75,13 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
                                             .removeSuffix("_SAPLING")
                                             .removeSuffix("_PROPAGULE")
                                             .removeSuffix("_FUNGUS")
-                                            .lowercase()
+                                            .lowercase(),
                                     )
                                 }
                                 builder.buildFuture()
-                            }
-                            .then(
-                                Commands.argument("index", StringArgumentType.string())
+                            }.then(
+                                Commands
+                                    .argument("index", StringArgumentType.string())
                                     .suggests { ctx, builder ->
                                         StringArgumentType.getString(ctx, "type").toMaterial()?.let { material ->
                                             schematicCache[material]?.let { schematics ->
@@ -89,27 +91,24 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
                                             }
                                         }
                                         builder.buildFuture()
-                                    }
-                                    .executes { ctx ->
+                                    }.executes { ctx ->
                                         ctx.tryCatch { handleTreeCmd((it.sender as Player), ctx, true) }
-                                    })
-                            .executes { ctx -> ctx.tryCatch { handleTreeCmd((it.sender as Player), ctx, false) } }
+                                    },
+                            ).executes { ctx -> ctx.tryCatch { handleTreeCmd((it.sender as Player), ctx, false) } },
                     ),
                 "Triggers the spawning of a tree",
-                listOf("tr")
-            )
+                listOf("tr"),
+            ),
         )
-    }
 
-    override fun perms(): List<Permission> {
-        return listOf(
+    override fun perms(): List<Permission> =
+        listOf(
             Permission(
                 "${instance::class.simpleName}.tree".lowercase(),
                 "Allows use of the tree command",
-                PermissionDefault.OP
-            )
+                PermissionDefault.OP,
+            ),
         )
-    }
 
     /**
      * Handle the StructureGrowEvent.
@@ -118,11 +117,12 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: StructureGrowEvent) {
         if (!enabled()) return
-        event.location.block.takeIf {
-            Tag.SAPLINGS.isTagged(it.type)
-                    || it.type == Material.WARPED_FUNGUS
-                    || it.type == Material.CRIMSON_FUNGUS
-        }?.let { event.isCancelled = pasteSchematic(it) }
+        event.location.block
+            .takeIf {
+                Tag.SAPLINGS.isTagged(it.type) ||
+                    it.type == Material.WARPED_FUNGUS ||
+                    it.type == Material.CRIMSON_FUNGUS
+            }?.let { event.isCancelled = pasteSchematic(it) }
     }
 
     /**
@@ -135,7 +135,8 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
         return try {
             FileSystems.newFileSystem(url.toURI(), mapOf("create" to false)).use { fs ->
                 val dirPath = fs.getPath(resourceDir.removePrefix("/"))
-                Files.walk(dirPath, 1)
+                Files
+                    .walk(dirPath, 1)
                     .filter { Files.isRegularFile(it) }
                     .collect(Collectors.toList())
                     .also { if (it.isEmpty()) error("No schematics found in directory: $resourceDir") }
@@ -156,7 +157,10 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
      * @param channel The channel to read the schematic from.
      * @return The loaded schematic.
      */
-    private fun readClipboard(path: Path, channel: ReadableByteChannel): Clipboard {
+    private fun readClipboard(
+        path: Path,
+        channel: ReadableByteChannel,
+    ): Clipboard {
         val format = ClipboardFormats.findByAlias("schem") ?: error("Unsupported schematic format for resource: $path")
         return try {
             format.getReader(Channels.newInputStream(channel)).read()
@@ -181,17 +185,24 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
      * @param clipboard The specific clipboard to paste.
      * @return True if the schematic was pasted successfully.
      */
-    private fun pasteSchematic(block: Block, clipboard: Clipboard): Boolean {
+    private fun pasteSchematic(
+        block: Block,
+        clipboard: Clipboard,
+    ): Boolean {
         instance.server.scheduler.runTask(
             instance,
             Runnable {
                 try {
-                    WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(block.world))
+                    WorldEdit
+                        .getInstance()
+                        .newEditSession(BukkitAdapter.adapt(block.world))
                         .use { editSession ->
                             block.type = Material.AIR
-                            editSession.mask = BlockTypeMask(
-                                editSession,
-                                MaterialRegistry.TREE_MASK.map { BukkitAdapter.asBlockType(it) })
+                            editSession.mask =
+                                BlockTypeMask(
+                                    editSession,
+                                    MaterialRegistry.TREE_MASK.map { BukkitAdapter.asBlockType(it) },
+                                )
                             ClipboardHolder(clipboard).apply {
                                 transform = transform.combine(AffineTransform().rotateY(getRandomRotation().toDouble()))
                                 Operations.complete(
@@ -201,14 +212,15 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
                                         .copyEntities(config.copyEntities)
                                         .ignoreAirBlocks(config.ignoreAirBlocks)
                                         .ignoreStructureVoidBlocks(config.ignoreStructureVoidBlocks)
-                                        .build()
+                                        .build(),
                                 )
                             }
                         }
                 } catch (ex: Exception) {
                     instance.logger.severe("Error while pasting schematic: ${ex.message}")
                 }
-            })
+            },
+        )
         return true
     }
 
@@ -218,17 +230,22 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
      * @param ctx The [CommandContext] containing command arguments and context.
      * @param hasIndex Whether the command has an index argument.
      */
-    private fun handleTreeCmd(player: Player, ctx: CommandContext<CommandSourceStack>, hasIndex: Boolean) {
+    private fun handleTreeCmd(
+        player: Player,
+        ctx: CommandContext<CommandSourceStack>,
+        hasIndex: Boolean,
+    ) {
         val typeName = StringArgumentType.getString(ctx, "type")
         val material = typeName.toMaterial() ?: return
         val clipboards = schematicCache[material] ?: return
-        val clipboard = if (hasIndex) {
-            val index = StringArgumentType.getString(ctx, "index").toInt()
-            if (index < 0 || index >= clipboards.size) return
-            clipboards[index]
-        } else {
-            clipboards.random()
-        }
+        val clipboard =
+            if (hasIndex) {
+                val index = StringArgumentType.getString(ctx, "index").toInt()
+                if (index < 0 || index >= clipboards.size) return
+                clipboards[index]
+            } else {
+                clipboards.random()
+            }
         try {
             val actor = BukkitAdapter.adapt(player)
             val session = WorldEdit.getInstance().sessionManager.get(actor)
@@ -266,18 +283,19 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
         var copyEntities: Boolean = false,
         var ignoreAirBlocks: Boolean = true,
         var ignoreStructureVoidBlocks: Boolean = true,
-        var saplingLink: Map<Material, List<String>> = mapOf(
-            Material.ACACIA_SAPLING to listOf("trees/acacia"),
-            Material.BIRCH_SAPLING to listOf("trees/birch"),
-            Material.CHERRY_SAPLING to listOf("trees/cherry"),
-            Material.CRIMSON_FUNGUS to listOf("trees/crimson"),
-            Material.DARK_OAK_SAPLING to listOf("trees/dark_oak"),
-            Material.JUNGLE_SAPLING to listOf("trees/jungle"),
-            Material.MANGROVE_PROPAGULE to listOf("trees/mangrove"),
-            Material.OAK_SAPLING to listOf("trees/oak"),
-            Material.PALE_OAK_SAPLING to listOf("trees/pale_oak"),
-            Material.SPRUCE_SAPLING to listOf("trees/spruce"),
-            Material.WARPED_FUNGUS to listOf("trees/warped"),
-        ),
+        var saplingLink: Map<Material, List<String>> =
+            mapOf(
+                Material.ACACIA_SAPLING to listOf("trees/acacia"),
+                Material.BIRCH_SAPLING to listOf("trees/birch"),
+                Material.CHERRY_SAPLING to listOf("trees/cherry"),
+                Material.CRIMSON_FUNGUS to listOf("trees/crimson"),
+                Material.DARK_OAK_SAPLING to listOf("trees/dark_oak"),
+                Material.JUNGLE_SAPLING to listOf("trees/jungle"),
+                Material.MANGROVE_PROPAGULE to listOf("trees/mangrove"),
+                Material.OAK_SAPLING to listOf("trees/oak"),
+                Material.PALE_OAK_SAPLING to listOf("trees/pale_oak"),
+                Material.SPRUCE_SAPLING to listOf("trees/spruce"),
+                Material.WARPED_FUNGUS to listOf("trees/warped"),
+            ),
     ) : ModuleInterface.Config
 }

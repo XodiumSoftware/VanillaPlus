@@ -48,8 +48,8 @@ internal class DimensionsModule : ModuleInterface<DimensionsModule.Config> {
     fun on(event: PortalCreateEvent) {
         if (!enabled()) return
 
-        if (event.world.environment == World.Environment.NETHER
-            && event.reason == PortalCreateEvent.CreateReason.FIRE
+        if (event.world.environment == World.Environment.NETHER &&
+            event.reason == PortalCreateEvent.CreateReason.FIRE
         ) {
             if (findCorrespondingPortal(calcPortalCentre(event.blocks), getOverworld()) == null) {
                 event.isCancelled = true
@@ -69,7 +69,7 @@ internal class DimensionsModule : ModuleInterface<DimensionsModule.Config> {
     private fun findCorrespondingPortal(
         netherPortal: Location,
         overworld: World,
-        searchRadius: Int = config.portalSearchRadius
+        searchRadius: Int = config.portalSearchRadius,
     ): Location? {
         val targetX = netherPortal.x * 8
         val targetZ = netherPortal.z * 8
@@ -107,34 +107,34 @@ internal class DimensionsModule : ModuleInterface<DimensionsModule.Config> {
      * @param z2 The Z-coordinate of the second point.
      * @return The distance between the two points.
      */
-    private fun distance2D(x1: Double, z1: Double, x2: Double, z2: Double): Double {
-        return sqrt((x1 - x2).pow(2) + (z1 - z2).pow(2))
-    }
+    private fun distance2D(
+        x1: Double,
+        z1: Double,
+        x2: Double,
+        z2: Double,
+    ): Double = sqrt((x1 - x2).pow(2) + (z1 - z2).pow(2))
 
     /**
      * Calculates the centre point of a portal structure by averaging the positions of its constituent blocks.
      * @param blockStates The list of [BlockState]s representing the portal frame and portal blocks.
      * @return The [Location] representing the geometric centre of the portal.
      */
-    private fun calcPortalCentre(blockStates: List<BlockState>): Location {
-        return blockStates
+    private fun calcPortalCentre(blockStates: List<BlockState>): Location =
+        blockStates
             .map { it.location }
             .reduce { acc, loc -> acc.add(loc) }
             .multiply(1.0 / blockStates.size)
-    }
 
     /**
      * Retrieves the Overworld instance or throws if not found.
      * @return The Overworld [World] object.
      * @throws IllegalStateException if the Overworld is not loaded.
      */
-    private fun getOverworld(): World {
-        return instance.server.getWorld("world") ?: throw IllegalStateException("Overworld (world) is not loaded.")
-    }
+    private fun getOverworld(): World = instance.server.getWorld("world") ?: throw IllegalStateException("Overworld (world) is not loaded.")
 
     data class Config(
         override var enabled: Boolean = true,
         var portalSearchRadius: Int = 128,
-        var portalCreationDeniedMsg: String = "No corresponding active portal found in the Overworld!".fireFmt()
+        var portalCreationDeniedMsg: String = "No corresponding active portal found in the Overworld!".fireFmt(),
     ) : ModuleInterface.Config
 }

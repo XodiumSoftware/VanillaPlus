@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package org.xodium.vanillaplus.data
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect
@@ -21,10 +23,11 @@ internal data class PlayerData(
     val nickname: String? = null,
 ) {
     companion object {
-        private val mapper = jacksonObjectMapper()
-            .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
-            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-            .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
+        private val mapper =
+            jacksonObjectMapper()
+                .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+                .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+                .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
         private val filePath = instance.dataFolder.toPath().resolve("playerdata.json")
         private val cache = mutableMapOf<UUID, PlayerData>()
 
@@ -48,15 +51,18 @@ internal data class PlayerData(
 
         /** Saves the current state of the [PlayerData] cache to the file asynchronously. */
         private fun save() {
-            instance.server.scheduler.runTaskAsynchronously(instance, Runnable {
-                try {
-                    filePath.parent.createDirectories()
-                    filePath.writeText(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(cache))
-                } catch (e: IOException) {
-                    instance.logger.severe("Failed to write ${PlayerData::class.simpleName} to file: ${e.message}")
-                    e.printStackTrace()
-                }
-            })
+            instance.server.scheduler.runTaskAsynchronously(
+                instance,
+                Runnable {
+                    try {
+                        filePath.parent.createDirectories()
+                        filePath.writeText(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(cache))
+                    } catch (e: IOException) {
+                        instance.logger.severe("Failed to write ${PlayerData::class.simpleName} to file: ${e.message}")
+                        e.printStackTrace()
+                    }
+                },
+            )
         }
 
         /**
@@ -73,16 +79,17 @@ internal data class PlayerData(
          * @param player The [player] whose data is to be retrieved.
          * @return The [PlayerData] associated with the [player].
          */
-        fun get(player: Player): PlayerData {
-            return cache.getOrPut(player.uniqueId) { PlayerData() }
-        }
+        fun get(player: Player): PlayerData = cache.getOrPut(player.uniqueId) { PlayerData() }
 
         /**
          * Updates the [player] data for a specific [player].
          * @param player The [player] whose data is to be updated.
          * @param data The new [PlayerData] to set for the [player].
          */
-        fun update(player: Player, data: PlayerData) {
+        fun update(
+            player: Player,
+            data: PlayerData,
+        ) {
             cache[player.uniqueId] = data
             save()
         }

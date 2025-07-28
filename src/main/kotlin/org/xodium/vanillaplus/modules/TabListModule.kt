@@ -35,7 +35,7 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
                 instance,
                 Runnable { instance.server.onlinePlayers.forEach { updateTabList(it) } },
                 config.initDelay,
-                config.interval
+                config.interval,
             )
         }
     }
@@ -77,9 +77,9 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
                 joinConfig,
                 config.footer.mm(
                     Placeholder.component("weather", getWeather().mm()),
-                    Placeholder.component("tps", getTps().mm())
-                )
-            )
+                    Placeholder.component("tps", getTps().mm()),
+                ),
+            ),
         )
     }
 
@@ -125,20 +125,22 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
         override var enabled: Boolean = true,
         var initDelay: Long = 0L,
         var interval: Long = TimeUtils.seconds(10),
-        var header: List<String> = listOf(
-            "${"]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt()}   ${"⚡ IllyriaRPG ⚡".fireFmt()}   ${
-                "]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)
-            }",
-            ""
-        ),
-        var footer: List<String> = listOf(
-            "",
-            "${"]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt()}  ${"TPS:".fireFmt()} <tps> ${"|".mangoFmt()} ${
-                "Weather:".fireFmt()
-            } <weather>  ${
-                "]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)
-            }"
-        ),
+        var header: List<String> =
+            listOf(
+                "${"]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt()}   ${"⚡ IllyriaRPG ⚡".fireFmt()}   ${
+                    "]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)
+                }",
+                "",
+            ),
+        var footer: List<String> =
+            listOf(
+                "",
+                "${"]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt()}  ${"TPS:".fireFmt()} <tps> ${"|".mangoFmt()} ${
+                    "Weather:".fireFmt()
+                } <weather>  ${
+                    "]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)
+                }",
+            ),
         var weatherThundering: String = "<red>\uD83C\uDF29<reset>",
         var weatherStorm: String = "<yellow>\uD83C\uDF26<reset>",
         var weatherClear: String = "<green>\uD83C\uDF24<reset>",

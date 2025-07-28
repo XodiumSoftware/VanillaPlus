@@ -23,27 +23,26 @@ internal class AutoRestartModule : ModuleInterface<AutoRestartModule.Config> {
 
     override fun enabled(): Boolean = config.enabled
 
-    override fun cmds(): List<CommandData> {
-        return listOf(
+    override fun cmds(): List<CommandData> =
+        listOf(
             CommandData(
-                Commands.literal("autorestart")
+                Commands
+                    .literal("autorestart")
                     .requires { it.sender.hasPermission(perms()[0]) }
                     .executes { ctx -> ctx.tryCatch { countdown() } },
                 "Triggers a countdown for the server restart.",
-                listOf("ar")
-            )
+                listOf("ar"),
+            ),
         )
-    }
 
-    override fun perms(): List<Permission> {
-        return listOf(
+    override fun perms(): List<Permission> =
+        listOf(
             Permission(
                 "${instance::class.simpleName}.autorestart".lowercase(),
                 "Allows use of the autorestart command",
-                PermissionDefault.OP
-            )
+                PermissionDefault.OP,
+            ),
         )
-    }
 
     init {
         if (enabled()) {
@@ -58,7 +57,7 @@ internal class AutoRestartModule : ModuleInterface<AutoRestartModule.Config> {
                     }
                 },
                 config.scheduleInitDelay,
-                config.scheduleInterval
+                config.scheduleInterval,
             )
         }
     }
@@ -80,7 +79,7 @@ internal class AutoRestartModule : ModuleInterface<AutoRestartModule.Config> {
                     val progress = remainingSeconds.toFloat() / totalSeconds
                     bossBar.name(
                         config.bossbar.name
-                            .mm(Placeholder.component("time", displayTime.toString().mm()))
+                            .mm(Placeholder.component("time", displayTime.toString().mm())),
                     )
                     bossBar.progress(progress)
                     instance.server.onlinePlayers.forEach { player ->
@@ -92,7 +91,7 @@ internal class AutoRestartModule : ModuleInterface<AutoRestartModule.Config> {
                 }
             },
             config.countdownInitDelay,
-            config.countdownInterval
+            config.countdownInterval,
         )
     }
 
@@ -102,29 +101,35 @@ internal class AutoRestartModule : ModuleInterface<AutoRestartModule.Config> {
      * @param restartTime the time to compare to the current time.
      * @return true if the current time is equal to the restart time.
      */
-    private fun isTimeToStartCountdown(zoneId: ZoneId, restartTime: LocalTime): Boolean {
+    private fun isTimeToStartCountdown(
+        zoneId: ZoneId,
+        restartTime: LocalTime,
+    ): Boolean {
         val now = LocalTime.now(zoneId).truncatedTo(ChronoUnit.SECONDS)
-        val trigger = restartTime
-            .minusMinutes(config.countdownStartMinutes.toLong())
-            .truncatedTo(ChronoUnit.SECONDS)
+        val trigger =
+            restartTime
+                .minusMinutes(config.countdownStartMinutes.toLong())
+                .truncatedTo(ChronoUnit.SECONDS)
         return now.equals(trigger)
     }
 
     data class Config(
         override var enabled: Boolean = true,
         var zoneId: ZoneId? = null,
-        var restartTimes: MutableList<LocalTime> = mutableListOf(
-            LocalTime.of(0, 0),
-            LocalTime.of(6, 0),
-            LocalTime.of(12, 0),
-            LocalTime.of(18, 0),
-        ),
-        var bossbar: BossBarData = BossBarData(
-            "⚡ RESTARTING in <time> minute(s) ⚡".fireFmt(),
-            1.0f,
-            BossBar.Color.RED,
-            BossBar.Overlay.PROGRESS,
-        ),
+        var restartTimes: MutableList<LocalTime> =
+            mutableListOf(
+                LocalTime.of(0, 0),
+                LocalTime.of(6, 0),
+                LocalTime.of(12, 0),
+                LocalTime.of(18, 0),
+            ),
+        var bossbar: BossBarData =
+            BossBarData(
+                "⚡ RESTARTING in <time> minute(s) ⚡".fireFmt(),
+                1.0f,
+                BossBar.Color.RED,
+                BossBar.Overlay.PROGRESS,
+            ),
         var scheduleInitDelay: Long = TimeUtils.seconds(0),
         var scheduleInterval: Long = TimeUtils.seconds(1),
         var countdownInitDelay: Long = TimeUtils.seconds(0),

@@ -16,43 +16,44 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 
 /** Represents a module handling nickname mechanics within the system. */
-internal class NicknameModule(private val tabListModule: TabListModule) : ModuleInterface<NicknameModule.Config> {
+internal class NicknameModule(
+    private val tabListModule: TabListModule,
+) : ModuleInterface<NicknameModule.Config> {
     override val config: Config = Config()
 
     override fun enabled(): Boolean = config.enabled && tabListModule.enabled()
 
-    override fun cmds(): List<CommandData> {
-        return listOf(
+    override fun cmds(): List<CommandData> =
+        listOf(
             CommandData(
-                Commands.literal("nickname")
+                Commands
+                    .literal("nickname")
                     .requires { it.sender.hasPermission(perms()[0]) }
                     .executes { ctx ->
                         ctx.tryCatch { nickname(ctx.source.sender as Player, "") }
-                    }
-                    .then(
-                        Commands.argument("name", StringArgumentType.greedyString())
+                    }.then(
+                        Commands
+                            .argument("name", StringArgumentType.greedyString())
                             .executes { ctx ->
                                 ctx.tryCatch {
                                     val name = StringArgumentType.getString(ctx, "name")
                                     nickname(ctx.source.sender as Player, name)
                                 }
-                            }
+                            },
                     ),
                 "Allows players to set or remove their nickname.",
-                listOf("nick")
-            )
+                listOf("nick"),
+            ),
         )
-    }
 
-    override fun perms(): List<Permission> {
-        return listOf(
+    override fun perms(): List<Permission> =
+        listOf(
             Permission(
                 "${instance::class.simpleName}.nickname".lowercase(),
                 "Allows use of the nickname command",
-                PermissionDefault.TRUE
-            )
+                PermissionDefault.TRUE,
+            ),
         )
-    }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
@@ -66,7 +67,10 @@ internal class NicknameModule(private val tabListModule: TabListModule) : Module
      * @param player The player whose nickname is to be set.
      * @param name The new nickname for the player.
      */
-    private fun nickname(player: Player, name: String) {
+    private fun nickname(
+        player: Player,
+        name: String,
+    ) {
         val newNickname = name.ifBlank { null }
         PlayerData.update(player, PlayerData.get(player).copy(nickname = newNickname))
         player.displayName((newNickname ?: player.name).mm())

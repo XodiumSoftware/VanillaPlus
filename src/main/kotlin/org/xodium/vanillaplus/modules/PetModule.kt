@@ -48,15 +48,15 @@ internal class PetModule : ModuleInterface<PetModule.Config> {
         source.sendActionBar(
             config.sourceTransferMessage.mm(
                 Placeholder.component("<pet>", petName),
-                Placeholder.component("<target>", target.displayName())
-            )
+                Placeholder.component("<target>", target.displayName()),
+            ),
         )
 
         target.sendActionBar(
             config.targetTransferMessage.mm(
                 Placeholder.component("<pet>", petName),
-                Placeholder.component("<source>", source.displayName())
-            )
+                Placeholder.component("<source>", source.displayName()),
+            ),
         )
 
         event.isCancelled = true
