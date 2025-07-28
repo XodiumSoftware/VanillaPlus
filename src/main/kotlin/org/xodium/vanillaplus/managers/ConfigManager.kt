@@ -71,22 +71,21 @@ internal object ConfigManager {
      * @param silent If true, suppresses logging messages during loading.
      * @return A JsonNode representing the configuration, or null on failure or if the file doesn't exist.
      */
-    fun load(silent: Boolean = false): JsonNode? {
+    fun load(silent: Boolean = false): JsonNode? =
         try {
-            if (configPath.toFile().exists()) {
+            if (!configPath.toFile().exists()) {
+                if (!silent) instance.logger.info("Config: No config file found, creating new one.")
+                null
+            } else {
                 if (!silent) instance.logger.info("Config: Loading settings.")
                 val node = objectMapper.readTree(configPath.toFile().readText())
                 if (!silent) instance.logger.info("Config: Settings loaded successfully.")
-                return node
-            } else {
-                if (!silent) instance.logger.info("Config: No config file found, creating new one.")
-                return null
+                node
             }
         } catch (e: IOException) {
             instance.logger.severe("Config: Failed to load config file: ${e.message} | ${e.stackTraceToString()}")
-            return null
+            null
         }
-    }
 
     /**
      * Saves the current settings to the config file.

@@ -2,6 +2,7 @@
 
 package org.xodium.vanillaplus.managers
 
+import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.JsonNode
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -58,7 +59,7 @@ internal object ModuleManager {
             allConfigsNode?.get(configKey)?.let { moduleConfigNode ->
                 try {
                     ConfigManager.objectMapper.readerForUpdating(module.config).readValue(moduleConfigNode)
-                } catch (e: Exception) {
+                } catch (e: JsonProcessingException) {
                     instance.logger.warning(
                         "Failed to parse config for ${module::class.simpleName}. Using defaults. Error: ${e.message}",
                     )
