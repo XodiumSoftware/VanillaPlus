@@ -59,7 +59,9 @@ internal object ModuleManager {
                 try {
                     ConfigManager.objectMapper.readerForUpdating(module.config).readValue(moduleConfigNode)
                 } catch (e: Exception) {
-                    instance.logger.warning("Failed to parse config for ${module::class.simpleName}. Using defaults. Error: ${e.message}")
+                    instance.logger.warning(
+                        "Failed to parse config for ${module::class.simpleName}. Using defaults. Error: ${e.message}",
+                    )
                 }
             }
             configsToSave[configKey] = module.config

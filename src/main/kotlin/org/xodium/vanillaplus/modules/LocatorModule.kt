@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.command.brigadier.Commands
@@ -11,6 +13,7 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
+import java.util.*
 import java.util.concurrent.CompletableFuture
 
 /** Represents a module handling locator mechanics within the system. */
@@ -98,7 +101,7 @@ internal class LocatorModule : ModuleInterface<LocatorModule.Config> {
             hex != null ->
                 instance.server.dispatchCommand(
                     player,
-                    "$cmd color hex ${String.format("%06X", hex.value())}",
+                    "$cmd color hex ${String.format(Locale.ENGLISH, "%06X", hex.value())}",
                 )
 
             else -> instance.server.dispatchCommand(player, "$cmd color reset")

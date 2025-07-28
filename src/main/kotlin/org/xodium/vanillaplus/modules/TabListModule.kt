@@ -16,6 +16,7 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.TimeUtils
+import java.util.*
 import kotlin.math.roundToInt
 
 /** Represents a module handling tab-list mechanics within the system. */
@@ -92,7 +93,7 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
         val clampedTps = tps.coerceIn(0.0, 20.0)
         val ratio = clampedTps / 20.0
         val color = getColorForTps(ratio)
-        val formattedTps = String.format("%.1f", tps)
+        val formattedTps = String.format(Locale.ENGLISH, "%.1f", tps)
         return "<color:$color>$formattedTps</color>"
     }
 
@@ -105,7 +106,7 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
         val clamped = ratio.coerceIn(0.0, 1.0)
         val r = (255 * (1 - clamped)).roundToInt()
         val g = (255 * clamped).roundToInt()
-        return String.format("#%02X%02X%02X", r, g, 0)
+        return String.format(Locale.ENGLISH, "#%02X%02X%02X", r, g, 0)
     }
 
     /**

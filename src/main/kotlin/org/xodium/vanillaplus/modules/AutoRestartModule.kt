@@ -118,9 +118,9 @@ internal class AutoRestartModule : ModuleInterface<AutoRestartModule.Config> {
         var zoneId: ZoneId? = null,
         var restartTimes: MutableList<LocalTime> =
             mutableListOf(
-                LocalTime.of(0, 0),
+                LocalTime.MIDNIGHT,
                 LocalTime.of(6, 0),
-                LocalTime.of(12, 0),
+                LocalTime.NOON,
                 LocalTime.of(18, 0),
             ),
         var bossbar: BossBarData =

@@ -216,8 +216,8 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
                                 )
                             }
                         }
-                } catch (ex: Exception) {
-                    instance.logger.severe("Error while pasting schematic: ${ex.message}")
+                } catch (e: Exception) {
+                    instance.logger.severe("Error while pasting schematic: ${e.message}")
                 }
             },
         )
@@ -251,8 +251,8 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
             val session = WorldEdit.getInstance().sessionManager.get(actor)
             session.clipboard = ClipboardHolder(clipboard)
             player.sendMessage("$PREFIX Loaded $typeName tree into clipboard! Use //paste to place it".mm())
-        } catch (ex: Exception) {
-            instance.logger.severe("Error while setting clipboard: ${ex.message}")
+        } catch (e: Exception) {
+            instance.logger.severe("Error while setting clipboard: ${e.message}")
             player.sendMessage("$PREFIX ${"Error Occurred, Check Console!".fireFmt()}".mm())
         }
     }

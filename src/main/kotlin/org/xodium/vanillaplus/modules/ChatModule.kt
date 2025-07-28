@@ -210,7 +210,9 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
             ),
         var joinMessage: String = "<green>➕<reset> ${"›".mangoFmt(true)} <player>",
         var quitMessage: String = "<red>➖<reset> ${"›".mangoFmt(true)} <player>",
-        var whisperToFormat: String = "${"You".skylineFmt()} ${"➛".mangoFmt(true)} <player> <reset>${"›".mangoFmt(true)} <message>",
-        var whisperFromFormat: String = "<player> <reset>${"➛".mangoFmt(true)} ${"You".skylineFmt()} ${"›".mangoFmt(true)} <message>",
+        var whisperToFormat: String =
+            "${"You".skylineFmt()} ${"➛".mangoFmt(true)} <player> <reset>${"›".mangoFmt(true)} <message>",
+        var whisperFromFormat: String =
+            "<player> <reset>${"➛".mangoFmt(true)} ${"You".skylineFmt()} ${"›".mangoFmt(true)} <message>",
     ) : ModuleInterface.Config
 }
