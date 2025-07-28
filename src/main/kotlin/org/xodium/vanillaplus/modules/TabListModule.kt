@@ -15,15 +15,25 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
-import org.xodium.vanillaplus.utils.TimeUtils
 import java.util.*
 import kotlin.math.roundToInt
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.DurationUnit
 
 /** Represents a module handling tab-list mechanics within the system. */
 internal class TabListModule : ModuleInterface<TabListModule.Config> {
     override val config: Config = Config()
 
     override fun enabled(): Boolean = config.enabled
+
+    companion object {
+        private const val MIN_TPS = 0.0
+        private const val MAX_TPS = 20.0
+        private const val TPS_DECIMAL_FORMAT = "%.1f"
+        private const val MAX_COLOR_VALUE = 255
+        private const val COLOR_FORMAT = "#%02X%02X%02X"
+    }
 
     init {
         if (enabled()) {
@@ -36,7 +46,7 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
                 instance,
                 Runnable { instance.server.onlinePlayers.forEach { updateTabList(it) } },
                 config.initDelay,
-                config.interval,
+                config.interval.toLong(DurationUnit.SECONDS),
             )
         }
     }
@@ -90,10 +100,10 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
      */
     private fun getTps(): String {
         val tps = instance.server.tps[0]
-        val clampedTps = tps.coerceIn(0.0, 20.0)
-        val ratio = clampedTps / 20.0
+        val clampedTps = tps.coerceIn(MIN_TPS, MAX_TPS)
+        val ratio = clampedTps / MAX_TPS
         val color = getColorForTps(ratio)
-        val formattedTps = String.format(Locale.ENGLISH, "%.1f", tps)
+        val formattedTps = String.format(Locale.ENGLISH, TPS_DECIMAL_FORMAT, tps)
         return "<color:$color>$formattedTps</color>"
     }
 
@@ -104,9 +114,9 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
      */
     private fun getColorForTps(ratio: Double): String {
         val clamped = ratio.coerceIn(0.0, 1.0)
-        val r = (255 * (1 - clamped)).roundToInt()
-        val g = (255 * clamped).roundToInt()
-        return String.format(Locale.ENGLISH, "#%02X%02X%02X", r, g, 0)
+        val r = (MAX_COLOR_VALUE * (1 - clamped)).roundToInt()
+        val g = (MAX_COLOR_VALUE * clamped).roundToInt()
+        return String.format(Locale.ENGLISH, COLOR_FORMAT, r, g, 0)
     }
 
     /**
@@ -125,7 +135,7 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
     data class Config(
         override var enabled: Boolean = true,
         var initDelay: Long = 0L,
-        var interval: Long = TimeUtils.seconds(10),
+        var interval: Duration = 10.seconds,
         var header: List<String> =
             listOf(
                 "${"]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt()}   ${"⚡ IllyriaRPG ⚡".fireFmt()}   ${
