@@ -30,8 +30,6 @@ import java.util.concurrent.CompletableFuture
 internal class ChatModule : ModuleInterface<ChatModule.Config> {
     override val config: Config = Config()
 
-    override fun enabled(): Boolean = config.enabled
-
     override fun cmds(): List<CommandData> {
         return listOf(
             CommandData(

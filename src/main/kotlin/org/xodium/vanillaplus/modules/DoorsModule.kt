@@ -28,8 +28,6 @@ import org.bukkit.Sound as BukkitSound
 internal class DoorsModule : ModuleInterface<DoorsModule.Config> {
     override val config: Config = Config()
 
-    override fun enabled(): Boolean = config.enabled
-
     private val autoClose = mutableMapOf<Block, Long>()
     private val possibleNeighbours =
         listOf(

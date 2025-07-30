@@ -45,8 +45,6 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
     val lastUnloads: ConcurrentHashMap<UUID, List<Block>> = ConcurrentHashMap()
     val activeVisualizations: ConcurrentHashMap<UUID, Int> = ConcurrentHashMap()
 
-    override fun enabled(): Boolean = config.enabled
-
     override fun cmds(): List<CommandData> =
         listOf(
             CommandData(

@@ -12,8 +12,6 @@ import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 internal class MotdModule : ModuleInterface<MotdModule.Config> {
     override val config: Config = Config()
 
-    override fun enabled(): Boolean = config.enabled
-
     @EventHandler(priority = EventPriority.HIGH)
     fun on(event: ServerListPingEvent) {
         if (!enabled()) return

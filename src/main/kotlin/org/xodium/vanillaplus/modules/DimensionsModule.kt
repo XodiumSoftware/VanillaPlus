@@ -22,8 +22,6 @@ import kotlin.math.sqrt
 internal class DimensionsModule : ModuleInterface<DimensionsModule.Config> {
     override val config: Config = Config()
 
-    override fun enabled(): Boolean = config.enabled
-
     companion object {
         private const val NETHER_TO_OVERWORLD_RATIO = 8
     }

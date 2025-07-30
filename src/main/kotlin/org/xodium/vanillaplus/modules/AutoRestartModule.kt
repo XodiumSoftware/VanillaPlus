@@ -20,8 +20,6 @@ import java.time.temporal.ChronoUnit
 internal class AutoRestartModule : ModuleInterface<AutoRestartModule.Config> {
     override val config: Config = Config()
 
-    override fun enabled(): Boolean = config.enabled
-
     companion object {
         private const val SEC_IN_MIN = 60
     }

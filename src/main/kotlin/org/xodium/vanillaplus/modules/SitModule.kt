@@ -24,8 +24,6 @@ import java.util.*
 internal class SitModule : ModuleInterface<SitModule.Config> {
     override val config: Config = Config()
 
-    override fun enabled(): Boolean = config.enabled
-
     private val sittingPlayers = mutableMapOf<UUID, ArmorStand>()
     private val blockCenterOffset = Vector(0.5, 0.5, 0.5)
     private val playerStandUpOffset = Vector(0.0, 0.5, 0.0)

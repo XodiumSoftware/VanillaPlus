@@ -12,8 +12,6 @@ import org.xodium.vanillaplus.utils.ExtUtils.pt
 internal class SignModule : ModuleInterface<SignModule.Config> {
     override val config: Config = Config()
 
-    override fun enabled(): Boolean = config.enabled
-
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: SignChangeEvent) {
         if (!enabled()) return

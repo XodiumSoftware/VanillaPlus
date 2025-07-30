@@ -22,8 +22,6 @@ import kotlin.math.roundToInt
 internal class TabListModule : ModuleInterface<TabListModule.Config> {
     override val config: Config = Config()
 
-    override fun enabled(): Boolean = config.enabled
-
     companion object {
         private const val MIN_TPS = 0.0
         private const val MAX_TPS = 20.0

@@ -24,7 +24,7 @@ internal interface ModuleInterface<out T : ModuleInterface.Config> : Listener {
      * Determines if this module is currently enabled.
      * @return `true` if the module is enabled, `false` otherwise.
      */
-    fun enabled(): Boolean
+    fun enabled(): Boolean = config.enabled
 
     /**
      * Retrieves a list of command data associated with the module.

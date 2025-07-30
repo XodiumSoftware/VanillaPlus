@@ -17,8 +17,6 @@ internal class BooksModule : ModuleInterface<BooksModule.Config> {
     override val config: Config = Config()
     private val permPrefix: String = "${instance::class.simpleName}.book".lowercase()
 
-    override fun enabled(): Boolean = config.enabled
-
     override fun cmds(): List<CommandData> =
         config.books.map { book ->
             CommandData(

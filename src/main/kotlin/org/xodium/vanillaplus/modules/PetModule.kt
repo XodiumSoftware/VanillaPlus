@@ -16,8 +16,6 @@ import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 internal class PetModule : ModuleInterface<PetModule.Config> {
     override val config: Config = Config()
 
-    override fun enabled(): Boolean = config.enabled
-
     @EventHandler
     fun on(event: PlayerInteractEntityEvent) {
         if (!enabled()) return

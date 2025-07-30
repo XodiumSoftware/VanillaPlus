@@ -11,8 +11,6 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 internal class RecipiesModule : ModuleInterface<RecipiesModule.Config> {
     override val config: Config = Config()
 
-    override fun enabled(): Boolean = config.enabled
-
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
         if (!enabled()) return

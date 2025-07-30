@@ -22,8 +22,6 @@ internal class LocatorModule : ModuleInterface<LocatorModule.Config> {
 
     private val colors = NamedTextColor.NAMES.keys().map { it.toString() } + listOf("<RRGGBB>", "reset")
 
-    override fun enabled(): Boolean = config.enabled
-
     override fun cmds(): List<CommandData> =
         listOf(
             CommandData(

@@ -10,8 +10,6 @@ import kotlin.math.ceil
 internal class SleepModule : ModuleInterface<SleepModule.Config> {
     override val config: Config = Config()
 
-    override fun enabled(): Boolean = config.enabled
-
     companion object {
         private const val MAX_PERCENTAGE: Double = 100.0
     }
