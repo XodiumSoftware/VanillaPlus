@@ -22,6 +22,10 @@ internal class AutoRestartModule : ModuleInterface<AutoRestartModule.Config> {
 
     override fun enabled(): Boolean = config.enabled
 
+    companion object {
+        private const val SEC_IN_MIN = 60
+    }
+
     override fun cmds(): List<CommandData> =
         listOf(
             CommandData(
@@ -64,7 +68,7 @@ internal class AutoRestartModule : ModuleInterface<AutoRestartModule.Config> {
     /** Triggers a countdown for the server restart. */
     private fun countdown() {
         val totalMinutes = config.countdownStartMinutes
-        var remainingSeconds = totalMinutes * 60
+        var remainingSeconds = totalMinutes * SEC_IN_MIN
         val totalSeconds = remainingSeconds
         val bossBar = config.bossbar.toBossBar()
         instance.server.onlinePlayers.forEach { player -> player.showBossBar(bossBar) }
@@ -74,7 +78,7 @@ internal class AutoRestartModule : ModuleInterface<AutoRestartModule.Config> {
                 if (remainingSeconds > 0) {
                     remainingSeconds--
                     val displayTime =
-                        if (remainingSeconds % 60 > 0) (remainingSeconds / 60) + 1 else remainingSeconds / 60
+                        if (remainingSeconds % SEC_IN_MIN > 0) (remainingSeconds / SEC_IN_MIN) + 1 else remainingSeconds / SEC_IN_MIN
                     val progress = remainingSeconds.toFloat() / totalSeconds
                     bossBar.name(
                         config.bossbar.name

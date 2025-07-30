@@ -12,6 +12,10 @@ internal class SleepModule : ModuleInterface<SleepModule.Config> {
 
     override fun enabled(): Boolean = config.enabled
 
+    companion object {
+        private const val MAX_PERCENTAGE: Double = 100.0
+    }
+
     @EventHandler
     fun on(event: PlayerBedEnterEvent) {
         val world = event.player.world
@@ -27,7 +31,7 @@ internal class SleepModule : ModuleInterface<SleepModule.Config> {
             Runnable {
                 val players = world.players
                 if (players.isEmpty()) return@Runnable
-                if (players.count { it.isSleeping } >= ceil(players.size * config.sleepPercentage / 100.0)) {
+                if (players.count { it.isSleeping } >= ceil(players.size * config.sleepPercentage / MAX_PERCENTAGE)) {
                     world.time = 0
                 }
             },
