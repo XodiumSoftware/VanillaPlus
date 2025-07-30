@@ -65,10 +65,10 @@ internal class BooksModule : ModuleInterface<BooksModule.Config> {
                                 "2. Change the <white>cmd</white>, <white>title</white>, and <white>pages</white>.",
                                 "",
                                 "<red>⚠</red> <gray>Permissions auto-generate!",
-                    ),
+                            ),
+                        ),
                 ),
+                // --- Add REAL books below (e.g., "rules", "guide") ---
             ),
-            // --- Add REAL books below (e.g., "rules", "guide") ---
-        )
     ) : ModuleInterface.Config
 }
