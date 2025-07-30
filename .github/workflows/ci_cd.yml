@@ -1,16 +1,27 @@
 name: Xodium CI/CD
 
-on: { push: { branches: [ main ], paths: [ "src/**" ] }, workflow_dispatch: }
+on:
+  push:
+    branches: [ main ]
+    paths: [ "src/**" ]
+  workflow_dispatch:
 
-permissions: { contents: write, packages: write }
+permissions:
+  contents: write
+  packages: write
 
-concurrency: { group: "${{ github.workflow }}-${{ github.ref }}", cancel-in-progress: true }
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: { name: "${{ github.ref_name }}", url: "${{ steps.upload_artifact.outputs.artifact-url }}" }
-    outputs: { VERSION: "${{ steps.get_artifact_version.outputs.VERSION }}" }
+    environment:
+      name: "${{ github.ref_name }}"
+      url: "${{ steps.upload_artifact.outputs.artifact-url }}"
+    outputs:
+      VERSION: "${{ steps.get_artifact_version.outputs.VERSION }}"
     steps:
       - id: checkout
         name: Checkout
@@ -19,7 +30,9 @@ jobs:
       - id: setup_java
         name: Setup Java
         uses: actions/setup-java@v4.7.1
-        with: { distribution: temurin, java-version: "21" }
+        with:
+          distribution: temurin
+          java-version: "21"
 
       - id: setup_gradle
         name: Setup Gradle
@@ -37,12 +50,16 @@ jobs:
       - id: upload_artifact
         name: Upload Artifact
         uses: actions/upload-artifact@v4.6.2
-        with: { name: vanillaplus, path: build/libs/VanillaPlus-*.jar }
+        with:
+          name: vanillaplus
+          path: build/libs/VanillaPlus-*.jar
 
   release:
     needs: [ build ]
     runs-on: ubuntu-latest
-    environment: { name: "${{ github.ref_name }}", url: "${{ steps.release_artifact.outputs.url }}" }
+    environment:
+      name: "${{ github.ref_name }}"
+      url: "${{ steps.release_artifact.outputs.url }}"
     steps:
       - id: download_artifact
         name: Download Artifact
@@ -52,7 +69,8 @@ jobs:
       - id: release_artifact
         name: Release Artifact
         uses: softprops/action-gh-release@v2.3.2
-        env: { GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}" }
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         with:
           draft: ${{ contains(github.event.head_commit.message, '.draft') }}
           generate_release_notes: true

@@ -1,17 +1,15 @@
 name: Xodium CI/CD - Check Branches
-run-name: "Xodium CI/CD - Check Branches"
 
 on:
   pull_request_target:
-    types:
-      - opened
-      - reopened
-      - synchronize
-      - edited
+    types: [ opened, reopened, synchronize, edited, ready_for_review ]
 
-concurrency: { group: "${{ github.workflow }}-${{ github.ref }}", cancel-in-progress: true }
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
 
-permissions: { contents: read }
+permissions:
+  contents: read
 
 jobs:
   check-branches:
