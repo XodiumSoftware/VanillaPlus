@@ -1,4 +1,4 @@
-@file:Suppress("unused", "UnstableApiUsage")
+@file:Suppress("UnstableApiUsage", "ktlint:standard:no-wildcard-imports", "unused")
 
 package org.xodium.vanillaplus.utils
 
@@ -24,14 +24,31 @@ import javax.imageio.ImageIO
 internal object ExtUtils {
     private val MM: MiniMessage = MiniMessage.miniMessage()
 
+    private const val DEFAULT_FACE_SIZE = 8
+    private const val FACE_X = 8
+    private const val FACE_Y = 8
+    private const val FACE_WIDTH = 8
+    private const val FACE_HEIGHT = 8
+    private const val MAX_COORDINATE = 7
+    private const val COLOR_MASK = 0xFF
+    private const val BLACK_COLOR = "#000000"
+    private const val PIXEL_CHAR = "█"
+    private const val ALPHA_SHIFT = 24
+    private const val RED_SHIFT = 16
+    private const val GREEN_SHIFT = 8
+    private const val MILLISECONDS_PER_TICK = 50L
+
     /**
      * Deserializes a [MiniMessage] [String] into a [Component].
      * @param resolvers Optional tag resolvers for custom tags.
      * @return The deserialized [Component].
      */
     fun String.mm(vararg resolvers: TagResolver): Component =
-        if (resolvers.isEmpty()) MM.deserialize(this)
-        else MM.deserialize(this, TagResolver.resolver(*resolvers))
+        if (resolvers.isEmpty()) {
+            MM.deserialize(this)
+        } else {
+            MM.deserialize(this, TagResolver.resolver(*resolvers))
+        }
 
     /**
      * Deserializes a list of [MiniMessage] strings into a list of Components.
@@ -39,8 +56,7 @@ internal object ExtUtils {
      * @return The list of deserialized Components.
      */
     @JvmName("mmStringList")
-    fun List<String>.mm(vararg resolvers: TagResolver): List<Component> =
-        this.map { it.mm(*resolvers) }
+    fun List<String>.mm(vararg resolvers: TagResolver): List<Component> = this.map { it.mm(*resolvers) }
 
     /** Serializes a [Component] into a String. */
     fun Component.mm(): String = MM.serialize(this)
@@ -99,26 +115,24 @@ internal object ExtUtils {
      * @param hover Optional hover text for the command.
      * @return The formatted [String] with the command.
      */
-    fun String.clickRunCmd(hover: String? = null): String {
-        return if (hover != null) {
+    fun String.clickRunCmd(hover: String? = null): String =
+        if (hover != null) {
             "<hover:show_text:'$hover'><click:run_command:'$this'>$this</click></hover>"
         } else {
             "<click:run_command:'$this'>$this</click>"
         }
-    }
 
     /**
      * Suggests a command from a [String].
      * @param hover Optional hover text for the command.
      * @return The formatted [String] with the suggested command.
      */
-    fun String.clickSuggestCmd(hover: String? = null): String {
-        return if (hover != null) {
+    fun String.clickSuggestCmd(hover: String? = null): String =
+        if (hover != null) {
             "<hover:show_text:'$hover'><click:suggest_command:'$this'>$this</click></hover>"
         } else {
             "<click:suggest_command:'$this'>$this</click>"
         }
-    }
 
     /**
      * A helper  function to wrap command execution with standardized error handling.
@@ -126,13 +140,18 @@ internal object ExtUtils {
      * @return Command.SINGLE_SUCCESS after execution.
      */
     fun CommandContext<CommandSourceStack>.tryCatch(action: (CommandSourceStack) -> Unit): Int {
-        try {
-            action(this.source)
-        } catch (e: Exception) {
-            instance.logger.severe("An Error has occurred: ${e.message}")
-            e.printStackTrace()
-            (this.source.sender as Player).sendMessage("$PREFIX <red>An Error has occurred. Check server logs for details.".mm())
-        }
+        runCatching { action(this.source) }
+            .onFailure { e ->
+                instance.logger.severe(
+                    """
+                    Command error: ${e.message}
+                    ${e.stackTraceToString()}
+                    """.trimIndent(),
+                )
+                (this.source.sender as? Player)?.sendMessage(
+                    "$PREFIX <red>An error has occurred. Check server logs for details.".mm(),
+                )
+            }
         return Command.SINGLE_SUCCESS
     }
 
@@ -143,37 +162,42 @@ internal object ExtUtils {
      */
     fun Player.face(size: Int = 8): String {
         // 1. fetch skin URL from the playerProfile
-        val texturesProp = playerProfile.properties
-            .firstOrNull { it.name == "textures" }
-            ?: throw IllegalStateException("Player has no skin texture")
+        val texturesProp =
+            playerProfile.properties
+                .firstOrNull { it.name == "textures" }
+                ?: error("Player has no skin texture")
         val json = JsonParser.parseString(String(Base64.getDecoder().decode(texturesProp.value))).asJsonObject
-        val skinUrl = json
-            .getAsJsonObject("textures")
-            .getAsJsonObject("SKIN")
-            .get("url")
-            .asString
+        val skinUrl =
+            json
+                .getAsJsonObject("textures")
+                .getAsJsonObject("SKIN")
+                .get("url")
+                .asString
 
         // 2. load and crop
         val fullImg = ImageIO.read(URI.create(skinUrl).toURL())
         if (fullImg == null) {
-            throw IllegalStateException("Failed to load skin image from URL: $skinUrl")
+            error("Failed to load skin image from URL: $skinUrl")
         }
-        val face = fullImg.getSubimage(8, 8, 8, 8)
+        val face = fullImg.getSubimage(FACE_X, FACE_Y, FACE_WIDTH, FACE_HEIGHT)
 
         // 3. scale & build MiniMessage
-        val scale = 8.0 / size
+        val scale = FACE_WIDTH.toDouble() / size
         val builder = StringBuilder()
         for (y in 0 until size) {
             for (x in 0 until size) {
-                val px = (x * scale).toInt().coerceIn(0, 7)
-                val py = (y * scale).toInt().coerceIn(0, 7)
+                val px = (x * scale).toInt().coerceAtMost(MAX_COORDINATE)
+                val py = (y * scale).toInt().coerceAtMost(MAX_COORDINATE)
                 val rgb = face.getRGB(px, py)
-                val a = (rgb ushr 24) and 0xFF
-                val r = (rgb shr 16) and 0xFF
-                val g = (rgb shr 8) and 0xFF
-                val b = rgb and 0xFF
-                if (a == 0) builder.append("<color:#000000>█</color>")
-                else builder.append("<color:#%02x%02x%02x>█</color>".format(r, g, b))
+                val a = (rgb ushr ALPHA_SHIFT) and COLOR_MASK
+                val r = (rgb shr RED_SHIFT) and COLOR_MASK
+                val g = (rgb shr GREEN_SHIFT) and COLOR_MASK
+                val b = rgb and COLOR_MASK
+                if (a == 0) {
+                    builder.append("<color:$BLACK_COLOR>$PIXEL_CHAR</color>")
+                } else {
+                    builder.append("<color:#%02x%02x%02x>$PIXEL_CHAR</color>".format(r, g, b))
+                }
             }
             builder.append("\n")
         }

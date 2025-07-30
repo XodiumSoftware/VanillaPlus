@@ -16,8 +16,6 @@ import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 internal class PetModule : ModuleInterface<PetModule.Config> {
     override val config: Config = Config()
 
-    override fun enabled(): Boolean = config.enabled
-
     @EventHandler
     fun on(event: PlayerInteractEntityEvent) {
         if (!enabled()) return
@@ -48,15 +46,15 @@ internal class PetModule : ModuleInterface<PetModule.Config> {
         source.sendActionBar(
             config.sourceTransferMessage.mm(
                 Placeholder.component("<pet>", petName),
-                Placeholder.component("<target>", target.displayName())
-            )
+                Placeholder.component("<target>", target.displayName()),
+            ),
         )
 
         target.sendActionBar(
             config.targetTransferMessage.mm(
                 Placeholder.component("<pet>", petName),
-                Placeholder.component("<source>", source.displayName())
-            )
+                Placeholder.component("<source>", source.displayName()),
+            ),
         )
 
         event.isCancelled = true

@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "org.xodium.vanillaplus"
-version = "1.16.2"
+version = "1.16.3"
 description = "Minecraft plugin that enhances the base gameplay."
 
 var author: String = "Xodium"
@@ -25,7 +25,7 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:$apiVersion-R0.1-SNAPSHOT")
-    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.15") //TODO("Move away from WorldEdit")
+    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.15") // TODO("Move away from WorldEdit")
 
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -43,7 +43,7 @@ tasks {
                     "version" to version,
                     "description" to description,
                     "author" to author,
-                )
+                ),
             )
         }
     }
@@ -67,22 +67,26 @@ tasks {
         group = "application"
         description = "Download the PaperMC server jar"
         doFirst {
-            fun findLatestBuild(builds: List<Map<*, *>>): Map<*, *>? {
-                return builds.findLast { it["channel"] == "default" }
+            fun findLatestBuild(builds: List<Map<*, *>>): Map<*, *>? =
+                builds.findLast { it["channel"] == "default" }
                     ?: builds.findLast { it["channel"] == "experimental" }
-            }
 
             val buildsUrl = URI("https://api.papermc.io/v2/projects/paper/versions/$apiVersion/builds").toURL()
-            val response = JsonSlurper().parse(buildsUrl) as? Map<*, *>
-                ?: throw GradleException("Failed to parse PaperMC builds API response.")
-            val builds = response["builds"] as? List<*>
-                ?: throw GradleException("No 'builds' key in PaperMC API response.")
+            val response =
+                JsonSlurper().parse(buildsUrl) as? Map<*, *>
+                    ?: throw GradleException("Failed to parse PaperMC builds API response.")
+            val builds =
+                response["builds"] as? List<*>
+                    ?: throw GradleException("No 'builds' key in PaperMC API response.")
             val buildMapList = builds.mapNotNull { it as? Map<*, *> }
-            val latestBuild = findLatestBuild(buildMapList)
-                ?: throw GradleException("No build with channel='default' or 'experimental' found.")
+            val latestBuild =
+                findLatestBuild(buildMapList)
+                    ?: throw GradleException("No build with channel='default' or 'experimental' found.")
             val buildNumber = latestBuild["build"] ?: throw GradleException("Build number missing in build info.")
 
-            src("https://api.papermc.io/v2/projects/paper/versions/$apiVersion/builds/$buildNumber/downloads/paper-$apiVersion-$buildNumber.jar")
+            src(
+                "https://api.papermc.io/v2/projects/paper/versions/$apiVersion/builds/$buildNumber/downloads/paper-$apiVersion-$buildNumber.jar",
+            )
             dest(file(".server/server.jar"))
             onlyIfModified(true)
         }
@@ -98,14 +102,20 @@ tasks {
         dependsOn("shadowJar", "downloadServerJar", "acceptEula")
         workingDir = file(".server/").apply { mkdirs() }
         standardInput = System.`in`
-        val javaExec = project.extensions.getByType(JavaToolchainService::class.java)
-            .launcherFor { languageVersion.set(JavaLanguageVersion.of(21)) }
-            .get().executablePath.asFile.absolutePath
-        commandLine = listOf(
-            javaExec,
-            "-XX:+AllowEnhancedClassRedefinition",
-            "-jar", "server.jar", "nogui"
-        )
+        val javaExec =
+            project.extensions
+                .getByType(JavaToolchainService::class.java)
+                .launcherFor { languageVersion.set(JavaLanguageVersion.of(21)) }
+                .get()
+                .executablePath.asFile.absolutePath
+        commandLine =
+            listOf(
+                javaExec,
+                "-XX:+AllowEnhancedClassRedefinition",
+                "-jar",
+                "server.jar",
+                "nogui",
+            )
     }
 }
 

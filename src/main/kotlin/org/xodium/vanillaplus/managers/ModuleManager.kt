@@ -1,5 +1,8 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package org.xodium.vanillaplus.managers
 
+import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.JsonNode
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -7,7 +10,6 @@ import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.modules.*
 import kotlin.time.measureTime
-
 
 /** Represents the module manager within the system. */
 @Suppress("MemberVisibilityCanBePrivate")
@@ -29,24 +31,25 @@ internal object ModuleManager {
     val nicknameModule: NicknameModule = NicknameModule(tabListModule)
     val treesModule: TreesModule = TreesModule()
 
-    private val modules = listOf(
-        autoRestartModule,
-        booksModule,
-        chatModule,
-        dimensionsModule,
-        doorsModule,
-        invModule,
-        locatorModule,
-        motdModule,
-        nicknameModule,
-        petModule,
-        recipiesModule,
-        signModule,
-        sitModule,
-        sleepModule,
-        tabListModule,
-        treesModule,
-    )
+    private val modules =
+        listOf(
+            autoRestartModule,
+            booksModule,
+            chatModule,
+            dimensionsModule,
+            doorsModule,
+            invModule,
+            locatorModule,
+            motdModule,
+            nicknameModule,
+            petModule,
+            recipiesModule,
+            signModule,
+            sitModule,
+            sleepModule,
+            tabListModule,
+            treesModule,
+        )
 
     init {
         val allConfigsNode: JsonNode? = ConfigManager.load()
@@ -56,8 +59,10 @@ internal object ModuleManager {
             allConfigsNode?.get(configKey)?.let { moduleConfigNode ->
                 try {
                     ConfigManager.objectMapper.readerForUpdating(module.config).readValue(moduleConfigNode)
-                } catch (e: Exception) {
-                    instance.logger.warning("Failed to parse config for ${module::class.simpleName}. Using defaults. Error: ${e.message}")
+                } catch (e: JsonProcessingException) {
+                    instance.logger.warning(
+                        "Failed to parse config for ${module::class.simpleName}. Using defaults. Error: ${e.message}",
+                    )
                 }
             }
             configsToSave[configKey] = module.config
@@ -77,7 +82,7 @@ internal object ModuleManager {
                         instance.server.pluginManager.addPermissions(module.perms())
                         commandsToRegister.addAll(module.cmds())
                     }.inWholeMilliseconds
-                }ms"
+                }ms",
             )
         }
         commandsToRegister.takeIf { it.isNotEmpty() }?.let { cmds ->
@@ -86,7 +91,7 @@ internal object ModuleManager {
                     event.registrar().register(
                         commandData.builder.build(),
                         commandData.description,
-                        commandData.aliases.toMutableList()
+                        commandData.aliases.toMutableList(),
                     )
                 }
             }

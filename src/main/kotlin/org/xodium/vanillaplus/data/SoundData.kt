@@ -19,7 +19,7 @@ internal data class SoundData(
     val name: Sound.Type,
     private val source: Sound.Source = Sound.Source.MASTER,
     private val volume: Float = 1.0f,
-    private val pitch: Float = 1.0f
+    private val pitch: Float = 1.0f,
 ) {
     companion object {
         /**

@@ -12,8 +12,6 @@ import org.xodium.vanillaplus.utils.ExtUtils.pt
 internal class SignModule : ModuleInterface<SignModule.Config> {
     override val config: Config = Config()
 
-    override fun enabled(): Boolean = config.enabled
-
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: SignChangeEvent) {
         if (!enabled()) return
@@ -29,9 +27,7 @@ internal class SignModule : ModuleInterface<SignModule.Config> {
      * @param component the component to inspect for MiniMessage tags in its plaintext form
      * @return true if MiniMessage tags are found, false otherwise
      */
-    private fun containsMiniMessageTags(component: Component): Boolean {
-        return config.miniMessageRegex.toRegex().containsMatchIn(component.pt())
-    }
+    private fun containsMiniMessageTags(component: Component): Boolean = config.miniMessageRegex.toRegex().containsMatchIn(component.pt())
 
     data class Config(
         override var enabled: Boolean = true,

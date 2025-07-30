@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package org.xodium.vanillaplus.modules
 
 import com.mojang.brigadier.arguments.StringArgumentType
@@ -30,7 +32,6 @@ import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.FmtUtils.roseFmt
-import org.xodium.vanillaplus.utils.TimeUtils
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
@@ -44,52 +45,49 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
     val lastUnloads: ConcurrentHashMap<UUID, List<Block>> = ConcurrentHashMap()
     val activeVisualizations: ConcurrentHashMap<UUID, Int> = ConcurrentHashMap()
 
-    override fun enabled(): Boolean = config.enabled
-
-    override fun cmds(): List<CommandData> {
-        return listOf(
+    override fun cmds(): List<CommandData> =
+        listOf(
             CommandData(
-                Commands.literal("invsearch")
+                Commands
+                    .literal("invsearch")
                     .requires { it.sender.hasPermission(perms()[0]) }
                     .then(
-                        Commands.argument("material", StringArgumentType.word())
+                        Commands
+                            .argument("material", StringArgumentType.word())
                             .suggests { ctx, builder ->
                                 Material.entries
                                     .map { it.name.lowercase() }
                                     .filter { it.startsWith(builder.remaining.lowercase()) }
                                     .forEach(builder::suggest)
                                 CompletableFuture.completedFuture(builder.build())
-                            }
-                            .executes { ctx -> ctx.tryCatch { handleSearch(ctx) } }
-                    )
-                    .executes { ctx -> ctx.tryCatch { handleSearch(ctx) } },
+                            }.executes { ctx -> ctx.tryCatch { handleSearch(ctx) } },
+                    ).executes { ctx -> ctx.tryCatch { handleSearch(ctx) } },
                 "Search nearby chests for specific items",
-                listOf("search", "searchinv", "invs")
+                listOf("search", "searchinv", "invs"),
             ),
             CommandData(
-                Commands.literal("invunload")
+                Commands
+                    .literal("invunload")
                     .requires { it.sender.hasPermission(perms()[1]) }
                     .executes { ctx -> ctx.tryCatch { unload(it.sender as Player) } },
                 "Unload your inventory into nearby chests",
-                listOf("unload", "unloadinv", "invu")
+                listOf("unload", "unloadinv", "invu"),
             ),
         )
-    }
 
-    override fun perms(): List<Permission> {
-        return listOf(
+    override fun perms(): List<Permission> =
+        listOf(
             Permission(
-                "${instance::class.simpleName}.invsearch.use".lowercase(),
+                "${instance::class.simpleName}.invsearch".lowercase(),
                 "Allows use of the invsearch command",
-                PermissionDefault.TRUE
+                PermissionDefault.TRUE,
             ),
             Permission(
-                "${instance::class.simpleName}.invunload.use".lowercase(),
+                "${instance::class.simpleName}.invunload".lowercase(),
                 "Allows use of the invunload command",
-                PermissionDefault.TRUE
+                PermissionDefault.TRUE,
             ),
         )
-    }
 
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: PlayerQuitEvent) {
@@ -124,7 +122,10 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
      * @param player The player who initiated the search.
      * @param material The material to search for in the chests.
      */
-    private fun search(player: Player, material: Material) {
+    private fun search(
+        player: Player,
+        material: Material,
+    ) {
         val cooldownKey = NamespacedKey(instance, "invsearch_cooldown")
         val cooldownDuration = config.cooldown
         if (CooldownManager.isOnCooldown(player, cooldownKey, cooldownDuration)) {
@@ -132,21 +133,23 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         }
         CooldownManager.setCooldown(player, cooldownKey, System.currentTimeMillis())
 
-        val chests = findBlocksInRadius(player.location, config.searchRadius)
-            .filter { it.state is Container }
+        val chests =
+            findBlocksInRadius(player.location, config.searchRadius)
+                .filter { it.state is Container }
         if (chests.isEmpty()) {
             return player.sendActionBar("No usable chests found for ${"$material".roseFmt()}".fireFmt().mm())
         }
 
         val seenDoubleChests = mutableSetOf<InventoryHolder?>()
-        val affectedChests = chests.filter { block ->
-            val inventory = (block.state as Container).inventory
-            val holder = inventory.holder
-            if (holder is DoubleChest) {
-                if (!seenDoubleChests.add(holder.leftSide)) return@filter false
+        val affectedChests =
+            chests.filter { block ->
+                val inventory = (block.state as Container).inventory
+                val holder = inventory.holder
+                if (holder is DoubleChest) {
+                    if (!seenDoubleChests.add(holder.leftSide)) return@filter false
+                }
+                searchItemInContainers(material, inventory)
             }
-            searchItemInContainers(material, inventory)
-        }
         if (affectedChests.isEmpty()) {
             return player.sendActionBar("No chests contain ${"$material".roseFmt()}".fireFmt().mm())
         }
@@ -169,8 +172,9 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
 
         val startSlot = 9
         val endSlot = 35
-        val chests = findBlocksInRadius(player.location, config.unloadRadius)
-            .filter { it.state is Container }
+        val chests =
+            findBlocksInRadius(player.location, config.unloadRadius)
+                .filter { it.state is Container }
         if (chests.isEmpty()) {
             return player.sendActionBar("No chests found nearby".fireFmt().mm())
         }
@@ -247,13 +251,16 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
      * @param destination The inventory to search in.
      * @return True if the item was found in the inventory or its containers, false otherwise.
      */
-    private fun searchItemInContainers(material: Material, destination: Inventory): Boolean {
+    private fun searchItemInContainers(
+        material: Material,
+        destination: Inventory,
+    ): Boolean {
         if (doesChestContain(destination, ItemStack(material))) {
             destination.location?.let {
                 protocolUnload(
                     it,
                     material,
-                    doesChestContainCount(destination, material)
+                    doesChestContainCount(destination, material),
                 )
             }
             return true
@@ -267,24 +274,29 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
      * @param material The material to count.
      * @return The amount of the material in the chest.
      */
-    private fun doesChestContainCount(inventory: Inventory, material: Material): Int {
-        return inventory.contents.filter { it?.type == material }.sumOf { it?.amount ?: 0 }
-    }
+    private fun doesChestContainCount(
+        inventory: Inventory,
+        material: Material,
+    ): Int = inventory.contents.filter { it?.type == material }.sumOf { it?.amount ?: 0 }
 
     /**
      * Creates a laser effect for the specified player and chests.
      * @param player The player to play the effect for.
      * @param affectedChests The list of chests to affect. If null, will use the last unloaded chests.
      */
-    private fun laserEffectSchedule(player: Player, affectedChests: List<Block>? = null) {
+    private fun laserEffectSchedule(
+        player: Player,
+        affectedChests: List<Block>? = null,
+    ) {
         val chests = affectedChests ?: lastUnloads[player.uniqueId] ?: return
 
-        activeVisualizations[player.uniqueId] = instance.server.scheduler.scheduleSyncRepeatingTask(
-            instance,
-            { laserEffect(chests, player, 0.3, 2, Particle.CRIT, 0.001, 128) },
-            0L,
-            2L
-        )
+        activeVisualizations[player.uniqueId] =
+            instance.server.scheduler.scheduleSyncRepeatingTask(
+                instance,
+                { laserEffect(chests, player, 0.3, 2, Particle.CRIT, 0.001, 128) },
+                0L,
+                2L,
+            )
 
         instance.server.scheduler.runTaskLater(
             instance,
@@ -294,7 +306,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                     activeVisualizations.remove(player.uniqueId)
                 }
             },
-            TimeUtils.seconds(5)
+            config.scheduleInitDelayInTicks,
         )
     }
 
@@ -315,7 +327,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         count: Int,
         particle: Particle,
         speed: Double,
-        maxDistance: Int
+        maxDistance: Int,
     ) {
         require(destinations.isNotEmpty()) { "Destinations list cannot be empty" }
         require(interval > 0) { "Interval must be positive" }
@@ -351,7 +363,10 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
      * @param second The second ItemStack.
      * @return True if the enchantments match, false otherwise.
      */
-    private fun hasMatchingEnchantments(first: ItemStack, second: ItemStack): Boolean {
+    private fun hasMatchingEnchantments(
+        first: ItemStack,
+        second: ItemStack,
+    ): Boolean {
         if (!config.matchEnchantments && (!config.matchEnchantmentsOnBooks || first.type != Material.ENCHANTED_BOOK)) return true
 
         val firstMeta = first.itemMeta
@@ -376,21 +391,32 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
      * @param radius The radius to search within.
      * @return A list of blocks found within the radius.
      */
-    fun findBlocksInRadius(loc: Location, radius: Int): MutableList<Block> {
-        return getChunksInBox(
+    fun findBlocksInRadius(
+        loc: Location,
+        radius: Int,
+    ): MutableList<Block> =
+        getChunksInBox(
             loc.world,
-            BoundingBox.of(loc, radius.toDouble(), radius.toDouble(), radius.toDouble())
+            BoundingBox.of(loc, radius.toDouble(), radius.toDouble(), radius.toDouble()),
         ).flatMap { chunk ->
-            chunk.tileEntities.filter { state ->
-                state is Container &&
+            chunk.tileEntities
+                .filter { state ->
+                    state is Container &&
                         MaterialRegistry.CONTAINER_TYPES.contains(state.type) &&
                         state.location.distanceSquared(loc) <= radius * radius &&
-                        (state.type != Material.CHEST ||
-                                !(state.block.getRelative(BlockFace.UP).type.isSolid &&
-                                        state.block.getRelative(BlockFace.UP).type.isOccluding))
-            }.map { (it as Container).block }
+                        (
+                            state.type != Material.CHEST ||
+                                !(
+                                    state.block
+                                        .getRelative(BlockFace.UP)
+                                        .type.isSolid &&
+                                        state.block
+                                            .getRelative(BlockFace.UP)
+                                            .type.isOccluding
+                                )
+                        )
+                }.map { (it as Container).block }
         }.toMutableList()
-    }
 
     /**
      * Check if a chest contains an item with matching enchantments.
@@ -398,13 +424,15 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
      * @param item The item to check for.
      * @return True if the chest contains the item, false otherwise.
      */
-    fun doesChestContain(inv: Inventory, item: ItemStack): Boolean {
-        return inv.contents.any { otherItem ->
-            otherItem != null
-                    && otherItem.type == item.type
-                    && hasMatchingEnchantments(item, otherItem)
+    fun doesChestContain(
+        inv: Inventory,
+        item: ItemStack,
+    ): Boolean =
+        inv.contents.any { otherItem ->
+            otherItem != null &&
+                otherItem.type == item.type &&
+                hasMatchingEnchantments(item, otherItem)
         }
-    }
 
     /**
      * Get all chunks in a bounding box.
@@ -412,7 +440,10 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
      * @param box The bounding box to get chunks from.
      * @return A list of chunks in the bounding box.
      */
-    private fun getChunksInBox(world: World, box: BoundingBox): List<Chunk> {
+    private fun getChunksInBox(
+        world: World,
+        box: BoundingBox,
+    ): List<Chunk> {
         val minChunkX = Math.floorDiv(box.minX.toInt(), 16)
         val maxChunkX = Math.floorDiv(box.maxX.toInt(), 16)
         val minChunkZ = Math.floorDiv(box.minZ.toInt(), 16)
@@ -436,18 +467,19 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
     fun getCenterOfBlock(block: Block): Location {
         val baseLoc = block.location.clone()
         val state = block.state
-        val centerLoc = if (state is Chest && state.inventory.holder is DoubleChest) {
-            val doubleChest = state.inventory.holder as? DoubleChest
-            val left = (doubleChest?.leftSide as? Chest)?.block?.location
-            val right = (doubleChest?.rightSide as? Chest)?.block?.location
-            if (left != null && right != null) {
-                left.clone().add(right).multiply(0.5)
+        val centerLoc =
+            if (state is Chest && state.inventory.holder is DoubleChest) {
+                val doubleChest = state.inventory.holder as? DoubleChest
+                val left = (doubleChest?.leftSide as? Chest)?.block?.location
+                val right = (doubleChest?.rightSide as? Chest)?.block?.location
+                if (left != null && right != null) {
+                    left.clone().add(right).multiply(0.5)
+                } else {
+                    baseLoc
+                }
             } else {
                 baseLoc
             }
-        } else {
-            baseLoc
-        }
         centerLoc.add(Vector(0.5, 1.0, 0.5))
         return centerLoc
     }
@@ -457,7 +489,10 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
      * @param player The player to create the laser effect for.
      * @param block The block to create the laser effect towards.
      */
-    fun chestEffect(player: Player, block: Block) {
+    fun chestEffect(
+        player: Player,
+        block: Block,
+    ) {
         player.spawnParticle(Particle.CRIT, getCenterOfBlock(block), 10, 0.0, 0.0, 0.0)
     }
 
@@ -467,21 +502,27 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
      * @param mat The material to unload.
      * @param amount The amount of material to unload.
      */
-    fun protocolUnload(loc: Location, mat: Material, amount: Int) {
+    fun protocolUnload(
+        loc: Location,
+        mat: Material,
+        amount: Int,
+    ) {
         if (amount == 0) return
         unloads.computeIfAbsent(loc) { mutableMapOf() }.merge(mat, amount, Int::plus)
     }
 
     data class Config(
         override var enabled: Boolean = true,
-        var cooldown: Long = 1L * 1000L,
+        var cooldown: Long = 1 * 1000,
         var searchRadius: Int = 5,
         var unloadRadius: Int = 5,
         var matchEnchantments: Boolean = true,
         var matchEnchantmentsOnBooks: Boolean = true,
-        var soundOnUnload: SoundData = SoundData(
-            BukkitSound.ENTITY_PLAYER_LEVELUP,
-            Sound.Source.PLAYER
-        ),
+        var soundOnUnload: SoundData =
+            SoundData(
+                BukkitSound.ENTITY_PLAYER_LEVELUP,
+                Sound.Source.PLAYER,
+            ),
+        var scheduleInitDelayInTicks: Long = 5,
     ) : ModuleInterface.Config
 }
