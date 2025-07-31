@@ -51,7 +51,7 @@ tasks {
         dependsOn(processResources)
         archiveClassifier.set("")
         destinationDirectory.set(file(".server/plugins/update"))
-        relocate("com.fasterxml.jackson", "org.xodium.vanillaplus.jackson")
+        relocate("com.fasterxml.jackson", "$group.jackson")
         minimize { exclude(dependency("org.jetbrains.kotlin:kotlin-reflect:.*")) }
         doLast {
             copy {
