@@ -33,7 +33,7 @@ internal class BooksModule : ModuleInterface<BooksModule.Config> {
             Permission(
                 "$permPrefix.${it.cmd.lowercase()}",
                 "Allows use of the book command: ${it.cmd}",
-                PermissionDefault.TRUE,
+                it.permission,
             )
         }
 
@@ -44,6 +44,7 @@ internal class BooksModule : ModuleInterface<BooksModule.Config> {
                 // --- EXAMPLE BOOK (DEMO FORMAT) ---
                 BookData(
                     cmd = "example", // Command to open: `/example`
+                    permission = PermissionDefault.TRUE, // Default permission level
                     title = "<gradient:gold:yellow>Example Book</gradient>", // Fancy title
                     author = instance::class.simpleName.toString(),
                     pages =
