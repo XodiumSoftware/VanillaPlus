@@ -89,9 +89,8 @@ internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
 
         val leaderboard =
             instance.server.onlinePlayers
-                .map { player ->
-                    Pair(player.name, player.getAdvancements().count { it.isDone })
-                }.sortedByDescending { it.second }
+                .map { player -> Pair(player.name, player.getAdvancements().count { it.isDone }) }
+                .sortedByDescending { it.second }
                 .take(10)
 
         leaderboard.forEach { (name, count) -> objective.getScore(name).score = count }
