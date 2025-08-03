@@ -93,17 +93,7 @@ internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
                 }.sortedByDescending { it.second }
                 .take(10)
 
-        leaderboard.forEachIndexed { index, (name, count) ->
-            val position = index + 1
-            val line =
-                when (position) {
-                    1 -> "$name $count"
-                    2 -> "$name $count"
-                    3 -> "$name $count"
-                    else -> "$name $count"
-                }
-            objective.getScore(line).score = 10 - index
-        }
+        leaderboard.forEach { (name, count) -> objective.getScore(name).score = count }
 
         activeScoreboards[player.uniqueId] = scoreboard
         player.scoreboard = scoreboard
