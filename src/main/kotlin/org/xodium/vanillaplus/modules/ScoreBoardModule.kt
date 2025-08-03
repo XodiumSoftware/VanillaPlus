@@ -65,21 +65,32 @@ internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
             scoreboard.registerNewObjective(
                 "${instance::class.simpleName}.scoreboard.${System.currentTimeMillis()}",
                 Criteria.DUMMY,
-                "<b>Advancements Leader Board</b>".fireFmt().mm(),
+                "<b>Advancements</b>".fireFmt().mm(),
             )
 
         objective.displaySlot = DisplaySlot.SIDEBAR
 
-        val lines =
-            listOf(
-                "" to 10,
-                "" to 9,
-                "" to 8,
-                "" to 7,
-            )
+        val leaderboard =
+            instance.server.onlinePlayers
+                .map { p ->
+                    val count = p.getAdvancementProgresses().count { it.value.isDone }
+                    Pair(p.displayName(), count)
+                }.sortedByDescending { it.second }
+                .take(10)
 
-        lines.forEach { (text, score) -> objective.getScore(text).score = score }
+        leaderboard.forEachIndexed { index, (name, count) ->
+            val position = index + 1
+            val line =
+                when (position) {
+                    1 -> "<gold>#1 $name <gray>| <gold>$count</gold>"
+                    2 -> "<gray>#2 $name <gray>| <gray>$count</gray>"
+                    3 -> "<dark_red>#3 $name <gray>| <orange>$count</orange>"
+                    else -> "<gray>#$position $name <gray>| <white>$count</white>"
+                }
+            objective.getScore(line.mm()).score = 10 - index
+        }
 
+        activeScoreboards[player.uniqueId] = scoreboard
         player.scoreboard = scoreboard
     }
 
