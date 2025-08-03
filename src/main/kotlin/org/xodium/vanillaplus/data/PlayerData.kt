@@ -18,9 +18,11 @@ import kotlin.io.path.writeText
 /**
  * Represents the data structure for player data.
  * @param nickname The [nickname] of the player, if set.
- */
+ * @property scoreboard Whether the player has the scoreboard visible (true) or hidden (false).
+ * */
 internal data class PlayerData(
     val nickname: String? = null,
+    val scoreboard: Boolean = false,
 ) {
     companion object {
         private val mapper =
