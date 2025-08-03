@@ -25,6 +25,7 @@ internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
     override val config: Config = Config()
 
     private val activeScoreboards = mutableMapOf<UUID, Scoreboard>()
+    private val scoreboardToggled = mutableSetOf<UUID>()
 
     override fun cmds(): List<CommandData> =
         listOf(
@@ -32,7 +33,7 @@ internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
                 Commands
                     .literal("score")
                     .requires { it.sender.hasPermission(perms()[0]) }
-                    .executes { ctx -> ctx.tryCatch { scoreboard(it.sender as Player) } },
+                    .executes { ctx -> ctx.tryCatch { toggleScoreboard(it.sender as Player) } },
                 "Shows the scoreboard",
                 listOf("sb"),
             ),
@@ -54,10 +55,26 @@ internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
     }
 
     /**
+     * Toggles the scoreboard for the specified player.
+     * @param player The player to toggle the scoreboard for.
+     */
+    private fun toggleScoreboard(player: Player) {
+        if (scoreboardToggled.contains(player.uniqueId)) {
+            cleanup(player)
+            scoreboardToggled.remove(player.uniqueId)
+            player.sendMessage("<green>Scoreboard disabled".fireFmt().mm())
+        } else {
+            createScoreboard(player)
+            scoreboardToggled.add(player.uniqueId)
+            player.sendMessage("<green>Scoreboard enabled".fireFmt().mm())
+        }
+    }
+
+    /**
      * Creates and displays a custom scoreboard for the specified player.
      * @param player The player to display the scoreboard to.
      */
-    private fun scoreboard(player: Player) {
+    private fun createScoreboard(player: Player) {
         val scoreboard = activeScoreboards[player.uniqueId] ?: instance.server.scoreboardManager.newScoreboard
 
         scoreboard.objectives.forEach { it.unregister() }
