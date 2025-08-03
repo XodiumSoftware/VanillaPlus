@@ -30,7 +30,7 @@ internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
         listOf(
             CommandData(
                 Commands
-                    .literal("scoreboard")
+                    .literal("score")
                     .requires { it.sender.hasPermission(perms()[0]) }
                     .executes { ctx -> ctx.tryCatch { scoreboard(it.sender as Player) } },
                 "Shows the scoreboard",
