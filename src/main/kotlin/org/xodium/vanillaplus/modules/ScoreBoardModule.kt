@@ -74,8 +74,7 @@ internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
         val leaderboard =
             instance.server.onlinePlayers
                 .map { player ->
-                    val count = player.getAdvancements().count { it.isDone }
-                    Pair(player.displayName(), count)
+                    Pair(player.name, player.getAdvancements().count { it.isDone })
                 }.sortedByDescending { it.second }
                 .take(10)
 
