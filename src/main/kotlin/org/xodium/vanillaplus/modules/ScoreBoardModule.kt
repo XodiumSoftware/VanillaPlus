@@ -87,8 +87,6 @@ internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
 
         objective.displaySlot = DisplaySlot.SIDEBAR
 
-        // objective.getScore("").score = Int.MAX_VALUE //TODO: see if there is another way.
-
         val leaderboard =
             instance.server.onlinePlayers
                 .map { player ->
