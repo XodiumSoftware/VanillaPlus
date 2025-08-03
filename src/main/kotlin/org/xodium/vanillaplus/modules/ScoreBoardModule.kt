@@ -14,6 +14,7 @@ import org.bukkit.scoreboard.DisplaySlot
 import org.bukkit.scoreboard.Scoreboard
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
+import org.xodium.vanillaplus.data.PlayerData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
@@ -25,7 +26,6 @@ internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
     override val config: Config = Config()
 
     private val activeScoreboards = mutableMapOf<UUID, Scoreboard>()
-    private val scoreboardToggled = mutableSetOf<UUID>()
 
     override fun cmds(): List<CommandData> =
         listOf(
@@ -59,12 +59,13 @@ internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
      * @param player The player to toggle the scoreboard for.
      */
     private fun toggleScoreboard(player: Player) {
-        if (scoreboardToggled.contains(player.uniqueId)) {
+        val playerData = PlayerData.get(player)
+        if (playerData.scoreboard) {
             cleanup(player)
-            scoreboardToggled.remove(player.uniqueId)
+            PlayerData.update(player, playerData.copy(scoreboard = false))
         } else {
             createScoreboard(player)
-            scoreboardToggled.add(player.uniqueId)
+            PlayerData.update(player, playerData.copy(scoreboard = true))
         }
     }
 
@@ -85,6 +86,8 @@ internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
             )
 
         objective.displaySlot = DisplaySlot.SIDEBAR
+
+        // objective.getScore("").score = Int.MAX_VALUE //TODO: see if there is another way.
 
         val leaderboard =
             instance.server.onlinePlayers
