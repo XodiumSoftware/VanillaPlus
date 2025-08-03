@@ -3,6 +3,7 @@
 package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.command.brigadier.Commands
+import org.bukkit.advancement.AdvancementProgress
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerQuitEvent
@@ -72,9 +73,9 @@ internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
 
         val leaderboard =
             instance.server.onlinePlayers
-                .map { p ->
-                    val count = p.getAdvancementProgresses().count { it.value.isDone }
-                    Pair(p.displayName(), count)
+                .map { player ->
+                    val count = player.getAdvancements().count { it.isDone }
+                    Pair(player.displayName(), count)
                 }.sortedByDescending { it.second }
                 .take(10)
 
@@ -87,12 +88,24 @@ internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
                     3 -> "<dark_red>#3 $name <gray>| <orange>$count</orange>"
                     else -> "<gray>#$position $name <gray>| <white>$count</white>"
                 }
-            objective.getScore(line.mm()).score = 10 - index
+            objective.getScore(line).score = 10 - index
         }
 
         activeScoreboards[player.uniqueId] = scoreboard
         player.scoreboard = scoreboard
     }
+
+    /**
+     * Gets a list of all advancement progress tracking objects for this player.
+     * @return List of [AdvancementProgress] objects representing the player's progress
+     *         for every advancement available on the server
+     */
+    private fun Player.getAdvancements(): List<AdvancementProgress> =
+        instance.server
+            .advancementIterator()
+            .asSequence()
+            .map { getAdvancementProgress(it) }
+            .toList()
 
     /**
      * Cleans up scoreboard resources for the specified player.
