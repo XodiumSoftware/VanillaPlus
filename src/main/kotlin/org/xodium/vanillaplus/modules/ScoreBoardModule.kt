@@ -1,13 +1,29 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package org.xodium.vanillaplus.modules
 
+import io.papermc.paper.command.brigadier.Commands
+import org.bukkit.entity.Player
+import org.bukkit.event.EventHandler
+import org.bukkit.event.player.PlayerQuitEvent
+import org.bukkit.permissions.Permission
+import org.bukkit.permissions.PermissionDefault
+import org.bukkit.scoreboard.Criteria
+import org.bukkit.scoreboard.DisplaySlot
+import org.bukkit.scoreboard.Scoreboard
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
+import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
+import java.util.*
 
 /** Represents a module handling scoreboard mechanics within the system. */
 internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
     override val config: Config = Config()
+
+    private val activeScoreboards = mutableMapOf<UUID, Scoreboard>()
 
     override fun cmds(): List<CommandData> =
         listOf(
@@ -15,7 +31,7 @@ internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
                 Commands
                     .literal("scoreboard")
                     .requires { it.sender.hasPermission(perms()[0]) }
-                    .executes { ctx -> ctx.tryCatch { scoreboard() } },
+                    .executes { ctx -> ctx.tryCatch { scoreboard(it.sender as Player) } },
                 "Shows the scoreboard",
                 listOf("sb"),
             ),
@@ -30,7 +46,50 @@ internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
             ),
         )
 
-    private fun scoreboard() {
+    @EventHandler
+    fun on(event: PlayerQuitEvent) {
+        if (!enabled()) return
+        cleanup(event.player)
+    }
+
+    /**
+     * Creates and displays a custom scoreboard for the specified player.
+     * @param player The player to display the scoreboard to.
+     */
+    private fun scoreboard(player: Player) {
+        val scoreboard = activeScoreboards[player.uniqueId] ?: instance.server.scoreboardManager.newScoreboard
+
+        scoreboard.objectives.forEach { it.unregister() }
+
+        val objective =
+            scoreboard.registerNewObjective(
+                "${instance::class.simpleName}.scoreboard.${System.currentTimeMillis()}",
+                Criteria.DUMMY,
+                "<b>Advancements Leader Board</b>".fireFmt().mm(),
+            )
+
+        objective.displaySlot = DisplaySlot.SIDEBAR
+
+        val lines =
+            listOf(
+                "" to 10,
+                "" to 9,
+                "" to 8,
+                "" to 7,
+            )
+
+        lines.forEach { (text, score) -> objective.getScore(text).score = score }
+
+        player.scoreboard = scoreboard
+    }
+
+    /**
+     * Cleans up scoreboard resources for the specified player.
+     * @param player The player whose scoreboard should be cleaned up.
+     */
+    private fun cleanup(player: Player) {
+        activeScoreboards.remove(player.uniqueId)?.let { it.objectives.forEach { obj -> obj.unregister() } }
+        player.scoreboard = instance.server.scoreboardManager.mainScoreboard
     }
 
     data class Config(
