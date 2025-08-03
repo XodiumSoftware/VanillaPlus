@@ -62,11 +62,9 @@ internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
         if (scoreboardToggled.contains(player.uniqueId)) {
             cleanup(player)
             scoreboardToggled.remove(player.uniqueId)
-            player.sendMessage("<green>Scoreboard disabled".fireFmt().mm())
         } else {
             createScoreboard(player)
             scoreboardToggled.add(player.uniqueId)
-            player.sendMessage("<green>Scoreboard enabled".fireFmt().mm())
         }
     }
 
