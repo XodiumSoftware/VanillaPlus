@@ -83,10 +83,10 @@ internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
             val position = index + 1
             val line =
                 when (position) {
-                    1 -> "<gold>#1 $name <gray>| <gold>$count</gold>"
-                    2 -> "<gray>#2 $name <gray>| <gray>$count</gray>"
-                    3 -> "<dark_red>#3 $name <gray>| <orange>$count</orange>"
-                    else -> "<gray>#$position $name <gray>| <white>$count</white>"
+                    1 -> "$name $count"
+                    2 -> "$name $count"
+                    3 -> "$name $count"
+                    else -> "$name $count"
                 }
             objective.getScore(line).score = 10 - index
         }
