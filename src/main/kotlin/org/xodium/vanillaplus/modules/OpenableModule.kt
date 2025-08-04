@@ -16,6 +16,7 @@ import org.bukkit.event.Event
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
+import org.bukkit.event.block.BlockRedstoneEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -52,6 +53,33 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
             Action.LEFT_CLICK_BLOCK -> handleLeftClick(event, clickedBlock)
             Action.RIGHT_CLICK_BLOCK -> handleRightClick(clickedBlock)
             else -> return
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    fun on(event: BlockRedstoneEvent) {
+        if (!enabled()) return
+
+        val block = event.block
+        BlockFace.entries.forEach { face ->
+            val relative = block.getRelative(face)
+            if (relative.blockData is Door) {
+                handleRedstoneDoorInteraction(relative)
+            }
+        }
+    }
+
+    private fun handleRedstoneDoorInteraction(block: Block) {
+        val door = block.blockData as? Door ?: return
+        val door2Block = getOtherPart(getDoorBottom(block), block) ?: return
+        val secondDoor = door2Block.blockData as? Door ?: return
+        val shouldOpen = block.isBlockPowered || block.isBlockIndirectlyPowered
+        if (door.isOpen != shouldOpen) {
+            toggleDoor(block, door, shouldOpen)
+        }
+
+        if (secondDoor.isOpen != shouldOpen) {
+            toggleDoor(door2Block, secondDoor, shouldOpen)
         }
     }
 
