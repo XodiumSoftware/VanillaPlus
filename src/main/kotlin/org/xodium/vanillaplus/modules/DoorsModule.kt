@@ -94,18 +94,17 @@ internal class DoorsModule : ModuleInterface<DoorsModule.Config> {
     }
 
     /**
-     * Handles the right-click interaction with doors and gates,
-     * toggling their state and handling auto-close functionality.
+     * Handles the right-click interaction with doors and gates, toggling their state.
      * @param block The block representing the door or gate being interacted with.
      */
     private fun handleRightClick(block: Block) {
-        if (config.allowDoubleDoors && (block.blockData is Door || block.blockData is Gate)) {
+        if (config.allowDoubleDoors && isInteractableBlock(block)) {
             processDoorOrGateInteraction(block)
         }
     }
 
     /**
-     * Processes the interaction with doors or gates, toggling their state and handling auto-close functionality.
+     * Processes the interaction with doors or gates, toggling their state.
      * @param block The block representing the door or gate being interacted with.
      */
     private fun processDoorOrGateInteraction(block: Block) {
@@ -114,6 +113,12 @@ internal class DoorsModule : ModuleInterface<DoorsModule.Config> {
         val secondDoor = door2Block.blockData as? Door ?: return
         toggleOtherDoor(block, door2Block, !secondDoor.isOpen)
     }
+
+    /**
+     * Checks if this block is a door/gate that can be interacted with.
+     * @param block The block to be checked.
+     */
+    private fun isInteractableBlock(block: Block): Boolean = block.blockData is Door || block.blockData is Gate
 
     /**
      * Checks if the player can knock on the block based on their game mode and interaction conditions.
