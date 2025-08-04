@@ -95,6 +95,16 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
     }
 
     /**
+     * Handles the right-click interaction with doors and gates, toggling their state.
+     * @param block The block representing the door or gate being interacted with.
+     */
+    private fun handleRightClick(block: Block) {
+        if (config.allowDoubleDoors && block.blockData is Openable) {
+            processDoorOrGateInteraction(block)
+        }
+    }
+
+    /**
      * Plays the knocking sound to all nearby players around the specified block.
      * @param block The block where the knock sound originates. The sound will be played
      *              at this block's location and propagate to nearby players.
@@ -103,16 +113,6 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
         block.world
             .getNearbyPlayers(block.location, config.soundProximityRadius)
             .forEach { it.playSound(config.soundKnock.toSound()) }
-    }
-
-    /**
-     * Handles the right-click interaction with doors and gates, toggling their state.
-     * @param block The block representing the door or gate being interacted with.
-     */
-    private fun handleRightClick(block: Block) {
-        if (config.allowDoubleDoors && block.blockData is Openable) {
-            processDoorOrGateInteraction(block)
-        }
     }
 
     /**
@@ -218,14 +218,11 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
         if (door == null) return null
         return possibleNeighbours
             .firstOrNull { neighbour ->
-                val relative = block.getRelative(neighbour.offsetX, 0, neighbour.offsetZ)
-                (relative.blockData as? Door)?.takeIf {
-                    it.facing == door.facing &&
-                        it.hinge != door.hinge &&
-                        it.isOpen == door.isOpen &&
-                        relative.type == block.type
-                } != null
-            }?.let { block.getRelative(it.offsetX, 0, it.offsetZ) }
+                (block.getRelative(neighbour.offsetX, 0, neighbour.offsetZ).blockData as? Door)
+                    ?.let { otherDoor ->
+                        neighbour.matchesDoorPair(otherDoor, door, block.type)
+                    } != null
+            }?.getRelativeBlock(block)
     }
 
     data class Config(
