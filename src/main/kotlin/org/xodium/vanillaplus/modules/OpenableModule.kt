@@ -2,10 +2,6 @@
 
 package org.xodium.vanillaplus.modules
 
-import de.oliver.fancyholograms.api.FancyHologramsPlugin
-import de.oliver.fancyholograms.api.HologramManager
-import de.oliver.fancyholograms.api.data.TextHologramData
-import de.oliver.fancyholograms.api.hologram.Hologram
 import net.kyori.adventure.sound.Sound
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -16,7 +12,6 @@ import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.Openable
 import org.bukkit.block.data.type.Door
 import org.bukkit.entity.Player
-import org.bukkit.entity.TextDisplay
 import org.bukkit.event.Event
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -27,7 +22,6 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.AdjacentBlockData
 import org.xodium.vanillaplus.data.SoundData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import java.util.*
 import org.bukkit.Sound as BukkitSound
 
@@ -47,41 +41,6 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
             AdjacentBlockData(-1, 0, Door.Hinge.RIGHT, BlockFace.NORTH),
             AdjacentBlockData(1, 0, Door.Hinge.LEFT, BlockFace.NORTH),
         )
-    private val manager = FancyHologramsPlugin.get().hologramManager
-    private val doorHolograms = mutableMapOf<Block, Hologram>()
-
-    override fun enabled(): Boolean = config.enabled && FancyHologramsPlugin.isEnabled()
-
-    private fun doorHologram(block: Block) {
-        removeHologramForDoor(manager, block)
-
-        val data =
-            TextHologramData(
-                "${instance::class.simpleName?.lowercase()}_door_hologram_${block.x}_${block.y}_${block.z}",
-                block.location.add(0.5, 2.0, 0.5),
-            ).setText(
-                listOf(
-                    "Door Mechanics Tooltip".fireFmt(),
-                    "Doors on this server have custom mechanics:",
-                    "When a door is a double door it opens both in sync.",
-                    "When shift+left-clicking it will create knock sound. ",
-                ),
-            ).setTextAlignment(TextDisplay.TextAlignment.CENTER)
-
-        val hologram = manager.create(data)
-        manager.addHologram(hologram)
-        doorHolograms[block] = hologram
-    }
-
-    private fun removeHologramForDoor(
-        manager: HologramManager,
-        block: Block,
-    ) {
-        doorHolograms[block]?.let {
-            manager.removeHologram(it)
-            doorHolograms.remove(block)
-        }
-    }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerInteractEvent) {
@@ -109,8 +68,6 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
     ) {
         openable.isOpen = open
         block.blockData = openable
-
-        if (!open) removeHologramForDoor(manager, block)
     }
 
     /**
@@ -140,11 +97,7 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
      * @param block The block representing the door or gate being interacted with.
      */
     private fun handleRightClick(block: Block) {
-        if (config.allowDoubleDoors && block.blockData is Openable) {
-            processDoorOrGateInteraction(block)
-            val openable = block.blockData as Openable
-            if (openable.isOpen && config.doorHologram.isNotEmpty()) doorHologram(block)
-        }
+        if (config.allowDoubleDoors && block.blockData is Openable) processDoorOrGateInteraction(block)
     }
 
     /**
@@ -234,10 +187,7 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
             Runnable {
                 val door = block.blockData as Door
                 val door2 = block2.blockData as Door
-                if (door.isOpen != door2.isOpen) {
-                    toggleDoor(block2, door2, open)
-                    if (!open) removeHologramForDoor(manager, block2)
-                }
+                if (door.isOpen != door2.isOpen) toggleDoor(block2, door2, open)
             },
             delay,
         )
