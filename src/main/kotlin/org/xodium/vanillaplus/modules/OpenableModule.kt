@@ -58,7 +58,7 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: BlockRedstoneEvent) {
-        if (!enabled()) return
+        if (!enabled() || !config.allowDoubleDoors || !config.redstoneAffectsDoubleDoors) return
 
         val block = event.block
         BlockFace.entries.forEach { face ->
@@ -204,11 +204,13 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
      * @param block The block representing the first door.
      * @param block2 The block representing the second door.
      * @param open The desired state (open or closed) for the second door.
+     * @param delay TODO
      */
     private fun toggleOtherDoor(
         block: Block,
         block2: Block,
         open: Boolean,
+        delay: Long = config.initDelayInTicks,
     ) {
         if (block.blockData !is Door || block2.blockData !is Door) return
         instance.server.scheduler.runTaskLater(
@@ -218,7 +220,7 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
                 val door2 = block2.blockData as Door
                 if (door.isOpen != door2.isOpen) toggleDoor(block2, door2, open)
             },
-            config.initDelayInTicks,
+            delay,
         )
     }
 
@@ -260,6 +262,7 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
         var allowKnocking: Boolean = true,
         var knockingRequiresEmptyHand: Boolean = true,
         var knockingRequiresShifting: Boolean = true,
+        var redstoneAffectsDoubleDoors: Boolean = true,
         var soundKnock: SoundData =
             SoundData(
                 BukkitSound.ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR,
