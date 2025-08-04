@@ -29,7 +29,7 @@ internal class DoorsModule : ModuleInterface<DoorsModule.Config> {
     override val config: Config = Config()
 
     private val possibleNeighbours =
-        listOf(
+        setOf(
             AdjacentBlockData(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
             AdjacentBlockData(0, 1, Door.Hinge.LEFT, BlockFace.EAST),
             AdjacentBlockData(1, 0, Door.Hinge.RIGHT, BlockFace.SOUTH),
