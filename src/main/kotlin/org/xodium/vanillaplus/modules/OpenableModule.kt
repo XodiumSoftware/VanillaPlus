@@ -21,7 +21,7 @@ import org.bukkit.inventory.EquipmentSlot
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.AdjacentBlockData
 import org.xodium.vanillaplus.data.SoundData
-import org.xodium.vanillaplus.hooks.DecentHologramsHook
+import org.xodium.vanillaplus.hooks.FancyHologramsHook
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import java.util.*
 import org.bukkit.Sound as BukkitSound
@@ -43,7 +43,11 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
             AdjacentBlockData(1, 0, Door.Hinge.LEFT, BlockFace.NORTH),
         )
 
-    override fun enabled(): Boolean = config.enabled && DecentHologramsHook.get("OpenableModule")
+    override fun enabled(): Boolean = config.enabled && FancyHologramsHook.get("OpenableModule")
+
+    private fun hologram(block: Block) { // TODO: add check to only show on first time opening a door.
+        FancyHologramsHook.createHologram(config.doorHologram, block.location)
+    }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerInteractEvent) {
@@ -244,5 +248,6 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
                 Sound.Source.HOSTILE,
             ),
         var soundProximityRadius: Double = 10.0,
+        var doorHologram: String = "",
     ) : ModuleInterface.Config
 }
