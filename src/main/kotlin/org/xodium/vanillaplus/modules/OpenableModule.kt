@@ -21,6 +21,7 @@ import org.bukkit.inventory.EquipmentSlot
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.AdjacentBlockData
 import org.xodium.vanillaplus.data.SoundData
+import org.xodium.vanillaplus.hooks.DecentHologramsHook
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import java.util.*
 import org.bukkit.Sound as BukkitSound
@@ -41,6 +42,8 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
             AdjacentBlockData(-1, 0, Door.Hinge.RIGHT, BlockFace.NORTH),
             AdjacentBlockData(1, 0, Door.Hinge.LEFT, BlockFace.NORTH),
         )
+
+    override fun enabled(): Boolean = config.enabled && DecentHologramsHook.get("OpenableModule")
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerInteractEvent) {
