@@ -25,8 +25,8 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import java.util.*
 import org.bukkit.Sound as BukkitSound
 
-/** Represents a module handling door mechanics within the system. */
-internal class DoorsModule : ModuleInterface<DoorsModule.Config> {
+/** Represents a module handling openable blocks mechanics within the system. */
+internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
     override val config: Config = Config()
 
     private val disallowedKnockGameModes = EnumSet.of(GameMode.CREATIVE, GameMode.SPECTATOR)

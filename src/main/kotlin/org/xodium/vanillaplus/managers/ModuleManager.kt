@@ -18,10 +18,10 @@ internal object ModuleManager {
     val booksModule: BooksModule = BooksModule()
     val chatModule: ChatModule = ChatModule()
     val dimensionsModule: DimensionsModule = DimensionsModule()
-    val doorsModule: DoorsModule = DoorsModule()
     val invModule: InvModule = InvModule()
     val locatorModule: LocatorModule = LocatorModule()
     val motdModule: MotdModule = MotdModule()
+    val openableModule: OpenableModule = OpenableModule()
     val petModule: PetModule = PetModule()
     val recipiesModule: RecipiesModule = RecipiesModule()
     val scoreboardModule: ScoreBoardModule = ScoreBoardModule()
@@ -38,11 +38,11 @@ internal object ModuleManager {
             booksModule,
             chatModule,
             dimensionsModule,
-            doorsModule,
             invModule,
             locatorModule,
             motdModule,
             nicknameModule,
+            openableModule,
             petModule,
             recipiesModule,
             scoreboardModule,
