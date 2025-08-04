@@ -16,7 +16,6 @@ import org.bukkit.event.Event
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
-import org.bukkit.event.block.BlockRedstoneEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -53,33 +52,6 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
             Action.LEFT_CLICK_BLOCK -> handleLeftClick(event, clickedBlock)
             Action.RIGHT_CLICK_BLOCK -> handleRightClick(clickedBlock)
             else -> return
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    fun on(event: BlockRedstoneEvent) {
-        if (!enabled() || !config.allowDoubleDoors || !config.redstoneAffectsDoubleDoors) return
-
-        val block = event.block
-        BlockFace.entries.forEach { face ->
-            val relative = block.getRelative(face)
-            if (relative.blockData is Door) {
-                handleRedstoneDoorInteraction(relative)
-            }
-        }
-    }
-
-    private fun handleRedstoneDoorInteraction(block: Block) {
-        val door = block.blockData as? Door ?: return
-        val door2Block = getOtherPart(getDoorBottom(block), block) ?: return
-        val secondDoor = door2Block.blockData as? Door ?: return
-        val shouldOpen = block.isBlockPowered || block.isBlockIndirectlyPowered
-        if (door.isOpen != shouldOpen) {
-            toggleDoor(block, door, shouldOpen)
-        }
-
-        if (secondDoor.isOpen != shouldOpen) {
-            toggleDoor(door2Block, secondDoor, shouldOpen)
         }
     }
 
@@ -204,7 +176,8 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
      * @param block The block representing the first door.
      * @param block2 The block representing the second door.
      * @param open The desired state (open or closed) for the second door.
-     * @param delay TODO
+     * @param delay The delay in ticks before toggling the secondary door (defaults to config.initDelayInTicks).
+     *              This delay helps prevent race conditions with block updates.
      */
     private fun toggleOtherDoor(
         block: Block,
@@ -262,7 +235,6 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
         var allowKnocking: Boolean = true,
         var knockingRequiresEmptyHand: Boolean = true,
         var knockingRequiresShifting: Boolean = true,
-        var redstoneAffectsDoubleDoors: Boolean = true,
         var soundKnock: SoundData =
             SoundData(
                 BukkitSound.ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR,
