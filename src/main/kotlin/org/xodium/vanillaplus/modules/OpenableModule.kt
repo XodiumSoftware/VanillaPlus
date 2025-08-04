@@ -40,7 +40,7 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
             AdjacentBlockData(0, -1, Door.Hinge.LEFT, BlockFace.WEST),
             AdjacentBlockData(-1, 0, Door.Hinge.RIGHT, BlockFace.NORTH),
             AdjacentBlockData(1, 0, Door.Hinge.LEFT, BlockFace.NORTH),
-        ).also { Collections.unmodifiableSet(it) }
+        )
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerInteractEvent) {
