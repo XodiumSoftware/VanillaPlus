@@ -28,7 +28,6 @@ import org.bukkit.Sound as BukkitSound
 internal class DoorsModule : ModuleInterface<DoorsModule.Config> {
     override val config: Config = Config()
 
-    private val autoClose = mutableMapOf<Block, Long>()
     private val possibleNeighbours =
         listOf(
             AdjacentBlockData(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
@@ -40,21 +39,6 @@ internal class DoorsModule : ModuleInterface<DoorsModule.Config> {
             AdjacentBlockData(-1, 0, Door.Hinge.RIGHT, BlockFace.NORTH),
             AdjacentBlockData(1, 0, Door.Hinge.LEFT, BlockFace.NORTH),
         )
-
-    init {
-        if (enabled()) {
-            instance.server.scheduler.runTaskTimer(
-                instance,
-                Runnable {
-                    autoClose.entries.removeIf { (block, time) ->
-                        System.currentTimeMillis() >= time && handleAutoClose(block)
-                    }
-                },
-                config.initDelayInTicks,
-                config.intervalInTicks,
-            )
-        }
-    }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerInteractEvent) {
@@ -82,47 +66,6 @@ internal class DoorsModule : ModuleInterface<DoorsModule.Config> {
     ) {
         openable.isOpen = open
         block.blockData = openable
-    }
-
-    /**
-     * Handles the auto-close functionality for doors and gates.
-     * @param block The block representing the door or gate to be closed.
-     * @return True if the block was successfully closed, false otherwise.
-     */
-    private fun handleAutoClose(block: Block): Boolean {
-        val data = block.blockData as? Openable ?: return false
-        if (!data.isOpen) return false
-        when (data) {
-            is Door -> handleDoorClose(block, data)
-            is Gate -> handleGateClose(block)
-            else -> return false
-        }
-        data.isOpen = false
-        block.blockData = data
-        return true
-    }
-
-    /**
-     * Handles the sound effect for closing a door.
-     * @param block The block representing the door being closed.
-     * @param door The door block data.
-     */
-    private fun handleDoorClose(
-        block: Block,
-        door: Door,
-    ) {
-        getOtherPart(door, block)?.let { toggleOtherDoor(block, it, false) }
-        val proximity = block.world.getNearbyPlayers(block.location, config.soundProximityRadius)
-        for (player in proximity) player.playSound(config.soundDoorClose.toSound())
-    }
-
-    /**
-     * Handles the sound effect for closing a gate.
-     * @param block The block representing the gate being closed.
-     */
-    private fun handleGateClose(block: Block) {
-        val proximity = block.world.getNearbyPlayers(block.location, config.soundProximityRadius)
-        for (player in proximity) player.playSound(config.soundGateClose.toSound())
     }
 
     /**
@@ -159,10 +102,6 @@ internal class DoorsModule : ModuleInterface<DoorsModule.Config> {
         if (config.allowDoubleDoors && (block.blockData is Door || block.blockData is Gate)) {
             processDoorOrGateInteraction(block)
         }
-        if (config.allowAutoClose) {
-            autoClose[block] =
-                System.currentTimeMillis() + config.autoCloseDelayInMillis
-        }
     }
 
     /**
@@ -174,9 +113,6 @@ internal class DoorsModule : ModuleInterface<DoorsModule.Config> {
         val door2Block = getOtherPart(getDoorBottom(door, block), block) ?: return
         val secondDoor = door2Block.blockData as? Door ?: return
         toggleOtherDoor(block, door2Block, !secondDoor.isOpen)
-        if (config.allowAutoClose) {
-            autoClose[door2Block] = System.currentTimeMillis() + config.autoCloseDelayInMillis
-        }
     }
 
     /**
@@ -283,25 +219,12 @@ internal class DoorsModule : ModuleInterface<DoorsModule.Config> {
     data class Config(
         override var enabled: Boolean = true,
         var initDelayInTicks: Long = 1,
-        var intervalInTicks: Long = 1,
-        var allowAutoClose: Boolean = true,
         var allowDoubleDoors: Boolean = true,
         var allowKnockingDoors: Boolean = true,
         var allowKnockingGates: Boolean = true,
         var allowKnockingTrapdoors: Boolean = true,
         var knockingRequiresEmptyHand: Boolean = true,
         var knockingRequiresShifting: Boolean = true,
-        var autoCloseDelayInMillis: Long = 6000,
-        var soundDoorClose: SoundData =
-            SoundData(
-                BukkitSound.BLOCK_IRON_DOOR_CLOSE,
-                Sound.Source.BLOCK,
-            ),
-        var soundGateClose: SoundData =
-            SoundData(
-                BukkitSound.BLOCK_FENCE_GATE_CLOSE,
-                Sound.Source.BLOCK,
-            ),
         var soundKnock: SoundData =
             SoundData(
                 BukkitSound.ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR,
