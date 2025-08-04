@@ -11,8 +11,6 @@ import org.bukkit.block.data.Bisected
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.Openable
 import org.bukkit.block.data.type.Door
-import org.bukkit.block.data.type.Gate
-import org.bukkit.block.data.type.TrapDoor
 import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import org.bukkit.event.EventHandler
@@ -31,6 +29,7 @@ import org.bukkit.Sound as BukkitSound
 internal class DoorsModule : ModuleInterface<DoorsModule.Config> {
     override val config: Config = Config()
 
+    private val disallowedKnockGameModes = EnumSet.of(GameMode.CREATIVE, GameMode.SPECTATOR)
     private val possibleNeighbours: Set<AdjacentBlockData> =
         setOf(
             AdjacentBlockData(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
@@ -91,9 +90,19 @@ internal class DoorsModule : ModuleInterface<DoorsModule.Config> {
         block: Block,
     ) {
         if (canKnock(event, event.player) && isKnockableBlock(block.blockData)) {
-            val proximity = block.world.getNearbyPlayers(block.location, config.soundProximityRadius)
-            for (player in proximity) player.playSound(config.soundKnock.toSound())
+            playKnockSound(block)
         }
+    }
+
+    /**
+     * Plays the knocking sound to all nearby players around the specified block.
+     * @param block The block where the knock sound originates. The sound will be played
+     *              at this block's location and propagate to nearby players.
+     */
+    private fun playKnockSound(block: Block) {
+        block.world
+            .getNearbyPlayers(block.location, config.soundProximityRadius)
+            .forEach { it.playSound(config.soundKnock.toSound()) }
     }
 
     /**
@@ -101,7 +110,7 @@ internal class DoorsModule : ModuleInterface<DoorsModule.Config> {
      * @param block The block representing the door or gate being interacted with.
      */
     private fun handleRightClick(block: Block) {
-        if (config.allowDoubleDoors && isInteractableBlock(block)) {
+        if (config.allowDoubleDoors && block.blockData is Openable) {
             processDoorOrGateInteraction(block)
         }
     }
@@ -111,17 +120,10 @@ internal class DoorsModule : ModuleInterface<DoorsModule.Config> {
      * @param block The block representing the door or gate being interacted with.
      */
     private fun processDoorOrGateInteraction(block: Block) {
-        val door = (block.blockData as? Door) ?: return
-        val door2Block = getOtherPart(getDoorBottom(door, block), block) ?: return
+        val door2Block = getOtherPart(getDoorBottom(block), block) ?: return
         val secondDoor = door2Block.blockData as? Door ?: return
         toggleOtherDoor(block, door2Block, !secondDoor.isOpen)
     }
-
-    /**
-     * Checks if this block is a door/gate that can be interacted with.
-     * @param block The block to be checked.
-     */
-    private fun isInteractableBlock(block: Block): Boolean = block.blockData is Door || block.blockData is Gate
 
     /**
      * Checks if the player can knock on the block based on their game mode and interaction conditions.
@@ -133,37 +135,41 @@ internal class DoorsModule : ModuleInterface<DoorsModule.Config> {
         event: PlayerInteractEvent,
         player: Player,
     ): Boolean =
-        when {
-            player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR -> false
-            event.action != Action.LEFT_CLICK_BLOCK || event.hand != EquipmentSlot.HAND -> false
-            isKnockingConditionViolated(player) -> false
-            else -> true
-        }
+        event.action == Action.LEFT_CLICK_BLOCK &&
+            event.hand == EquipmentSlot.HAND &&
+            player.gameMode !in disallowedKnockGameModes &&
+            !isKnockingConditionViolated(player)
 
     /**
      * Checks if the knocking conditions are violated based on the player's state and configuration.
      * @param player The player attempting to knock.
-     * @return True if the knocking conditions are violated, false otherwise.
+     * @return True if any knocking condition is violated, false otherwise.
      */
     private fun isKnockingConditionViolated(player: Player): Boolean =
-        (config.knockingRequiresShifting && !player.isSneaking) ||
-            (
-                config.knockingRequiresEmptyHand &&
-                    player.inventory.itemInMainHand.type != Material.AIR
-            )
+        isViolatingSneakingRequirement(player) || isViolatingEmptyHandRequirement(player)
+
+    /**
+     * Checks if the player is violating the sneaking requirement for knocking.
+     * @param player The player attempting to knock.
+     * @return True if sneaking is required but the player isn't sneaking, false otherwise.
+     */
+    private fun isViolatingSneakingRequirement(player: Player): Boolean = config.knockingRequiresShifting && !player.isSneaking
+
+    /**
+     * Checks if the player is violating the empty hand requirement for knocking.
+     * @param player The player attempting to knock.
+     * @return True if empty hand is required but the player is holding something, false otherwise.
+     */
+    private fun isViolatingEmptyHandRequirement(player: Player): Boolean =
+        config.knockingRequiresEmptyHand &&
+            player.inventory.itemInMainHand.type != Material.AIR
 
     /**
      * Checks if the block data is of a type that can be knocked on.
      * @param data The block data to check.
      * @return True if the block can be knocked on, false otherwise.
      */
-    private fun isKnockableBlock(data: BlockData): Boolean =
-        when (data) {
-            is Door -> config.allowKnockingDoors
-            is Gate -> config.allowKnockingGates
-            is TrapDoor -> config.allowKnockingTrapdoors
-            else -> false
-        }
+    private fun isKnockableBlock(data: BlockData): Boolean = config.allowKnocking && data is Openable
 
     /**
      * Toggles the state of the other door when one door is opened or closed.
@@ -190,16 +196,14 @@ internal class DoorsModule : ModuleInterface<DoorsModule.Config> {
 
     /**
      * Retrieves the bottom half of a door if the provided block is the top half.
-     * @param door The door block data.
      * @param block The block to check.
      * @return The bottom half of the door if it exists, null otherwise.
      */
-    private fun getDoorBottom(
-        door: Door,
-        block: Block,
-    ): Door? =
-        (if (door.half == Bisected.Half.BOTTOM) block else block.getRelative(BlockFace.DOWN))
-            .blockData as? Door
+    private fun getDoorBottom(block: Block): Door? =
+        runCatching {
+            (block.blockData as? Door)?.takeIf { it.half == Bisected.Half.BOTTOM }
+                ?: block.getRelative(BlockFace.DOWN).blockData as? Door
+        }.getOrNull()
 
     /**
      * Retrieves the other part of a door if it exists.
@@ -228,9 +232,7 @@ internal class DoorsModule : ModuleInterface<DoorsModule.Config> {
         override var enabled: Boolean = true,
         var initDelayInTicks: Long = 1,
         var allowDoubleDoors: Boolean = true,
-        var allowKnockingDoors: Boolean = true,
-        var allowKnockingGates: Boolean = true,
-        var allowKnockingTrapdoors: Boolean = true,
+        var allowKnocking: Boolean = true,
         var knockingRequiresEmptyHand: Boolean = true,
         var knockingRequiresShifting: Boolean = true,
         var soundKnock: SoundData =
