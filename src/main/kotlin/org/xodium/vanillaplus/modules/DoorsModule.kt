@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package org.xodium.vanillaplus.modules
 
 import net.kyori.adventure.sound.Sound
@@ -22,13 +24,14 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.AdjacentBlockData
 import org.xodium.vanillaplus.data.SoundData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import java.util.*
 import org.bukkit.Sound as BukkitSound
 
 /** Represents a module handling door mechanics within the system. */
 internal class DoorsModule : ModuleInterface<DoorsModule.Config> {
     override val config: Config = Config()
 
-    private val possibleNeighbours =
+    private val possibleNeighbours: Set<AdjacentBlockData> =
         setOf(
             AdjacentBlockData(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
             AdjacentBlockData(0, 1, Door.Hinge.LEFT, BlockFace.EAST),
@@ -38,7 +41,7 @@ internal class DoorsModule : ModuleInterface<DoorsModule.Config> {
             AdjacentBlockData(0, -1, Door.Hinge.LEFT, BlockFace.WEST),
             AdjacentBlockData(-1, 0, Door.Hinge.RIGHT, BlockFace.NORTH),
             AdjacentBlockData(1, 0, Door.Hinge.LEFT, BlockFace.NORTH),
-        )
+        ).also { Collections.unmodifiableSet(it) }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerInteractEvent) {
