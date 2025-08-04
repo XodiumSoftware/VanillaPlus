@@ -31,7 +31,7 @@ internal class AutoRestartModule : ModuleInterface<AutoRestartModule.Config> {
                     .literal("autorestart")
                     .requires { it.sender.hasPermission(perms()[0]) }
                     .executes { ctx -> ctx.tryCatch { countdown() } },
-                "Triggers a countdown for the server restart.",
+                "Triggers a countdown for the server restart",
                 listOf("ar"),
             ),
         )
