@@ -68,7 +68,7 @@ jobs:
 
       - id: release_artifact
         name: Release Artifact
-        uses: softprops/action-gh-release@72f2c25fcb47643c292f7107632f7a47c1df5cd8
+        uses: softprops/action-gh-release@f2352b97da0095b4dbbd885a81023e3deabf4fef
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         with:
