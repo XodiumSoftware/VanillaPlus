@@ -41,7 +41,7 @@ internal class NicknameModule(
                                 }
                             },
                     ),
-                "Allows players to set or remove their nickname.",
+                "Allows players to set or remove their nickname",
                 listOf("nick"),
             ),
         )

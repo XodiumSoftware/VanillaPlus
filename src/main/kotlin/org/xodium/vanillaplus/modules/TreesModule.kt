@@ -25,6 +25,7 @@ import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
+import org.xodium.vanillaplus.hooks.WorldEditHook
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.registries.MaterialRegistry
 import org.xodium.vanillaplus.utils.ExtUtils.mm
@@ -50,14 +51,7 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
         }
     }
 
-    override fun enabled(): Boolean {
-        if (!config.enabled) return false
-
-        val worldEdit = instance.server.pluginManager.getPlugin("WorldEdit") != null
-        if (!worldEdit) instance.logger.warning("WorldEdit not found, disabling TreesModule")
-
-        return worldEdit
-    }
+    override fun enabled(): Boolean = config.enabled && WorldEditHook.get("TreesModule")
 
     override fun cmds(): List<CommandData> =
         listOf(

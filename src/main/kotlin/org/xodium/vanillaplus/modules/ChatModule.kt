@@ -63,7 +63,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
                                     },
                             ),
                     ),
-                "This command allows you to whisper to players.",
+                "This command allows you to whisper to players",
                 listOf("w"),
             ),
         )
