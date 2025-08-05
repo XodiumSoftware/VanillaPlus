@@ -54,7 +54,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                     .then(
                         Commands
                             .argument("material", StringArgumentType.word())
-                            .suggests { ctx, builder ->
+                            .suggests { _, builder ->
                                 Material.entries
                                     .map { it.name.lowercase() }
                                     .filter { it.startsWith(builder.remaining.lowercase()) }
