@@ -35,7 +35,7 @@ internal class MobsModule : ModuleInterface<MobsModule.Config> {
                 Commands
                     .literal("settings")
                     .requires { it.sender.hasPermission(perms()[0]) }
-                    .executes { ctx -> ctx.tryCatch { gui().open(ctx.source.sender as Player) } },
+                    .executes { ctx -> ctx.tryCatch { guis()[0].open(ctx.source.sender as Player) } },
                 "Opens the mob settings gui",
                 emptyList(),
             ),
@@ -90,19 +90,21 @@ internal class MobsModule : ModuleInterface<MobsModule.Config> {
         if (event.ignitingEntity is Blaze && config.disableBlazeGrief) event.isCancelled = true
     }
 
-    private fun gui(): Gui =
-        buildGui {
-            containerType = chestContainer { rows = 1 }
-            spamPreventionDuration = config.guiSpamPrevention
-            title(config.guiTitle.mm())
-            statelessComponent {
-                it[1, 5] =
-                    ItemBuilder
-                        .from(Material.BAKED_POTATO)
-                        .name("item_name_sample".fireFmt().mm())
-                        .asGuiItem()
-            }
-        }
+    override fun guis(): List<Gui> =
+        listOf(
+            buildGui {
+                containerType = chestContainer { rows = 1 }
+                spamPreventionDuration = config.guiSpamPrevention
+                title(config.guiTitle.mm())
+                statelessComponent {
+                    it[1, 5] =
+                        ItemBuilder
+                            .from(Material.BAKED_POTATO)
+                            .name("item_name_sample".fireFmt().mm())
+                            .asGuiItem()
+                }
+            },
+        )
 
     data class Config(
         override var enabled: Boolean = true,
