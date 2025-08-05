@@ -31,7 +31,7 @@ internal class LocatorModule : ModuleInterface<LocatorModule.Config> {
                     .then(
                         Commands
                             .argument("color", ArgumentTypes.namedColor())
-                            .suggests { ctx, builder ->
+                            .suggests { _, builder ->
                                 colors
                                     .filter { it.startsWith(builder.remaining.lowercase()) }
                                     .forEach(builder::suggest)
