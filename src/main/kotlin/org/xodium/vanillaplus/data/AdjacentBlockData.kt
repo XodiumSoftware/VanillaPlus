@@ -1,5 +1,6 @@
 package org.xodium.vanillaplus.data
 
+import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.type.Door
@@ -35,7 +36,7 @@ internal data class AdjacentBlockData(
     fun matchesDoorPair(
         door: Door,
         originalDoor: Door,
-        blockType: org.bukkit.Material,
+        blockType: Material,
     ): Boolean =
         door.facing == originalDoor.facing &&
             door.hinge != originalDoor.hinge &&
