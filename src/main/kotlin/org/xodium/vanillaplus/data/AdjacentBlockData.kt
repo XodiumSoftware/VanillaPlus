@@ -1,6 +1,9 @@
 package org.xodium.vanillaplus.data
 
+import org.bukkit.Material
+import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
+import org.bukkit.block.data.type.Door
 import org.bukkit.block.data.type.Door.Hinge
 
 /**
@@ -20,6 +23,30 @@ import org.bukkit.block.data.type.Door.Hinge
 internal data class AdjacentBlockData(
     val offsetX: Int,
     val offsetZ: Int,
-    private val hinge: Hinge,
-    private val facing: BlockFace,
-)
+    val hinge: Hinge,
+    val facing: BlockFace,
+) {
+    /**
+     * Checks if this adjacent block data matches the given door's properties.
+     * @param door The door to check against
+     * @param originalDoor The original door to compare with
+     * @param blockType The material type to match
+     * @return true if this adjacent data matches a valid door pair
+     */
+    fun matchesDoorPair(
+        door: Door,
+        originalDoor: Door,
+        blockType: Material,
+    ): Boolean =
+        door.facing == originalDoor.facing &&
+            door.hinge != originalDoor.hinge &&
+            door.isOpen == originalDoor.isOpen &&
+            blockType == door.material
+
+    /**
+     * Gets the relative block using the stored offsets
+     * @param block The original block to get relative from
+     * @return The relative block
+     */
+    fun getRelativeBlock(block: Block): Block = block.getRelative(offsetX, 0, offsetZ)
+}

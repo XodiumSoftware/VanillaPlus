@@ -11,7 +11,7 @@ internal class SleepModule : ModuleInterface<SleepModule.Config> {
     override val config: Config = Config()
 
     companion object {
-        private const val MAX_PERCENTAGE: Double = 100.0
+        private const val FULL_PERCENTAGE: Double = 100.0
     }
 
     @EventHandler
@@ -29,12 +29,23 @@ internal class SleepModule : ModuleInterface<SleepModule.Config> {
             Runnable {
                 val players = world.players
                 if (players.isEmpty()) return@Runnable
-                if (players.count { it.isSleeping } >= ceil(players.size * config.sleepPercentage / MAX_PERCENTAGE)) {
-                    world.time = 0
-                }
+                if (shouldSkipNight(players.count { it.isSleeping }, players.size)) world.time = 0
             },
         )
     }
+
+    /**
+     * Determines whether the night should be skipped based on the number of players sleeping
+     * and the required percentage of sleeping players.
+     * @param sleepingPlayers The number of players currently sleeping.
+     * @param totalPlayers The total number of players in the world.
+     * @return True if the number of sleeping players meets or exceeds the threshold
+     *         required to skip the night, otherwise false.
+     */
+    private fun shouldSkipNight(
+        sleepingPlayers: Int,
+        totalPlayers: Int,
+    ): Boolean = sleepingPlayers >= ceil(totalPlayers * config.sleepPercentage / FULL_PERCENTAGE)
 
     data class Config(
         override var enabled: Boolean = true,

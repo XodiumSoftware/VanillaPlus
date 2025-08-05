@@ -63,7 +63,7 @@ internal class LocatorModule : ModuleInterface<LocatorModule.Config> {
                                 }
                             },
                     ),
-                "Allows players to personalise their locator bar.",
+                "Allows players to personalise their locator bar",
                 listOf("lc"),
             ),
         )

@@ -6,12 +6,12 @@ plugins {
     id("java")
     id("idea")
     kotlin("jvm") version "2.2.0"
-    id("com.gradleup.shadow") version "9.0.0-rc2"
+    id("com.gradleup.shadow") version "9.0.0-rc3"
     id("de.undercouch.download") version "5.6.0"
 }
 
 group = "org.xodium.vanillaplus"
-version = "1.16.3"
+version = "1.17.0"
 description = "Minecraft plugin that enhances the base gameplay."
 
 var author: String = "Xodium"
@@ -51,7 +51,7 @@ tasks {
         dependsOn(processResources)
         archiveClassifier.set("")
         destinationDirectory.set(file(".server/plugins/update"))
-        relocate("com.fasterxml.jackson", "org.xodium.vanillaplus.jackson")
+        relocate("com.fasterxml.jackson", "$group.jackson")
         minimize { exclude(dependency("org.jetbrains.kotlin:kotlin-reflect:.*")) }
         doLast {
             copy {
