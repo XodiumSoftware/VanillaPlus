@@ -162,6 +162,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
      * Unloads the inventory of the specified player.
      * @param player The player whose inventory to unload.
      */
+    @Deprecated(message = "Going to be obsolete on the next mc version")
     private fun unload(player: Player) {
         val cooldownKey = NamespacedKey(instance, "invunload_cooldown")
         val cooldownDuration = config.cooldown
