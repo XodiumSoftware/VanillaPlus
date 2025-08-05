@@ -19,6 +19,7 @@ internal object ModuleManager {
     val dimensionsModule: DimensionsModule = DimensionsModule()
     val invModule: InvModule = InvModule()
     val locatorModule: LocatorModule = LocatorModule()
+    val mobsModule: MobsModule = MobsModule()
     val motdModule: MotdModule = MotdModule()
     val openableModule: OpenableModule = OpenableModule()
     val petModule: PetModule = PetModule()
@@ -37,6 +38,7 @@ internal object ModuleManager {
             dimensionsModule,
             invModule,
             locatorModule,
+            mobsModule,
             motdModule,
             nicknameModule,
             openableModule,

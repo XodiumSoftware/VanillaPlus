@@ -38,19 +38,33 @@
     <output-test url="file://$MODULE_DIR$/../../build/classes/java/test" />
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../src/test" />
-    <orderEntry type="jdk" jdkName="jbr-21" jdkType="JavaSDK" />
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="VanillaPlus.main" />
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.2" level="project" />
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.module:jackson-module-kotlin:2.19.2" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-reflect:2.2.0" level="project" />
+    <orderEntry type="library" name="Gradle: dev.triumphteam:triumph-gui-paper-kotlin:4.0.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.2.0" level="project" />
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.19.2" level="project" />
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.19.2" level="project" />
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.19.2" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:2.2.0" level="project" />
+    <orderEntry type="library" name="Gradle: dev.triumphteam:triumph-gui-kotlin:4.0.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Gradle: dev.triumphteam:triumph-gui-paper:4.0.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.2.0" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains:annotations:13.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.jetbrains:annotations:26.0.2" level="project" />
+    <orderEntry type="library" name="Gradle: dev.triumphteam:nova-kotlin:1.0.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Gradle: dev.triumphteam:triumph-gui-core:4.0.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Gradle: dev.triumphteam:nova:1.0.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.guava:guava:33.4.0-jre" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.guava:failureaccess:1.0.2" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.code.findbugs:jsr305:3.0.2" level="project" />
+    <orderEntry type="library" name="Gradle: org.checkerframework:checker-qual:3.43.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.errorprone:error_prone_annotations:2.36.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.j2objc:j2objc-annotations:3.0.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains:annotations:13.0" level="project" />
   </component>
   <component name="TestModuleProperties" production-module="VanillaPlus.main" />
 </module>
