@@ -23,7 +23,6 @@ internal object ModuleManager {
     val openableModule: OpenableModule = OpenableModule()
     val petModule: PetModule = PetModule()
     val recipiesModule: RecipiesModule = RecipiesModule()
-    val scoreboardModule: ScoreBoardModule = ScoreBoardModule()
     val signModule: SignModule = SignModule()
     val sitModule: SitModule = SitModule()
     val sleepModule: SleepModule = SleepModule()
@@ -43,7 +42,6 @@ internal object ModuleManager {
             openableModule,
             petModule,
             recipiesModule,
-            scoreboardModule,
             signModule,
             sitModule,
             sleepModule,
