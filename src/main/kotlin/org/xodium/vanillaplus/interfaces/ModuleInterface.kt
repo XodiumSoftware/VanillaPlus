@@ -1,6 +1,5 @@
 package org.xodium.vanillaplus.interfaces
 
-import dev.triumphteam.gui.paper.Gui
 import org.bukkit.event.Listener
 import org.bukkit.permissions.Permission
 import org.xodium.vanillaplus.data.CommandData
@@ -38,10 +37,4 @@ internal interface ModuleInterface<out T : ModuleInterface.Config> : Listener {
      * @return A [List] of [Permission] objects representing the permissions for this module.
      */
     fun perms(): List<Permission> = emptyList()
-
-    /**
-     * Retrieves a list of GUI components associated with this module.
-     * @return A [List] of [Gui] objects representing the graphical user interfaces for the module.
-     */
-    fun guis(): List<Gui> = emptyList()
 }
