@@ -111,22 +111,24 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
                 )
             }
 
-        var imageIndex = 1
+        var imageIndex = 0
         player.sendMessage(
-            Regex("<image>").replace(config.welcomeText.joinToString("\n")) { "<image${++imageIndex}>" }.mm(
-                Placeholder.component(
-                    "player",
-                    player
-                        .displayName()
-                        .clickEvent(ClickEvent.suggestCommand("/nickname ${player.name}"))
-                        .hoverEvent(HoverEvent.showText(config.l18n.clickMe.mm())),
+            Regex("<image>")
+                .replace(config.welcomeText.joinToString("\n")) { "<image${++imageIndex}>" }
+                .mm(
+                    Placeholder.component(
+                        "player",
+                        player
+                            .displayName()
+                            .clickEvent(ClickEvent.suggestCommand("/nickname ${player.name}"))
+                            .hoverEvent(HoverEvent.showText(config.l18n.clickMe.mm())),
+                    ),
+                    *player
+                        .face()
+                        .lines()
+                        .mapIndexed { i, line -> Placeholder.component("image${i + 1}", line.mm()) }
+                        .toTypedArray(),
                 ),
-                *player
-                    .face()
-                    .lines()
-                    .mapIndexed { i, line -> Placeholder.component("image${i + 1}", line.mm()) }
-                    .toTypedArray(),
-            ),
         )
     }
 
