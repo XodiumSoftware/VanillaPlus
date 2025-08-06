@@ -39,7 +39,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
                     .then(
                         Commands
                             .argument("target", StringArgumentType.string())
-                            .suggests { ctx, builder ->
+                            .suggests { _, builder ->
                                 instance.server.onlinePlayers
                                     .map { it.name }
                                     .filter { it.lowercase().startsWith(builder.remaining.lowercase()) }
@@ -55,7 +55,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
                                             val target =
                                                 instance.server.getPlayer(targetName)
                                                     ?: return@tryCatch sender.sendMessage(
-                                                        "$PREFIX Player is not Online!".fireFmt().mm(),
+                                                        config.l18n.playerIsNotOnline.mm(),
                                                     )
                                             val message = ctx.getArgument("message", String::class.java)
                                             whisper(sender, target, message)
@@ -87,7 +87,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
                     "player",
                     displayName
                         .clickEvent(ClickEvent.suggestCommand("/w ${source.name} "))
-                        .hoverEvent(HoverEvent.showText("Click to Whisper".fireFmt().mm())),
+                        .hoverEvent(HoverEvent.showText(config.l18n.clickToWhisper.mm())),
                 ),
                 Placeholder.component("message", message.pt().mm()),
             )
@@ -113,13 +113,13 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
 
         var imageIndex = 1
         player.sendMessage(
-            Regex("<image>").replace(config.welcomeText.joinToString("\n")) { "<image${imageIndex++}>" }.mm(
+            Regex("<image>").replace(config.welcomeText.joinToString("\n")) { "<image${++imageIndex}>" }.mm(
                 Placeholder.component(
                     "player",
                     player
                         .displayName()
                         .clickEvent(ClickEvent.suggestCommand("/nickname ${player.name}"))
-                        .hoverEvent(HoverEvent.showText("Click Me!".fireFmt().mm())),
+                        .hoverEvent(HoverEvent.showText(config.l18n.clickMe.mm())),
                 ),
                 *player
                     .face()
@@ -166,7 +166,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
                     target
                         .displayName()
                         .clickEvent(ClickEvent.suggestCommand("/w ${target.name} "))
-                        .hoverEvent(HoverEvent.showText("Click to Whisper".fireFmt().mm())),
+                        .hoverEvent(HoverEvent.showText(config.l18n.clickToWhisper.mm())),
                 ),
                 Placeholder.component("message", message.mm()),
             ),
@@ -179,7 +179,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
                     sender
                         .displayName()
                         .clickEvent(ClickEvent.suggestCommand("/w ${sender.name} "))
-                        .hoverEvent(HoverEvent.showText("Click to Whisper".fireFmt().mm())),
+                        .hoverEvent(HoverEvent.showText(config.l18n.clickToWhisper.mm())),
                 ),
                 Placeholder.component("message", message.mm()),
             ),
@@ -212,5 +212,12 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
             "${"You".skylineFmt()} ${"➛".mangoFmt(true)} <player> <reset>${"›".mangoFmt(true)} <message>",
         var whisperFromFormat: String =
             "<player> <reset>${"➛".mangoFmt(true)} ${"You".skylineFmt()} ${"›".mangoFmt(true)} <message>",
-    ) : ModuleInterface.Config
+        var l18n: L18n = L18n(),
+    ) : ModuleInterface.Config {
+        data class L18n(
+            var clickMe: String = "Click Me!".fireFmt(),
+            var clickToWhisper: String = "Click to Whisper".fireFmt(),
+            var playerIsNotOnline: String = "$PREFIX Player is not Online!".fireFmt(),
+        )
+    }
 }
