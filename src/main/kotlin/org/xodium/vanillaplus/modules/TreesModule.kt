@@ -62,7 +62,7 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
                     .then(
                         Commands
                             .argument("type", StringArgumentType.string())
-                            .suggests { ctx, builder ->
+                            .suggests { _, builder ->
                                 config.saplingLink.keys.forEach { material ->
                                     builder.suggest(
                                         material.name

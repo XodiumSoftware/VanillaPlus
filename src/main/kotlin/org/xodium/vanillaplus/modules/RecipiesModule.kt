@@ -14,6 +14,7 @@ internal class RecipiesModule : ModuleInterface<RecipiesModule.Config> {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
         if (!enabled()) return
+
         event.player.discoverRecipes(
             instance.server
                 .recipeIterator()
