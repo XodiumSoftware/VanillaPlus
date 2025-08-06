@@ -7,6 +7,7 @@ import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import net.kyori.adventure.sound.Sound
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.*
 import org.bukkit.block.*
 import org.bukkit.entity.Player
@@ -29,7 +30,6 @@ import org.xodium.vanillaplus.registries.MaterialRegistry
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
-import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.FmtUtils.roseFmt
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -108,7 +108,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         val material =
             materialName?.let { Material.getMaterial(it.uppercase()) } ?: player.inventory.itemInMainHand.type
         if (material == Material.AIR) {
-            player.sendActionBar("You must specify a valid material or hold something in your hand".fireFmt().mm())
+            player.sendActionBar(config.l18n.noMaterialSpecified.mm())
             return 0
         }
 
@@ -128,7 +128,9 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         val chests =
             findBlocksInRadius(player.location, config.searchRadius).filter { it.state is Container }
         if (chests.isEmpty()) {
-            return player.sendActionBar("No usable chests found for ${"$material".roseFmt()}".fireFmt().mm())
+            return player.sendActionBar(
+                config.l18n.noChestsFound.mm(Placeholder.component("material", material.name.mm())),
+            )
         }
 
         val seenDoubleChests = mutableSetOf<InventoryHolder?>()
@@ -140,7 +142,9 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                 searchItemInContainers(material, inventory)
             }
         if (affectedChests.isEmpty()) {
-            return player.sendActionBar("No chests contain ${"$material".roseFmt()}".fireFmt().mm())
+            return player.sendActionBar(
+                config.l18n.noMatchingItems.mm(Placeholder.component("material", material.name.mm())),
+            )
         }
 
         affectedChests.forEach { chestEffect(player, it) }
@@ -157,7 +161,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         val chests =
             findBlocksInRadius(player.location, config.unloadRadius)
                 .filter { it.state is Container }
-        if (chests.isEmpty()) return player.sendActionBar("No chests found nearby".fireFmt().mm())
+        if (chests.isEmpty()) return player.sendActionBar(config.l18n.noNearbyChests.mm())
 
         val affectedChests = mutableListOf<Block>()
         for (block in chests) {
@@ -167,9 +171,9 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
             }
         }
 
-        if (affectedChests.isEmpty()) return player.sendActionBar("No items were unloaded".fireFmt().mm())
+        if (affectedChests.isEmpty()) return player.sendActionBar(config.l18n.noItemsUnloaded.mm())
 
-        player.sendActionBar("Inventory unloaded".mangoFmt().mm())
+        player.sendActionBar(config.l18n.inventoryUnloaded.mm())
         lastUnloads[player.uniqueId] = affectedChests
 
         for (block in affectedChests) chestEffect(player, block)
@@ -506,5 +510,15 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                 Sound.Source.PLAYER,
             ),
         var scheduleInitDelayInTicks: Long = 5,
-    ) : ModuleInterface.Config
+        var l18n: L18n = L18n(),
+    ) : ModuleInterface.Config {
+        data class L18n(
+            var noMaterialSpecified: String = "You must specify a valid material or hold something in your hand".fireFmt(),
+            var noChestsFound: String = "No usable chests found for ${"<material>".roseFmt()}".fireFmt(),
+            var noMatchingItems: String = "No chests contain ${"<material>".roseFmt()}".fireFmt(),
+            var noNearbyChests: String = "No chests found nearby".fireFmt(),
+            var noItemsUnloaded: String = "No items were unloaded".fireFmt(),
+            var inventoryUnloaded: String = "Inventory unloaded".fireFmt(),
+        )
+    }
 }
