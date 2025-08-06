@@ -220,10 +220,10 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
 
     /**
      * Counts the total number of items in the given inventory.
-     * @param inv The inventory to count items in.
+     * @param inventory The inventory to count items in.
      * @return The total number of items in the inventory.
      */
-    private fun countInventoryContents(inv: Inventory): Int = inv.contents.filterNotNull().sumOf { it.amount }
+    private fun countInventoryContents(inventory: Inventory): Int = inventory.contents.filterNotNull().sumOf { it.amount }
 
     /**
      * Searches for a specific item in the given inventory and its containers.
@@ -364,20 +364,20 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
 
     /**
      * Find all blocks in a given radius from a location.
-     * @param loc The location to search from.
+     * @param location The location to search from.
      * @param radius The radius to search within.
      * @return A list of blocks found within the radius.
      */
     fun findBlocksInRadius(
-        loc: Location,
+        location: Location,
         radius: Int,
     ): MutableList<Block> {
-        val searchArea = BoundingBox.of(loc, radius.toDouble(), radius.toDouble(), radius.toDouble())
-        val chunksInArea = getChunksInBox(loc.world, searchArea)
+        val searchArea = BoundingBox.of(location, radius.toDouble(), radius.toDouble(), radius.toDouble())
+        val chunksInArea = getChunksInBox(location.world, searchArea)
         return chunksInArea
             .flatMap { chunk ->
                 chunk.tileEntities
-                    .filter { blockState -> isRelevantContainer(blockState, loc, radius) }
+                    .filter { blockState -> isRelevantContainer(blockState, location, radius) }
                     .map { blockState -> (blockState as Container).block }
             }.toMutableList()
     }
@@ -409,15 +409,15 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
 
     /**
      * Check if a chest contains an item with matching enchantments.
-     * @param inv The inventory to check.
+     * @param inventory The inventory to check.
      * @param item The item to check for.
      * @return True if the chest contains the item, false otherwise.
      */
     fun doesChestContain(
-        inv: Inventory,
+        inventory: Inventory,
         item: ItemStack,
     ): Boolean =
-        inv.contents.any { otherItem ->
+        inventory.contents.any { otherItem ->
             otherItem != null &&
                 otherItem.type == item.type &&
                 hasMatchingEnchantments(item, otherItem)
@@ -485,17 +485,17 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
 
     /**
      * Unloads the specified amount of material from the given location.
-     * @param loc The location to unload from.
-     * @param mat The material to unload.
+     * @param location The location to unload from.
+     * @param material The material to unload.
      * @param amount The amount of material to unload.
      */
     fun protocolUnload(
-        loc: Location,
-        mat: Material,
+        location: Location,
+        material: Material,
         amount: Int,
     ) {
         if (amount == 0) return
-        unloads.computeIfAbsent(loc) { mutableMapOf() }.merge(mat, amount, Int::plus)
+        unloads.computeIfAbsent(location) { mutableMapOf() }.merge(material, amount, Int::plus)
     }
 
     data class Config(
