@@ -7,6 +7,7 @@ import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import net.kyori.adventure.sound.Sound
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.*
 import org.bukkit.block.*
 import org.bukkit.entity.Player
@@ -25,12 +26,10 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.SoundData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.managers.CooldownManager
 import org.xodium.vanillaplus.registries.MaterialRegistry
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
-import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.FmtUtils.roseFmt
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -42,8 +41,8 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
     override val config: Config = Config()
 
     private val unloads = ConcurrentHashMap<Location, MutableMap<Material, Int>>()
-    val lastUnloads: ConcurrentHashMap<UUID, List<Block>> = ConcurrentHashMap()
-    val activeVisualizations: ConcurrentHashMap<UUID, Int> = ConcurrentHashMap()
+    private val lastUnloads = ConcurrentHashMap<UUID, List<Block>>()
+    private val activeVisualizations = ConcurrentHashMap<UUID, Int>()
 
     override fun cmds(): List<CommandData> =
         listOf(
@@ -54,7 +53,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                     .then(
                         Commands
                             .argument("material", StringArgumentType.word())
-                            .suggests { ctx, builder ->
+                            .suggests { _, builder ->
                                 Material.entries
                                     .map { it.name.lowercase() }
                                     .filter { it.startsWith(builder.remaining.lowercase()) }
@@ -109,7 +108,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         val material =
             materialName?.let { Material.getMaterial(it.uppercase()) } ?: player.inventory.itemInMainHand.type
         if (material == Material.AIR) {
-            player.sendActionBar("You must specify a valid material or hold something in your hand".fireFmt().mm())
+            player.sendActionBar(config.l18n.noMaterialSpecified.mm())
             return 0
         }
 
@@ -126,18 +125,12 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         player: Player,
         material: Material,
     ) {
-        val cooldownKey = NamespacedKey(instance, "invsearch_cooldown")
-        val cooldownDuration = config.cooldown
-        if (CooldownManager.isOnCooldown(player, cooldownKey, cooldownDuration)) {
-            return player.sendActionBar("You must wait before using this again.".fireFmt().mm())
-        }
-        CooldownManager.setCooldown(player, cooldownKey, System.currentTimeMillis())
-
         val chests =
-            findBlocksInRadius(player.location, config.searchRadius)
-                .filter { it.state is Container }
+            findBlocksInRadius(player.location, config.searchRadius).filter { it.state is Container }
         if (chests.isEmpty()) {
-            return player.sendActionBar("No usable chests found for ${"$material".roseFmt()}".fireFmt().mm())
+            return player.sendActionBar(
+                config.l18n.noChestsFound.mm(Placeholder.component("material", material.name.mm())),
+            )
         }
 
         val seenDoubleChests = mutableSetOf<InventoryHolder?>()
@@ -145,13 +138,13 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
             chests.filter { block ->
                 val inventory = (block.state as Container).inventory
                 val holder = inventory.holder
-                if (holder is DoubleChest) {
-                    if (!seenDoubleChests.add(holder.leftSide)) return@filter false
-                }
+                if (holder is DoubleChest && !seenDoubleChests.add(holder.leftSide)) return@filter false
                 searchItemInContainers(material, inventory)
             }
         if (affectedChests.isEmpty()) {
-            return player.sendActionBar("No chests contain ${"$material".roseFmt()}".fireFmt().mm())
+            return player.sendActionBar(
+                config.l18n.noMatchingItems.mm(Placeholder.component("material", material.name.mm())),
+            )
         }
 
         affectedChests.forEach { chestEffect(player, it) }
@@ -163,21 +156,12 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
      * @param player The player whose inventory to unload.
      */
     private fun unload(player: Player) {
-        val cooldownKey = NamespacedKey(instance, "invunload_cooldown")
-        val cooldownDuration = config.cooldown
-        if (CooldownManager.isOnCooldown(player, cooldownKey, cooldownDuration)) {
-            return player.sendActionBar("You must wait before using this again.".fireFmt().mm())
-        }
-        CooldownManager.setCooldown(player, cooldownKey, System.currentTimeMillis())
-
         val startSlot = 9
         val endSlot = 35
         val chests =
             findBlocksInRadius(player.location, config.unloadRadius)
                 .filter { it.state is Container }
-        if (chests.isEmpty()) {
-            return player.sendActionBar("No chests found nearby".fireFmt().mm())
-        }
+        if (chests.isEmpty()) return player.sendActionBar(config.l18n.noNearbyChests.mm())
 
         val affectedChests = mutableListOf<Block>()
         for (block in chests) {
@@ -187,16 +171,12 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
             }
         }
 
-        if (affectedChests.isEmpty()) {
-            return player.sendActionBar("No items were unloaded".fireFmt().mm())
-        }
+        if (affectedChests.isEmpty()) return player.sendActionBar(config.l18n.noItemsUnloaded.mm())
 
-        player.sendActionBar("Inventory unloaded".mangoFmt().mm())
+        player.sendActionBar(config.l18n.inventoryUnloaded.mm())
         lastUnloads[player.uniqueId] = affectedChests
 
-        for (block in affectedChests) {
-            chestEffect(player, block)
-        }
+        for (block in affectedChests) chestEffect(player, block)
 
         player.playSound(config.soundOnUnload.toSound(), Sound.Emitter.self())
     }
@@ -336,17 +316,14 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         require(maxDistance > 0) { "Max distance must be positive" }
 
         val playerLocation = player.location
-
         destinations.forEach { destination ->
             val start = playerLocation.clone()
             val end = getCenterOfBlock(destination).add(0.0, -0.5, 0.0)
             val direction = end.toVector().subtract(start.toVector()).normalize()
             val distance = start.distance(destination.location)
-
             if (distance < maxDistance) {
                 var currentDistance = 1.0
                 val steps = (distance / interval).toInt()
-
                 repeat(steps) {
                     val point = start.clone().add(direction.multiply(currentDistance))
                     player.spawnParticle(particle, point, count, 0.0, 0.0, 0.0, speed)
@@ -394,29 +371,41 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
     fun findBlocksInRadius(
         loc: Location,
         radius: Int,
-    ): MutableList<Block> =
-        getChunksInBox(
-            loc.world,
-            BoundingBox.of(loc, radius.toDouble(), radius.toDouble(), radius.toDouble()),
-        ).flatMap { chunk ->
-            chunk.tileEntities
-                .filter { state ->
-                    state is Container &&
-                        MaterialRegistry.CONTAINER_TYPES.contains(state.type) &&
-                        state.location.distanceSquared(loc) <= radius * radius &&
-                        (
-                            state.type != Material.CHEST ||
-                                !(
-                                    state.block
-                                        .getRelative(BlockFace.UP)
-                                        .type.isSolid &&
-                                        state.block
-                                            .getRelative(BlockFace.UP)
-                                            .type.isOccluding
-                                )
-                        )
-                }.map { (it as Container).block }
-        }.toMutableList()
+    ): MutableList<Block> {
+        val searchArea = BoundingBox.of(loc, radius.toDouble(), radius.toDouble(), radius.toDouble())
+        val chunksInArea = getChunksInBox(loc.world, searchArea)
+        return chunksInArea
+            .flatMap { chunk ->
+                chunk.tileEntities
+                    .filter { blockState -> isRelevantContainer(blockState, loc, radius) }
+                    .map { blockState -> (blockState as Container).block }
+            }.toMutableList()
+    }
+
+    /**
+     * Helper function to determine if a block state is a relevant container.
+     * @param blockState The block state to check. Must be a Container.
+     * @param center The centre location of the search area.
+     * @param radius The radius of the search area.
+     * @return True if the block state is a relevant container, false otherwise.
+     */
+    private fun isRelevantContainer(
+        blockState: BlockState,
+        center: Location,
+        radius: Int,
+    ): Boolean {
+        when {
+            blockState !is Container || !MaterialRegistry.CONTAINER_TYPES.contains(blockState.type) -> return false
+            blockState.location.distanceSquared(center) > radius * radius -> return false
+            blockState.type == Material.CHEST -> {
+                val blockAbove = blockState.block.getRelative(BlockFace.UP)
+                if (blockAbove.type.isSolid && blockAbove.type.isOccluding) {
+                    return false
+                }
+            }
+        }
+        return true
+    }
 
     /**
      * Check if a chest contains an item with matching enchantments.
@@ -492,9 +481,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
     fun chestEffect(
         player: Player,
         block: Block,
-    ) {
-        player.spawnParticle(Particle.CRIT, getCenterOfBlock(block), 10, 0.0, 0.0, 0.0)
-    }
+    ) = player.spawnParticle(Particle.CRIT, getCenterOfBlock(block), 10, 0.0, 0.0, 0.0)
 
     /**
      * Unloads the specified amount of material from the given location.
@@ -513,7 +500,6 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
 
     data class Config(
         override var enabled: Boolean = true,
-        var cooldown: Long = 1 * 1000,
         var searchRadius: Int = 5,
         var unloadRadius: Int = 5,
         var matchEnchantments: Boolean = true,
@@ -524,5 +510,15 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                 Sound.Source.PLAYER,
             ),
         var scheduleInitDelayInTicks: Long = 5,
-    ) : ModuleInterface.Config
+        var l18n: L18n = L18n(),
+    ) : ModuleInterface.Config {
+        data class L18n(
+            var noMaterialSpecified: String = "You must specify a valid material or hold something in your hand".fireFmt(),
+            var noChestsFound: String = "No usable chests found for ${"<material>".roseFmt()}".fireFmt(),
+            var noMatchingItems: String = "No chests contain ${"<material>".roseFmt()}".fireFmt(),
+            var noNearbyChests: String = "No chests found nearby".fireFmt(),
+            var noItemsUnloaded: String = "No items were unloaded".fireFmt(),
+            var inventoryUnloaded: String = "Inventory unloaded".fireFmt(),
+        )
+    }
 }
