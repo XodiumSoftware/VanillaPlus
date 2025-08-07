@@ -10,11 +10,13 @@ plugins {
     id("de.undercouch.download") version "5.6.0"
 }
 
-group = "org.xodium.vanillaplus"
-version = project.findProperty("buildVersion")?.toString() ?: "1.21.8"
-description = "Minecraft plugin that enhances the base gameplay."
+val pluginVersion = project.findProperty("buildVersion")?.toString() ?: "1.21.8"
+val apiVersion = Regex("""^(\d+\.\d+\.\d+)""").find(pluginVersion)?.groupValues?.get(1) ?: "1.21.8"
+val author = "Xodium"
 
-var author: String = "Xodium"
+group = "org.xodium.vanillaplus"
+version = pluginVersion
+description = "Minecraft plugin that enhances the base gameplay."
 
 repositories {
     mavenCentral()
@@ -23,7 +25,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:$version-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:$apiVersion-R0.1-SNAPSHOT")
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.15") // TODO("Move away from WorldEdit")
 
     implementation(kotlin("stdlib-jdk8"))
@@ -70,7 +72,7 @@ tasks {
                 builds.findLast { it["channel"] == "default" }
                     ?: builds.findLast { it["channel"] == "experimental" }
 
-            val buildsUrl = URI("https://api.papermc.io/v2/projects/paper/versions/$version/builds").toURL()
+            val buildsUrl = URI("https://api.papermc.io/v2/projects/paper/versions/$apiVersion/builds").toURL()
             val response =
                 JsonSlurper().parse(buildsUrl) as? Map<*, *>
                     ?: throw GradleException("Failed to parse PaperMC builds API response.")
@@ -84,7 +86,7 @@ tasks {
             val buildNumber = latestBuild["build"] ?: throw GradleException("Build number missing in build info.")
 
             src(
-                "https://api.papermc.io/v2/projects/paper/versions/$version/builds/$buildNumber/downloads/paper-$version-$buildNumber.jar",
+                "https://api.papermc.io/v2/projects/paper/versions/$apiVersion/builds/$buildNumber/downloads/paper-$apiVersion-$buildNumber.jar",
             )
             dest(file(".server/server.jar"))
             onlyIfModified(true)
