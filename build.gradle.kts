@@ -13,7 +13,6 @@ val pluginVersion = getPluginProperty("version")
 val pluginDescription = getPluginProperty("description")
 val mainClass = getPluginProperty("main")
 val pluginGroup = mainClass.substringBeforeLast('.')
-
 val apiVersion = Regex("""^(\d+\.\d+\.\d+)""").find(pluginVersion)?.groupValues?.get(1) ?: pluginVersion
 
 plugins {
