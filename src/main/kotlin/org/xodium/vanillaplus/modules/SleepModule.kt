@@ -17,19 +17,19 @@ internal class SleepModule : ModuleInterface<SleepModule.Config> {
     @EventHandler
     fun on(event: PlayerBedEnterEvent) {
         val world = event.player.world
-        if (!enabled() ||
-            event.bedEnterResult != PlayerBedEnterEvent.BedEnterResult.OK ||
-            world.isDayTime
-        ) {
-            return
-        }
+        if (!enabled() || event.bedEnterResult != PlayerBedEnterEvent.BedEnterResult.OK) return
+        if (!world.isThundering && world.isDayTime) return
 
         instance.server.scheduler.runTask(
             instance,
             Runnable {
                 val players = world.players
                 if (players.isEmpty()) return@Runnable
-                if (shouldSkipNight(players.count { it.isSleeping }, players.size)) world.time = 0
+                if (shouldSkipNight(players.count { it.isSleeping }, players.size)) {
+                    world.time = 0
+                    world.isThundering = false
+                    world.setStorm(false)
+                }
             },
         )
     }

@@ -23,6 +23,7 @@ internal class VanillaPlus : JavaPlugin() {
     }
 
     /** Called when the plugin is enabled. */
+    @Suppress("UNUSED_EXPRESSION")
     override fun onEnable() {
         when {
             !server.version.contains(SUPPORTED_VERSION) -> disablePlugin(UNSUPPORTED_VERSION_MSG)

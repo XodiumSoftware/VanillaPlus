@@ -175,10 +175,7 @@ internal object ExtUtils {
                 .asString
 
         // 2. load and crop
-        val fullImg = ImageIO.read(URI.create(skinUrl).toURL())
-        if (fullImg == null) {
-            error("Failed to load skin image from URL: $skinUrl")
-        }
+        val fullImg = ImageIO.read(URI.create(skinUrl).toURL()) ?: error("Failed to load skin image from URL: $skinUrl")
         val face = fullImg.getSubimage(FACE_X, FACE_Y, FACE_WIDTH, FACE_HEIGHT)
 
         // 3. scale & build MiniMessage

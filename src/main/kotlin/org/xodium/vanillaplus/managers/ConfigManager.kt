@@ -36,6 +36,7 @@ internal object ConfigManager {
      * @return A list of [CommandData] containing the command definition, description, and aliases for usage.
      */
     fun cmds(): List<CommandData> =
+        // FIX: reloading doesn't seem to work.
         listOf(
             CommandData(
                 Commands
