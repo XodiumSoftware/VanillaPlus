@@ -1,9 +1,9 @@
 name: VanillaPlus
-version: ${version}
+version: 1.21.8-1
 main: org.xodium.vanillaplus.VanillaPlus
-description: ${description}
+description: Minecraft plugin that enhances the base gameplay
 api-version: 1.21.8
-author: ${author}
+author: Xodium
 dependencies:
   server:
     WorldEdit:

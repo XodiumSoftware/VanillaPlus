@@ -1,9 +1,20 @@
-object PluginConfig {
-    const val AUTHOR = "Xodium"
-    const val GROUP = "org.xodium.vanillaplus"
-    const val VERSION = "1.21.8"
-    const val DESCRIPTION = "Minecraft plugin that enhances the base gameplay."
-}
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
+import java.util.*
+
+val pluginYmlFile = file("src/main/resources/paper-plugin.yml")
+val pluginProperties = Properties().apply { pluginYmlFile.inputStream().use { load(it) } }
+
+fun getPluginProperty(key: String): String =
+    pluginProperties.getProperty(key)
+        ?: error("'$key' not found in paper-plugin.yml")
+
+val pluginVersion = getPluginProperty("version")
+val pluginDescription = getPluginProperty("description")
+val mainClass = getPluginProperty("main")
+val pluginGroup = mainClass.substringBeforeLast('.')
+
+val apiVersion = Regex("""^(\d+\.\d+\.\d+)""").find(pluginVersion)?.groupValues?.get(1) ?: pluginVersion
 
 plugins {
     id("java")
@@ -12,12 +23,9 @@ plugins {
     id("com.gradleup.shadow") version "9.0.0"
 }
 
-val pluginVersion = project.findProperty("buildVersion")?.toString() ?: PluginConfig.VERSION
-val apiVersion = Regex("""^(\d+\.\d+\.\d+)""").find(pluginVersion)?.groupValues?.get(1) ?: PluginConfig.VERSION
-
-group = PluginConfig.GROUP
+group = pluginGroup
 version = pluginVersion
-description = PluginConfig.DESCRIPTION
+description = pluginDescription
 
 repositories {
     mavenCentral()
@@ -38,22 +46,13 @@ dependencies {
 java { toolchain.languageVersion.set(JavaLanguageVersion.of(21)) }
 
 tasks {
-    val props =
-        mapOf(
-            "version" to pluginVersion,
-            "description" to PluginConfig.DESCRIPTION,
-            "author" to PluginConfig.AUTHOR,
-        )
-    processResources { filesMatching("paper-plugin.yml") { expand(props) } }
     shadowJar {
         dependsOn(processResources)
         archiveClassifier.set("")
         destinationDirectory.set(layout.projectDirectory.dir("libs"))
-        relocate("com.fasterxml.jackson", "${PluginConfig.GROUP}.jackson")
+        relocate("com.fasterxml.jackson", "$pluginGroup.jackson")
         minimize { exclude(dependency("org.jetbrains.kotlin:kotlin-reflect:.*")) }
     }
     jar { enabled = false }
     withType<JavaCompile> { options.encoding = "UTF-8" }
 }
-
-idea { module { excludeDirs.add(file(".server")) } }
