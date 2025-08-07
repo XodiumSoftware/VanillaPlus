@@ -49,7 +49,7 @@ tasks {
     shadowJar {
         dependsOn(processResources)
         archiveClassifier.set("")
-        destinationDirectory.set(layout.projectDirectory.dir("libs"))
+        destinationDirectory.set(layout.projectDirectory.dir("build/libs"))
         relocate("com.fasterxml.jackson", "$pluginGroup.jackson")
         minimize { exclude(dependency("org.jetbrains.kotlin:kotlin-reflect:.*")) }
     }
