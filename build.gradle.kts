@@ -52,32 +52,8 @@ tasks {
         relocate("com.fasterxml.jackson", "${PluginConfig.GROUP}.jackson")
         minimize { exclude(dependency("org.jetbrains.kotlin:kotlin-reflect:.*")) }
     }
-    register<Copy>("copyJar") {
-        dependsOn(shadowJar)
-        from(shadowJar)
-        into(layout.projectDirectory.dir(".server/plugins/update"))
-    }
     jar { enabled = false }
     withType<JavaCompile> { options.encoding = "UTF-8" }
-    register("printVersion") { doLast { println(project.version) } }
-    register("acceptEula") { doLast { file(".server/eula.txt").writeText("eula=true\n") } }
-    register<Exec>("runDevServer") {
-        dependsOn("copyJar", "acceptEula")
-        workingDir = file(".server/").apply { mkdirs() }
-        standardInput = System.`in`
-        commandLine =
-            listOf(
-                project.extensions
-                    .getByType(JavaToolchainService::class.java)
-                    .launcherFor { languageVersion.set(JavaLanguageVersion.of(21)) }
-                    .get()
-                    .executablePath.asFile.absolutePath,
-                "-XX:+AllowEnhancedClassRedefinition",
-                "-jar",
-                "server.jar",
-                "nogui",
-            )
-    }
 }
 
 idea { module { excludeDirs.add(file(".server")) } }
