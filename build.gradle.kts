@@ -1,7 +1,3 @@
-import de.undercouch.gradle.tasks.download.Download
-import groovy.json.JsonSlurper
-import java.net.URI
-
 object PluginConfig {
     const val AUTHOR = "Xodium"
     const val GROUP = "org.xodium.vanillaplus"
@@ -14,7 +10,6 @@ plugins {
     id("idea")
     kotlin("jvm") version "2.2.0"
     id("com.gradleup.shadow") version "9.0.0"
-    id("de.undercouch.download") version "5.6.0"
 }
 
 val pluginVersion = project.findProperty("buildVersion")?.toString() ?: PluginConfig.VERSION
@@ -65,43 +60,9 @@ tasks {
     jar { enabled = false }
     withType<JavaCompile> { options.encoding = "UTF-8" }
     register("printVersion") { doLast { println(project.version) } }
-    register<Download>("downloadServerJar") {
-        group = "application"
-        description = "Download the PaperMC server jar"
-        doFirst {
-            fun findLatestBuild(builds: List<Map<*, *>>): Map<*, *>? =
-                builds.findLast { it["channel"] == "default" }
-                    ?: builds.findLast { it["channel"] == "experimental" }
-
-            val buildsUrl = URI("https://api.papermc.io/v2/projects/paper/versions/$apiVersion/builds").toURL()
-            val response =
-                JsonSlurper().parse(buildsUrl) as? Map<*, *>
-                    ?: throw GradleException("Failed to parse PaperMC builds API response.")
-            val builds =
-                response["builds"] as? List<*>
-                    ?: throw GradleException("No 'builds' key in PaperMC API response.")
-            val buildMapList = builds.mapNotNull { it as? Map<*, *> }
-            val latestBuild =
-                findLatestBuild(buildMapList)
-                    ?: throw GradleException("No build with channel='default' or 'experimental' found.")
-            val buildNumber = latestBuild["build"] ?: throw GradleException("Build number missing in build info.")
-
-            src(
-                "https://api.papermc.io/v2/projects/paper/versions/$apiVersion/builds/$buildNumber/downloads/paper-$apiVersion-$buildNumber.jar",
-            )
-            dest(file(".server/server.jar"))
-            onlyIfModified(true)
-        }
-    }
-    register("acceptEula") {
-        group = "application"
-        description = "Accept EULA before running the server"
-        doLast { file(".server/eula.txt").writeText("eula=true\n") }
-    }
+    register("acceptEula") { doLast { file(".server/eula.txt").writeText("eula=true\n") } }
     register<Exec>("runDevServer") {
-        group = "application"
-        description = "Run Development Server"
-        dependsOn("copyJar", "downloadServerJar", "acceptEula")
+        dependsOn("copyJar", "acceptEula")
         workingDir = file(".server/").apply { mkdirs() }
         standardInput = System.`in`
         commandLine =
