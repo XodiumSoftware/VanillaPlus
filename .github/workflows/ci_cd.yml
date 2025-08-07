@@ -2,7 +2,7 @@ name: Xodium CI/CD
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, dev ]
     paths: [ "src/**" ]
   workflow_dispatch:
 
@@ -16,6 +16,7 @@ concurrency:
 
 jobs:
   build:
+    if: "!contains(github.event.head_commit.message, '[ci-skip]')"
     runs-on: ubuntu-latest
     environment:
       name: "${{ github.ref_name }}"
@@ -38,14 +39,21 @@ jobs:
         name: Setup Gradle
         uses: gradle/actions/setup-gradle@017a9effdb900e5b5b2fddfb590a105619dca3c3
 
-      - id: get_artifact_version
-        name: Get Artifact Version
-        shell: bash
-        run: echo "VERSION=v$(grep -m1 '^version = ' build.gradle.kts | cut -d '"' -f2)" >> $GITHUB_OUTPUT
+      - id: set_version
+        name: Set Version
+        run: |
+          base_version=$(grep -m1 '^version = ' build.gradle.kts | cut -d '"' -f2)
+          if [[ "${GITHUB_REF_NAME}" == "dev" ]]; then
+            build_number=$(git rev-list --count HEAD)
+            VERSION="${base_version}-${build_number}"
+          else
+            VERSION="${base_version}"
+          fi
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
       - id: build_artifact
         name: Build Artifact
-        run: ./gradlew shadowJar
+        run: ./gradlew shadowJar -PbuildVersion=${{ steps.set_version.outputs.VERSION }}
 
       - id: upload_artifact
         name: Upload Artifact
@@ -56,6 +64,7 @@ jobs:
 
   release:
     needs: [ build ]
+    if: github.ref_name == 'main' || github.ref_name == 'dev'
     runs-on: ubuntu-latest
     environment:
       name: "${{ github.ref_name }}"
@@ -72,9 +81,8 @@ jobs:
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         with:
-          draft: ${{ contains(github.event.head_commit.message, '.draft') }}
           generate_release_notes: true
-          prerelease: ${{ contains(github.event.head_commit.message, '.pre') }}
+          prerelease: ${{ github.ref_name == 'dev' }}
           tag_name: ${{ needs.build.outputs.VERSION }}
           files: VanillaPlus-*.jar
 
@@ -83,6 +91,7 @@ jobs:
       - build
       - release
     runs-on: ubuntu-latest
+    if: github.ref_name == 'main' || github.ref_name == 'dev'
     environment:
       name: ${{ github.ref_name }}
     steps:
