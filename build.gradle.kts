@@ -2,6 +2,13 @@ import de.undercouch.gradle.tasks.download.Download
 import groovy.json.JsonSlurper
 import java.net.URI
 
+object PluginConfig {
+    const val AUTHOR = "Xodium"
+    const val GROUP = "org.xodium.vanillaplus"
+    const val VERSION = "1.21.8"
+    const val DESCRIPTION = "Minecraft plugin that enhances the base gameplay."
+}
+
 plugins {
     id("java")
     id("idea")
@@ -10,13 +17,12 @@ plugins {
     id("de.undercouch.download") version "5.6.0"
 }
 
-val pluginVersion = project.findProperty("buildVersion")?.toString() ?: "1.21.8"
-val apiVersion = Regex("""^(\d+\.\d+\.\d+)""").find(pluginVersion)?.groupValues?.get(1) ?: "1.21.8"
-val author = "Xodium"
+val pluginVersion = project.findProperty("buildVersion")?.toString() ?: PluginConfig.VERSION
+val apiVersion = Regex("""^(\d+\.\d+\.\d+)""").find(pluginVersion)?.groupValues?.get(1) ?: PluginConfig.VERSION
 
-group = "org.xodium.vanillaplus"
+group = PluginConfig.GROUP
 version = pluginVersion
-description = "Minecraft plugin that enhances the base gameplay."
+description = PluginConfig.DESCRIPTION
 
 repositories {
     mavenCentral()
@@ -37,33 +43,28 @@ dependencies {
 java { toolchain.languageVersion.set(JavaLanguageVersion.of(21)) }
 
 tasks {
-    processResources {
-        filesMatching("paper-plugin.yml") {
-            expand(
-                mapOf(
-                    "version" to version,
-                    "description" to description,
-                    "author" to author,
-                ),
-            )
-        }
-    }
+    val props =
+        mapOf(
+            "version" to pluginVersion,
+            "description" to PluginConfig.DESCRIPTION,
+            "author" to PluginConfig.AUTHOR,
+        )
+    processResources { filesMatching("paper-plugin.yml") { expand(props) } }
     shadowJar {
         dependsOn(processResources)
         archiveClassifier.set("")
-        destinationDirectory.set(file(".server/plugins/update"))
-        relocate("com.fasterxml.jackson", "$group.jackson")
+        destinationDirectory.set(layout.projectDirectory.dir("libs"))
+        relocate("com.fasterxml.jackson", "${PluginConfig.GROUP}.jackson")
         minimize { exclude(dependency("org.jetbrains.kotlin:kotlin-reflect:.*")) }
-        doLast {
-            copy {
-                from(archiveFile)
-                into(layout.buildDirectory.dir("libs"))
-            }
-        }
+    }
+    register<Copy>("copyJar") {
+        dependsOn(shadowJar)
+        from(shadowJar)
+        into(layout.projectDirectory.dir(".server/plugins/update"))
     }
     jar { enabled = false }
     withType<JavaCompile> { options.encoding = "UTF-8" }
-    register("printVersion") { doLast { println(version) } }
+    register("printVersion") { doLast { println(project.version) } }
     register<Download>("downloadServerJar") {
         group = "application"
         description = "Download the PaperMC server jar"
@@ -100,18 +101,16 @@ tasks {
     register<Exec>("runDevServer") {
         group = "application"
         description = "Run Development Server"
-        dependsOn("shadowJar", "downloadServerJar", "acceptEula")
+        dependsOn("copyJar", "downloadServerJar", "acceptEula")
         workingDir = file(".server/").apply { mkdirs() }
         standardInput = System.`in`
-        val javaExec =
-            project.extensions
-                .getByType(JavaToolchainService::class.java)
-                .launcherFor { languageVersion.set(JavaLanguageVersion.of(21)) }
-                .get()
-                .executablePath.asFile.absolutePath
         commandLine =
             listOf(
-                javaExec,
+                project.extensions
+                    .getByType(JavaToolchainService::class.java)
+                    .launcherFor { languageVersion.set(JavaLanguageVersion.of(21)) }
+                    .get()
+                    .executablePath.asFile.absolutePath,
                 "-XX:+AllowEnhancedClassRedefinition",
                 "-jar",
                 "server.jar",
