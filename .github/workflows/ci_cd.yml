@@ -42,7 +42,7 @@ jobs:
       - id: set_version
         name: Set Version
         run: |
-          base_version=$(grep -m1 '^val pluginVersion = ' build.gradle.kts | cut -d '"' -f2)
+          base_version=$(grep -oP '(?<=^version: ).*' src/main/resources/paper-plugin.yml | tr -d \''"')
           if [[ "${GITHUB_REF_NAME}" == "dev" ]]; then
             build_number=$(git rev-list --count HEAD)
             VERSION="${base_version}-${build_number}"
