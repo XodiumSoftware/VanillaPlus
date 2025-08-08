@@ -13,12 +13,10 @@ val pluginVersion = getPluginProperty("version")
 val pluginDescription = getPluginProperty("description")
 val mainClass = getPluginProperty("main")
 val pluginGroup = mainClass.substringBeforeLast('.')
-
 val apiVersion = Regex("""^(\d+\.\d+\.\d+)""").find(pluginVersion)?.groupValues?.get(1) ?: pluginVersion
 
 plugins {
     id("java")
-    id("idea")
     kotlin("jvm") version "2.2.0"
     id("com.gradleup.shadow") version "9.0.0"
 }
