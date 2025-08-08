@@ -17,8 +17,10 @@ val apiVersion = Regex("""^(\d+\.\d+\.\d+)""").find(pluginVersion)?.groupValues?
 
 plugins {
     id("java")
+    id("idea")
     kotlin("jvm") version "2.2.0"
     id("com.gradleup.shadow") version "9.0.0"
+    id("xyz.jpenilla.run-paper") version "3.0.0-beta.1"
 }
 
 group = pluginGroup
@@ -53,4 +55,7 @@ tasks {
     }
     jar { enabled = false }
     withType<JavaCompile> { options.encoding = "UTF-8" }
+    runServer { minecraftVersion(apiVersion) }
 }
+
+idea { module { excludeDirs.add(file("run")) } }
