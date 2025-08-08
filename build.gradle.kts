@@ -14,7 +14,6 @@ val pluginDescription = getPluginProperty("description")
 val mainClass = getPluginProperty("main")
 val pluginGroup = mainClass.substringBeforeLast('.')
 val apiVersion = Regex("""^(\d+\.\d+\.\d+)""").find(pluginVersion)?.groupValues?.get(1) ?: pluginVersion
-val isDev = true // NOTE: swap this to false before commiting.
 
 plugins {
     id("java")
@@ -59,10 +58,8 @@ tasks {
         dependsOn(processResources)
         archiveClassifier.set("")
         destinationDirectory.set(layout.projectDirectory.dir("build/libs"))
-        if (!isDev) {
-            relocate("com.fasterxml.jackson", "$pluginGroup.jackson")
-            minimize { exclude(dependency("org.jetbrains.kotlin:kotlin-reflect:.*")) }
-        }
+        relocate("com.fasterxml.jackson", "$pluginGroup.jackson")
+        minimize { exclude(dependency("org.jetbrains.kotlin:kotlin-reflect:.*")) }
     }
     jar { enabled = false }
     runServer { minecraftVersion(apiVersion) }
