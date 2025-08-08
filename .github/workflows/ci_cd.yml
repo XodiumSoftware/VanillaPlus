@@ -113,4 +113,4 @@ jobs:
           password: ${{ secrets.SFTP_PASSWORD }}
           port: ${{ secrets.SFTP_PORT }}
           source: "VanillaPlus-*.jar"
-          target: ${{ secrets.SFTP_MCS_PLUGINS_UPDATE_FOLDER_PATH }}/
+          target: ${{ (github.ref_name == 'dev' && secrets.SFTP_MCS_DEV_PLUGINS_UPDATE_FOLDER_PATH) || secrets.SFTP_MCS_PLUGINS_UPDATE_FOLDER_PATH }}/
