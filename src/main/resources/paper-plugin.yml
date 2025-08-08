@@ -1,5 +1,5 @@
 name: VanillaPlus
-version: 1.21.8-1
+version: 1.21.8
 main: org.xodium.vanillaplus.VanillaPlus
 description: Minecraft plugin that enhances the base gameplay
 api-version: 1.21.8

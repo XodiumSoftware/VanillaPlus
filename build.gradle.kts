@@ -22,7 +22,7 @@ plugins {
 }
 
 group = pluginGroup
-version = pluginVersion
+version = if (project.hasProperty("buildVersion")) project.property("buildVersion")!! else pluginVersion
 description = pluginDescription
 
 repositories {

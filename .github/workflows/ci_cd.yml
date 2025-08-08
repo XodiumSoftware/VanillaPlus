@@ -22,11 +22,13 @@ jobs:
       name: "${{ github.ref_name }}"
       url: "${{ steps.upload_artifact.outputs.artifact-url }}"
     outputs:
-      VERSION: "${{ steps.get_artifact_version.outputs.VERSION }}"
+      VERSION: "${{ steps.set_version.outputs.VERSION }}"
     steps:
       - id: checkout
         name: Checkout
         uses: actions/checkout@v4.2.2
+        with:
+          fetch-depth: 0
 
       - id: setup_java
         name: Setup Java
@@ -39,25 +41,19 @@ jobs:
         name: Setup Gradle
         uses: gradle/actions/setup-gradle@017a9effdb900e5b5b2fddfb590a105619dca3c3
 
-      - id: set_dev_version
-        name: Set Dev Version
-        if: github.ref_name == 'dev'
+      - id: set_version
+        name: Set Version
         run: |
           base_version=$(grep -oP '(?<=^version: ).*' src/main/resources/paper-plugin.yml | tr -d \''"')
-          build_number=$(git rev-list --count HEAD)
-          VERSION="${base_version}-${build_number}"
-          echo "Calculated dev version: $VERSION"
+          if [ "${{ github.ref_name }}" = "dev" ]; then
+            build_number=$(git rev-list --count HEAD)
+            VERSION="${base_version}-${build_number}"
+            echo "Calculated dev version: $VERSION"
+          else
+            VERSION="${base_version}"
+            echo "Calculated main version: $VERSION"
+          fi
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
-
-      - id: set_main_version
-        name: Set Main Version
-        if: github.ref_name == 'main'
-        run: |
-          base_version=$(grep -oP '(?<=^version: ).*' src/main/resources/paper-plugin.yml | tr -d \''"')
-          VERSION="${base_version}"
-          echo "Calculated main version: $VERSION"
-          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
-
 
       - id: build_artifact
         name: Build Artifact
