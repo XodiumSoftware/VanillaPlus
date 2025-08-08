@@ -23,15 +23,15 @@ plugins {
     id("xyz.jpenilla.run-paper") version "3.0.0-beta.1"
 }
 
+group = pluginGroup
+version = if (project.hasProperty("buildVersion")) project.property("buildVersion")!! else pluginVersion
+description = pluginDescription
+
 repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://maven.enginehub.org/repo/")
 }
-
-group = pluginGroup
-version = if (project.hasProperty("buildVersion")) project.property("buildVersion")!! else pluginVersion
-description = pluginDescription
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:$apiVersion-R0.1-SNAPSHOT")
@@ -45,7 +45,7 @@ dependencies {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(11)
+        languageVersion = JavaLanguageVersion.of(21)
         @Suppress("UnstableApiUsage")
         vendor = JvmVendorSpec.JETBRAINS
     }
