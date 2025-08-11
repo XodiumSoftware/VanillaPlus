@@ -53,7 +53,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: com.sk89q.worldedit:worldedit-bukkit:7.3.15" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Gradle: de.oliver:FancyHolograms:2.7.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.decentsoftware-eu:decentholograms:2.9.6" level="project" />
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.2" level="project" />
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.module:jackson-module-kotlin:2.19.2" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-reflect:2.2.0" level="project" />
@@ -78,6 +78,41 @@
     <orderEntry type="library" scope="PROVIDED" name="Gradle: org.checkerframework:checker-qual:3.49.2" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: com.sk89q.worldedit:worldedit-core:7.3.15" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: com.sk89q.worldedit.worldedit-libs:bukkit:7.3.15" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.decentsoftware-eu.decentholograms:decentholograms:2.9.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.decentsoftware-eu.decentholograms:nms:2.9.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.decentsoftware-eu.decentholograms:nms-common:2.9.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.decentsoftware-eu.decentholograms:nms-v1_10_R1:2.9.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.decentsoftware-eu.decentholograms:nms-v1_11_R1:2.9.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.decentsoftware-eu.decentholograms:nms-v1_12_R1:2.9.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.decentsoftware-eu.decentholograms:nms-v1_13_R1:2.9.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.decentsoftware-eu.decentholograms:nms-v1_13_R2:2.9.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.decentsoftware-eu.decentholograms:nms-v1_14_R1:2.9.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.decentsoftware-eu.decentholograms:nms-v1_15_R1:2.9.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.decentsoftware-eu.decentholograms:nms-v1_16_R1:2.9.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.decentsoftware-eu.decentholograms:nms-v1_16_R2:2.9.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.decentsoftware-eu.decentholograms:nms-v1_16_R3:2.9.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.decentsoftware-eu.decentholograms:nms-v1_17_R1:2.9.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.decentsoftware-eu.decentholograms:nms-v1_18_R1:2.9.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.decentsoftware-eu.decentholograms:nms-v1_18_R2:2.9.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.decentsoftware-eu.decentholograms:nms-v1_19_R1:2.9.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.decentsoftware-eu.decentholograms:nms-v1_19_R2:2.9.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.decentsoftware-eu.decentholograms:nms-v1_19_R3:2.9.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.decentsoftware-eu.decentholograms:nms-v1_20_R1:2.9.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.decentsoftware-eu.decentholograms:nms-v1_20_R2:2.9.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.decentsoftware-eu.decentholograms:nms-v1_20_R3:2.9.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.decentsoftware-eu.decentholograms:nms-v1_20_R4:2.9.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.decentsoftware-eu.decentholograms:nms-v1_21_R1:2.9.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.decentsoftware-eu.decentholograms:nms-v1_21_R2:2.9.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.decentsoftware-eu.decentholograms:nms-v1_21_R3:2.9.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.decentsoftware-eu.decentholograms:nms-v1_21_R4:2.9.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.decentsoftware-eu.decentholograms:nms-v1_21_R5:2.9.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.decentsoftware-eu.decentholograms:nms-v1_8_R1:2.9.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.decentsoftware-eu.decentholograms:nms-v1_8_R2:2.9.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.decentsoftware-eu.decentholograms:nms-v1_8_R3:2.9.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.decentsoftware-eu.decentholograms:nms-v1_9_R1:2.9.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.decentsoftware-eu.decentholograms:nms-v1_9_R2:2.9.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.decentsoftware-eu.decentholograms:plugin:2.9.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.decentsoftware-eu.decentholograms:shared:2.9.6" level="project" />
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.19.2" level="project" />
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.19.2" level="project" />
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.19.2" level="project" />

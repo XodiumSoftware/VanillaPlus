@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Gradle: com.github.decentsoftware-eu.decentholograms:nms-v1_21_R3:2.9.6" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="com.github.decentsoftware-eu.decentholograms" artifactId="nms-v1_21_R3" version="2.9.6" baseVersion="2.9.6" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.decentsoftware-eu.decentholograms/nms-v1_21_R3/2.9.6/48ef3d81814d694ae674222fb79975218e78f151/nms-v1_21_R3-2.9.6.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
