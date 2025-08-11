@@ -17,8 +17,10 @@ val apiVersion = Regex("""^(\d+\.\d+\.\d+)""").find(pluginVersion)?.groupValues?
 
 plugins {
     id("java")
+    id("idea")
     kotlin("jvm") version "2.2.0"
-    id("com.gradleup.shadow") version "9.0.0"
+    id("com.gradleup.shadow") version "9.0.1"
+    id("xyz.jpenilla.run-paper") version "3.0.0-beta.1"
 }
 
 group = pluginGroup
@@ -41,7 +43,15 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.2")
 }
 
-java { toolchain.languageVersion.set(JavaLanguageVersion.of(21)) }
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+        @Suppress("UnstableApiUsage")
+        vendor = JvmVendorSpec.JETBRAINS
+    }
+}
+
+idea { module { excludeDirs.add(file("run")) } }
 
 tasks {
     shadowJar {
@@ -52,5 +62,7 @@ tasks {
         minimize { exclude(dependency("org.jetbrains.kotlin:kotlin-reflect:.*")) }
     }
     jar { enabled = false }
+    runServer { minecraftVersion(apiVersion) }
     withType<JavaCompile> { options.encoding = "UTF-8" }
+    withType(xyz.jpenilla.runtask.task.AbstractRun::class) { jvmArgs("-XX:+AllowEnhancedClassRedefinition") }
 }
