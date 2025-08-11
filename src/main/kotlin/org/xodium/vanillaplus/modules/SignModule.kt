@@ -1,9 +1,12 @@
 package org.xodium.vanillaplus.modules
 
+import de.oliver.fancyholograms.api.data.TextHologramData
 import net.kyori.adventure.text.Component
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.SignChangeEvent
+import org.xodium.vanillaplus.hooks.FancyHologramsHook
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.pt
@@ -28,6 +31,15 @@ internal class SignModule : ModuleInterface<SignModule.Config> {
      * @return true if MiniMessage tags are found, false otherwise
      */
     private fun containsMiniMessageTags(component: Component): Boolean = config.miniMessageRegex.toRegex().containsMatchIn(component.pt())
+
+    private fun hologram(player: Player) {
+        val hook = FancyHologramsHook
+        if (!hook.enabled()) return
+
+        val data = TextHologramData("Tutorial", player.location)
+        val hologram = hook.manager.create(data)
+        hook.manager.addHologram(hologram)
+    }
 
     data class Config(
         override var enabled: Boolean = true,

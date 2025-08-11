@@ -1,18 +1,16 @@
 package org.xodium.vanillaplus.hooks
 
+import de.oliver.fancyholograms.api.FancyHologramsPlugin
+import de.oliver.fancyholograms.api.HologramManager
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 
 /** Utility object for checking plugin availability and handling related dependencies. */
 object FancyHologramsHook {
+    val manager: HologramManager = FancyHologramsPlugin.get().hologramManager
+
     /**
-     * Checks if a specified plugin is available and optionally logs a warning if not found.
-     * @param module The name of the module that will be disabled.
+     * Checks if a specified plugin is available.
      * @return true if the plugin is installed and enabled, false otherwise.
      */
-    fun get(module: String): Boolean {
-        val plugin = instance.server.pluginManager.getPlugin("FancyHolograms") != null
-        if (!plugin) instance.logger.warning("FancyHolograms not found, disabling $module")
-
-        return plugin
-    }
+    fun enabled(): Boolean = instance.server.pluginManager.getPlugin("FancyHolograms") != null
 }
