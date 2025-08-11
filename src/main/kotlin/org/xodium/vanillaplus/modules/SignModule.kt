@@ -1,6 +1,7 @@
 package org.xodium.vanillaplus.modules
 
 import de.oliver.fancyholograms.api.data.TextHologramData
+import io.papermc.paper.event.player.PlayerOpenSignEvent
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -25,6 +26,13 @@ internal class SignModule : ModuleInterface<SignModule.Config> {
         }
     }
 
+    @EventHandler
+    fun on(event: PlayerOpenSignEvent) {
+        if (!enabled() || !FancyHologramsHook.enabled()) return
+        event.isCancelled = true
+        hologram(event.player)
+    }
+
     /**
      * Determines if the given component's plaintext representation contains MiniMessage tags.
      * @param component the component to inspect for MiniMessage tags in its plaintext form
@@ -33,12 +41,10 @@ internal class SignModule : ModuleInterface<SignModule.Config> {
     private fun containsMiniMessageTags(component: Component): Boolean = config.miniMessageRegex.toRegex().containsMatchIn(component.pt())
 
     private fun hologram(player: Player) {
-        val hook = FancyHologramsHook
-        if (!hook.enabled()) return
-
+        if (!FancyHologramsHook.enabled()) return
         val data = TextHologramData("Tutorial", player.location)
-        val hologram = hook.manager.create(data)
-        hook.manager.addHologram(hologram)
+        val hologram = FancyHologramsHook.manager.create(data)
+        FancyHologramsHook.manager.addHologram(hologram)
     }
 
     data class Config(
