@@ -31,5 +31,10 @@
       <option name="name" value="maven3" />
       <option name="url" value="https://repo.triumphteam.dev/snapshots" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven3" />
+      <option name="name" value="maven3" />
+      <option name="url" value="https://repo.fancyinnovations.com/releases" />
+    </remote-repository>
   </component>
 </project>
