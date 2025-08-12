@@ -1,24 +1,18 @@
 package org.xodium.vanillaplus.modules
 
-import eu.decentsoftware.holograms.api.DHAPI
-import eu.decentsoftware.holograms.event.HologramClickEvent
 import io.papermc.paper.event.player.PlayerOpenSignEvent
 import net.kyori.adventure.text.Component
-import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.SignChangeEvent
-import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.hooks.DecentHologramsHook
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.pt
+import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 
 /** Represents a module handling sign mechanics within the system. */
 internal class SignModule : ModuleInterface<SignModule.Config> {
     override val config: Config = Config()
-
-    private val hologramID = "${instance::class.simpleName}_${this::class.simpleName}_tutorial"
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: SignChangeEvent) {
@@ -34,15 +28,8 @@ internal class SignModule : ModuleInterface<SignModule.Config> {
 
     @EventHandler
     fun on(event: PlayerOpenSignEvent) {
-        if (!enabled() || !DecentHologramsHook.enabled()) return
+        if (!enabled()) return
         event.isCancelled = true
-        hologram(event.player)
-    }
-
-    @EventHandler
-    fun on(event: HologramClickEvent) {
-        if (!enabled() || !DecentHologramsHook.enabled()) return
-        DHAPI.removeHologram(event.hologram.name)
     }
 
     /**
@@ -52,17 +39,25 @@ internal class SignModule : ModuleInterface<SignModule.Config> {
      */
     private fun containsMiniMessageTags(component: Component): Boolean = config.miniMessageRegex.toRegex().containsMatchIn(component.pt())
 
-    private fun hologram(player: Player) {
-        if (!DecentHologramsHook.enabled()) return
-        DHAPI.createHologram(hologramID, player.location, true, config.hologramText).apply {
-            isDefaultVisibleState = false
-            setShowPlayer(player)
-        }
-    }
-
     data class Config(
         override var enabled: Boolean = true,
         var miniMessageRegex: String = "</?[a-zA-Z0-9_#:-]+.*?>",
-        var hologramText: List<String> = listOf("Tutorial Text"),
+        var tutorial: List<String> =
+            listOf(
+                "Sign Formatting Tutorial".fireFmt(),
+                "Signs can make use of [MiniMessage] formatting",
+                "For example:",
+                "  <red>This text is red",
+                "  <#ff0000>This text is red in RGB",
+                "  <bold>This text is bold",
+                "  <italic>This text is italic",
+                "  <underlined>This text is underlined",
+                "  <strikethrough>This text is strikethrough",
+                "  <obfuscated>This text is obfuscated",
+                "  <hover:show_text:'Hover text'>This text has a hover tooltip",
+                "  <click:run_command:'/help'>This text has a click action",
+                "",
+                "<Click to Close>",
+            ),
     ) : ModuleInterface.Config
 }
