@@ -30,14 +30,9 @@ internal class BroadcastModule : ModuleInterface<BroadcastModule.Config> {
         override var enabled: Boolean = true,
         var broadcastData: List<String> =
             listOf(
-                "${l18n.broadcastPrefix} ${"Signs can make use of ".spellbiteFmt()}<click:open_url:'https://docs.advntr.dev/minimessage/format.html'><hover:show_text:'${"Click Me!".fireFmt()}'>${"[<u>MiniMessage</u>]".roseFmt()}${" formatting!".spellbiteFmt()}",
+                "\uD83D\uDCE2 ${"Signs can make use of ".spellbiteFmt()}<click:open_url:'https://docs.advntr.dev/minimessage/format.html'><hover:show_text:'${"Click Me!".fireFmt()}'>${"[<u>MiniMessage</u>]".roseFmt()}${" formatting!".spellbiteFmt()}",
             ),
-        var broadcastDelay: Long = 100L,
+        var broadcastDelay: Long = 1000L,
         var broadcastPeriod: Long = 1000L,
-        var l18n: L18n = L18n(),
-    ) : ModuleInterface.Config {
-        data class L18n(
-            var broadcastPrefix: String = "Broadcast <gray>🟅".fireFmt(),
-        )
-    }
+    ) : ModuleInterface.Config
 }
