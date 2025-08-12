@@ -30,12 +30,16 @@ internal class NicknameModule(
                     .literal("nickname")
                     .requires { it.sender.hasPermission(perms()[0]) }
                     .executes { ctx ->
-                        ctx.tryCatch { nickname(ctx.source.sender as Player, "") }
+                        ctx.tryCatch {
+                            if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+                            nickname(it.sender as Player, "")
+                        }
                     }.then(
                         Commands
                             .argument("name", StringArgumentType.greedyString())
                             .executes { ctx ->
                                 ctx.tryCatch {
+                                    if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
                                     val name = StringArgumentType.getString(ctx, "name")
                                     nickname(it.sender as Player, name)
                                 }

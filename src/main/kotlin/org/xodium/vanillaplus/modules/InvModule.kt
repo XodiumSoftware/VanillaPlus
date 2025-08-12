@@ -59,7 +59,12 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                                     .filter { it.startsWith(builder.remaining.lowercase()) }
                                     .forEach(builder::suggest)
                                 CompletableFuture.completedFuture(builder.build())
-                            }.executes { ctx -> ctx.tryCatch { handleSearch(ctx) } },
+                            }.executes { ctx ->
+                                ctx.tryCatch {
+                                    if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+                                    handleSearch(ctx)
+                                }
+                            },
                     ).executes { ctx -> ctx.tryCatch { handleSearch(ctx) } },
                 "Search nearby chests for specific items",
                 listOf("search", "searchinv", "invs"),
@@ -68,7 +73,12 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                 Commands
                     .literal("invunload")
                     .requires { it.sender.hasPermission(perms()[1]) }
-                    .executes { ctx -> ctx.tryCatch { unload(it.sender as Player) } },
+                    .executes { ctx ->
+                        ctx.tryCatch {
+                            if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+                            unload(it.sender as Player)
+                        }
+                    },
                 "Unload your inventory into nearby chests",
                 listOf("unload", "unloadinv", "invu"),
             ),

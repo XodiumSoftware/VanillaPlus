@@ -86,9 +86,17 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
                                         }
                                         builder.buildFuture()
                                     }.executes { ctx ->
-                                        ctx.tryCatch { handleTreeCmd((it.sender as Player), ctx, true) }
+                                        ctx.tryCatch {
+                                            if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+                                            handleTreeCmd((it.sender as Player), ctx, true)
+                                        }
                                     },
-                            ).executes { ctx -> ctx.tryCatch { handleTreeCmd((it.sender as Player), ctx, false) } },
+                            ).executes { ctx ->
+                                ctx.tryCatch {
+                                    if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+                                    handleTreeCmd((it.sender as Player), ctx, false)
+                                }
+                            },
                     ),
                 "Triggers the spawning of a tree",
                 listOf("tr"),

@@ -50,7 +50,8 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
                                     .argument("message", StringArgumentType.greedyString())
                                     .executes { ctx ->
                                         ctx.tryCatch {
-                                            val sender = ctx.source.sender as Player
+                                            if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+                                            val sender = it.sender as Player
                                             val targetName = ctx.getArgument("target", String::class.java)
                                             val target =
                                                 instance.server.getPlayer(targetName)

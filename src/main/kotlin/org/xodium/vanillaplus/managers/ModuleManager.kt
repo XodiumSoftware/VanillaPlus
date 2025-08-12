@@ -69,7 +69,9 @@ internal object ModuleManager {
                         .executes { ctx ->
                             ctx.tryCatch {
                                 updateConfig()
-                                (it.sender as Player).sendMessage("$PREFIX <green>Config reloaded successfully".mm())
+                                if (it.sender is Player) {
+                                    it.sender.sendMessage("$PREFIX <green>Config reloaded successfully".mm())
+                                }
                             }
                         },
                 ),
