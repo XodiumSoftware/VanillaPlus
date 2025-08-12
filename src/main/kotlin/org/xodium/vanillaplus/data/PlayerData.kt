@@ -21,7 +21,6 @@ import kotlin.io.path.writeText
  */
 internal data class PlayerData(
     val nickname: String? = null,
-    val signTutorial: Boolean = false,
 ) {
     companion object {
         private val mapper =
