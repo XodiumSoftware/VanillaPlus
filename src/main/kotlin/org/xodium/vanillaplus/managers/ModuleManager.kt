@@ -68,9 +68,7 @@ internal object ModuleManager {
                         .requires { it.sender.hasPermission(configPerm) }
                         .executes { ctx ->
                             ctx.tryCatch {
-                                // TODO: reloading is not working.
-                                ConfigManager.load()
-                                instance.logger.info("Config: Reloaded successfully")
+                                updateConfig()
                                 (it.sender as Player).sendMessage("$PREFIX <green>Config reloaded successfully".mm())
                             }
                         },
@@ -96,27 +94,7 @@ internal object ModuleManager {
 
     /** Loads configs, registers modules' events and permissions, and collects commands. */
     private fun pluginManager() {
-        val allConfigsNode = ConfigManager.load()
-        when {
-            allConfigsNode != null -> instance.logger.info("Config: Loaded successfully")
-            !ConfigManager.configPath.exists() -> instance.logger.info("Config: No config file found, a new one will be created")
-            else -> instance.logger.warning("Config: Failed to load, using defaults")
-        }
-        modules.forEach { module ->
-            val configKey = getConfigKey(module)
-            allConfigsNode?.get(configKey)?.let { moduleConfigNode ->
-                try {
-                    ConfigManager.objectMapper.readerForUpdating(module.config).readValue(moduleConfigNode)
-                } catch (e: JsonProcessingException) {
-                    instance.logger.warning(
-                        "Failed to parse config for ${module::class.simpleName}. Using defaults. Error: ${e.message}",
-                    )
-                }
-            }
-            configsToSave[configKey] = module.config
-        }
-        ConfigManager.save(configsToSave)
-
+        updateConfig()
         commandsToRegister.add(configCmd)
         instance.server.pluginManager.addPermission(configPerm)
         modules.filter { it.enabled() }.forEach { module ->
@@ -146,6 +124,34 @@ internal object ModuleManager {
                 }
             }
         }
+    }
+
+    /**
+     * TODO
+     */
+    private fun updateConfig() {
+        val allConfigsNode = ConfigManager.load()
+        when {
+            allConfigsNode != null -> instance.logger.info("Config: Loaded successfully")
+            !ConfigManager.configPath.exists() -> instance.logger.info("Config: No config file found, a new one will be created")
+            else -> instance.logger.warning("Config: Failed to load, using defaults")
+        }
+
+        modules.forEach { module ->
+            val configKey = getConfigKey(module)
+            allConfigsNode?.get(configKey)?.let { moduleConfigNode ->
+                try {
+                    ConfigManager.objectMapper.readerForUpdating(module.config).readValue(moduleConfigNode)
+                } catch (e: JsonProcessingException) {
+                    instance.logger.warning(
+                        "Failed to parse config for ${module::class.simpleName}. Using defaults. Error: ${e.message}",
+                    )
+                }
+            }
+            configsToSave[configKey] = module.config
+        }
+
+        ConfigManager.save(configsToSave)
     }
 
     /**
