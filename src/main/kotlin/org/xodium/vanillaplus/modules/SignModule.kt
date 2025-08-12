@@ -2,13 +2,16 @@ package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.event.player.PlayerOpenSignEvent
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.title.Title
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.SignChangeEvent
+import org.xodium.vanillaplus.data.PlayerData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.pt
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
+import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.FmtUtils.roseFmt
 import org.xodium.vanillaplus.utils.FmtUtils.spellbiteFmt
 
@@ -28,8 +31,12 @@ internal class SignModule : ModuleInterface<SignModule.Config> {
 
     @EventHandler
     fun on(event: PlayerOpenSignEvent) {
-        if (!enabled()) return
-        event.player
+        val player = event.player
+        if (!enabled() || PlayerData.get(player).signTutorial) return
+        event.isCancelled = true
+        player.showTitle(Title.title(config.title.mm(), config.subtitle.mm()))
+        player.sendMessage(config.tutorialText.mm())
+//        PlayerData.update(player, PlayerData.get(player).copy(signTutorial = true))
     }
 
     /**
@@ -42,9 +49,13 @@ internal class SignModule : ModuleInterface<SignModule.Config> {
     data class Config(
         override var enabled: Boolean = true,
         var miniMessageRegex: String = "</?[a-zA-Z0-9_#:-]+.*?>",
-        var tutorialText: List<String> =
-            listOf(
-                "\uD83D\uDCE2 ${"Signs can make use of ".spellbiteFmt()}<click:open_url:'https://docs.advntr.dev/minimessage/format.html'><hover:show_text:'${"Click Me!".fireFmt()}'>${"[<u>MiniMessage</u>]".roseFmt()}${" formatting!".spellbiteFmt()}",
-            ),
+        var title: String = "Sign Tutorial".fireFmt(),
+        var subtitle: String = "Read the chat...".mangoFmt(),
+        var tutorialText: String =
+            "${
+                "⯈".mangoFmt(
+                    true,
+                )
+            } ${"Signs can make use of ".spellbiteFmt()}<click:open_url:'https://docs.advntr.dev/minimessage/format.html'><hover:show_text:'${"Click Me!".fireFmt()}'>${"[<u>MiniMessage</u>]".roseFmt()}${" formatting!".spellbiteFmt()}",
     ) : ModuleInterface.Config
 }
