@@ -6,6 +6,7 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.roseFmt
 import org.xodium.vanillaplus.utils.FmtUtils.spellbiteFmt
+import kotlin.random.Random
 
 /** Represents a module handling broadcasting mechanics within the system. */
 internal class BroadcastModule : ModuleInterface<BroadcastModule.Config> {
@@ -16,10 +17,11 @@ internal class BroadcastModule : ModuleInterface<BroadcastModule.Config> {
     }
 
     private fun broadcast() {
+        if (config.broadcastData.isEmpty()) return
         instance.server.scheduler.runTaskTimer(
             instance,
             Runnable {
-                config.broadcastData.forEach { instance.server.broadcast(it.mm()) }
+                instance.server.broadcast(config.broadcastData[Random.nextInt(config.broadcastData.size)].mm())
             },
             config.broadcastDelay,
             config.broadcastPeriod,
