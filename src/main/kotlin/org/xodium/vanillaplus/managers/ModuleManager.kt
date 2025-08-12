@@ -3,7 +3,6 @@
 package org.xodium.vanillaplus.managers
 
 import com.fasterxml.jackson.core.JsonProcessingException
-import com.fasterxml.jackson.databind.JsonNode
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
@@ -51,11 +50,19 @@ internal object ModuleManager {
             treesModule,
         )
 
+    private val configsToSave: MutableMap<String, ModuleInterface.Config> = mutableMapOf()
+    private val commandsToRegister: MutableList<CommandData> = mutableListOf()
+
     init {
-        val allConfigsNode: JsonNode? = ConfigManager.load()
-        val configsToSave = mutableMapOf<String, ModuleInterface.Config>()
+        pluginManager()
+        lifecycleManager()
+    }
+
+    /** Loads configs, registers modules' events and permissions, and collects commands. */
+    private fun pluginManager() {
+        val allConfigsNode = ConfigManager.load()
         modules.forEach { module ->
-            val configKey = module::class.simpleName!!.removeSuffix("Module").replaceFirstChar { it.lowercase() }
+            val configKey = getConfigKey(module)
             allConfigsNode?.get(configKey)?.let { moduleConfigNode ->
                 try {
                     ConfigManager.objectMapper.readerForUpdating(module.config).readValue(moduleConfigNode)
@@ -69,7 +76,6 @@ internal object ModuleManager {
         }
         ConfigManager.save(configsToSave)
 
-        val commandsToRegister = mutableListOf<CommandData>()
         commandsToRegister.addAll(ConfigManager.cmds())
         @Suppress("UnstableApiUsage")
         instance.server.pluginManager.addPermissions(ConfigManager.perms())
@@ -85,6 +91,10 @@ internal object ModuleManager {
                 }ms",
             )
         }
+    }
+
+    /** Registers all commands in commandsToRegister with the lifecycle manager. */
+    private fun lifecycleManager() {
         commandsToRegister.takeIf { it.isNotEmpty() }?.let { cmds ->
             instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
                 cmds.forEach { commandData ->
@@ -97,4 +107,11 @@ internal object ModuleManager {
             }
         }
     }
+
+    /**
+     * Generates a configuration key for a module.
+     * @param module The module to generate the key for.
+     * @return The generated configuration key.
+     */
+    private fun getConfigKey(module: ModuleInterface<*>): String = module::class.simpleName!!
 }
