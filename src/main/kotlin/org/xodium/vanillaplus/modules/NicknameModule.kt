@@ -37,7 +37,7 @@ internal class NicknameModule(
                             .executes { ctx ->
                                 ctx.tryCatch {
                                     val name = StringArgumentType.getString(ctx, "name")
-                                    nickname(ctx.source.sender as Player, name)
+                                    nickname(it.sender as Player, name)
                                 }
                             },
                     ),

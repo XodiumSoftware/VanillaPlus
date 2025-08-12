@@ -18,7 +18,7 @@ import kotlin.io.path.writeText
 /**
  * Represents the data structure for player data.
  * @param nickname The [nickname] of the player, if set.
- * */
+ */
 internal data class PlayerData(
     val nickname: String? = null,
 ) {
