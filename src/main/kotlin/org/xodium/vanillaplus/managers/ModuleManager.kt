@@ -12,10 +12,10 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.managers.ConfigManager.load
 import org.xodium.vanillaplus.modules.*
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
+import kotlin.io.path.exists
 import kotlin.time.measureTime
 
 /** Represents the module manager within the system. */
@@ -69,7 +69,7 @@ internal object ModuleManager {
                         .executes { ctx ->
                             ctx.tryCatch {
                                 // TODO: reloading is not working.
-                                load(true)
+                                ConfigManager.load()
                                 instance.logger.info("Config: Reloaded successfully")
                                 (it.sender as Player).sendMessage("$PREFIX <green>Config reloaded successfully".mm())
                             }
@@ -96,7 +96,12 @@ internal object ModuleManager {
 
     /** Loads configs, registers modules' events and permissions, and collects commands. */
     private fun pluginManager() {
-        val allConfigsNode = load()
+        val allConfigsNode = ConfigManager.load()
+        when {
+            allConfigsNode != null -> instance.logger.info("Config: Loaded successfully")
+            !ConfigManager.configPath.exists() -> instance.logger.info("Config: No config file found, a new one will be created")
+            else -> instance.logger.warning("Config: Failed to load, using defaults")
+        }
         modules.forEach { module ->
             val configKey = getConfigKey(module)
             allConfigsNode?.get(configKey)?.let { moduleConfigNode ->
