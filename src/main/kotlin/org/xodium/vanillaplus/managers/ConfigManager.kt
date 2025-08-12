@@ -7,16 +7,8 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import io.papermc.paper.command.brigadier.Commands
-import org.bukkit.entity.Player
-import org.bukkit.permissions.Permission
-import org.bukkit.permissions.PermissionDefault
-import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import java.io.IOException
 import kotlin.io.path.createDirectories
 import kotlin.io.path.writeText
@@ -30,42 +22,6 @@ internal object ConfigManager {
             .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
             .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
-
-    /**
-     * Defines a list of commands for the VanillaPlus module.
-     * @return A list of [CommandData] containing the command definition, description, and aliases for usage.
-     */
-    fun cmds(): List<CommandData> =
-        // FIX: reloading doesn't seem to work.
-        listOf(
-            CommandData(
-                Commands
-                    .literal("vanillaplus")
-                    .requires { it.sender.hasPermission(perms()[0]) }
-                    .executes { ctx ->
-                        ctx.tryCatch {
-                            load(true)
-                            instance.logger.info("Config: Reloaded successfully")
-                            (it.sender as Player).sendMessage("$PREFIX <green>Config reloaded successfully".mm())
-                        }
-                    },
-                "Reloads the VanillaPlus Config file.",
-                listOf("vp"),
-            ),
-        )
-
-    /**
-     * Retrieves a list of permissions related to the module.
-     * @return A list of [Permission] objects, each representing a specific permission required for module actions.
-     */
-    fun perms(): List<Permission> =
-        listOf(
-            Permission(
-                "${instance::class.simpleName}.reload".lowercase(),
-                "Allows use of the vanillaplus command",
-                PermissionDefault.OP,
-            ),
-        )
 
     /**
      * Loads settings from the config file.

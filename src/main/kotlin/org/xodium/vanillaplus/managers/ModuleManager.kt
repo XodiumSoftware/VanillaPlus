@@ -3,11 +3,19 @@
 package org.xodium.vanillaplus.managers
 
 import com.fasterxml.jackson.core.JsonProcessingException
+import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
+import org.bukkit.entity.Player
+import org.bukkit.permissions.Permission
+import org.bukkit.permissions.PermissionDefault
+import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.managers.ConfigManager.load
 import org.xodium.vanillaplus.modules.*
+import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import kotlin.time.measureTime
 
 /** Represents the module manager within the system. */
@@ -60,7 +68,7 @@ internal object ModuleManager {
 
     /** Loads configs, registers modules' events and permissions, and collects commands. */
     private fun pluginManager() {
-        val allConfigsNode = ConfigManager.load()
+        val allConfigsNode = load()
         modules.forEach { module ->
             val configKey = getConfigKey(module)
             allConfigsNode?.get(configKey)?.let { moduleConfigNode ->
@@ -76,9 +84,8 @@ internal object ModuleManager {
         }
         ConfigManager.save(configsToSave)
 
-        commandsToRegister.addAll(ConfigManager.cmds())
-        @Suppress("UnstableApiUsage")
-        instance.server.pluginManager.addPermissions(ConfigManager.perms())
+        commandsToRegister.add(configCmd)
+        instance.server.pluginManager.addPermission(configPerm)
         modules.filter { it.enabled() }.forEach { module ->
             instance.logger.info(
                 "Loaded: ${module::class.simpleName} | Took ${
@@ -114,4 +121,32 @@ internal object ModuleManager {
      * @return The generated configuration key.
      */
     private fun getConfigKey(module: ModuleInterface<*>): String = module::class.simpleName!!
+
+    private val configCmd =
+        CommandData(
+            Commands
+                .literal("vanillaplus")
+                .then(
+                    Commands
+                        .literal("reload")
+                        .requires { it.sender.hasPermission(configPerm) }
+                        .executes { ctx ->
+                            ctx.tryCatch {
+                                // TODO: reloading is not working.
+                                load(true)
+                                instance.logger.info("Config: Reloaded successfully")
+                                (it.sender as Player).sendMessage("$PREFIX <green>Config reloaded successfully".mm())
+                            }
+                        },
+                ),
+            "Main VanillaPlus command. Use subcommands for actions.",
+            listOf("vp"),
+        )
+
+    private val configPerm =
+        Permission(
+            "${instance::class.simpleName}.reload".lowercase(),
+            "Allows use of the vanillaplus reload command",
+            PermissionDefault.OP,
+        )
 }
