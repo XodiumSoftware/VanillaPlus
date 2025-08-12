@@ -126,9 +126,7 @@ internal object ModuleManager {
         }
     }
 
-    /**
-     * TODO
-     */
+    /** Updates the config. */
     private fun updateConfig() {
         val allConfigsNode = ConfigManager.load()
         when {
