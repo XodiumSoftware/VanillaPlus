@@ -95,7 +95,7 @@ jobs:
       - build
       - release
     runs-on: ubuntu-latest
-    if: github.ref_name == 'main' || github.ref_name == 'dev'
+    if: github.ref_name == 'main'
     environment:
       name: ${{ github.ref_name }}
     steps:
