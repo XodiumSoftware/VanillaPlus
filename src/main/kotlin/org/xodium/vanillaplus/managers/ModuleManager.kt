@@ -58,6 +58,34 @@ internal object ModuleManager {
             treesModule,
         )
 
+    private val configCmd =
+        CommandData(
+            Commands
+                .literal("vanillaplus")
+                .then(
+                    Commands
+                        .literal("reload")
+                        .requires { it.sender.hasPermission(configPerm) }
+                        .executes { ctx ->
+                            ctx.tryCatch {
+                                // TODO: reloading is not working.
+                                load(true)
+                                instance.logger.info("Config: Reloaded successfully")
+                                (it.sender as Player).sendMessage("$PREFIX <green>Config reloaded successfully".mm())
+                            }
+                        },
+                ),
+            "Main VanillaPlus command. Use subcommands for actions.",
+            listOf("vp"),
+        )
+
+    private val configPerm =
+        Permission(
+            "${instance::class.simpleName}.reload".lowercase(),
+            "Allows use of the vanillaplus reload command",
+            PermissionDefault.OP,
+        )
+
     private val configsToSave: MutableMap<String, ModuleInterface.Config> = mutableMapOf()
     private val commandsToRegister: MutableList<CommandData> = mutableListOf()
 
@@ -121,32 +149,4 @@ internal object ModuleManager {
      * @return The generated configuration key.
      */
     private fun getConfigKey(module: ModuleInterface<*>): String = module::class.simpleName!!
-
-    private val configCmd =
-        CommandData(
-            Commands
-                .literal("vanillaplus")
-                .then(
-                    Commands
-                        .literal("reload")
-                        .requires { it.sender.hasPermission(configPerm) }
-                        .executes { ctx ->
-                            ctx.tryCatch {
-                                // TODO: reloading is not working.
-                                load(true)
-                                instance.logger.info("Config: Reloaded successfully")
-                                (it.sender as Player).sendMessage("$PREFIX <green>Config reloaded successfully".mm())
-                            }
-                        },
-                ),
-            "Main VanillaPlus command. Use subcommands for actions.",
-            listOf("vp"),
-        )
-
-    private val configPerm =
-        Permission(
-            "${instance::class.simpleName}.reload".lowercase(),
-            "Allows use of the vanillaplus reload command",
-            PermissionDefault.OP,
-        )
 }
