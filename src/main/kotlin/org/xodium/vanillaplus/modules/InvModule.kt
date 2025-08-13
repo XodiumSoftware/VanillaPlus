@@ -328,7 +328,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         val playerLocation = player.location
         destinations.forEach { destination ->
             val start = playerLocation.clone()
-            val end = getCenterOfBlock(destination).add(0.0, -0.5, 0.0)
+            val end = destination.center().add(0.0, -0.5, 0.0)
             val direction = end.toVector().subtract(start.toVector()).normalize()
             val distance = start.distance(destination.location)
             if (distance < maxDistance) {
@@ -459,13 +459,37 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
     }
 
     /**
+     * Creates a chest effect for the specified block and player.
+     * @param player The player to create the laser effect for.
+     * @param block The block to create the laser effect towards.
+     */
+    fun chestEffect(
+        player: Player,
+        block: Block,
+    ) = player.spawnParticle(Particle.CRIT, block.center(), 10, 0.0, 0.0, 0.0)
+
+    /**
+     * Unloads the specified amount of material from the given location.
+     * @param location The location to unload from.
+     * @param material The material to unload.
+     * @param amount The amount of material to unload.
+     */
+    fun protocolUnload(
+        location: Location,
+        material: Material,
+        amount: Int,
+    ) {
+        if (amount == 0) return
+        unloads.computeIfAbsent(location) { mutableMapOf() }.merge(material, amount, Int::plus)
+    }
+
+    /**
      * Get the centre of a block.
-     * @param block The block to get the centre of.
      * @return The centre location of the block.
      */
-    fun getCenterOfBlock(block: Block): Location {
-        val baseLoc = block.location.clone()
-        val state = block.state
+    private fun Block.center(): Location {
+        val baseLoc = location.clone()
+        val state = state
         val centerLoc =
             if (state is Chest && state.inventory.holder is DoubleChest) {
                 val doubleChest = state.inventory.holder as? DoubleChest
@@ -481,31 +505,6 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
             }
         centerLoc.add(Vector(0.5, 1.0, 0.5))
         return centerLoc
-    }
-
-    /**
-     * Creates a chest effect for the specified block and player.
-     * @param player The player to create the laser effect for.
-     * @param block The block to create the laser effect towards.
-     */
-    fun chestEffect(
-        player: Player,
-        block: Block,
-    ) = player.spawnParticle(Particle.CRIT, getCenterOfBlock(block), 10, 0.0, 0.0, 0.0)
-
-    /**
-     * Unloads the specified amount of material from the given location.
-     * @param location The location to unload from.
-     * @param material The material to unload.
-     * @param amount The amount of material to unload.
-     */
-    fun protocolUnload(
-        location: Location,
-        material: Material,
-        amount: Int,
-    ) {
-        if (amount == 0) return
-        unloads.computeIfAbsent(location) { mutableMapOf() }.merge(material, amount, Int::plus)
     }
 
     data class Config(
