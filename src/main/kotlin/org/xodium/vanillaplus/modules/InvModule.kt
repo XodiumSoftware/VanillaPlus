@@ -489,22 +489,17 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
      */
     private fun Block.center(): Location {
         val baseLoc = location.clone()
-        val state = state
         val centerLoc =
-            if (state is Chest && state.inventory.holder is DoubleChest) {
-                val doubleChest = state.inventory.holder as? DoubleChest
-                val left = (doubleChest?.leftSide as? Chest)?.block?.location
-                val right = (doubleChest?.rightSide as? Chest)?.block?.location
-                if (left != null && right != null) {
-                    left.clone().add(right).multiply(0.5)
-                } else {
-                    baseLoc
-                }
-            } else {
-                baseLoc
-            }
-        centerLoc.add(Vector(0.5, 1.0, 0.5))
-        return centerLoc
+            (state as? Chest)
+                ?.takeIf { it.inventory.holder is DoubleChest }
+                ?.let { chest ->
+                    (chest.inventory.holder as DoubleChest).let { dc ->
+                        val left = (dc.leftSide as? Chest)?.block?.location
+                        val right = (dc.rightSide as? Chest)?.block?.location
+                        if (left != null && right != null) left.clone().add(right).multiply(0.5) else baseLoc
+                    }
+                } ?: baseLoc
+        return centerLoc.add(Vector(0.5, 1.0, 0.5))
     }
 
     data class Config(
