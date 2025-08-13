@@ -244,14 +244,10 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         material: Material,
         destination: Inventory,
     ): Boolean {
-        if (doesChestContain(destination, ItemStack(material))) {
-            destination.location?.let {
-                protocolUnload(
-                    it,
-                    material,
-                    doesChestContainCount(destination, material),
-                )
-            }
+        val item = ItemStack.of(material)
+        val count = doesChestContainCount(destination, material)
+        if (count > 0 && doesChestContain(destination, item)) {
+            destination.location?.let { location -> protocolUnload(location, material, count) }
             return true
         }
         return false
@@ -318,12 +314,6 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         speed: Double,
         maxDistance: Int,
     ) {
-        require(destinations.isNotEmpty()) { "Destinations list cannot be empty" }
-        require(interval > 0) { "Interval must be positive" }
-        require(count > 0) { "Count must be positive" }
-        require(speed >= 0) { "Speed must be non-negative" }
-        require(maxDistance > 0) { "Max distance must be positive" }
-
         val playerLocation = player.location
         destinations.forEach { destination ->
             val start = playerLocation.clone()
@@ -426,11 +416,10 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         inventory: Inventory,
         item: ItemStack,
     ): Boolean =
-        inventory.contents.any { otherItem ->
-            otherItem != null &&
-                otherItem.type == item.type &&
-                hasMatchingEnchantments(item, otherItem)
-        }
+        inventory.contents
+            .asSequence()
+            .filterNotNull()
+            .any { it.type == item.type && hasMatchingEnchantments(item, it) }
 
     /**
      * Get all chunks in a bounding box.
