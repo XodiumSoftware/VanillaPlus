@@ -21,7 +21,6 @@ import org.bukkit.inventory.meta.EnchantmentStorageMeta
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.bukkit.util.BoundingBox
-import org.bukkit.util.Vector
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.SoundData
@@ -381,15 +380,15 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
     fun findBlocksInRadius(
         location: Location,
         radius: Int,
-    ): MutableList<Block> {
+    ): List<Block> {
         val searchArea = BoundingBox.of(location, radius.toDouble(), radius.toDouble(), radius.toDouble())
-        val chunksInArea = getChunksInBox(location.world, searchArea)
-        return chunksInArea
-            .flatMap { chunk ->
-                chunk.tileEntities
-                    .filter { blockState -> isRelevantContainer(blockState, location, radius) }
-                    .map { blockState -> (blockState as Container).block }
-            }.toMutableList()
+        return getChunksInBox(location.world, searchArea)
+            .asSequence()
+            .flatMap { it.tileEntities.asSequence() }
+            .filterIsInstance<Container>()
+            .filter { isRelevantContainer(it, location, radius) }
+            .map { it.block }
+            .toList()
     }
 
     /**
@@ -488,18 +487,17 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
      * @return The centre location of the block.
      */
     private fun Block.center(): Location {
-        val baseLoc = location.clone()
-        val centerLoc =
-            (state as? Chest)
-                ?.takeIf { it.inventory.holder is DoubleChest }
-                ?.let { chest ->
-                    (chest.inventory.holder as DoubleChest).let { dc ->
-                        val left = (dc.leftSide as? Chest)?.block?.location
-                        val right = (dc.rightSide as? Chest)?.block?.location
-                        if (left != null && right != null) left.clone().add(right).multiply(0.5) else baseLoc
-                    }
-                } ?: baseLoc
-        return centerLoc.add(Vector(0.5, 1.0, 0.5))
+        val loc = location.clone()
+        val chest = state as? Chest ?: return loc.add(0.5, 1.0, 0.5)
+        val holder = chest.inventory.holder as? DoubleChest ?: return loc.add(0.5, 1.0, 0.5)
+        val leftLoc = (holder.leftSide as? Chest)?.block?.location
+        val rightLoc = (holder.rightSide as? Chest)?.block?.location
+        if (leftLoc != null && rightLoc != null) {
+            loc.x = (leftLoc.x + rightLoc.x) / 2
+            loc.y = (leftLoc.y + rightLoc.y) / 2
+            loc.z = (leftLoc.z + rightLoc.z) / 2
+        }
+        return loc.add(0.5, 1.0, 0.5)
     }
 
     data class Config(
