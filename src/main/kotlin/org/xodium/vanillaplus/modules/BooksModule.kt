@@ -22,7 +22,12 @@ internal class BooksModule : ModuleInterface<BooksModule.Config> {
                 Commands
                     .literal(book.cmd.lowercase())
                     .requires { it.sender.hasPermission("$permPrefix.${book.cmd.lowercase()}") }
-                    .executes { ctx -> ctx.tryCatch { (it.sender as Player).openBook(book.toBook()) } },
+                    .executes { ctx ->
+                        ctx.tryCatch {
+                            if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+                            it.sender.openBook(book.toBook())
+                        }
+                    },
                 "Opens the predefined book '${book.cmd.lowercase()}'",
                 emptyList(),
             )

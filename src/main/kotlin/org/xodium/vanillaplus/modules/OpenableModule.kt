@@ -198,11 +198,10 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
      * @param block The block to check.
      * @return The bottom half of the door if it exists, null otherwise.
      */
-    private fun getDoorBottom(block: Block): Door? =
-        runCatching {
-            (block.blockData as? Door)?.takeIf { it.half == Bisected.Half.BOTTOM }
-                ?: block.getRelative(BlockFace.DOWN).blockData as? Door
-        }.getOrNull()
+    private fun getDoorBottom(block: Block): Door? {
+        val door = block.blockData as? Door ?: return null
+        return if (door.half == Bisected.Half.BOTTOM) door else block.getRelative(BlockFace.DOWN).blockData as? Door
+    }
 
     /**
      * Retrieves the other part of a door if it exists.
@@ -216,12 +215,11 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
     ): Block? {
         if (door == null) return null
         return possibleNeighbours
-            .firstOrNull { neighbour ->
-                (block.getRelative(neighbour.offsetX, 0, neighbour.offsetZ).blockData as? Door)
-                    ?.let { otherDoor ->
-                        neighbour.matchesDoorPair(otherDoor, door, block.type)
-                    } != null
-            }?.getRelativeBlock(block)
+            .map { it to block.getRelative(it.offsetX, 0, it.offsetZ).blockData as? Door }
+            .firstOrNull { (neighbour, otherDoor) ->
+                otherDoor?.let { neighbour.matchesDoorPair(it, door, block.type) } == true
+            }?.first
+            ?.getRelativeBlock(block)
     }
 
     data class Config(

@@ -18,8 +18,8 @@ val apiVersion = Regex("""^(\d+\.\d+\.\d+)""").find(pluginVersion)?.groupValues?
 plugins {
     id("java")
     id("idea")
-    kotlin("jvm") version "2.2.0"
-    id("com.gradleup.shadow") version "9.0.1"
+    kotlin("jvm") version "2.2.10"
+    id("com.gradleup.shadow") version "9.0.2"
     id("xyz.jpenilla.run-paper") version "3.0.0-beta.1"
 }
 
@@ -35,7 +35,7 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:$apiVersion-R0.1-SNAPSHOT")
-    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.15") // TODO("Move away from WorldEdit")
+    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.16") // TODO("Move away from WorldEdit")
 
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlin:kotlin-reflect")

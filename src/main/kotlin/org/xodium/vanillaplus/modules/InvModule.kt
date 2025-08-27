@@ -21,7 +21,6 @@ import org.bukkit.inventory.meta.EnchantmentStorageMeta
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.bukkit.util.BoundingBox
-import org.bukkit.util.Vector
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.SoundData
@@ -59,7 +58,12 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                                     .filter { it.startsWith(builder.remaining.lowercase()) }
                                     .forEach(builder::suggest)
                                 CompletableFuture.completedFuture(builder.build())
-                            }.executes { ctx -> ctx.tryCatch { handleSearch(ctx) } },
+                            }.executes { ctx ->
+                                ctx.tryCatch {
+                                    if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+                                    handleSearch(ctx)
+                                }
+                            },
                     ).executes { ctx -> ctx.tryCatch { handleSearch(ctx) } },
                 "Search nearby chests for specific items",
                 listOf("search", "searchinv", "invs"),
@@ -68,7 +72,12 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                 Commands
                     .literal("invunload")
                     .requires { it.sender.hasPermission(perms()[1]) }
-                    .executes { ctx -> ctx.tryCatch { unload(it.sender as Player) } },
+                    .executes { ctx ->
+                        ctx.tryCatch {
+                            if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+                            unload(it.sender as Player)
+                        }
+                    },
                 "Unload your inventory into nearby chests",
                 listOf("unload", "unloadinv", "invu"),
             ),
@@ -235,14 +244,10 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         material: Material,
         destination: Inventory,
     ): Boolean {
-        if (doesChestContain(destination, ItemStack(material))) {
-            destination.location?.let {
-                protocolUnload(
-                    it,
-                    material,
-                    doesChestContainCount(destination, material),
-                )
-            }
+        val item = ItemStack.of(material)
+        val count = doesChestContainCount(destination, material)
+        if (count > 0 && doesChestContain(destination, item)) {
+            destination.location?.let { location -> protocolUnload(location, material, count) }
             return true
         }
         return false
@@ -309,16 +314,10 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         speed: Double,
         maxDistance: Int,
     ) {
-        require(destinations.isNotEmpty()) { "Destinations list cannot be empty" }
-        require(interval > 0) { "Interval must be positive" }
-        require(count > 0) { "Count must be positive" }
-        require(speed >= 0) { "Speed must be non-negative" }
-        require(maxDistance > 0) { "Max distance must be positive" }
-
         val playerLocation = player.location
         destinations.forEach { destination ->
             val start = playerLocation.clone()
-            val end = getCenterOfBlock(destination).add(0.0, -0.5, 0.0)
+            val end = destination.center().add(0.0, -0.5, 0.0)
             val direction = end.toVector().subtract(start.toVector()).normalize()
             val distance = start.distance(destination.location)
             if (distance < maxDistance) {
@@ -371,15 +370,15 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
     fun findBlocksInRadius(
         location: Location,
         radius: Int,
-    ): MutableList<Block> {
+    ): List<Block> {
         val searchArea = BoundingBox.of(location, radius.toDouble(), radius.toDouble(), radius.toDouble())
-        val chunksInArea = getChunksInBox(location.world, searchArea)
-        return chunksInArea
-            .flatMap { chunk ->
-                chunk.tileEntities
-                    .filter { blockState -> isRelevantContainer(blockState, location, radius) }
-                    .map { blockState -> (blockState as Container).block }
-            }.toMutableList()
+        return getChunksInBox(location.world, searchArea)
+            .asSequence()
+            .flatMap { it.tileEntities.asSequence() }
+            .filterIsInstance<Container>()
+            .filter { isRelevantContainer(it, location, radius) }
+            .map { it.block }
+            .toList()
     }
 
     /**
@@ -417,11 +416,10 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         inventory: Inventory,
         item: ItemStack,
     ): Boolean =
-        inventory.contents.any { otherItem ->
-            otherItem != null &&
-                otherItem.type == item.type &&
-                hasMatchingEnchantments(item, otherItem)
-        }
+        inventory.contents
+            .asSequence()
+            .filterNotNull()
+            .any { it.type == item.type && hasMatchingEnchantments(item, it) }
 
     /**
      * Get all chunks in a bounding box.
@@ -449,31 +447,6 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
     }
 
     /**
-     * Get the centre of a block.
-     * @param block The block to get the centre of.
-     * @return The centre location of the block.
-     */
-    fun getCenterOfBlock(block: Block): Location {
-        val baseLoc = block.location.clone()
-        val state = block.state
-        val centerLoc =
-            if (state is Chest && state.inventory.holder is DoubleChest) {
-                val doubleChest = state.inventory.holder as? DoubleChest
-                val left = (doubleChest?.leftSide as? Chest)?.block?.location
-                val right = (doubleChest?.rightSide as? Chest)?.block?.location
-                if (left != null && right != null) {
-                    left.clone().add(right).multiply(0.5)
-                } else {
-                    baseLoc
-                }
-            } else {
-                baseLoc
-            }
-        centerLoc.add(Vector(0.5, 1.0, 0.5))
-        return centerLoc
-    }
-
-    /**
      * Creates a chest effect for the specified block and player.
      * @param player The player to create the laser effect for.
      * @param block The block to create the laser effect towards.
@@ -481,7 +454,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
     fun chestEffect(
         player: Player,
         block: Block,
-    ) = player.spawnParticle(Particle.CRIT, getCenterOfBlock(block), 10, 0.0, 0.0, 0.0)
+    ) = player.spawnParticle(Particle.CRIT, block.center(), 10, 0.0, 0.0, 0.0)
 
     /**
      * Unloads the specified amount of material from the given location.
@@ -496,6 +469,24 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
     ) {
         if (amount == 0) return
         unloads.computeIfAbsent(location) { mutableMapOf() }.merge(material, amount, Int::plus)
+    }
+
+    /**
+     * Get the centre of a block.
+     * @return The centre location of the block.
+     */
+    private fun Block.center(): Location {
+        val loc = location.clone()
+        val chest = state as? Chest ?: return loc.add(0.5, 1.0, 0.5)
+        val holder = chest.inventory.holder as? DoubleChest ?: return loc.add(0.5, 1.0, 0.5)
+        val leftLoc = (holder.leftSide as? Chest)?.block?.location
+        val rightLoc = (holder.rightSide as? Chest)?.block?.location
+        if (leftLoc != null && rightLoc != null) {
+            loc.x = (leftLoc.x + rightLoc.x) / 2
+            loc.y = (leftLoc.y + rightLoc.y) / 2
+            loc.z = (leftLoc.z + rightLoc.z) / 2
+        }
+        return loc.add(0.5, 1.0, 0.5)
     }
 
     data class Config(

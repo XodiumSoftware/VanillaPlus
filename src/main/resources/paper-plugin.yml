@@ -10,3 +10,6 @@ dependencies:
       load: BEFORE
       required: false
       join-classpath: true
+    DecentHolograms:
+      load: BEFORE
+      required: false
