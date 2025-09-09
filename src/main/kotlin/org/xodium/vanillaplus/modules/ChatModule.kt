@@ -146,18 +146,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
     fun on(event: PlayerQuitEvent) {
         if (!config.enabled) return
 
-        event.quitMessage(null)
-
-        val player = event.player
-        instance.server.onlinePlayers
-            .filter { it.uniqueId != player.uniqueId }
-            .forEach {
-                it.sendMessage(
-                    config.quitMessage.mm(
-                        Placeholder.component("player", player.displayName()),
-                    ),
-                )
-            }
+        event.quitMessage(config.quitMessage.mm(Placeholder.component("player", event.player.displayName())))
     }
 
     /**
