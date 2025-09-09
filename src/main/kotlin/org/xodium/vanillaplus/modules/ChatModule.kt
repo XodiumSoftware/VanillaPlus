@@ -82,8 +82,8 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: AsyncChatEvent) {
         if (!config.enabled) return
-        event.renderer { source, displayName, message, _ ->
-            config.chatFormat.mm(
+        event.renderer { source, displayName, message, viewer ->
+            var base = config.chatFormat.mm(
                 Placeholder.component(
                     "player",
                     displayName
@@ -92,6 +92,15 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
                 ),
                 Placeholder.component("message", message.pt().mm()),
             )
+
+            if (viewer == source) {
+                val deleteCross = config.deleteCross.mm()
+                    .hoverEvent(config.l18n.deleteMessage.mm())
+                    .clickEvent(ClickEvent.callback { _ -> instance.server.deleteMessage(event.signedMessage()) })
+
+                base = base.appendSpace().append(deleteCross)
+            }
+            base
         }
     }
 
@@ -215,12 +224,14 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
             "${"You".skylineFmt()} ${"➛".mangoFmt(true)} <player> <reset>${"›".mangoFmt(true)} <message>",
         var whisperFromFormat: String =
             "<player> <reset>${"➛".mangoFmt(true)} ${"You".skylineFmt()} ${"›".mangoFmt(true)} <message>",
+        var deleteCross: String = "<dark_gray>[<dark_red><b>X</b></dark_red><dark_gray>]",
         var l18n: L18n = L18n(),
     ) : ModuleInterface.Config {
         data class L18n(
             var clickMe: String = "Click Me!".fireFmt(),
             var clickToWhisper: String = "Click to Whisper".fireFmt(),
             var playerIsNotOnline: String = "$PREFIX Player is not Online!".fireFmt(),
+            var deleteMessage: String = "Click to delete your message!".fireFmt(),
         )
     }
 }
