@@ -108,18 +108,19 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
     fun on(event: PlayerJoinEvent) {
         if (!config.enabled) return
 
-        event.joinMessage(null)
-
         val player = event.player
-        instance.server.onlinePlayers
-            .filter { it.uniqueId != player.uniqueId }
-            .forEach {
-                it.sendMessage(
-                    config.joinMessage.mm(
-                        Placeholder.component("player", player.displayName()),
-                    ),
-                )
-            }
+        if (config.joinMessage.isNotEmpty()) {
+            event.joinMessage(null)
+            instance.server.onlinePlayers
+                .filter { it.uniqueId != player.uniqueId }
+                .forEach {
+                    it.sendMessage(
+                        config.joinMessage.mm(
+                            Placeholder.component("player", player.displayName()),
+                        ),
+                    )
+                }
+        }
 
         var imageIndex = 0
         player.sendMessage(
