@@ -147,7 +147,9 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
     fun on(event: PlayerQuitEvent) {
         if (!config.enabled) return
 
-        event.quitMessage(config.quitMessage.mm(Placeholder.component("player", event.player.displayName())))
+        if (config.quitMessage.isNotEmpty()) {
+            event.quitMessage(config.quitMessage.mm(Placeholder.component("player", event.player.displayName())))
+        }
     }
 
     /**
