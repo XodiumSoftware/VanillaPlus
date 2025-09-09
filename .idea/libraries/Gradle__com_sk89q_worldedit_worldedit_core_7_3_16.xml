@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Gradle: com.sk89q.worldedit:worldedit-core:7.3.16" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="com.sk89q.worldedit" artifactId="worldedit-core" version="7.3.16" baseVersion="7.3.16" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.sk89q.worldedit/worldedit-core/7.3.16/c0b0c6d491452085314f8c0a7ac8dccbdbf782c5/worldedit-core-7.3.16.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
