@@ -82,6 +82,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: AsyncChatEvent) {
         if (!config.enabled) return
+
         event.renderer { source, displayName, message, viewer ->
             var base = config.chatFormat.mm(
                 Placeholder.component(
