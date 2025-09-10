@@ -19,40 +19,29 @@ internal class CauldronModule : ModuleInterface<CauldronModule.Config> {
         if (!Tag.CONCRETE_POWDER.isTagged(block.type)) return
 
         val below = block.getRelative(0, -1, 0)
-        if (below.type == Material.WATER_CAULDRON) {
-            val concreteType = when (block.type) {
-                Material.WHITE_CONCRETE_POWDER -> Material.WHITE_CONCRETE
-                Material.ORANGE_CONCRETE_POWDER -> Material.ORANGE_CONCRETE
-                Material.MAGENTA_CONCRETE_POWDER -> Material.MAGENTA_CONCRETE
-                Material.LIGHT_BLUE_CONCRETE_POWDER -> Material.LIGHT_BLUE_CONCRETE
-                Material.YELLOW_CONCRETE_POWDER -> Material.YELLOW_CONCRETE
-                Material.LIME_CONCRETE_POWDER -> Material.LIME_CONCRETE
-                Material.PINK_CONCRETE_POWDER -> Material.PINK_CONCRETE
-                Material.GRAY_CONCRETE_POWDER -> Material.GRAY_CONCRETE
-                Material.LIGHT_GRAY_CONCRETE_POWDER -> Material.LIGHT_GRAY_CONCRETE
-                Material.CYAN_CONCRETE_POWDER -> Material.CYAN_CONCRETE
-                Material.PURPLE_CONCRETE_POWDER -> Material.PURPLE_CONCRETE
-                Material.BLUE_CONCRETE_POWDER -> Material.BLUE_CONCRETE
-                Material.BROWN_CONCRETE_POWDER -> Material.BROWN_CONCRETE
-                Material.GREEN_CONCRETE_POWDER -> Material.GREEN_CONCRETE
-                Material.RED_CONCRETE_POWDER -> Material.RED_CONCRETE
-                Material.BLACK_CONCRETE_POWDER -> Material.BLACK_CONCRETE
-                else -> null
-            }
+        if (below.type != Material.WATER_CAULDRON) return
 
-            concreteType?.let {
-                block.type = it
-                val data = below.blockData
-                if (data is Levelled) {
-                    data.level = (data.level - 1).coerceAtLeast(0)
-                    below.blockData = data
-                    if (data.level == 0) below.type = Material.CAULDRON
-                }
+        val converted = when {
+            config.convertConcretePowder && Tag.CONCRETE_POWDER.isTagged(block.type) ->
+                Material.entries.firstOrNull { it.name == block.type.name.removeSuffix("_POWDER") }
+
+            config.convertDirt && block.type == Material.DIRT -> Material.MUD
+            else -> null
+        }
+        converted?.let {
+            block.type = it
+            val data = below.blockData
+            if (data is Levelled) {
+                data.level = (data.level - 1).coerceAtLeast(0)
+                below.blockData = data
+                if (data.level == 0) below.type = Material.CAULDRON
             }
         }
     }
 
     data class Config(
         override var enabled: Boolean = true,
+        var convertConcretePowder: Boolean = true,
+        var convertDirt: Boolean = true,
     ) : ModuleInterface.Config
 }
