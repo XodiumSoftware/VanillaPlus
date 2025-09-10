@@ -3,7 +3,6 @@ package org.xodium.vanillaplus.modules
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.Tag
-import org.bukkit.block.Block
 import org.bukkit.block.CreatureSpawner
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.event.EventHandler
@@ -62,7 +61,6 @@ internal class SilkTouchModule : ModuleInterface<SilkTouchModule.Config> {
         event.expToDrop = 0
 
         //TODO: rewrite this to use data instead of meta when API available.
-        //FIX: blockstate (cave spider) example not persisting.
         val state = event.block.state
         if (state is CreatureSpawner) {
             val itemStack = ItemStack.of(Material.SPAWNER)
