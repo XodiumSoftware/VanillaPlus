@@ -37,6 +37,7 @@ internal class SilkTouchModule : ModuleInterface<SilkTouchModule.Config> {
     private fun handleSpawnerBreak(event: BlockBreakEvent) {
         if (!config.allowSpawnerSilk) return
         event.isDropItems = false
+        event.expToDrop = 0
 
         //TODO: rewrite this to use data instead of meta when API available.
         val state = event.block.state
