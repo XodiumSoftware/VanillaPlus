@@ -3,11 +3,13 @@ package org.xodium.vanillaplus.modules
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.Tag
+import org.bukkit.block.Block
 import org.bukkit.block.CreatureSpawner
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockBreakEvent
+import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BlockStateMeta
 import org.xodium.vanillaplus.interfaces.ModuleInterface
@@ -29,6 +31,26 @@ internal class SilkTouchModule : ModuleInterface<SilkTouchModule.Config> {
             else -> return
         }
     }
+
+    @EventHandler
+    fun on(event: BlockPlaceEvent) {
+        if (!enabled()) return
+
+        val item = event.itemInHand
+        val block = event.blockPlaced
+
+        if (block.type != Material.SPAWNER) return
+        if (item.itemMeta !is BlockStateMeta) return
+
+        val meta = item.itemMeta as BlockStateMeta
+        val state = meta.blockState
+        if (state is CreatureSpawner) {
+            val spawner = block.state as CreatureSpawner
+            spawner.spawnedType = state.spawnedType
+            spawner.update()
+        }
+    }
+
 
     /**
      * Handles breaking a spawner with Silk Touch.
