@@ -1,5 +1,6 @@
 package org.xodium.vanillaplus.modules
 
+import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.block.CreatureSpawner
@@ -17,7 +18,10 @@ internal class SilkTouchModule : ModuleInterface<SilkTouchModule.Config> {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun on(event: BlockBreakEvent) {
-        if (!enabled() || !isValidTool(event.player.inventory.itemInMainHand)) return
+        if (!enabled()
+            || event.player.gameMode != GameMode.SURVIVAL
+            || !isValidTool(event.player.inventory.itemInMainHand)
+        ) return
 
         when (event.block.type) {
             Material.SPAWNER -> handleSpawnerBreak(event)
