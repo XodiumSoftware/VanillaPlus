@@ -18,7 +18,7 @@ val apiVersion = Regex("""^(\d+\.\d+\.\d+)""").find(pluginVersion)?.groupValues?
 plugins {
     id("java")
     id("idea")
-    kotlin("jvm") version "2.2.10"
+    kotlin("jvm") version "2.2.20"
     id("com.gradleup.shadow") version "9.1.0"
     id("xyz.jpenilla.run-paper") version "3.0.0"
 }
