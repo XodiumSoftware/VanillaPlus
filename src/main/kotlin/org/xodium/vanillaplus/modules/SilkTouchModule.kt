@@ -34,16 +34,17 @@ internal class SilkTouchModule : ModuleInterface<SilkTouchModule.Config> {
         if (!config.allowSpawnerSilk) return
         event.isDropItems = false
 
+        //TODO: rewrite this to use data instead of meta.
         val state = event.block.state
         if (state is CreatureSpawner) {
-            val spawnerItem = ItemStack.of(Material.SPAWNER)
-            val meta = spawnerItem.itemMeta as BlockStateMeta
-            val spawnerState = meta.blockState as CreatureSpawner
-            spawnerState.spawnedType = state.spawnedType
-            spawnerState.update()
-            meta.blockState = spawnerState
-            spawnerItem.itemMeta = meta
-            event.block.world.dropItemNaturally(event.block.location, spawnerItem)
+            val itemStack = ItemStack.of(Material.SPAWNER)
+            val itemMeta = itemStack.itemMeta as BlockStateMeta
+            val blockState = itemMeta.blockState as CreatureSpawner
+            blockState.spawnedType = state.spawnedType
+            blockState.update()
+            itemMeta.blockState = blockState
+            itemStack.itemMeta = itemMeta
+            event.block.world.dropItemNaturally(event.block.location, itemStack)
         }
     }
 

@@ -32,6 +32,7 @@ internal object ModuleManager {
     val petModule: PetModule = PetModule()
     val recipiesModule: RecipiesModule = RecipiesModule()
     val signModule: SignModule = SignModule()
+    val silkTouchModule: SilkTouchModule = SilkTouchModule()
     val sitModule: SitModule = SitModule()
     val sleepModule: SleepModule = SleepModule()
     val tabListModule: TabListModule = TabListModule()
@@ -52,6 +53,7 @@ internal object ModuleManager {
             petModule,
             recipiesModule,
             signModule,
+            silkTouchModule,
             sitModule,
             sleepModule,
             tabListModule,
