@@ -44,11 +44,10 @@ internal class SilkTouchModule : ModuleInterface<SilkTouchModule.Config> {
         if (state is CreatureSpawner) {
             val itemStack = ItemStack.of(Material.SPAWNER)
             val itemMeta = itemStack.itemMeta as BlockStateMeta
-            val blockState = itemMeta.blockState as CreatureSpawner
-            blockState.spawnedType = state.spawnedType
-            blockState.update()
-            itemMeta.blockState = blockState
+
+            itemMeta.blockState = state
             itemStack.itemMeta = itemMeta
+
             event.block.world.dropItemNaturally(event.block.location, itemStack)
         }
     }
