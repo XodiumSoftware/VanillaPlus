@@ -2,20 +2,25 @@ package org.xodium.vanillaplus.modules
 
 import org.bukkit.GameMode
 import org.bukkit.Material
+import org.bukkit.NamespacedKey
 import org.bukkit.Tag
 import org.bukkit.block.CreatureSpawner
 import org.bukkit.enchantments.Enchantment
+import org.bukkit.entity.EntityType
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.meta.BlockStateMeta
+import org.bukkit.persistence.PersistentDataType
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 
 /** Represents a module handling silk touch mechanics within the system. */
 internal class SilkTouchModule : ModuleInterface<SilkTouchModule.Config> {
     override val config: Config = Config()
+
+    private val spawnerKey = NamespacedKey(instance, "spawner_type")
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun on(event: BlockBreakEvent) {
@@ -39,15 +44,13 @@ internal class SilkTouchModule : ModuleInterface<SilkTouchModule.Config> {
         val block = event.blockPlaced
 
         if (block.type != Material.SPAWNER) return
-        if (item.itemMeta !is BlockStateMeta) return
 
-        val meta = item.itemMeta as BlockStateMeta
-        val state = meta.blockState
-        if (state is CreatureSpawner) {
-            val spawner = block.state as CreatureSpawner
-            spawner.spawnedType = state.spawnedType
-            spawner.update()
-        }
+        val typeName = item.itemMeta?.persistentDataContainer?.get(spawnerKey, PersistentDataType.STRING)
+            ?: return
+        val spawner = block.state as CreatureSpawner
+
+        spawner.spawnedType = EntityType.valueOf(typeName)
+        spawner.update()
     }
 
 
@@ -60,16 +63,13 @@ internal class SilkTouchModule : ModuleInterface<SilkTouchModule.Config> {
         event.isDropItems = false
         event.expToDrop = 0
 
-        //TODO: rewrite this to use data instead of meta when API available.
         val state = event.block.state
         if (state is CreatureSpawner) {
-            val itemStack = ItemStack.of(Material.SPAWNER)
-            val itemMeta = itemStack.itemMeta as BlockStateMeta
-
-            itemMeta.blockState = state
-            itemStack.itemMeta = itemMeta
-
-            event.block.world.dropItemNaturally(event.block.location, itemStack)
+            val item = ItemStack.of(Material.SPAWNER)
+            val meta = item.itemMeta!!
+            meta.persistentDataContainer.set(spawnerKey, PersistentDataType.STRING, state.spawnedType?.name ?: return)
+            item.itemMeta = meta
+            event.block.world.dropItemNaturally(event.block.location, item)
         }
     }
 
