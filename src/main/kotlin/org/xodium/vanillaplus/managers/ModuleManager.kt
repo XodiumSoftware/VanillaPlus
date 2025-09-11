@@ -29,6 +29,7 @@ internal object ModuleManager {
     val mobsModule: MobsModule = MobsModule()
     val motdModule: MotdModule = MotdModule()
     val openableModule: OpenableModule = OpenableModule()
+    val paintingModule: PaintingModule = PaintingModule()
     val petModule: PetModule = PetModule()
     val recipiesModule: RecipiesModule = RecipiesModule()
     val signModule: SignModule = SignModule()
@@ -51,6 +52,7 @@ internal object ModuleManager {
             motdModule,
             nicknameModule,
             openableModule,
+            paintingModule,
             petModule,
             recipiesModule,
             signModule,
