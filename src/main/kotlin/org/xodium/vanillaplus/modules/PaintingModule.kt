@@ -17,7 +17,6 @@ internal class PaintingModule : ModuleInterface<PaintingModule.Config> {
 
     private val key = NamespacedKey(instance, "painting_variant")
 
-
     init {
         if (enabled()) {
             val paintingRegistry = RegistryAccess.registryAccess().getRegistry(RegistryKey.PAINTING_VARIANT)
@@ -39,6 +38,8 @@ internal class PaintingModule : ModuleInterface<PaintingModule.Config> {
             }
         }
     }
+
+    //TODO: add blockplaceevent so that the type doesnt cancel.
 
     data class Config(
         override var enabled: Boolean = true,
