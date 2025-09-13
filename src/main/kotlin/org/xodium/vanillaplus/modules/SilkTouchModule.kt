@@ -24,10 +24,12 @@ internal class SilkTouchModule : ModuleInterface<SilkTouchModule.Config> {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun on(event: BlockBreakEvent) {
-        if (!enabled()
-            || event.player.gameMode != GameMode.SURVIVAL
-            || !isValidTool(event.player.inventory.itemInMainHand)
-        ) return
+        if (!enabled() ||
+            event.player.gameMode != GameMode.SURVIVAL ||
+            !isValidTool(event.player.inventory.itemInMainHand)
+        ) {
+            return
+        }
 
         when (event.block.type) {
             Material.SPAWNER -> handleSpawnerBreak(event)
@@ -45,14 +47,12 @@ internal class SilkTouchModule : ModuleInterface<SilkTouchModule.Config> {
 
         if (block.type != Material.SPAWNER) return
 
-        val typeName = item.itemMeta?.persistentDataContainer?.get(spawnerKey, PersistentDataType.STRING)
-            ?: return
+        val typeName = item.itemMeta?.persistentDataContainer?.get(spawnerKey, PersistentDataType.STRING) ?: return
         val spawner = block.state as CreatureSpawner
 
         spawner.spawnedType = EntityType.valueOf(typeName)
         spawner.update()
     }
-
 
     /**
      * Handles breaking a spawner with Silk Touch.

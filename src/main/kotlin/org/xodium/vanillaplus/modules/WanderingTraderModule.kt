@@ -33,9 +33,10 @@ internal class WanderingTraderModule : ModuleInterface<WanderingTraderModule.Con
         override var enabled: Boolean = true,
         var notifyRadius: Double = 32.0,
         var traderMessage: String = "⭐ A Wandering Trader has arrived nearby ⭐".mangoFmt(),
-        var traderSpawnSound: SoundData = SoundData(
-            BukkitSound.ENTITY_EXPERIENCE_ORB_PICKUP,
-            Sound.Source.UI,
-        ),
+        var traderSpawnSound: SoundData =
+            SoundData(
+                BukkitSound.ENTITY_EXPERIENCE_ORB_PICKUP,
+                Sound.Source.UI,
+            ),
     ) : ModuleInterface.Config
 }
