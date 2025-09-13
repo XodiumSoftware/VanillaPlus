@@ -32,6 +32,10 @@ internal class CauldronModule : ModuleInterface<CauldronModule.Config> {
         }
     }
 
+    /**
+     * Checks if an item entity is in a water cauldron and performs conversion if applicable.
+     * @param item the item entity to check for cauldron conversion.
+     */
     private fun checkItemInCauldron(item: Item) {
         val blockBelow = item.location.clone().block
         if (blockBelow.type != Material.WATER_CAULDRON) return
@@ -56,10 +60,22 @@ internal class CauldronModule : ModuleInterface<CauldronModule.Config> {
         convertedMaterial?.let { mat -> convertItem(item, mat, blockBelow, cauldronData) }
     }
 
+    /**
+     * Determines if a material is convertible by this cauldron module.
+     * @param material the material to check for convertibility.
+     * @return true if the material can be converted, false otherwise.
+     */
     private fun isConvertible(material: Material): Boolean =
         (config.convertDirt && material == Material.DIRT) ||
             (config.convertConcretePowder && Tag.CONCRETE_POWDER.isTagged(material))
 
+    /**
+     * Converts an item to a new material and updates the cauldron state.
+     * @param item the item entity to convert.
+     * @param newMaterial the target material to convert the item to.
+     * @param cauldronBlock the cauldron block where the conversion occurs.
+     * @param cauldronData the levelled block data of the cauldron.
+     */
     private fun convertItem(
         item: Item,
         newMaterial: Material,
