@@ -5,6 +5,8 @@
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.sk89q.worldedit.worldedit-libs/bukkit/7.3.16/ad3724ccb216bd31714f3db54bd6ca0ae67a3241/bukkit-7.3.16.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.sk89q.worldedit.worldedit-libs/bukkit/7.3.16/95497735fd8c9d8d033ab08a42a120885f568163/bukkit-7.3.16-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>
