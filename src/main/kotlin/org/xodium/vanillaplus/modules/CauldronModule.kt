@@ -59,7 +59,7 @@ internal class CauldronModule : ModuleInterface<CauldronModule.Config> {
                 else -> null
             }
 
-        convertedMaterial?.let { mat -> convertItem(item, mat, blockBelow, cauldronData) }
+        convertedMaterial?.let { convertItem(item, it, blockBelow, cauldronData) }
     }
 
     /**
