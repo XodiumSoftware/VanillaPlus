@@ -45,8 +45,7 @@ internal class SilkTouchModule : ModuleInterface<SilkTouchModule.Config> {
 
         if (block.type != Material.SPAWNER) return
 
-        val typeName = item.itemMeta?.persistentDataContainer?.get(spawnerKey, PersistentDataType.STRING)
-            ?: return
+        val typeName = item.itemMeta?.persistentDataContainer?.get(spawnerKey, PersistentDataType.STRING) ?: return
         val spawner = block.state as CreatureSpawner
 
         spawner.spawnedType = EntityType.valueOf(typeName)

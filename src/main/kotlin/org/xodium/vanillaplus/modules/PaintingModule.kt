@@ -4,6 +4,9 @@ import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
+import org.bukkit.entity.Painting
+import org.bukkit.event.EventHandler
+import org.bukkit.event.hanging.HangingPlaceEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.StonecuttingRecipe
 import org.bukkit.persistence.PersistentDataType
@@ -15,7 +18,7 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 internal class PaintingModule : ModuleInterface<PaintingModule.Config> {
     override val config: Config = Config()
 
-    private val key = NamespacedKey(instance, "painting_variant")
+    private val paintingKey = NamespacedKey(instance, "painting_variant")
 
     init {
         if (enabled()) {
@@ -25,7 +28,7 @@ internal class PaintingModule : ModuleInterface<PaintingModule.Config> {
                 val itemMeta = itemStack.itemMeta
                 val variantKey = paintingRegistry.getKeyOrThrow(art)
                 if (itemMeta != null) {
-                    itemMeta.persistentDataContainer.set(key, PersistentDataType.STRING, variantKey.asString())
+                    itemMeta.persistentDataContainer.set(paintingKey, PersistentDataType.STRING, variantKey.asString())
                     itemMeta.displayName("Painting: ${variantKey.key}".mm())
                     itemStack.itemMeta = itemMeta
                 }
@@ -39,7 +42,22 @@ internal class PaintingModule : ModuleInterface<PaintingModule.Config> {
         }
     }
 
-    //TODO: add blockplaceevent so that the type doesnt cancel.
+    @EventHandler
+    fun on(event: HangingPlaceEvent) {
+        if (!enabled()) return
+        if (event.entity !is Painting) return
+
+        val painting = event.entity as Painting
+        val item = event.itemStack ?: return
+
+        val typeName = item.itemMeta?.persistentDataContainer?.get(paintingKey, PersistentDataType.STRING) ?: return
+        val key = NamespacedKey.fromString(typeName) ?: return
+
+        val paintingRegistry = RegistryAccess.registryAccess().getRegistry(RegistryKey.PAINTING_VARIANT)
+        val variant = paintingRegistry.get(key) ?: return
+
+        painting.variant = variant
+    }
 
     data class Config(
         override var enabled: Boolean = true,
