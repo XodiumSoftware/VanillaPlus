@@ -5,8 +5,6 @@ import org.bukkit.Tag
 import org.bukkit.block.Block
 import org.bukkit.block.data.Levelled
 import org.bukkit.entity.Item
-import org.bukkit.event.EventHandler
-import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
@@ -15,28 +13,27 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 internal class CauldronModule : ModuleInterface<CauldronModule.Config> {
     override val config: Config = Config()
 
-    @EventHandler
-    fun on(event: PlayerDropItemEvent) {
-        if (!enabled()) return
-
-        val item = event.itemDrop
-        instance.server.scheduler.runTaskTimer(
-            instance,
-            Runnable { if (!item.isDead) checkItemInCauldron(item) },
-            0L,
-            20L,
-        )
+    init {
+        if (enabled()) {
+            instance.server.scheduler.runTaskTimer(
+                instance,
+                Runnable {
+                    for (world in instance.server.worlds) {
+                        for (entity in world.entities) {
+                            if (entity is Item && isConvertible(entity.itemStack.type)) {
+                                checkItemInCauldron(entity)
+                            }
+                        }
+                    }
+                },
+                0L,
+                20L,
+            )
+        }
     }
 
     private fun checkItemInCauldron(item: Item) {
-        if (!isConvertible(item.itemStack.type)) return
-
-        val blockBelow =
-            item.location
-                .clone()
-                .subtract(0.0, 1.0, 0.0)
-                .block
-
+        val blockBelow = item.location.clone().block
         if (blockBelow.type != Material.WATER_CAULDRON) return
 
         val cauldronData = blockBelow.blockData as? Levelled ?: return
