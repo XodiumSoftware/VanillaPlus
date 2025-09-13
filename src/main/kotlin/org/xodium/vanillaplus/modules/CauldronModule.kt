@@ -89,10 +89,13 @@ internal class CauldronModule : ModuleInterface<CauldronModule.Config> {
             ItemStack.of(newMaterial, item.itemStack.amount),
         )
 
-        cauldronData.level = (cauldronData.level - 1).coerceAtLeast(0)
-        cauldronBlock.blockData = cauldronData
-
-        if (cauldronData.level == 0) cauldronBlock.type = Material.CAULDRON
+        val newLevel = cauldronData.level - 1
+        if (newLevel <= 0) {
+            cauldronBlock.type = Material.CAULDRON
+        } else {
+            cauldronData.level = newLevel
+            cauldronBlock.blockData = cauldronData
+        }
     }
 
     data class Config(
