@@ -33,11 +33,13 @@ internal object ModuleManager {
     val petModule: PetModule = PetModule()
     val recipiesModule: RecipiesModule = RecipiesModule()
     val signModule: SignModule = SignModule()
+    val silkTouchModule: SilkTouchModule = SilkTouchModule()
     val sitModule: SitModule = SitModule()
     val sleepModule: SleepModule = SleepModule()
     val tabListModule: TabListModule = TabListModule()
     val nicknameModule: NicknameModule = NicknameModule(tabListModule)
     val treesModule: TreesModule = TreesModule()
+    val wanderingTraderModule: WanderingTraderModule = WanderingTraderModule()
 
     private val modules =
         listOf(
@@ -54,10 +56,12 @@ internal object ModuleManager {
             petModule,
             recipiesModule,
             signModule,
+            silkTouchModule,
             sitModule,
             sleepModule,
             tabListModule,
             treesModule,
+            wanderingTraderModule,
         )
 
     private val configCmd =
