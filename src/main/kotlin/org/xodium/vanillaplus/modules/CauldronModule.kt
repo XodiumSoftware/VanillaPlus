@@ -13,6 +13,9 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 internal class CauldronModule : ModuleInterface<CauldronModule.Config> {
     override val config: Config = Config()
 
+    private val schedulerDelay = 0L
+    private val schedulerPeriod = 20L
+
     init {
         if (enabled()) {
             instance.server.scheduler.runTaskTimer(
@@ -26,8 +29,8 @@ internal class CauldronModule : ModuleInterface<CauldronModule.Config> {
                         }
                     }
                 },
-                0L,
-                20L,
+                schedulerDelay,
+                schedulerPeriod,
             )
         }
     }
