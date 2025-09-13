@@ -13,5 +13,5 @@ Thumbs.db
 *.tmp
 *.swp
 
-# Dev server files
-.server
+# server files
+/run/
