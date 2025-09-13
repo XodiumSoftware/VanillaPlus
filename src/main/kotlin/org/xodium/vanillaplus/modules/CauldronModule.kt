@@ -46,6 +46,8 @@ internal class CauldronModule : ModuleInterface<CauldronModule.Config> {
         val convertedMaterial =
             when {
                 config.convertDirt && item.itemStack.type == Material.DIRT -> Material.MUD
+                config.convertCoarseDirt && item.itemStack.type == Material.COARSE_DIRT -> Material.MUD
+                config.convertRootedDirt && item.itemStack.type == Material.ROOTED_DIRT -> Material.MUD
                 config.convertConcretePowder && Tag.CONCRETE_POWDER.isTagged(item.itemStack.type) -> {
                     Material.entries.firstOrNull {
                         it.name ==
@@ -67,6 +69,8 @@ internal class CauldronModule : ModuleInterface<CauldronModule.Config> {
      */
     private fun isConvertible(material: Material): Boolean =
         (config.convertDirt && material == Material.DIRT) ||
+            (config.convertCoarseDirt && material == Material.COARSE_DIRT) ||
+            (config.convertRootedDirt && material == Material.ROOTED_DIRT) ||
             (config.convertConcretePowder && Tag.CONCRETE_POWDER.isTagged(material))
 
     /**
@@ -102,5 +106,7 @@ internal class CauldronModule : ModuleInterface<CauldronModule.Config> {
         override var enabled: Boolean = true,
         var convertConcretePowder: Boolean = true,
         var convertDirt: Boolean = true,
+        var convertCoarseDirt: Boolean = true,
+        var convertRootedDirt: Boolean = true,
     ) : ModuleInterface.Config
 }
