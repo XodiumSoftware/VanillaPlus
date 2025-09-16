@@ -106,7 +106,7 @@ jobs:
 
       - id: uts
         name: Upload to Server
-        uses: appleboy/scp-action@eb443bd4941c3334ee584c1915fcfa2001e8a86c
+        uses: appleboy/scp-action@7179e72a3fa4d4c33870a471708fda724fae7596
         with:
           host: ${{ secrets.SFTP_HOST }}
           username: ${{ secrets.SFTP_USER }}
