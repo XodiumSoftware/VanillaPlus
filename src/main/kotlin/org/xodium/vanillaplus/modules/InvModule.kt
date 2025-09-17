@@ -157,7 +157,9 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         }
 
         affectedChests.forEach { chestEffect(player, it) }
-        laserEffectSchedule(player, affectedChests)
+        // TODO: change to all chests in radius that contain the item the user is searching (multiple lasers if needed)
+        val sortedChests = affectedChests.sortedBy { it.location.distanceSquared(player.location) }
+        laserEffectSchedule(player, sortedChests)
     }
 
     /**
@@ -170,6 +172,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         val chests =
             findBlocksInRadius(player.location, config.unloadRadius)
                 .filter { it.state is Container }
+                .sortedBy { it.location.distanceSquared(player.location) }
         if (chests.isEmpty()) return player.sendActionBar(config.l18n.noNearbyChests.mm())
 
         val affectedChests = mutableListOf<Block>()
