@@ -15,13 +15,15 @@ internal class PlayerModule : ModuleInterface<PlayerModule.Config> {
 
     @EventHandler
     fun on(event: PlayerDeathEvent) {
-        if (!enabled() || event.entity.killer == null) return
+        if (!enabled()) return
+        val killer = event.entity.killer ?: return
 
         val entity = event.entity
         val itemStack = ItemStack.of(Material.PLAYER_HEAD)
         val itemMeta = itemStack.itemMeta as SkullMeta
         if (itemMeta.setOwningPlayer(entity)) {
             itemMeta.customName(entity.displayName().append("'s Skull".fireFmt().mm()))
+            itemMeta.lore(listOf("${entity.name} killed by ${killer.name}").mm())
             itemStack.itemMeta = itemMeta
             entity.world.dropItemNaturally(entity.location, itemStack)
         }
