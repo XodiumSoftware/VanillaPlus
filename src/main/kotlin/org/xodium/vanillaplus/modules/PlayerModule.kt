@@ -15,12 +15,12 @@ internal class PlayerModule : ModuleInterface<PlayerModule.Config> {
     fun on(event: PlayerDeathEvent) {
         if (!enabled() || event.entity.killer == null) return
 
-        val victim = event.entity
-        val skull = ItemStack.of(Material.PLAYER_HEAD, 1)
-        val meta = skull.itemMeta as SkullMeta
-        if (meta.setOwningPlayer(victim)) {
-            skull.itemMeta = meta
-            victim.world.dropItemNaturally(victim.location, skull)
+        val entity = event.entity
+        val itemStack = ItemStack.of(Material.PLAYER_HEAD)
+        val itemMeta = itemStack.itemMeta as SkullMeta
+        if (itemMeta.setOwningPlayer(entity)) {
+            itemStack.itemMeta = itemMeta
+            entity.world.dropItemNaturally(entity.location, itemStack)
         }
     }
 
