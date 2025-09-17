@@ -16,13 +16,12 @@ internal class PlayerModule : ModuleInterface<PlayerModule.Config> {
         if (!enabled() || event.entity.killer == null) return
 
         val victim = event.entity
-
         val skull = ItemStack.of(Material.PLAYER_HEAD, 1)
         val meta = skull.itemMeta as SkullMeta
-        meta.owningPlayer = victim
-        skull.itemMeta = meta
-
-        victim.world.dropItemNaturally(victim.location, skull)
+        if (meta.setOwningPlayer(victim)) {
+            skull.itemMeta = meta
+            victim.world.dropItemNaturally(victim.location, skull)
+        }
     }
 
     data class Config(
