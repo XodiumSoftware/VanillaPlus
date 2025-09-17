@@ -6,6 +6,7 @@ import org.bukkit.block.Block
 import org.bukkit.block.data.Levelled
 import org.bukkit.entity.Item
 import org.bukkit.inventory.ItemStack
+import org.bukkit.scheduler.BukkitTask
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 
@@ -15,9 +16,15 @@ internal class CauldronModule : ModuleInterface<CauldronModule.Config> {
 
     private val schedulerDelay = 0L
     private val schedulerPeriod = 20L
+    private var task: BukkitTask? = null
 
     init {
-        if (enabled()) {
+        if (enabled()) startScheduler()
+    }
+
+    /** Starts the scheduler for checking items in cauldrons. */
+    private fun startScheduler() {
+        task =
             instance.server.scheduler.runTaskTimer(
                 instance,
                 Runnable {
@@ -32,7 +39,12 @@ internal class CauldronModule : ModuleInterface<CauldronModule.Config> {
                 schedulerDelay,
                 schedulerPeriod,
             )
-        }
+    }
+
+    /** Stops the scheduler if it's running. */
+    override fun stopScheduler() {
+        task?.cancel()
+        task = null
     }
 
     /**

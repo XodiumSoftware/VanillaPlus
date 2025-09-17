@@ -105,14 +105,16 @@ internal object ModuleManager {
         updateConfig()
         commandsToRegister.add(configCmd)
         instance.server.pluginManager.addPermission(configPerm)
-        modules.filter { it.enabled() }.forEach { module ->
+        // TODO: rewrite so it works with config reload, now it only works with restart.
+        modules.filter { !it.enabled() }.forEach { it.stopScheduler() }
+        modules.filter { it.enabled() }.forEach {
             instance.logger.info(
-                "Loaded: ${module::class.simpleName} | Took ${
+                "Loaded: ${it::class.simpleName} | Took ${
                     measureTime {
-                        instance.server.pluginManager.registerEvents(module, instance)
+                        instance.server.pluginManager.registerEvents(it, instance)
                         @Suppress("UnstableApiUsage")
-                        instance.server.pluginManager.addPermissions(module.perms())
-                        commandsToRegister.addAll(module.cmds())
+                        instance.server.pluginManager.addPermissions(it.perms())
+                        commandsToRegister.addAll(it.cmds())
                     }.inWholeMilliseconds
                 }ms",
             )

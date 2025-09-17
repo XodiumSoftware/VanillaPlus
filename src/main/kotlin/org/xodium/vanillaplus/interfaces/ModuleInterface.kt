@@ -37,4 +37,12 @@ internal interface ModuleInterface<out T : ModuleInterface.Config> : Listener {
      * @return A [List] of [Permission] objects representing the permissions for this module.
      */
     fun perms(): List<Permission> = emptyList()
+
+    /**
+     * Stops any running schedulers or background tasks associated with this module.
+     * Modules that do not use schedulers can ignore this method. Modules that implement
+     * periodic tasks (e.g., using Bukkit's scheduler) should override this method to
+     * cancel those tasks when the module is disabled.
+     */
+    fun stopScheduler() {}
 }
