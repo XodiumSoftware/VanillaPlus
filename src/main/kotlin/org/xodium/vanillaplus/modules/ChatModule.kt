@@ -27,6 +27,7 @@ import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import org.xodium.vanillaplus.utils.FmtUtils.skylineFmt
 import java.util.concurrent.CompletableFuture
 
+/** Represents a module handling chat mechanics within the system. */
 internal class ChatModule : ModuleInterface<ChatModule.Config> {
     override val config: Config = Config()
 
@@ -84,20 +85,23 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
         if (!config.enabled) return
 
         event.renderer { source, displayName, message, viewer ->
-            var base = config.chatFormat.mm(
-                Placeholder.component(
-                    "player",
-                    displayName
-                        .clickEvent(ClickEvent.suggestCommand("/w ${source.name} "))
-                        .hoverEvent(HoverEvent.showText(config.l18n.clickToWhisper.mm())),
-                ),
-                Placeholder.component("message", message.pt().mm()),
-            )
+            var base =
+                config.chatFormat.mm(
+                    Placeholder.component(
+                        "player",
+                        displayName
+                            .clickEvent(ClickEvent.suggestCommand("/w ${source.name} "))
+                            .hoverEvent(HoverEvent.showText(config.l18n.clickToWhisper.mm())),
+                    ),
+                    Placeholder.component("message", message.pt().mm()),
+                )
 
             if (viewer == source) {
-                val deleteCross = config.deleteCross.mm()
-                    .hoverEvent(config.l18n.deleteMessage.mm())
-                    .clickEvent(ClickEvent.callback { _ -> instance.server.deleteMessage(event.signedMessage()) })
+                val deleteCross =
+                    config.deleteCross
+                        .mm()
+                        .hoverEvent(config.l18n.deleteMessage.mm())
+                        .clickEvent(ClickEvent.callback { _ -> instance.server.deleteMessage(event.signedMessage()) })
 
                 base = base.appendSpace().append(deleteCross)
             }

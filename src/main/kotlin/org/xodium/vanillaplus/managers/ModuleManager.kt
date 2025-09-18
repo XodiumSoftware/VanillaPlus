@@ -31,6 +31,7 @@ internal object ModuleManager {
     val motdModule: MotdModule = MotdModule()
     val openableModule: OpenableModule = OpenableModule()
     val petModule: PetModule = PetModule()
+    val playerModule: PlayerModule = PlayerModule()
     val recipiesModule: RecipiesModule = RecipiesModule()
     val signModule: SignModule = SignModule()
     val silkTouchModule: SilkTouchModule = SilkTouchModule()
@@ -54,6 +55,7 @@ internal object ModuleManager {
             nicknameModule,
             openableModule,
             petModule,
+            playerModule,
             recipiesModule,
             signModule,
             silkTouchModule,
