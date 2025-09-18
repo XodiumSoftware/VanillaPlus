@@ -290,29 +290,35 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         affectedChests: List<Block>,
         strong: Boolean,
     ) {
-        val particle = if (strong) Particle.DUST else Particle.DUST
-        val dustOptions =
-            if (strong) Particle.DustOptions(Color.MAROON, 1.0f) else Particle.DustOptions(Color.RED, 0.5f)
-        val interval = if (strong) 0.3 else 0.5
-        val count = if (strong) 3 else 1
-        val speed = if (strong) 0.001 else 0.0
+//        val particle = if (strong) Particle.DUST else Particle.DUST
+//        val dustOptions =
+//            if (strong) Particle.DustOptions(Color.MAROON, 0.6f) else Particle.DustOptions(Color.RED, 0.5f)
+//        val interval = if (strong) 0.3 else 0.5
+//        val count = if (strong) 3 else 1
+//        val speed = if (strong) 0.001 else 0.0
         val duration = 100L
 
         val taskId =
             instance.server.scheduler.scheduleSyncRepeatingTask(
                 instance,
                 {
-                    laserEffect(
-                        affectedChests,
-                        player,
-                        interval,
-                        count,
-                        particle,
-                        speed,
-                        config.searchRadius,
-                        dustOptions,
-                    )
+                    affectedChests.forEach { chest ->
+                        val chestLocation = chest.location.add(0.0, -0.5, 0.0)
+                        searchEffect(player.location, chestLocation, Color.RED, 40)
+                    }
                 },
+//                {
+//                    laserEffect(
+//                        affectedChests,
+//                        player,
+//                        interval,
+//                        count,
+//                        particle,
+//                        speed,
+//                        config.searchRadius,
+//                        dustOptions,
+//                    )
+//                },
                 0L,
                 2L,
             )
@@ -382,14 +388,10 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         endLocation: Location,
         color: Color,
         travelTicks: Int,
-        count: Int,
-        speed: Double,
     ): ParticleBuilder =
         Particle.TRAIL
             .builder()
             .location(startLocation)
-            .count(count)
-            .extra(speed)
             .data(Particle.Trail(endLocation, color, travelTicks))
             .receivers(32, true)
             .spawn()
