@@ -134,6 +134,11 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         player: Player,
         material: Material,
     ) {
+        activeVisualizations[player.uniqueId]?.let {
+            instance.server.scheduler.cancelTask(it)
+            activeVisualizations.remove(player.uniqueId)
+        }
+
         val chests =
             findBlocksInRadius(player.location, config.searchRadius)
                 .filter { it.state is Container }
@@ -284,18 +289,31 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         affectedChests: List<Block>,
         strong: Boolean,
     ) {
-        val particle = if (strong) Particle.CRIT else Particle.CRIT
+        val particle = Particle.CRIT
         val interval = if (strong) 0.3 else 0.5
         val count = if (strong) 3 else 1
         val speed = if (strong) 0.001 else 0.0
+        val duration = 100L
 
-        activeVisualizations[player.uniqueId] =
+        val taskId =
             instance.server.scheduler.scheduleSyncRepeatingTask(
                 instance,
-                { laserEffect(affectedChests, player, interval, count, particle, speed, 128) },
+                {
+                    laserEffect(
+                        affectedChests,
+                        player,
+                        interval,
+                        count,
+                        particle,
+                        speed,
+                        config.maxLaserDistance.toInt(),
+                    )
+                },
                 0L,
                 2L,
             )
+
+        activeVisualizations[player.uniqueId] = taskId
 
         instance.server.scheduler.runTaskLater(
             instance,
@@ -305,7 +323,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                     activeVisualizations.remove(player.uniqueId)
                 }
             },
-            config.scheduleInitDelayInTicks,
+            duration,
         )
     }
 
@@ -516,6 +534,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                 Sound.Source.PLAYER,
             ),
         var scheduleInitDelayInTicks: Long = 5,
+        var maxLaserDistance: Double = 25.0,
         var l18n: L18n = L18n(),
     ) : ModuleInterface.Config {
         data class L18n(
