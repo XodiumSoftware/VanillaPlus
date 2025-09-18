@@ -135,29 +135,29 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         material: Material,
     ) {
         val chests =
-            findBlocksInRadius(player.location, config.searchRadius).filter { it.state is Container }
-        if (chests.isEmpty()) {
-            return player.sendActionBar(
-                config.l18n.noChestsFound.mm(Placeholder.component("material", material.name.mm())),
-            )
-        }
+            findBlocksInRadius(player.location, config.searchRadius)
+                .filter { it.state is Container }
+                .filter { searchItemInContainers(material, (it.state as Container).inventory) }
 
-        val seenDoubleChests = mutableSetOf<InventoryHolder?>()
-        val affectedChests =
-            chests.filter { block ->
-                val inventory = (block.state as Container).inventory
-                val holder = inventory.holder
-                if (holder is DoubleChest && !seenDoubleChests.add(holder.leftSide)) return@filter false
-                searchItemInContainers(material, inventory)
-            }
-        if (affectedChests.isEmpty()) {
+        if (chests.isEmpty()) {
             return player.sendActionBar(
                 config.l18n.noMatchingItems.mm(Placeholder.component("material", material.name.mm())),
             )
         }
 
-        affectedChests.forEach { chestEffect(player, it) }
-        laserEffectSchedule(player, affectedChests)
+        val seenDoubleChests = mutableSetOf<InventoryHolder?>()
+        val filteredChests =
+            chests.filter { block ->
+                val inventory = (block.state as Container).inventory
+                val holder = inventory.holder
+                if (holder is DoubleChest && !seenDoubleChests.add(holder.leftSide)) return@filter false
+                true
+            }
+
+        val sortedChests = filteredChests.sortedBy { it.location.distanceSquared(player.location) }
+
+        sortedChests.forEach { chestEffect(player, it) }
+        laserEffectSchedule(player, sortedChests)
     }
 
     /**
@@ -170,6 +170,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         val chests =
             findBlocksInRadius(player.location, config.unloadRadius)
                 .filter { it.state is Container }
+                .sortedBy { it.location.distanceSquared(player.location) }
         if (chests.isEmpty()) return player.sendActionBar(config.l18n.noNearbyChests.mm())
 
         val affectedChests = mutableListOf<Block>()
@@ -477,14 +478,17 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
      */
     private fun Block.center(): Location {
         val loc = location.clone()
-        val chest = state as? Chest ?: return loc.add(0.5, 1.0, 0.5)
-        val holder = chest.inventory.holder as? DoubleChest ?: return loc.add(0.5, 1.0, 0.5)
-        val leftLoc = (holder.leftSide as? Chest)?.block?.location
-        val rightLoc = (holder.rightSide as? Chest)?.block?.location
-        if (leftLoc != null && rightLoc != null) {
-            loc.x = (leftLoc.x + rightLoc.x) / 2
-            loc.y = (leftLoc.y + rightLoc.y) / 2
-            loc.z = (leftLoc.z + rightLoc.z) / 2
+        val stateChest = state as? Chest ?: return loc.add(0.5, 1.0, 0.5)
+        val holder = stateChest.inventory.holder as? DoubleChest
+        if (holder != null) {
+            val leftLoc = (holder.leftSide as? Chest)?.block?.location
+            val rightLoc = (holder.rightSide as? Chest)?.block?.location
+            if (leftLoc != null && rightLoc != null) {
+                loc.x = (leftLoc.x + rightLoc.x) / 2.0
+                loc.y = (leftLoc.y + rightLoc.y) / 2.0
+                loc.z = (leftLoc.z + rightLoc.z) / 2.0
+                return loc.add(0.5, 1.0, 0.5)
+            }
         }
         return loc.add(0.5, 1.0, 0.5)
     }
