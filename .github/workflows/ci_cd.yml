@@ -39,7 +39,7 @@ jobs:
 
       - id: setup_gradle
         name: Setup Gradle
-        uses: gradle/actions/setup-gradle@c04286a41dd5075ea60cc98f51d01bd24f8571f8
+        uses: gradle/actions/setup-gradle@f8140229023a7015c7ce4df6f7c390a3cace8f83
 
       - id: set_version
         name: Set Version
@@ -106,7 +106,7 @@ jobs:
 
       - id: uts
         name: Upload to Server
-        uses: appleboy/scp-action@eb443bd4941c3334ee584c1915fcfa2001e8a86c
+        uses: appleboy/scp-action@7179e72a3fa4d4c33870a471708fda724fae7596
         with:
           host: ${{ secrets.SFTP_HOST }}
           username: ${{ secrets.SFTP_USER }}
