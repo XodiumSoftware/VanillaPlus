@@ -155,9 +155,17 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
             }
 
         val sortedChests = filteredChests.sortedBy { it.location.distanceSquared(player.location) }
+        if (sortedChests.isEmpty()) return
 
-        sortedChests.forEach { chestEffect(player, it) }
-        laserEffectSchedule(player, sortedChests)
+        val closestChest = sortedChests.first()
+        chestEffect(player, closestChest)
+        laserEffectSchedule(player, listOf(closestChest), strong = true)
+
+        val otherChests = sortedChests.drop(1)
+        if (otherChests.isNotEmpty()) {
+            otherChests.forEach { chestEffect(player, it) }
+            laserEffectSchedule(player, otherChests, strong = false)
+        }
     }
 
     /**
@@ -268,18 +276,23 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
     /**
      * Creates a laser effect for the specified player and chests.
      * @param player The player to play the effect for.
-     * @param affectedChests The list of chests to affect. If null, will use the last unloaded chests.
+     * @param affectedChests The list of chests to affect.
+     * @param strong Whether to use strong (true) or faded (false) beams.
      */
     private fun laserEffectSchedule(
         player: Player,
-        affectedChests: List<Block>? = null,
+        affectedChests: List<Block>,
+        strong: Boolean,
     ) {
-        val chests = affectedChests ?: lastUnloads[player.uniqueId] ?: return
+        val particle = if (strong) Particle.CRIT else Particle.CRIT
+        val interval = if (strong) 0.3 else 0.5
+        val count = if (strong) 3 else 1
+        val speed = if (strong) 0.001 else 0.0
 
         activeVisualizations[player.uniqueId] =
             instance.server.scheduler.scheduleSyncRepeatingTask(
                 instance,
-                { laserEffect(chests, player, 0.3, 2, Particle.CRIT, 0.001, 128) },
+                { laserEffect(affectedChests, player, interval, count, particle, speed, 128) },
                 0L,
                 2L,
             )
@@ -399,9 +412,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
             blockState.location.distanceSquared(center) > radius * radius -> return false
             blockState.type == Material.CHEST -> {
                 val blockAbove = blockState.block.getRelative(BlockFace.UP)
-                if (blockAbove.type.isSolid && blockAbove.type.isOccluding) {
-                    return false
-                }
+                if (blockAbove.type.isSolid && blockAbove.type.isOccluding) return false
             }
         }
         return true
