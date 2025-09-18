@@ -360,8 +360,15 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                 val steps = (distance / interval).toInt()
                 repeat(steps) {
                     val point = start.clone().add(direction.multiply(currentDistance))
-                    player.spawnParticle(particle, point, count, 0.0, 0.0, 0.0, speed, dustOptions)
-                    direction.normalize()
+                    particle
+                        .builder()
+                        .location(point)
+                        .count(count)
+                        .extra(speed)
+                        .data(dustOptions)
+                        .receivers(32, true)
+                        .spawn()
+
                     currentDistance += interval
                 }
             }
