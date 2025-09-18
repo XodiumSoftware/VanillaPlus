@@ -282,12 +282,12 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
     /**
      * Creates a laser effect for the specified player and chests.
      * @param player The player to play the effect for.
-     * @param affectedChests The list of chests to affect.
+     * @param chests The list of chests to affect.
      * @param strong Whether to use strong (true) or faded (false) beams.
      */
     private fun laserEffectSchedule(
         player: Player,
-        affectedChests: List<Block>,
+        chests: List<Block>,
         strong: Boolean,
     ) {
 //        val particle = if (strong) Particle.DUST else Particle.DUST
@@ -302,10 +302,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
             instance.server.scheduler.scheduleSyncRepeatingTask(
                 instance,
                 {
-                    affectedChests.forEach { chest ->
-                        val chestLocation = chest.location.add(0.0, -0.5, 0.0)
-                        searchEffect(player.location, chestLocation, Color.RED, 40)
-                    }
+                    chests.forEach { searchEffect(player.location, it.location, Color.RED, 40) }
                 },
 //                {
 //                    laserEffect(
