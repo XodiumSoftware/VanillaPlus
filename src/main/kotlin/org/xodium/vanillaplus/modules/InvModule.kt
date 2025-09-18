@@ -41,7 +41,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
 
     private val unloads = ConcurrentHashMap<Location, MutableMap<Material, Int>>()
     private val lastUnloads = ConcurrentHashMap<UUID, List<Block>>()
-    private val activeVisualizations = ConcurrentHashMap<UUID, Int>()
+    private val activeVisualizations = ConcurrentHashMap<UUID, MutableList<Int>>()
 
     override fun cmds(): List<CommandData> =
         listOf(
@@ -134,8 +134,8 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         player: Player,
         material: Material,
     ) {
-        activeVisualizations[player.uniqueId]?.let {
-            instance.server.scheduler.cancelTask(it)
+        activeVisualizations[player.uniqueId]?.let { taskIds ->
+            taskIds.forEach { instance.server.scheduler.cancelTask(it) }
             activeVisualizations.remove(player.uniqueId)
         }
 
@@ -313,15 +313,13 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                 2L,
             )
 
-        activeVisualizations[player.uniqueId] = taskId
+        activeVisualizations.computeIfAbsent(player.uniqueId) { mutableListOf() }.add(taskId)
 
         instance.server.scheduler.runTaskLater(
             instance,
             Runnable {
-                activeVisualizations[player.uniqueId]?.let {
-                    instance.server.scheduler.cancelTask(it)
-                    activeVisualizations.remove(player.uniqueId)
-                }
+                activeVisualizations[player.uniqueId]?.forEach { instance.server.scheduler.cancelTask(it) }
+                activeVisualizations.remove(player.uniqueId)
             },
             duration,
         )
