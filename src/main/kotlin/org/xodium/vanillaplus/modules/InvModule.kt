@@ -2,6 +2,7 @@
 
 package org.xodium.vanillaplus.modules
 
+import com.destroystokyo.paper.ParticleBuilder
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
@@ -369,11 +370,29 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                         .receivers(32, true)
                         .spawn()
 
+                    direction.normalize()
                     currentDistance += interval
                 }
             }
         }
     }
+
+    private fun searchEffect(
+        startLocation: Location,
+        endLocation: Location,
+        color: Color,
+        travelTicks: Int,
+        count: Int,
+        speed: Double,
+    ): ParticleBuilder =
+        Particle.TRAIL
+            .builder()
+            .location(startLocation)
+            .count(count)
+            .extra(speed)
+            .data(Particle.Trail(endLocation, color, travelTicks))
+            .receivers(32, true)
+            .spawn()
 
     /**
      * Checks if two ItemStacks have matching enchantments.
