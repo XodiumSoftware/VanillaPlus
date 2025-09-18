@@ -289,7 +289,9 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         affectedChests: List<Block>,
         strong: Boolean,
     ) {
-        val particle = Particle.CRIT
+        val particle = if (strong) Particle.DUST else Particle.DUST
+        val dustOptions =
+            if (strong) Particle.DustOptions(Color.MAROON, 1.0f) else Particle.DustOptions(Color.RED, 0.5f)
         val interval = if (strong) 0.3 else 0.5
         val count = if (strong) 3 else 1
         val speed = if (strong) 0.001 else 0.0
@@ -307,6 +309,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                         particle,
                         speed,
                         config.searchRadius,
+                        dustOptions,
                     )
                 },
                 0L,
@@ -334,6 +337,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
      * @param particle The type of particle to spawn.
      * @param speed The speed of the particles.
      * @param maxDistance The maximum distance for the laser effect.
+     * @param dustOptions The dust options for the laser effect.
      */
     private fun laserEffect(
         destinations: List<Block>,
@@ -343,6 +347,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         particle: Particle,
         speed: Double,
         maxDistance: Int,
+        dustOptions: Particle.DustOptions?,
     ) {
         val playerLocation = player.location
         destinations.forEach { destination ->
@@ -355,7 +360,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                 val steps = (distance / interval).toInt()
                 repeat(steps) {
                     val point = start.clone().add(direction.multiply(currentDistance))
-                    player.spawnParticle(particle, point, count, 0.0, 0.0, 0.0, speed)
+                    player.spawnParticle(particle, point, count, 0.0, 0.0, 0.0, speed, dustOptions)
                     direction.normalize()
                     currentDistance += interval
                 }
