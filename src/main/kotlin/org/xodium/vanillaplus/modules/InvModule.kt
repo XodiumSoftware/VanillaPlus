@@ -306,7 +306,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                         count,
                         particle,
                         speed,
-                        config.maxLaserDistance.toInt(),
+                        config.searchRadius,
                     )
                 },
                 0L,
@@ -524,8 +524,8 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
 
     data class Config(
         override var enabled: Boolean = true,
-        var searchRadius: Int = 5,
-        var unloadRadius: Int = 5,
+        var searchRadius: Int = 25,
+        var unloadRadius: Int = 25,
         var matchEnchantments: Boolean = true,
         var matchEnchantmentsOnBooks: Boolean = true,
         var soundOnUnload: SoundData =
@@ -534,7 +534,6 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                 Sound.Source.PLAYER,
             ),
         var scheduleInitDelayInTicks: Long = 5,
-        var maxLaserDistance: Double = 25.0,
         var l18n: L18n = L18n(),
     ) : ModuleInterface.Config {
         data class L18n(
