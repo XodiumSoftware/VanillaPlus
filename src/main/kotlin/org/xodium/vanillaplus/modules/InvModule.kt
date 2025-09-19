@@ -165,12 +165,12 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
 
         val closestChest = sortedChests.first()
         chestEffect(player, closestChest)
-        laserEffectSchedule(player, listOf(closestChest), strong = true)
+        laserEffectSchedule(player, listOf(closestChest))
 
         val otherChests = sortedChests.drop(1)
         if (otherChests.isNotEmpty()) {
             otherChests.forEach { chestEffect(player, it) }
-            laserEffectSchedule(player, otherChests, strong = false)
+            laserEffectSchedule(player, otherChests)
         }
     }
 
@@ -283,44 +283,21 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
      * Creates a laser effect for the specified player and chests.
      * @param player The player to play the effect for.
      * @param chests The list of chests to affect.
-     * @param strong Whether to use strong (true) or faded (false) beams.
      */
     private fun laserEffectSchedule(
         player: Player,
         chests: List<Block>,
-        strong: Boolean,
     ) {
-//        val particle = if (strong) Particle.DUST else Particle.DUST
-//        val dustOptions =
-//            if (strong) Particle.DustOptions(Color.MAROON, 0.6f) else Particle.DustOptions(Color.RED, 0.5f)
-//        val interval = if (strong) 0.3 else 0.5
-//        val count = if (strong) 3 else 1
-//        val speed = if (strong) 0.001 else 0.0
-        val duration = 100L
-
-        val taskId =
+        activeVisualizations.computeIfAbsent(player.uniqueId) { mutableListOf() }.add(
             instance.server.scheduler.scheduleSyncRepeatingTask(
                 instance,
                 {
                     chests.forEach { searchEffect(player.location, it.location, Color.RED, 40) }
                 },
-//                {
-//                    laserEffect(
-//                        affectedChests,
-//                        player,
-//                        interval,
-//                        count,
-//                        particle,
-//                        speed,
-//                        config.searchRadius,
-//                        dustOptions,
-//                    )
-//                },
                 0L,
                 2L,
-            )
-
-        activeVisualizations.computeIfAbsent(player.uniqueId) { mutableListOf() }.add(taskId)
+            ),
+        )
 
         instance.server.scheduler.runTaskLater(
             instance,
@@ -328,58 +305,13 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                 activeVisualizations[player.uniqueId]?.forEach { instance.server.scheduler.cancelTask(it) }
                 activeVisualizations.remove(player.uniqueId)
             },
-            duration,
+            100L,
         )
     }
 
     /**
-     * Creates a laser effect between the player and the specified blocks.
-     * @param destinations The list of blocks to create the laser effect towards.
-     * @param player The player to create the laser effect for.
-     * @param interval The interval between each particle spawn.
-     * @param count The number of particles to spawn at each location.
-     * @param particle The type of particle to spawn.
-     * @param speed The speed of the particles.
-     * @param maxDistance The maximum distance for the laser effect.
-     * @param dustOptions The dust options for the laser effect.
+     * TODO
      */
-    private fun laserEffect(
-        destinations: List<Block>,
-        player: Player,
-        interval: Double,
-        count: Int,
-        particle: Particle,
-        speed: Double,
-        maxDistance: Int,
-        dustOptions: Particle.DustOptions?,
-    ) {
-        val playerLocation = player.location
-        destinations.forEach { destination ->
-            val start = playerLocation.clone()
-            val end = destination.center().add(0.0, -0.5, 0.0)
-            val direction = end.toVector().subtract(start.toVector()).normalize()
-            val distance = start.distance(destination.location)
-            if (distance < maxDistance) {
-                var currentDistance = 1.0
-                val steps = (distance / interval).toInt()
-                repeat(steps) {
-                    val point = start.clone().add(direction.multiply(currentDistance))
-                    particle
-                        .builder()
-                        .location(point)
-                        .count(count)
-                        .extra(speed)
-                        .data(dustOptions)
-                        .receivers(32, true)
-                        .spawn()
-
-                    direction.normalize()
-                    currentDistance += interval
-                }
-            }
-        }
-    }
-
     private fun searchEffect(
         startLocation: Location,
         endLocation: Location,
@@ -392,6 +324,11 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
             .data(Particle.Trail(endLocation, color, travelTicks))
             .receivers(32, true)
             .spawn()
+
+    /**
+     * TODO
+     */
+    private fun chestEffect() {}
 
     /**
      * Checks if two ItemStacks have matching enchantments.
