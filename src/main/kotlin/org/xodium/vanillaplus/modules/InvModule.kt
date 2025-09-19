@@ -164,12 +164,12 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         if (sortedChests.isEmpty()) return
 
         val closestChest = sortedChests.first()
-        chestEffect(player, closestChest)
+        chestEffect(closestChest.center(), 40, player)
         laserEffectSchedule(player, listOf(closestChest))
 
         val otherChests = sortedChests.drop(1)
         if (otherChests.isNotEmpty()) {
-            otherChests.forEach { chestEffect(player, it) }
+            otherChests.forEach { chestEffect(it.center(), 40, player) }
             laserEffectSchedule(player, otherChests)
         }
     }
@@ -200,7 +200,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         player.sendActionBar(config.l18n.inventoryUnloaded.mm())
         lastUnloads[player.uniqueId] = affectedChests
 
-        for (block in affectedChests) chestEffect(player, block)
+        for (block in affectedChests) chestEffect(block.center(), 40, player)
 
         player.playSound(config.soundOnUnload.toSound(), Sound.Emitter.self())
     }
@@ -292,7 +292,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
             instance.server.scheduler.scheduleSyncRepeatingTask(
                 instance,
                 {
-                    chests.forEach { searchEffect(player.location, it.location, Color.RED, 40) }
+                    chests.forEach { searchEffect(player.location, it.center(), Color.RED, 40, player) }
                 },
                 0L,
                 2L,
@@ -310,25 +310,47 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
     }
 
     /**
-     * TODO
+     * Spawns a particle trail effect visible only to the given player.
+     * @param startLocation The starting location of the trail.
+     * @param endLocation The ending location of the trail.
+     * @param color The color of the trail.
+     * @param travelTicks The number of ticks it takes for the trail to travel from start to end.
+     * @param player The player who will see the particle trail.
+     * @return A [ParticleBuilder] instance for further configuration if needed.
      */
     private fun searchEffect(
         startLocation: Location,
         endLocation: Location,
         color: Color,
         travelTicks: Int,
+        player: Player,
     ): ParticleBuilder =
         Particle.TRAIL
             .builder()
             .location(startLocation)
             .data(Particle.Trail(endLocation, color, travelTicks))
-            .receivers(32, true)
+            .receivers(player)
             .spawn()
 
     /**
-     * TODO
+     * Spawns a critical hit particle effect at the given location,
+     * visible only to the specified player.
+     * @param location The central [Location] where the particles will appear.
+     * @param count The number of particles to spawn.
+     * @param player The [Player] who will see the particle effect.
+     * @return A [ParticleBuilder] instance for further configuration if needed.
      */
-    private fun chestEffect() {}
+    private fun chestEffect(
+        location: Location,
+        count: Int,
+        player: Player,
+    ): ParticleBuilder =
+        Particle.CRIT
+            .builder()
+            .location(location)
+            .count(count)
+            .receivers(player)
+            .spawn()
 
     /**
      * Checks if two ItemStacks have matching enchantments.
@@ -364,7 +386,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
      * @param radius The radius to search within.
      * @return A list of blocks found within the radius.
      */
-    fun findBlocksInRadius(
+    private fun findBlocksInRadius(
         location: Location,
         radius: Int,
     ): List<Block> {
@@ -407,7 +429,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
      * @param item The item to check for.
      * @return True if the chest contains the item, false otherwise.
      */
-    fun doesChestContain(
+    private fun doesChestContain(
         inventory: Inventory,
         item: ItemStack,
     ): Boolean =
@@ -442,22 +464,12 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
     }
 
     /**
-     * Creates a chest effect for the specified block and player.
-     * @param player The player to create the laser effect for.
-     * @param block The block to create the laser effect towards.
-     */
-    fun chestEffect(
-        player: Player,
-        block: Block,
-    ) = player.spawnParticle(Particle.CRIT, block.center(), 10, 0.0, 0.0, 0.0)
-
-    /**
      * Unloads the specified amount of material from the given location.
      * @param location The location to unload from.
      * @param material The material to unload.
      * @param amount The amount of material to unload.
      */
-    fun protocolUnload(
+    private fun protocolUnload(
         location: Location,
         material: Material,
         amount: Int,
