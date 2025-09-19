@@ -165,6 +165,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
 
         val closestChest = sortedChests.first()
         schedulePlayerTask(player, {
+            // TODO: center() broken since have to use .add() to get the 3DCenter.
             val chest3DCenter = closestChest.center().add(.0, -0.5, 0.0)
             searchEffect(player.location, chest3DCenter, Color.MAROON, 40, player)
             chestEffect(chest3DCenter, 10, Particle.DustOptions(Color.MAROON, 5.0f), player)
@@ -174,6 +175,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         if (otherChests.isNotEmpty()) {
             schedulePlayerTask(player, {
                 otherChests.forEach {
+                    // TODO: center() broken since have to use .add() to get the 3DCenter.
                     val chest3DCenter = it.center().add(.0, -0.5, 0.0)
                     searchEffect(player.location, chest3DCenter, Color.RED, 40, player)
                     chestEffect(chest3DCenter, 10, Particle.DustOptions(Color.RED, 5.0f), player)
