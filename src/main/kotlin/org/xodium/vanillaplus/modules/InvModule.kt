@@ -164,7 +164,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         if (sortedChests.isEmpty()) return
 
         val closestChest = sortedChests.first()
-        scheduleEffect(player, {
+        schedulePlayerTask(player, {
             val chest3DCenter = closestChest.center().add(.0, -0.5, 0.0)
             searchEffect(player.location, chest3DCenter, Color.MAROON, 40, player)
             chestEffect(chest3DCenter, 10, Particle.DustOptions(Color.MAROON, 5.0f), player)
@@ -172,7 +172,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
 
         val otherChests = sortedChests.drop(1)
         if (otherChests.isNotEmpty()) {
-            scheduleEffect(player, {
+            schedulePlayerTask(player, {
                 otherChests.forEach {
                     val chest3DCenter = it.center().add(.0, -0.5, 0.0)
                     searchEffect(player.location, chest3DCenter, Color.RED, 40, player)
@@ -286,15 +286,15 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
     ): Int = inventory.contents.filter { it?.type == material }.sumOf { it?.amount ?: 0 }
 
     /**
-     * Creates a laser effect for the specified player and chests.
-     * @param player The player to play the effect for.
-     * @param task The task to run repeatedly.
-     * @param initialDelay Delay before the effect starts (in ticks). Default 0L.
-     * @param repeatDelay Delay between effect repetitions (in ticks). Default 2L.
-     * @param durationTicks Duration of the effect (in ticks). Default 100L.
+     * Schedules a repeating task for a specific player and automatically cancels it after a set duration.
+     * @param player The player for whom the task is scheduled.
+     * @param task The repeating task to execute.
+     * @param initialDelay Ticks to wait before the first execution. Default is 0L.
+     * @param repeatDelay Ticks between each execution. Default is 2L.
+     * @param durationTicks Total duration in ticks before the task is automatically cancelled. Default is 100L.
      * @return The task ID of the scheduled repeating task.
      */
-    private fun scheduleEffect(
+    private fun schedulePlayerTask(
         player: Player,
         task: () -> Unit,
         initialDelay: Long = 0L,
