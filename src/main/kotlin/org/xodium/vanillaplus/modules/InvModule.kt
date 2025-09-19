@@ -164,10 +164,22 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         if (sortedChests.isEmpty()) return
 
         val closestChest = sortedChests.first()
-        effectSchedule(player, listOf(closestChest))
+        scheduleEffect(player, {
+            val chest3DCenter = closestChest.center().add(.0, -0.5, 0.0)
+            searchEffect(player.location, chest3DCenter, Color.MAROON, 40, player)
+            chestEffect(chest3DCenter, 10, Particle.DustOptions(Color.MAROON, 5.0f), player)
+        })
 
         val otherChests = sortedChests.drop(1)
-        if (otherChests.isNotEmpty()) effectSchedule(player, otherChests)
+        if (otherChests.isNotEmpty()) {
+            scheduleEffect(player, {
+                otherChests.forEach {
+                    val chest3DCenter = it.center().add(.0, -0.5, 0.0)
+                    searchEffect(player.location, chest3DCenter, Color.RED, 40, player)
+                    chestEffect(chest3DCenter, 10, Particle.DustOptions(Color.RED, 5.0f), player)
+                }
+            })
+        }
     }
 
     /**
@@ -276,35 +288,39 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
     /**
      * Creates a laser effect for the specified player and chests.
      * @param player The player to play the effect for.
-     * @param chests The list of chests to affect.
+     * @param task The task to run repeatedly.
+     * @param initialDelay Delay before the effect starts (in ticks). Default 0L.
+     * @param repeatDelay Delay between effect repetitions (in ticks). Default 2L.
+     * @param durationTicks Duration of the effect (in ticks). Default 100L.
+     * @return The task ID of the scheduled repeating task.
      */
-    private fun effectSchedule(
+    private fun scheduleEffect(
         player: Player,
-        chests: List<Block>,
-    ) {
-        activeVisualizations.computeIfAbsent(player.uniqueId) { mutableListOf() }.add(
+        task: () -> Unit,
+        initialDelay: Long = 0L,
+        repeatDelay: Long = 2L,
+        durationTicks: Long = 100L,
+    ): Int {
+        val taskId =
             instance.server.scheduler.scheduleSyncRepeatingTask(
                 instance,
-                {
-                    chests.forEach {
-                        val chest3DCenter = it.center().add(.0, -0.5, 0.0)
-                        searchEffect(player.location, chest3DCenter, Color.RED, 40, player)
-                        chestEffect(chest3DCenter, 10, Particle.DustOptions(Color.RED, 5.0f), player)
-                    }
-                },
-                0L,
-                2L,
-            ),
-        )
+                task,
+                initialDelay,
+                repeatDelay,
+            )
+
+        activeVisualizations.computeIfAbsent(player.uniqueId) { mutableListOf() }.add(taskId)
 
         instance.server.scheduler.runTaskLater(
             instance,
             Runnable {
-                activeVisualizations[player.uniqueId]?.forEach { instance.server.scheduler.cancelTask(it) }
-                activeVisualizations.remove(player.uniqueId)
+                activeVisualizations[player.uniqueId]?.remove(taskId)
+                instance.server.scheduler.cancelTask(taskId)
             },
-            100L,
+            durationTicks,
         )
+
+        return taskId
     }
 
     /**
