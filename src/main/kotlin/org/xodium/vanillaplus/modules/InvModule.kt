@@ -164,14 +164,10 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         if (sortedChests.isEmpty()) return
 
         val closestChest = sortedChests.first()
-        chestEffect(closestChest.center(), 40, player)
-        laserEffectSchedule(player, listOf(closestChest))
+        effectSchedule(player, listOf(closestChest))
 
         val otherChests = sortedChests.drop(1)
-        if (otherChests.isNotEmpty()) {
-            otherChests.forEach { chestEffect(it.center(), 40, player) }
-            laserEffectSchedule(player, otherChests)
-        }
+        if (otherChests.isNotEmpty()) effectSchedule(player, otherChests)
     }
 
     /**
@@ -200,7 +196,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         player.sendActionBar(config.l18n.inventoryUnloaded.mm())
         lastUnloads[player.uniqueId] = affectedChests
 
-        for (block in affectedChests) chestEffect(block.center(), 40, player)
+        for (block in affectedChests) chestEffect(block.center(), 10, Particle.DustOptions(Color.RED, 1.0f), player)
 
         player.playSound(config.soundOnUnload.toSound(), Sound.Emitter.self())
     }
@@ -284,7 +280,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
      * @param player The player to play the effect for.
      * @param chests The list of chests to affect.
      */
-    private fun laserEffectSchedule(
+    private fun effectSchedule(
         player: Player,
         chests: List<Block>,
     ) {
@@ -292,7 +288,11 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
             instance.server.scheduler.scheduleSyncRepeatingTask(
                 instance,
                 {
-                    chests.forEach { searchEffect(player.location, it.center(), Color.RED, 40, player) }
+                    chests.forEach {
+                        val chest3DCenter = it.center().add(.0, -0.5, 0.0)
+                        searchEffect(player.location, chest3DCenter, Color.RED, 40, player)
+                        chestEffect(chest3DCenter, 10, Particle.DustOptions(Color.RED, 1.0f), player)
+                    }
                 },
                 0L,
                 2L,
@@ -337,18 +337,21 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
      * visible only to the specified player.
      * @param location The central [Location] where the particles will appear.
      * @param count The number of particles to spawn.
+     * @param dustOptions The [Particle.DustOptions] defining the color and size of the dust particles.
      * @param player The [Player] who will see the particle effect.
      * @return A [ParticleBuilder] instance for further configuration if needed.
      */
     private fun chestEffect(
         location: Location,
         count: Int,
+        dustOptions: Particle.DustOptions,
         player: Player,
     ): ParticleBuilder =
-        Particle.CRIT
+        Particle.DUST
             .builder()
             .location(location)
             .count(count)
+            .data(dustOptions)
             .receivers(player)
             .spawn()
 
