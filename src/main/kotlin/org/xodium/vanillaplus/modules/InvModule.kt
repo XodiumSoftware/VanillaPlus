@@ -165,20 +165,16 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
 
         val closestChest = sortedChests.first()
         schedulePlayerTask(player, {
-            // TODO: center() broken since have to use .add() to get the 3DCenter.
-            val chest3DCenter = closestChest.center().add(.0, -0.5, 0.0)
-            searchEffect(player.location, chest3DCenter, Color.MAROON, 40, player)
-            chestEffect(chest3DCenter, 10, Particle.DustOptions(Color.MAROON, 5.0f), player)
+            searchEffect(player.location, closestChest.center(), Color.MAROON, 40, player)
+            chestEffect(closestChest.center(), 10, Particle.DustOptions(Color.MAROON, 5.0f), player)
         })
 
         val otherChests = sortedChests.drop(1)
         if (otherChests.isNotEmpty()) {
             schedulePlayerTask(player, {
                 otherChests.forEach {
-                    // TODO: center() broken since have to use .add() to get the 3DCenter.
-                    val chest3DCenter = it.center().add(.0, -0.5, 0.0)
-                    searchEffect(player.location, chest3DCenter, Color.RED, 40, player)
-                    chestEffect(chest3DCenter, 10, Particle.DustOptions(Color.RED, 5.0f), player)
+                    searchEffect(player.location, it.center(), Color.RED, 40, player)
+                    chestEffect(it.center(), 10, Particle.DustOptions(Color.RED, 5.0f), player)
                 }
             })
         }
@@ -503,19 +499,19 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
      */
     private fun Block.center(): Location {
         val loc = location.clone()
-        val stateChest = state as? Chest ?: return loc.add(0.5, 1.0, 0.5)
+        val stateChest = state as? Chest ?: return loc.add(0.5, 0.5, 0.5)
         val holder = stateChest.inventory.holder as? DoubleChest
         if (holder != null) {
             val leftLoc = (holder.leftSide as? Chest)?.block?.location
             val rightLoc = (holder.rightSide as? Chest)?.block?.location
             if (leftLoc != null && rightLoc != null) {
-                loc.x = (leftLoc.x + rightLoc.x) / 2.0
-                loc.y = (leftLoc.y + rightLoc.y) / 2.0
-                loc.z = (leftLoc.z + rightLoc.z) / 2.0
-                return loc.add(0.5, 1.0, 0.5)
+                loc.x = (leftLoc.x + rightLoc.x) / 2.0 + 0.5
+                loc.y = (leftLoc.y + rightLoc.y) / 2.0 + 0.5
+                loc.z = (leftLoc.z + rightLoc.z) / 2.0 + 0.5
+                return loc.add(0.5, 0.5, 0.5)
             }
         }
-        return loc.add(0.5, 1.0, 0.5)
+        return loc.add(0.5, 0.5, 0.5)
     }
 
     data class Config(
