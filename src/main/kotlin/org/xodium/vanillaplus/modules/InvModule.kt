@@ -186,9 +186,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         val affectedChests = mutableListOf<Block>()
         for (block in chests) {
             val inv = (block.state as Container).inventory
-            if (stuffInventoryIntoAnother(player, inv, true, startSlot, endSlot)) {
-                affectedChests.add(block)
-            }
+            if (stuffInventoryIntoAnother(player, inv, true, startSlot, endSlot)) affectedChests.add(block)
         }
 
         if (affectedChests.isEmpty()) return player.sendActionBar(config.l18n.noItemsUnloaded.mm())
@@ -196,7 +194,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         player.sendActionBar(config.l18n.inventoryUnloaded.mm())
         lastUnloads[player.uniqueId] = affectedChests
 
-        for (block in affectedChests) chestEffect(block.center(), 10, Particle.DustOptions(Color.RED, 1.0f), player)
+        for (block in affectedChests) chestEffect(block.center(), 10, Particle.DustOptions(Color.LIME, 5.0f), player)
 
         player.playSound(config.soundOnUnload.toSound(), Sound.Emitter.self())
     }
@@ -291,7 +289,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                     chests.forEach {
                         val chest3DCenter = it.center().add(.0, -0.5, 0.0)
                         searchEffect(player.location, chest3DCenter, Color.RED, 40, player)
-                        chestEffect(chest3DCenter, 10, Particle.DustOptions(Color.RED, 1.0f), player)
+                        chestEffect(chest3DCenter, 10, Particle.DustOptions(Color.RED, 5.0f), player)
                     }
                 },
                 0L,
