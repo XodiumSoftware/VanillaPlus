@@ -204,7 +204,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         player.sendActionBar(config.l18n.inventoryUnloaded.mm())
         lastUnloads[player.uniqueId] = affectedChests
 
-        for (block in affectedChests) chestEffect(block.center(), 10, Particle.DustOptions(Color.LIME, 5.0f), player)
+        for (chest in affectedChests) chestEffect(chest.center(), 10, Particle.DustOptions(Color.LIME, 5.0f), player)
 
         player.playSound(config.soundOnUnload.toSound(), Sound.Emitter.self())
     }
