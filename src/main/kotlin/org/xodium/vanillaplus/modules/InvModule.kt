@@ -266,7 +266,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         val item = ItemStack.of(material)
         val count = doesChestContainCount(destination, material)
         if (count > 0 && doesChestContain(destination, item)) {
-            destination.location?.let { location -> protocolUnload(location, material, count) }
+            destination.location?.let { protocolUnload(it, material, count) }
             return true
         }
         return false
