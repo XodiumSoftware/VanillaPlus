@@ -39,7 +39,7 @@ jobs:
 
       - id: setup_gradle
         name: Setup Gradle
-        uses: gradle/actions/setup-gradle@0e052761e2b444a9db1681a00dc8730b80af3fc0
+        uses: gradle/actions/setup-gradle@182e4d39a69c621df8047e4504c7be47bacfd8d6
 
       - id: set_version
         name: Set Version
