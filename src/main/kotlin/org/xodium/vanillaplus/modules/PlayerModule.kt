@@ -45,8 +45,7 @@ internal class PlayerModule(
                             .executes { ctx ->
                                 ctx.tryCatch {
                                     if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
-                                    val name = StringArgumentType.getString(ctx, "name")
-                                    nickname(it.sender as Player, name)
+                                    nickname(it.sender as Player, StringArgumentType.getString(ctx, "name"))
                                 }
                             },
                     ),
@@ -73,17 +72,7 @@ internal class PlayerModule(
     @EventHandler
     fun on(event: PlayerDeathEvent) {
         if (!enabled()) return
-        val killer = event.entity.killer ?: return
-
-        val entity = event.entity
-        val itemStack = ItemStack.of(Material.PLAYER_HEAD)
-        val itemMeta = itemStack.itemMeta as SkullMeta
-        if (itemMeta.setOwningPlayer(entity)) {
-            itemMeta.customName(entity.displayName().append("'s Skull".fireFmt().mm()))
-            itemMeta.lore(listOf("${entity.name} killed by ${killer.name}").mm())
-            itemStack.itemMeta = itemMeta
-            entity.world.dropItemNaturally(entity.location, itemStack)
-        }
+        dropPlayerHead(event.entity, event.entity.killer ?: return)
     }
 
     /**
@@ -99,6 +88,25 @@ internal class PlayerModule(
         PlayerData.update(player, PlayerData.get(player).copy(nickname = newNickname))
         player.displayName((newNickname ?: player.name).mm())
         tabListModule.updatePlayerDisplayName(player)
+    }
+
+    /**
+     * Drops the player's head with custom metadata when killed by another player.
+     * @param entity The player who died.
+     * @param killer The player who killed the entity.
+     */
+    private fun dropPlayerHead(
+        entity: Player,
+        killer: Player,
+    ) {
+        val itemStack = ItemStack.of(Material.PLAYER_HEAD)
+        val itemMeta = itemStack.itemMeta as SkullMeta
+        if (itemMeta.setOwningPlayer(entity)) {
+            itemMeta.customName(entity.displayName().append("'s Skull".fireFmt().mm()))
+            itemMeta.lore(listOf("${entity.name} killed by ${killer.name}").mm())
+            itemStack.itemMeta = itemMeta
+            entity.world.dropItemNaturally(entity.location, itemStack)
+        }
     }
 
     data class Config(
