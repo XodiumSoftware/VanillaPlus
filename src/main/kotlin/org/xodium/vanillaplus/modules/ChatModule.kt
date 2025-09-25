@@ -203,6 +203,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
 
         return "dim:$worldName x:$x y:$y z:$z"
             .mm()
+            // TODO: doesnt work.
             .clickEvent(ClickEvent.copyToClipboard("$worldName $x $y $z"))
             .hoverEvent(HoverEvent.showText(config.l18n.clickToClipboard.mm()))
     }
