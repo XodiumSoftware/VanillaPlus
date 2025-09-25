@@ -19,6 +19,7 @@ import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.PlayerData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.ExtUtils.pt
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 
@@ -106,13 +107,22 @@ internal class PlayerModule(
             entity.location,
             ItemStack.of(Material.PLAYER_HEAD).apply {
                 setData(DataComponentTypes.PROFILE, ResolvableProfile.resolvableProfile(entity.playerProfile))
-                setData(DataComponentTypes.CUSTOM_NAME, entity.displayName().append("’s Skull".fireFmt().mm()))
+                setData(
+                    DataComponentTypes.CUSTOM_NAME,
+                    config.l18n.playerHeadName
+                        .replace("<player>", entity.displayName().pt())
+                        .mm(),
+                )
                 setData(
                     DataComponentTypes.LORE,
                     ItemLore
                         .lore()
-                        .addLine("${entity.name} killed by ${killer.name}".mm())
-                        .build(),
+                        .addLine(
+                            config.l18n.playerHeadLore
+                                .replace("<player>", entity.name)
+                                .replace("<killer>", killer.name)
+                                .mm(),
+                        ).build(),
                 )
             },
         )
@@ -120,5 +130,11 @@ internal class PlayerModule(
 
     data class Config(
         override var enabled: Boolean = true,
-    ) : ModuleInterface.Config
+        var l18n: L18n = L18n(),
+    ) : ModuleInterface.Config {
+        data class L18n(
+            var playerHeadName: String = "<player>’s Skull".fireFmt(),
+            var playerHeadLore: String = "<player> killed by <killer>",
+        )
+    }
 }
