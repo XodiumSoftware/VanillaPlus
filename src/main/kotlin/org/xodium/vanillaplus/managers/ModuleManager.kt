@@ -31,14 +31,13 @@ internal object ModuleManager {
     val motdModule: MotdModule = MotdModule()
     val openableModule: OpenableModule = OpenableModule()
     val petModule: PetModule = PetModule()
-    val playerModule: PlayerModule = PlayerModule()
     val recipiesModule: RecipiesModule = RecipiesModule()
     val signModule: SignModule = SignModule()
     val silkTouchModule: SilkTouchModule = SilkTouchModule()
     val sitModule: SitModule = SitModule()
     val sleepModule: SleepModule = SleepModule()
     val tabListModule: TabListModule = TabListModule()
-    val nicknameModule: NicknameModule = NicknameModule(tabListModule)
+    val playerModule: PlayerModule = PlayerModule(tabListModule)
     val treesModule: TreesModule = TreesModule()
     val wanderingTraderModule: WanderingTraderModule = WanderingTraderModule()
 
@@ -52,7 +51,6 @@ internal object ModuleManager {
             locatorModule,
             mobsModule,
             motdModule,
-            nicknameModule,
             openableModule,
             petModule,
             playerModule,
