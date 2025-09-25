@@ -2,6 +2,9 @@ package org.xodium.vanillaplus.modules
 
 import com.mojang.brigadier.arguments.StringArgumentType
 import io.papermc.paper.command.brigadier.Commands
+import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.ItemLore
+import io.papermc.paper.datacomponent.item.ResolvableProfile
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -9,7 +12,6 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -95,18 +97,25 @@ internal class PlayerModule(
      * @param entity The player who died.
      * @param killer The player who killed the entity.
      */
+    @Suppress("UnstableApiUsage")
     private fun dropPlayerHead(
         entity: Player,
         killer: Player,
     ) {
-        val itemStack = ItemStack.of(Material.PLAYER_HEAD)
-        val itemMeta = itemStack.itemMeta as SkullMeta
-        if (itemMeta.setOwningPlayer(entity)) {
-            itemMeta.customName(entity.displayName().append("'s Skull".fireFmt().mm()))
-            itemMeta.lore(listOf("${entity.name} killed by ${killer.name}").mm())
-            itemStack.itemMeta = itemMeta
-            entity.world.dropItemNaturally(entity.location, itemStack)
-        }
+        entity.world.dropItemNaturally(
+            entity.location,
+            ItemStack.of(Material.PLAYER_HEAD).apply {
+                setData(DataComponentTypes.PROFILE, ResolvableProfile.resolvableProfile(entity.playerProfile))
+                setData(DataComponentTypes.CUSTOM_NAME, entity.displayName().append("’s Skull".fireFmt().mm()))
+                setData(
+                    DataComponentTypes.LORE,
+                    ItemLore
+                        .lore()
+                        .addLine("${entity.name} killed by ${killer.name}".mm())
+                        .build(),
+                )
+            },
+        )
     }
 
     data class Config(
