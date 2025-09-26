@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: dev.triumphteam:nova:1.0.0-SNAPSHOT" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="dev.triumphteam" artifactId="nova" version="1.0.0-SNAPSHOT" baseVersion="1.0.0-SNAPSHOT" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/dev.triumphteam/nova/1.0.0-SNAPSHOT/cd39f8e618ad939feb92f0ab127552b26bfc949c/nova-1.0.0-SNAPSHOT.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/dev.triumphteam/nova/1.0.0-SNAPSHOT/44c6f81343261ed4fbe0c250c173217d469fb31/nova-1.0.0-SNAPSHOT-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
