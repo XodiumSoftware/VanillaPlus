@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import kotlinx.serialization.Serializable
 import org.bukkit.entity.Player
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import java.io.IOException
@@ -20,7 +19,6 @@ import kotlin.io.path.writeText
  * Represents the data structure for player data.
  * @param nickname The [nickname] of the player, if set.
  */
-@Serializable
 internal data class PlayerData(
     val nickname: String? = null,
 ) {
