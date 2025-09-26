@@ -200,4 +200,10 @@ internal object ExtUtils {
         }
         return builder.toString()
     }
+
+    /**
+     * Converts a CamelCase string to snake_case.
+     * @return the snake_case version of the string.
+     */
+    fun String.toSnakeCase(): String = this.replace(Regex("([a-z])([A-Z])"), "$1_$2").lowercase()
 }

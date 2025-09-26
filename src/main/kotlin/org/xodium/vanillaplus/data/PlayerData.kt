@@ -15,7 +15,6 @@ internal data class PlayerData(
 ) {
     companion object : DataInterface<PlayerData> {
         override val dataClass = PlayerData::class
-        override val fileName = "players.json"
         override val cache = mutableMapOf<UUID, PlayerData>()
 
         init {

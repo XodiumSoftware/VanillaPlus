@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.utils.ExtUtils.toSnakeCase
 import java.io.IOException
 import java.nio.file.Path
 import java.util.*
@@ -19,17 +20,19 @@ import kotlin.reflect.KClass
 /** Represents a contract for data within the system. */
 interface DataInterface<T : Any> {
     val dataClass: KClass<T>
-    val fileName: String
     val cache: MutableMap<UUID, T>
 
-    val mapper: ObjectMapper
+    private val mapper: ObjectMapper
         get() =
             jacksonObjectMapper()
                 .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
                 .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
                 .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
 
-    val filePath: Path
+    private val fileName: String
+        get() = "${dataClass.simpleName?.toSnakeCase() ?: "error"}.json"
+
+    private val filePath: Path
         get() = instance.dataFolder.toPath().resolve(fileName)
 
     /** Initializes the cache and loads existing data from the file. */

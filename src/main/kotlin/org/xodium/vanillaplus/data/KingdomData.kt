@@ -22,7 +22,6 @@ data class KingdomData(
 ) {
     companion object : DataInterface<KingdomData> {
         override val dataClass = KingdomData::class
-        override val fileName = "kingdoms.json"
         override val cache = mutableMapOf<UUID, KingdomData>()
 
         init {
