@@ -19,6 +19,7 @@ import kotlin.io.path.writeText
  * Represents the data structure for player data.
  * @param nickname The [nickname] of the player, if set.
  */
+@Serializable
 internal data class PlayerData(
     val nickname: String? = null,
 ) {
@@ -28,7 +29,7 @@ internal data class PlayerData(
                 .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
                 .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
                 .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
-        private val filePath = instance.dataFolder.toPath().resolve("playerdata.json")
+        private val filePath = instance.dataFolder.toPath().resolve("players.json")
         private val cache = mutableMapOf<UUID, PlayerData>()
 
         init {

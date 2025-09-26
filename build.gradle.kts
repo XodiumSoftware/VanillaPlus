@@ -19,6 +19,7 @@ plugins {
     id("java")
     id("idea")
     kotlin("jvm") version "2.2.20"
+    kotlin("plugin.serialization") version "2.2.20"
     id("com.gradleup.shadow") version "9.2.1"
     id("xyz.jpenilla.run-paper") version "3.0.0"
 }
@@ -41,6 +42,8 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.20.0")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:2.2.20")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:2.2.20")
 }
 
 java {
