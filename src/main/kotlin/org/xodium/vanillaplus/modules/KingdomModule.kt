@@ -24,7 +24,6 @@ import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
-import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
@@ -81,7 +80,8 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
         buildGui {
             containerType = hopper()
             spamPreventionDuration = config.guiSpamPreventionDuration
-            title("Kingdom".fireFmt().mm()) // TODO: change to player kingdom name.
+            title("".mm()) // TODO: change to player kingdom name.
+            statelessComponent { }
         }
 
     private fun sceptre(): ItemStack =

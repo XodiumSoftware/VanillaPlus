@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.KotlinFeature
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
@@ -21,8 +23,10 @@ internal object ConfigManager {
     val configPath: Path = instance.dataFolder.toPath().resolve("config.json")
     internal val objectMapper =
         jacksonObjectMapper()
-            .registerModules(JavaTimeModule())
-            .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+            .registerModules(
+                JavaTimeModule(),
+                KotlinModule.Builder().enable(KotlinFeature.UseJavaDurationConversion).build(),
+            ).disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
             .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
 
