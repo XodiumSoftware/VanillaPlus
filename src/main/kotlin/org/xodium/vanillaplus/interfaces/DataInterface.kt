@@ -37,8 +37,8 @@ interface DataInterface<T : Any> {
         if (filePath.toFile().exists()) {
             try {
                 cache.clear()
-                @Suppress("UNCHECKED_CAST")
-                val rawMap: Map<String, Any> = mapper.readValue(filePath.toFile(), Map::class.java) as Map<String, Any>
+                val type = mapper.typeFactory.constructMapType(Map::class.java, String::class.java, Any::class.java)
+                val rawMap: Map<String, Any> = mapper.readValue(filePath.toFile(), type)
                 rawMap.forEach { (keyString, value) ->
                     val convertedValue =
                         when (value) {
