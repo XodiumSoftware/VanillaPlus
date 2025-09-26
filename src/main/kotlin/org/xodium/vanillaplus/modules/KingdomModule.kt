@@ -3,20 +3,26 @@ package org.xodium.vanillaplus.modules
 import dev.triumphteam.gui.paper.Gui
 import dev.triumphteam.gui.paper.container.type.PaperContainerType.hopper
 import dev.triumphteam.gui.paper.kotlin.builder.buildGui
+import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.Recipe
 import org.bukkit.inventory.ShapedRecipe
+import org.bukkit.permissions.Permission
+import org.bukkit.permissions.PermissionDefault
 import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
@@ -31,6 +37,32 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
     init {
         if (enabled()) instance.server.addRecipe(sceptreRecipe())
     }
+
+    override fun cmds(): List<CommandData> =
+        listOf(
+            CommandData(
+                Commands
+                    .literal("sceptre")
+                    .requires { it.sender.hasPermission(perms()[0]) }
+                    .executes { ctx ->
+                        ctx.tryCatch {
+                            if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+                            (it.sender as Player).give(sceptre())
+                        }
+                    },
+                "This command gives you a sceptre",
+                emptyList(),
+            ),
+        )
+
+    override fun perms(): List<Permission> =
+        listOf(
+            Permission(
+                "${instance::class.simpleName}.sceptre".lowercase(),
+                "Allows use of the sceptre command",
+                PermissionDefault.OP,
+            ),
+        )
 
     @EventHandler
     fun on(event: PlayerInteractEvent) {
