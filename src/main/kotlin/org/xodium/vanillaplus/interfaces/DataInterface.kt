@@ -4,7 +4,6 @@ package org.xodium.vanillaplus.interfaces
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect
 import com.fasterxml.jackson.annotation.PropertyAccessor
-import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
@@ -38,9 +37,17 @@ interface DataInterface<T : Any> {
         if (filePath.toFile().exists()) {
             try {
                 cache.clear()
-                val typeRef = object : TypeReference<Map<String, T>>() {}
-                val map: Map<String, T> = mapper.readValue(filePath.toFile(), typeRef)
-                map.forEach { (keyString, value) -> cache[UUID.fromString(keyString)] = value }
+                @Suppress("UNCHECKED_CAST")
+                val rawMap: Map<String, Any> = mapper.readValue(filePath.toFile(), Map::class.java) as Map<String, Any>
+                rawMap.forEach { (keyString, value) ->
+                    val convertedValue =
+                        when (value) {
+                            is Map<*, *> -> mapper.convertValue(value, dataClass.java)
+                            else -> value
+                        }
+                    @Suppress("UNCHECKED_CAST")
+                    cache[UUID.fromString(keyString)] = convertedValue as T
+                }
                 save()
             } catch (e: IOException) {
                 instance.logger.severe("Failed to load ${dataClass.simpleName}: ${e.message}")
