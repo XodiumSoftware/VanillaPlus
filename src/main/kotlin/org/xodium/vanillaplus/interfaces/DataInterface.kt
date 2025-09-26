@@ -33,12 +33,9 @@ interface DataInterface<T : Any> {
     val filePath: Path
         get() = instance.dataFolder.toPath().resolve(fileName)
 
-    private val isLoaded: Boolean
-        get() = cache.isNotEmpty() || !filePath.toFile().exists()
-
     /** Initializes the cache and loads existing data from the file. */
-    private fun load() {
-        if (!isLoaded && filePath.toFile().exists()) {
+    fun load() {
+        if (filePath.toFile().exists()) {
             try {
                 cache.clear()
                 val map: Map<String, T> = mapper.readValue(filePath.toFile())
@@ -72,7 +69,7 @@ interface DataInterface<T : Any> {
      * @return the value associated with the specified key, or `null` if no mapping exists.
      */
     fun get(key: UUID): T? {
-        load()
+        if (!cache.containsKey(key) && filePath.toFile().exists()) load()
         return cache[key]
     }
 
@@ -85,7 +82,6 @@ interface DataInterface<T : Any> {
         key: UUID,
         data: T,
     ) {
-        load()
         cache[key] = data
         save()
     }

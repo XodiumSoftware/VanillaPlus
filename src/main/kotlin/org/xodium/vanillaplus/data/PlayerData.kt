@@ -18,6 +18,10 @@ internal data class PlayerData(
         override val fileName = "players.json"
         override val cache = mutableMapOf<UUID, PlayerData>()
 
+        init {
+            load()
+        }
+
         /**
          * Sets the data for a specific player.
          * @param player The player whose data is to be set.
