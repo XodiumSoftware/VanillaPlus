@@ -26,6 +26,7 @@ internal object ModuleManager {
     val chatModule: ChatModule = ChatModule()
     val dimensionsModule: DimensionsModule = DimensionsModule()
     val invModule: InvModule = InvModule()
+    val kingdomModule: KingdomModule = KingdomModule()
     val locatorModule: LocatorModule = LocatorModule()
     val mobsModule: MobsModule = MobsModule()
     val motdModule: MotdModule = MotdModule()
@@ -47,6 +48,7 @@ internal object ModuleManager {
             chatModule,
             dimensionsModule,
             invModule,
+            kingdomModule,
             locatorModule,
             mobsModule,
             motdModule,
