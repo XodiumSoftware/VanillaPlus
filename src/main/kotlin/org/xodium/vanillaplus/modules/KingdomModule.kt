@@ -25,8 +25,9 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.seconds
+import java.time.Duration
+import java.time.temporal.ChronoUnit
+import kotlin.time.toKotlinDuration
 
 /** Represents a module handling kingdom mechanics within the system. */
 internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
@@ -79,7 +80,7 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
     private fun gui(): Gui =
         buildGui {
             containerType = hopper()
-            spamPreventionDuration = config.guiSpamPreventionDuration
+            spamPreventionDuration = config.guiSpamPreventionDuration.toKotlinDuration()
             title("".mm()) // TODO: change to player kingdom name.
             statelessComponent { }
         }
@@ -107,7 +108,7 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
 
     data class Config(
         override var enabled: Boolean = true,
-        var guiSpamPreventionDuration: Duration = 1.seconds,
+        var guiSpamPreventionDuration: Duration = Duration.of(1, ChronoUnit.SECONDS),
         var sceptreMaterial: Material = Material.BLAZE_ROD,
         var sceptreItemName: String = "Royal Sceptre".mangoFmt(),
         var sceptreLore: MutableList<String> = mutableListOf("<gray>Right-click to manage your Kingdom</gray>"),
