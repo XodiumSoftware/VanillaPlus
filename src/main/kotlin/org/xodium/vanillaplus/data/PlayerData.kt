@@ -8,11 +8,9 @@ import java.util.*
 
 /**
  * Represents the data structure for player data.
- * @param uuid The UUID of the player.
  * @param nickname The [nickname] of the player, if set.
  */
 internal data class PlayerData(
-    val uuid: UUID,
     val nickname: String? = null,
 ) {
     companion object : DataInterface<PlayerData> {
@@ -33,7 +31,7 @@ internal data class PlayerData(
             player: Player,
             nickname: String? = null,
         ) {
-            set(player.uniqueId, PlayerData(player.uniqueId, nickname))
+            set(player.uniqueId, PlayerData(nickname))
         }
 
         /**
