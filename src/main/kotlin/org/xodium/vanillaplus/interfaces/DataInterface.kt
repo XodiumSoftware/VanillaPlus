@@ -4,9 +4,8 @@ package org.xodium.vanillaplus.interfaces
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect
 import com.fasterxml.jackson.annotation.PropertyAccessor
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.databind.*
+import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import java.io.IOException
@@ -28,6 +27,7 @@ interface DataInterface<T : Any> {
                 .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
                 .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
                 .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
+                .registerModule(UUIDModule())
 
     val filePath: Path
         get() = instance.dataFolder.toPath().resolve(fileName)
@@ -37,17 +37,9 @@ interface DataInterface<T : Any> {
         if (filePath.toFile().exists()) {
             try {
                 cache.clear()
-                val type = mapper.typeFactory.constructMapType(Map::class.java, String::class.java, Any::class.java)
-                val rawMap: Map<String, Any> = mapper.readValue(filePath.toFile(), type)
-                rawMap.forEach { (keyString, value) ->
-                    val convertedValue =
-                        when (value) {
-                            is Map<*, *> -> mapper.convertValue(value, dataClass.java)
-                            else -> value
-                        }
-                    @Suppress("UNCHECKED_CAST")
-                    cache[UUID.fromString(keyString)] = convertedValue as T
-                }
+                val type = mapper.typeFactory.constructMapType(Map::class.java, UUID::class.java, dataClass.java)
+                val rawMap: Map<UUID, T> = mapper.readValue(filePath.toFile(), type)
+                cache.putAll(rawMap)
                 save()
             } catch (e: IOException) {
                 instance.logger.severe("Failed to load ${dataClass.simpleName}: ${e.message}")
@@ -62,8 +54,7 @@ interface DataInterface<T : Any> {
             Runnable {
                 try {
                     filePath.parent.createDirectories()
-                    val stringKeyMap = cache.mapKeys { it.key.toString() }
-                    filePath.writeText(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(stringKeyMap))
+                    filePath.writeText(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(cache))
                 } catch (e: IOException) {
                     instance.logger.severe("Failed to write ${dataClass.simpleName} to file: ${e.message}")
                 }
@@ -93,4 +84,24 @@ interface DataInterface<T : Any> {
         cache[key] = data
         save()
     }
+}
+
+// Custom module to handle UUID serialization/deserialization as map keys
+class UUIDModule : SimpleModule() {
+    init {
+        addKeyDeserializer(UUID::class.java, UUIDKeyDeserializer())
+    }
+}
+
+// Custom key deserializer for UUID
+class UUIDKeyDeserializer : KeyDeserializer() {
+    override fun deserializeKey(
+        key: String,
+        ctxt: DeserializationContext,
+    ): Any =
+        try {
+            UUID.fromString(key)
+        } catch (e: IllegalArgumentException) {
+            throw JsonMappingException(ctxt.parser, "Invalid UUID format: $key")
+        }
 }
