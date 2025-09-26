@@ -42,17 +42,5 @@ internal data class PlayerData(
          * @return The PlayerData associated with the player, or null if not found.
          */
         fun get(player: Player): PlayerData? = get(player.uniqueId)
-
-        /**
-         * Updates the data for a specific player.
-         * @param player The player whose data is to be updated.
-         * @param nickname The new nickname to set.
-         */
-        fun update(
-            player: Player,
-            nickname: String? = null,
-        ) {
-            update(player.uniqueId, PlayerData(player.uniqueId, nickname))
-        }
     }
 }

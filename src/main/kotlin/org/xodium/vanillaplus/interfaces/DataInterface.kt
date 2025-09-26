@@ -63,6 +63,11 @@ interface DataInterface<T : Any> {
         )
     }
 
+    /**
+     * Associates the specified value with the specified key in the cache and saves the changes.
+     * @param key the UUID key with which the specified value is to be associated.
+     * @param data the value to be associated with the specified key.
+     */
     fun set(
         key: UUID,
         data: T,
@@ -71,13 +76,10 @@ interface DataInterface<T : Any> {
         save()
     }
 
+    /**
+     * Returns the value associated with the specified key, or `null` if no value is associated.
+     * @param key the UUID key whose associated value is to be returned.
+     * @return the value associated with the specified key, or `null` if no mapping exists.
+     */
     fun get(key: UUID): T? = cache[key]
-
-    fun update(
-        key: UUID,
-        data: T,
-    ) {
-        cache[key] = data
-        save()
-    }
 }
