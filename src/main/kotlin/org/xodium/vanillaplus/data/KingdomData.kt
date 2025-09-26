@@ -9,7 +9,7 @@ import java.util.*
  * Represents a kingdom in the VanillaPlus plugin.
  * @property id The unique identifier of the kingdom.
  * @property name The display name of the kingdom.
- * @property ruler The UUID of the player who rules this kingdom.
+ * @property sceptre The UUID of the sceptre who rules this kingdom.
  * @property creationDate The date when the kingdom was created.
  * @property members Mutable set of UUIDs representing kingdom members (excluding the ruler).
  * //TODO
@@ -17,6 +17,7 @@ import java.util.*
 data class KingdomData(
     val id: UUID,
     val name: String,
+    val sceptre: UUID,
     val ruler: UUID,
     val creationDate: Date,
     val members: MutableSet<UUID> = mutableSetOf(),
@@ -28,6 +29,32 @@ data class KingdomData(
 
         init {
             load()
+            cache.values.forEach { kingdom ->
+                sceptreToKingdom[kingdom.sceptre] = kingdom.id
+            }
+        }
+
+        fun getKingdomBySceptre(sceptreId: UUID): KingdomData? = sceptreToKingdom[sceptreId]?.let { cache[it] }
+
+        fun createNewKingdom(
+            sceptreId: UUID,
+            sceptreHolder: UUID,
+            kingdomName: String,
+        ): KingdomData {
+            val kingdom =
+                KingdomData(
+                    id = UUID.randomUUID(),
+                    name = kingdomName,
+                    sceptre = sceptreId,
+                    sceptreHolder = sceptreHolder,
+                    creationDate = Date(),
+                )
+
+            cache[kingdom.id] = kingdom
+            sceptreToKingdom[sceptreId] = kingdom.id
+            save()
+
+            return kingdom
         }
     }
 }

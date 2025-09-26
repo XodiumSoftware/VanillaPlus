@@ -21,10 +21,12 @@ import org.bukkit.permissions.PermissionDefault
 import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
+import org.xodium.vanillaplus.data.KingdomData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
+import java.util.*
 import kotlin.time.Duration.Companion.seconds
 
 /** Represents a module handling kingdom mechanics within the system. */
@@ -32,6 +34,7 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
     override val config: Config = Config()
 
     private val sceptreKey = NamespacedKey(instance, "kingdom_sceptre")
+    private val sceptreIdKey = NamespacedKey(instance, "kingdom_sceptre_id")
     private val sceptreRecipeKey = NamespacedKey(instance, "kingdom_sceptre_recipe")
 
     init {
@@ -69,17 +72,86 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
         if (!enabled() && event.action != Action.RIGHT_CLICK_AIR && event.action != Action.RIGHT_CLICK_BLOCK) return
 
         val item = event.item ?: return
+        val player = event.player
         if (item.persistentDataContainer.has(sceptreKey, PersistentDataType.BYTE)) {
             event.isCancelled = true
-            gui().open(event.player)
+
+            val sceptreUUID = getSceptreUUID(item)
+            val kingdom = KingdomData.getKingdomBySceptre(sceptreUUID)
+            if (kingdom == null) {
+                createNewKingdom(player, sceptreUUID, item)
+            } else {
+                if (kingdom.sceptreHolder == player.uniqueId) {
+                    gui(kingdom).open(player)
+                } else {
+                    kingdom.sceptreHolder = player.uniqueId
+                    KingdomData.save()
+                    gui(kingdom).open(player)
+                }
+            }
         }
     }
 
-    private fun gui(): Gui =
+    private fun getSceptreUUID(item: ItemStack): UUID {
+        val pdc = item.persistentDataContainer
+        val sceptreUUIDString = pdc.get(sceptreIdKey, PersistentDataType.STRING)
+
+        return if (sceptreUUIDString != null) {
+            UUID.fromString(sceptreUUIDString)
+        } else {
+            // Generate new UUID for this sceptre
+            val newUUID = UUID.randomUUID()
+            pdc.set(sceptreIdKey, PersistentDataType.STRING, newUUID.toString())
+            newUUID
+        }
+    }
+
+    private fun createNewKingdom(
+        player: Player,
+        sceptreUUID: UUID,
+        sceptreItem: ItemStack,
+    ) {
+        val kingdomName = "${player.name}'s Kingdom" // Default kingdom name
+
+        // Create the kingdom
+        val kingdom =
+            KingdomData.createNewKingdom(
+                sceptreId = sceptreUUID,
+                sceptreHolder = player.uniqueId,
+                kingdomName = kingdomName,
+            )
+
+        // Update sceptre lore to show kingdom info
+        updateSceptreLore(sceptreItem, kingdom)
+
+        // Notify player
+        player.sendMessage("§aNew kingdom '${kingdom.name}' has been created!")
+        player.sendMessage("§7You are now the ruler. Right-click the sceptre to manage your kingdom.")
+
+        // Open the GUI
+        gui(kingdom).open(player)
+    }
+
+    private fun updateSceptreLore(
+        sceptreItem: ItemStack,
+        kingdom: KingdomData,
+    ) {
+        val newLore =
+            mutableListOf(
+                "<gray>Right-click to manage your Kingdom</gray>",
+                "<dark_gray>Kingdom: ${kingdom.name}</dark_gray>",
+                "<dark_gray>Ruler: ${kingdom.ruler}</dark_gray>",
+            )
+
+        @Suppress("unstableApiUsage")
+        sceptreItem.setData(DataComponentTypes.LORE, ItemLore.lore(newLore.mm()))
+    }
+
+    private fun gui(kingdom: KingdomData): Gui =
         buildGui {
             containerType = hopper()
             spamPreventionDuration = config.guiSpamPreventionDuration.seconds
-            title("".mm()) // TODO: change to player kingdom name.
+            title(kingdom.name.mm())
             statelessComponent { }
         }
 
