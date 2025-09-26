@@ -4,11 +4,11 @@ package org.xodium.vanillaplus.interfaces
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect
 import com.fasterxml.jackson.annotation.PropertyAccessor
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import java.io.IOException
 import java.nio.file.Path
@@ -38,7 +38,8 @@ interface DataInterface<T : Any> {
         if (filePath.toFile().exists()) {
             try {
                 cache.clear()
-                val map: Map<String, T> = mapper.readValue(filePath.toFile())
+                val typeRef = object : TypeReference<Map<String, T>>() {}
+                val map: Map<String, T> = mapper.readValue(filePath.toFile(), typeRef)
                 map.forEach { (keyString, value) -> cache[UUID.fromString(keyString)] = value }
                 save()
             } catch (e: IOException) {
