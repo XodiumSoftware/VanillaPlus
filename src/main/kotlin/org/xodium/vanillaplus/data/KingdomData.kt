@@ -12,6 +12,7 @@ import java.util.*
  * @property ruler The UUID of the player who rules this kingdom.
  * @property creationDate The date when the kingdom was created.
  * @property members Mutable set of UUIDs representing kingdom members (excluding the ruler).
+ * //TODO
  */
 data class KingdomData(
     val id: UUID,
@@ -19,6 +20,7 @@ data class KingdomData(
     val ruler: UUID,
     val creationDate: Date,
     val members: MutableSet<UUID> = mutableSetOf(),
+    val npcs: MutableSet<UUID> = mutableSetOf(),
 ) {
     companion object : DataInterface<KingdomData> {
         override val dataClass = KingdomData::class

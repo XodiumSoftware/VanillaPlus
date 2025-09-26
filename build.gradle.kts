@@ -31,6 +31,7 @@ repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://maven.enginehub.org/repo/")
+    maven("https://repo.triumphteam.dev/snapshots")
 }
 
 dependencies {
@@ -41,6 +42,9 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.20.0")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.0")
+    implementation("dev.triumphteam:triumph-gui-paper-kotlin:4.0.0-SNAPSHOT") {
+        exclude(group = "com.google.guava", module = "guava")
+    }
 }
 
 java {
@@ -59,6 +63,7 @@ tasks {
         archiveClassifier.set("")
         destinationDirectory.set(layout.projectDirectory.dir("build/libs"))
         relocate("com.fasterxml.jackson", "$pluginGroup.jackson")
+        relocate("dev.triumphteam.gui", "$pluginGroup.gui")
         minimize { exclude(dependency("org.jetbrains.kotlin:kotlin-reflect:.*")) }
     }
     jar { enabled = false }
