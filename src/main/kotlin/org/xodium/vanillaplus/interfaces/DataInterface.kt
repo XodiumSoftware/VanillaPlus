@@ -4,8 +4,9 @@ package org.xodium.vanillaplus.interfaces
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect
 import com.fasterxml.jackson.annotation.PropertyAccessor
-import com.fasterxml.jackson.databind.*
-import com.fasterxml.jackson.databind.module.SimpleModule
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import java.io.IOException
@@ -27,7 +28,6 @@ interface DataInterface<T : Any> {
                 .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
                 .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
                 .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
-                .registerModule(UUIDModule())
 
     val filePath: Path
         get() = instance.dataFolder.toPath().resolve(fileName)
@@ -84,24 +84,4 @@ interface DataInterface<T : Any> {
         cache[key] = data
         save()
     }
-}
-
-// Custom module to handle UUID serialization/deserialization as map keys
-class UUIDModule : SimpleModule() {
-    init {
-        addKeyDeserializer(UUID::class.java, UUIDKeyDeserializer())
-    }
-}
-
-// Custom key deserializer for UUID
-class UUIDKeyDeserializer : KeyDeserializer() {
-    override fun deserializeKey(
-        key: String,
-        ctxt: DeserializationContext,
-    ): Any =
-        try {
-            UUID.fromString(key)
-        } catch (e: IllegalArgumentException) {
-            throw JsonMappingException(ctxt.parser, "Invalid UUID format: $key")
-        }
 }
