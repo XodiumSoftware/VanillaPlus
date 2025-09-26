@@ -33,9 +33,12 @@ interface DataInterface<T : Any> {
     val filePath: Path
         get() = instance.dataFolder.toPath().resolve(fileName)
 
+    private val isLoaded: Boolean
+        get() = cache.isNotEmpty() || !filePath.toFile().exists()
+
     /** Initializes the cache and loads existing data from the file. */
-    fun load() {
-        if (filePath.toFile().exists()) {
+    private fun load() {
+        if (!isLoaded && filePath.toFile().exists()) {
             try {
                 cache.clear()
                 val map: Map<String, T> = mapper.readValue(filePath.toFile())
@@ -48,7 +51,7 @@ interface DataInterface<T : Any> {
     }
 
     /** Saves the current state of the cache to the file asynchronously. */
-    fun save() {
+    private fun save() {
         instance.server.scheduler.runTaskAsynchronously(
             instance,
             Runnable {
@@ -64,6 +67,16 @@ interface DataInterface<T : Any> {
     }
 
     /**
+     * Returns the value associated with the specified key, or `null` if no value is associated.
+     * @param key the UUID key whose associated value is to be returned.
+     * @return the value associated with the specified key, or `null` if no mapping exists.
+     */
+    fun get(key: UUID): T? {
+        load()
+        return cache[key]
+    }
+
+    /**
      * Associates the specified value with the specified key in the cache and saves the changes.
      * @param key the UUID key with which the specified value is to be associated.
      * @param data the value to be associated with the specified key.
@@ -72,14 +85,8 @@ interface DataInterface<T : Any> {
         key: UUID,
         data: T,
     ) {
+        load()
         cache[key] = data
         save()
     }
-
-    /**
-     * Returns the value associated with the specified key, or `null` if no value is associated.
-     * @param key the UUID key whose associated value is to be returned.
-     * @return the value associated with the specified key, or `null` if no mapping exists.
-     */
-    fun get(key: UUID): T? = cache[key]
 }
