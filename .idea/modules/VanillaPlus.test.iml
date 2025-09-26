@@ -2,7 +2,7 @@
 <module external.linked.project.id="VanillaPlus:test" external.linked.project.path="$MODULE_DIR$/../.." external.root.project.path="$MODULE_DIR$/../.." external.system.id="GRADLE" external.system.module.group="org.xodium.vanillaplus" external.system.module.type="sourceSet" external.system.module.version="1.21.8" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet external-system-id="GRADLE" type="kotlin-language" name="Kotlin">
-      <configuration version="5" platform="JVM 21" allPlatforms="JVM [21]" useProjectSettings="false" pureKotlinSourceFolders="C:\Users\admin\Documents\Projects\VanillaPlus\src\main\kotlin;C:\Users\admin\Documents\Projects\VanillaPlus\src\test\kotlin">
+      <configuration version="5" platform="JVM 21" allPlatforms="JVM [21]" useProjectSettings="false" pureKotlinSourceFolders="$MODULE_DIR$/../../src/test/kotlin;/media/hdd/JetBrains/Projects/VanillaPlus/src/main/kotlin">
         <additionalVisibleModuleNames>VanillaPlus:main</additionalVisibleModuleNames>
         <compilerSettings />
         <compilerArguments>
@@ -50,10 +50,10 @@
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.20.0" level="project" />
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.20" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:2.2.20" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.6.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.0" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.2.20" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains:annotations:13.0" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-serialization-json:2.2.20" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-serialization-core:2.2.20" level="project" />
   </component>
   <component name="TestModuleProperties" production-module="VanillaPlus.main" />
 </module>

@@ -11,7 +11,7 @@
       </configuration>
     </facet>
     <facet external-system-id="GRADLE" type="kotlin-language" name="Kotlin">
-      <configuration version="5" platform="JVM 21" allPlatforms="JVM [21]" useProjectSettings="false" pureKotlinSourceFolders="C:\Users\admin\Documents\Projects\VanillaPlus\src\main\kotlin;C:\Users\admin\Documents\Projects\VanillaPlus\src\test\kotlin">
+      <configuration version="5" platform="JVM 21" allPlatforms="JVM [21]" useProjectSettings="false" pureKotlinSourceFolders="$MODULE_DIR$/../../src/test/kotlin;/media/hdd/JetBrains/Projects/VanillaPlus/src/main/kotlin">
         <compilerSettings />
         <compilerArguments>
           <flagArguments>
@@ -82,6 +82,8 @@
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.20.0" level="project" />
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.20" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:2.2.20" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.6.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.0" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.2.20" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: com.google.guava:failureaccess:1.0.2" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava" level="project" />
@@ -117,8 +119,6 @@
     <orderEntry type="library" scope="PROVIDED" name="Gradle: org.abego.treelayout:org.abego.treelayout.core:1.0.3" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: com.ibm.icu:icu4j:72.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: org.apache.commons:commons-lang3:3.12.0" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-serialization-json:2.2.20" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-serialization-core:2.2.20" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains:annotations:13.0" level="project" />
   </component>
 </module>

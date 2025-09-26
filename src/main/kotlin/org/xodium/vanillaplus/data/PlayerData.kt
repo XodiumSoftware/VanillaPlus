@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import kotlinx.serialization.Serializable
 import org.bukkit.entity.Player
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import java.io.IOException
