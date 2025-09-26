@@ -5,6 +5,7 @@ import dev.triumphteam.gui.paper.container.type.PaperContainerType.hopper
 import dev.triumphteam.gui.paper.kotlin.builder.buildGui
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.CustomModelData
 import io.papermc.paper.datacomponent.item.ItemLore
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
@@ -89,6 +90,10 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
             setData(DataComponentTypes.ITEM_NAME, config.sceptreItemName.mm())
             setData(DataComponentTypes.LORE, ItemLore.lore(config.sceptreLore.mm()))
             setData(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, config.sceptreGlint)
+            setData(
+                DataComponentTypes.CUSTOM_MODEL_DATA,
+                CustomModelData.customModelData().addString(config.sceptreCustomModelData),
+            )
             editPersistentDataContainer { it.set(sceptreKey, PersistentDataType.BYTE, 1) }
         }
 
@@ -107,5 +112,6 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
         var sceptreItemName: String = "Royal Sceptre".mangoFmt(),
         var sceptreLore: MutableList<String> = mutableListOf("<gray>Right-click to manage your Kingdom</gray>"),
         var sceptreGlint: Boolean = true,
+        var sceptreCustomModelData: String = "sceptre",
     ) : ModuleInterface.Config
 }
