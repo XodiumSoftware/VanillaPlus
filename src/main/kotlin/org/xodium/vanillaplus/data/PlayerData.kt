@@ -2,95 +2,57 @@
 
 package org.xodium.vanillaplus.data
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect
-import com.fasterxml.jackson.annotation.PropertyAccessor
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import org.bukkit.entity.Player
-import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import java.io.IOException
+import org.xodium.vanillaplus.interfaces.DataInterface
 import java.util.*
-import kotlin.io.path.createDirectories
-import kotlin.io.path.writeText
 
 /**
  * Represents the data structure for player data.
+ * @param uuid The UUID of the player.
  * @param nickname The [nickname] of the player, if set.
  */
 internal data class PlayerData(
+    val uuid: UUID,
     val nickname: String? = null,
 ) {
-    companion object {
-        private val mapper =
-            jacksonObjectMapper()
-                .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
-                .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-                .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
-        private val filePath = instance.dataFolder.toPath().resolve("players.json")
-        private val cache = mutableMapOf<UUID, PlayerData>()
+    companion object : DataInterface<PlayerData> {
+        override val dataClass = PlayerData::class
+        override val fileName = "players.json"
+        override val cache = mutableMapOf<UUID, PlayerData>()
 
         init {
             load()
         }
 
-        /** Initializes the [PlayerData] cache and loads existing data from the file. */
-        private fun load() {
-            if (filePath.toFile().exists()) {
-                try {
-                    cache.clear()
-                    cache.putAll(mapper.readValue(filePath.toFile()))
-                    save()
-                } catch (e: IOException) {
-                    instance.logger.severe("Failed to load player data: ${e.message} | ${e.stackTraceToString()}")
-                }
-            }
-        }
-
-        /** Saves the current state of the [PlayerData] cache to the file asynchronously. */
-        private fun save() {
-            instance.server.scheduler.runTaskAsynchronously(
-                instance,
-                Runnable {
-                    try {
-                        filePath.parent.createDirectories()
-                        filePath.writeText(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(cache))
-                    } catch (e: IOException) {
-                        instance.logger.severe("Failed to write ${PlayerData::class.simpleName} to file: ${e.message}")
-                        e.printStackTrace()
-                    }
-                },
-            )
-        }
-
         /**
-         * Sets the [player] data for a specific [player].
-         * @param player The [player] whose data is to be set.
+         * Sets the data for a specific player.
+         * @param player The player whose data is to be set.
+         * @param nickname The nickname to set (optional).
          */
-        fun set(player: Player) {
-            cache.getOrPut(player.uniqueId) { PlayerData() }
-            save()
+        fun set(
+            player: Player,
+            nickname: String? = null,
+        ) {
+            set(player.uniqueId, PlayerData(player.uniqueId, nickname))
         }
 
         /**
-         * Retrieves the [player] data for a specific [player].
-         * @param player The [player] whose data is to be retrieved.
-         * @return The [PlayerData] associated with the [player].
+         * Retrieves the data for a specific player.
+         * @param player The player whose data is to be retrieved.
+         * @return The PlayerData associated with the player, or null if not found.
          */
-        fun get(player: Player): PlayerData = cache.getOrPut(player.uniqueId) { PlayerData() }
+        fun get(player: Player): PlayerData? = get(player.uniqueId)
 
         /**
-         * Updates the [player] data for a specific [player].
-         * @param player The [player] whose data is to be updated.
-         * @param data The new [PlayerData] to set for the [player].
+         * Updates the data for a specific player.
+         * @param player The player whose data is to be updated.
+         * @param nickname The new nickname to set.
          */
         fun update(
             player: Player,
-            data: PlayerData,
+            nickname: String? = null,
         ) {
-            cache[player.uniqueId] = data
-            save()
+            update(player.uniqueId, PlayerData(player.uniqueId, nickname))
         }
     }
 }
