@@ -11,6 +11,8 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.Recipe
+import org.bukkit.inventory.ShapedRecipe
 import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
@@ -24,13 +26,21 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
     override val config: Config = Config()
 
     private val sceptreKey = NamespacedKey(instance, "kingdom_sceptre")
+    private val sceptreRecipeKey = NamespacedKey(instance, "kingdom_sceptre_recipe")
+
+    init {
+        if (enabled()) instance.server.addRecipe(sceptreRecipe())
+    }
 
     @EventHandler
     fun on(event: PlayerInteractEvent) {
         if (!enabled() && event.action != Action.RIGHT_CLICK_AIR && event.action != Action.RIGHT_CLICK_BLOCK) return
 
         val item = event.item ?: return
-        if (item.type != config.sceptreMaterial) return
+        if (item.persistentDataContainer.has(sceptreKey, PersistentDataType.BYTE)) {
+            event.isCancelled = true
+            gui().open(event.player)
+        }
     }
 
     private fun gui(): Gui =
@@ -47,6 +57,14 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
             setData(DataComponentTypes.LORE, ItemLore.lore(config.sceptreLore.mm()))
             setData(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, config.sceptreGlint)
             editPersistentDataContainer { it.set(sceptreKey, PersistentDataType.BYTE, 1) }
+        }
+
+    private fun sceptreRecipe(): Recipe =
+        ShapedRecipe(sceptreRecipeKey, sceptre()).apply {
+            shape(" ", " ", " ")
+            setIngredient('#', Material.STONE)
+            setIngredient(' ', Material.IRON_INGOT)
+            setIngredient(' ', Material.IRON_BLOCK)
         }
 
     data class Config(
