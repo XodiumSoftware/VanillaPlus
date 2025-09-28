@@ -48,10 +48,12 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
             val kingdom = KingdomData.getKingdomBySceptre(sceptreUUID)
             if (kingdom == null) {
                 val kingdom =
-                    KingdomData.createNewKingdom(
-                        sceptreId = sceptreUUID,
-                        sceptreHolder = player.uniqueId,
-                        kingdomName = "${player.name}'s Kingdom",
+                    KingdomData(
+                        id = UUID.randomUUID(),
+                        name = "${player.name}'s Kingdom",
+                        sceptre = sceptreUUID,
+                        ruler = player.uniqueId,
+                        creationDate = Date(),
                     )
 
                 player.sendMessage("New kingdom '${kingdom.name}' has been created!".mm())

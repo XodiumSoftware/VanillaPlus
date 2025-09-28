@@ -29,30 +29,6 @@ data class KingdomData(
 
         init {
             load()
-            cache.values.forEach { sceptreToKingdom[it.sceptre] = it.id }
-        }
-
-        fun getKingdomBySceptre(sceptreId: UUID): KingdomData? = sceptreToKingdom[sceptreId]?.let { cache[it] }
-
-        fun createNewKingdom(
-            sceptreId: UUID,
-            sceptreHolder: UUID,
-            kingdomName: String,
-        ): KingdomData {
-            val kingdom =
-                KingdomData(
-                    id = UUID.randomUUID(),
-                    name = kingdomName,
-                    sceptre = sceptreId,
-                    sceptreHolder = sceptreHolder,
-                    creationDate = Date(),
-                )
-
-            cache[kingdom.id] = kingdom
-            sceptreToKingdom[sceptreId] = kingdom.id
-            save() // TODO: use set() instead since that saves to cache and file. save() is private.
-
-            return kingdom
         }
     }
 }
