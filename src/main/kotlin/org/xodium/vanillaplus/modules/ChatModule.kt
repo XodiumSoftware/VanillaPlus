@@ -89,7 +89,6 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
         event.renderer(ChatRenderer.defaultRenderer())
 
         event.renderer { player, displayName, message, audience ->
-            val processedMessage = replacePositionPlaceholder(player, message)
             var base =
                 config.chatFormat.mm(
                     Placeholder.component(
@@ -98,7 +97,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
                             .clickEvent(ClickEvent.suggestCommand("/w ${player.name} "))
                             .hoverEvent(HoverEvent.showText(config.l18n.clickToWhisper.mm())),
                     ),
-                    Placeholder.component("message", processedMessage.pt().mm()),
+                    Placeholder.component("message", message.pt().mm()),
                 )
             if (audience == player) base = base.appendSpace().append(createDeleteCross(event))
             base
@@ -192,23 +191,6 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
     }
 
     /**
-     * Extension function to create position text for a [Player].
-     * @return A [Component] representing the player's position with copy-to-clipboard functionality.
-     */
-    private fun Player.createPositionText(): Component {
-        val worldName = location.world?.name ?: "unknown"
-        val x = location.blockX
-        val y = location.blockY
-        val z = location.blockZ
-
-        return "dim:$worldName x:$x y:$y z:$z"
-            .mm()
-            // TODO: doesnt work.
-            .clickEvent(ClickEvent.copyToClipboard("$worldName $x $y $z"))
-            .hoverEvent(HoverEvent.showText(config.l18n.clickToClipboard.mm()))
-    }
-
-    /**
      * Creates the delete cross component for message deletion.
      * @param event The [AsyncChatEvent] containing the message to be deleted.
      * @return A [Component] representing the delete cross with hover text and click action.
@@ -218,20 +200,6 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
             .mm()
             .hoverEvent(config.l18n.deleteMessage.mm())
             .clickEvent(ClickEvent.callback { instance.server.deleteMessage(event.signedMessage()) })
-
-    /**
-     * Replaces <pos> placeholder in the message with player's coordinates.
-     * @param player The player whose position should be used.
-     * @param originalMessage The original message component.
-     * @return The modified component with position placeholder replaced.
-     */
-    private fun replacePositionPlaceholder(
-        player: Player,
-        originalMessage: Component,
-    ): Component {
-        if (!originalMessage.pt().contains("<pos>", ignoreCase = true)) return originalMessage
-        return originalMessage.replaceText { it.matchLiteral("<pos>").replacement(player.createPositionText()) }
-    }
 
     data class Config(
         override var enabled: Boolean = true,
