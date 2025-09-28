@@ -44,8 +44,9 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
         if (item.persistentDataContainer.has(sceptreKey, PersistentDataType.BYTE)) {
             event.isCancelled = true
 
+            // TODO: we should assign UUID on sceptre itemstack, so it assigns it on using the recipe. so we can move this method completely and just fetch it directly.
             val sceptreUUID = getSceptreUUID(item)
-            val kingdom = KingdomData.getKingdomBySceptre(sceptreUUID)
+            val kingdom = KingdomData.get(sceptreUUID)
             if (kingdom == null) {
                 val kingdom =
                     KingdomData(
