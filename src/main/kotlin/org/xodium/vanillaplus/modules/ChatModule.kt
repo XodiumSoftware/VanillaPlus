@@ -1,8 +1,10 @@
 package org.xodium.vanillaplus.modules
 
 import com.mojang.brigadier.arguments.StringArgumentType
+import io.papermc.paper.chat.ChatRenderer
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.event.player.AsyncChatEvent
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
@@ -84,27 +86,20 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
     fun on(event: AsyncChatEvent) {
         if (!config.enabled) return
 
-        event.renderer { source, displayName, message, viewer ->
+        event.renderer(ChatRenderer.defaultRenderer())
+
+        event.renderer { player, displayName, message, audience ->
             var base =
                 config.chatFormat.mm(
                     Placeholder.component(
                         "player",
                         displayName
-                            .clickEvent(ClickEvent.suggestCommand("/w ${source.name} "))
+                            .clickEvent(ClickEvent.suggestCommand("/w ${player.name} "))
                             .hoverEvent(HoverEvent.showText(config.l18n.clickToWhisper.mm())),
                     ),
                     Placeholder.component("message", message.pt().mm()),
                 )
-
-            if (viewer == source) {
-                val deleteCross =
-                    config.deleteCross
-                        .mm()
-                        .hoverEvent(config.l18n.deleteMessage.mm())
-                        .clickEvent(ClickEvent.callback { _ -> instance.server.deleteMessage(event.signedMessage()) })
-
-                base = base.appendSpace().append(deleteCross)
-            }
+            if (audience == player) base = base.appendSpace().append(createDeleteCross(event))
             base
         }
     }
@@ -195,6 +190,17 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
         )
     }
 
+    /**
+     * Creates the delete cross component for message deletion.
+     * @param event The [AsyncChatEvent] containing the message to be deleted.
+     * @return A [Component] representing the delete cross with hover text and click action.
+     */
+    private fun createDeleteCross(event: AsyncChatEvent): Component =
+        config.deleteCross
+            .mm()
+            .hoverEvent(config.l18n.deleteMessage.mm())
+            .clickEvent(ClickEvent.callback { instance.server.deleteMessage(event.signedMessage()) })
+
     data class Config(
         override var enabled: Boolean = true,
         var chatFormat: String = "<player> <reset>${"›".mangoFmt(true)} <message>",
@@ -229,6 +235,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
             var clickToWhisper: String = "Click to Whisper".fireFmt(),
             var playerIsNotOnline: String = "$PREFIX Player is not Online!".fireFmt(),
             var deleteMessage: String = "Click to delete your message!".fireFmt(),
+            var clickToClipboard: String = "Click to copy position to clipboard".fireFmt(),
         )
     }
 }
