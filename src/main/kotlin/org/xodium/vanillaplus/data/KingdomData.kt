@@ -29,9 +29,7 @@ data class KingdomData(
 
         init {
             load()
-            cache.values.forEach { kingdom ->
-                sceptreToKingdom[kingdom.sceptre] = kingdom.id
-            }
+            cache.values.forEach { sceptreToKingdom[it.sceptre] = it.id }
         }
 
         fun getKingdomBySceptre(sceptreId: UUID): KingdomData? = sceptreToKingdom[sceptreId]?.let { cache[it] }
@@ -52,7 +50,7 @@ data class KingdomData(
 
             cache[kingdom.id] = kingdom
             sceptreToKingdom[sceptreId] = kingdom.id
-            save()
+            save() // TODO: use set() instead since that saves to cache and file. save() is private.
 
             return kingdom
         }
