@@ -7,6 +7,7 @@ import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.CustomModelData
 import io.papermc.paper.datacomponent.item.ItemLore
 import io.papermc.paper.dialog.Dialog
+import io.papermc.paper.dialog.DialogResponseView
 import io.papermc.paper.event.player.PlayerCustomClickEvent
 import io.papermc.paper.registry.data.dialog.ActionButton
 import io.papermc.paper.registry.data.dialog.DialogBase
@@ -17,6 +18,7 @@ import io.papermc.paper.registry.data.dialog.type.DialogType
 import net.kyori.adventure.key.Key
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
@@ -101,25 +103,58 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
     @Suppress("unstableApiUsage")
     @EventHandler
     fun on(event: PlayerCustomClickEvent) {
-        if (!enabled() || event.identifier != Key.key(instance, "kingdom/save")) return
+        if (!enabled()) return
+        when (event.identifier) {
+            Key.key(instance, "kingdom/save") -> handleKingdomSave(event)
+        }
+    }
 
+    @Suppress("unstableApiUsage")
+    private fun handleKingdomSave(event: PlayerCustomClickEvent) {
         val view = event.dialogResponseView ?: return
         val player = (event.commonConnection as? PlayerGameConnection)?.player ?: return
+
+        handleKingdomName(view, player)
+        handleKingdomType(view, player)
+    }
+
+    @Suppress("unstableApiUsage")
+    private fun handleKingdomName(
+        view: DialogResponseView,
+        player: Player,
+    ) {
         val name = view.getText("name") ?: return
-        val item = player.inventory.itemInMainHand
-        val sceptreUUIDString = item.persistentDataContainer.get(sceptreIdKey, PersistentDataType.STRING)
-        val sceptreUUID = sceptreUUIDString?.let { UUID.fromString(it) } ?: return
-        val oldKingdom = KingdomData.get(sceptreUUID) ?: return
-        val oldName = oldKingdom.name
-        if (oldName == name) return
+        val (sceptreUUID, oldKingdom) = getKingdomDataFromPlayer(player) ?: return
+        if (oldKingdom.name == name) return
+
         KingdomData.set(sceptreUUID, oldKingdom.copy(name = name))
         instance.server.broadcast(
             "❗ "
                 .fireFmt()
                 .mm()
-                .append("<i>The kingdom of $oldName is now known as $name</i>".mangoFmt(true).mm())
+                .append("<i>The kingdom of ${oldKingdom.name} is now known as $name</i>".mangoFmt(true).mm())
                 .append(" ❗".fireFmt(true).mm()),
         )
+    }
+
+    @Suppress("unstableApiUsage")
+    private fun handleKingdomType(
+        view: DialogResponseView,
+        player: Player,
+    ) {
+        val type = KingdomTypeEnum.valueOf(view.getText("type") ?: return)
+        val (sceptreUUID, oldKingdom) = getKingdomDataFromPlayer(player) ?: return
+        if (oldKingdom.type == type) return
+
+        KingdomData.set(sceptreUUID, oldKingdom.copy(type = type))
+    }
+
+    private fun getKingdomDataFromPlayer(player: Player): Pair<UUID, KingdomData>? {
+        val item = player.inventory.itemInMainHand
+        val sceptreUUIDString = item.persistentDataContainer.get(sceptreIdKey, PersistentDataType.STRING)
+        val sceptreUUID = sceptreUUIDString?.let { UUID.fromString(it) } ?: return null
+        val oldKingdom = KingdomData.get(sceptreUUID) ?: return null
+        return sceptreUUID to oldKingdom
     }
 
     @Suppress("unstableApiUsage")
