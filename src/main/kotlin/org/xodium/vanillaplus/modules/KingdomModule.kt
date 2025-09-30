@@ -89,8 +89,17 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
         val item = player.inventory.itemInMainHand
         val sceptreUUIDString = item.persistentDataContainer.get(sceptreIdKey, PersistentDataType.STRING)
         val sceptreUUID = sceptreUUIDString?.let { UUID.fromString(it) } ?: return
-        KingdomData.get(sceptreUUID)?.let { KingdomData.set(sceptreUUID, it.copy(name = name)) } ?: return
-        // instance.server.broadcast("".fireFmt().mm()) TODO
+        val oldKingdom = KingdomData.get(sceptreUUID) ?: return
+        val oldName = oldKingdom.name
+        if (oldName == name) return
+        KingdomData.set(sceptreUUID, oldKingdom.copy(name = name))
+        instance.server.broadcast(
+            "❗ "
+                .fireFmt()
+                .mm()
+                .append("<i>The kingdom of $oldName is now known as $name</i>".mangoFmt(true).mm())
+                .append(" ❗".fireFmt(true).mm()),
+        )
     }
 
     @Suppress("unstableApiUsage")
@@ -106,6 +115,7 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
                                 DialogInput
                                     .text("name", "Rename Kingdom".fireFmt().mm())
                                     .initial(data.name)
+                                    .maxLength(100)
                                     .build(),
                             ),
                         ).build(),
