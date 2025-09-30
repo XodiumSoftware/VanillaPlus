@@ -91,33 +91,35 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
                         .from(Material.NAME_TAG)
                         .name("Rename your Kingdom".fireFmt().mm())
                         .lore("<gray>Left-click to rename your Kingdom</gray>".mm())
-                        .asGuiItem { _, _ ->
+                        .asGuiItem { player, _ ->
                             @Suppress("unstableApiUsage")
-                            Dialog.create { builder ->
-                                builder
-                                    .empty()
-                                    .base(DialogBase.builder("Rename your Kingdom".fireFmt().mm()).build())
-                                    .type(
-                                        DialogType.confirmation(
-                                            ActionButton
-                                                .builder("Save".fireFmt().mm())
-                                                .action(
-                                                    DialogAction.customClick(
-                                                        Key.key(instance, "kingdom/rename/agree"),
-                                                        null,
-                                                    ),
-                                                ).build(),
-                                            ActionButton
-                                                .builder("Discard".fireFmt().mm())
-                                                .action(
-                                                    DialogAction.customClick(
-                                                        Key.key(instance, "kingdom/rename/disagree"),
-                                                        null,
-                                                    ),
-                                                ).build(),
-                                        ),
-                                    )
-                            }
+                            player.showDialog(
+                                Dialog.create { builder ->
+                                    builder
+                                        .empty()
+                                        .base(DialogBase.builder("Rename your Kingdom".fireFmt().mm()).build())
+                                        .type(
+                                            DialogType.confirmation(
+                                                ActionButton
+                                                    .builder("Save".fireFmt().mm())
+                                                    .action(
+                                                        DialogAction.customClick(
+                                                            Key.key(instance, "kingdom/rename/agree"),
+                                                            null,
+                                                        ),
+                                                    ).build(),
+                                                ActionButton
+                                                    .builder("Discard".fireFmt().mm())
+                                                    .action(
+                                                        DialogAction.customClick(
+                                                            Key.key(instance, "kingdom/rename/disagree"),
+                                                            null,
+                                                        ),
+                                                    ).build(),
+                                            ),
+                                        )
+                                },
+                            )
                         }
             }
         }
