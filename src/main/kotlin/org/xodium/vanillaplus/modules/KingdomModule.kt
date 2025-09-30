@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package org.xodium.vanillaplus.modules
 
 import dev.triumphteam.gui.paper.Gui
@@ -27,7 +29,6 @@ import kotlin.time.Duration.Companion.seconds
 internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
     override val config: Config = Config()
 
-    private val sceptreKey = NamespacedKey(instance, "kingdom_sceptre")
     private val sceptreIdKey = NamespacedKey(instance, "kingdom_sceptre_id")
     private val sceptreRecipeKey = NamespacedKey(instance, "kingdom_sceptre_recipe")
 
@@ -41,49 +42,33 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
 
         val item = event.item ?: return
         val player = event.player
-        if (item.persistentDataContainer.has(sceptreKey, PersistentDataType.BYTE)) {
-            event.isCancelled = true
+        val sceptreUUIDString = item.persistentDataContainer.get(sceptreIdKey, PersistentDataType.STRING)
+        val sceptreUUID = sceptreUUIDString?.let { UUID.fromString(it) } ?: return
 
-            // TODO: we should assign UUID on sceptre itemstack, so it assigns it on using the recipe. so we can remove this method completely and just fetch it directly.
-            val sceptreUUID = getSceptreUUID(item)
-            val kingdom = KingdomData.get(sceptreUUID)
-            if (kingdom == null) {
-                val kingdom =
-                    KingdomData(
-                        name = "${player.name}'s Kingdom",
-                        sceptre = sceptreUUID,
-                        ruler = player.uniqueId,
-                    )
+        event.isCancelled = true
 
-                KingdomData.set(sceptreUUID, kingdom)
+        val kingdom = KingdomData.get(sceptreUUID)
+        if (kingdom == null) {
+            val kingdom =
+                KingdomData(
+                    name = "${player.name}'s Kingdom",
+                    sceptre = sceptreUUID,
+                    ruler = player.uniqueId,
+                )
 
-                player.sendMessage("New kingdom '${kingdom.name}' has been created!".mm())
-                player.sendMessage("You are now the ruler. Right-click the sceptre to manage your kingdom.".mm())
+            KingdomData.set(sceptreUUID, kingdom)
 
+            player.sendMessage("New kingdom '${kingdom.name}' has been created!".mm())
+            player.sendMessage("You are now the ruler. Right-click the sceptre to manage your kingdom.".mm())
+
+            gui(kingdom).open(player)
+        } else {
+            if (kingdom.ruler == player.uniqueId) {
                 gui(kingdom).open(player)
             } else {
-                if (kingdom.ruler == player.uniqueId) {
-                    gui(kingdom).open(player)
-                } else {
-                    KingdomData.set(sceptreUUID, kingdom.copy(ruler = kingdom.ruler))
-                    gui(kingdom).open(player)
-                }
+                KingdomData.set(sceptreUUID, kingdom.copy(ruler = kingdom.ruler))
+                gui(kingdom).open(player)
             }
-        }
-    }
-
-    // TODO: maybe move to its own SceptreData?
-    private fun getSceptreUUID(item: ItemStack): UUID {
-        val pdc = item.persistentDataContainer
-        val sceptreUUIDString = pdc.get(sceptreIdKey, PersistentDataType.STRING)
-
-        return if (sceptreUUIDString != null) {
-            UUID.fromString(sceptreUUIDString)
-        } else {
-            val newUUID = UUID.randomUUID()
-            // FIX: set() doesn't exist.
-            pdc.set(sceptreIdKey, PersistentDataType.STRING, newUUID.toString())
-            newUUID
         }
     }
 
@@ -105,7 +90,9 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
                 DataComponentTypes.CUSTOM_MODEL_DATA,
                 CustomModelData.customModelData().addString(config.sceptreCustomModelData),
             )
-            editPersistentDataContainer { it.set(sceptreKey, PersistentDataType.BYTE, 1) }
+            editPersistentDataContainer {
+                it.set(sceptreIdKey, PersistentDataType.STRING, UUID.randomUUID().toString())
+            }
         }
 
     private fun sceptreRecipe(): Recipe =
