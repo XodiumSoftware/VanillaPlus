@@ -15,11 +15,11 @@ import java.util.*
  * //TODO
  */
 data class KingdomData(
-    val id: UUID,
+    val id: UUID = UUID.randomUUID(),
     val name: String,
     val sceptre: UUID,
     val ruler: UUID,
-    val creationDate: Date,
+    val creationDate: Date = Date(),
     val members: MutableSet<UUID> = mutableSetOf(),
     val npcs: MutableSet<UUID> = mutableSetOf(),
 ) {
