@@ -3,11 +3,18 @@
 package org.xodium.vanillaplus.modules
 
 import dev.triumphteam.gui.paper.Gui
+import dev.triumphteam.gui.paper.builder.item.ItemBuilder
 import dev.triumphteam.gui.paper.container.type.PaperContainerType.hopper
 import dev.triumphteam.gui.paper.kotlin.builder.buildGui
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.CustomModelData
 import io.papermc.paper.datacomponent.item.ItemLore
+import io.papermc.paper.dialog.Dialog
+import io.papermc.paper.registry.data.dialog.ActionButton
+import io.papermc.paper.registry.data.dialog.DialogBase
+import io.papermc.paper.registry.data.dialog.action.DialogAction
+import io.papermc.paper.registry.data.dialog.type.DialogType
+import net.kyori.adventure.key.Key
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.event.EventHandler
@@ -21,6 +28,7 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.KingdomData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import java.util.*
 import kotlin.time.Duration.Companion.seconds
@@ -77,7 +85,41 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
             containerType = hopper()
             spamPreventionDuration = config.guiSpamPreventionDuration.seconds
             title(kingdom.name.mm())
-            statelessComponent { }
+            statelessComponent {
+                it[0] =
+                    ItemBuilder
+                        .from(Material.NAME_TAG)
+                        .name("Rename your Kingdom".fireFmt().mm())
+                        .lore("<gray>Left-click to rename your Kingdom</gray>".mm())
+                        .asGuiItem { _, _ ->
+                            @Suppress("unstableApiUsage")
+                            Dialog.create { builder ->
+                                builder
+                                    .empty()
+                                    .base(DialogBase.builder("Rename your Kingdom".fireFmt().mm()).build())
+                                    .type(
+                                        DialogType.confirmation(
+                                            ActionButton
+                                                .builder("Save".fireFmt().mm())
+                                                .action(
+                                                    DialogAction.customClick(
+                                                        Key.key(instance, "kingdom/rename/agree"),
+                                                        null,
+                                                    ),
+                                                ).build(),
+                                            ActionButton
+                                                .builder("Discard".fireFmt().mm())
+                                                .action(
+                                                    DialogAction.customClick(
+                                                        Key.key(instance, "kingdom/rename/disagree"),
+                                                        null,
+                                                    ),
+                                                ).build(),
+                                        ),
+                                    )
+                            }
+                        }
+            }
         }
 
     private fun sceptre(): ItemStack =

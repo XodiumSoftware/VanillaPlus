@@ -5,6 +5,8 @@
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.kyori/adventure-key/4.25.0-SNAPSHOT/a2cb01401abd66950c5999ebdd0a68d74b7b729c/adventure-key-4.25.0-SNAPSHOT.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.kyori/adventure-key/4.25.0-SNAPSHOT/754f157c636fd0eb9733553912a8bf97d6437f0b/adventure-key-4.25.0-SNAPSHOT-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>
