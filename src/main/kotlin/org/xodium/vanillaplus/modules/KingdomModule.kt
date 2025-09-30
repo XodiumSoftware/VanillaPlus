@@ -140,9 +140,9 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
     private fun sceptreRecipe(): Recipe =
         ShapedRecipe(sceptreRecipeKey, sceptre()).apply {
             shape(" A ", " B ", " C ")
-            setIngredient('C', Material.EMERALD)
+            setIngredient('A', Material.EMERALD)
             setIngredient('B', Material.NETHER_STAR)
-            setIngredient('A', Material.BLAZE_ROD)
+            setIngredient('C', Material.BLAZE_ROD)
         }
 
     data class Config(
