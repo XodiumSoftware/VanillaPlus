@@ -14,6 +14,8 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.Recipe
+import org.bukkit.inventory.ShapelessRecipe
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.bukkit.persistence.PersistentDataType
@@ -33,6 +35,7 @@ internal class PlayerModule(
     override val config: Config = Config()
 
     private val playerSkullXpKey = NamespacedKey(instance, "player_head_xp")
+    private val playerSkullXpRecipeKey = NamespacedKey(instance, "player_head_xp_recipe")
 
     override fun enabled(): Boolean = config.enabled && tabListModule.enabled()
 
@@ -71,6 +74,10 @@ internal class PlayerModule(
             ),
         )
 
+    init {
+        if (enabled()) instance.server.addRecipe(recipe())
+    }
+
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
         if (!enabled()) return
@@ -81,7 +88,10 @@ internal class PlayerModule(
     fun on(event: PlayerDeathEvent) {
         if (!enabled()) return
         val killer = event.entity.killer ?: return
-        dropPlayerHead(event.entity, killer, event.droppedExp)
+        event.entity.world.dropItemNaturally(
+            event.entity.location,
+            playerSkull(event.entity, killer, event.droppedExp),
+        )
         event.deathMessage(
             config.l18n.playerDeathMsg.mm(
                 Placeholder.component("player", event.player.displayName()),
@@ -105,42 +115,48 @@ internal class PlayerModule(
     }
 
     /**
-     * Drops the player's head with custom metadata when killed by another player.
-     * @param entity The player who died.
+     * Creates a custom player skull item when a player is killed.
+     * @param entity The player whose head is being created.
      * @param killer The player who killed the entity.
-     * @param xp The xp the player drops upon death.
+     * @param xp The amount of experience associated with the kill, stored in the skull.
+     * @return An [ItemStack] representing the customized player head.
      */
     @Suppress("UnstableApiUsage")
-    private fun dropPlayerHead(
+    private fun playerSkull(
         entity: Player,
         killer: Player,
         xp: Int,
-    ) {
-        entity.world.dropItemNaturally(
-            entity.location,
-            ItemStack.of(Material.PLAYER_HEAD).apply {
-                setData(DataComponentTypes.PROFILE, ResolvableProfile.resolvableProfile(entity.playerProfile))
-                setData(
-                    DataComponentTypes.CUSTOM_NAME,
-                    config.l18n.playerHeadName.mm(Placeholder.component("player", entity.displayName())),
-                )
-                setData(
-                    DataComponentTypes.LORE,
-                    ItemLore
-                        .lore()
-                        .addLines(
-                            config.l18n.playerHeadLore
-                                .mm(
-                                    Placeholder.component("player", entity.name.mm()),
-                                    Placeholder.component("killer", killer.name.mm()),
-                                    Placeholder.parsed("xp", xp.toString()),
-                                ),
-                        ).build(),
-                )
-                editPersistentDataContainer { it.set(playerSkullXpKey, PersistentDataType.INTEGER, xp) }
-            },
-        )
-    }
+    ): ItemStack =
+        ItemStack.of(Material.PLAYER_HEAD).apply {
+            setData(DataComponentTypes.PROFILE, ResolvableProfile.resolvableProfile(entity.playerProfile))
+            setData(
+                DataComponentTypes.CUSTOM_NAME,
+                config.l18n.playerHeadName.mm(Placeholder.component("player", entity.displayName())),
+            )
+            setData(
+                DataComponentTypes.LORE,
+                ItemLore
+                    .lore()
+                    .addLines(
+                        config.l18n.playerHeadLore
+                            .mm(
+                                Placeholder.component("player", entity.name.mm()),
+                                Placeholder.component("killer", killer.name.mm()),
+                                Placeholder.parsed("xp", xp.toString()),
+                            ),
+                    ).build(),
+            )
+            editPersistentDataContainer { it.set(playerSkullXpKey, PersistentDataType.INTEGER, xp) }
+        }
+
+    /**
+     * Creates a shapeless recipe for converting a player skull into an experience bottle.
+     * @return A [Recipe] representing the custom shapeless crafting recipe.
+     */
+    private fun recipe(): Recipe =
+        ShapelessRecipe(playerSkullXpRecipeKey, ItemStack.of(Material.EXPERIENCE_BOTTLE))
+            .addIngredient(1, Material.GLASS_BOTTLE)
+            .addIngredient(1, Material.PLAYER_HEAD)
 
     data class Config(
         override var enabled: Boolean = true,
