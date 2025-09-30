@@ -12,6 +12,7 @@ import io.papermc.paper.registry.data.dialog.ActionButton
 import io.papermc.paper.registry.data.dialog.DialogBase
 import io.papermc.paper.registry.data.dialog.action.DialogAction
 import io.papermc.paper.registry.data.dialog.input.DialogInput
+import io.papermc.paper.registry.data.dialog.input.SingleOptionDialogInput
 import io.papermc.paper.registry.data.dialog.type.DialogType
 import net.kyori.adventure.key.Key
 import org.bukkit.Material
@@ -25,6 +26,7 @@ import org.bukkit.inventory.ShapedRecipe
 import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.KingdomData
+import org.xodium.vanillaplus.enums.KingdomTypeEnum
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
@@ -99,7 +101,7 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
     @Suppress("unstableApiUsage")
     @EventHandler
     fun on(event: PlayerCustomClickEvent) {
-        if (!enabled() || event.identifier != Key.key(instance, "kingdom/rename/agree")) return
+        if (!enabled() || event.identifier != Key.key(instance, "kingdom/save")) return
 
         val view = event.dialogResponseView ?: return
         val player = (event.commonConnection as? PlayerGameConnection)?.player ?: return
@@ -135,6 +137,18 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
                                     .initial(data.name)
                                     .maxLength(100)
                                     .build(),
+                                DialogInput
+                                    .singleOption(
+                                        "type",
+                                        "Set Government Type".fireFmt().mm(),
+                                        KingdomTypeEnum.entries.map { types ->
+                                            SingleOptionDialogInput.OptionEntry.create(
+                                                types.name,
+                                                types.name.mm(),
+                                                (types == data.type),
+                                            )
+                                        },
+                                    ).build(),
                             ),
                         ).build(),
                 ).type(
@@ -143,7 +157,7 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
                             .builder("Save".fireFmt().mm())
                             .action(
                                 DialogAction.customClick(
-                                    Key.key(instance, "kingdom/rename/agree"),
+                                    Key.key(instance, "kingdom/save"),
                                     null,
                                 ),
                             ).build(),
@@ -151,7 +165,7 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
                             .builder("Discard".fireFmt().mm())
                             .action(
                                 DialogAction.customClick(
-                                    Key.key(instance, "kingdom/rename/disagree"),
+                                    Key.key(instance, "kingdom/discard"),
                                     null,
                                 ),
                             ).build(),

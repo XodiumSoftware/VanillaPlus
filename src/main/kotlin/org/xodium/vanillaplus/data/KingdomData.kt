@@ -2,8 +2,8 @@
 
 package org.xodium.vanillaplus.data
 
+import org.xodium.vanillaplus.enums.KingdomTypeEnum
 import org.xodium.vanillaplus.interfaces.DataInterface
-import org.xodium.vanillaplus.interfaces.KingdomTypeInterface
 import java.util.*
 
 /**
@@ -21,7 +21,7 @@ internal data class KingdomData(
     val name: String,
     val sceptre: UUID,
     val ruler: UUID,
-    val type: KingdomTypeInterface? = null,
+    val type: KingdomTypeEnum = KingdomTypeEnum.FEUDALISM,
     val creationDate: Date = Date(),
     val members: MutableSet<UUID> = mutableSetOf(),
     val npcs: MutableSet<UUID> = mutableSetOf(),
