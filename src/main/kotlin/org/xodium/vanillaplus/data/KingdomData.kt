@@ -18,7 +18,7 @@ data class KingdomData(
     val id: UUID = UUID.randomUUID(),
     val name: String,
     val sceptre: UUID,
-    var ruler: UUID,
+    val ruler: UUID,
     val creationDate: Date = Date(),
     val members: MutableSet<UUID> = mutableSetOf(),
     val npcs: MutableSet<UUID> = mutableSetOf(),

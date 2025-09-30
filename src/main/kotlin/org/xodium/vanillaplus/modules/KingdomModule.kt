@@ -65,8 +65,7 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
                 if (kingdom.ruler == player.uniqueId) {
                     gui(kingdom).open(player)
                 } else {
-                    kingdom.ruler = player.uniqueId
-                    KingdomData.set(sceptreUUID, kingdom)
+                    KingdomData.set(sceptreUUID, kingdom.copy(ruler = kingdom.ruler))
                     gui(kingdom).open(player)
                 }
             }
