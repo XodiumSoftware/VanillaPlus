@@ -17,6 +17,7 @@ import io.papermc.paper.registry.data.dialog.input.DialogInput
 import io.papermc.paper.registry.data.dialog.input.SingleOptionDialogInput
 import io.papermc.paper.registry.data.dialog.type.DialogType
 import net.kyori.adventure.key.Key
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
@@ -71,8 +72,7 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
             player.showDialog(kingdomDialog(kingdom))
             instance.server.broadcast(
                 config.l18n.kingdomCreatedMsg
-                    .format(kingdom)
-                    .mm(),
+                    .mm(Placeholder.component("kingdomName", kingdom.name.mm())),
             )
         } else {
             if (kingdom.ruler == player.uniqueId) {
@@ -82,8 +82,13 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
                 player.showDialog(kingdomDialog(kingdom))
                 instance.server.broadcast(
                     config.l18n.kingdomRulerChangeMsg
-                        .format(kingdom)
-                        .mm(),
+                        .mm(
+                            Placeholder.component("kingdomName", kingdom.name.mm()),
+                            Placeholder.component(
+                                "player",
+                                instance.server.getPlayer(kingdom.ruler)?.displayName() ?: "NULL".mm(),
+                            ),
+                        ),
                 )
             }
         }
@@ -119,8 +124,10 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
         KingdomData.set(sceptreUUID, oldKingdom.copy(name = name))
         instance.server.broadcast(
             config.l18n.kingdomRenameMsg
-                .format(oldKingdom, name)
-                .mm(),
+                .mm(
+                    Placeholder.component("kingdomName", name.mm()),
+                    Placeholder.component("kingdomOldName", oldKingdom.name.mm()),
+                ),
         )
     }
 
@@ -240,15 +247,15 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
         data class L18n(
             var kingdomCreatedMsg: String =
                 "❗ ".fireFmt() +
-                    "<i>The kingdom of %s has been created</i>".mangoFmt(true) +
+                    "<i>The kingdom of <kingdomName> has been created</i>".mangoFmt(true) +
                     " ❗".fireFmt(true),
             var kingdomRulerChangeMsg: String =
                 "❗ ".fireFmt() +
-                    "<i>The kingdom of %s has a new ruler named %s</i>".mangoFmt(true) +
+                        "<i>The kingdom of <kingdomName> has a new ruler named <player></i>".mangoFmt(true) +
                     " ❗".fireFmt(true),
             var kingdomRenameMsg: String = (
                 "❗ ".fireFmt() +
-                    "<i>The kingdom of %s is now known as %s</i>".mangoFmt(true) +
+                        "<i>The kingdom of <kingdomOldName> is now known as <kingdomName></i>".mangoFmt(true) +
                     " ❗".fireFmt(true)
             ),
         )
