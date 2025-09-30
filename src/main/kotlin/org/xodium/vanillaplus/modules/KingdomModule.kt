@@ -63,7 +63,6 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
             val kingdom =
                 KingdomData(
                     name = "${player.name}'s Kingdom",
-                    sceptre = sceptreUUID,
                     ruler = player.uniqueId,
                 )
 
