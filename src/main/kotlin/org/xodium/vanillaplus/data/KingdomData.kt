@@ -11,16 +11,13 @@ import java.util.*
  * @property name The display name of the kingdom.
  * @property ruler The UUID of the ruler of this kingdom.
  * @property type The type of government system for this kingdom.
- * @property creationDate The date when the kingdom was created.
  * @property members Mutable set of UUIDs representing kingdom members (excluding the ruler).
  */
 internal data class KingdomData(
     val name: String,
     val ruler: UUID,
     val type: KingdomTypeEnum = KingdomTypeEnum.FEUDALISM,
-    val creationDate: Date = Date(),
     val members: MutableSet<UUID> = mutableSetOf(),
-    val npcs: MutableSet<UUID> = mutableSetOf(),
 ) {
     companion object : DataInterface<KingdomData> {
         override val dataClass = KingdomData::class

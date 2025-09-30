@@ -58,6 +58,7 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
 
         event.isCancelled = true
 
+        // TODO: check if we can create a KingdomData.create() method in case kingdom == null
         val kingdom = KingdomData.get(sceptreUUID)
         if (kingdom == null) {
             val kingdom =
@@ -69,15 +70,9 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
             KingdomData.set(sceptreUUID, kingdom)
             player.showDialog(kingdomDialog(kingdom))
             instance.server.broadcast(
-                "❗ "
-                    .fireFmt()
-                    .mm()
-                    .append(
-                        "<i>The kingdom of ${kingdom.name} has been created</i>"
-                            .mangoFmt(
-                                true,
-                            ).mm(),
-                    ).append(" ❗".fireFmt(true).mm()),
+                config.l18n.kingdomCreatedMsg
+                    .format(kingdom)
+                    .mm(),
             )
         } else {
             if (kingdom.ruler == player.uniqueId) {
@@ -86,15 +81,9 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
                 KingdomData.set(sceptreUUID, kingdom.copy(ruler = kingdom.ruler))
                 player.showDialog(kingdomDialog(kingdom))
                 instance.server.broadcast(
-                    "❗ "
-                        .fireFmt()
-                        .mm()
-                        .append(
-                            "<i>The kingdom of ${kingdom.name} has a new ruler named ${kingdom.ruler}</i>"
-                                .mangoFmt(
-                                    true,
-                                ).mm(),
-                        ).append(" ❗".fireFmt(true).mm()),
+                    config.l18n.kingdomRulerChangeMsg
+                        .format(kingdom)
+                        .mm(),
                 )
             }
         }
@@ -129,11 +118,9 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
 
         KingdomData.set(sceptreUUID, oldKingdom.copy(name = name))
         instance.server.broadcast(
-            "❗ "
-                .fireFmt()
-                .mm()
-                .append("<i>The kingdom of ${oldKingdom.name} is now known as $name</i>".mangoFmt(true).mm())
-                .append(" ❗".fireFmt(true).mm()),
+            config.l18n.kingdomRenameMsg
+                .format(oldKingdom, name)
+                .mm(),
         )
     }
 
@@ -248,5 +235,22 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
         var sceptreLore: MutableList<String> = mutableListOf("<gray>Right-click to manage your Kingdom</gray>"),
         var sceptreGlint: Boolean = true,
         var sceptreCustomModelData: String = "sceptre",
-    ) : ModuleInterface.Config
+        var l18n: L18n = L18n(),
+    ) : ModuleInterface.Config {
+        data class L18n(
+            var kingdomCreatedMsg: String =
+                "❗ ".fireFmt() +
+                    "<i>The kingdom of %s has been created</i>".mangoFmt(true) +
+                    " ❗".fireFmt(true),
+            var kingdomRulerChangeMsg: String =
+                "❗ ".fireFmt() +
+                    "<i>The kingdom of %s has a new ruler named %s</i>".mangoFmt(true) +
+                    " ❗".fireFmt(true),
+            var kingdomRenameMsg: String = (
+                "❗ ".fireFmt() +
+                    "<i>The kingdom of %s is now known as %s</i>".mangoFmt(true) +
+                    " ❗".fireFmt(true)
+            ),
+        )
+    }
 }
