@@ -5,6 +5,7 @@ import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
 import io.papermc.paper.datacomponent.item.ResolvableProfile
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -19,7 +20,6 @@ import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.PlayerData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.ExtUtils.pt
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 
@@ -108,9 +108,7 @@ internal class PlayerModule(
                 setData(DataComponentTypes.PROFILE, ResolvableProfile.resolvableProfile(entity.playerProfile))
                 setData(
                     DataComponentTypes.CUSTOM_NAME,
-                    config.l18n.playerHeadName
-                        .replace("<player>", entity.displayName().pt())
-                        .mm(),
+                    config.l18n.playerHeadName.mm(Placeholder.component("player", entity.displayName())),
                 )
                 setData(
                     DataComponentTypes.LORE,
@@ -118,9 +116,10 @@ internal class PlayerModule(
                         .lore()
                         .addLine(
                             config.l18n.playerHeadLore
-                                .replace("<player>", entity.name)
-                                .replace("<killer>", killer.name)
-                                .mm(),
+                                .mm(
+                                    Placeholder.component("player", entity.name.mm()),
+                                    Placeholder.component("killer", killer.name.mm()),
+                                ),
                         ).build(),
                 )
             },
