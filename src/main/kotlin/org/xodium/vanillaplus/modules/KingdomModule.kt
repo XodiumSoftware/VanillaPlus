@@ -55,6 +55,8 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
                         ruler = player.uniqueId,
                     )
 
+                KingdomData.set(sceptreUUID, kingdom)
+
                 player.sendMessage("New kingdom '${kingdom.name}' has been created!".mm())
                 player.sendMessage("You are now the ruler. Right-click the sceptre to manage your kingdom.".mm())
 
@@ -63,9 +65,8 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
                 if (kingdom.ruler == player.uniqueId) {
                     gui(kingdom).open(player)
                 } else {
-                    // FIX: val cannot be reassigned.
                     kingdom.ruler = player.uniqueId
-                    KingdomData.save() // TODO: use set() instead since that saves to cache and file. save() is private.
+                    KingdomData.set(sceptreUUID, kingdom)
                     gui(kingdom).open(player)
                 }
             }
