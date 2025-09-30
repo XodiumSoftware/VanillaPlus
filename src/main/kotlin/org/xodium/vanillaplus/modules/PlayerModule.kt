@@ -133,7 +133,7 @@ internal class PlayerModule(
                                 .mm(
                                     Placeholder.component("player", entity.name.mm()),
                                     Placeholder.component("killer", killer.name.mm()),
-                                    Placeholder.component("xp", xp.toString().mm()),
+                                    Placeholder.parsed("xp", xp.toString()),
                                 ),
                         ).build(),
                 )
