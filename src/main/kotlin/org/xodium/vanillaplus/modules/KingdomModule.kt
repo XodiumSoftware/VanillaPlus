@@ -63,11 +63,18 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
                 )
 
             KingdomData.set(sceptreUUID, kingdom)
-
-            player.sendMessage("New kingdom '${kingdom.name}' has been created!".mm())
-            player.sendMessage("You are now the ruler. Right-click the sceptre to manage your kingdom.".mm())
-
             player.showDialog(kingdomDialog(kingdom))
+            instance.server.broadcast(
+                "❗ "
+                    .fireFmt()
+                    .mm()
+                    .append(
+                        "<i>The kingdom of ${kingdom.name} has been created</i>"
+                            .mangoFmt(
+                                true,
+                            ).mm(),
+                    ).append(" ❗".fireFmt(true).mm()),
+            )
         } else {
             if (kingdom.ruler == player.uniqueId) {
                 player.showDialog(kingdomDialog(kingdom))
