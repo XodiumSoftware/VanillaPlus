@@ -74,6 +74,17 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
             } else {
                 KingdomData.set(sceptreUUID, kingdom.copy(ruler = kingdom.ruler))
                 player.showDialog(kingdomDialog(kingdom))
+                instance.server.broadcast(
+                    "❗ "
+                        .fireFmt()
+                        .mm()
+                        .append(
+                            "<i>The kingdom of ${kingdom.name} has a new ruler named ${kingdom.ruler}</i>"
+                                .mangoFmt(
+                                    true,
+                                ).mm(),
+                        ).append(" ❗".fireFmt(true).mm()),
+                )
             }
         }
     }
