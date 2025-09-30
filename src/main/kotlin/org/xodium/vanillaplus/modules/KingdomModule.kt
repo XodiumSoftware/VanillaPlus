@@ -2,14 +2,16 @@
 
 package org.xodium.vanillaplus.modules
 
+import io.papermc.paper.connection.PlayerGameConnection
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.CustomModelData
 import io.papermc.paper.datacomponent.item.ItemLore
 import io.papermc.paper.dialog.Dialog
+import io.papermc.paper.event.player.PlayerCustomClickEvent
 import io.papermc.paper.registry.data.dialog.ActionButton
 import io.papermc.paper.registry.data.dialog.DialogBase
 import io.papermc.paper.registry.data.dialog.action.DialogAction
-import io.papermc.paper.registry.data.dialog.body.DialogBody
+import io.papermc.paper.registry.data.dialog.input.DialogInput
 import io.papermc.paper.registry.data.dialog.type.DialogType
 import net.kyori.adventure.key.Key
 import org.bukkit.Material
@@ -77,6 +79,21 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
     }
 
     @Suppress("unstableApiUsage")
+    @EventHandler
+    fun on(event: PlayerCustomClickEvent) {
+        if (!enabled() || event.identifier != Key.key(instance, "kingdom/rename/agree")) return
+
+        val view = event.dialogResponseView ?: return
+        val player = (event.commonConnection as? PlayerGameConnection)?.player ?: return
+        val name = view.getText("name") ?: return
+        val item = player.inventory.itemInMainHand
+        val sceptreUUIDString = item.persistentDataContainer.get(sceptreIdKey, PersistentDataType.STRING)
+        val sceptreUUID = sceptreUUIDString?.let { UUID.fromString(it) } ?: return
+        KingdomData.get(sceptreUUID)?.let { KingdomData.set(sceptreUUID, it.copy(name = name)) } ?: return
+        // instance.server.broadcast("".fireFmt().mm()) TODO
+    }
+
+    @Suppress("unstableApiUsage")
     private fun kingdomDialog(data: KingdomData): Dialog =
         Dialog.create {
             it
@@ -84,8 +101,14 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
                 .base(
                     DialogBase
                         .builder(data.name.mm())
-                        .body(mutableListOf(DialogBody.item(ItemStack.of(Material.NAME_TAG)).build()))
-                        .build(),
+                        .inputs(
+                            listOf(
+                                DialogInput
+                                    .text("name", "Rename Kingdom".fireFmt().mm())
+                                    .initial(data.name)
+                                    .build(),
+                            ),
+                        ).build(),
                 ).type(
                     DialogType.confirmation(
                         ActionButton
