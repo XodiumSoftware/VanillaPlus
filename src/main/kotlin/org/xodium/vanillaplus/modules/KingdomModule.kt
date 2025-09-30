@@ -175,11 +175,11 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
                                 DialogInput
                                     .singleOption(
                                         "type",
-                                        "Set Government Type".fireFmt().mm(),
+                                        "Government Type".fireFmt().mm(),
                                         KingdomTypeEnum.entries.map { types ->
                                             SingleOptionDialogInput.OptionEntry.create(
                                                 types.name,
-                                                types.name.mm(),
+                                                types.displayName(),
                                                 (types == data.type),
                                             )
                                         },
