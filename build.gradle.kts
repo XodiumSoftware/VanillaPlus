@@ -1,5 +1,6 @@
 @file:Suppress("ktlint:standard:no-wildcard-imports")
 
+import xyz.jpenilla.runtask.task.AbstractRun
 import java.util.*
 
 val pluginYmlFile = file("src/main/resources/paper-plugin.yml")
@@ -13,7 +14,6 @@ val pluginVersion = getPluginProperty("version")
 val pluginDescription = getPluginProperty("description")
 val mainClass = getPluginProperty("main")
 val pluginGroup = mainClass.substringBeforeLast('.')
-val apiVersion = Regex("""^(\d+\.\d+\.\d+)""").find(pluginVersion)?.groupValues?.get(1) ?: pluginVersion
 
 plugins {
     id("java")
@@ -35,7 +35,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:$apiVersion-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:$pluginVersion-R0.1-SNAPSHOT")
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.16") // TODO("Move away from WorldEdit")
 
     implementation(kotlin("stdlib-jdk8"))
@@ -67,7 +67,7 @@ tasks {
         minimize { exclude(dependency("org.jetbrains.kotlin:kotlin-reflect:.*")) }
     }
     jar { enabled = false }
-    runServer { minecraftVersion(apiVersion) }
+    runServer { minecraftVersion(pluginVersion) }
     withType<JavaCompile> { options.encoding = "UTF-8" }
-    withType(xyz.jpenilla.runtask.task.AbstractRun::class) { jvmArgs("-XX:+AllowEnhancedClassRedefinition") }
+    withType(AbstractRun::class) { jvmArgs("-XX:+AllowEnhancedClassRedefinition") }
 }
