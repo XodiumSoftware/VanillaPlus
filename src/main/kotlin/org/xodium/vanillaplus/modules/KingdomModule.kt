@@ -75,22 +75,7 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
                     .mm(Placeholder.component("kingdom_name", kingdom.name.mm())),
             )
         } else {
-            if (kingdom.ruler == player.uniqueId) {
-                player.showDialog(kingdomDialog(kingdom))
-            } else {
-                KingdomData.set(sceptreUUID, kingdom.copy(ruler = kingdom.ruler))
-                player.showDialog(kingdomDialog(kingdom))
-                instance.server.broadcast(
-                    config.l18n.kingdomRulerChangeMsg
-                        .mm(
-                            Placeholder.component("kingdom_name", kingdom.name.mm()),
-                            Placeholder.component(
-                                "player",
-                                instance.server.getPlayer(kingdom.ruler)?.displayName() ?: "NULL".mm(),
-                            ),
-                        ),
-                )
-            }
+            player.showDialog(kingdomDialog(kingdom))
         }
     }
 
@@ -112,8 +97,31 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
         val view = event.dialogResponseView ?: return
         val player = (event.commonConnection as? PlayerGameConnection)?.player ?: return
 
+        handleKingdomRuler(view, player)
         handleKingdomName(view, player)
         handleKingdomType(view, player)
+    }
+
+    @Suppress("unstableApiUsage")
+    private fun handleKingdomRuler(
+        view: DialogResponseView,
+        player: Player,
+    ) {
+        val newRuler = UUID.fromString(view.getText("ruler") ?: return)
+        val (sceptreUUID, kingdom) = getKingdomDataFromPlayer(player) ?: return
+        if (kingdom.ruler == newRuler) return
+
+        KingdomData.set(sceptreUUID, kingdom.copy(ruler = newRuler))
+        instance.server.broadcast(
+            config.l18n.kingdomRulerChangeMsg
+                .mm(
+                    Placeholder.component("kingdom_name", kingdom.name.mm()),
+                    Placeholder.component(
+                        "player",
+                        instance.server.getPlayer(newRuler)?.displayName() ?: "NULL".mm(),
+                    ),
+                ),
+        )
     }
 
     /**
@@ -126,16 +134,16 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
         view: DialogResponseView,
         player: Player,
     ) {
-        val name = view.getText("name") ?: return
-        val (sceptreUUID, oldKingdom) = getKingdomDataFromPlayer(player) ?: return
-        if (oldKingdom.name == name) return
+        val newName = view.getText("name") ?: return
+        val (sceptreUUID, kingdom) = getKingdomDataFromPlayer(player) ?: return
+        if (kingdom.name == newName) return
 
-        KingdomData.set(sceptreUUID, oldKingdom.copy(name = name))
+        KingdomData.set(sceptreUUID, kingdom.copy(name = newName))
         instance.server.broadcast(
             config.l18n.kingdomRenameMsg
                 .mm(
-                    Placeholder.component("kingdom_name", name.mm()),
-                    Placeholder.component("kingdom_old_name", oldKingdom.name.mm()),
+                    Placeholder.component("kingdom_name", newName.mm()),
+                    Placeholder.component("kingdom_old_name", kingdom.name.mm()),
                 ),
         )
     }
@@ -150,11 +158,11 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
         view: DialogResponseView,
         player: Player,
     ) {
-        val type = KingdomTypeEnum.valueOf(view.getText("type") ?: return)
-        val (sceptreUUID, oldKingdom) = getKingdomDataFromPlayer(player) ?: return
-        if (oldKingdom.type == type) return
+        val newType = KingdomTypeEnum.valueOf(view.getText("type") ?: return)
+        val (sceptreUUID, kingdom) = getKingdomDataFromPlayer(player) ?: return
+        if (kingdom.type == newType) return
 
-        KingdomData.set(sceptreUUID, oldKingdom.copy(type = type))
+        KingdomData.set(sceptreUUID, kingdom.copy(type = newType))
     }
 
     /**
@@ -195,6 +203,18 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
                             ),
                         ).inputs(
                             listOf(
+                                DialogInput
+                                    .singleOption(
+                                        "ruler",
+                                        "Ruler".fireFmt().mm(),
+                                        instance.server.onlinePlayers.map { player ->
+                                            SingleOptionDialogInput.OptionEntry.create(
+                                                player.name,
+                                                player.displayName(),
+                                                (player.uniqueId == data.ruler),
+                                            )
+                                        },
+                                    ).build(),
                                 DialogInput
                                     .text("name", "Rename Kingdom".fireFmt().mm())
                                     .initial(data.name)
@@ -288,7 +308,7 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
                     " ❗".fireFmt(true),
             var kingdomRenameMsg: String = (
                 "❗ ".fireFmt() +
-                        "<i>The kingdom of <kingdom_old_name> is now known as <kingdom_name></i>".mangoFmt(true) +
+                    "<i>The kingdom of <kingdom_old_name> is now known as <kingdom_name></i>".mangoFmt(true) +
                     " ❗".fireFmt(true)
             ),
         )
