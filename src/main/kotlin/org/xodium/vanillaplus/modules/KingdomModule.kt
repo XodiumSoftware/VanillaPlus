@@ -12,7 +12,6 @@ import io.papermc.paper.event.player.PlayerCustomClickEvent
 import io.papermc.paper.registry.data.dialog.ActionButton
 import io.papermc.paper.registry.data.dialog.DialogBase
 import io.papermc.paper.registry.data.dialog.action.DialogAction
-import io.papermc.paper.registry.data.dialog.body.DialogBody
 import io.papermc.paper.registry.data.dialog.input.DialogInput
 import io.papermc.paper.registry.data.dialog.input.SingleOptionDialogInput
 import io.papermc.paper.registry.data.dialog.type.DialogType
@@ -192,16 +191,7 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
                 .base(
                     DialogBase
                         .builder(data.name.mm())
-                        .body(
-                            listOf(
-                                DialogBody.plainMessage(
-                                    "Current ruler: "
-                                        .fireFmt()
-                                        .mm()
-                                        .append(instance.server.getPlayer(data.ruler)?.displayName() ?: "NULL".mm()),
-                                ),
-                            ),
-                        ).inputs(
+                        .inputs(
                             listOf(
                                 DialogInput
                                     .singleOption(
