@@ -103,6 +103,10 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
         }
     }
 
+    /**
+     * Handles the save action for the kingdom management dialog.
+     * @param event the [PlayerCustomClickEvent] triggered when the player clicks the "Save" button.
+     */
     @Suppress("unstableApiUsage")
     private fun handleKingdomSave(event: PlayerCustomClickEvent) {
         val view = event.dialogResponseView ?: return
@@ -112,6 +116,11 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
         handleKingdomType(view, player)
     }
 
+    /**
+     * Handles renaming a kingdom based on the player's dialog response.
+     * @param view the [DialogResponseView] containing the player's submitted dialog inputs.
+     * @param player the [Player] whose sceptre determines which kingdom to rename.
+     */
     @Suppress("unstableApiUsage")
     private fun handleKingdomName(
         view: DialogResponseView,
@@ -131,6 +140,11 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
         )
     }
 
+    /**
+     * Handles updating the government type of kingdom based on the player's dialog response.
+     * @param view the [DialogResponseView] containing the player's submitted dialog inputs.
+     * @param player the [Player] whose sceptre determines which kingdom to update.
+     */
     @Suppress("unstableApiUsage")
     private fun handleKingdomType(
         view: DialogResponseView,
@@ -143,6 +157,12 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
         KingdomData.set(sceptreUUID, oldKingdom.copy(type = type))
     }
 
+    /**
+     * Retrieves the [KingdomData] associated with the sceptre held by the given [player].
+     * @param player the [Player] whose main-hand sceptre should be checked.
+     * @return a [Pair] containing the sceptre's [UUID] and its corresponding [KingdomData],
+     *         or `null` if no valid data is found.
+     */
     private fun getKingdomDataFromPlayer(player: Player): Pair<UUID, KingdomData>? {
         val item = player.inventory.itemInMainHand
         val sceptreUUIDString = item.persistentDataContainer.get(sceptreIdKey, PersistentDataType.STRING)
@@ -151,6 +171,11 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
         return sceptreUUID to oldKingdom
     }
 
+    /**
+     * Builds a kingdom management dialog for the specified [KingdomData].
+     * @param data the [KingdomData] representing the current state of the kingdom (name, ruler, and type).
+     * @return a fully built [Dialog] that allows viewing and modifying kingdom properties.
+     */
     @Suppress("unstableApiUsage")
     private fun kingdomDialog(data: KingdomData): Dialog =
         Dialog.create {
@@ -211,6 +236,10 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
                 )
         }
 
+    /**
+     * Creates a new instance of the custom sceptre item.
+     * @return an [ItemStack] representing the fully configured sceptre.
+     */
     private fun sceptre(): ItemStack =
         @Suppress("unstableApiUsage")
         ItemStack.of(config.sceptreMaterial).apply {
@@ -226,6 +255,10 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
             }
         }
 
+    /**
+     * Creates the shaped crafting recipe for the custom sceptre item.
+     * @return a [Recipe] representing the sceptre crafting recipe.
+     */
     private fun sceptreRecipe(): Recipe =
         ShapedRecipe(sceptreRecipeKey, sceptre()).apply {
             shape(" A ", " B ", " C ")
@@ -251,7 +284,7 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
                     " ❗".fireFmt(true),
             var kingdomRulerChangeMsg: String =
                 "❗ ".fireFmt() +
-                        "<i>The kingdom of <kingdom_name> has a new ruler named <player></i>".mangoFmt(true) +
+                    "<i>The kingdom of <kingdom_name> has a new ruler named <player></i>".mangoFmt(true) +
                     " ❗".fireFmt(true),
             var kingdomRenameMsg: String = (
                 "❗ ".fireFmt() +
