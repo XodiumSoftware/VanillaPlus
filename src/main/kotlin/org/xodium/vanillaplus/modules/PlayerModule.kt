@@ -7,6 +7,7 @@ import io.papermc.paper.datacomponent.item.ItemLore
 import io.papermc.paper.datacomponent.item.ResolvableProfile
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Material
+import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -15,6 +16,7 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
+import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.PlayerData
@@ -22,12 +24,15 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
+import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 
 /** Represents a module handling player mechanics within the system. */
 internal class PlayerModule(
     private val tabListModule: TabListModule,
 ) : ModuleInterface<PlayerModule.Config> {
     override val config: Config = Config()
+
+    private val playerSkullXpKey = NamespacedKey(instance, "player_head_xp")
 
     override fun enabled(): Boolean = config.enabled && tabListModule.enabled()
 
@@ -75,7 +80,14 @@ internal class PlayerModule(
     @EventHandler
     fun on(event: PlayerDeathEvent) {
         if (!enabled()) return
-        dropPlayerHead(event.entity, event.entity.killer ?: return)
+        val killer = event.entity.killer ?: return
+        dropPlayerHead(event.entity, killer, event.droppedExp)
+        event.deathMessage(
+            config.l18n.playerDeathMsg.mm(
+                Placeholder.component("player", event.player.displayName()),
+                Placeholder.component("killer", killer.displayName()),
+            ),
+        )
     }
 
     /**
@@ -96,11 +108,13 @@ internal class PlayerModule(
      * Drops the player's head with custom metadata when killed by another player.
      * @param entity The player who died.
      * @param killer The player who killed the entity.
+     * @param xp The xp the player drops upon death.
      */
     @Suppress("UnstableApiUsage")
     private fun dropPlayerHead(
         entity: Player,
         killer: Player,
+        xp: Int,
     ) {
         entity.world.dropItemNaturally(
             entity.location,
@@ -114,14 +128,16 @@ internal class PlayerModule(
                     DataComponentTypes.LORE,
                     ItemLore
                         .lore()
-                        .addLine(
+                        .addLines(
                             config.l18n.playerHeadLore
                                 .mm(
                                     Placeholder.component("player", entity.name.mm()),
                                     Placeholder.component("killer", killer.name.mm()),
+                                    Placeholder.component("xp", xp.toString().mm()),
                                 ),
                         ).build(),
                 )
+                editPersistentDataContainer { it.set(playerSkullXpKey, PersistentDataType.INTEGER, xp) }
             },
         )
     }
@@ -132,7 +148,8 @@ internal class PlayerModule(
     ) : ModuleInterface.Config {
         data class L18n(
             var playerHeadName: String = "<player>’s Skull".fireFmt(),
-            var playerHeadLore: String = "<player> killed by <killer>",
+            var playerHeadLore: List<String> = listOf("<player> killed by <killer>", "Stored XP: <xp>"),
+            var playerDeathMsg: String = "<killer> ${"⚔".mangoFmt(true)} <player>",
         )
     }
 }
