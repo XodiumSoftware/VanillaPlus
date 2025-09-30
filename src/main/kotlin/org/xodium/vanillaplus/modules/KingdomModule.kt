@@ -72,7 +72,7 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
             player.showDialog(kingdomDialog(kingdom))
             instance.server.broadcast(
                 config.l18n.kingdomCreatedMsg
-                    .mm(Placeholder.component("kingdomName", kingdom.name.mm())),
+                    .mm(Placeholder.component("kingdom_name", kingdom.name.mm())),
             )
         } else {
             if (kingdom.ruler == player.uniqueId) {
@@ -83,7 +83,7 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
                 instance.server.broadcast(
                     config.l18n.kingdomRulerChangeMsg
                         .mm(
-                            Placeholder.component("kingdomName", kingdom.name.mm()),
+                            Placeholder.component("kingdom_name", kingdom.name.mm()),
                             Placeholder.component(
                                 "player",
                                 instance.server.getPlayer(kingdom.ruler)?.displayName() ?: "NULL".mm(),
@@ -125,8 +125,8 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
         instance.server.broadcast(
             config.l18n.kingdomRenameMsg
                 .mm(
-                    Placeholder.component("kingdomName", name.mm()),
-                    Placeholder.component("kingdomOldName", oldKingdom.name.mm()),
+                    Placeholder.component("kingdom_name", name.mm()),
+                    Placeholder.component("kingdom_old_name", oldKingdom.name.mm()),
                 ),
         )
     }
@@ -247,15 +247,15 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
         data class L18n(
             var kingdomCreatedMsg: String =
                 "❗ ".fireFmt() +
-                    "<i>The kingdom of <kingdomName> has been created</i>".mangoFmt(true) +
+                    "<i>The kingdom of <kingdom_name> has been created</i>".mangoFmt(true) +
                     " ❗".fireFmt(true),
             var kingdomRulerChangeMsg: String =
                 "❗ ".fireFmt() +
-                        "<i>The kingdom of <kingdomName> has a new ruler named <player></i>".mangoFmt(true) +
+                        "<i>The kingdom of <kingdom_name> has a new ruler named <player></i>".mangoFmt(true) +
                     " ❗".fireFmt(true),
             var kingdomRenameMsg: String = (
                 "❗ ".fireFmt() +
-                        "<i>The kingdom of <kingdomOldName> is now known as <kingdomName></i>".mangoFmt(true) +
+                        "<i>The kingdom of <kingdom_old_name> is now known as <kingdom_name></i>".mangoFmt(true) +
                     " ❗".fireFmt(true)
             ),
         )
