@@ -9,6 +9,7 @@ import io.papermc.paper.dialog.Dialog
 import io.papermc.paper.registry.data.dialog.ActionButton
 import io.papermc.paper.registry.data.dialog.DialogBase
 import io.papermc.paper.registry.data.dialog.action.DialogAction
+import io.papermc.paper.registry.data.dialog.body.DialogBody
 import io.papermc.paper.registry.data.dialog.type.DialogType
 import net.kyori.adventure.key.Key
 import org.bukkit.Material
@@ -64,24 +65,27 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
             player.sendMessage("New kingdom '${kingdom.name}' has been created!".mm())
             player.sendMessage("You are now the ruler. Right-click the sceptre to manage your kingdom.".mm())
 
-            player.showDialog(gui(kingdom))
+            player.showDialog(kingdomDialog(kingdom))
         } else {
             if (kingdom.ruler == player.uniqueId) {
-                player.showDialog(gui(kingdom))
+                player.showDialog(kingdomDialog(kingdom))
             } else {
                 KingdomData.set(sceptreUUID, kingdom.copy(ruler = kingdom.ruler))
-                player.showDialog(gui(kingdom))
+                player.showDialog(kingdomDialog(kingdom))
             }
         }
     }
 
     @Suppress("unstableApiUsage")
-    private fun gui(data: KingdomData): Dialog =
+    private fun kingdomDialog(data: KingdomData): Dialog =
         Dialog.create {
             it
                 .empty()
                 .base(
-                    DialogBase.builder(data.name.mm()).build(),
+                    DialogBase
+                        .builder(data.name.mm())
+                        .body(mutableListOf(DialogBody.item(ItemStack.of(Material.NAME_TAG)).build()))
+                        .build(),
                 ).type(
                     DialogType.confirmation(
                         ActionButton
