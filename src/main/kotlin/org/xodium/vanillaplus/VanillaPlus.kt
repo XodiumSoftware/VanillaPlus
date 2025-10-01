@@ -6,8 +6,12 @@ import org.xodium.vanillaplus.managers.ModuleManager
 /** Main class of the plugin. */
 internal class VanillaPlus : JavaPlugin() {
     companion object {
-        @JvmStatic
-        val instance: VanillaPlus by lazy { getPlugin(VanillaPlus::class.java) }
+        lateinit var instance: VanillaPlus
+            private set
+    }
+
+    init {
+        instance = this
     }
 
     /** Called when the plugin is enabled. */
