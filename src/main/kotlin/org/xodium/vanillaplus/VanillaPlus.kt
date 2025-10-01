@@ -2,8 +2,6 @@ package org.xodium.vanillaplus
 
 import org.bukkit.plugin.java.JavaPlugin
 import org.xodium.vanillaplus.managers.ModuleManager
-import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
-import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 
 /** Main class of the plugin. */
 internal class VanillaPlus : JavaPlugin() {
@@ -11,9 +9,6 @@ internal class VanillaPlus : JavaPlugin() {
         private const val SUPPORTED_PLATFORM = "Paper"
         private const val UNSUPPORTED_PLATFORM_MSG =
             "This plugin requires a supported server platform. Supported platforms: ${SUPPORTED_PLATFORM}."
-
-        val PREFIX: String =
-            "${"[".mangoFmt(true)}${VanillaPlus::class.simpleName.toString().fireFmt()}${"]".mangoFmt()}"
 
         @JvmStatic
         val instance: VanillaPlus by lazy { getPlugin(VanillaPlus::class.java) }

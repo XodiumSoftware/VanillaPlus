@@ -15,13 +15,13 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
-import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.clickRunCmd
 import org.xodium.vanillaplus.utils.ExtUtils.face
 import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.ExtUtils.prefix
 import org.xodium.vanillaplus.utils.ExtUtils.pt
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
@@ -233,7 +233,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
         data class I18n(
             var clickMe: String = "Click Me!".fireFmt(),
             var clickToWhisper: String = "Click to Whisper".fireFmt(),
-            var playerIsNotOnline: String = "$PREFIX Player is not Online!".fireFmt(),
+            var playerIsNotOnline: String = "${instance.prefix} Player is not Online!".fireFmt(),
             var deleteMessage: String = "Click to delete your message!".fireFmt(),
             var clickToClipboard: String = "Click to copy position to clipboard".fireFmt(),
         )
