@@ -108,14 +108,14 @@ internal class PlayerModule(
                 setData(DataComponentTypes.PROFILE, ResolvableProfile.resolvableProfile(entity.playerProfile))
                 setData(
                     DataComponentTypes.CUSTOM_NAME,
-                    config.l18n.playerHeadName.mm(Placeholder.component("player", entity.displayName())),
+                    config.i18n.playerHeadName.mm(Placeholder.component("player", entity.displayName())),
                 )
                 setData(
                     DataComponentTypes.LORE,
                     ItemLore
                         .lore()
                         .addLine(
-                            config.l18n.playerHeadLore
+                            config.i18n.playerHeadLore
                                 .mm(
                                     Placeholder.component("player", entity.name.mm()),
                                     Placeholder.component("killer", killer.name.mm()),
@@ -128,9 +128,9 @@ internal class PlayerModule(
 
     data class Config(
         override var enabled: Boolean = true,
-        var l18n: L18n = L18n(),
+        var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
-        data class L18n(
+        data class I18n(
             var playerHeadName: String = "<player>’s Skull".fireFmt(),
             var playerHeadLore: String = "<player> killed by <killer>",
         )

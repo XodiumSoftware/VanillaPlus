@@ -118,7 +118,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         val material =
             materialName?.let { Material.getMaterial(it.uppercase()) } ?: player.inventory.itemInMainHand.type
         if (material == Material.AIR) {
-            player.sendActionBar(config.l18n.noMaterialSpecified.mm())
+            player.sendActionBar(config.i18n.noMaterialSpecified.mm())
             return 0
         }
 
@@ -147,7 +147,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
 
         if (chests.isEmpty()) {
             return player.sendActionBar(
-                config.l18n.noMatchingItems.mm(Placeholder.component("material", material.name.mm())),
+                config.i18n.noMatchingItems.mm(Placeholder.component("material", material.name.mm())),
             )
         }
 
@@ -191,7 +191,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
             findBlocksInRadius(player.location, config.unloadRadius)
                 .filter { it.state is Container }
                 .sortedBy { it.location.distanceSquared(player.location) }
-        if (chests.isEmpty()) return player.sendActionBar(config.l18n.noNearbyChests.mm())
+        if (chests.isEmpty()) return player.sendActionBar(config.i18n.noNearbyChests.mm())
 
         val affectedChests = mutableListOf<Block>()
         for (block in chests) {
@@ -199,9 +199,9 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
             if (stuffInventoryIntoAnother(player, inv, true, startSlot, endSlot)) affectedChests.add(block)
         }
 
-        if (affectedChests.isEmpty()) return player.sendActionBar(config.l18n.noItemsUnloaded.mm())
+        if (affectedChests.isEmpty()) return player.sendActionBar(config.i18n.noItemsUnloaded.mm())
 
-        player.sendActionBar(config.l18n.inventoryUnloaded.mm())
+        player.sendActionBar(config.i18n.inventoryUnloaded.mm())
         lastUnloads[player.uniqueId] = affectedChests
 
         for (chest in affectedChests) chestEffect(chest.center(), 10, Particle.DustOptions(Color.LIME, 5.0f), player)
@@ -526,9 +526,9 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                 Sound.Source.PLAYER,
             ),
         var scheduleInitDelayInTicks: Long = 5,
-        var l18n: L18n = L18n(),
+        var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
-        data class L18n(
+        data class I18n(
             var noMaterialSpecified: String = "You must specify a valid material or hold something in your hand".fireFmt(),
             var noChestsFound: String = "No usable chests found for ${"<material>".roseFmt()}".fireFmt(),
             var noMatchingItems: String = "No chests contain ${"<material>".roseFmt()}".fireFmt(),

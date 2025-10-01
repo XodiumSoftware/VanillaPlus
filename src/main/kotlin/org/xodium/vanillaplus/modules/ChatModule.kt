@@ -59,7 +59,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
                                             val target =
                                                 instance.server.getPlayer(targetName)
                                                     ?: return@tryCatch sender.sendMessage(
-                                                        config.l18n.playerIsNotOnline.mm(),
+                                                        config.i18n.playerIsNotOnline.mm(),
                                                     )
                                             val message = ctx.getArgument("message", String::class.java)
                                             whisper(sender, target, message)
@@ -95,7 +95,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
                         "player",
                         displayName
                             .clickEvent(ClickEvent.suggestCommand("/w ${player.name} "))
-                            .hoverEvent(HoverEvent.showText(config.l18n.clickToWhisper.mm())),
+                            .hoverEvent(HoverEvent.showText(config.i18n.clickToWhisper.mm())),
                     ),
                     Placeholder.component("message", message.pt().mm()),
                 )
@@ -132,7 +132,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
                         player
                             .displayName()
                             .clickEvent(ClickEvent.suggestCommand("/nickname ${player.name}"))
-                            .hoverEvent(HoverEvent.showText(config.l18n.clickMe.mm())),
+                            .hoverEvent(HoverEvent.showText(config.i18n.clickMe.mm())),
                     ),
                     *player
                         .face()
@@ -170,7 +170,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
                     target
                         .displayName()
                         .clickEvent(ClickEvent.suggestCommand("/w ${target.name} "))
-                        .hoverEvent(HoverEvent.showText(config.l18n.clickToWhisper.mm())),
+                        .hoverEvent(HoverEvent.showText(config.i18n.clickToWhisper.mm())),
                 ),
                 Placeholder.component("message", message.mm()),
             ),
@@ -183,7 +183,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
                     sender
                         .displayName()
                         .clickEvent(ClickEvent.suggestCommand("/w ${sender.name} "))
-                        .hoverEvent(HoverEvent.showText(config.l18n.clickToWhisper.mm())),
+                        .hoverEvent(HoverEvent.showText(config.i18n.clickToWhisper.mm())),
                 ),
                 Placeholder.component("message", message.mm()),
             ),
@@ -198,7 +198,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
     private fun createDeleteCross(event: AsyncChatEvent): Component =
         config.deleteCross
             .mm()
-            .hoverEvent(config.l18n.deleteMessage.mm())
+            .hoverEvent(config.i18n.deleteMessage.mm())
             .clickEvent(ClickEvent.callback { instance.server.deleteMessage(event.signedMessage()) })
 
     data class Config(
@@ -228,9 +228,9 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
         var whisperFromFormat: String =
             "<player> <reset>${"➛".mangoFmt(true)} ${"You".skylineFmt()} ${"›".mangoFmt(true)} <message>",
         var deleteCross: String = "<dark_gray>[<dark_red><b>X</b></dark_red><dark_gray>]",
-        var l18n: L18n = L18n(),
+        var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
-        data class L18n(
+        data class I18n(
             var clickMe: String = "Click Me!".fireFmt(),
             var clickToWhisper: String = "Click to Whisper".fireFmt(),
             var playerIsNotOnline: String = "$PREFIX Player is not Online!".fireFmt(),

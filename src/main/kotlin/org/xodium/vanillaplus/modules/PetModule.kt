@@ -98,14 +98,14 @@ internal class PetModule : ModuleInterface<PetModule.Config> {
         petName: Component,
     ) {
         source.sendActionBar(
-            config.l18n.sourceTransfer.mm(
+            config.i18n.sourceTransfer.mm(
                 Placeholder.component("<pet>", petName),
                 Placeholder.component("<target>", target.displayName()),
             ),
         )
 
         target.sendActionBar(
-            config.l18n.targetTransfer.mm(
+            config.i18n.targetTransfer.mm(
                 Placeholder.component("<pet>", petName),
                 Placeholder.component("<source>", source.displayName()),
             ),
@@ -115,9 +115,9 @@ internal class PetModule : ModuleInterface<PetModule.Config> {
     data class Config(
         override var enabled: Boolean = true,
         var transferRadius: Double = 10.0,
-        var l18n: L18n = L18n(),
+        var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
-        data class L18n(
+        data class I18n(
             var sourceTransfer: String = "${"You have transferred".fireFmt()} <pet> ${"to".fireFmt()} <target>",
             var targetTransfer: String = "<source> ${"has transferred".fireFmt()} <pet> ${"to you".fireFmt()}",
         )
