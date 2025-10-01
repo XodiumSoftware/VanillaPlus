@@ -237,6 +237,7 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
         ctx: CommandContext<CommandSourceStack>,
         hasIndex: Boolean,
     ) {
+        // TODO: check if this can be refactored.
         val typeName = StringArgumentType.getString(ctx, "type")
         val material = typeName.toMaterial() ?: return
         val clipboards = schematicCache[material] ?: return
