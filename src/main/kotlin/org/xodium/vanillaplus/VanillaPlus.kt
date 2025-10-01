@@ -23,12 +23,11 @@ internal class VanillaPlus : JavaPlugin() {
         "This plugin requires a supported server version. Supported versions: ${pluginMeta.version}."
 
     /** Called when the plugin is enabled. */
-    @Suppress("UNUSED_EXPRESSION")
     override fun onEnable() {
         when {
             !server.version.contains(pluginMeta.version) -> disablePlugin(unsupportedVersionMsg)
             !server.name.contains(SUPPORTED_PLATFORM) -> disablePlugin(UNSUPPORTED_PLATFORM_MSG)
-            else -> ModuleManager
+            else -> ModuleManager.run {}
         }
     }
 
