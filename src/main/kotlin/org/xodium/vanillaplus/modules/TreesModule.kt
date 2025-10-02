@@ -159,8 +159,12 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
      * Returns a random rotation angle from a given list of angles.
      * @param angle The list of angles to choose from. Defaults to [0, 90, 180, 270].
      * @return A random angle from the provided or default list.
+     * @throws IllegalArgumentException if any angle is not a multiple of 90 or outside [0, 270)
      */
-    private fun getRandomRotation(angle: List<Int> = listOf(0, 90, 180, 270)) = angle.random()
+    private fun getRandomRotation(angle: List<Int> = listOf(0, 90, 180, 270)): Int {
+        require(angle.all { it in setOf(0, 90, 180, 270) }) { "Angles must be one of: 0, 90, 180, 270" }
+        return angle.random()
+    }
 
     data class Config(
         override var enabled: Boolean = true,
