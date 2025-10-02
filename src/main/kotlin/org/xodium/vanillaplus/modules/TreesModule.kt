@@ -65,9 +65,8 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
         val url = javaClass.getResource(resourceDir) ?: error("Resource directory not found: $resourceDir")
         return try {
             FileSystems.newFileSystem(url.toURI(), mapOf("create" to false)).use { fs ->
-                val dirPath = fs.getPath(resourceDir.removePrefix("/"))
                 Files
-                    .walk(dirPath, 1)
+                    .walk(fs.getPath(resourceDir.removePrefix("/")), 1)
                     .filter { Files.isRegularFile(it) }
                     .collect(Collectors.toList())
                     .also { if (it.isEmpty()) error("No schematics found in directory: $resourceDir") }
