@@ -1,7 +1,5 @@
 package org.xodium.vanillaplus.modules
 
-import com.mojang.brigadier.arguments.StringArgumentType
-import com.mojang.brigadier.context.CommandContext
 import com.sk89q.worldedit.WorldEdit
 import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldedit.extent.clipboard.Clipboard
@@ -11,26 +9,16 @@ import com.sk89q.worldedit.function.operation.Operations
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.math.transform.AffineTransform
 import com.sk89q.worldedit.session.ClipboardHolder
-import io.papermc.paper.command.brigadier.CommandSourceStack
-import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.block.Block
-import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.world.StructureGrowEvent
-import org.bukkit.permissions.Permission
-import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.hooks.FAWEHook
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.registries.MaterialRegistry
-import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.ExtUtils.prefix
-import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
-import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import java.io.IOException
 import java.nio.channels.Channels
 import java.nio.channels.ReadableByteChannel
@@ -52,65 +40,6 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
     }
 
     override fun enabled(): Boolean = config.enabled && FAWEHook.get()
-
-    override fun cmds(): List<CommandData> =
-        listOf(
-            CommandData(
-                Commands
-                    .literal("tree")
-                    .requires { it.sender.hasPermission(perms()[0]) }
-                    .then(
-                        Commands
-                            .argument("type", StringArgumentType.string())
-                            .suggests { _, builder ->
-                                config.saplingLink.keys.forEach { material ->
-                                    builder.suggest(
-                                        material.name
-                                            .removeSuffix("_SAPLING")
-                                            .removeSuffix("_PROPAGULE")
-                                            .removeSuffix("_FUNGUS")
-                                            .lowercase(),
-                                    )
-                                }
-                                builder.buildFuture()
-                            }.then(
-                                Commands
-                                    .argument("index", StringArgumentType.string())
-                                    .suggests { ctx, builder ->
-                                        StringArgumentType.getString(ctx, "type").toMaterial()?.let { material ->
-                                            schematicCache[material]?.let { schematics ->
-                                                schematics.indices.forEach { index ->
-                                                    builder.suggest(index.toString())
-                                                }
-                                            }
-                                        }
-                                        builder.buildFuture()
-                                    }.executes { ctx ->
-                                        ctx.tryCatch {
-                                            if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
-                                            handleTreeCmd((it.sender as Player), ctx, true)
-                                        }
-                                    },
-                            ).executes { ctx ->
-                                ctx.tryCatch {
-                                    if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
-                                    handleTreeCmd((it.sender as Player), ctx, false)
-                                }
-                            },
-                    ),
-                "Triggers the spawning of a tree",
-                listOf("tr"),
-            ),
-        )
-
-    override fun perms(): List<Permission> =
-        listOf(
-            Permission(
-                "${instance::class.simpleName}.tree".lowercase(),
-                "Allows use of the tree command",
-                PermissionDefault.OP,
-            ),
-        )
 
     /**
      * Handle the StructureGrowEvent.
@@ -227,58 +156,11 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
     }
 
     /**
-     * Handles the `/tree` command execution for spawning a tree structure.
-     * @param player The [Player] executing the command.
-     * @param ctx The [CommandContext] containing command arguments and context.
-     * @param hasIndex Whether the command has an index argument.
+     * Returns a random rotation angle from a given list of angles.
+     * @param angle The list of angles to choose from. Defaults to [0, 90, 180, 270].
+     * @return A random angle from the provided or default list.
      */
-    private fun handleTreeCmd(
-        player: Player,
-        ctx: CommandContext<CommandSourceStack>,
-        hasIndex: Boolean,
-    ) {
-        // TODO: check if this can be refactored.
-        val typeName = StringArgumentType.getString(ctx, "type")
-        val material = typeName.toMaterial() ?: return
-        val clipboards = schematicCache[material] ?: return
-        val clipboard =
-            if (hasIndex) {
-                val index = StringArgumentType.getString(ctx, "index").toInt()
-                if (index < 0 || index >= clipboards.size) return
-                clipboards[index]
-            } else {
-                clipboards.random()
-            }
-        try {
-            val actor = BukkitAdapter.adapt(player)
-            val session = WorldEdit.getInstance().sessionManager.get(actor)
-            session.clipboard = ClipboardHolder(clipboard)
-            player.sendMessage("${instance.prefix} Loaded $typeName tree into clipboard! Use //paste to place it".mm())
-        } catch (e: Exception) {
-            instance.logger.severe("Error while setting clipboard: ${e.message}")
-            player.sendMessage("${instance.prefix} ${"Error Occurred, Check Console!".fireFmt()}".mm())
-        }
-    }
-
-    /**
-     * Attempts to resolve this [String] as a [Material], optionally trying suffixes
-     * like "_SAPLING", "_PROPAGULE", and "_FUNGUS" if a direct match fails.
-     * @receiver The material name to search for.
-     * @return The matching [Material], or `null` if no match is found.
-     */
-    private fun String.toMaterial(): Material? {
-        val name = this.uppercase()
-        return Material.matchMaterial(name)
-            ?: Material.matchMaterial("${name}_SAPLING")
-            ?: Material.matchMaterial("${name}_PROPAGULE")
-            ?: Material.matchMaterial("${name}_FUNGUS")
-    }
-
-    /**
-     * Returns a random rotation angle from the set {0, 90, 180, 270}.
-     * @return An integer representing a rotation angle in degrees.
-     */
-    private fun getRandomRotation() = listOf(0, 90, 180, 270).random()
+    private fun getRandomRotation(angle: List<Int> = listOf(0, 90, 180, 270)) = angle.random()
 
     data class Config(
         override var enabled: Boolean = true,
