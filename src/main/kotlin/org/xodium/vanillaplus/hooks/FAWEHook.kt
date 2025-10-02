@@ -6,12 +6,15 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 object FAWEHook {
     /**
      * Checks if a specified plugin is available and optionally logs a warning if not found.
-     * @param module The name of the module that will be disabled.
      * @return true if the plugin is installed and enabled, false otherwise.
      */
-    fun get(module: String): Boolean {
+    fun get(): Boolean {
         val plugin = instance.server.pluginManager.getPlugin("WorldEdit") != null
-        if (!plugin) instance.logger.warning("FAWE or WorldEdit not found, disabling $module")
+        if (!plugin) {
+            val callerClassName = Thread.currentThread().stackTrace[2].className
+            val simpleName = callerClassName.substringAfterLast('.')
+            instance.logger.warning("FAWE or WorldEdit not found, disabling $simpleName")
+        }
 
         return plugin
     }

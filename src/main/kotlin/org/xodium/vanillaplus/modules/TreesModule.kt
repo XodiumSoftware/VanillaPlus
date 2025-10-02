@@ -51,7 +51,7 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
         }
     }
 
-    override fun enabled(): Boolean = config.enabled && FAWEHook.get("TreesModule")
+    override fun enabled(): Boolean = config.enabled && FAWEHook.get()
 
     override fun cmds(): List<CommandData> =
         listOf(
