@@ -11,6 +11,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.PlayerDeathEvent
+import org.bukkit.event.player.PlayerAdvancementDoneEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.permissions.Permission
@@ -22,6 +23,7 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
+import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 
 /** Represents a module handling player mechanics within the system. */
 internal class PlayerModule(
@@ -78,6 +80,17 @@ internal class PlayerModule(
         dropPlayerHead(event.entity, event.entity.killer ?: return)
     }
 
+    @EventHandler
+    fun on(event: PlayerAdvancementDoneEvent) {
+        if (!enabled()) return
+        event.message(
+            config.i18n.playerAdvancementDoneMsg.mm(
+                Placeholder.component("player", event.player.displayName()),
+                Placeholder.component("advancement", event.advancement.displayName()),
+            ),
+        )
+    }
+
     /**
      * Sets the nickname of the player to the given name.
      * @param player The player whose nickname is to be set.
@@ -88,7 +101,7 @@ internal class PlayerModule(
         name: String,
     ) {
         PlayerData.set(player, name)
-        player.displayName((name).mm())
+        player.displayName(name.mm())
         tabListModule.updatePlayerDisplayName(player)
     }
 
@@ -133,6 +146,12 @@ internal class PlayerModule(
         data class I18n(
             var playerHeadName: String = "<player>’s Skull".fireFmt(),
             var playerHeadLore: String = "<player> killed by <killer>",
+            var playerAdvancementDoneMsg: String =
+                "\uD83C\uDF89 ${
+                    "›".mangoFmt(
+                        true,
+                    )
+                } <player> ${"has made the advancement:".mangoFmt()} <advancement>".mangoFmt(),
         )
     }
 }
