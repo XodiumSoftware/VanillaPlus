@@ -97,6 +97,9 @@ internal class PlayerModule(
     fun on(event: PlayerDeathEvent) {
         if (!enabled()) return
         dropPlayerHead(event.entity, event.entity.killer ?: return)
+        // TODO
+        if (config.i18n.playerDeathMsg.isNotEmpty()) event.deathMessage()
+        if (config.i18n.playerDeathScreenMsg.isNotEmpty()) event.deathScreenMessageOverride()
     }
 
     @EventHandler
@@ -167,6 +170,8 @@ internal class PlayerModule(
             var playerHeadLore: String = "<player> killed by <killer>",
             var playerJoinMsg: String = "<green>➕<reset> ${"›".mangoFmt(true)} <player>",
             var playerQuitMsg: String = "<red>➖<reset> ${"›".mangoFmt(true)} <player>",
+            var playerDeathMsg: String = "☠ ${"›".mangoFmt(true)}",
+            var playerDeathScreenMsg: String = "☠",
             var playerAdvancementDoneMsg: String =
                 "\uD83C\uDF89 ${
                     "›".mangoFmt(
