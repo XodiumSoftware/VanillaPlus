@@ -13,6 +13,7 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerAdvancementDoneEvent
 import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
@@ -72,9 +73,27 @@ internal class PlayerModule(
     fun on(event: PlayerJoinEvent) {
         if (!enabled()) return
         PlayerData.get(event.player)?.nickname?.let { event.player.displayName(it.mm()) }
+        if (config.i18n.playerJoinMsg.isEmpty()) return
+        event.joinMessage(null)
+        val player = event.player
+        instance.server.onlinePlayers
+            .filter { it.uniqueId != player.uniqueId }
+            .forEach {
+                it.sendMessage(
+                    config.i18n.playerJoinMsg.mm(
+                        Placeholder.component("player", player.displayName()),
+                    ),
+                )
+            }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    fun on(event: PlayerQuitEvent) {
+        if (!enabled() || config.i18n.playerQuitMsg.isEmpty()) return
+        event.quitMessage(config.i18n.playerQuitMsg.mm(Placeholder.component("player", event.player.displayName())))
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerDeathEvent) {
         if (!enabled()) return
         dropPlayerHead(event.entity, event.entity.killer ?: return)
@@ -82,7 +101,7 @@ internal class PlayerModule(
 
     @EventHandler
     fun on(event: PlayerAdvancementDoneEvent) {
-        if (!enabled()) return
+        if (!enabled() || config.i18n.playerAdvancementDoneMsg.isEmpty()) return
         event.message(
             config.i18n.playerAdvancementDoneMsg.mm(
                 Placeholder.component("player", event.player.displayName()),
@@ -146,6 +165,8 @@ internal class PlayerModule(
         data class I18n(
             var playerHeadName: String = "<player>’s Skull".fireFmt(),
             var playerHeadLore: String = "<player> killed by <killer>",
+            var playerJoinMsg: String = "<green>➕<reset> ${"›".mangoFmt(true)} <player>",
+            var playerQuitMsg: String = "<red>➖<reset> ${"›".mangoFmt(true)} <player>",
             var playerAdvancementDoneMsg: String =
                 "\uD83C\uDF89 ${
                     "›".mangoFmt(

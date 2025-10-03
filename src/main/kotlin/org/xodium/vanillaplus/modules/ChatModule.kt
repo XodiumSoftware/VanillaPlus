@@ -12,7 +12,6 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.player.PlayerJoinEvent
-import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -109,19 +108,6 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
         if (!config.enabled) return
 
         val player = event.player
-        if (config.joinMessage.isNotEmpty()) {
-            event.joinMessage(null)
-            instance.server.onlinePlayers
-                .filter { it.uniqueId != player.uniqueId }
-                .forEach {
-                    it.sendMessage(
-                        config.joinMessage.mm(
-                            Placeholder.component("player", player.displayName()),
-                        ),
-                    )
-                }
-        }
-
         var imageIndex = 0
         player.sendMessage(
             Regex("<image>")
@@ -141,15 +127,6 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
                         .toTypedArray(),
                 ),
         )
-    }
-
-    @EventHandler(priority = EventPriority.HIGH)
-    fun on(event: PlayerQuitEvent) {
-        if (!config.enabled) return
-
-        if (config.quitMessage.isNotEmpty()) {
-            event.quitMessage(config.quitMessage.mm(Placeholder.component("player", event.player.displayName())))
-        }
     }
 
     /**
@@ -221,8 +198,6 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
                 "<image>${"⯈".mangoFmt(true)}",
                 "]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true),
             ),
-        var joinMessage: String = "<green>➕<reset> ${"›".mangoFmt(true)} <player>",
-        var quitMessage: String = "<red>➖<reset> ${"›".mangoFmt(true)} <player>",
         var whisperToFormat: String =
             "${"You".skylineFmt()} ${"➛".mangoFmt(true)} <player> <reset>${"›".mangoFmt(true)} <message>",
         var whisperFromFormat: String =
