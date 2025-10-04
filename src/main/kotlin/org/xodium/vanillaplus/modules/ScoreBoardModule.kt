@@ -60,14 +60,14 @@ internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
      */
     private fun toggle(player: Player) {
         val playerData = PlayerData.get(player.uniqueId)
-        if (playerData?.scoreboardVisibility == true) {
+        if (playerData?.scoreboardVisibility == false) {
             player.scoreboard = instance.server.scoreboardManager.mainScoreboard
             PlayerData.set(player.uniqueId, playerData.copy(scoreboardVisibility = true))
         } else {
             player.scoreboard = instance.server.scoreboardManager.newScoreboard
             PlayerData.set(
                 player.uniqueId,
-                playerData?.copy(scoreboardVisibility = true) ?: PlayerData(scoreboardVisibility = false),
+                playerData?.copy(scoreboardVisibility = false) ?: PlayerData(scoreboardVisibility = false),
             )
         }
     }
