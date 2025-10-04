@@ -12,7 +12,9 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.PlayerDeathEvent
+import org.bukkit.event.player.PlayerAdvancementDoneEvent
 import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.Recipe
 import org.bukkit.inventory.ShapelessRecipe
@@ -82,9 +84,27 @@ internal class PlayerModule(
     fun on(event: PlayerJoinEvent) {
         if (!enabled()) return
         PlayerData.get(event.player)?.nickname?.let { event.player.displayName(it.mm()) }
+        if (config.i18n.playerJoinMsg.isEmpty()) return
+        event.joinMessage(null)
+        val player = event.player
+        instance.server.onlinePlayers
+            .filter { it.uniqueId != player.uniqueId }
+            .forEach {
+                it.sendMessage(
+                    config.i18n.playerJoinMsg.mm(
+                        Placeholder.component("player", player.displayName()),
+                    ),
+                )
+            }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    fun on(event: PlayerQuitEvent) {
+        if (!enabled() || config.i18n.playerQuitMsg.isEmpty()) return
+        event.quitMessage(config.i18n.playerQuitMsg.mm(Placeholder.component("player", event.player.displayName())))
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerDeathEvent) {
         if (!enabled()) return
         val killer = event.entity.killer ?: return
@@ -96,6 +116,19 @@ internal class PlayerModule(
             config.l18n.playerDeathMsg.mm(
                 Placeholder.component("player", event.player.displayName()),
                 Placeholder.component("killer", killer.displayName()),
+        dropPlayerHead(event.entity, event.entity.killer ?: return)
+        // TODO
+//        if (config.i18n.playerDeathMsg.isNotEmpty()) event.deathMessage()
+//        if (config.i18n.playerDeathScreenMsg.isNotEmpty()) event.deathScreenMessageOverride()
+    }
+
+    @EventHandler
+    fun on(event: PlayerAdvancementDoneEvent) {
+        if (!enabled() || config.i18n.playerAdvancementDoneMsg.isEmpty()) return
+        event.message(
+            config.i18n.playerAdvancementDoneMsg.mm(
+                Placeholder.component("player", event.player.displayName()),
+                Placeholder.component("advancement", event.advancement.displayName()),
             ),
         )
     }
@@ -110,7 +143,7 @@ internal class PlayerModule(
         name: String,
     ) {
         PlayerData.set(player, name)
-        player.displayName((name).mm())
+        player.displayName(name.mm())
         tabListModule.updatePlayerDisplayName(player)
     }
 
@@ -160,12 +193,23 @@ internal class PlayerModule(
 
     data class Config(
         override var enabled: Boolean = true,
-        var l18n: L18n = L18n(),
+        var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
-        data class L18n(
+        data class I18n(
             var playerHeadName: String = "<player>’s Skull".fireFmt(),
             var playerHeadLore: List<String> = listOf("<player> killed by <killer>", "Stored XP: <xp>"),
             var playerDeathMsg: String = "<killer> ${"⚔".mangoFmt(true)} <player>",
+            var playerHeadLore: String = "<player> killed by <killer>",
+            var playerJoinMsg: String = "<green>➕<reset> ${"›".mangoFmt(true)} <player>",
+            var playerQuitMsg: String = "<red>➖<reset> ${"›".mangoFmt(true)} <player>",
+            var playerDeathMsg: String = "☠ ${"›".mangoFmt(true)}",
+            var playerDeathScreenMsg: String = "☠",
+            var playerAdvancementDoneMsg: String =
+                "\uD83C\uDF89 ${
+                    "›".mangoFmt(
+                        true,
+                    )
+                } <player> ${"has made the advancement:".mangoFmt()} <advancement>".mangoFmt(),
         )
     }
 }

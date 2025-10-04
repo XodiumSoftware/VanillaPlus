@@ -56,7 +56,7 @@ internal class DimensionsModule : ModuleInterface<DimensionsModule.Config> {
             if (findCorrespondingPortal(calcPortalCentre(event.blocks), getOverworld()) == null) {
                 event.isCancelled = true
                 val player = event.entity as? Player ?: return
-                player.sendActionBar(config.l18n.portalCreationDenied.mm())
+                player.sendActionBar(config.i18n.portalCreationDenied.mm())
             }
         }
     }
@@ -137,9 +137,9 @@ internal class DimensionsModule : ModuleInterface<DimensionsModule.Config> {
     data class Config(
         override var enabled: Boolean = true,
         var portalSearchRadius: Int = 128,
-        var l18n: L18n = L18n(),
+        var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
-        data class L18n(
+        data class I18n(
             var portalCreationDenied: String = "No corresponding active portal found in the Overworld!".fireFmt(),
         )
     }
