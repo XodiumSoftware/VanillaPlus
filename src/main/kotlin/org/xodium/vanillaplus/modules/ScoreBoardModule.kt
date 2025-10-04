@@ -8,7 +8,10 @@ import org.bukkit.scoreboard.DisplaySlot
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.ExtUtils.prefix
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
+import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 
 /** Represents a module handling scoreboard mechanics within the system. */
 internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
@@ -53,6 +56,7 @@ internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
             val objective = scoreboard.getObjective(config.scoreboardObjective)
             if (objective == null) {
                 instance.logger.warning("Scoreboard objective '${config.scoreboardObjective}' not found for player ${player.name}!")
+                player.sendMessage("${instance.prefix} ${"Error Occurred, Check Console!".fireFmt()}".mm())
                 return
             }
             objective.displaySlot = DisplaySlot.SIDEBAR
