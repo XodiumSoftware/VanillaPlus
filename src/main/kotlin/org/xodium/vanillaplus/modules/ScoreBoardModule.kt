@@ -48,9 +48,9 @@ internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
         val player = event.player
         val playerData = PlayerData.get(player.uniqueId)
         if (playerData?.scoreboardVisibility == true) {
-            player.scoreboard = instance.server.scoreboardManager.newScoreboard
-        } else {
             player.scoreboard = instance.server.scoreboardManager.mainScoreboard
+        } else {
+            player.scoreboard = instance.server.scoreboardManager.newScoreboard
         }
     }
 
@@ -62,12 +62,12 @@ internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
         val playerData = PlayerData.get(player.uniqueId)
         if (playerData?.scoreboardVisibility == true) {
             player.scoreboard = instance.server.scoreboardManager.mainScoreboard
-            PlayerData.set(player.uniqueId, playerData.copy(scoreboardVisibility = false))
+            PlayerData.set(player.uniqueId, playerData.copy(scoreboardVisibility = true))
         } else {
             player.scoreboard = instance.server.scoreboardManager.newScoreboard
             PlayerData.set(
                 player.uniqueId,
-                playerData?.copy(scoreboardVisibility = true) ?: PlayerData(scoreboardVisibility = true),
+                playerData?.copy(scoreboardVisibility = true) ?: PlayerData(scoreboardVisibility = false),
             )
         }
     }
