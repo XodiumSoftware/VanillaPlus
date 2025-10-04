@@ -9,8 +9,6 @@ import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.ExtUtils.prefix
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 
 /** Represents a module handling scoreboard mechanics within the system. */
@@ -59,11 +57,9 @@ internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
         if (hiddenPlayers.contains(player)) {
             player.scoreboard = instance.server.scoreboardManager.mainScoreboard
             hiddenPlayers.remove(player)
-            player.sendMessage("${instance.prefix} <gray>Leaderboard shown.".mm())
         } else {
             player.scoreboard = instance.server.scoreboardManager.newScoreboard
             hiddenPlayers.add(player)
-            player.sendMessage("${instance.prefix} <gray>Leaderboard hidden.".mm())
         }
     }
 
