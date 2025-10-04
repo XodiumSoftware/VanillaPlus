@@ -98,8 +98,8 @@ internal class PlayerModule(
         if (!enabled()) return
         dropPlayerHead(event.entity, event.entity.killer ?: return)
         // TODO
-        if (config.i18n.playerDeathMsg.isNotEmpty()) event.deathMessage()
-        if (config.i18n.playerDeathScreenMsg.isNotEmpty()) event.deathScreenMessageOverride()
+//        if (config.i18n.playerDeathMsg.isNotEmpty()) event.deathMessage()
+//        if (config.i18n.playerDeathScreenMsg.isNotEmpty()) event.deathScreenMessageOverride()
     }
 
     @EventHandler
