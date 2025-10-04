@@ -112,11 +112,6 @@ internal class PlayerModule(
             event.entity.location,
             playerSkull(event.entity, killer, event.droppedExp),
         )
-        event.deathMessage(
-            config.l18n.playerDeathMsg.mm(
-                Placeholder.component("player", event.player.displayName()),
-                Placeholder.component("killer", killer.displayName()),
-        dropPlayerHead(event.entity, event.entity.killer ?: return)
         // TODO
 //        if (config.i18n.playerDeathMsg.isNotEmpty()) event.deathMessage()
 //        if (config.i18n.playerDeathScreenMsg.isNotEmpty()) event.deathScreenMessageOverride()
@@ -164,14 +159,14 @@ internal class PlayerModule(
             setData(DataComponentTypes.PROFILE, ResolvableProfile.resolvableProfile(entity.playerProfile))
             setData(
                 DataComponentTypes.CUSTOM_NAME,
-                config.l18n.playerHeadName.mm(Placeholder.component("player", entity.displayName())),
+                config.i18n.playerHeadName.mm(Placeholder.component("player", entity.displayName())),
             )
             setData(
                 DataComponentTypes.LORE,
                 ItemLore
                     .lore()
                     .addLines(
-                        config.l18n.playerHeadLore
+                        config.i18n.playerHeadLore
                             .mm(
                                 Placeholder.component("player", entity.name.mm()),
                                 Placeholder.component("killer", killer.name.mm()),
@@ -198,8 +193,7 @@ internal class PlayerModule(
         data class I18n(
             var playerHeadName: String = "<player>’s Skull".fireFmt(),
             var playerHeadLore: List<String> = listOf("<player> killed by <killer>", "Stored XP: <xp>"),
-            var playerDeathMsg: String = "<killer> ${"⚔".mangoFmt(true)} <player>",
-            var playerHeadLore: String = "<player> killed by <killer>",
+//            var playerDeathMsg: String = "<killer> ${"⚔".mangoFmt(true)} <player>",
             var playerJoinMsg: String = "<green>➕<reset> ${"›".mangoFmt(true)} <player>",
             var playerQuitMsg: String = "<red>➖<reset> ${"›".mangoFmt(true)} <player>",
             var playerDeathMsg: String = "☠ ${"›".mangoFmt(true)}",
