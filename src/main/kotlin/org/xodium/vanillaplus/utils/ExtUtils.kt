@@ -13,7 +13,6 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.Color
-import org.bukkit.advancement.Advancement
 import org.bukkit.entity.Player
 import org.xodium.vanillaplus.VanillaPlus
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -206,17 +205,4 @@ internal object ExtUtils {
         }
         return builder.toString()
     }
-
-    /**
-     * Gets a list of all completed advancements for this player.
-     * @return a [List] of [Advancement] objects representing all advancements
-     *         that the player has completed, or an empty list if none are completed.
-     */
-    val Player.completedAdvancements: List<Advancement>
-        get() =
-            instance.server
-                .advancementIterator()
-                .asSequence()
-                .filter { getAdvancementProgress(it).isDone }
-                .toList()
 }
