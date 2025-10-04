@@ -2,9 +2,10 @@ package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.entity.Player
+import org.bukkit.event.EventHandler
+import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
-import org.bukkit.scoreboard.DisplaySlot
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
@@ -15,6 +16,8 @@ import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 /** Represents a module handling scoreboard mechanics within the system. */
 internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
     override val config: Config = Config()
+
+    private val hiddenPlayers = mutableSetOf<Player>()
 
     override fun cmds(): List<CommandData> =
         listOf(
@@ -42,28 +45,29 @@ internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
             ),
         )
 
+    @EventHandler
+    fun on(event: PlayerQuitEvent) {
+        if (!enabled()) return
+        hiddenPlayers.remove(event.player)
+    }
+
     /**
      * Toggles the display of the scoreboard sidebar for a player.
      * @param player The player whose scoreboard sidebar should be toggled.
      */
     private fun toggle(player: Player) {
-        val scoreboard = player.scoreboard
-        val sidebar = scoreboard.getObjective(DisplaySlot.SIDEBAR)
-        if (sidebar != null) {
-            scoreboard.clearSlot(DisplaySlot.SIDEBAR)
+        if (hiddenPlayers.contains(player)) {
+            player.scoreboard = instance.server.scoreboardManager.mainScoreboard
+            hiddenPlayers.remove(player)
+            player.sendMessage("${instance.prefix} <gray>Leaderboard shown.".mm())
         } else {
-            val objective = scoreboard.getObjective(config.scoreboardObjective)
-            if (objective == null) {
-                instance.logger.warning("Scoreboard objective '${config.scoreboardObjective}' not found for player ${player.name}!")
-                player.sendMessage("${instance.prefix} <red>Error Occurred, Check Console!".mm())
-                return
-            }
-            objective.displaySlot = DisplaySlot.SIDEBAR
+            player.scoreboard = instance.server.scoreboardManager.newScoreboard
+            hiddenPlayers.add(player)
+            player.sendMessage("${instance.prefix} <gray>Leaderboard hidden.".mm())
         }
     }
 
     data class Config(
         override var enabled: Boolean = true,
-        var scoreboardObjective: String = "bac_advancements",
     ) : ModuleInterface.Config
 }
