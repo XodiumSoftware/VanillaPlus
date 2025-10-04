@@ -40,9 +40,27 @@ internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
             ),
         )
 
-    private fun toggle(player: Player) = player.scoreboard.clearSlot(DisplaySlot.SIDEBAR)
+    /**
+     * Toggles the display of the scoreboard sidebar for a player.
+     * @param player The player whose scoreboard sidebar should be toggled.
+     */
+    private fun toggle(player: Player) {
+        val scoreboard = player.scoreboard
+        val sidebar = scoreboard.getObjective(DisplaySlot.SIDEBAR)
+        if (sidebar != null) {
+            scoreboard.clearSlot(DisplaySlot.SIDEBAR)
+        } else {
+            val objective = scoreboard.getObjective(config.scoreboardObjective)
+            if (objective == null) {
+                instance.logger.warning("Scoreboard objective '${config.scoreboardObjective}' not found for player ${player.name}!")
+                return
+            }
+            objective.displaySlot = DisplaySlot.SIDEBAR
+        }
+    }
 
     data class Config(
         override var enabled: Boolean = true,
+        var scoreboardObjective: String = "bac_advancements",
     ) : ModuleInterface.Config
 }
