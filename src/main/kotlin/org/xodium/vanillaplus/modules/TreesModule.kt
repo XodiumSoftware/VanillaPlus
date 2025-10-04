@@ -30,7 +30,6 @@ import org.xodium.vanillaplus.registries.MaterialRegistry
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.prefix
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
-import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import java.io.IOException
 import java.nio.channels.Channels
 import java.nio.channels.ReadableByteChannel
@@ -256,7 +255,7 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
             player.sendMessage("${instance.prefix} Loaded $typeName tree into clipboard! Use //paste to place it".mm())
         } catch (e: Exception) {
             instance.logger.severe("Error while setting clipboard: ${e.message}")
-            player.sendMessage("${instance.prefix} ${"Error Occurred, Check Console!".fireFmt()}".mm())
+            player.sendMessage("${instance.prefix} <red>Error Occurred, Check Console!".mm())
         }
     }
 
