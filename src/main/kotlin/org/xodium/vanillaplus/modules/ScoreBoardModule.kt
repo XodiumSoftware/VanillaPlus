@@ -27,7 +27,7 @@ internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
                         }
                     },
                 "This command allows you to open the leaderboard",
-                listOf("w"),
+                listOf("lb", "board"),
             ),
         )
 
