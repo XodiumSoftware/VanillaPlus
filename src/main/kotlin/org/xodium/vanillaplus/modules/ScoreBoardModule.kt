@@ -3,19 +3,18 @@ package org.xodium.vanillaplus.modules
 import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
-import org.bukkit.event.player.PlayerQuitEvent
+import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
+import org.xodium.vanillaplus.data.PlayerData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 
 /** Represents a module handling scoreboard mechanics within the system. */
 internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
     override val config: Config = Config()
-
-    private val hiddenPlayers = mutableSetOf<Player>()
 
     override fun cmds(): List<CommandData> =
         listOf(
@@ -44,9 +43,15 @@ internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
         )
 
     @EventHandler
-    fun on(event: PlayerQuitEvent) {
+    fun on(event: PlayerJoinEvent) {
         if (!enabled()) return
-        hiddenPlayers.remove(event.player)
+        val player = event.player
+        val playerData = PlayerData.get(player.uniqueId)
+        if (playerData?.scoreboardVisibility == true) {
+            player.scoreboard = instance.server.scoreboardManager.newScoreboard
+        } else {
+            player.scoreboard = instance.server.scoreboardManager.mainScoreboard
+        }
     }
 
     /**
@@ -54,12 +59,16 @@ internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
      * @param player The player whose scoreboard sidebar should be toggled.
      */
     private fun toggle(player: Player) {
-        if (hiddenPlayers.contains(player)) {
+        val playerData = PlayerData.get(player.uniqueId)
+        if (playerData?.scoreboardVisibility == true) {
             player.scoreboard = instance.server.scoreboardManager.mainScoreboard
-            hiddenPlayers.remove(player)
+            PlayerData.set(player.uniqueId, playerData.copy(scoreboardVisibility = false))
         } else {
             player.scoreboard = instance.server.scoreboardManager.newScoreboard
-            hiddenPlayers.add(player)
+            PlayerData.set(
+                player.uniqueId,
+                playerData?.copy(scoreboardVisibility = true) ?: PlayerData(scoreboardVisibility = true),
+            )
         }
     }
 
