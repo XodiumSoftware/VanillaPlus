@@ -1,5 +1,8 @@
 package org.xodium.vanillaplus.modules
 
+import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.ItemLore
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
@@ -15,6 +18,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.ExtUtils.mm
 
 /** Represents a module handling silk touch mechanics within the system. */
 internal class SilkTouchModule : ModuleInterface<SilkTouchModule.Config> {
@@ -47,7 +51,7 @@ internal class SilkTouchModule : ModuleInterface<SilkTouchModule.Config> {
 
         if (block.type != Material.SPAWNER) return
 
-        val typeName = item.itemMeta?.persistentDataContainer?.get(spawnerKey, PersistentDataType.STRING) ?: return
+        val typeName = item.persistentDataContainer.get(spawnerKey, PersistentDataType.STRING) ?: return
         val spawner = block.state as CreatureSpawner
 
         spawner.spawnedType = EntityType.valueOf(typeName)
@@ -65,11 +69,29 @@ internal class SilkTouchModule : ModuleInterface<SilkTouchModule.Config> {
 
         val state = event.block.state
         if (state is CreatureSpawner) {
-            val item = ItemStack.of(Material.SPAWNER)
-            val meta = item.itemMeta!!
-            meta.persistentDataContainer.set(spawnerKey, PersistentDataType.STRING, state.spawnedType?.name ?: return)
-            item.itemMeta = meta
-            event.block.world.dropItemNaturally(event.block.location, item)
+            val spawnedTypeName = state.spawnedType?.name ?: return
+            @Suppress("UnstableApiUsage")
+            event.block.world.dropItemNaturally(
+                event.block.location,
+                ItemStack.of(Material.SPAWNER).apply {
+                    setData(
+                        DataComponentTypes.LORE,
+                        ItemLore.lore(
+                            config.i18n.spawnerLore
+                                .mm(
+                                    Placeholder.component("spawner_type", spawnedTypeName.mm()),
+                                ),
+                        ),
+                    )
+                    editPersistentDataContainer {
+                        it.set(
+                            spawnerKey,
+                            PersistentDataType.STRING,
+                            spawnedTypeName,
+                        )
+                    }
+                },
+            )
         }
     }
 
@@ -95,5 +117,10 @@ internal class SilkTouchModule : ModuleInterface<SilkTouchModule.Config> {
         override var enabled: Boolean = true,
         var allowSpawnerSilk: Boolean = true,
         var allowBuddingAmethystSilk: Boolean = true,
-    ) : ModuleInterface.Config
+        var i18n: I18n = I18n(),
+    ) : ModuleInterface.Config {
+        data class I18n(
+            var spawnerLore: List<String> = listOf("Type: <spawner_type>"),
+        )
+    }
 }

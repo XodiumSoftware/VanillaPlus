@@ -167,15 +167,14 @@ internal class PlayerModule(
             setData(
                 DataComponentTypes.LORE,
                 ItemLore
-                    .lore()
-                    .addLines(
+                    .lore(
                         config.i18n.playerHeadLore
                             .mm(
                                 Placeholder.component("player", entity.name.mm()),
                                 Placeholder.component("killer", killer.name.mm()),
                                 Placeholder.parsed("xp", xp.toString()),
                             ),
-                    ).build(),
+                    ),
             )
             editPersistentDataContainer { it.set(playerSkullXpKey, PersistentDataType.INTEGER, xp) }
         }
