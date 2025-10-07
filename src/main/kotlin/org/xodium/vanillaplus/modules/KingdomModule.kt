@@ -270,19 +270,18 @@ internal class KingdomModule : ModuleInterface<KingdomModule.Config> {
      * @return a [Recipe] representing the sceptre crafting recipe.
      */
     private fun sceptreRecipe(): Recipe =
-        ShapedRecipe(sceptreRecipeKey, sceptre()).apply {
-            shape(" A ", " B ", " C ")
-            setIngredient('A', Material.EMERALD)
-            setIngredient('B', Material.NETHER_STAR)
-            setIngredient('C', Material.BLAZE_ROD)
-        }
+        ShapedRecipe(sceptreRecipeKey, sceptre())
+            .shape(" A ", " B ", " C ")
+            .setIngredient('A', Material.EMERALD)
+            .setIngredient('B', Material.NETHER_STAR)
+            .setIngredient('C', Material.BLAZE_ROD)
 
     data class Config(
         override var enabled: Boolean = true,
         var guiSpamPreventionDuration: Int = 1,
         var sceptreMaterial: Material = Material.BLAZE_ROD,
         var sceptreItemName: String = "Royal Sceptre".mangoFmt(),
-        var sceptreLore: MutableList<String> = mutableListOf("<gray>Right-click to manage your Kingdom</gray>"),
+        var sceptreLore: List<String> = listOf("<gray>Right-click to manage your Kingdom</gray>"),
         var sceptreGlint: Boolean = true,
         var sceptreCustomModelData: String = "sceptre",
         var l18n: L18n = L18n(),
