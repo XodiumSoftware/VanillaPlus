@@ -34,7 +34,7 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
 
     /** A map of sapling materials to a list of schematics. */
     private val schematicCache: Map<Material, List<Clipboard>> by lazy {
-        config.saplingLink.mapValues { (_, dirs) ->
+        MaterialRegistry.SAPLING_LINKS.mapValues { (_, dirs) ->
             dirs.flatMap { dir -> loadSchematics("/schematics/$dir") }
         }
     }
@@ -128,11 +128,13 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
                         .newEditSession(BukkitAdapter.adapt(block.world))
                         .use { editSession ->
                             block.type = Material.AIR
-                            editSession.mask =
-                                BlockTypeMask(
-                                    editSession,
-                                    MaterialRegistry.TREE_MASK.map { BukkitAdapter.asBlockType(it) },
-                                )
+                            if (config.treeMask.isNotEmpty()) {
+                                editSession.mask =
+                                    BlockTypeMask(
+                                        editSession,
+                                        config.treeMask.map { BukkitAdapter.asBlockType(it) },
+                                    )
+                            }
                             ClipboardHolder(clipboard).apply {
                                 transform = transform.combine(AffineTransform().rotateY(getRandomRotation().toDouble()))
                                 Operations.complete(
@@ -171,19 +173,6 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
         var copyEntities: Boolean = false,
         var ignoreAirBlocks: Boolean = true,
         var ignoreStructureVoidBlocks: Boolean = true,
-        var saplingLink: Map<Material, List<String>> =
-            mapOf(
-                Material.ACACIA_SAPLING to listOf("trees/acacia"),
-                Material.BIRCH_SAPLING to listOf("trees/birch"),
-                Material.CHERRY_SAPLING to listOf("trees/cherry"),
-                Material.CRIMSON_FUNGUS to listOf("trees/crimson"),
-                Material.DARK_OAK_SAPLING to listOf("trees/dark_oak"),
-                Material.JUNGLE_SAPLING to listOf("trees/jungle"),
-                Material.MANGROVE_PROPAGULE to listOf("trees/mangrove"),
-                Material.OAK_SAPLING to listOf("trees/oak"),
-                Material.PALE_OAK_SAPLING to listOf("trees/pale_oak"),
-                Material.SPRUCE_SAPLING to listOf("trees/spruce"),
-                Material.WARPED_FUNGUS to listOf("trees/warped"),
-            ),
+        var treeMask: Set<Material> = emptySet(),
     ) : ModuleInterface.Config
 }
