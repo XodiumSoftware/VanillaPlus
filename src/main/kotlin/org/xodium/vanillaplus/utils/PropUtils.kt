@@ -1,33 +1,36 @@
 package org.xodium.vanillaplus.utils
 
+import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 /** Property utilities. */
 internal object PropUtils {
     /**
-     * Creates a delegated property for an Int that must stay within [range].
-     * @param range The valid range of values.
-     * @param initial The initial value of the property. Must be within [range].
-     * @throws [IllegalArgumentException] if a value outside the range is assigned.
+     * Creates a delegated property that enforces values to be within a specified range.
+     * @param T The type of values to validate, must implement [Comparable].
+     * @param range The valid range of values (inclusive).
+     * @param initial The initial value for the property. Must be within [range] or an exception will be thrown on first access.
+     * @return A [ReadWriteProperty] that validates values against the specified range.
+     * @throws IllegalArgumentException when attempting to set a value outside the specified range.
      */
-    class IntInRangeDelegate(
-        private val range: IntRange,
-        initial: Int,
-    ) {
+    fun <T : Comparable<T>> inRange(
+        range: ClosedRange<T>,
+        initial: T,
+    ) = object : ReadWriteProperty<Any?, T> {
         private var value = initial
 
-        operator fun getValue(
+        override fun getValue(
             thisRef: Any?,
             property: KProperty<*>,
-        ): Int = value
+        ) = value
 
-        operator fun setValue(
+        override fun setValue(
             thisRef: Any?,
             property: KProperty<*>,
-            newValue: Int,
+            value: T,
         ) {
-            require(newValue in range) { "${property.name} must be in $range, got $newValue" }
-            value = newValue
+            require(value in range) { "${property.name} must be in $range, got $value" }
+            this.value = value
         }
     }
 }

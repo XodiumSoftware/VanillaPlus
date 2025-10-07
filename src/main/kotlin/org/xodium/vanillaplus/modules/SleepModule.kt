@@ -4,7 +4,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerBedEnterEvent
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.utils.PropUtils.IntInRangeDelegate
+import org.xodium.vanillaplus.utils.PropUtils.inRange
 import kotlin.math.ceil
 
 /** Represents a module handling sleeping mechanics within the system. */
@@ -48,6 +48,6 @@ internal class SleepModule : ModuleInterface<SleepModule.Config> {
         override var enabled: Boolean = true,
     ) : ModuleInterface.Config {
         @delegate:Transient
-        var sleepPercentage: Int by IntInRangeDelegate(0..100, 51)
+        var sleepPercentage: Int by inRange(0..100, 51)
     }
 }
