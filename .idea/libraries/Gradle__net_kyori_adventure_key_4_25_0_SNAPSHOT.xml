@@ -2,7 +2,7 @@
   <library name="Gradle: net.kyori:adventure-key:4.25.0-SNAPSHOT" type="java-imported" external-system-id="GRADLE">
     <properties groupId="net.kyori" artifactId="adventure-key" version="4.25.0-SNAPSHOT" baseVersion="4.25.0-SNAPSHOT" />
     <CLASSES>
-      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.kyori/adventure-key/4.25.0-SNAPSHOT/7984ec65fcd49a68121b2e25df26f2f28f88bf1e/adventure-key-4.25.0-SNAPSHOT.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.kyori/adventure-key/4.25.0-SNAPSHOT/9066f672862d4868019d62a7c79c99a268ab4de8/adventure-key-4.25.0-SNAPSHOT.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
