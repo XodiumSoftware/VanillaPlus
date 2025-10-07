@@ -14,8 +14,10 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.Color
 import org.bukkit.entity.Player
-import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
+import org.xodium.vanillaplus.VanillaPlus
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
+import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import java.net.URI
 import java.util.*
 import javax.imageio.ImageIO
@@ -37,6 +39,9 @@ internal object ExtUtils {
     private const val RED_SHIFT = 16
     private const val GREEN_SHIFT = 8
     private const val MILLISECONDS_PER_TICK = 50L
+
+    val VanillaPlus.prefix: String
+        get() = "${"[".mangoFmt(true)}${this::class.simpleName.toString().fireFmt()}${"]".mangoFmt()}"
 
     /**
      * Deserializes a [MiniMessage] [String] into a [Component].
@@ -149,7 +154,7 @@ internal object ExtUtils {
                     """.trimIndent(),
                 )
                 (this.source.sender as? Player)?.sendMessage(
-                    "$PREFIX <red>An error has occurred. Check server logs for details.".mm(),
+                    "${instance.prefix} <red>An error has occurred. Check server logs for details.".mm(),
                 )
             }
         return Command.SINGLE_SUCCESS

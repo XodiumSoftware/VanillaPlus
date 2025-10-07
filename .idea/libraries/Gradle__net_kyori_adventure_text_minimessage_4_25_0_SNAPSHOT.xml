@@ -2,9 +2,11 @@
   <library name="Gradle: net.kyori:adventure-text-minimessage:4.25.0-SNAPSHOT" type="java-imported" external-system-id="GRADLE">
     <properties groupId="net.kyori" artifactId="adventure-text-minimessage" version="4.25.0-SNAPSHOT" baseVersion="4.25.0-SNAPSHOT" />
     <CLASSES>
-      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.kyori/adventure-text-minimessage/4.25.0-SNAPSHOT/882e523919f21648a815f9c836182b10449ccc0b/adventure-text-minimessage-4.25.0-SNAPSHOT.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.kyori/adventure-text-minimessage/4.25.0-SNAPSHOT/83979e9f747ed9c64e7a9da95d4400e1e744c007/adventure-text-minimessage-4.25.0-SNAPSHOT.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.kyori/adventure-text-minimessage/4.25.0-SNAPSHOT/ad335f7e391b6397d3aaee01be40c0b7e534ef37/adventure-text-minimessage-4.25.0-SNAPSHOT-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>

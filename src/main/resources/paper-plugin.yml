@@ -1,5 +1,5 @@
 name: VanillaPlus
-version: 1.21.9-rc1
+version: 1.21.9
 main: org.xodium.vanillaplus.VanillaPlus
 description: Minecraft plugin that enhances the base gameplay
 api-version: 1.21.9
@@ -10,6 +10,3 @@ dependencies:
       load: BEFORE
       required: false
       join-classpath: true
-    DecentHolograms:
-      load: BEFORE
-      required: false

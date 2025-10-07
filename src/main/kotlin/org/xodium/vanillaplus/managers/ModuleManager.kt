@@ -8,12 +8,12 @@ import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import org.bukkit.entity.Player
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
-import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.modules.*
 import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.ExtUtils.prefix
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import kotlin.io.path.exists
 import kotlin.time.measureTime
@@ -33,6 +33,7 @@ internal object ModuleManager {
     val openableModule: OpenableModule = OpenableModule()
     val petModule: PetModule = PetModule()
     val recipiesModule: RecipiesModule = RecipiesModule()
+    val scoreBoardModule: ScoreBoardModule = ScoreBoardModule()
     val signModule: SignModule = SignModule()
     val silkTouchModule: SilkTouchModule = SilkTouchModule()
     val sitModule: SitModule = SitModule()
@@ -56,6 +57,7 @@ internal object ModuleManager {
             petModule,
             playerModule,
             recipiesModule,
+            scoreBoardModule,
             signModule,
             silkTouchModule,
             sitModule,
@@ -76,7 +78,7 @@ internal object ModuleManager {
                             ctx.tryCatch {
                                 updateConfig()
                                 if (it.sender is Player) {
-                                    it.sender.sendMessage("$PREFIX <green>Config reloaded successfully".mm())
+                                    it.sender.sendMessage("${instance.prefix} <green>Config reloaded successfully".mm())
                                 }
                             }
                         },
@@ -147,7 +149,7 @@ internal object ModuleManager {
             val configKey = getConfigKey(module)
             allConfigsNode?.get(configKey)?.let { moduleConfigNode ->
                 try {
-                    ConfigManager.objectMapper.readerForUpdating(module.config).readValue(moduleConfigNode)
+                    ConfigManager.jsonMapper.readerForUpdating(module.config).readValue(moduleConfigNode)
                 } catch (e: JsonProcessingException) {
                     instance.logger.warning(
                         "Failed to parse config for ${module::class.simpleName}. Using defaults. Error: ${e.message}",
