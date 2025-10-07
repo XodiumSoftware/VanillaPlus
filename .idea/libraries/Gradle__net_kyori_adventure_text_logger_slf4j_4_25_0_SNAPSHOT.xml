@@ -2,7 +2,7 @@
   <library name="Gradle: net.kyori:adventure-text-logger-slf4j:4.25.0-SNAPSHOT" type="java-imported" external-system-id="GRADLE">
     <properties groupId="net.kyori" artifactId="adventure-text-logger-slf4j" version="4.25.0-SNAPSHOT" baseVersion="4.25.0-SNAPSHOT" />
     <CLASSES>
-      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.kyori/adventure-text-logger-slf4j/4.25.0-SNAPSHOT/81f5c603d47c5d7a7500e83550fa4dddd831c86a/adventure-text-logger-slf4j-4.25.0-SNAPSHOT.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.kyori/adventure-text-logger-slf4j/4.25.0-SNAPSHOT/ad191742420ac83b1edf27da9f5b760156552bbf/adventure-text-logger-slf4j-4.25.0-SNAPSHOT.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

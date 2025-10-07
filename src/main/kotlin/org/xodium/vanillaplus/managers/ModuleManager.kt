@@ -147,7 +147,7 @@ internal object ModuleManager {
             val configKey = getConfigKey(module)
             allConfigsNode?.get(configKey)?.let { moduleConfigNode ->
                 try {
-                    ConfigManager.objectMapper.readerForUpdating(module.config).readValue(moduleConfigNode)
+                    ConfigManager.jsonMapper.readerForUpdating(module.config).readValue(moduleConfigNode)
                 } catch (e: JsonProcessingException) {
                     instance.logger.warning(
                         "Failed to parse config for ${module::class.simpleName}. Using defaults. Error: ${e.message}",
