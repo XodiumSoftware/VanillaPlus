@@ -83,7 +83,7 @@ internal class PlayerModule(
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
         if (!enabled()) return
-        PlayerData.get(event.player.uniqueId)?.nickname?.let { event.player.displayName(it.mm()) }
+        PlayerData.get(event.player)?.nickname?.let { event.player.displayName(it.mm()) }
         if (config.i18n.playerJoinMsg.isEmpty()) return
         event.joinMessage(null)
         val player = event.player
@@ -137,10 +137,7 @@ internal class PlayerModule(
         player: Player,
         name: String,
     ) {
-        PlayerData.set(
-            player.uniqueId,
-            PlayerData.get(player.uniqueId)?.copy(nickname = name) ?: PlayerData(nickname = name),
-        )
+        PlayerData.set(player, nickname = name)
         player.displayName(name.mm())
         tabListModule.updatePlayerDisplayName(player)
     }
