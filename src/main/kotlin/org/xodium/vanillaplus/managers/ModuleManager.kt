@@ -32,6 +32,7 @@ internal object ModuleManager {
     val openableModule: OpenableModule = OpenableModule()
     val petModule: PetModule = PetModule()
     val recipiesModule: RecipiesModule = RecipiesModule()
+    val scoreBoardModule: ScoreBoardModule = ScoreBoardModule()
     val signModule: SignModule = SignModule()
     val silkTouchModule: SilkTouchModule = SilkTouchModule()
     val sitModule: SitModule = SitModule()
@@ -54,6 +55,7 @@ internal object ModuleManager {
             petModule,
             playerModule,
             recipiesModule,
+            scoreBoardModule,
             signModule,
             silkTouchModule,
             sitModule,
@@ -145,7 +147,7 @@ internal object ModuleManager {
             val configKey = getConfigKey(module)
             allConfigsNode?.get(configKey)?.let { moduleConfigNode ->
                 try {
-                    ConfigManager.objectMapper.readerForUpdating(module.config).readValue(moduleConfigNode)
+                    ConfigManager.jsonMapper.readerForUpdating(module.config).readValue(moduleConfigNode)
                 } catch (e: JsonProcessingException) {
                     instance.logger.warning(
                         "Failed to parse config for ${module::class.simpleName}. Using defaults. Error: ${e.message}",

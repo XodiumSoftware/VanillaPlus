@@ -235,6 +235,5 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
                 Sound.Source.HOSTILE,
             ),
         var soundProximityRadius: Double = 10.0,
-        var doorHologram: String = "",
     ) : ModuleInterface.Config
 }
