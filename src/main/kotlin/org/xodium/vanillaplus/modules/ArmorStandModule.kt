@@ -19,8 +19,8 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
 
     @EventHandler
     fun on(event: PlayerInteractAtEntityEvent) {
-        if (!enabled() || event.rightClicked !is ArmorStand) return
-        gui(event.rightClicked as ArmorStand)
+        if (!enabled() || event.rightClicked !is ArmorStand || event.player.isSneaking) return
+        gui(event.rightClicked as ArmorStand).open(event.player)
         event.isCancelled = true
     }
 
@@ -35,7 +35,9 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
             spamPreventionDuration = config.guiSpamPreventionDuration.seconds
             title(armorStand.customName() ?: armorStand.name.mm())
             statelessComponent {
-                it[1] = ItemBuilder.from(Material.BLACK_STAINED_GLASS_PANE).asGuiItem()
+                for (slot in 0 until 54) {
+                    it[slot] = ItemBuilder.from(Material.BLACK_STAINED_GLASS_PANE).asGuiItem()
+                }
             }
         }
 
