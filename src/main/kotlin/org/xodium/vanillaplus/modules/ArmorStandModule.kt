@@ -87,6 +87,9 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
             }
         }
 
+    /**
+     * TODO
+     */
     private fun handleEquipmentSwap(
         player: Player,
         armorStand: ArmorStand,
