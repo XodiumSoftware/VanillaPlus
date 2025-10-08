@@ -49,8 +49,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                     it[slot] =
                         ItemBuilder
                             .from(config.guiFillerMaterial)
-                            .name("".mm())
-                            .glow(config.guiFillerMaterialGlow)
+                            .name(config.i18n.guiFillerItemName.mm())
                             .asGuiItem()
                 }
                 // Helmet slot
@@ -73,12 +72,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                     ItemBuilder
                         .from(armorStand.equipment.itemInOffHand)
                         .asGuiItem { player, ctx ->
-                            handleEquipmentSwap(
-                                ctx,
-                                player,
-                                armorStand,
-                                EquipmentSlot.OFF_HAND,
-                            )
+                            handleEquipmentSwap(ctx, player, armorStand, EquipmentSlot.OFF_HAND)
                         }
                 // Leggings slot
                 it[31] =
@@ -96,7 +90,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                 it[43] =
                     ItemBuilder
                         .from(if (armorStand.hasArms()) Material.GREEN_WOOL else Material.RED_WOOL)
-                        .name(config.i18n.toggleArmsItemTitle.mm())
+                        .name(config.i18n.toggleArmsItemName.mm())
                         .asGuiItem { _, ctx ->
                             armorStand.setArms(!armorStand.hasArms())
                             ctx.guiView.open()
@@ -144,13 +138,13 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
 
     data class Config(
         override var enabled: Boolean = true,
-        var guiSpamPreventionDuration: Int = 1,
+        var guiSpamPreventionDuration: Int = 0,
         var guiFillerMaterial: Material = Material.BLACK_STAINED_GLASS_PANE,
-        var guiFillerMaterialGlow: Boolean = true,
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
         data class I18n(
-            var toggleArmsItemTitle: String = "Toggle Arms".mangoFmt(),
+            var guiFillerItemName: String = "",
+            var toggleArmsItemName: String = "Toggle Arms".mangoFmt(),
         )
     }
 }
