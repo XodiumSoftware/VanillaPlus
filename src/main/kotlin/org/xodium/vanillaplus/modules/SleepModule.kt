@@ -4,15 +4,12 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerBedEnterEvent
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.PropUtils.inRange
 import kotlin.math.ceil
 
 /** Represents a module handling sleeping mechanics within the system. */
 internal class SleepModule : ModuleInterface<SleepModule.Config> {
     override val config: Config = Config()
-
-    companion object {
-        private const val FULL_PERCENTAGE: Double = 100.0
-    }
 
     @EventHandler
     fun on(event: PlayerBedEnterEvent) {
@@ -45,10 +42,12 @@ internal class SleepModule : ModuleInterface<SleepModule.Config> {
     private fun shouldSkipNight(
         sleepingPlayers: Int,
         totalPlayers: Int,
-    ): Boolean = sleepingPlayers >= ceil(totalPlayers * config.sleepPercentage / FULL_PERCENTAGE)
+    ): Boolean = sleepingPlayers >= ceil(totalPlayers * config.sleepPercentage / 100.0)
 
     data class Config(
         override var enabled: Boolean = true,
-        var sleepPercentage: Int = 51,
-    ) : ModuleInterface.Config
+    ) : ModuleInterface.Config {
+        @delegate:Transient
+        var sleepPercentage: Int by inRange(0..100, 51)
+    }
 }

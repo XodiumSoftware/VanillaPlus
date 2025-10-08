@@ -24,8 +24,8 @@ internal class SignModule : ModuleInterface<SignModule.Config> {
 
     /**
      * Determines if the given component's plaintext representation contains MiniMessage tags.
-     * @param component the component to inspect for MiniMessage tags in its plaintext form
-     * @return true if MiniMessage tags are found, false otherwise
+     * @param component the component to inspect for MiniMessage tags in its plaintext form.
+     * @return true if MiniMessage tags are found, false otherwise.
      */
     private fun containsMiniMessageTags(component: Component): Boolean = config.miniMessageRegex.toRegex().containsMatchIn(component.pt())
 

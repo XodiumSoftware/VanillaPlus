@@ -2,6 +2,7 @@
 
 package org.xodium.vanillaplus.modules
 
+import com.destroystokyo.paper.ParticleBuilder
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
@@ -21,7 +22,6 @@ import org.bukkit.inventory.meta.EnchantmentStorageMeta
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.bukkit.util.BoundingBox
-import org.bukkit.util.Vector
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.SoundData
@@ -42,7 +42,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
 
     private val unloads = ConcurrentHashMap<Location, MutableMap<Material, Int>>()
     private val lastUnloads = ConcurrentHashMap<UUID, List<Block>>()
-    private val activeVisualizations = ConcurrentHashMap<UUID, Int>()
+    private val activeVisualizations = ConcurrentHashMap<UUID, MutableList<Int>>()
 
     override fun cmds(): List<CommandData> =
         listOf(
@@ -59,7 +59,12 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                                     .filter { it.startsWith(builder.remaining.lowercase()) }
                                     .forEach(builder::suggest)
                                 CompletableFuture.completedFuture(builder.build())
-                            }.executes { ctx -> ctx.tryCatch { handleSearch(ctx) } },
+                            }.executes { ctx ->
+                                ctx.tryCatch {
+                                    if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+                                    handleSearch(ctx)
+                                }
+                            },
                     ).executes { ctx -> ctx.tryCatch { handleSearch(ctx) } },
                 "Search nearby chests for specific items",
                 listOf("search", "searchinv", "invs"),
@@ -68,7 +73,12 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                 Commands
                     .literal("invunload")
                     .requires { it.sender.hasPermission(perms()[1]) }
-                    .executes { ctx -> ctx.tryCatch { unload(it.sender as Player) } },
+                    .executes { ctx ->
+                        ctx.tryCatch {
+                            if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+                            unload(it.sender as Player)
+                        }
+                    },
                 "Unload your inventory into nearby chests",
                 listOf("unload", "unloadinv", "invu"),
             ),
@@ -108,7 +118,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         val material =
             materialName?.let { Material.getMaterial(it.uppercase()) } ?: player.inventory.itemInMainHand.type
         if (material == Material.AIR) {
-            player.sendActionBar(config.l18n.noMaterialSpecified.mm())
+            player.sendActionBar(config.i18n.noMaterialSpecified.mm())
             return 0
         }
 
@@ -125,30 +135,49 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         player: Player,
         material: Material,
     ) {
+        activeVisualizations[player.uniqueId]?.let { taskIds ->
+            taskIds.forEach { instance.server.scheduler.cancelTask(it) }
+            activeVisualizations.remove(player.uniqueId)
+        }
+
         val chests =
-            findBlocksInRadius(player.location, config.searchRadius).filter { it.state is Container }
+            findBlocksInRadius(player.location, config.searchRadius)
+                .filter { it.state is Container }
+                .filter { searchItemInContainers(material, (it.state as Container).inventory) }
+
         if (chests.isEmpty()) {
             return player.sendActionBar(
-                config.l18n.noChestsFound.mm(Placeholder.component("material", material.name.mm())),
+                config.i18n.noMatchingItems.mm(Placeholder.component("material", material.name.mm())),
             )
         }
 
         val seenDoubleChests = mutableSetOf<InventoryHolder?>()
-        val affectedChests =
+        val filteredChests =
             chests.filter { block ->
                 val inventory = (block.state as Container).inventory
                 val holder = inventory.holder
                 if (holder is DoubleChest && !seenDoubleChests.add(holder.leftSide)) return@filter false
-                searchItemInContainers(material, inventory)
+                true
             }
-        if (affectedChests.isEmpty()) {
-            return player.sendActionBar(
-                config.l18n.noMatchingItems.mm(Placeholder.component("material", material.name.mm())),
-            )
-        }
 
-        affectedChests.forEach { chestEffect(player, it) }
-        laserEffectSchedule(player, affectedChests)
+        val sortedChests = filteredChests.sortedBy { it.location.distanceSquared(player.location) }
+        if (sortedChests.isEmpty()) return
+
+        val closestChest = sortedChests.first()
+        schedulePlayerTask(player, {
+            searchEffect(player.location, closestChest.center(), Color.MAROON, 40, player)
+            chestEffect(closestChest.center(), 10, Particle.DustOptions(Color.MAROON, 5.0f), player)
+        })
+
+        val otherChests = sortedChests.drop(1)
+        if (otherChests.isNotEmpty()) {
+            schedulePlayerTask(player, {
+                otherChests.forEach {
+                    searchEffect(player.location, it.center(), Color.RED, 40, player)
+                    chestEffect(it.center(), 10, Particle.DustOptions(Color.RED, 5.0f), player)
+                }
+            })
+        }
     }
 
     /**
@@ -161,22 +190,21 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         val chests =
             findBlocksInRadius(player.location, config.unloadRadius)
                 .filter { it.state is Container }
-        if (chests.isEmpty()) return player.sendActionBar(config.l18n.noNearbyChests.mm())
+                .sortedBy { it.location.distanceSquared(player.location) }
+        if (chests.isEmpty()) return player.sendActionBar(config.i18n.noNearbyChests.mm())
 
         val affectedChests = mutableListOf<Block>()
         for (block in chests) {
             val inv = (block.state as Container).inventory
-            if (stuffInventoryIntoAnother(player, inv, true, startSlot, endSlot)) {
-                affectedChests.add(block)
-            }
+            if (stuffInventoryIntoAnother(player, inv, true, startSlot, endSlot)) affectedChests.add(block)
         }
 
-        if (affectedChests.isEmpty()) return player.sendActionBar(config.l18n.noItemsUnloaded.mm())
+        if (affectedChests.isEmpty()) return player.sendActionBar(config.i18n.noItemsUnloaded.mm())
 
-        player.sendActionBar(config.l18n.inventoryUnloaded.mm())
+        player.sendActionBar(config.i18n.inventoryUnloaded.mm())
         lastUnloads[player.uniqueId] = affectedChests
 
-        for (block in affectedChests) chestEffect(player, block)
+        for (chest in affectedChests) chestEffect(chest.center(), 10, Particle.DustOptions(Color.LIME, 5.0f), player)
 
         player.playSound(config.soundOnUnload.toSound(), Sound.Emitter.self())
     }
@@ -235,14 +263,10 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         material: Material,
         destination: Inventory,
     ): Boolean {
-        if (doesChestContain(destination, ItemStack(material))) {
-            destination.location?.let {
-                protocolUnload(
-                    it,
-                    material,
-                    doesChestContainCount(destination, material),
-                )
-            }
+        val item = ItemStack.of(material)
+        val count = doesChestContainCount(destination, material)
+        if (count > 0 && doesChestContain(destination, item)) {
+            destination.location?.let { protocolUnload(it, material, count) }
             return true
         }
         return false
@@ -260,79 +284,88 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
     ): Int = inventory.contents.filter { it?.type == material }.sumOf { it?.amount ?: 0 }
 
     /**
-     * Creates a laser effect for the specified player and chests.
-     * @param player The player to play the effect for.
-     * @param affectedChests The list of chests to affect. If null, will use the last unloaded chests.
+     * Schedules a repeating task for a specific player and automatically cancels it after a set duration.
+     * @param player The player for whom the task is scheduled.
+     * @param task The repeating task to execute.
+     * @param initialDelay Ticks to wait before the first execution. Default is 0L.
+     * @param repeatDelay Ticks between each execution. Default is 2L.
+     * @param durationTicks Total duration in ticks before the task is automatically cancelled. Default is 100L.
+     * @return The task ID of the scheduled repeating task.
      */
-    private fun laserEffectSchedule(
+    private fun schedulePlayerTask(
         player: Player,
-        affectedChests: List<Block>? = null,
-    ) {
-        val chests = affectedChests ?: lastUnloads[player.uniqueId] ?: return
-
-        activeVisualizations[player.uniqueId] =
+        task: () -> Unit,
+        initialDelay: Long = 0L,
+        repeatDelay: Long = 2L,
+        durationTicks: Long = 100L,
+    ): Int {
+        val taskId =
             instance.server.scheduler.scheduleSyncRepeatingTask(
                 instance,
-                { laserEffect(chests, player, 0.3, 2, Particle.CRIT, 0.001, 128) },
-                0L,
-                2L,
+                task,
+                initialDelay,
+                repeatDelay,
             )
+
+        activeVisualizations.computeIfAbsent(player.uniqueId) { mutableListOf() }.add(taskId)
 
         instance.server.scheduler.runTaskLater(
             instance,
             Runnable {
-                activeVisualizations[player.uniqueId]?.let {
-                    instance.server.scheduler.cancelTask(it)
-                    activeVisualizations.remove(player.uniqueId)
-                }
+                activeVisualizations[player.uniqueId]?.remove(taskId)
+                instance.server.scheduler.cancelTask(taskId)
             },
-            config.scheduleInitDelayInTicks,
+            durationTicks,
         )
+
+        return taskId
     }
 
     /**
-     * Creates a laser effect between the player and the specified blocks.
-     * @param destinations The list of blocks to create the laser effect towards.
-     * @param player The player to create the laser effect for.
-     * @param interval The interval between each particle spawn.
-     * @param count The number of particles to spawn at each location.
-     * @param particle The type of particle to spawn.
-     * @param speed The speed of the particles.
-     * @param maxDistance The maximum distance for the laser effect.
+     * Spawns a particle trail effect visible only to the given player.
+     * @param startLocation The starting location of the trail.
+     * @param endLocation The ending location of the trail.
+     * @param color The color of the trail.
+     * @param travelTicks The number of ticks it takes for the trail to travel from start to end.
+     * @param player The player who will see the particle trail.
+     * @return A [ParticleBuilder] instance for further configuration if needed.
      */
-    private fun laserEffect(
-        destinations: List<Block>,
+    private fun searchEffect(
+        startLocation: Location,
+        endLocation: Location,
+        color: Color,
+        travelTicks: Int,
         player: Player,
-        interval: Double,
-        count: Int,
-        particle: Particle,
-        speed: Double,
-        maxDistance: Int,
-    ) {
-        require(destinations.isNotEmpty()) { "Destinations list cannot be empty" }
-        require(interval > 0) { "Interval must be positive" }
-        require(count > 0) { "Count must be positive" }
-        require(speed >= 0) { "Speed must be non-negative" }
-        require(maxDistance > 0) { "Max distance must be positive" }
+    ): ParticleBuilder =
+        Particle.TRAIL
+            .builder()
+            .location(startLocation)
+            .data(Particle.Trail(endLocation, color, travelTicks))
+            .receivers(player)
+            .spawn()
 
-        val playerLocation = player.location
-        destinations.forEach { destination ->
-            val start = playerLocation.clone()
-            val end = getCenterOfBlock(destination).add(0.0, -0.5, 0.0)
-            val direction = end.toVector().subtract(start.toVector()).normalize()
-            val distance = start.distance(destination.location)
-            if (distance < maxDistance) {
-                var currentDistance = 1.0
-                val steps = (distance / interval).toInt()
-                repeat(steps) {
-                    val point = start.clone().add(direction.multiply(currentDistance))
-                    player.spawnParticle(particle, point, count, 0.0, 0.0, 0.0, speed)
-                    direction.normalize()
-                    currentDistance += interval
-                }
-            }
-        }
-    }
+    /**
+     * Spawns a critical hit particle effect at the given location,
+     * visible only to the specified player.
+     * @param location The central [Location] where the particles will appear.
+     * @param count The number of particles to spawn.
+     * @param dustOptions The [Particle.DustOptions] defining the color and size of the dust particles.
+     * @param player The [Player] who will see the particle effect.
+     * @return A [ParticleBuilder] instance for further configuration if needed.
+     */
+    private fun chestEffect(
+        location: Location,
+        count: Int,
+        dustOptions: Particle.DustOptions,
+        player: Player,
+    ): ParticleBuilder =
+        Particle.DUST
+            .builder()
+            .location(location)
+            .count(count)
+            .data(dustOptions)
+            .receivers(player)
+            .spawn()
 
     /**
      * Checks if two ItemStacks have matching enchantments.
@@ -368,18 +401,18 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
      * @param radius The radius to search within.
      * @return A list of blocks found within the radius.
      */
-    fun findBlocksInRadius(
+    private fun findBlocksInRadius(
         location: Location,
         radius: Int,
-    ): MutableList<Block> {
+    ): List<Block> {
         val searchArea = BoundingBox.of(location, radius.toDouble(), radius.toDouble(), radius.toDouble())
-        val chunksInArea = getChunksInBox(location.world, searchArea)
-        return chunksInArea
-            .flatMap { chunk ->
-                chunk.tileEntities
-                    .filter { blockState -> isRelevantContainer(blockState, location, radius) }
-                    .map { blockState -> (blockState as Container).block }
-            }.toMutableList()
+        return getChunksInBox(location.world, searchArea)
+            .asSequence()
+            .flatMap { it.tileEntities.asSequence() }
+            .filterIsInstance<Container>()
+            .filter { isRelevantContainer(it, location, radius) }
+            .map { it.block }
+            .toList()
     }
 
     /**
@@ -399,9 +432,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
             blockState.location.distanceSquared(center) > radius * radius -> return false
             blockState.type == Material.CHEST -> {
                 val blockAbove = blockState.block.getRelative(BlockFace.UP)
-                if (blockAbove.type.isSolid && blockAbove.type.isOccluding) {
-                    return false
-                }
+                if (blockAbove.type.isSolid && blockAbove.type.isOccluding) return false
             }
         }
         return true
@@ -413,15 +444,14 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
      * @param item The item to check for.
      * @return True if the chest contains the item, false otherwise.
      */
-    fun doesChestContain(
+    private fun doesChestContain(
         inventory: Inventory,
         item: ItemStack,
     ): Boolean =
-        inventory.contents.any { otherItem ->
-            otherItem != null &&
-                otherItem.type == item.type &&
-                hasMatchingEnchantments(item, otherItem)
-        }
+        inventory.contents
+            .asSequence()
+            .filterNotNull()
+            .any { it.type == item.type && hasMatchingEnchantments(item, it) }
 
     /**
      * Get all chunks in a bounding box.
@@ -449,47 +479,12 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
     }
 
     /**
-     * Get the centre of a block.
-     * @param block The block to get the centre of.
-     * @return The centre location of the block.
-     */
-    fun getCenterOfBlock(block: Block): Location {
-        val baseLoc = block.location.clone()
-        val state = block.state
-        val centerLoc =
-            if (state is Chest && state.inventory.holder is DoubleChest) {
-                val doubleChest = state.inventory.holder as? DoubleChest
-                val left = (doubleChest?.leftSide as? Chest)?.block?.location
-                val right = (doubleChest?.rightSide as? Chest)?.block?.location
-                if (left != null && right != null) {
-                    left.clone().add(right).multiply(0.5)
-                } else {
-                    baseLoc
-                }
-            } else {
-                baseLoc
-            }
-        centerLoc.add(Vector(0.5, 1.0, 0.5))
-        return centerLoc
-    }
-
-    /**
-     * Creates a chest effect for the specified block and player.
-     * @param player The player to create the laser effect for.
-     * @param block The block to create the laser effect towards.
-     */
-    fun chestEffect(
-        player: Player,
-        block: Block,
-    ) = player.spawnParticle(Particle.CRIT, getCenterOfBlock(block), 10, 0.0, 0.0, 0.0)
-
-    /**
      * Unloads the specified amount of material from the given location.
      * @param location The location to unload from.
      * @param material The material to unload.
      * @param amount The amount of material to unload.
      */
-    fun protocolUnload(
+    private fun protocolUnload(
         location: Location,
         material: Material,
         amount: Int,
@@ -498,10 +493,31 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         unloads.computeIfAbsent(location) { mutableMapOf() }.merge(material, amount, Int::plus)
     }
 
+    /**
+     * Get the centre of a block.
+     * @return The centre location of the block.
+     */
+    private fun Block.center(): Location {
+        val loc = location.clone()
+        val stateChest = state as? Chest ?: return loc.add(0.5, 0.5, 0.5)
+        val holder = stateChest.inventory.holder as? DoubleChest
+        if (holder != null) {
+            val leftLoc = (holder.leftSide as? Chest)?.block?.location
+            val rightLoc = (holder.rightSide as? Chest)?.block?.location
+            if (leftLoc != null && rightLoc != null) {
+                loc.x = (leftLoc.x + rightLoc.x) / 2.0 + 0.5
+                loc.y = (leftLoc.y + rightLoc.y) / 2.0 + 0.5
+                loc.z = (leftLoc.z + rightLoc.z) / 2.0 + 0.5
+                return loc.add(0.5, 0.5, 0.5)
+            }
+        }
+        return loc.add(0.5, 0.5, 0.5)
+    }
+
     data class Config(
         override var enabled: Boolean = true,
-        var searchRadius: Int = 5,
-        var unloadRadius: Int = 5,
+        var searchRadius: Int = 25,
+        var unloadRadius: Int = 25,
         var matchEnchantments: Boolean = true,
         var matchEnchantmentsOnBooks: Boolean = true,
         var soundOnUnload: SoundData =
@@ -510,9 +526,9 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                 Sound.Source.PLAYER,
             ),
         var scheduleInitDelayInTicks: Long = 5,
-        var l18n: L18n = L18n(),
+        var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
-        data class L18n(
+        data class I18n(
             var noMaterialSpecified: String = "You must specify a valid material or hold something in your hand".fireFmt(),
             var noChestsFound: String = "No usable chests found for ${"<material>".roseFmt()}".fireFmt(),
             var noMatchingItems: String = "No chests contain ${"<material>".roseFmt()}".fireFmt(),

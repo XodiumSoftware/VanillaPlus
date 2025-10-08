@@ -26,20 +26,20 @@ jobs:
     steps:
       - id: checkout
         name: Checkout
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v5.0.0
         with:
           fetch-depth: 0
 
       - id: setup_java
         name: Setup Java
-        uses: actions/setup-java@v4.7.1
+        uses: actions/setup-java@v5.0.0
         with:
           distribution: temurin
           java-version: "21"
 
       - id: setup_gradle
         name: Setup Gradle
-        uses: gradle/actions/setup-gradle@017a9effdb900e5b5b2fddfb590a105619dca3c3
+        uses: gradle/actions/setup-gradle@9d95dbe2248129ffd3434eead1d690885e9a4284
 
       - id: set_version
         name: Set Version
@@ -81,7 +81,7 @@ jobs:
 
       - id: release_artifact
         name: Release Artifact
-        uses: softprops/action-gh-release@f82d31e53e61a962573dd0c5fcd6b446ca78871f
+        uses: softprops/action-gh-release@f38efdea4c5ffe13e9424b0aa2833bee28f1e34c
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         with:
@@ -106,7 +106,7 @@ jobs:
 
       - id: uts
         name: Upload to Server
-        uses: appleboy/scp-action@7f18bf0ec86d81d9fba5e2bdf3253b7b22a604ab
+        uses: appleboy/scp-action@7179e72a3fa4d4c33870a471708fda724fae7596
         with:
           host: ${{ secrets.SFTP_HOST }}
           username: ${{ secrets.SFTP_USER }}

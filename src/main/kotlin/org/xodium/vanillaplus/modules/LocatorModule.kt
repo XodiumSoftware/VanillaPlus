@@ -38,7 +38,8 @@ internal class LocatorModule : ModuleInterface<LocatorModule.Config> {
                                 CompletableFuture.completedFuture(builder.build())
                             }.executes { ctx ->
                                 ctx.tryCatch {
-                                    val player = ctx.source.sender as Player
+                                    if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+                                    val player = it.sender as Player
                                     val color = ctx.getArgument("color", NamedTextColor::class.java)
                                     locator(player, colour = color)
                                 }
@@ -48,7 +49,8 @@ internal class LocatorModule : ModuleInterface<LocatorModule.Config> {
                             .argument("hex", ArgumentTypes.hexColor())
                             .executes { ctx ->
                                 ctx.tryCatch {
-                                    val player = ctx.source.sender as Player
+                                    if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+                                    val player = it.sender as Player
                                     val hex = ctx.getArgument("hex", TextColor::class.java)
                                     locator(player, hex = hex)
                                 }
@@ -58,7 +60,8 @@ internal class LocatorModule : ModuleInterface<LocatorModule.Config> {
                             .literal("reset")
                             .executes { ctx ->
                                 ctx.tryCatch {
-                                    val player = ctx.source.sender as Player
+                                    if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+                                    val player = it.sender as Player
                                     locator(player)
                                 }
                             },

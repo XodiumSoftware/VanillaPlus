@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.20.0" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="com.fasterxml.jackson.core" artifactId="jackson-databind" version="2.20.0" baseVersion="2.20.0" />
+    <ANNOTATIONS>
+      <root url="jar://$APPLICATION_PLUGINS_DIR$/Minecraft Development/lib/resources/externalAnnotations.jar!/" />
+    </ANNOTATIONS>
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-databind/2.20.0/f0a5e62fbd21285e9a5498a60dccb097e1ef793b/jackson-databind-2.20.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-databind/2.20.0/bf340bdf740bea08a8efd16c7f29650b86b32364/jackson-databind-2.20.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

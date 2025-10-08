@@ -22,15 +22,14 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.world.StructureGrowEvent
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
-import org.xodium.vanillaplus.VanillaPlus.Companion.PREFIX
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
-import org.xodium.vanillaplus.hooks.WorldEditHook
+import org.xodium.vanillaplus.hooks.FAWEHook
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.registries.MaterialRegistry
 import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.ExtUtils.prefix
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
-import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import java.io.IOException
 import java.nio.channels.Channels
 import java.nio.channels.ReadableByteChannel
@@ -51,7 +50,7 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
         }
     }
 
-    override fun enabled(): Boolean = config.enabled && WorldEditHook.get("TreesModule")
+    override fun enabled(): Boolean = config.enabled && FAWEHook.get()
 
     override fun cmds(): List<CommandData> =
         listOf(
@@ -86,9 +85,17 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
                                         }
                                         builder.buildFuture()
                                     }.executes { ctx ->
-                                        ctx.tryCatch { handleTreeCmd((it.sender as Player), ctx, true) }
+                                        ctx.tryCatch {
+                                            if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+                                            handleTreeCmd((it.sender as Player), ctx, true)
+                                        }
                                     },
-                            ).executes { ctx -> ctx.tryCatch { handleTreeCmd((it.sender as Player), ctx, false) } },
+                            ).executes { ctx ->
+                                ctx.tryCatch {
+                                    if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+                                    handleTreeCmd((it.sender as Player), ctx, false)
+                                }
+                            },
                     ),
                 "Triggers the spawning of a tree",
                 listOf("tr"),
@@ -229,6 +236,7 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
         ctx: CommandContext<CommandSourceStack>,
         hasIndex: Boolean,
     ) {
+        // TODO: check if this can be refactored.
         val typeName = StringArgumentType.getString(ctx, "type")
         val material = typeName.toMaterial() ?: return
         val clipboards = schematicCache[material] ?: return
@@ -244,10 +252,10 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
             val actor = BukkitAdapter.adapt(player)
             val session = WorldEdit.getInstance().sessionManager.get(actor)
             session.clipboard = ClipboardHolder(clipboard)
-            player.sendMessage("$PREFIX Loaded $typeName tree into clipboard! Use //paste to place it".mm())
+            player.sendMessage("${instance.prefix} Loaded $typeName tree into clipboard! Use //paste to place it".mm())
         } catch (e: Exception) {
             instance.logger.severe("Error while setting clipboard: ${e.message}")
-            player.sendMessage("$PREFIX ${"Error Occurred, Check Console!".fireFmt()}".mm())
+            player.sendMessage("${instance.prefix} <red>Error Occurred, Check Console!".mm())
         }
     }
 
