@@ -22,7 +22,7 @@ interface DataInterface<T : Any> {
     val dataClass: KClass<T>
     val cache: MutableMap<UUID, T>
 
-    private val mapper: ObjectMapper
+    val mapper: ObjectMapper
         get() =
             jacksonObjectMapper()
                 .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)

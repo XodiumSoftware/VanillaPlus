@@ -5,6 +5,8 @@
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.kyori/adventure-text-serializer-gson/4.25.0-SNAPSHOT/1cbae894047246ba78abc2a2dc2a34085fe1b178/adventure-text-serializer-gson-4.25.0-SNAPSHOT.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.kyori/adventure-text-serializer-gson/4.25.0-SNAPSHOT/94ad1de2affa953355cc34e0c2c5742fe35d5449/adventure-text-serializer-gson-4.25.0-SNAPSHOT-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>
