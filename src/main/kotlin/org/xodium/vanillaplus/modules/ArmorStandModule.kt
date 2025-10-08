@@ -94,17 +94,18 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
     ) {
         val equipment = armorStand.equipment
         val playerInventory = player.inventory
-        val cursorItem = playerInventory.itemInMainHand.clone()
+        val cursorItem = playerInventory.itemInMainHand
 
-        when (slot) {
-            EquipmentSlot.HEAD -> equipment.helmet.clone()
-            EquipmentSlot.CHEST -> equipment.chestplate.clone()
-            EquipmentSlot.LEGS -> equipment.leggings.clone()
-            EquipmentSlot.FEET -> equipment.boots.clone()
-            EquipmentSlot.HAND -> equipment.itemInMainHand.clone()
-            EquipmentSlot.OFF_HAND -> equipment.itemInOffHand.clone()
-            else -> return
-        }
+        val standItem =
+            when (slot) {
+                EquipmentSlot.HEAD -> equipment.helmet
+                EquipmentSlot.CHEST -> equipment.chestplate
+                EquipmentSlot.LEGS -> equipment.leggings
+                EquipmentSlot.FEET -> equipment.boots
+                EquipmentSlot.HAND -> equipment.itemInMainHand
+                EquipmentSlot.OFF_HAND -> equipment.itemInOffHand
+                else -> return
+            }
 
         when (slot) {
             EquipmentSlot.HEAD -> equipment.setHelmet(cursorItem)
@@ -116,6 +117,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
             else -> return
         }
 
+        playerInventory.setItemInMainHand(standItem)
         player.closeInventory()
         gui(armorStand).open(player)
     }
