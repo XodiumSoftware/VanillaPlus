@@ -44,18 +44,18 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
             statelessComponent {
                 // Filler slots
                 for (slot in 0 until 54) it[slot] = ItemBuilder.from(config.guiFillerMaterial).asGuiItem()
-                // Head slot
-                it[13] = ItemBuilder.from(Material.LEATHER).asGuiItem()
+                // Helmet slot
+                it[13] = ItemBuilder.from(armorStand.equipment.helmet).asGuiItem()
                 // Main Hand slot
-                it[21] = ItemBuilder.from(Material.LEATHER).asGuiItem()
-                // Chest slot
-                it[22] = ItemBuilder.from(Material.LEATHER).asGuiItem()
+                it[21] = ItemBuilder.from(armorStand.equipment.itemInMainHand).asGuiItem()
+                // Chestplate slot
+                it[22] = ItemBuilder.from(armorStand.equipment.chestplate).asGuiItem()
                 // Offhand slot
-                it[23] = ItemBuilder.from(Material.LEATHER).asGuiItem()
+                it[23] = ItemBuilder.from(armorStand.equipment.itemInOffHand).asGuiItem()
                 // Leggings slot
-                it[31] = ItemBuilder.from(Material.LEATHER).asGuiItem()
+                it[31] = ItemBuilder.from(armorStand.equipment.leggings).asGuiItem()
                 // Boots slot
-                it[40] = ItemBuilder.from(Material.LEATHER).asGuiItem()
+                it[40] = ItemBuilder.from(armorStand.equipment.boots).asGuiItem()
                 // Arms toggling slot
                 it[43] =
                     ItemBuilder
