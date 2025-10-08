@@ -5,7 +5,6 @@ import dev.triumphteam.gui.paper.builder.item.ItemBuilder
 import dev.triumphteam.gui.paper.kotlin.builder.buildGui
 import dev.triumphteam.gui.paper.kotlin.builder.chestContainer
 import org.bukkit.Material
-import org.bukkit.Tag
 import org.bukkit.entity.ArmorStand
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractAtEntityEvent
@@ -67,27 +66,6 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                         }
             }
         }
-
-    /**
-     * Checks if the given material represents a tool item.
-     * @param material the [Material] to check.
-     * @return `true` if the material is a tool, `false` otherwise.
-     */
-    private fun isTool(material: Material): Boolean =
-        Tag.ITEMS_AXES.isTagged(material) ||
-            Tag.ITEMS_PICKAXES.isTagged(material) ||
-            Tag.ITEMS_SHOVELS.isTagged(material) ||
-            Tag.ITEMS_HOES.isTagged(material) ||
-            Tag.ITEMS_SWORDS.isTagged(material) ||
-            material == Material.FISHING_ROD ||
-            material == Material.FLINT_AND_STEEL ||
-            material == Material.SHEARS ||
-            material == Material.BOW ||
-            material == Material.CROSSBOW ||
-            material == Material.TRIDENT ||
-            material == Material.SHIELD ||
-            material == Material.CARROT_ON_A_STICK ||
-            material == Material.WARPED_FUNGUS_ON_A_STICK
 
     data class Config(
         override var enabled: Boolean = true,
