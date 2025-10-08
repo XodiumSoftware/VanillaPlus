@@ -19,7 +19,13 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
 
     @EventHandler
     fun on(event: PlayerInteractAtEntityEvent) {
-        if (!enabled() || event.rightClicked !is ArmorStand || event.player.isSneaking) return
+        if (!enabled() ||
+            event.rightClicked !is ArmorStand ||
+            event.player.isSneaking ||
+            event.player.inventory.itemInMainHand.type == Material.NAME_TAG
+        ) {
+            return
+        }
         gui(event.rightClicked as ArmorStand).open(event.player)
         event.isCancelled = true
     }
