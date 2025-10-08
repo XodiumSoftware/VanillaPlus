@@ -42,48 +42,50 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
             containerType = chestContainer { rows = 6 }
             spamPreventionDuration = config.guiSpamPreventionDuration.seconds
             title(armorStand.customName() ?: armorStand.name.mm())
-            statelessComponent {
-                // Filler slots
-                for (slot in 0 until 54) it[slot] = ItemBuilder.from(config.guiFillerMaterial).asGuiItem()
-                // Helmet slot
-                it[13] =
-                    ItemBuilder
-                        .from(armorStand.equipment.helmet)
-                        .asGuiItem { player, _ -> handleEquipmentSwap(player, armorStand, EquipmentSlot.HEAD) }
-                // Main Hand slot
-                it[21] =
-                    ItemBuilder
-                        .from(armorStand.equipment.itemInMainHand)
-                        .asGuiItem { player, _ -> handleEquipmentSwap(player, armorStand, EquipmentSlot.HAND) }
-                // Chestplate slot
-                it[22] =
-                    ItemBuilder
-                        .from(armorStand.equipment.chestplate)
-                        .asGuiItem { player, _ -> handleEquipmentSwap(player, armorStand, EquipmentSlot.CHEST) }
-                // Offhand slot
-                it[23] =
-                    ItemBuilder
-                        .from(armorStand.equipment.itemInOffHand)
-                        .asGuiItem { player, _ -> handleEquipmentSwap(player, armorStand, EquipmentSlot.OFF_HAND) }
-                // Leggings slot
-                it[31] =
-                    ItemBuilder
-                        .from(armorStand.equipment.leggings)
-                        .asGuiItem { player, _ -> handleEquipmentSwap(player, armorStand, EquipmentSlot.LEGS) }
-                // Boots slot
-                it[40] =
-                    ItemBuilder
-                        .from(armorStand.equipment.boots)
-                        .asGuiItem { player, _ -> handleEquipmentSwap(player, armorStand, EquipmentSlot.FEET) }
-                // Arms toggling slot
-                it[43] =
-                    ItemBuilder
-                        .from(if (armorStand.hasArms()) Material.GREEN_WOOL else Material.RED_WOOL)
-                        .name("Toggle Arms".mangoFmt().mm())
-                        .asGuiItem { player, _ ->
-                            armorStand.setArms(!armorStand.hasArms())
-                            player.closeInventory()
-                        }
+            component {
+                render {
+                    // Filler slots
+                    for (slot in 0 until 54) it[slot] = ItemBuilder.from(config.guiFillerMaterial).asGuiItem()
+                    // Helmet slot
+                    it[13] =
+                        ItemBuilder
+                            .from(armorStand.equipment.helmet)
+                            .asGuiItem { player, _ -> handleEquipmentSwap(player, armorStand, EquipmentSlot.HEAD) }
+                    // Main Hand slot
+                    it[21] =
+                        ItemBuilder
+                            .from(armorStand.equipment.itemInMainHand)
+                            .asGuiItem { player, _ -> handleEquipmentSwap(player, armorStand, EquipmentSlot.HAND) }
+                    // Chestplate slot
+                    it[22] =
+                        ItemBuilder
+                            .from(armorStand.equipment.chestplate)
+                            .asGuiItem { player, _ -> handleEquipmentSwap(player, armorStand, EquipmentSlot.CHEST) }
+                    // Offhand slot
+                    it[23] =
+                        ItemBuilder
+                            .from(armorStand.equipment.itemInOffHand)
+                            .asGuiItem { player, _ -> handleEquipmentSwap(player, armorStand, EquipmentSlot.OFF_HAND) }
+                    // Leggings slot
+                    it[31] =
+                        ItemBuilder
+                            .from(armorStand.equipment.leggings)
+                            .asGuiItem { player, _ -> handleEquipmentSwap(player, armorStand, EquipmentSlot.LEGS) }
+                    // Boots slot
+                    it[40] =
+                        ItemBuilder
+                            .from(armorStand.equipment.boots)
+                            .asGuiItem { player, _ -> handleEquipmentSwap(player, armorStand, EquipmentSlot.FEET) }
+                    // Arms toggling slot
+                    it[43] =
+                        ItemBuilder
+                            .from(if (armorStand.hasArms()) Material.GREEN_WOOL else Material.RED_WOOL)
+                            .name("Toggle Arms".mangoFmt().mm())
+                            .asGuiItem { player, _ ->
+                                armorStand.setArms(!armorStand.hasArms())
+                                player.closeInventory()
+                            }
+                }
             }
         }
 
