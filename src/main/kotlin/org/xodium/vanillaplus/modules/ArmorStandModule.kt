@@ -96,7 +96,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                 it[43] =
                     ItemBuilder
                         .from(if (armorStand.hasArms()) Material.GREEN_WOOL else Material.RED_WOOL)
-                        .name("Toggle Arms".mangoFmt().mm())
+                        .name(config.i18n.toggleArmsItemTitle.mm())
                         .asGuiItem { _, ctx ->
                             armorStand.setArms(!armorStand.hasArms())
                             ctx.guiView.open()
@@ -147,5 +147,10 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
         var guiSpamPreventionDuration: Int = 1,
         var guiFillerMaterial: Material = Material.BLACK_STAINED_GLASS_PANE,
         var guiFillerMaterialGlow: Boolean = true,
-    ) : ModuleInterface.Config
+        var i18n: I18n = I18n(),
+    ) : ModuleInterface.Config {
+        data class I18n(
+            var toggleArmsItemTitle: String = "Toggle Arms".mangoFmt(),
+        )
+    }
 }
