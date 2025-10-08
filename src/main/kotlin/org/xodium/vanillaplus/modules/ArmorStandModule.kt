@@ -5,8 +5,8 @@ import org.bukkit.Tag
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
-import org.bukkit.event.player.PlayerInteractEntityEvent
-import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.event.player.PlayerInteractAtEntityEvent
+import org.bukkit.inventory.EntityEquipment
 import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 
@@ -15,40 +15,70 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
     override val config: Config = Config()
 
     @EventHandler
-    fun on(event: PlayerInteractEntityEvent) {
-        if (!enabled() || event.rightClicked !is ArmorStand || event.hand != EquipmentSlot.HAND) return
+    fun on(event: PlayerInteractAtEntityEvent) {
+        if (!enabled() || event.rightClicked !is ArmorStand) return
 
         val armorStand = event.rightClicked as ArmorStand
         val player = event.player
         val itemInHand = player.inventory.itemInMainHand
-        val armorStandHandItem = armorStand.getItem(EquipmentSlot.HAND)
-        if (itemInHand.type.isAir) {
-            if (!armorStandHandItem.type.isAir) {
-                giveItemToPlayer(player, armorStandHandItem)
-                armorStand.setItem(EquipmentSlot.HAND, ItemStack.of(Material.AIR))
-                event.isCancelled = true
-            }
-        } else {
-            if (isTool(itemInHand.type) && armorStandHandItem.type.isAir) {
-                armorStand.setItem(EquipmentSlot.HAND, itemInHand.clone())
-                player.inventory.setItemInMainHand(null)
-                event.isCancelled = true
-            }
+        val equipment = armorStand.equipment
+
+        when {
+            isHoldingTool(itemInHand) -> handleToolPlacement(armorStand, equipment, itemInHand, player)
+            isEmptyHand(itemInHand) -> handleEmptyHandInteraction(armorStand, equipment)
         }
     }
 
-    private fun giveItemToPlayer(
+    private fun isHoldingTool(item: ItemStack) = item.type != Material.AIR && isTool(item.type)
+
+    private fun isEmptyHand(item: ItemStack) = item.type == Material.AIR
+
+    private fun handleToolPlacement(
+        armorStand: ArmorStand,
+        equipment: EntityEquipment,
+        tool: ItemStack,
         player: Player,
-        item: ItemStack,
     ) {
-        val remainingItems = player.inventory.addItem(item.clone())
-        if (remainingItems.isNotEmpty()) {
-            for (remainingItem in remainingItems.values) {
-                player.world.dropItem(player.location, remainingItem)
+        when {
+            equipment.itemInMainHand.type == Material.AIR -> {
+                equipment.setItemInMainHand(tool)
+                updateArmorStandState(armorStand, player)
+            }
+
+            equipment.itemInOffHand.type == Material.AIR -> {
+                equipment.setItemInOffHand(tool)
+                updateArmorStandState(armorStand, player)
             }
         }
     }
 
+    private fun handleEmptyHandInteraction(
+        armorStand: ArmorStand,
+        equipment: EntityEquipment,
+    ) {
+        val hasItemsInHands =
+            equipment.itemInMainHand.type != Material.AIR || equipment.itemInOffHand.type != Material.AIR
+        val noItemsInHands =
+            equipment.itemInMainHand.type == Material.AIR && equipment.itemInOffHand.type == Material.AIR
+
+        if (hasItemsInHands && noItemsInHands) {
+            armorStand.setArms(false)
+        }
+    }
+
+    private fun updateArmorStandState(
+        armorStand: ArmorStand,
+        player: Player,
+    ) {
+        armorStand.setArms(true)
+        player.inventory.setItemInMainHand(ItemStack.of(Material.AIR))
+    }
+
+    /**
+     * Checks if the given material represents a tool item.
+     * @param material the [Material] to check.
+     * @return `true` if the material is a tool, `false` otherwise.
+     */
     private fun isTool(material: Material): Boolean =
         Tag.ITEMS_AXES.isTagged(material) ||
             Tag.ITEMS_PICKAXES.isTagged(material) ||
