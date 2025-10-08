@@ -11,6 +11,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractAtEntityEvent
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import kotlin.time.Duration.Companion.seconds
 
 /** Represents a module handling armor stand mechanics within the system. */
@@ -41,9 +42,29 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
             spamPreventionDuration = config.guiSpamPreventionDuration.seconds
             title(armorStand.customName() ?: armorStand.name.mm())
             statelessComponent {
-                for (slot in 0 until 54) {
-                    it[slot] = ItemBuilder.from(Material.BLACK_STAINED_GLASS_PANE).asGuiItem()
-                }
+                // Filler slots
+                for (slot in 0 until 54) it[slot] = ItemBuilder.from(config.guiFillerMaterial).asGuiItem()
+                // Head slot
+                it[13] = ItemBuilder.from(Material.LEATHER).asGuiItem()
+                // Main Hand slot
+                it[21] = ItemBuilder.from(Material.LEATHER).asGuiItem()
+                // Chest slot
+                it[22] = ItemBuilder.from(Material.LEATHER).asGuiItem()
+                // Offhand slot
+                it[23] = ItemBuilder.from(Material.LEATHER).asGuiItem()
+                // Leggings slot
+                it[31] = ItemBuilder.from(Material.LEATHER).asGuiItem()
+                // Boots slot
+                it[40] = ItemBuilder.from(Material.LEATHER).asGuiItem()
+                // Arms toggling slot
+                it[43] =
+                    ItemBuilder
+                        .from(if (armorStand.hasArms()) Material.GREEN_WOOL else Material.RED_WOOL)
+                        .name("Toggle Arms".mangoFmt().mm())
+                        .asGuiItem { player, _ ->
+                            armorStand.setArms(!armorStand.hasArms())
+                            player.closeInventory()
+                        }
             }
         }
 
@@ -71,5 +92,6 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
     data class Config(
         override var enabled: Boolean = true,
         var guiSpamPreventionDuration: Int = 1,
+        var guiFillerMaterial: Material = Material.BLACK_STAINED_GLASS_PANE,
     ) : ModuleInterface.Config
 }
