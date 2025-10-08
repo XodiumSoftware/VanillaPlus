@@ -6,8 +6,10 @@ import dev.triumphteam.gui.paper.kotlin.builder.buildGui
 import dev.triumphteam.gui.paper.kotlin.builder.chestContainer
 import org.bukkit.Material
 import org.bukkit.entity.ArmorStand
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractAtEntityEvent
+import org.bukkit.inventory.EquipmentSlot
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
@@ -44,17 +46,35 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                 // Filler slots
                 for (slot in 0 until 54) it[slot] = ItemBuilder.from(config.guiFillerMaterial).asGuiItem()
                 // Helmet slot
-                it[13] = ItemBuilder.from(armorStand.equipment.helmet).asGuiItem()
+                it[13] =
+                    ItemBuilder
+                        .from(armorStand.equipment.helmet)
+                        .asGuiItem { player, _ -> handleEquipmentSwap(player, armorStand, EquipmentSlot.HEAD) }
                 // Main Hand slot
-                it[21] = ItemBuilder.from(armorStand.equipment.itemInMainHand).asGuiItem()
+                it[21] =
+                    ItemBuilder
+                        .from(armorStand.equipment.itemInMainHand)
+                        .asGuiItem { player, _ -> handleEquipmentSwap(player, armorStand, EquipmentSlot.HAND) }
                 // Chestplate slot
-                it[22] = ItemBuilder.from(armorStand.equipment.chestplate).asGuiItem()
+                it[22] =
+                    ItemBuilder
+                        .from(armorStand.equipment.chestplate)
+                        .asGuiItem { player, _ -> handleEquipmentSwap(player, armorStand, EquipmentSlot.CHEST) }
                 // Offhand slot
-                it[23] = ItemBuilder.from(armorStand.equipment.itemInOffHand).asGuiItem()
+                it[23] =
+                    ItemBuilder
+                        .from(armorStand.equipment.itemInOffHand)
+                        .asGuiItem { player, _ -> handleEquipmentSwap(player, armorStand, EquipmentSlot.OFF_HAND) }
                 // Leggings slot
-                it[31] = ItemBuilder.from(armorStand.equipment.leggings).asGuiItem()
+                it[31] =
+                    ItemBuilder
+                        .from(armorStand.equipment.leggings)
+                        .asGuiItem { player, _ -> handleEquipmentSwap(player, armorStand, EquipmentSlot.LEGS) }
                 // Boots slot
-                it[40] = ItemBuilder.from(armorStand.equipment.boots).asGuiItem()
+                it[40] =
+                    ItemBuilder
+                        .from(armorStand.equipment.boots)
+                        .asGuiItem { player, _ -> handleEquipmentSwap(player, armorStand, EquipmentSlot.FEET) }
                 // Arms toggling slot
                 it[43] =
                     ItemBuilder
@@ -66,6 +86,39 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                         }
             }
         }
+
+    private fun handleEquipmentSwap(
+        player: Player,
+        armorStand: ArmorStand,
+        slot: EquipmentSlot,
+    ) {
+        val equipment = armorStand.equipment
+        val playerInventory = player.inventory
+        val cursorItem = playerInventory.itemInMainHand.clone()
+
+        when (slot) {
+            EquipmentSlot.HEAD -> equipment.helmet.clone()
+            EquipmentSlot.CHEST -> equipment.chestplate.clone()
+            EquipmentSlot.LEGS -> equipment.leggings.clone()
+            EquipmentSlot.FEET -> equipment.boots.clone()
+            EquipmentSlot.HAND -> equipment.itemInMainHand.clone()
+            EquipmentSlot.OFF_HAND -> equipment.itemInOffHand.clone()
+            else -> return
+        }
+
+        when (slot) {
+            EquipmentSlot.HEAD -> equipment.setHelmet(cursorItem)
+            EquipmentSlot.CHEST -> equipment.setChestplate(cursorItem)
+            EquipmentSlot.LEGS -> equipment.setLeggings(cursorItem)
+            EquipmentSlot.FEET -> equipment.setBoots(cursorItem)
+            EquipmentSlot.HAND -> equipment.setItemInMainHand(cursorItem)
+            EquipmentSlot.OFF_HAND -> equipment.setItemInOffHand(cursorItem)
+            else -> return
+        }
+
+        player.closeInventory()
+        gui(armorStand).open(player)
+    }
 
     data class Config(
         override var enabled: Boolean = true,
