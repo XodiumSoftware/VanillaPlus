@@ -1,5 +1,6 @@
 package org.xodium.vanillaplus.modules
 
+import dev.triumphteam.gui.click.ClickContext
 import dev.triumphteam.gui.paper.Gui
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder
 import dev.triumphteam.gui.paper.kotlin.builder.buildGui
@@ -44,45 +45,61 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
             title(armorStand.customName() ?: armorStand.name.mm())
             statelessComponent {
                 // Filler slots
-                for (slot in 0 until 54) it[slot] = ItemBuilder.from(config.guiFillerMaterial).name("".mm()).asGuiItem()
+                for (slot in 0 until 54) {
+                    it[slot] =
+                        ItemBuilder
+                            .from(config.guiFillerMaterial)
+                            .name("".mm())
+                            .glow(config.guiFillerMaterialGlow)
+                            .asGuiItem()
+                }
                 // Helmet slot
                 it[13] =
                     ItemBuilder
                         .from(armorStand.equipment.helmet)
-                        .asGuiItem { player, _ -> handleEquipmentSwap(player, armorStand, EquipmentSlot.HEAD) }
+                        .asGuiItem { player, ctx -> handleEquipmentSwap(ctx, player, armorStand, EquipmentSlot.HEAD) }
                 // Main Hand slot
                 it[21] =
                     ItemBuilder
                         .from(armorStand.equipment.itemInMainHand)
-                        .asGuiItem { player, _ -> handleEquipmentSwap(player, armorStand, EquipmentSlot.HAND) }
+                        .asGuiItem { player, ctx -> handleEquipmentSwap(ctx, player, armorStand, EquipmentSlot.HAND) }
                 // Chestplate slot
                 it[22] =
                     ItemBuilder
                         .from(armorStand.equipment.chestplate)
-                        .asGuiItem { player, _ -> handleEquipmentSwap(player, armorStand, EquipmentSlot.CHEST) }
+                        .asGuiItem { player, ctx -> handleEquipmentSwap(ctx, player, armorStand, EquipmentSlot.CHEST) }
                 // Offhand slot
                 it[23] =
                     ItemBuilder
                         .from(armorStand.equipment.itemInOffHand)
-                        .asGuiItem { player, _ -> handleEquipmentSwap(player, armorStand, EquipmentSlot.OFF_HAND) }
+                        .asGuiItem { player, ctx ->
+                            handleEquipmentSwap(
+                                ctx,
+                                player,
+                                armorStand,
+                                EquipmentSlot.OFF_HAND,
+                            )
+                        }
                 // Leggings slot
                 it[31] =
                     ItemBuilder
                         .from(armorStand.equipment.leggings)
-                        .asGuiItem { player, _ -> handleEquipmentSwap(player, armorStand, EquipmentSlot.LEGS) }
+                        .asGuiItem { player, ctx -> handleEquipmentSwap(ctx, player, armorStand, EquipmentSlot.LEGS) }
                 // Boots slot
                 it[40] =
                     ItemBuilder
                         .from(armorStand.equipment.boots)
-                        .asGuiItem { player, _ -> handleEquipmentSwap(player, armorStand, EquipmentSlot.FEET) }
+                        .asGuiItem { player, ctx ->
+                            handleEquipmentSwap(ctx, player, armorStand, EquipmentSlot.FEET)
+                        }
                 // Arms toggling slot
                 it[43] =
                     ItemBuilder
                         .from(if (armorStand.hasArms()) Material.GREEN_WOOL else Material.RED_WOOL)
                         .name("Toggle Arms".mangoFmt().mm())
-                        .asGuiItem { player, _ ->
+                        .asGuiItem { _, ctx ->
                             armorStand.setArms(!armorStand.hasArms())
-                            gui(armorStand).open(player)
+                            ctx.guiView.open()
                         }
             }
         }
@@ -91,6 +108,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
      * TODO
      */
     private fun handleEquipmentSwap(
+        ctx: ClickContext,
         player: Player,
         armorStand: ArmorStand,
         slot: EquipmentSlot,
@@ -121,12 +139,13 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
         }
 
         playerInventory.setItemInMainHand(standItem)
-        gui(armorStand).open(player)
+        ctx.guiView.open()
     }
 
     data class Config(
         override var enabled: Boolean = true,
         var guiSpamPreventionDuration: Int = 1,
         var guiFillerMaterial: Material = Material.BLACK_STAINED_GLASS_PANE,
+        var guiFillerMaterialGlow: Boolean = true,
     ) : ModuleInterface.Config
 }
