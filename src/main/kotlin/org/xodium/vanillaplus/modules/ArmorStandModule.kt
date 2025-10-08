@@ -1,6 +1,8 @@
 package org.xodium.vanillaplus.modules
 
 import dev.triumphteam.gui.click.ClickContext
+import dev.triumphteam.gui.click.MoveResult
+import dev.triumphteam.gui.click.action.GuiClickAction
 import dev.triumphteam.gui.paper.Gui
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder
 import dev.triumphteam.gui.paper.kotlin.builder.buildGui
@@ -56,37 +58,63 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                 it[13] =
                     ItemBuilder
                         .from(armorStand.equipment.helmet)
-                        .asGuiItem { player, ctx -> handleEquipmentSwap(ctx, player, armorStand, EquipmentSlot.HEAD) }
+                        .asGuiItem(
+                            GuiClickAction.movable { player, ctx ->
+                                // handleEquipmentSwap(ctx, player, armorStand, EquipmentSlot.HEAD)
+                                MoveResult.ALLOW
+                            },
+                        )
                 // Main Hand slot
                 it[21] =
                     ItemBuilder
                         .from(armorStand.equipment.itemInMainHand)
-                        .asGuiItem { player, ctx -> handleEquipmentSwap(ctx, player, armorStand, EquipmentSlot.HAND) }
+                        .asGuiItem(
+                            GuiClickAction.movable { player, ctx ->
+                                // handleEquipmentSwap(ctx, player, armorStand, EquipmentSlot.HAND)
+                                MoveResult.ALLOW
+                            },
+                        )
                 // Chestplate slot
                 it[22] =
                     ItemBuilder
                         .from(armorStand.equipment.chestplate)
-                        .asGuiItem { player, ctx -> handleEquipmentSwap(ctx, player, armorStand, EquipmentSlot.CHEST) }
+                        .asGuiItem(
+                            GuiClickAction.movable { player, ctx ->
+                                // handleEquipmentSwap(ctx, player, armorStand, EquipmentSlot.CHEST)
+                                MoveResult.ALLOW
+                            },
+                        )
                 // Offhand slot
                 it[23] =
                     ItemBuilder
                         .from(armorStand.equipment.itemInOffHand)
-                        .asGuiItem { player, ctx ->
-                            handleEquipmentSwap(ctx, player, armorStand, EquipmentSlot.OFF_HAND)
-                        }
+                        .asGuiItem(
+                            GuiClickAction.movable { player, ctx ->
+                                // handleEquipmentSwap(ctx, player, armorStand, EquipmentSlot.OFF_HAND)
+                                MoveResult.ALLOW
+                            },
+                        )
                 // Leggings slot
                 it[31] =
                     ItemBuilder
                         .from(armorStand.equipment.leggings)
-                        .asGuiItem { player, ctx -> handleEquipmentSwap(ctx, player, armorStand, EquipmentSlot.LEGS) }
+                        .asGuiItem(
+                            GuiClickAction.movable { player, ctx ->
+                                // handleEquipmentSwap(ctx, player, armorStand, EquipmentSlot.LEGS)
+                                MoveResult.ALLOW
+                            },
+                        )
                 // Boots slot
                 it[40] =
                     ItemBuilder
                         .from(armorStand.equipment.boots)
-                        .asGuiItem { player, ctx ->
-                            handleEquipmentSwap(ctx, player, armorStand, EquipmentSlot.FEET)
-                        }
-                // Arms toggling slot
+                        .asGuiItem(
+                            GuiClickAction.movable { player, ctx ->
+                                // handleEquipmentSwap(ctx, player, armorStand, EquipmentSlot.FEET)
+                                MoveResult.ALLOW
+                            },
+                        )
+                // Arms toggling slot0
                 it[43] =
                     ItemBuilder
                         .from(if (armorStand.hasArms()) Material.GREEN_WOOL else Material.RED_WOOL)
