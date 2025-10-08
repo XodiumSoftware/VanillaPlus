@@ -26,16 +26,16 @@ jobs:
     steps:
       - id: checkout
         name: Checkout
-        uses: actions/checkout@v5.0.0
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
       - id: setup_java
         name: Setup Java
-        uses: actions/setup-java@v5.0.0
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
-          java-version: "21"
+          java-version: 21
 
       - id: setup_gradle
         name: Setup Gradle
@@ -66,8 +66,30 @@ jobs:
           name: vanillaplus
           path: build/libs/VanillaPlus-*.jar
 
-  release:
+  dependency-submission:
     needs: [ build ]
+    runs-on: ubuntu-latest
+    environment:
+      name: "${{ github.ref_name }}"
+      url: "${{ steps.generate_and_submit_dependency_graph.outputs.url }}"
+    steps:
+      - id: checkout
+        name: Checkout
+        uses: actions/checkout@v5
+
+      - id: setup_java
+        name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - id: generate_and_submit_dependency_graph
+        name: Generate and submit dependency graph
+        uses: gradle/actions/dependency-submission@v5
+
+  release:
+    needs: [ dependency-submission, build ]
     if: github.ref_name == 'main' || github.ref_name == 'dev'
     runs-on: ubuntu-latest
     environment:
@@ -76,7 +98,7 @@ jobs:
     steps:
       - id: download_artifact
         name: Download Artifact
-        uses: actions/download-artifact@v5.0.0
+        uses: actions/download-artifact@v5
         with: { name: vanillaplus }
 
       - id: release_artifact
@@ -91,9 +113,7 @@ jobs:
           files: VanillaPlus-*.jar
 
   deploy:
-    needs:
-      - build
-      - release
+    needs: [ release ]
     runs-on: ubuntu-latest
     if: github.ref_name == 'main'
     environment:
@@ -101,7 +121,7 @@ jobs:
     steps:
       - id: download_artifact
         name: Download Artifact
-        uses: actions/download-artifact@v5.0.0
+        uses: actions/download-artifact@v5
         with: { name: vanillaplus }
 
       - id: uts
