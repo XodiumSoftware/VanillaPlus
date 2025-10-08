@@ -126,6 +126,8 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
             }
         }
 
+    // TODO: make it so when dropped into the slot it wills set() and when picked up it will unset()
+
     /**
      * TODO
      */
