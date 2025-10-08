@@ -1,14 +1,17 @@
 package org.xodium.vanillaplus.modules
 
+import dev.triumphteam.gui.paper.Gui
+import dev.triumphteam.gui.paper.builder.item.ItemBuilder
+import dev.triumphteam.gui.paper.kotlin.builder.buildGui
+import dev.triumphteam.gui.paper.kotlin.builder.chestContainer
 import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.entity.ArmorStand
-import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractAtEntityEvent
-import org.bukkit.inventory.EntityEquipment
-import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.ExtUtils.mm
+import kotlin.time.Duration.Companion.seconds
 
 /** Represents a module handling armor stand mechanics within the system. */
 internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
@@ -17,62 +20,24 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
     @EventHandler
     fun on(event: PlayerInteractAtEntityEvent) {
         if (!enabled() || event.rightClicked !is ArmorStand) return
-
-        val armorStand = event.rightClicked as ArmorStand
-        val player = event.player
-        val itemInHand = player.inventory.itemInMainHand
-        val equipment = armorStand.equipment
-
-        when {
-            isHoldingTool(itemInHand) -> handleToolPlacement(armorStand, equipment, itemInHand, player)
-            isEmptyHand(itemInHand) -> handleEmptyHandInteraction(armorStand, equipment)
-        }
+        gui(event.rightClicked as ArmorStand)
+        event.isCancelled = true
     }
 
-    private fun isHoldingTool(item: ItemStack) = item.type != Material.AIR && isTool(item.type)
-
-    private fun isEmptyHand(item: ItemStack) = item.type == Material.AIR
-
-    private fun handleToolPlacement(
-        armorStand: ArmorStand,
-        equipment: EntityEquipment,
-        tool: ItemStack,
-        player: Player,
-    ) {
-        when {
-            equipment.itemInMainHand.type == Material.AIR -> {
-                equipment.setItemInMainHand(tool)
-                updateArmorStandState(armorStand, player)
-            }
-
-            equipment.itemInOffHand.type == Material.AIR -> {
-                equipment.setItemInOffHand(tool)
-                updateArmorStandState(armorStand, player)
+    /**
+     * Builds a GUI for interacting with an armor stand entity.
+     * @param armorStand The armor stand entity to create the GUI for.
+     * @return A configured Gui instance ready to be displayed to players.
+     */
+    private fun gui(armorStand: ArmorStand): Gui =
+        buildGui {
+            containerType = chestContainer { rows = 6 }
+            spamPreventionDuration = config.guiSpamPreventionDuration.seconds
+            title(armorStand.customName() ?: armorStand.name.mm())
+            statelessComponent {
+                it[1] = ItemBuilder.from(Material.BLACK_STAINED_GLASS_PANE).asGuiItem()
             }
         }
-    }
-
-    private fun handleEmptyHandInteraction(
-        armorStand: ArmorStand,
-        equipment: EntityEquipment,
-    ) {
-        val hasItemsInHands =
-            equipment.itemInMainHand.type != Material.AIR || equipment.itemInOffHand.type != Material.AIR
-        val noItemsInHands =
-            equipment.itemInMainHand.type == Material.AIR && equipment.itemInOffHand.type == Material.AIR
-
-        if (hasItemsInHands && noItemsInHands) {
-            armorStand.setArms(false)
-        }
-    }
-
-    private fun updateArmorStandState(
-        armorStand: ArmorStand,
-        player: Player,
-    ) {
-        armorStand.setArms(true)
-        player.inventory.setItemInMainHand(ItemStack.of(Material.AIR))
-    }
 
     /**
      * Checks if the given material represents a tool item.
@@ -97,5 +62,6 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
 
     data class Config(
         override var enabled: Boolean = true,
+        var guiSpamPreventionDuration: Int = 1,
     ) : ModuleInterface.Config
 }

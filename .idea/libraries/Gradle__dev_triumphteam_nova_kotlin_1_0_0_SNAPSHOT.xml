@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Gradle: dev.triumphteam:nova-kotlin:1.0.0-SNAPSHOT" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="dev.triumphteam" artifactId="nova-kotlin" version="1.0.0-SNAPSHOT" baseVersion="1.0.0-SNAPSHOT" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/dev.triumphteam/nova-kotlin/1.0.0-SNAPSHOT/da4589a32d3572ec7ebf94c1957db75bd605f12c/nova-kotlin-1.0.0-SNAPSHOT.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

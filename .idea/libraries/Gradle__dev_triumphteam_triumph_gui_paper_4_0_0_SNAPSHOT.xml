@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: dev.triumphteam:triumph-gui-paper:4.0.0-SNAPSHOT" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="dev.triumphteam" artifactId="triumph-gui-paper" version="4.0.0-SNAPSHOT" baseVersion="4.0.0-SNAPSHOT" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/dev.triumphteam/triumph-gui-paper/4.0.0-SNAPSHOT/630ce7b6b005875ffc8bffa4bc520fc3ad31237a/triumph-gui-paper-4.0.0-SNAPSHOT.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/dev.triumphteam/triumph-gui-paper/4.0.0-SNAPSHOT/89b3339eac9bd5f04054053475aff1ab5333a1fa/triumph-gui-paper-4.0.0-SNAPSHOT-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
