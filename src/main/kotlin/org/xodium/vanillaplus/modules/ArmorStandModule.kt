@@ -47,7 +47,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
             title(armorStand.customName() ?: armorStand.name.mm())
             statelessComponent {
                 // Filler slots
-                for (slot in 0 until 54) {
+                repeat(53) { slot ->
                     it[slot] =
                         ItemBuilder
                             .from(config.guiFillerMaterial)
@@ -100,6 +100,10 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                         .from(armorStand.equipment.leggings)
                         .asGuiItem(
                             GuiClickAction.movable { player, ctx ->
+                                // TODO: dont take from main hand instead take from cursor dragging. or dropped item into slot.
+                                val cursor = player.inventory.itemInMainHand
+                                val equipment = armorStand.equipment
+                                if (cursor.type == Material.AIR) equipment.setLeggings(cursor)
                                 // handleEquipmentSwap(ctx, player, armorStand, EquipmentSlot.LEGS)
                                 MoveResult.ALLOW
                             },
@@ -110,6 +114,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                         .from(armorStand.equipment.boots)
                         .asGuiItem(
                             GuiClickAction.movable { player, ctx ->
+
                                 // handleEquipmentSwap(ctx, player, armorStand, EquipmentSlot.FEET)
                                 MoveResult.ALLOW
                             },
