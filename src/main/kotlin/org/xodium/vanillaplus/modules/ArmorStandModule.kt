@@ -29,20 +29,20 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
         ) {
             return
         }
-        gui(event.rightClicked as ArmorStand).open(event.player)
+        val armorStand = event.rightClicked as ArmorStand
+        armorStand.gui().open(event.player)
         event.isCancelled = true
     }
 
     /**
      * Builds a GUI for interacting with an armor stand entity.
-     * @param armorStand The armor stand entity to create the GUI for.
      * @return A configured Gui instance ready to be displayed to players.
      */
-    private fun gui(armorStand: ArmorStand): Gui =
+    private fun ArmorStand.gui(): Gui =
         buildGui {
             containerType = chestContainer { rows = 6 }
             spamPreventionDuration = config.guiSpamPreventionDuration.seconds
-            title(armorStand.customName() ?: armorStand.name.mm())
+            title(customName() ?: name.mm())
             statelessComponent { component ->
                 // Filler slots
                 repeat(53) { slot ->
@@ -55,7 +55,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                 // Helmet slot
                 component[13] =
                     ItemBuilder
-                        .from(armorStand.equipment.helmet)
+                        .from(equipment.helmet)
                         .asGuiItem(
                             GuiClickAction.movable { _, ctx ->
                                 if (Tag.ITEMS_HEAD_ARMOR.isTagged(cursor.type)) equipment.setHelmet(cursor)
@@ -66,10 +66,10 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                 // Main Hand slot
                 component[21] =
                     ItemBuilder
-                        .from(armorStand.equipment.itemInMainHand)
+                        .from(equipment.itemInMainHand)
                         .asGuiItem(
                             GuiClickAction.movable { _, ctx ->
-                                if (cursor.type != Material.AIR) armorStand.equipment.setItemInMainHand(cursor)
+                                if (cursor.type != Material.AIR) equipment.setItemInMainHand(cursor)
                                 ctx.guiView.open()
                                 MoveResult.ALLOW
                             },
@@ -77,11 +77,11 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                 // Chestplate slot
                 component[22] =
                     ItemBuilder
-                        .from(armorStand.equipment.chestplate)
+                        .from(equipment.chestplate)
                         .asGuiItem(
                             GuiClickAction.movable { _, ctx ->
                                 if (Tag.ITEMS_CHEST_ARMOR.isTagged(cursor.type)) {
-                                    armorStand.equipment.setChestplate(
+                                    equipment.setChestplate(
                                         cursor,
                                     )
                                 }
@@ -92,10 +92,10 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                 // Offhand slot
                 component[23] =
                     ItemBuilder
-                        .from(armorStand.equipment.itemInOffHand)
+                        .from(equipment.itemInOffHand)
                         .asGuiItem(
                             GuiClickAction.movable { _, ctx ->
-                                if (cursor.type != Material.AIR) armorStand.equipment.setItemInOffHand(cursor)
+                                if (cursor.type != Material.AIR) equipment.setItemInOffHand(cursor)
                                 ctx.guiView.open()
                                 MoveResult.ALLOW
                             },
@@ -103,10 +103,10 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                 // Leggings slot
                 component[31] =
                     ItemBuilder
-                        .from(armorStand.equipment.leggings)
+                        .from(equipment.leggings)
                         .asGuiItem(
                             GuiClickAction.movable { _, ctx ->
-                                if (Tag.ITEMS_LEG_ARMOR.isTagged(cursor.type)) armorStand.equipment.setLeggings(cursor)
+                                if (Tag.ITEMS_LEG_ARMOR.isTagged(cursor.type)) equipment.setLeggings(cursor)
                                 ctx.guiView.open()
                                 MoveResult.ALLOW
                             },
@@ -114,10 +114,10 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                 // Boots slot
                 component[40] =
                     ItemBuilder
-                        .from(armorStand.equipment.boots)
+                        .from(equipment.boots)
                         .asGuiItem(
                             GuiClickAction.movable { _, ctx ->
-                                if (Tag.ITEMS_FOOT_ARMOR.isTagged(cursor.type)) armorStand.equipment.setBoots(cursor)
+                                if (Tag.ITEMS_FOOT_ARMOR.isTagged(cursor.type)) equipment.setBoots(cursor)
                                 ctx.guiView.open()
                                 MoveResult.ALLOW
                             },
@@ -125,10 +125,10 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                 // Arms toggling slot0
                 component[43] =
                     ItemBuilder
-                        .from(if (armorStand.hasArms()) Material.GREEN_WOOL else Material.RED_WOOL)
+                        .from(if (hasArms()) Material.GREEN_WOOL else Material.RED_WOOL)
                         .name(config.i18n.toggleArmsItemName.mm())
                         .asGuiItem { _, ctx ->
-                            armorStand.setArms(!armorStand.hasArms())
+                            setArms(!hasArms())
                             ctx.guiView.open()
                         }
             }
