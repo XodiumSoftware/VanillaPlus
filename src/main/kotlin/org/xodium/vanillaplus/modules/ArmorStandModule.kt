@@ -1,6 +1,5 @@
 package org.xodium.vanillaplus.modules
 
-import dev.triumphteam.gui.click.ClickContext
 import dev.triumphteam.gui.click.MoveResult
 import dev.triumphteam.gui.click.action.GuiClickAction
 import dev.triumphteam.gui.paper.Gui
@@ -8,11 +7,10 @@ import dev.triumphteam.gui.paper.builder.item.ItemBuilder
 import dev.triumphteam.gui.paper.kotlin.builder.buildGui
 import dev.triumphteam.gui.paper.kotlin.builder.chestContainer
 import org.bukkit.Material
+import org.bukkit.Tag
 import org.bukkit.entity.ArmorStand
-import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractAtEntityEvent
-import org.bukkit.inventory.EquipmentSlot
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
@@ -45,57 +43,69 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
             containerType = chestContainer { rows = 6 }
             spamPreventionDuration = config.guiSpamPreventionDuration.seconds
             title(armorStand.customName() ?: armorStand.name.mm())
-            statelessComponent {
+            statelessComponent { component ->
                 // Filler slots
                 repeat(53) { slot ->
-                    it[slot] =
+                    component[slot] =
                         ItemBuilder
                             .from(config.guiFillerMaterial)
                             .name(config.i18n.guiFillerItemName.mm())
                             .asGuiItem()
                 }
                 // Helmet slot
-                it[13] =
+                component[13] =
                     ItemBuilder
                         .from(armorStand.equipment.helmet)
                         .asGuiItem(
                             GuiClickAction.movable { player, ctx ->
-                                // handleEquipmentSwap(ctx, player, armorStand, EquipmentSlot.HEAD)
+                                val cursor = player.inventory.itemInMainHand
+                                val equipment = armorStand.equipment
+                                if (Tag.ITEMS_HEAD_ARMOR.isTagged(cursor.type)) equipment.setHelmet(cursor)
+                                ctx.guiView.open()
                                 MoveResult.ALLOW
                             },
                         )
                 // Main Hand slot
-                it[21] =
+                component[21] =
                     ItemBuilder
                         .from(armorStand.equipment.itemInMainHand)
                         .asGuiItem(
                             GuiClickAction.movable { player, ctx ->
-                                // handleEquipmentSwap(ctx, player, armorStand, EquipmentSlot.HAND)
+                                val cursor = player.inventory.itemInMainHand
+                                val equipment = armorStand.equipment
+                                if (cursor.type != Material.AIR) equipment.setItemInMainHand(cursor)
+                                ctx.guiView.open()
                                 MoveResult.ALLOW
                             },
                         )
                 // Chestplate slot
-                it[22] =
+                component[22] =
                     ItemBuilder
                         .from(armorStand.equipment.chestplate)
                         .asGuiItem(
                             GuiClickAction.movable { player, ctx ->
-                                // handleEquipmentSwap(ctx, player, armorStand, EquipmentSlot.CHEST)
+                                val cursor = player.inventory.itemInMainHand
+                                val equipment = armorStand.equipment
+                                if (Tag.ITEMS_CHEST_ARMOR.isTagged(cursor.type)) equipment.setChestplate(cursor)
+                                ctx.guiView.open()
                                 MoveResult.ALLOW
                             },
                         )
                 // Offhand slot
-                it[23] =
+                component[23] =
                     ItemBuilder
                         .from(armorStand.equipment.itemInOffHand)
                         .asGuiItem(
                             GuiClickAction.movable { player, ctx ->
-                                // handleEquipmentSwap(ctx, player, armorStand, EquipmentSlot.OFF_HAND)
+                                val cursor = player.inventory.itemInMainHand
+                                val equipment = armorStand.equipment
+                                if (cursor.type != Material.AIR) equipment.setItemInOffHand(cursor)
+                                ctx.guiView.open()
                                 MoveResult.ALLOW
                             },
                         )
                 // Leggings slot
-                it[31] =
+                component[31] =
                     ItemBuilder
                         .from(armorStand.equipment.leggings)
                         .asGuiItem(
@@ -103,24 +113,26 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                                 // TODO: dont take from main hand instead take from cursor dragging. or dropped item into slot.
                                 val cursor = player.inventory.itemInMainHand
                                 val equipment = armorStand.equipment
-                                if (cursor.type == Material.AIR) equipment.setLeggings(cursor)
-                                // handleEquipmentSwap(ctx, player, armorStand, EquipmentSlot.LEGS)
+                                if (Tag.ITEMS_LEG_ARMOR.isTagged(cursor.type)) equipment.setLeggings(cursor)
+                                ctx.guiView.open()
                                 MoveResult.ALLOW
                             },
                         )
                 // Boots slot
-                it[40] =
+                component[40] =
                     ItemBuilder
                         .from(armorStand.equipment.boots)
                         .asGuiItem(
                             GuiClickAction.movable { player, ctx ->
-
-                                // handleEquipmentSwap(ctx, player, armorStand, EquipmentSlot.FEET)
+                                val cursor = player.inventory.itemInMainHand
+                                val equipment = armorStand.equipment
+                                if (Tag.ITEMS_FOOT_ARMOR.isTagged(cursor.type)) equipment.setBoots(cursor)
+                                ctx.guiView.open()
                                 MoveResult.ALLOW
                             },
                         )
                 // Arms toggling slot0
-                it[43] =
+                component[43] =
                     ItemBuilder
                         .from(if (armorStand.hasArms()) Material.GREEN_WOOL else Material.RED_WOOL)
                         .name(config.i18n.toggleArmsItemName.mm())
@@ -130,46 +142,6 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                         }
             }
         }
-
-    // TODO: make it so when dropped into the slot it wills set() and when picked up it will unset()
-
-    /**
-     * TODO
-     */
-    private fun handleEquipmentSwap(
-        ctx: ClickContext,
-        player: Player,
-        armorStand: ArmorStand,
-        slot: EquipmentSlot,
-    ) {
-        val equipment = armorStand.equipment
-        val playerInventory = player.inventory
-        val cursorItem = playerInventory.itemInMainHand
-
-        val standItem =
-            when (slot) {
-                EquipmentSlot.HEAD -> equipment.helmet
-                EquipmentSlot.CHEST -> equipment.chestplate
-                EquipmentSlot.LEGS -> equipment.leggings
-                EquipmentSlot.FEET -> equipment.boots
-                EquipmentSlot.HAND -> equipment.itemInMainHand
-                EquipmentSlot.OFF_HAND -> equipment.itemInOffHand
-                else -> return
-            }
-
-        when (slot) {
-            EquipmentSlot.HEAD -> equipment.setHelmet(cursorItem)
-            EquipmentSlot.CHEST -> equipment.setChestplate(cursorItem)
-            EquipmentSlot.LEGS -> equipment.setLeggings(cursorItem)
-            EquipmentSlot.FEET -> equipment.setBoots(cursorItem)
-            EquipmentSlot.HAND -> equipment.setItemInMainHand(cursorItem)
-            EquipmentSlot.OFF_HAND -> equipment.setItemInOffHand(cursorItem)
-            else -> return
-        }
-
-        playerInventory.setItemInMainHand(standItem)
-        ctx.guiView.open()
-    }
 
     data class Config(
         override var enabled: Boolean = true,
