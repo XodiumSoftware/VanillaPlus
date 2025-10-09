@@ -1,20 +1,11 @@
 package org.xodium.vanillaplus.modules
 
-import dev.triumphteam.gui.click.MoveResult
-import dev.triumphteam.gui.click.action.GuiClickAction
-import dev.triumphteam.gui.paper.Gui
-import dev.triumphteam.gui.paper.builder.item.ItemBuilder
-import dev.triumphteam.gui.paper.kotlin.builder.buildGui
-import dev.triumphteam.gui.paper.kotlin.builder.chestContainer
 import org.bukkit.Material
-import org.bukkit.Tag
 import org.bukkit.entity.ArmorStand
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractAtEntityEvent
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
-import kotlin.time.Duration.Companion.seconds
 
 /** Represents a module handling armor stand mechanics within the system. */
 internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
@@ -29,110 +20,112 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
         ) {
             return
         }
-        val armorStand = event.rightClicked as ArmorStand
-        armorStand.gui().open(event.player)
+//        val armorStand = event.rightClicked as ArmorStand
+//        armorStand.gui().open(event.player)
         event.isCancelled = true
     }
 
-    /**
-     * Builds a GUI for interacting with an armor stand entity.
-     * @return A configured Gui instance ready to be displayed to players.
-     */
-    private fun ArmorStand.gui(): Gui =
-        buildGui {
-            containerType = chestContainer { rows = 6 }
-            spamPreventionDuration = config.guiSpamPreventionDuration.seconds
-            title(customName() ?: name.mm())
-            statelessComponent { component ->
-                // Filler slots
-                repeat(53) { slot ->
-                    component[slot] =
-                        ItemBuilder
-                            .from(config.guiFillerMaterial)
-                            .name(config.i18n.guiFillerItemName.mm())
-                            .asGuiItem()
-                }
-                // Helmet slot
-                component[13] =
-                    ItemBuilder
-                        .from(equipment.helmet)
-                        .asGuiItem(
-                            GuiClickAction.movable { _, ctx ->
-                                if (Tag.ITEMS_HEAD_ARMOR.isTagged(cursor.type)) equipment.setHelmet(cursor)
-                                ctx.guiView.open()
-                                MoveResult.ALLOW
-                            },
-                        )
-                // Main Hand slot
-                component[21] =
-                    ItemBuilder
-                        .from(equipment.itemInMainHand)
-                        .asGuiItem(
-                            GuiClickAction.movable { _, ctx ->
-                                if (cursor.type != Material.AIR) equipment.setItemInMainHand(cursor)
-                                ctx.guiView.open()
-                                MoveResult.ALLOW
-                            },
-                        )
-                // Chestplate slot
-                component[22] =
-                    ItemBuilder
-                        .from(equipment.chestplate)
-                        .asGuiItem(
-                            GuiClickAction.movable { _, ctx ->
-                                if (Tag.ITEMS_CHEST_ARMOR.isTagged(cursor.type)) {
-                                    equipment.setChestplate(
-                                        cursor,
-                                    )
-                                }
-                                ctx.guiView.open()
-                                MoveResult.ALLOW
-                            },
-                        )
-                // Offhand slot
-                component[23] =
-                    ItemBuilder
-                        .from(equipment.itemInOffHand)
-                        .asGuiItem(
-                            GuiClickAction.movable { _, ctx ->
-                                if (cursor.type != Material.AIR) equipment.setItemInOffHand(cursor)
-                                ctx.guiView.open()
-                                MoveResult.ALLOW
-                            },
-                        )
-                // Leggings slot
-                component[31] =
-                    ItemBuilder
-                        .from(equipment.leggings)
-                        .asGuiItem(
-                            GuiClickAction.movable { _, ctx ->
-                                if (Tag.ITEMS_LEG_ARMOR.isTagged(cursor.type)) equipment.setLeggings(cursor)
-                                ctx.guiView.open()
-                                MoveResult.ALLOW
-                            },
-                        )
-                // Boots slot
-                component[40] =
-                    ItemBuilder
-                        .from(equipment.boots)
-                        .asGuiItem(
-                            GuiClickAction.movable { _, ctx ->
-                                if (Tag.ITEMS_FOOT_ARMOR.isTagged(cursor.type)) equipment.setBoots(cursor)
-                                ctx.guiView.open()
-                                MoveResult.ALLOW
-                            },
-                        )
-                // Arms toggling slot0
-                component[43] =
-                    ItemBuilder
-                        .from(if (hasArms()) Material.GREEN_WOOL else Material.RED_WOOL)
-                        .name(config.i18n.toggleArmsItemName.mm())
-                        .asGuiItem { _, ctx ->
-                            setArms(!hasArms())
-                            ctx.guiView.open()
-                        }
-            }
-        }
+    private fun gui(): Interface<*> {}
+
+//    /**
+//     * Builds a GUI for interacting with an armor stand entity.
+//     * @return A configured Gui instance ready to be displayed to players.
+//     */
+//    private fun ArmorStand.gui(): Gui =
+//        buildGui {
+//            containerType = chestContainer { rows = 6 }
+//            spamPreventionDuration = config.guiSpamPreventionDuration.seconds
+//            title(customName() ?: name.mm())
+//            statelessComponent { component ->
+//                // Filler slots
+//                repeat(53) { slot ->
+//                    component[slot] =
+//                        ItemBuilder
+//                            .from(config.guiFillerMaterial)
+//                            .name(config.i18n.guiFillerItemName.mm())
+//                            .asGuiItem()
+//                }
+//                // Helmet slot
+//                component[13] =
+//                    ItemBuilder
+//                        .from(equipment.helmet)
+//                        .asGuiItem(
+//                            GuiClickAction.movable { _, ctx ->
+//                                if (Tag.ITEMS_HEAD_ARMOR.isTagged(cursor.type)) equipment.setHelmet(cursor)
+//                                ctx.guiView.open()
+//                                MoveResult.ALLOW
+//                            },
+//                        )
+//                // Main Hand slot
+//                component[21] =
+//                    ItemBuilder
+//                        .from(equipment.itemInMainHand)
+//                        .asGuiItem(
+//                            GuiClickAction.movable { _, ctx ->
+//                                if (cursor.type != Material.AIR) equipment.setItemInMainHand(cursor)
+//                                ctx.guiView.open()
+//                                MoveResult.ALLOW
+//                            },
+//                        )
+//                // Chestplate slot
+//                component[22] =
+//                    ItemBuilder
+//                        .from(equipment.chestplate)
+//                        .asGuiItem(
+//                            GuiClickAction.movable { _, ctx ->
+//                                if (Tag.ITEMS_CHEST_ARMOR.isTagged(cursor.type)) {
+//                                    equipment.setChestplate(
+//                                        cursor,
+//                                    )
+//                                }
+//                                ctx.guiView.open()
+//                                MoveResult.ALLOW
+//                            },
+//                        )
+//                // Offhand slot
+//                component[23] =
+//                    ItemBuilder
+//                        .from(equipment.itemInOffHand)
+//                        .asGuiItem(
+//                            GuiClickAction.movable { _, ctx ->
+//                                if (cursor.type != Material.AIR) equipment.setItemInOffHand(cursor)
+//                                ctx.guiView.open()
+//                                MoveResult.ALLOW
+//                            },
+//                        )
+//                // Leggings slot
+//                component[31] =
+//                    ItemBuilder
+//                        .from(equipment.leggings)
+//                        .asGuiItem(
+//                            GuiClickAction.movable { _, ctx ->
+//                                if (Tag.ITEMS_LEG_ARMOR.isTagged(cursor.type)) equipment.setLeggings(cursor)
+//                                ctx.guiView.open()
+//                                MoveResult.ALLOW
+//                            },
+//                        )
+//                // Boots slot
+//                component[40] =
+//                    ItemBuilder
+//                        .from(equipment.boots)
+//                        .asGuiItem(
+//                            GuiClickAction.movable { _, ctx ->
+//                                if (Tag.ITEMS_FOOT_ARMOR.isTagged(cursor.type)) equipment.setBoots(cursor)
+//                                ctx.guiView.open()
+//                                MoveResult.ALLOW
+//                            },
+//                        )
+//                // Arms toggling slot0
+//                component[43] =
+//                    ItemBuilder
+//                        .from(if (hasArms()) Material.GREEN_WOOL else Material.RED_WOOL)
+//                        .name(config.i18n.toggleArmsItemName.mm())
+//                        .asGuiItem { _, ctx ->
+//                            setArms(!hasArms())
+//                            ctx.guiView.open()
+//                        }
+//            }
+//        }
 
     data class Config(
         override var enabled: Boolean = true,
