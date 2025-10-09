@@ -1,19 +1,7 @@
 @file:Suppress("ktlint:standard:no-wildcard-imports")
 
+import xyz.jpenilla.resourcefactory.paper.PaperPluginYaml
 import xyz.jpenilla.runtask.task.AbstractRun
-import java.util.*
-
-val pluginYmlFile = file("src/main/resources/paper-plugin.yml")
-val pluginProperties = Properties().apply { pluginYmlFile.inputStream().use { load(it) } }
-
-fun getPluginProperty(key: String): String =
-    pluginProperties.getProperty(key)
-        ?: error("'$key' not found in paper-plugin.yml")
-
-val pluginVersion = getPluginProperty("version")
-val pluginDescription = getPluginProperty("description")
-val mainClass = getPluginProperty("main")
-val pluginGroup = mainClass.substringBeforeLast('.')
 
 plugins {
     id("java")
@@ -21,11 +9,12 @@ plugins {
     kotlin("jvm") version "2.2.20"
     id("com.gradleup.shadow") version "9.2.2"
     id("xyz.jpenilla.run-paper") version "3.0.1"
+    id("xyz.jpenilla.resource-factory-paper-convention") version "1.3.1"
 }
 
-group = pluginGroup
-version = if (project.hasProperty("buildVersion")) project.property("buildVersion")!! else pluginVersion
-description = pluginDescription
+group = "org.xodium.vanillaplus.VanillaPlus"
+version = "1.21.10"
+description = "Minecraft plugin that enhances the base gameplay"
 
 repositories {
     mavenCentral()
@@ -35,10 +24,10 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:$pluginVersion-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:$version-R0.1-SNAPSHOT")
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.16") // TODO("Move away from WorldEdit")
 
-    implementation(kotlin("stdlib-jdk8"))
+    implementation(kotlin("stdlib"))
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.20.0")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.0")
@@ -55,19 +44,28 @@ java {
     }
 }
 
-idea { module { excludeDirs.add(file("run")) } }
+idea { module { excludeDirs.addAll(files("run", ".kotlin")) } }
 
 tasks {
     shadowJar {
         dependsOn(processResources)
         archiveClassifier.set("")
         destinationDirectory.set(layout.projectDirectory.dir("build/libs"))
-        relocate("com.fasterxml.jackson", "$pluginGroup.jackson")
-        relocate("dev.triumphteam.gui", "$pluginGroup.gui")
+        relocate("com.fasterxml.jackson", "$group.jackson")
+        relocate("dev.triumphteam.gui", "$group.gui")
         minimize { exclude(dependency("org.jetbrains.kotlin:kotlin-reflect:.*")) }
     }
     jar { enabled = false }
-    runServer { minecraftVersion(pluginVersion) }
+    runServer { minecraftVersion(version.toString()) }
     withType<JavaCompile> { options.encoding = "UTF-8" }
     withType(AbstractRun::class) { jvmArgs("-XX:+AllowEnhancedClassRedefinition") }
+}
+
+paperPluginYaml {
+    main.set(group.toString())
+    authors.add("Xodium")
+    apiVersion.set(version)
+    dependencies {
+        server(name = "WorldEdit", load = PaperPluginYaml.Load.BEFORE, required = true, joinClasspath = true)
+    }
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module external.linked.project.id="VanillaPlus:main" external.linked.project.path="$MODULE_DIR$/../.." external.root.project.path="$MODULE_DIR$/../.." external.system.id="GRADLE" external.system.module.group="org.xodium.vanillaplus" external.system.module.type="sourceSet" external.system.module.version="1.21.10" type="JAVA_MODULE" version="4">
+<module external.linked.project.id="VanillaPlus:main" external.linked.project.path="$MODULE_DIR$/../.." external.root.project.path="$MODULE_DIR$/../.." external.system.id="GRADLE" external.system.module.group="org.xodium.vanillaplus.VanillaPlus" external.system.module.type="sourceSet" external.system.module.version="1.21.10" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet type="minecraft" name="Minecraft">
       <configuration>
@@ -11,7 +11,7 @@
       </configuration>
     </facet>
     <facet external-system-id="GRADLE" type="kotlin-language" name="Kotlin">
-      <configuration version="5" platform="JVM 21" allPlatforms="JVM [21]" useProjectSettings="false" pureKotlinSourceFolders="C:\Users\admin\Documents\Projects\VanillaPlus\src\main\kotlin;C:\Users\admin\Documents\Projects\VanillaPlus\src\test\kotlin">
+      <configuration version="5" platform="JVM 21" allPlatforms="JVM [21]" useProjectSettings="false" pureKotlinSourceFolders="$MODULE_DIR$/../../src/test/kotlin;/media/hdd/JetBrains/Projects/VanillaPlus/src/main/kotlin">
         <compilerSettings />
         <compilerArguments>
           <flagArguments>
@@ -45,6 +45,9 @@
   <component name="NewModuleRootManager">
     <output url="file://$MODULE_DIR$/../../build/classes/kotlin/main" />
     <exclude-output />
+    <content url="file://$MODULE_DIR$/../../build/generated/resourceFactory/main">
+      <sourceFolder url="file://$MODULE_DIR$/../../build/generated/resourceFactory/main" type="java-resource" />
+    </content>
     <content url="file://$MODULE_DIR$/../../src/main">
       <sourceFolder url="file://$MODULE_DIR$/../../src/main/kotlin" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../src/main/resources" type="java-resource" />
@@ -57,7 +60,7 @@
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.module:jackson-module-kotlin:2.20.0" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-reflect:2.2.20" level="project" />
     <orderEntry type="library" name="Gradle: dev.triumphteam:triumph-gui-paper-kotlin:4.0.0-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.2.20" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:2.2.20" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: com.google.guava:guava:33.3.1-jre" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: net.md-5:bungeecord-chat:1.21-R0.2-deprecated+build.21" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: net.kyori:adventure-text-logger-slf4j:4.25.0" level="project" />
@@ -81,10 +84,9 @@
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.20.0" level="project" />
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.20.0" level="project" />
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.20" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:2.2.20" level="project" />
     <orderEntry type="library" name="Gradle: dev.triumphteam:triumph-gui-kotlin:4.0.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Gradle: dev.triumphteam:triumph-gui-paper:4.0.0-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.2.20" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.jetbrains:annotations:26.0.2-1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: com.google.guava:failureaccess:1.0.2" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: com.google.code.findbugs:jsr305:3.0.2" level="project" />
@@ -93,7 +95,6 @@
     <orderEntry type="library" scope="PROVIDED" name="Gradle: net.kyori:adventure-key:4.25.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: net.kyori:examination-string:1.3.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: net.kyori:examination-api:1.3.0" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.jetbrains:annotations:26.0.2-1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: net.kyori:adventure-text-serializer-json:4.25.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: com.google.auto.service:auto-service-annotations:1.1.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: org.apache.maven.resolver:maven-resolver-impl:1.9.18" level="project" />

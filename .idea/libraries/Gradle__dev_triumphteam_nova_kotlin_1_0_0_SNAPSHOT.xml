@@ -5,6 +5,8 @@
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/dev.triumphteam/nova-kotlin/1.0.0-SNAPSHOT/da4589a32d3572ec7ebf94c1957db75bd605f12c/nova-kotlin-1.0.0-SNAPSHOT.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/dev.triumphteam/nova-kotlin/1.0.0-SNAPSHOT/2893e5f12d1d45f85457f0929c4d7d6eedbadccc/nova-kotlin-1.0.0-SNAPSHOT-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>
