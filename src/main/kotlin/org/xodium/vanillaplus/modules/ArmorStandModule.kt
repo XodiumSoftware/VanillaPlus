@@ -61,6 +61,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                                 val cursor = player.inventory.itemInMainHand
                                 val equipment = armorStand.equipment
                                 if (Tag.ITEMS_HEAD_ARMOR.isTagged(cursor.type)) equipment.setHelmet(cursor)
+                                player.inventory.setItemInMainHand(equipment.helmet)
                                 ctx.guiView.open()
                                 MoveResult.ALLOW
                             },
@@ -74,6 +75,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                                 val cursor = player.inventory.itemInMainHand
                                 val equipment = armorStand.equipment
                                 if (cursor.type != Material.AIR) equipment.setItemInMainHand(cursor)
+                                player.inventory.setItemInMainHand(equipment.itemInMainHand)
                                 ctx.guiView.open()
                                 MoveResult.ALLOW
                             },
@@ -87,6 +89,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                                 val cursor = player.inventory.itemInMainHand
                                 val equipment = armorStand.equipment
                                 if (Tag.ITEMS_CHEST_ARMOR.isTagged(cursor.type)) equipment.setChestplate(cursor)
+                                player.inventory.setItemInMainHand(equipment.chestplate)
                                 ctx.guiView.open()
                                 MoveResult.ALLOW
                             },
@@ -100,6 +103,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                                 val cursor = player.inventory.itemInMainHand
                                 val equipment = armorStand.equipment
                                 if (cursor.type != Material.AIR) equipment.setItemInOffHand(cursor)
+                                player.inventory.setItemInMainHand(equipment.itemInOffHand)
                                 ctx.guiView.open()
                                 MoveResult.ALLOW
                             },
@@ -114,6 +118,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                                 val cursor = player.inventory.itemInMainHand
                                 val equipment = armorStand.equipment
                                 if (Tag.ITEMS_LEG_ARMOR.isTagged(cursor.type)) equipment.setLeggings(cursor)
+                                player.inventory.setItemInMainHand(equipment.leggings)
                                 ctx.guiView.open()
                                 MoveResult.ALLOW
                             },
@@ -127,6 +132,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                                 val cursor = player.inventory.itemInMainHand
                                 val equipment = armorStand.equipment
                                 if (Tag.ITEMS_FOOT_ARMOR.isTagged(cursor.type)) equipment.setBoots(cursor)
+                                player.inventory.setItemInMainHand(equipment.boots)
                                 ctx.guiView.open()
                                 MoveResult.ALLOW
                             },
