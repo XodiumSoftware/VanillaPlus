@@ -40,7 +40,7 @@ java {
     }
 }
 
-idea { module { excludeDirs.add(file("run")) } }
+idea { module { excludeDirs.addAll(files("run", ".kotlin")) } }
 
 tasks {
     shadowJar {
