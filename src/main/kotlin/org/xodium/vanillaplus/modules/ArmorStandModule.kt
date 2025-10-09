@@ -57,11 +57,8 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                     ItemBuilder
                         .from(armorStand.equipment.helmet)
                         .asGuiItem(
-                            GuiClickAction.movable { player, ctx ->
-                                val cursor = player.inventory.itemInMainHand
-                                val equipment = armorStand.equipment
+                            GuiClickAction.movable { _, ctx ->
                                 if (Tag.ITEMS_HEAD_ARMOR.isTagged(cursor.type)) equipment.setHelmet(cursor)
-                                player.inventory.setItemInMainHand(equipment.helmet)
                                 ctx.guiView.open()
                                 MoveResult.ALLOW
                             },
@@ -71,11 +68,8 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                     ItemBuilder
                         .from(armorStand.equipment.itemInMainHand)
                         .asGuiItem(
-                            GuiClickAction.movable { player, ctx ->
-                                val cursor = player.inventory.itemInMainHand
-                                val equipment = armorStand.equipment
-                                if (cursor.type != Material.AIR) equipment.setItemInMainHand(cursor)
-                                player.inventory.setItemInMainHand(equipment.itemInMainHand)
+                            GuiClickAction.movable { _, ctx ->
+                                if (cursor.type != Material.AIR) armorStand.equipment.setItemInMainHand(cursor)
                                 ctx.guiView.open()
                                 MoveResult.ALLOW
                             },
@@ -85,11 +79,12 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                     ItemBuilder
                         .from(armorStand.equipment.chestplate)
                         .asGuiItem(
-                            GuiClickAction.movable { player, ctx ->
-                                val cursor = player.inventory.itemInMainHand
-                                val equipment = armorStand.equipment
-                                if (Tag.ITEMS_CHEST_ARMOR.isTagged(cursor.type)) equipment.setChestplate(cursor)
-                                player.inventory.setItemInMainHand(equipment.chestplate)
+                            GuiClickAction.movable { _, ctx ->
+                                if (Tag.ITEMS_CHEST_ARMOR.isTagged(cursor.type)) {
+                                    armorStand.equipment.setChestplate(
+                                        cursor,
+                                    )
+                                }
                                 ctx.guiView.open()
                                 MoveResult.ALLOW
                             },
@@ -99,11 +94,8 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                     ItemBuilder
                         .from(armorStand.equipment.itemInOffHand)
                         .asGuiItem(
-                            GuiClickAction.movable { player, ctx ->
-                                val cursor = player.inventory.itemInMainHand
-                                val equipment = armorStand.equipment
-                                if (cursor.type != Material.AIR) equipment.setItemInOffHand(cursor)
-                                player.inventory.setItemInMainHand(equipment.itemInOffHand)
+                            GuiClickAction.movable { _, ctx ->
+                                if (cursor.type != Material.AIR) armorStand.equipment.setItemInOffHand(cursor)
                                 ctx.guiView.open()
                                 MoveResult.ALLOW
                             },
@@ -113,12 +105,8 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                     ItemBuilder
                         .from(armorStand.equipment.leggings)
                         .asGuiItem(
-                            GuiClickAction.movable { player, ctx ->
-                                // TODO: dont take from main hand instead take from cursor dragging. or dropped item into slot.
-                                val cursor = player.inventory.itemInMainHand
-                                val equipment = armorStand.equipment
-                                if (Tag.ITEMS_LEG_ARMOR.isTagged(cursor.type)) equipment.setLeggings(cursor)
-                                player.inventory.setItemInMainHand(equipment.leggings)
+                            GuiClickAction.movable { _, ctx ->
+                                if (Tag.ITEMS_LEG_ARMOR.isTagged(cursor.type)) armorStand.equipment.setLeggings(cursor)
                                 ctx.guiView.open()
                                 MoveResult.ALLOW
                             },
@@ -128,11 +116,8 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                     ItemBuilder
                         .from(armorStand.equipment.boots)
                         .asGuiItem(
-                            GuiClickAction.movable { player, ctx ->
-                                val cursor = player.inventory.itemInMainHand
-                                val equipment = armorStand.equipment
-                                if (Tag.ITEMS_FOOT_ARMOR.isTagged(cursor.type)) equipment.setBoots(cursor)
-                                player.inventory.setItemInMainHand(equipment.boots)
+                            GuiClickAction.movable { _, ctx ->
+                                if (Tag.ITEMS_FOOT_ARMOR.isTagged(cursor.type)) armorStand.equipment.setBoots(cursor)
                                 ctx.guiView.open()
                                 MoveResult.ALLOW
                             },
