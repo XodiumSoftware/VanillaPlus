@@ -14,8 +14,10 @@ import org.incendo.interfaces.paper.PlayerViewer
 import org.incendo.interfaces.paper.type.ChestInterface
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.ExtUtils.lore
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.name
+import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 
 /** Represents a module handling armor stand mechanics within the system. */
@@ -128,7 +130,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
             }
             // Nametag toggling slot
             withTransform { view ->
-                view[1, 4] =
+                view[7, 1] =
                     ItemStack
                         .of(if (isCustomNameVisible) Material.GREEN_WOOL else Material.RED_WOOL)
                         .name(config.i18n.toggleNameTagItemName)
@@ -141,7 +143,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
             }
             // Arms toggling slot
             withTransform { view ->
-                view[7, 4] =
+                view[7, 2] =
                     ItemStack
                         .of(if (hasArms()) Material.GREEN_WOOL else Material.RED_WOOL)
                         .name(config.i18n.toggleArmsItemName)
@@ -154,7 +156,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
             }
             // BasePlate toggling slot
             withTransform { view ->
-                view[6, 4] =
+                view[7, 4] =
                     ItemStack
                         .of(if (hasBasePlate()) Material.GREEN_WOOL else Material.RED_WOOL)
                         .name(config.i18n.toggleBasePlateItemName)
@@ -167,7 +169,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
             }
             // Size toggling slot
             withTransform { view ->
-                view[2, 4] =
+                view[7, 3] =
                     ItemStack
                         .of(if (!isSmall) Material.GREEN_WOOL else Material.RED_WOOL)
                         .name(config.i18n.toggleSizeItemName)
@@ -177,6 +179,15 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                                 it.view().update()
                             },
                         )
+            }
+            // More options slot
+            withTransform { view ->
+                view[1, 4] =
+                    ItemStack
+                        .of(Material.ARMOR_STAND)
+                        .name(config.i18n.moreOptionsItemName)
+                        .lore(listOf("COMING SOON".fireFmt()))
+                        .asElement(ClickHandler.cancel())
             }
         }
 
@@ -191,6 +202,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
             var toggleNameTagItemName: String = "Toggle Name Tag".mangoFmt(),
             var toggleBasePlateItemName: String = "Toggle Base Plate".mangoFmt(),
             var toggleSizeItemName: String = "Toggle Size".mangoFmt(),
+            var moreOptionsItemName: String = "More Options".mangoFmt(),
         )
     }
 }

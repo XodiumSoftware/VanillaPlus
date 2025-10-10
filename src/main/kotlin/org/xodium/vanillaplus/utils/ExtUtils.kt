@@ -18,6 +18,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.VanillaPlus
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.utils.ExtUtils.lore
 import org.xodium.vanillaplus.utils.ExtUtils.name
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
@@ -222,4 +223,12 @@ internal object ExtUtils {
      * @see DataComponentTypes.CUSTOM_NAME
      */
     fun ItemStack.name(name: String): ItemStack = apply { setData(DataComponentTypes.CUSTOM_NAME, name.mm()) }
+
+    /**
+     * Sets custom lore for the ItemStack.
+     * @param lore the ItemLore to be set as the custom lore for this ItemStack.
+     * @return the modified ItemStack instance (`this`) with the new lore applied.
+     * @see DataComponentTypes.LORE
+     */
+    fun ItemStack.lore(lore: List<String>): ItemStack = apply { setData(DataComponentTypes.LORE, ItemLore.lore(lore.mm())) }
 }
