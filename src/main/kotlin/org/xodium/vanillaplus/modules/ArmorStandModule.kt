@@ -68,6 +68,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                     equipment.helmet.asElement(
                         ClickHandler.canceling {
                             if (it.cause().isLeftClick) it.cancel(false)
+                            it.view().update()
                             val item =
                                 it
                                     .view()
@@ -85,6 +86,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                     equipment.itemInMainHand.asElement(
                         ClickHandler.canceling {
                             if (it.cause().isLeftClick) it.cancel(false)
+                            it.view().update()
                             val item =
                                 it
                                     .view()
@@ -102,6 +104,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                     equipment.chestplate.asElement(
                         ClickHandler.canceling {
                             if (it.cause().isLeftClick) it.cancel(false)
+                            it.view().update()
                             val item =
                                 it
                                     .view()
@@ -119,6 +122,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                     equipment.itemInOffHand.asElement(
                         ClickHandler.canceling {
                             if (it.cause().isLeftClick) it.cancel(false)
+                            it.view().update()
                             val item =
                                 it
                                     .view()
@@ -136,6 +140,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                     equipment.leggings.asElement(
                         ClickHandler.canceling {
                             if (it.cause().isLeftClick) it.cancel(false)
+                            it.view().update()
                             val item =
                                 it
                                     .view()
@@ -153,6 +158,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                     equipment.boots.asElement(
                         ClickHandler.canceling {
                             if (it.cause().isLeftClick) it.cancel(false)
+                            it.view().update()
                             val item =
                                 it
                                     .view()
