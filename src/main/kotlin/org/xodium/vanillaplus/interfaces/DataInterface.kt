@@ -5,9 +5,12 @@ package org.xodium.vanillaplus.interfaces
 import com.fasterxml.jackson.annotation.JsonAutoDetect
 import com.fasterxml.jackson.annotation.PropertyAccessor
 import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.json.JsonMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.utils.ExtUtils.toSnakeCase
 import java.io.IOException
@@ -22,11 +25,16 @@ interface DataInterface<T : Any> {
     val dataClass: KClass<T>
     val cache: MutableMap<UUID, T>
 
-    val mapper: ObjectMapper
+    val jsonMapper: ObjectMapper
         get() =
-            jacksonObjectMapper()
+            JsonMapper
+                .builder()
+                .addModule(KotlinModule.Builder().build())
+                .addModule(JavaTimeModule())
                 .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
                 .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+                .configure(MapperFeature.PROPAGATE_TRANSIENT_MARKER, true)
+                .build()
                 .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
 
     private val fileName: String
@@ -40,8 +48,8 @@ interface DataInterface<T : Any> {
         if (filePath.toFile().exists()) {
             try {
                 cache.clear()
-                val type = mapper.typeFactory.constructMapType(Map::class.java, UUID::class.java, dataClass.java)
-                val rawMap: Map<UUID, T> = mapper.readValue(filePath.toFile(), type)
+                val type = jsonMapper.typeFactory.constructMapType(Map::class.java, UUID::class.java, dataClass.java)
+                val rawMap: Map<UUID, T> = jsonMapper.readValue(filePath.toFile(), type)
                 cache.putAll(rawMap)
                 save()
             } catch (e: IOException) {
@@ -57,7 +65,7 @@ interface DataInterface<T : Any> {
             Runnable {
                 try {
                     filePath.parent.createDirectories()
-                    filePath.writeText(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(cache))
+                    filePath.writeText(jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsString(cache))
                 } catch (e: IOException) {
                     instance.logger.severe("Failed to write ${dataClass.simpleName} to file: ${e.message}")
                 }
