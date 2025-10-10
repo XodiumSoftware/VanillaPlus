@@ -63,6 +63,6 @@ paperPluginYaml {
     authors.add("Xodium")
     apiVersion.set(version)
     dependencies {
-        server(name = "WorldEdit", load = PaperPluginYaml.Load.BEFORE, required = true, joinClasspath = true)
+        server(name = "WorldEdit", load = PaperPluginYaml.Load.BEFORE, required = false, joinClasspath = true)
     }
 }
