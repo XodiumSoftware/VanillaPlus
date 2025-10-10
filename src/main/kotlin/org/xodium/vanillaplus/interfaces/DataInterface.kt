@@ -15,16 +15,16 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.utils.ExtUtils.toSnakeCase
 import java.io.IOException
 import java.nio.file.Path
-import java.util.*
 import kotlin.io.path.createDirectories
 import kotlin.io.path.writeText
 import kotlin.reflect.KClass
 
 /** Represents a contract for data within the system. */
-interface DataInterface<T : Any> {
+interface DataInterface<K, T : Any> {
     val dataClass: KClass<T>
-    val cache: MutableMap<UUID, T>
-
+    val cache: MutableMap<K, T>
+    val fileName: String
+        get() = "${dataClass.simpleName?.toSnakeCase()}.json"
     val jsonMapper: ObjectMapper
         get() =
             JsonMapper
@@ -37,10 +37,7 @@ interface DataInterface<T : Any> {
                 .build()
                 .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
 
-    private val fileName: String
-        get() = "${dataClass.simpleName?.toSnakeCase() ?: "error"}.json"
-
-    private val filePath: Path
+    val filePath: Path
         get() = instance.dataFolder.toPath().resolve(fileName)
 
     /** Initializes the cache and loads existing data from the file. */
@@ -48,8 +45,8 @@ interface DataInterface<T : Any> {
         if (filePath.toFile().exists()) {
             try {
                 cache.clear()
-                val type = jsonMapper.typeFactory.constructMapType(Map::class.java, UUID::class.java, dataClass.java)
-                val rawMap: Map<UUID, T> = jsonMapper.readValue(filePath.toFile(), type)
+                val type = jsonMapper.typeFactory.constructMapType(cache::class.java, Any::class.java, dataClass.java)
+                val rawMap: Map<K, T> = jsonMapper.readValue(filePath.toFile(), type)
                 cache.putAll(rawMap)
                 save()
             } catch (e: IOException) {
@@ -78,9 +75,14 @@ interface DataInterface<T : Any> {
      * @param key the UUID key whose associated value is to be returned.
      * @return the value associated with the specified key, or `null` if no mapping exists.
      */
-    fun get(key: UUID): T? {
+    fun get(key: K): T? {
         if (!cache.containsKey(key) && filePath.toFile().exists()) load()
         return cache[key]
+    }
+
+    fun getAll(): Map<K, T> {
+        if (cache.isEmpty() && filePath.toFile().exists()) load()
+        return cache
     }
 
     /**
@@ -89,10 +91,16 @@ interface DataInterface<T : Any> {
      * @param data the value to be associated with the specified key.
      */
     fun set(
-        key: UUID,
+        key: K,
         data: T,
     ) {
         cache[key] = data
+        save()
+    }
+
+    fun setAll(data: Map<K, T>) {
+        cache.clear()
+        cache.putAll(data)
         save()
     }
 }
