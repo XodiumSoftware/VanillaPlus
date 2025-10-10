@@ -12,6 +12,7 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.modules.*
+import org.xodium.vanillaplus.utils.ExtUtils.key
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.prefix
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
@@ -144,7 +145,7 @@ internal object ModuleManager {
         }
 
         modules.forEach { module ->
-            val configKey = getConfigKey(module)
+            val configKey = module.key()
             allConfigs[configKey]?.let { savedConfig ->
                 try {
                     ConfigManager.jsonMapper
@@ -161,11 +162,4 @@ internal object ModuleManager {
 
         ConfigManager.saveConfig(configsToSave)
     }
-
-    /**
-     * Generates a configuration key for a module.
-     * @param module The module to generate the key for.
-     * @return The generated configuration key.
-     */
-    private fun getConfigKey(module: ModuleInterface<*>): String = module::class.simpleName.toString()
 }
