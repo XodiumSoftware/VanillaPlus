@@ -68,13 +68,13 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                     equipment.helmet.asElement(
                         ClickHandler.canceling {
                             if (it.cause().isLeftClick) it.cancel(false)
-                            it.view().update()
                             val item =
                                 it
                                     .view()
                                     .pane()
                                     .element(4, 1)
                                     .itemStack()
+                            println("debug: item from slot: $item")
                             if (Tag.ITEMS_HEAD_ARMOR.isTagged(item.type)) equipment.setHelmet(item)
                             it.view().update()
                         },
@@ -86,10 +86,8 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                     equipment.itemInMainHand.asElement(
                         ClickHandler.canceling {
                             if (it.cause().isLeftClick) it.cancel(false)
-                            it.view().update()
                             val item =
-                                it
-                                    .view()
+                                view
                                     .pane()
                                     .element(3, 2)
                                     .itemStack()
@@ -104,10 +102,8 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                     equipment.chestplate.asElement(
                         ClickHandler.canceling {
                             if (it.cause().isLeftClick) it.cancel(false)
-                            it.view().update()
                             val item =
-                                it
-                                    .view()
+                                view
                                     .pane()
                                     .element(4, 2)
                                     .itemStack()
@@ -122,10 +118,8 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                     equipment.itemInOffHand.asElement(
                         ClickHandler.canceling {
                             if (it.cause().isLeftClick) it.cancel(false)
-                            it.view().update()
                             val item =
-                                it
-                                    .view()
+                                view
                                     .pane()
                                     .element(5, 2)
                                     .itemStack()
@@ -140,10 +134,8 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                     equipment.leggings.asElement(
                         ClickHandler.canceling {
                             if (it.cause().isLeftClick) it.cancel(false)
-                            it.view().update()
                             val item =
-                                it
-                                    .view()
+                                view
                                     .pane()
                                     .element(4, 3)
                                     .itemStack()
@@ -156,17 +148,18 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
             withTransform { view ->
                 view[4, 4] =
                     equipment.boots.asElement(
-                        ClickHandler.canceling {
-                            if (it.cause().isLeftClick) it.cancel(false)
-                            it.view().update()
-                            val item =
-                                it
-                                    .view()
-                                    .pane()
-                                    .element(4, 4)
-                                    .itemStack()
-                            if (Tag.ITEMS_FOOT_ARMOR.isTagged(item.type)) equipment.setBoots(item)
-                            it.view().update()
+                        ClickHandler.canceling { ctx ->
+                            if (ctx.cause().isLeftClick) {
+                                ctx.cancel(false)
+                                println("${ctx.cause().rawSlot}")
+                                val item = ctx.cause().inventory.getItem(40)
+                                println("debug: OLD item from slot: $item")
+                                ctx.cause().inventory.setItem(40, item)
+                                val newItem = ctx.cause().inventory.getItem(40)
+                                println("debug: NEW item from slot: $newItem")
+                                equipment.setLeggings(newItem)
+                                ctx.view().update()
+                            }
                         },
                     )
             }
