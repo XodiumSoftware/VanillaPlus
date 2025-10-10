@@ -57,7 +57,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                         view[x, y] =
                             ItemStack
                                 .of(config.guiFillerMaterial)
-                                .name(config.i18n.guiFillerItemName)
+                                .name(config.i18n.guiFillerItemName.mm())
                                 .asElement(ClickHandler.cancel())
                     }
                 }
@@ -133,7 +133,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                 view[7, 1] =
                     ItemStack
                         .of(if (isCustomNameVisible) Material.GREEN_WOOL else Material.RED_WOOL)
-                        .name(config.i18n.toggleNameTagItemName)
+                        .name(config.i18n.toggleNameTagItemName.mm())
                         .asElement(
                             ClickHandler.canceling {
                                 isCustomNameVisible = !isCustomNameVisible
@@ -146,7 +146,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                 view[7, 2] =
                     ItemStack
                         .of(if (hasArms()) Material.GREEN_WOOL else Material.RED_WOOL)
-                        .name(config.i18n.toggleArmsItemName)
+                        .name(config.i18n.toggleArmsItemName.mm())
                         .asElement(
                             ClickHandler.canceling {
                                 setArms(!hasArms())
@@ -159,7 +159,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                 view[7, 4] =
                     ItemStack
                         .of(if (hasBasePlate()) Material.GREEN_WOOL else Material.RED_WOOL)
-                        .name(config.i18n.toggleBasePlateItemName)
+                        .name(config.i18n.toggleBasePlateItemName.mm())
                         .asElement(
                             ClickHandler.canceling {
                                 setBasePlate(!hasBasePlate())
@@ -172,7 +172,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                 view[7, 3] =
                     ItemStack
                         .of(if (!isSmall) Material.GREEN_WOOL else Material.RED_WOOL)
-                        .name(config.i18n.toggleSizeItemName)
+                        .name(config.i18n.toggleSizeItemName.mm())
                         .asElement(
                             ClickHandler.canceling {
                                 isSmall = !isSmall
@@ -185,8 +185,8 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                 view[1, 4] =
                     ItemStack
                         .of(Material.ARMOR_STAND)
-                        .name(config.i18n.moreOptionsItemName)
-                        .lore(listOf("COMING SOON".fireFmt()))
+                        .name(config.i18n.moreOptionsItemName.mm())
+                        .lore("COMING SOON".fireFmt().mm())
                         .asElement(ClickHandler.cancel())
             }
         }

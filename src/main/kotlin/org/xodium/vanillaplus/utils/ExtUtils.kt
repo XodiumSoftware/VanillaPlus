@@ -222,13 +222,13 @@ internal object ExtUtils {
      * @return the modified ItemStack instance (`this`) with the new name applied.
      * @see DataComponentTypes.CUSTOM_NAME
      */
-    fun ItemStack.name(name: String): ItemStack = apply { setData(DataComponentTypes.CUSTOM_NAME, name.mm()) }
+    fun ItemStack.name(name: Component): ItemStack = apply { setData(DataComponentTypes.CUSTOM_NAME, name) }
 
     /**
      * Sets custom lore for the ItemStack.
-     * @param lore the ItemLore to be set as the custom lore for this ItemStack.
+     * @param lore the lore to be set as the custom lore for this ItemStack.
      * @return the modified ItemStack instance (`this`) with the new lore applied.
      * @see DataComponentTypes.LORE
      */
-    fun ItemStack.lore(lore: List<String>): ItemStack = apply { setData(DataComponentTypes.LORE, ItemLore.lore(lore.mm())) }
+    fun ItemStack.lore(vararg lore: Component): ItemStack = apply { setData(DataComponentTypes.LORE, ItemLore.lore(lore.toList())) }
 }
