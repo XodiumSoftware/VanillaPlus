@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: org.incendo.interfaces:interfaces-kotlin:1.0.0-SNAPSHOT" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="org.incendo.interfaces" artifactId="interfaces-kotlin" version="1.0.0-SNAPSHOT" baseVersion="1.0.0-SNAPSHOT" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.incendo.interfaces/interfaces-kotlin/1.0.0-SNAPSHOT/481792dda24e3d0cb57507d020cfe3847c8a71fd/interfaces-kotlin-1.0.0-SNAPSHOT.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.incendo.interfaces/interfaces-kotlin/1.0.0-SNAPSHOT/9aa66d847b97e9cedd8112ed9bdaae8d72088248/interfaces-kotlin-1.0.0-SNAPSHOT-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

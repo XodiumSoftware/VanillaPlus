@@ -12,16 +12,24 @@ plugins {
     id("xyz.jpenilla.resource-factory-paper-convention") version "1.3.1"
 }
 
+val mcVersion = "1.21.10"
+
 group = "org.xodium.vanillaplus.VanillaPlus"
-version = "1.21.10"
+version = mcVersion
 description = "Minecraft plugin that enhances the base gameplay"
 
 repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://maven.enginehub.org/repo/")
-    maven("https://oss.sonatype.org/content/repositories/snapshots/")
-//    maven("https://repo.triumphteam.dev/snapshots")
+    maven("https://repo.jpenilla.xyz/snapshots/") {
+        mavenContent {
+            snapshotsOnly()
+            includeModule("org.incendo.interfaces", "interfaces-core")
+            includeModule("org.incendo.interfaces", "interfaces-paper")
+            includeModule("org.incendo.interfaces", "interfaces-kotlin")
+        }
+    }
 }
 
 dependencies {
@@ -32,10 +40,8 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.20.0")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.0")
-    implementation("org.incendo.interfaces:interfaces-core:1.0.0-SNAPSHOT")
-//    implementation("dev.triumphteam:triumph-gui-paper-kotlin:4.0.0-SNAPSHOT") {
-//        exclude(group = "com.google.guava", module = "guava")
-//    }
+    implementation("org.incendo.interfaces:interfaces-paper:1.0.0-SNAPSHOT")
+    implementation("org.incendo.interfaces:interfaces-kotlin:1.0.0-SNAPSHOT")
 }
 
 java {
@@ -54,11 +60,11 @@ tasks {
         archiveClassifier.set("")
         destinationDirectory.set(layout.projectDirectory.dir("build/libs"))
         relocate("com.fasterxml.jackson", "$group.jackson")
-//        relocate("dev.triumphteam.gui", "$group.gui")
+        relocate("org.incendo", "$group.gui")
         minimize { exclude(dependency("org.jetbrains.kotlin:kotlin-reflect:.*")) }
     }
     jar { enabled = false }
-    runServer { minecraftVersion(version.toString()) }
+    runServer { minecraftVersion(mcVersion) }
     withType<JavaCompile> { options.encoding = "UTF-8" }
     withType(AbstractRun::class) { jvmArgs("-XX:+AllowEnhancedClassRedefinition") }
 }
@@ -68,6 +74,6 @@ paperPluginYaml {
     authors.add("Xodium")
     apiVersion.set(version)
     dependencies {
-        server(name = "WorldEdit", load = PaperPluginYaml.Load.BEFORE, required = true, joinClasspath = true)
+        server(name = "WorldEdit", load = PaperPluginYaml.Load.BEFORE, required = false, joinClasspath = true)
     }
 }

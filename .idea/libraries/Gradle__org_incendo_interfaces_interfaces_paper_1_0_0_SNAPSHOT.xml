@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: org.incendo.interfaces:interfaces-paper:1.0.0-SNAPSHOT" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="org.incendo.interfaces" artifactId="interfaces-paper" version="1.0.0-SNAPSHOT" baseVersion="1.0.0-SNAPSHOT" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.incendo.interfaces/interfaces-paper/1.0.0-SNAPSHOT/fd79d7d5dc4b874b0e0ab5dd22ae0dc1a0be409b/interfaces-paper-1.0.0-SNAPSHOT.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.incendo.interfaces/interfaces-paper/1.0.0-SNAPSHOT/3e16c69d63b3eb8441a29c2ae3729bdd05be98e9/interfaces-paper-1.0.0-SNAPSHOT-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
