@@ -5,6 +5,8 @@
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.incendo.interfaces/interfaces-core/1.0.0-SNAPSHOT/8ab265d7634b92bf314444742dfd0f4b0e5730a8/interfaces-core-1.0.0-SNAPSHOT.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.incendo.interfaces/interfaces-core/1.0.0-SNAPSHOT/7fc43b3ba00350129ca8196afa63585714c577be/interfaces-core-1.0.0-SNAPSHOT-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>

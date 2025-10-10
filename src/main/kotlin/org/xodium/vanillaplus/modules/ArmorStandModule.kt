@@ -1,6 +1,7 @@
 package org.xodium.vanillaplus.modules
 
 import org.bukkit.Material
+import org.bukkit.Tag
 import org.bukkit.entity.ArmorStand
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractAtEntityEvent
@@ -60,24 +61,96 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                 }
             }
             // Helmet slot
-            withTransform { view -> view[4, 1] = equipment.helmet.asElement() }
+            withTransform { view ->
+                view[4, 1] =
+                    equipment.helmet.asElement(
+                        ClickHandler.canceling {
+                            val item = ItemStack.of(Material.GOLDEN_HELMET)
+                            if (Tag.ITEMS_HEAD_ARMOR.isTagged(item.type)) equipment.setHelmet(item)
+                            it.view().update()
+                        },
+                    )
+            }
             // Main Hand slot
-            withTransform { view -> view[3, 2] = equipment.itemInMainHand.asElement() }
+            withTransform { view ->
+                view[3, 2] =
+                    equipment.itemInMainHand.asElement(
+                        ClickHandler.canceling {
+                            val item = ItemStack.of(Material.GOLDEN_SWORD)
+                            equipment.setItemInMainHand(item)
+                            it.view().update()
+                        },
+                    )
+            }
             // Chestplate slot
-            withTransform { view -> view[4, 2] = equipment.chestplate.asElement() }
+            withTransform { view ->
+                view[4, 2] =
+                    equipment.chestplate.asElement(
+                        ClickHandler.canceling {
+                            val item = ItemStack.of(Material.GOLDEN_CHESTPLATE)
+                            if (Tag.ITEMS_CHEST_ARMOR.isTagged(item.type)) equipment.setChestplate(item)
+                            it.view().update()
+                        },
+                    )
+            }
             // Offhand slot
-            withTransform { view -> view[5, 2] = equipment.itemInOffHand.asElement() }
+            withTransform { view ->
+                view[5, 2] =
+                    equipment.itemInOffHand.asElement(
+                        ClickHandler.canceling {
+                            val item = ItemStack.of(Material.SHIELD)
+                            equipment.setItemInOffHand(item)
+                            it.view().update()
+                        },
+                    )
+            }
             // Leggings slot
-            withTransform { view -> view[4, 3] = equipment.leggings.asElement() }
+            withTransform { view ->
+                view[4, 3] =
+                    equipment.leggings.asElement(
+                        ClickHandler.canceling {
+                            val item = ItemStack.of(Material.GOLDEN_LEGGINGS)
+                            if (Tag.ITEMS_LEG_ARMOR.isTagged(item.type)) equipment.setLeggings(item)
+                            it.view().update()
+                        },
+                    )
+            }
             // Boots slot
-            withTransform { view -> view[4, 4] = equipment.boots.asElement() }
-            // Arms toggling slots
+            withTransform { view ->
+                view[4, 4] =
+                    equipment.boots.asElement(
+                        ClickHandler.canceling {
+                            val item = ItemStack.of(Material.GOLDEN_BOOTS)
+                            if (Tag.ITEMS_FOOT_ARMOR.isTagged(item.type)) equipment.setBoots(item)
+                            it.view().update()
+                        },
+                    )
+            }
+            // Nametag toggling slot
+            withTransform { view ->
+                view[6, 4] =
+                    ItemStack
+                        .of(if (isCustomNameVisible) Material.GREEN_WOOL else Material.RED_WOOL)
+                        .name(config.i18n.toggleNameTagItemName)
+                        .asElement(
+                            ClickHandler.canceling {
+                                isCustomNameVisible = !isCustomNameVisible
+                                it.view().update()
+                            },
+                        )
+            }
+            // Arms toggling slot
             withTransform { view ->
                 view[7, 4] =
                     ItemStack
                         .of(if (hasArms()) Material.GREEN_WOOL else Material.RED_WOOL)
                         .name(config.i18n.toggleArmsItemName)
-                        .asElement(ClickHandler.canceling { setArms(!hasArms()) })
+                        .asElement(
+                            ClickHandler.canceling {
+                                setArms(!hasArms())
+                                it.view().update()
+                            },
+                        )
             }
         }
 
@@ -89,6 +162,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
         data class I18n(
             var guiFillerItemName: String = "",
             var toggleArmsItemName: String = "Toggle Arms".mangoFmt(),
+            var toggleNameTagItemName: String = "Toggle Name Tag".mangoFmt(),
         )
     }
 }
