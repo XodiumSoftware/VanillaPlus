@@ -67,7 +67,12 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                 view[4, 1] =
                     equipment.helmet.asElement(
                         ClickHandler.canceling {
-                            val item = ItemStack.of(Material.GOLDEN_HELMET)
+                            val item =
+                                it
+                                    .view()
+                                    .pane()
+                                    .element(4, 1)
+                                    .itemStack()
                             if (Tag.ITEMS_HEAD_ARMOR.isTagged(item.type)) equipment.setHelmet(item)
                             it.view().update()
                         },
@@ -78,7 +83,12 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                 view[3, 2] =
                     equipment.itemInMainHand.asElement(
                         ClickHandler.canceling {
-                            val item = ItemStack.of(Material.GOLDEN_SWORD)
+                            val item =
+                                it
+                                    .view()
+                                    .pane()
+                                    .element(3, 2)
+                                    .itemStack()
                             equipment.setItemInMainHand(item)
                             it.view().update()
                         },
@@ -89,7 +99,12 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                 view[4, 2] =
                     equipment.chestplate.asElement(
                         ClickHandler.canceling {
-                            val item = ItemStack.of(Material.GOLDEN_CHESTPLATE)
+                            val item =
+                                it
+                                    .view()
+                                    .pane()
+                                    .element(4, 2)
+                                    .itemStack()
                             if (Tag.ITEMS_CHEST_ARMOR.isTagged(item.type)) equipment.setChestplate(item)
                             it.view().update()
                         },
@@ -100,7 +115,12 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                 view[5, 2] =
                     equipment.itemInOffHand.asElement(
                         ClickHandler.canceling {
-                            val item = ItemStack.of(Material.SHIELD)
+                            val item =
+                                it
+                                    .view()
+                                    .pane()
+                                    .element(5, 2)
+                                    .itemStack()
                             equipment.setItemInOffHand(item)
                             it.view().update()
                         },
@@ -111,7 +131,12 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                 view[4, 3] =
                     equipment.leggings.asElement(
                         ClickHandler.canceling {
-                            val item = ItemStack.of(Material.GOLDEN_LEGGINGS)
+                            val item =
+                                it
+                                    .view()
+                                    .pane()
+                                    .element(4, 3)
+                                    .itemStack()
                             if (Tag.ITEMS_LEG_ARMOR.isTagged(item.type)) equipment.setLeggings(item)
                             it.view().update()
                         },
@@ -122,7 +147,12 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                 view[4, 4] =
                     equipment.boots.asElement(
                         ClickHandler.canceling {
-                            val item = ItemStack.of(Material.GOLDEN_BOOTS)
+                            val item =
+                                it
+                                    .view()
+                                    .pane()
+                                    .element(4, 4)
+                                    .itemStack()
                             if (Tag.ITEMS_FOOT_ARMOR.isTagged(item.type)) equipment.setBoots(item)
                             it.view().update()
                         },
