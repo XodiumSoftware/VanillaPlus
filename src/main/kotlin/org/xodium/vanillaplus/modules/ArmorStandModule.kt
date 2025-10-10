@@ -126,9 +126,22 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                         },
                     )
             }
+            // Nametag changing slot
+            withTransform { view ->
+                view[1, 3] =
+                    ItemStack
+                        .of(Material.NAME_TAG)
+                        .name(config.i18n.changeNameTagItemName)
+                        .asElement(
+                            ClickHandler.canceling {
+                                // TODO: logic to change armorstand name.
+                                it.view().update()
+                            },
+                        )
+            }
             // Nametag toggling slot
             withTransform { view ->
-                view[6, 4] =
+                view[1, 4] =
                     ItemStack
                         .of(if (isCustomNameVisible) Material.GREEN_WOOL else Material.RED_WOOL)
                         .name(config.i18n.toggleNameTagItemName)
@@ -152,6 +165,19 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                             },
                         )
             }
+            // BasePlate toggling slot
+            withTransform { view ->
+                view[6, 4] =
+                    ItemStack
+                        .of(if (hasBasePlate()) Material.GREEN_WOOL else Material.RED_WOOL)
+                        .name(config.i18n.toggleBasePlateItemName)
+                        .asElement(
+                            ClickHandler.canceling {
+                                setBasePlate(!hasBasePlate())
+                                it.view().update()
+                            },
+                        )
+            }
         }
 
     data class Config(
@@ -163,6 +189,8 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
             var guiFillerItemName: String = "",
             var toggleArmsItemName: String = "Toggle Arms".mangoFmt(),
             var toggleNameTagItemName: String = "Toggle Name Tag".mangoFmt(),
+            var changeNameTagItemName: String = "Change Name Tag".mangoFmt(),
+            var toggleBasePlateItemName: String = "Toggle Base Plate".mangoFmt(),
         )
     }
 }
