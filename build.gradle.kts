@@ -8,7 +8,7 @@ plugins {
     id("idea")
     kotlin("jvm") version "2.2.20"
     id("com.gradleup.shadow") version "9.2.2"
-    id("xyz.jpenilla.run-paper") version "3.0.1"
+    id("xyz.jpenilla.run-paper") version "3.0.2"
     id("xyz.jpenilla.resource-factory-paper-convention") version "1.3.1"
 }
 
