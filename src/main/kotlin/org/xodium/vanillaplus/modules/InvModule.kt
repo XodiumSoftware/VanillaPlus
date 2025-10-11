@@ -30,6 +30,7 @@ import org.xodium.vanillaplus.registries.MaterialRegistry
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
+import org.xodium.vanillaplus.utils.FmtUtils.glorpFmt
 import org.xodium.vanillaplus.utils.FmtUtils.roseFmt
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -534,7 +535,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
             var noMatchingItems: String = "No chests contain ${"<material>".roseFmt()}".fireFmt(),
             var noNearbyChests: String = "No chests found nearby".fireFmt(),
             var noItemsUnloaded: String = "No items were unloaded".fireFmt(),
-            var inventoryUnloaded: String = "Inventory unloaded".fireFmt(),
+            var inventoryUnloaded: String = "Inventory unloaded".glorpFmt(),
         )
     }
 }
