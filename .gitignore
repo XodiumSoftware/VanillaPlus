@@ -1,5 +1,6 @@
 # Gradle specific files
 .gradle/
+.kotlin/
 build/
 
 # OS generated files

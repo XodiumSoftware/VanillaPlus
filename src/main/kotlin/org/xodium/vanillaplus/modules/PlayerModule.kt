@@ -27,7 +27,6 @@ import org.xodium.vanillaplus.data.PlayerData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
-import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 
 /** Represents a module handling player mechanics within the system. */
@@ -159,7 +158,7 @@ internal class PlayerModule(
             setData(DataComponentTypes.PROFILE, ResolvableProfile.resolvableProfile(entity.playerProfile))
             setData(
                 DataComponentTypes.CUSTOM_NAME,
-                config.i18n.playerHeadName.mm(Placeholder.component("player", entity.displayName())),
+                config.i18n.playerHeadName.mm(Placeholder.component("player", entity.name.mm())),
             )
             setData(
                 DataComponentTypes.LORE,
@@ -190,7 +189,7 @@ internal class PlayerModule(
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
         data class I18n(
-            var playerHeadName: String = "<player>’s Skull".fireFmt(),
+            var playerHeadName: String = "<player>’s Skull",
             var playerHeadLore: List<String> = listOf("<player> killed by <killer>", "Stored XP: <xp>"),
 //            var playerDeathMsg: String = "<killer> ${"⚔".mangoFmt(true)} <player>",
             var playerJoinMsg: String = "<green>➕<reset> ${"›".mangoFmt(true)} <player>",

@@ -15,7 +15,7 @@ internal data class PlayerData(
     val nickname: String? = null,
     val scoreboardVisibility: Boolean = true,
 ) {
-    companion object : DataInterface<PlayerData> {
+    companion object : DataInterface<UUID, PlayerData> {
         override val dataClass = PlayerData::class
         override val cache = mutableMapOf<UUID, PlayerData>()
 
