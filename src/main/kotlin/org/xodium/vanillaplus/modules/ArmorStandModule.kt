@@ -1,7 +1,6 @@
 package org.xodium.vanillaplus.modules
 
 import org.bukkit.Material
-import org.bukkit.Tag
 import org.bukkit.entity.ArmorStand
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractAtEntityEvent
@@ -66,17 +65,14 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
             withTransform { view ->
                 view[4, 1] =
                     equipment.helmet.asElement(
-                        ClickHandler.canceling {
-                            if (it.cause().isLeftClick) it.cancel(false)
-                            val item =
-                                it
-                                    .view()
-                                    .pane()
-                                    .element(4, 1)
-                                    .itemStack()
-                            println("debug: item from slot: $item")
-                            if (Tag.ITEMS_HEAD_ARMOR.isTagged(item.type)) equipment.setHelmet(item)
-                            it.view().update()
+                        ClickHandler.canceling { ctx ->
+                            ctx.cancel(false)
+                            val cursor = ctx.cause().cursor
+                            if (cursor.type != Material.AIR) {
+                                ctx.viewer().player().setItemOnCursor(null)
+                                equipment.setHelmet(cursor)
+                                ctx.view().update()
+                            }
                         },
                     )
             }
@@ -84,15 +80,14 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
             withTransform { view ->
                 view[3, 2] =
                     equipment.itemInMainHand.asElement(
-                        ClickHandler.canceling {
-                            if (it.cause().isLeftClick) it.cancel(false)
-                            val item =
-                                view
-                                    .pane()
-                                    .element(3, 2)
-                                    .itemStack()
-                            equipment.setItemInMainHand(item)
-                            it.view().update()
+                        ClickHandler.canceling { ctx ->
+                            ctx.cancel(false)
+                            val cursor = ctx.cause().cursor
+                            if (cursor.type != Material.AIR) {
+                                ctx.viewer().player().setItemOnCursor(null)
+                                equipment.setItemInMainHand(cursor)
+                                ctx.view().update()
+                            }
                         },
                     )
             }
@@ -100,15 +95,14 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
             withTransform { view ->
                 view[4, 2] =
                     equipment.chestplate.asElement(
-                        ClickHandler.canceling {
-                            if (it.cause().isLeftClick) it.cancel(false)
-                            val item =
-                                view
-                                    .pane()
-                                    .element(4, 2)
-                                    .itemStack()
-                            if (Tag.ITEMS_CHEST_ARMOR.isTagged(item.type)) equipment.setChestplate(item)
-                            it.view().update()
+                        ClickHandler.canceling { ctx ->
+                            ctx.cancel(false)
+                            val cursor = ctx.cause().cursor
+                            if (cursor.type != Material.AIR) {
+                                ctx.viewer().player().setItemOnCursor(null)
+                                equipment.setChestplate(cursor)
+                                ctx.view().update()
+                            }
                         },
                     )
             }
@@ -116,15 +110,14 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
             withTransform { view ->
                 view[5, 2] =
                     equipment.itemInOffHand.asElement(
-                        ClickHandler.canceling {
-                            if (it.cause().isLeftClick) it.cancel(false)
-                            val item =
-                                view
-                                    .pane()
-                                    .element(5, 2)
-                                    .itemStack()
-                            equipment.setItemInOffHand(item)
-                            it.view().update()
+                        ClickHandler.canceling { ctx ->
+                            ctx.cancel(false)
+                            val cursor = ctx.cause().cursor
+                            if (cursor.type != Material.AIR) {
+                                ctx.viewer().player().setItemOnCursor(null)
+                                equipment.setItemInOffHand(cursor)
+                                ctx.view().update()
+                            }
                         },
                     )
             }
@@ -132,15 +125,16 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
             withTransform { view ->
                 view[4, 3] =
                     equipment.leggings.asElement(
-                        ClickHandler.canceling {
-                            if (it.cause().isLeftClick) it.cancel(false)
-                            val item =
-                                view
-                                    .pane()
-                                    .element(4, 3)
-                                    .itemStack()
-                            if (Tag.ITEMS_LEG_ARMOR.isTagged(item.type)) equipment.setLeggings(item)
-                            it.view().update()
+                        ClickHandler.canceling { ctx ->
+                            if (ctx.cause().isLeftClick) {
+                                ctx.cancel(false)
+                                val cursor = ctx.cause().cursor
+                                if (cursor.type != Material.AIR) {
+                                    ctx.viewer().player().setItemOnCursor(null)
+                                    equipment.setLeggings(cursor)
+                                    ctx.view().update()
+                                }
+                            }
                         },
                     )
             }
@@ -149,15 +143,11 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                 view[4, 4] =
                     equipment.boots.asElement(
                         ClickHandler.canceling { ctx ->
-                            if (ctx.cause().isLeftClick) {
-                                ctx.cancel(false)
-                                println("${ctx.cause().rawSlot}")
-                                val item = ctx.cause().inventory.getItem(40)
-                                println("debug: OLD item from slot: $item")
-                                ctx.cause().inventory.setItem(40, item)
-                                val newItem = ctx.cause().inventory.getItem(40)
-                                println("debug: NEW item from slot: $newItem")
-                                equipment.setLeggings(newItem)
+                            ctx.cancel(false)
+                            val cursor = ctx.cause().cursor
+                            if (cursor.type != Material.AIR) {
+                                ctx.viewer().player().setItemOnCursor(null)
+                                equipment.setBoots(cursor)
                                 ctx.view().update()
                             }
                         },
