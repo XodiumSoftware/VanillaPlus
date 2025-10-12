@@ -12,6 +12,7 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.modules.*
+import org.xodium.vanillaplus.utils.ExtUtils.key
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.prefix
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
@@ -138,18 +139,20 @@ internal object ModuleManager {
 
     /** Updates the config. */
     private fun updateConfig() {
-        val allConfigsNode = ConfigManager.load()
+        val allConfigs = ConfigManager.loadConfig()
         when {
-            allConfigsNode != null -> instance.logger.info("Config: Loaded successfully")
-            !ConfigManager.configPath.exists() -> instance.logger.info("Config: No config file found, a new one will be created")
+            allConfigs.isNotEmpty() -> instance.logger.info("Config: Loaded successfully")
+            !ConfigManager.filePath.exists() -> instance.logger.info("Config: No config file found, a new one will be created")
             else -> instance.logger.warning("Config: Failed to load, using defaults")
         }
 
         modules.forEach { module ->
-            val configKey = getConfigKey(module)
-            allConfigsNode?.get(configKey)?.let { moduleConfigNode ->
+            val configKey = module.key()
+            allConfigs[configKey]?.let { savedConfig ->
                 try {
-                    ConfigManager.jsonMapper.readerForUpdating(module.config).readValue(moduleConfigNode)
+                    ConfigManager.jsonMapper
+                        .readerForUpdating(module.config)
+                        .readValue(ConfigManager.jsonMapper.writeValueAsString(savedConfig))
                 } catch (e: JsonProcessingException) {
                     instance.logger.warning(
                         "Failed to parse config for ${module::class.simpleName}. Using defaults. Error: ${e.message}",
@@ -159,13 +162,6 @@ internal object ModuleManager {
             configsToSave[configKey] = module.config
         }
 
-        ConfigManager.save(configsToSave)
+        ConfigManager.saveConfig(configsToSave)
     }
-
-    /**
-     * Generates a configuration key for a module.
-     * @param module The module to generate the key for.
-     * @return The generated configuration key.
-     */
-    private fun getConfigKey(module: ModuleInterface<*>): String = module::class.simpleName!!
 }

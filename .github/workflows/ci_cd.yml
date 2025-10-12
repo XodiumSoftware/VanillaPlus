@@ -39,7 +39,7 @@ jobs:
 
       - id: setup_gradle
         name: Setup Gradle
-        uses: gradle/actions/setup-gradle@9d95dbe2248129ffd3434eead1d690885e9a4284
+        uses: gradle/actions/setup-gradle@6a96db5a3f33ee3428706da0bfc3de5c5a8f698c
 
       - id: set_version
         name: Set Version
@@ -103,7 +103,7 @@ jobs:
 
       - id: release_artifact
         name: Release Artifact
-        uses: softprops/action-gh-release@f38efdea4c5ffe13e9424b0aa2833bee28f1e34c
+        uses: softprops/action-gh-release@6da8fa9354ddfdc4aeace5fc48d7f679b5214090
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         with:
