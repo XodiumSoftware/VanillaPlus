@@ -69,8 +69,12 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                             ctx.cancel(false)
                             val cursor = ctx.cause().cursor
                             if (cursor.type != Material.AIR) {
-                                ctx.viewer().player().setItemOnCursor(null)
                                 equipment.setHelmet(cursor)
+                                ctx.viewer().player().setItemOnCursor(null)
+                                ctx.view().update()
+                            } else {
+                                equipment.setHelmet(null)
+                                ctx.viewer().player().setItemOnCursor(cursor)
                                 ctx.view().update()
                             }
                         },
@@ -84,8 +88,12 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                             ctx.cancel(false)
                             val cursor = ctx.cause().cursor
                             if (cursor.type != Material.AIR) {
-                                ctx.viewer().player().setItemOnCursor(null)
                                 equipment.setItemInMainHand(cursor)
+                                ctx.viewer().player().setItemOnCursor(null)
+                                ctx.view().update()
+                            } else {
+                                equipment.setItemInMainHand(null)
+                                ctx.viewer().player().setItemOnCursor(cursor)
                                 ctx.view().update()
                             }
                         },
@@ -99,8 +107,12 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                             ctx.cancel(false)
                             val cursor = ctx.cause().cursor
                             if (cursor.type != Material.AIR) {
-                                ctx.viewer().player().setItemOnCursor(null)
                                 equipment.setChestplate(cursor)
+                                ctx.viewer().player().setItemOnCursor(null)
+                                ctx.view().update()
+                            } else {
+                                equipment.setChestplate(null)
+                                ctx.viewer().player().setItemOnCursor(cursor)
                                 ctx.view().update()
                             }
                         },
@@ -114,8 +126,12 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                             ctx.cancel(false)
                             val cursor = ctx.cause().cursor
                             if (cursor.type != Material.AIR) {
-                                ctx.viewer().player().setItemOnCursor(null)
                                 equipment.setItemInOffHand(cursor)
+                                ctx.viewer().player().setItemOnCursor(null)
+                                ctx.view().update()
+                            } else {
+                                equipment.setItemInOffHand(null)
+                                ctx.viewer().player().setItemOnCursor(cursor)
                                 ctx.view().update()
                             }
                         },
@@ -126,14 +142,16 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                 view[4, 3] =
                     equipment.leggings.asElement(
                         ClickHandler.canceling { ctx ->
-                            if (ctx.cause().isLeftClick) {
-                                ctx.cancel(false)
-                                val cursor = ctx.cause().cursor
-                                if (cursor.type != Material.AIR) {
-                                    ctx.viewer().player().setItemOnCursor(null)
-                                    equipment.setLeggings(cursor)
-                                    ctx.view().update()
-                                }
+                            ctx.cancel(false)
+                            val cursor = ctx.cause().cursor
+                            if (cursor.type != Material.AIR) {
+                                equipment.setLeggings(cursor)
+                                ctx.viewer().player().setItemOnCursor(null)
+                                ctx.view().update()
+                            } else {
+                                equipment.setLeggings(null)
+                                ctx.viewer().player().setItemOnCursor(cursor)
+                                ctx.view().update()
                             }
                         },
                     )
@@ -148,6 +166,10 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                             if (cursor.type != Material.AIR) {
                                 ctx.viewer().player().setItemOnCursor(null)
                                 equipment.setBoots(cursor)
+                                ctx.view().update()
+                            } else {
+                                equipment.setBoots(null)
+                                ctx.viewer().player().setItemOnCursor(cursor)
                                 ctx.view().update()
                             }
                         },
