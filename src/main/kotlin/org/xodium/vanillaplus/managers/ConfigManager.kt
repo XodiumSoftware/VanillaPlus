@@ -9,9 +9,9 @@ import kotlin.io.path.exists
 import kotlin.io.path.readText
 
 /** Represents the config manager within the system. */
-internal object ConfigManager : DataInterface<String, ModuleInterface.Config> {
-    override val dataClass = ModuleInterface.Config::class
-    override val cache = mutableMapOf<String, ModuleInterface.Config>()
+internal object ConfigManager : DataInterface<String, Any> {
+    override val dataClass = Any::class
+    override val cache = mutableMapOf<String, Any>()
     override val fileName = "config.json"
 
     /**
@@ -19,13 +19,13 @@ internal object ConfigManager : DataInterface<String, ModuleInterface.Config> {
      * @return A map of module names to their respective configuration objects.
      *         Returns an empty map if no configuration exists or if an error occurs during loading.
      */
-    fun loadConfig(): Map<String, ModuleInterface.Config> = getAll()
+    fun loadConfig(): Map<String, Any> = getAll()
 
     /**
      * Saves the provided configuration data to the config file.
      * @param data A map of module names to their respective configuration objects to be saved.
      */
-    fun saveConfig(data: Map<String, ModuleInterface.Config>) = setAll(LinkedHashMap(data))
+    fun saveConfig(data: Map<String, Any>) = setAll(LinkedHashMap(data))
 
     /**
      * Updates module configurations by loading from file and applying to modules.
@@ -53,7 +53,7 @@ internal object ConfigManager : DataInterface<String, ModuleInterface.Config> {
                 try {
                     jsonMapper
                         .readerForUpdating(module.config)
-                        .readValue(jsonMapper.writeValueAsString(configData))
+                        .readValue<Any>(jsonMapper.writeValueAsString(configData))
                 } catch (e: JsonProcessingException) {
                     instance.logger.warning(
                         "Failed to parse config for ${module::class.simpleName}. Using defaults. Error: ${e.message}",
