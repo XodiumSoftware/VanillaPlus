@@ -58,7 +58,7 @@ internal class WanderingTraderModule : ModuleInterface<WanderingTraderModule.Con
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
         data class I18n(
-            var horseTradeSuccessfulMessage: String = "You traded your horse for: <emeralds> <sprite:items:item/emerald>",
+            var horseTradeSuccessfulMessage: String = "You traded your horse for: <emeralds> <sprite:\"minecraft:items\":item/emerald>",
         )
     }
 }
