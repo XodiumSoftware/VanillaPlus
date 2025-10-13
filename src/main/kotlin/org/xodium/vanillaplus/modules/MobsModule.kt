@@ -2,6 +2,8 @@
 
 package org.xodium.vanillaplus.modules
 
+import org.bukkit.attribute.Attribute
+import org.bukkit.attribute.AttributeInstance
 import org.bukkit.entity.*
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.EntityChangeBlockEvent
@@ -40,6 +42,8 @@ internal class MobsModule : ModuleInterface<MobsModule.Config> {
             is Wither -> config.disableWitherGrief
             else -> false
         }
+
+    private fun HappyGhast.flyingSpeed(): AttributeInstance? = getAttribute(Attribute.FLYING_SPEED)
 
     data class Config(
         override var enabled: Boolean = true,
