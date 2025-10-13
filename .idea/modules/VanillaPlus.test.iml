@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module external.linked.project.id="VanillaPlus:test" external.linked.project.path="$MODULE_DIR$/../.." external.root.project.path="$MODULE_DIR$/../.." external.system.id="GRADLE" external.system.module.group="org.xodium.vanillaplus.VanillaPlus" external.system.module.type="sourceSet" external.system.module.version="1.21.8" type="JAVA_MODULE" version="4">
+<module external.linked.project.id="VanillaPlus:test" external.linked.project.path="$MODULE_DIR$/../.." external.root.project.path="$MODULE_DIR$/../.." external.system.id="GRADLE" external.system.module.group="org.xodium.vanillaplus.VanillaPlus" external.system.module.type="sourceSet" external.system.module.version="1.21.10" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet external-system-id="GRADLE" type="kotlin-language" name="Kotlin">
-      <configuration version="5" platform="JVM 21" allPlatforms="JVM [21]" useProjectSettings="false" pureKotlinSourceFolders="$MODULE_DIR$/../../src/test/kotlin;/media/hdd/JetBrains/Projects/VanillaPlus/src/main/kotlin">
+      <configuration version="5" platform="JVM 21" allPlatforms="JVM [21]" useProjectSettings="false" pureKotlinSourceFolders="$MODULE_DIR$/../../src/test/kotlin;/run/media/illyrius/HDD/JetBrains/Projects/VanillaPlus/src/main/kotlin">
         <additionalVisibleModuleNames>VanillaPlus:main</additionalVisibleModuleNames>
         <compilerSettings />
         <compilerArguments>
@@ -41,7 +41,7 @@
       <sourceFolder url="file://$MODULE_DIR$/../../build/generated/resourceFactory/test" type="java-test-resource" />
     </content>
     <content url="file://$MODULE_DIR$/../../src/test" />
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="jbr-21 (2)" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="VanillaPlus.main" />
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.0" level="project" />

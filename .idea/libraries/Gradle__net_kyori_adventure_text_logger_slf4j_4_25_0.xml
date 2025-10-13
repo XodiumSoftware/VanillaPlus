@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: net.kyori:adventure-text-logger-slf4j:4.25.0" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="net.kyori" artifactId="adventure-text-logger-slf4j" version="4.25.0" baseVersion="4.25.0" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.kyori/adventure-text-logger-slf4j/4.25.0/7800e20f422798c0011eadce9bfa6bef159d7ae9/adventure-text-logger-slf4j-4.25.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.kyori/adventure-text-logger-slf4j/4.25.0/15a2858b8b3444d52f296e186f3adde143b53ee1/adventure-text-logger-slf4j-4.25.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

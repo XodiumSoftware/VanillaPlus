@@ -12,6 +12,9 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.PlayerDeathEvent
+import org.bukkit.event.inventory.ClickType
+import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.player.PlayerAdvancementDoneEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
@@ -127,6 +130,19 @@ internal class PlayerModule(
         )
     }
 
+    @EventHandler
+    fun on(event: InventoryClickEvent) {
+        if (!enabled() ||
+            event.click != config.enderChestClickType ||
+            event.currentItem?.type != Material.ENDER_CHEST ||
+            event.clickedInventory?.type != InventoryType.PLAYER
+        ) {
+            return
+        }
+        event.isCancelled = true
+        event.whoClicked.openInventory(event.whoClicked.enderChest)
+    }
+
     /**
      * Sets the nickname of the player to the given name.
      * @param player The player whose nickname is to be set.
@@ -186,6 +202,7 @@ internal class PlayerModule(
 
     data class Config(
         override var enabled: Boolean = true,
+        var enderChestClickType: ClickType = ClickType.SHIFT_LEFT,
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
         data class I18n(
