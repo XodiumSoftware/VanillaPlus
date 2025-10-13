@@ -47,9 +47,9 @@ internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
         if (!enabled()) return
         val player = event.player
         if (player.scoreboardVisibility() == true) {
-            player.scoreboard = instance.server.scoreboardManager.mainScoreboard
-        } else {
             player.scoreboard = instance.server.scoreboardManager.newScoreboard
+        } else {
+            player.scoreboard = instance.server.scoreboardManager.mainScoreboard
         }
     }
 
@@ -58,12 +58,12 @@ internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
      * @param player The player whose scoreboard sidebar should be toggled.
      */
     private fun toggle(player: Player) {
-        if (player.scoreboardVisibility() == false) {
+        if (player.scoreboardVisibility() == true) {
             player.scoreboard = instance.server.scoreboardManager.mainScoreboard
-            player.scoreboardVisibility(true)
+            player.scoreboardVisibility(false)
         } else {
             player.scoreboard = instance.server.scoreboardManager.newScoreboard
-            player.scoreboardVisibility(false)
+            player.scoreboardVisibility(true)
         }
     }
 
