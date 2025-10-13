@@ -41,6 +41,7 @@ internal object ModuleManager {
     val tabListModule: TabListModule = TabListModule()
     val playerModule: PlayerModule = PlayerModule(tabListModule)
     val treesModule: TreesModule = TreesModule()
+    val wanderingTraderModule: WanderingTraderModule = WanderingTraderModule()
 
     private val modules =
         listOf(
@@ -63,6 +64,7 @@ internal object ModuleManager {
             sleepModule,
             tabListModule,
             treesModule,
+            wanderingTraderModule,
         )
 
     private val configCmd =
