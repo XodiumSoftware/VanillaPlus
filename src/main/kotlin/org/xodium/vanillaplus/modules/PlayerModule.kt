@@ -26,8 +26,8 @@ import org.bukkit.permissions.PermissionDefault
 import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
-import org.xodium.vanillaplus.data.PlayerData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
@@ -85,10 +85,11 @@ internal class PlayerModule(
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
         if (!enabled()) return
-        PlayerData.get(event.player)?.nickname?.let { event.player.displayName(it.mm()) }
+        val player = event.player
+        player.displayName(player.nickname()?.mm())
+
         if (config.i18n.playerJoinMsg.isEmpty()) return
         event.joinMessage(null)
-        val player = event.player
         instance.server.onlinePlayers
             .filter { it.uniqueId != player.uniqueId }
             .forEach {
@@ -152,8 +153,8 @@ internal class PlayerModule(
         player: Player,
         name: String,
     ) {
-        PlayerData.set(player, nickname = name)
-        player.displayName(name.mm())
+        player.nickname(name)
+        player.displayName(player.nickname()?.mm())
         tabListModule.updatePlayerDisplayName(player)
     }
 
