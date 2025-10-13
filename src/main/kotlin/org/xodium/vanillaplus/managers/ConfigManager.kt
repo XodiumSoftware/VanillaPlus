@@ -6,11 +6,12 @@ import org.xodium.vanillaplus.interfaces.DataInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.key
 import kotlin.io.path.exists
+import kotlin.io.path.readText
 
 /** Represents the config manager within the system. */
-internal object ConfigManager : DataInterface<String, Any> {
-    override val dataClass = Any::class
-    override val cache = mutableMapOf<String, Any>()
+internal object ConfigManager : DataInterface<String, ModuleInterface.Config> {
+    override val dataClass = ModuleInterface.Config::class
+    override val cache = mutableMapOf<String, ModuleInterface.Config>()
     override val fileName = "config.json"
 
     /**
@@ -18,13 +19,13 @@ internal object ConfigManager : DataInterface<String, Any> {
      * @return A map of module names to their respective configuration objects.
      *         Returns an empty map if no configuration exists or if an error occurs during loading.
      */
-    fun loadConfig(): Map<String, Any> = getAll()
+    fun loadConfig(): Map<String, ModuleInterface.Config> = getAll()
 
     /**
      * Saves the provided configuration data to the config file.
      * @param data A map of module names to their respective configuration objects to be saved.
      */
-    fun saveConfig(data: Map<String, Any>) = setAll(data)
+    fun saveConfig(data: Map<String, ModuleInterface.Config>) = setAll(LinkedHashMap(data))
 
     /**
      * Updates module configurations by loading from file and applying to modules.
@@ -35,7 +36,15 @@ internal object ConfigManager : DataInterface<String, Any> {
         when {
             allConfigs.isNotEmpty() -> instance.logger.info("Config: Loaded successfully")
             !filePath.exists() -> instance.logger.info("Config: No config file found, a new one will be created")
-            else -> instance.logger.warning("Config: Failed to load, using defaults")
+            else -> {
+                instance.logger.warning("Config: Failed to load, using defaults")
+                try {
+                    instance.logger.warning("Config file content: ${filePath.readText()}")
+                } catch (e: Exception) {
+                    instance.logger.warning("Config: Failed to read config file: ${e.message}")
+                    e.printStackTrace()
+                }
+            }
         }
 
         modules.forEach { module ->
