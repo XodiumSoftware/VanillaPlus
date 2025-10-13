@@ -30,6 +30,7 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
+import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 
 /** Represents a module handling player mechanics within the system. */
@@ -156,6 +157,7 @@ internal class PlayerModule(
         player.nickname(name)
         player.displayName(player.nickname()?.mm())
         tabListModule.updatePlayerDisplayName(player)
+        player.sendActionBar(config.i18n.nicknameUpdated.mm(Placeholder.component("nickname", player.displayName())))
     }
 
     /**
@@ -220,6 +222,7 @@ internal class PlayerModule(
                         true,
                     )
                 } <player> ${"has made the advancement:".mangoFmt()} <advancement>".mangoFmt(),
+            var nicknameUpdated: String = "Nickname has been updated to: <nickname>".fireFmt(),
         )
     }
 }
