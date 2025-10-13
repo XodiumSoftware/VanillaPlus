@@ -1,5 +1,6 @@
 package org.xodium.vanillaplus.modules
 
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Horse
@@ -29,13 +30,20 @@ internal class WanderingTraderModule : ModuleInterface<WanderingTraderModule.Con
 
         horse.remove()
         player.inventory.addItem(ItemStack.of(Material.EMERALD, emeralds))
-        player.sendActionBar("You traded your horse for".mm())
+        player.sendActionBar(
+            config.i18n.horseTradeSuccessfulMessage.mm(
+                Placeholder.component("emeralds", emeralds.toString().mm()),
+            ),
+        )
     }
 
     private fun findLeashedHorse(player: Player): Horse? =
         player
-            .getNearbyEntities(10.0, 10.0, 10.0)
-            .filterIsInstance<Horse>()
+            .getNearbyEntities(
+                config.playerNearbyHorseRadius.toDouble(),
+                config.playerNearbyHorseRadius.toDouble(),
+                config.playerNearbyHorseRadius.toDouble(),
+            ).filterIsInstance<Horse>()
             .firstOrNull { it.leashHolder == player }
 
     private fun calculateEmeraldValue(horse: Horse): Int {
@@ -46,5 +54,11 @@ internal class WanderingTraderModule : ModuleInterface<WanderingTraderModule.Con
 
     data class Config(
         override var enabled: Boolean = true,
-    ) : ModuleInterface.Config
+        var playerNearbyHorseRadius: Int = 10,
+        var i18n: I18n = I18n(),
+    ) : ModuleInterface.Config {
+        data class I18n(
+            var horseTradeSuccessfulMessage: String = "You traded your horse for: <emeralds> <sprite:items:item/emerald>",
+        )
+    }
 }
