@@ -26,6 +26,7 @@ internal object ModuleManager {
     val locatorModule: LocatorModule = LocatorModule()
     val mobsModule: MobsModule = MobsModule()
     val motdModule: MotdModule = MotdModule()
+    val npcModule: NPCModule = NPCModule()
     val openableModule: OpenableModule = OpenableModule()
     val petModule: PetModule = PetModule()
     val recipiesModule: RecipiesModule = RecipiesModule()
@@ -37,7 +38,6 @@ internal object ModuleManager {
     val tabListModule: TabListModule = TabListModule()
     val playerModule: PlayerModule = PlayerModule(tabListModule)
     val treesModule: TreesModule = TreesModule()
-    val npcModule: NPCModule = NPCModule()
 
     private val modules =
         listOf(
@@ -49,6 +49,7 @@ internal object ModuleManager {
             locatorModule,
             mobsModule,
             motdModule,
+            npcModule,
             openableModule,
             petModule,
             playerModule,
@@ -60,7 +61,6 @@ internal object ModuleManager {
             sleepModule,
             tabListModule,
             treesModule,
-            npcModule,
         )
 
     private val configCmd =
