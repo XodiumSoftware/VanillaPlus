@@ -28,7 +28,9 @@ internal class WanderingTraderModule : ModuleInterface<WanderingTraderModule.Con
         val emeralds = calculateEmeraldValue(horse)
         if (emeralds <= 0) return
 
-        horse.remove()
+        horse.isTamed = false
+        horse.removeWhenFarAway = true
+        horse.setLeashHolder(entity)
         player.inventory.addItem(ItemStack.of(Material.EMERALD, emeralds))
         player.sendActionBar(
             config.i18n.horseTradeSuccessfulMessage.mm(
@@ -51,6 +53,11 @@ internal class WanderingTraderModule : ModuleInterface<WanderingTraderModule.Con
             ).filterIsInstance<Horse>()
             .firstOrNull { it.isLeashed && it.leashHolder == player }
 
+    /**
+     * Calculates the emerald value of the horse based on attributes.
+     * @param horse The horse to evaluate.
+     * @return The emerald value.
+     */
     private fun calculateEmeraldValue(horse: Horse): Int {
         val speed = horse.getAttribute(Attribute.MOVEMENT_SPEED)?.baseValue?.times(10) ?: 0.0
         val jump = horse.jumpStrength * 10
