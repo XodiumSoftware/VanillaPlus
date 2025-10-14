@@ -139,7 +139,7 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
                                         .copyBiomes(config.copyBiomes)
                                         .copyEntities(config.copyEntities)
                                         .ignoreAirBlocks(config.ignoreAirBlocks)
-                                        .ignoreStructureVoidBlocks(config.ignoreStructureVoidBlocks)
+//                                        .ignoreStructureVoidBlocks(config.ignoreStructureVoidBlocks)
                                         .build(),
                                 )
                             }
@@ -168,7 +168,7 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
         var copyBiomes: Boolean = false,
         var copyEntities: Boolean = false,
         var ignoreAirBlocks: Boolean = true,
-        var ignoreStructureVoidBlocks: Boolean = true,
+//        var ignoreStructureVoidBlocks: Boolean = true,
         var treeMask: Set<Material> = emptySet(),
     ) : ModuleInterface.Config
 }
