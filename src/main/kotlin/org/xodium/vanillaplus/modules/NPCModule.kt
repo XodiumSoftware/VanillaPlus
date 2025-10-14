@@ -9,6 +9,7 @@ import org.bukkit.entity.WanderingTrader
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.inventory.ItemStack
+import org.xodium.vanillaplus.engines.ExpressionEngine
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.pdcs.HorsePDC.sold
 import org.xodium.vanillaplus.utils.ExtUtils.mm
@@ -66,18 +67,27 @@ internal class NPCModule : ModuleInterface<NPCModule.Config> {
      * @return The emerald value.
      */
     private fun calculateEmeraldValue(horse: Horse): Int {
-        val speed = horse.getAttribute(Attribute.MOVEMENT_SPEED)?.baseValue?.times(10) ?: 0.0
-        val jump = horse.jumpStrength * 10
-        return ((speed + jump) - 12).toInt().coerceAtLeast(1)
+        val context =
+            mapOf(
+                "speed" to (horse.getAttribute(Attribute.MOVEMENT_SPEED)?.baseValue ?: 0.0),
+                "jump" to horse.jumpStrength,
+            )
+
+        return config.evaluate(context).coerceAtLeast(1)
     }
 
     data class Config(
         override var enabled: Boolean = true,
         var transferRadius: Int = 10,
+        var horseTradeFormula: String = "speed * 10 + jump * 10 - 12",
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
         data class I18n(
             var horseTradeSuccessfulMessage: String = "You traded your horse for: <emeralds> <sprite:item/emerald>",
         )
+
+        /** Evaluates expressions */
+        fun evaluate(context: Map<String, Double>): Int =
+            ExpressionEngine.evaluate(horseTradeFormula, context, setOf("speed", "jump")).toInt()
     }
 }
