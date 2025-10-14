@@ -44,14 +44,14 @@ jobs:
       - id: set_version
         name: Set Version
         run: |
-          base_version=$(grep -oP '(?<=^version: ).*' src/main/resources/paper-plugin.yml | tr -d \''"')
+          base_version=$(./gradlew properties -q | grep "version:" | awk '{print $2}')
           if [ "${{ github.ref_name }}" = "dev" ]; then
-            build_number=$(git rev-list --count HEAD)
-            VERSION="${base_version}-${build_number}"
-            echo "Calculated dev version: $VERSION"
+          build_number=$(git rev-list --count HEAD)
+          VERSION="${base_version}-${build_number}"
+          echo "Calculated dev version: $VERSION"
           else
-            VERSION="${base_version}"
-            echo "Calculated main version: $VERSION"
+          VERSION="${base_version}"
+          echo "Calculated main version: $VERSION"
           fi
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
