@@ -73,7 +73,10 @@ internal class NPCModule : ModuleInterface<NPCModule.Config> {
                 "jump" to horse.jumpStrength,
             )
 
-        return config.evaluate(context).coerceAtLeast(1)
+        return ExpressionEngine
+            .evaluate(config.horseTradeFormula, context, setOf("speed", "jump"))
+            .toInt()
+            .coerceAtLeast(1)
     }
 
     data class Config(
@@ -85,9 +88,5 @@ internal class NPCModule : ModuleInterface<NPCModule.Config> {
         data class I18n(
             var horseTradeSuccessfulMessage: String = "You traded your horse for: <emeralds> <sprite:item/emerald>",
         )
-
-        /** Evaluates expressions */
-        fun evaluate(context: Map<String, Double>): Int =
-            ExpressionEngine.evaluate(horseTradeFormula, context, setOf("speed", "jump")).toInt()
     }
 }
