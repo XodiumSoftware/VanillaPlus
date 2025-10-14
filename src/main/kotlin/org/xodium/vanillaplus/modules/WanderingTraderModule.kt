@@ -45,9 +45,9 @@ internal class WanderingTraderModule : ModuleInterface<WanderingTraderModule.Con
     private fun findLeashedHorse(player: Player): Horse? =
         player
             .getNearbyEntities(
-                config.playerNearbyHorseRadius.toDouble(),
-                config.playerNearbyHorseRadius.toDouble(),
-                config.playerNearbyHorseRadius.toDouble(),
+                config.transferRadius.toDouble(),
+                config.transferRadius.toDouble(),
+                config.transferRadius.toDouble(),
             ).filterIsInstance<Horse>()
             .firstOrNull { it.isLeashed && it.leashHolder == player }
 
@@ -59,7 +59,7 @@ internal class WanderingTraderModule : ModuleInterface<WanderingTraderModule.Con
 
     data class Config(
         override var enabled: Boolean = true,
-        var playerNearbyHorseRadius: Int = 10,
+        var transferRadius: Int = 10,
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
         data class I18n(
