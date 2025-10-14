@@ -1,5 +1,6 @@
 package org.xodium.vanillaplus.modules
 
+import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
@@ -9,10 +10,12 @@ import org.bukkit.entity.WanderingTrader
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.inventory.ItemStack
+import org.xodium.vanillaplus.data.SoundData
 import org.xodium.vanillaplus.engines.ExpressionEngine
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.pdcs.HorsePDC.sold
 import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.bukkit.Sound as BukkitSound
 
 /** Represents a module handling wandering trader mechanics within the system. */
 internal class NPCModule : ModuleInterface<NPCModule.Config> {
@@ -30,7 +33,10 @@ internal class NPCModule : ModuleInterface<NPCModule.Config> {
         val horse = findLeashedHorse(player) ?: return
         val emeralds = calculateEmeraldValue(horse)
 
-        if (emeralds <= 0 || horse.sold()) return
+        if (emeralds <= 0 || horse.sold()) {
+            player.playSound(config.horseTradeDeniedSound.toSound())
+            return
+        }
 
         event.isCancelled = true
 
@@ -40,6 +46,7 @@ internal class NPCModule : ModuleInterface<NPCModule.Config> {
         horse.setLeashHolder(entity)
 
         player.inventory.addItem(ItemStack.of(Material.EMERALD, emeralds))
+        player.playSound(config.horseTradeSuccessfulSound.toSound())
         player.sendActionBar(
             config.i18n.horseTradeSuccessfulMessage.mm(
                 Placeholder.component("emeralds", emeralds.toString().mm()),
@@ -81,6 +88,16 @@ internal class NPCModule : ModuleInterface<NPCModule.Config> {
         override var enabled: Boolean = true,
         var transferRadius: Int = 10,
         var horseTradeFormula: String = "speed * 10 + jump * 10 - 12",
+        var horseTradeSuccessfulSound: SoundData =
+            SoundData(
+                BukkitSound.ENTITY_WANDERING_TRADER_TRADE,
+                Sound.Source.NEUTRAL,
+            ),
+        var horseTradeDeniedSound: SoundData =
+            SoundData(
+                BukkitSound.ENTITY_WANDERING_TRADER_NO,
+                Sound.Source.NEUTRAL,
+            ),
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
         data class I18n(
