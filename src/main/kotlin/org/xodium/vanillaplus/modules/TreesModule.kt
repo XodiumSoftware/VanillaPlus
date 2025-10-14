@@ -32,7 +32,6 @@ import java.util.stream.Collectors
 internal class TreesModule : ModuleInterface<TreesModule.Config> {
     override val config: Config = Config()
 
-    /** A map of sapling materials to a list of schematics. */
     private val schematicCache: Map<Material, List<Clipboard>> by lazy {
         MaterialRegistry.SAPLING_LINKS.mapValues { (_, dirs) ->
             dirs.flatMap { dir -> loadSchematics("/schematics/$dir") }
