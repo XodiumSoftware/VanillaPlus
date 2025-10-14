@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.pdcs.HorsePDC.sold
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 
 /** Represents a module handling wandering trader mechanics within the system. */
@@ -28,6 +29,8 @@ internal class WanderingTraderModule : ModuleInterface<WanderingTraderModule.Con
         val emeralds = calculateEmeraldValue(horse)
         if (emeralds <= 0) return
 
+        if (horse.sold()) return
+        horse.sold(true)
         horse.isTamed = false
         horse.removeWhenFarAway = true
         horse.setLeashHolder(entity)
