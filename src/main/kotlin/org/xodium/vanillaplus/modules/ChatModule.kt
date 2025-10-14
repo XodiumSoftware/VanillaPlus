@@ -114,6 +114,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
         event.renderer { player, displayName, message, audience ->
             var base =
                 config.chatFormat.mm(
+                    Placeholder.component("player_head", "<head:${player.uniqueId}>".mm()),
                     Placeholder.component(
                         "player",
                         displayName
@@ -204,7 +205,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
 
     data class Config(
         override var enabled: Boolean = true,
-        var chatFormat: String = "<player> <reset>${"›".mangoFmt(true)} <message>",
+        var chatFormat: String = "<player_head> <player> <reset>${"›".mangoFmt(true)} <message>",
         var welcomeText: List<String> =
             listOf(
                 "]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true),
