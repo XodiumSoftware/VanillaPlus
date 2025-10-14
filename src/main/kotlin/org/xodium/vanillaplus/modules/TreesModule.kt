@@ -69,7 +69,6 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
                     .walk(fs.getPath(resourceDir.removePrefix("/")), 1)
                     .filter { Files.isRegularFile(it) }
                     .collect(Collectors.toList())
-                    .also { if (it.isEmpty()) error("No schematics found in directory: $resourceDir") }
                     .map { path ->
                         Files.newByteChannel(path, StandardOpenOption.READ).use { channel ->
                             readClipboard(path, channel)
