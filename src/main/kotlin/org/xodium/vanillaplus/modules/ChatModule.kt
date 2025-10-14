@@ -69,6 +69,25 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
                 "This command allows you to whisper to players",
                 listOf("w"),
             ),
+            CommandData(
+                Commands
+                    .literal("guide")
+                    .requires { it.sender.hasPermission(perms()[1]) }
+                    .executes { ctx ->
+                        ctx.tryCatch {
+                            if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+                            val sender = it.sender as Player
+                            sender.sendMessage(
+                                instance.prefix +
+                                    "Click me to open url!".mangoFmt(true).mm().clickEvent(
+                                        ClickEvent.openUrl("https://illyria.fandom.com/"),
+                                    ),
+                            )
+                        }
+                    },
+                "This command redirects you to the wiki",
+                emptyList(),
+            ),
         )
     }
 

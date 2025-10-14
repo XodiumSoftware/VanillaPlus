@@ -1,61 +1,70 @@
 package org.xodium.vanillaplus.managers
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect
-import com.fasterxml.jackson.annotation.PropertyAccessor
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.MapperFeature
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.databind.json.JsonMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.core.JsonProcessingException
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.interfaces.DataInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import java.io.IOException
-import java.nio.file.Path
-import kotlin.io.path.createDirectories
+import org.xodium.vanillaplus.utils.ExtUtils.key
 import kotlin.io.path.exists
-import kotlin.io.path.inputStream
-import kotlin.io.path.outputStream
+import kotlin.io.path.readText
 
 /** Represents the config manager within the system. */
-internal object ConfigManager {
-    val configPath: Path = instance.dataFolder.toPath().resolve("config.json")
-    internal val jsonMapper =
-        JsonMapper
-            .builder()
-            .addModule(KotlinModule.Builder().build())
-            .addModule(JavaTimeModule())
-            .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
-            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-            .configure(MapperFeature.PROPAGATE_TRANSIENT_MARKER, true)
-            .build()
-            .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
+internal object ConfigManager : DataInterface<String, Any> {
+    override val dataClass = Any::class
+    override val cache = mutableMapOf<String, Any>()
+    override val fileName = "config.json"
 
     /**
-     * Loads settings from the config file.
-     * @return A JsonNode representing the configuration, or null on failure or if the file doesn't exist.
+     * Loads all configuration settings from the config file.
+     * @return A map of module names to their respective configuration objects.
+     *         Returns an empty map if no configuration exists or if an error occurs during loading.
      */
-    fun load(): JsonNode? {
-        if (!configPath.exists()) return null
-        return try {
-            jsonMapper.readTree(configPath.inputStream())
-        } catch (e: IOException) {
-            instance.logger.severe("Config: Failed to load config file: ${e.message} | ${e.stackTraceToString()}")
-            null
-        }
-    }
+    fun loadConfig(): Map<String, Any> = getAll()
 
     /**
-     * Saves the current settings to the config file.
-     * @param data The map of configuration data to save.
+     * Saves the provided configuration data to the config file.
+     * @param data A map of module names to their respective configuration objects to be saved.
      */
-    fun save(data: Map<String, ModuleInterface.Config>) {
-        try {
-            configPath.parent.createDirectories()
-            jsonMapper.writerWithDefaultPrettyPrinter().writeValue(configPath.outputStream(), data)
-        } catch (e: IOException) {
-            instance.logger.severe("Config: Failed to save config file: ${e.message} | ${e.stackTraceToString()}")
+    fun saveConfig(data: Map<String, Any>) = setAll(LinkedHashMap(data))
+
+    /**
+     * Updates module configurations by loading from file and applying to modules.
+     * @param modules List of modules to update configurations for.
+     */
+    fun updateConfig(modules: List<ModuleInterface<ModuleInterface.Config>>) {
+        val allConfigs = loadConfig()
+        when {
+            allConfigs.isNotEmpty() -> instance.logger.info("Config: Loaded successfully")
+            !filePath.exists() -> instance.logger.info("Config: No config file found, a new one will be created")
+            else -> {
+                instance.logger.warning("Config: Failed to load, using defaults")
+                try {
+                    instance.logger.warning("Config file content: ${filePath.readText()}")
+                } catch (e: Exception) {
+                    instance.logger.warning("Config: Failed to read config file: ${e.message}")
+                    e.printStackTrace()
+                }
+            }
         }
+
+        modules.forEach { module ->
+            val configKey = module.key()
+            allConfigs[configKey]?.let { configData ->
+                try {
+                    jsonMapper
+                        .readerForUpdating(module.config)
+                        .readValue<Any>(jsonMapper.writeValueAsString(configData))
+                } catch (e: JsonProcessingException) {
+                    instance.logger.warning(
+                        "Failed to parse config for ${module::class.simpleName}. Using defaults. Error: ${e.message}",
+                    )
+                    cache[configKey] = module.config
+                }
+            } ?: run {
+                cache[configKey] = module.config
+            }
+        }
+
+        if (!filePath.exists() || allConfigs.isEmpty()) saveConfig(cache)
     }
 }
