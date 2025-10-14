@@ -13,7 +13,6 @@ object ExpressionEngine {
      * Evaluates a mathematical expression with provided variable context.
      * @param expression the mathematical expression to evaluate (e.g., "speed * 10 + jump * 5").
      * @param context a map of variable names to their values for expression substitution.
-     * @param allowedVariables the whitelist of variable names permitted in the expression.
      * @return the computed numerical result of the expression.
      * @throws IllegalArgumentException if:
      * - Expression contains forbidden characters (`;`, `{`, `}`, `[`, `]`, `"`) :cite[1]
@@ -23,7 +22,6 @@ object ExpressionEngine {
     fun evaluate(
         expression: String,
         context: Map<String, Double>,
-        allowedVariables: Iterable<String>,
     ): Double {
         if (expression.contains(Regex("""[;{}\[\]"]"""))) {
             throw IllegalArgumentException("Expression contains forbidden characters")
@@ -31,7 +29,7 @@ object ExpressionEngine {
 
         val expr = Expression(expression)
 
-        context.forEach { (key, value) -> if (key in allowedVariables) expr.addArguments(Argument("$key = $value")) }
+        context.forEach { (key, value) -> expr.addArguments(Argument("$key = $value")) }
 
         val result = expr.calculate()
 

@@ -66,18 +66,16 @@ internal class NPCModule : ModuleInterface<NPCModule.Config> {
      * @param horse The horse to evaluate.
      * @return The emerald value.
      */
-    private fun calculateEmeraldValue(horse: Horse): Int {
-        val context =
-            mapOf(
-                "speed" to (horse.getAttribute(Attribute.MOVEMENT_SPEED)?.baseValue ?: 0.0),
-                "jump" to horse.jumpStrength,
-            )
-
-        return ExpressionEngine
-            .evaluate(config.horseTradeFormula, context, setOf("speed", "jump"))
-            .toInt()
+    private fun calculateEmeraldValue(horse: Horse): Int =
+        ExpressionEngine
+            .evaluate(
+                config.horseTradeFormula,
+                mapOf(
+                    "speed" to (horse.getAttribute(Attribute.MOVEMENT_SPEED)?.baseValue ?: 0.0),
+                    "jump" to horse.jumpStrength,
+                ),
+            ).toInt()
             .coerceAtLeast(1)
-    }
 
     data class Config(
         override var enabled: Boolean = true,
