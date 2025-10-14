@@ -98,6 +98,11 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
                 "Allows use of the whisper command",
                 PermissionDefault.TRUE,
             ),
+            Permission(
+                "${instance::class.simpleName}.guide".lowercase(),
+                "Allows use of the guide command",
+                PermissionDefault.TRUE,
+            ),
         )
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
