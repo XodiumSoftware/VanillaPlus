@@ -14,7 +14,7 @@ import org.xodium.vanillaplus.pdcs.HorsePDC.sold
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 
 /** Represents a module handling wandering trader mechanics within the system. */
-internal class WanderingTraderModule : ModuleInterface<WanderingTraderModule.Config> {
+internal class NPCModule : ModuleInterface<NPCModule.Config> {
     override val config: Config = Config()
 
     @EventHandler
