@@ -12,6 +12,9 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.PlayerDeathEvent
+import org.bukkit.event.inventory.ClickType
+import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.player.PlayerAdvancementDoneEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
@@ -23,8 +26,8 @@ import org.bukkit.permissions.PermissionDefault
 import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
-import org.xodium.vanillaplus.data.PlayerData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
@@ -83,10 +86,11 @@ internal class PlayerModule(
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
         if (!enabled()) return
-        PlayerData.get(event.player)?.nickname?.let { event.player.displayName(it.mm()) }
+        val player = event.player
+        player.displayName(player.nickname()?.mm())
+
         if (config.i18n.playerJoinMsg.isEmpty()) return
         event.joinMessage(null)
-        val player = event.player
         instance.server.onlinePlayers
             .filter { it.uniqueId != player.uniqueId }
             .forEach {
@@ -128,6 +132,19 @@ internal class PlayerModule(
         )
     }
 
+    @EventHandler
+    fun on(event: InventoryClickEvent) {
+        if (!enabled() ||
+            event.click != config.enderChestClickType ||
+            event.currentItem?.type != Material.ENDER_CHEST ||
+            event.clickedInventory?.type != InventoryType.PLAYER
+        ) {
+            return
+        }
+        event.isCancelled = true
+        event.whoClicked.openInventory(event.whoClicked.enderChest)
+    }
+
     /**
      * Sets the nickname of the player to the given name.
      * @param player The player whose nickname is to be set.
@@ -137,9 +154,10 @@ internal class PlayerModule(
         player: Player,
         name: String,
     ) {
-        PlayerData.set(player, nickname = name)
-        player.displayName(name.mm())
+        player.nickname(name)
+        player.displayName(player.nickname()?.mm())
         tabListModule.updatePlayerDisplayName(player)
+        player.sendActionBar(config.i18n.nicknameUpdated.mm(Placeholder.component("nickname", player.displayName())))
     }
 
     /**
@@ -159,7 +177,7 @@ internal class PlayerModule(
             setData(DataComponentTypes.PROFILE, ResolvableProfile.resolvableProfile(entity.playerProfile))
             setData(
                 DataComponentTypes.CUSTOM_NAME,
-                config.i18n.playerHeadName.mm(Placeholder.component("player", entity.displayName())),
+                config.i18n.playerHeadName.mm(Placeholder.component("player", entity.name.mm())),
             )
             setData(
                 DataComponentTypes.LORE,
@@ -187,10 +205,11 @@ internal class PlayerModule(
 
     data class Config(
         override var enabled: Boolean = true,
+        var enderChestClickType: ClickType = ClickType.SHIFT_LEFT,
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
         data class I18n(
-            var playerHeadName: String = "<player>’s Skull".fireFmt(),
+            var playerHeadName: String = "<player>’s Skull",
             var playerHeadLore: List<String> = listOf("<player> killed by <killer>", "Stored XP: <xp>"),
 //            var playerDeathMsg: String = "<killer> ${"⚔".mangoFmt(true)} <player>",
             var playerJoinMsg: String = "<green>➕<reset> ${"›".mangoFmt(true)} <player>",
@@ -203,6 +222,7 @@ internal class PlayerModule(
                         true,
                     )
                 } <player> ${"has made the advancement:".mangoFmt()} <advancement>".mangoFmt(),
+            var nicknameUpdated: String = "Nickname has been updated to: <nickname>".fireFmt(),
         )
     }
 }
