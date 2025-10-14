@@ -37,6 +37,11 @@ internal class WanderingTraderModule : ModuleInterface<WanderingTraderModule.Con
         )
     }
 
+    /**
+     * Finds the first leashed horse owned by the player within the configured radius.
+     * @param player The player to search around.
+     * @return The found horse or `null` if none exists.
+     */
     private fun findLeashedHorse(player: Player): Horse? =
         player
             .getNearbyEntities(
@@ -44,7 +49,7 @@ internal class WanderingTraderModule : ModuleInterface<WanderingTraderModule.Con
                 config.playerNearbyHorseRadius.toDouble(),
                 config.playerNearbyHorseRadius.toDouble(),
             ).filterIsInstance<Horse>()
-            .firstOrNull { it.leashHolder == player }
+            .firstOrNull { it.isLeashed && it.leashHolder == player }
 
     private fun calculateEmeraldValue(horse: Horse): Int {
         val speed = horse.getAttribute(Attribute.MOVEMENT_SPEED)?.baseValue?.times(10) ?: 0.0
