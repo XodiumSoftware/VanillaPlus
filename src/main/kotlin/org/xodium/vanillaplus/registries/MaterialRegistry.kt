@@ -3,6 +3,7 @@
 package org.xodium.vanillaplus.registries
 
 import org.bukkit.Material
+import org.bukkit.Tag
 import java.util.*
 
 /** Registry for materials. */
@@ -12,8 +13,7 @@ internal object MaterialRegistry {
             Material.entries.filter {
                 it.name.endsWith("BARREL") ||
                     it.name.endsWith("CHEST") ||
-                    it.name == "SHULKER_BOX" ||
-                    it.name.endsWith("_SHULKER_BOX")
+                    Tag.SHULKER_BOXES.isTagged(it)
             },
         )
 
