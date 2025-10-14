@@ -20,6 +20,7 @@ internal class NPCModule : ModuleInterface<NPCModule.Config> {
     @EventHandler
     fun on(event: PlayerInteractEntityEvent) {
         if (!enabled()) return
+
         val player = event.player
         val entity = event.rightClicked
 
@@ -27,13 +28,16 @@ internal class NPCModule : ModuleInterface<NPCModule.Config> {
 
         val horse = findLeashedHorse(player) ?: return
         val emeralds = calculateEmeraldValue(horse)
-        if (emeralds <= 0) return
 
-        if (horse.sold()) return
+        if (emeralds <= 0 || horse.sold()) return
+
+        event.isCancelled = true
+
         horse.sold(true)
         horse.isTamed = false
         horse.removeWhenFarAway = true
         horse.setLeashHolder(entity)
+
         player.inventory.addItem(ItemStack.of(Material.EMERALD, emeralds))
         player.sendActionBar(
             config.i18n.horseTradeSuccessfulMessage.mm(
