@@ -58,11 +58,13 @@ internal object ConfigManager : DataInterface<String, Any> {
                     instance.logger.warning(
                         "Failed to parse config for ${module::class.simpleName}. Using defaults. Error: ${e.message}",
                     )
+                    cache[configKey] = module.config
                 }
+            } ?: run {
+                cache[configKey] = module.config
             }
-            cache[configKey] = module.config
         }
 
-        saveConfig(cache)
+        if (!filePath.exists() || allConfigs.isEmpty()) saveConfig(cache)
     }
 }
