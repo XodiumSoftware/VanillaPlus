@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Gradle: org.mariuszgromada.math:MathParser.org-mXparser:6.1.0" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="org.mariuszgromada.math" artifactId="MathParser.org-mXparser" version="6.1.0" baseVersion="6.1.0" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.mariuszgromada.math/MathParser.org-mXparser/6.1.0/65bb36c8490647244ed1e4743443d25d03606889/MathParser.org-mXparser-6.1.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
