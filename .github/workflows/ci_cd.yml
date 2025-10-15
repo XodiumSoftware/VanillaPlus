@@ -66,30 +66,8 @@ jobs:
           name: vanillaplus
           path: build/libs/VanillaPlus-*.jar
 
-  dependency-submission:
-    needs: [ build ]
-    runs-on: ubuntu-latest
-    environment:
-      name: "${{ github.ref_name }}"
-      url: "${{ steps.generate_and_submit_dependency_graph.outputs.url }}"
-    steps:
-      - id: checkout
-        name: Checkout
-        uses: actions/checkout@ff7abcd0c3c05ccf6adc123a8cd1fd4fb30fb493
-
-      - id: setup_java
-        name: Setup Java
-        uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: 21
-
-      - id: generate_and_submit_dependency_graph
-        name: Generate and submit dependency graph
-        uses: gradle/actions/dependency-submission@v5
-
   release:
-    needs: [ dependency-submission, build ]
+    needs: [ build ]
     if: github.ref_name == 'main' || github.ref_name == 'dev'
     runs-on: ubuntu-latest
     environment:
