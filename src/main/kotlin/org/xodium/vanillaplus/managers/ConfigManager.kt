@@ -5,8 +5,6 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.DataInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.key
-import kotlin.io.path.exists
-import kotlin.io.path.readText
 
 /** Represents the config manager within the system. */
 internal object ConfigManager : DataInterface<String, Any> {
@@ -15,56 +13,29 @@ internal object ConfigManager : DataInterface<String, Any> {
     override val fileName = "config.json"
 
     /**
-     * Loads all configuration settings from the config file.
-     * @return A map of module names to their respective configuration objects.
-     *         Returns an empty map if no configuration exists or if an error occurs during loading.
-     */
-    fun loadConfig(): Map<String, Any> = getAll()
-
-    /**
-     * Saves the provided configuration data to the config file.
-     * @param data A map of module names to their respective configuration objects to be saved.
-     */
-    fun saveConfig(data: Map<String, Any>) = setAll(LinkedHashMap(data))
-
-    /**
      * Updates module configurations by loading from file and applying to modules.
      * @param modules List of modules to update configurations for.
      */
-    fun updateConfig(modules: List<ModuleInterface<ModuleInterface.Config>>) {
-        val allConfigs = loadConfig()
-        when {
-            allConfigs.isNotEmpty() -> instance.logger.info("Config: Loaded successfully")
-            !filePath.exists() -> instance.logger.info("Config: No config file found, a new one will be created")
-            else -> {
-                instance.logger.warning("Config: Failed to load, using defaults")
-                try {
-                    instance.logger.warning("Config file content: ${filePath.readText()}")
-                } catch (e: Exception) {
-                    instance.logger.warning("Config: Failed to read config file: ${e.message}")
-                    e.printStackTrace()
-                }
-            }
-        }
-
+    fun update(modules: List<ModuleInterface<ModuleInterface.Config>>) {
         modules.forEach { module ->
-            val configKey = module.key()
-            val defaultConfig = module.config
-            val mergedConfig =
-                allConfigs[configKey]?.let { configData ->
+            val key = module.key()
+            val newData =
+                get(key)?.let { data ->
                     try {
-                        val loaded = jsonMapper.convertValue(configData, defaultConfig::class.java)
-                        jsonMapper.updateValue(loaded, defaultConfig)
+                        jsonMapper.updateValue(
+                            jsonMapper.convertValue(data, module.config::class.java),
+                            module.config,
+                        )
                     } catch (e: JsonProcessingException) {
                         instance.logger.warning(
                             "Failed to parse config for ${module::class.simpleName}. Using defaults. Error: ${e.message}",
                         )
-                        defaultConfig
+                        module.config
                     }
-                } ?: defaultConfig
+                } ?: module.config
 
-            cache[configKey] = mergedConfig
+            set(key, newData)
         }
-        saveConfig(cache)
+        if (modules.isNotEmpty()) instance.logger.info("Config updated successfully")
     }
 }

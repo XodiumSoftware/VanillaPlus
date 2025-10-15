@@ -71,7 +71,7 @@ internal object ModuleManager {
                         .requires { it.sender.hasPermission(configPerm) }
                         .executes { ctx ->
                             ctx.tryCatch {
-                                ConfigManager.updateConfig(modules)
+                                ConfigManager.update(modules)
                                 if (it.sender is Player) {
                                     it.sender.sendMessage("${instance.prefix} <green>Config reloaded successfully".mm())
                                 }
@@ -98,7 +98,7 @@ internal object ModuleManager {
 
     /** Loads configs, registers modules' events and permissions, and collects commands. */
     private fun pluginManager() {
-        ConfigManager.updateConfig(modules)
+        ConfigManager.update(modules)
         commandsToRegister.add(configCmd)
         instance.server.pluginManager.addPermission(configPerm)
         modules.filter { it.enabled() }.forEach { module ->

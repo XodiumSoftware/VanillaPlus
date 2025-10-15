@@ -76,13 +76,8 @@ interface DataInterface<K, T : Any> {
      * @return the value associated with the specified key, or `null` if no mapping exists.
      */
     fun get(key: K): T? {
-        if (!cache.containsKey(key) && filePath.toFile().exists()) load()
-        return cache[key]
-    }
-
-    fun getAll(): Map<K, T> {
         if (cache.isEmpty() && filePath.toFile().exists()) load()
-        return cache
+        return cache[key]
     }
 
     /**
@@ -95,12 +90,6 @@ interface DataInterface<K, T : Any> {
         data: T,
     ) {
         cache[key] = data
-        save()
-    }
-
-    fun setAll(data: Map<K, T>) {
-        cache.clear()
-        cache.putAll(data)
         save()
     }
 }
