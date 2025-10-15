@@ -75,7 +75,7 @@ jobs:
     steps:
       - id: checkout
         name: Checkout
-        uses: actions/checkout@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2
+        uses: actions/checkout@ff7abcd0c3c05ccf6adc123a8cd1fd4fb30fb493
 
       - id: setup_java
         name: Setup Java
