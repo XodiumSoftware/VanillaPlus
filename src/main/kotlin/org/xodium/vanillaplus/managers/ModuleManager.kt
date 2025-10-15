@@ -22,11 +22,10 @@ internal object ModuleManager {
     val cauldronModule: CauldronModule = CauldronModule()
     val chatModule: ChatModule = ChatModule()
     val dimensionsModule: DimensionsModule = DimensionsModule()
+    val entityModule: EntityModule = EntityModule()
     val invModule: InvModule = InvModule()
     val locatorModule: LocatorModule = LocatorModule()
-    val mobsModule: MobsModule = MobsModule()
     val motdModule: MotdModule = MotdModule()
-    val npcModule: NPCModule = NPCModule()
     val openableModule: OpenableModule = OpenableModule()
     val petModule: PetModule = PetModule()
     val recipiesModule: RecipiesModule = RecipiesModule()
@@ -45,11 +44,10 @@ internal object ModuleManager {
             cauldronModule,
             chatModule,
             dimensionsModule,
+            entityModule,
             invModule,
             locatorModule,
-            mobsModule,
             motdModule,
-            npcModule,
             openableModule,
             petModule,
             playerModule,
