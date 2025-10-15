@@ -1,6 +1,5 @@
 package org.xodium.vanillaplus.managers
 
-import com.fasterxml.jackson.core.JsonProcessingException
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.DataInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
@@ -19,22 +18,7 @@ internal object ConfigManager : DataInterface<String, Any> {
     fun update(modules: List<ModuleInterface<ModuleInterface.Config>>) {
         modules.forEach { module ->
             val key = module.key()
-            val newData =
-                get(key)?.let { data ->
-                    try {
-                        jsonMapper.updateValue(
-                            jsonMapper.convertValue(data, module.config::class.java),
-                            module.config,
-                        )
-                    } catch (e: JsonProcessingException) {
-                        instance.logger.warning(
-                            "Failed to parse config for ${module::class.simpleName}. Using defaults. Error: ${e.message}",
-                        )
-                        module.config
-                    }
-                } ?: module.config
-
-            set(key, newData)
+            if (!cache.containsKey(key)) set(key, get(key) ?: module.config)
         }
         if (modules.isNotEmpty()) instance.logger.info("Config updated successfully")
     }
