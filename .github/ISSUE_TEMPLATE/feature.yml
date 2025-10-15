@@ -1,6 +1,6 @@
 name: Feature Request
 description: File a feature request.
-type: [ "Feature" ]
+type: "Feature"
 assignees: [ "illyrius666" ]
 body:
   - type: markdown
