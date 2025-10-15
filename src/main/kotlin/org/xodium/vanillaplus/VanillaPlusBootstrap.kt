@@ -9,6 +9,7 @@ import io.papermc.paper.registry.event.RegistryComposeEvent
 import io.papermc.paper.registry.event.RegistryEvents
 import io.papermc.paper.registry.keys.EnchantmentKeys
 import io.papermc.paper.registry.keys.tags.ItemTypeTagKeys
+import io.papermc.paper.registry.set.RegistrySet
 import net.kyori.adventure.key.Key
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.EquipmentSlotGroup
@@ -106,6 +107,12 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
             .minimumCost(EnchantmentRegistryEntry.EnchantmentCost.of(4, 6))
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(24, 6))
             .activeSlots(EquipmentSlotGroup.BODY)
+            .exclusiveWith(
+                RegistrySet.keySet(
+                    RegistryKey.ENCHANTMENT,
+                    setOf(RegistryKey.ENCHANTMENT.typedKey(ZEPHYR)),
+                ),
+            )
     }
 
     /**
@@ -126,5 +133,11 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
             .minimumCost(EnchantmentRegistryEntry.EnchantmentCost.of(4, 6))
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(24, 6))
             .activeSlots(EquipmentSlotGroup.BODY)
+            .exclusiveWith(
+                RegistrySet.keySet(
+                    RegistryKey.ENCHANTMENT,
+                    setOf(RegistryKey.ENCHANTMENT.typedKey(NIMBUS)),
+                ),
+            )
     }
 }
