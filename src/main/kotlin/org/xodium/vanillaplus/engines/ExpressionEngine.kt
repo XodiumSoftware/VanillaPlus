@@ -8,7 +8,7 @@ import org.mariuszgromada.math.mxparser.Expression
  * @see org.mariuszgromada.math.mxparser.Expression
  * @see org.mariuszgromada.math.mxparser.Argument
  */
-object ExpressionEngine {
+internal object ExpressionEngine {
     /**
      * Evaluates a mathematical expression with provided variable context.
      * @param expression the mathematical expression to evaluate (e.g., "speed * 10 + jump * 5").
