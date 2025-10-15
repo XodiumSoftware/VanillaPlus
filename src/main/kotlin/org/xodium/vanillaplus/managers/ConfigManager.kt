@@ -1,24 +1,54 @@
 package org.xodium.vanillaplus.managers
 
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.DataInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.ExtUtils.key
 
-/** Represents the config manager within the system. */
+/** Manages module configs on disk and in-memory. */
 internal object ConfigManager : DataInterface<String, ModuleInterface.Config> {
-    override val dataClass = ModuleInterface.Config::class
-    override val cache = mutableMapOf<String, ModuleInterface.Config>()
-    override val fileName = "config.json"
+    override val dataClass: kotlin.reflect.KClass<ModuleInterface.Config> = ModuleInterface.Config::class
+    override val cache: MutableMap<String, ModuleInterface.Config> = mutableMapOf()
+    override val fileName: String = "config.json"
 
     /**
-     * Loads all configuration settings from the config file.
-     * @return A map of module names to their respective configuration objects.
-     *         Returns an empty map if no configuration exists or if an error occurs during loading.
+     * Updates module configurations by merging existing file values into
+     * in-code defaults. File/user values take precedence over defaults.
+     * @param modules list of modules to update.
      */
-    fun loadConfig(): Map<String, ModuleInterface.Config> = getAll()
+    fun update(modules: List<ModuleInterface<ModuleInterface.Config>>) {
+        modules.forEach { module ->
+            val key = module.key()
 
-    /**
-     * Saves the provided configuration data to the config file.
-     * @param data A map of module names to their respective configuration objects to be saved.
-     */
-    fun saveConfig(data: Map<String, ModuleInterface.Config>) = setAll(data)
+            val fileConfig: ModuleInterface.Config? =
+                try {
+                    if (filePath.toFile().exists()) {
+                        val tree = jsonMapper.readTree(filePath.toFile())
+                        val node = tree?.get(key)
+                        if (node != null) jsonMapper.treeToValue(node, module.config::class.java) else null
+                    } else {
+                        null
+                    }
+                } catch (e: Exception) {
+                    instance.logger.warning("Failed to read config section for $key: ${e.message}")
+                    null
+                }
+
+            val mergedConfig =
+                if (fileConfig != null) {
+                    try {
+                        jsonMapper.updateValue(module.config, fileConfig)
+                    } catch (e: Exception) {
+                        instance.logger.warning("Failed to merge config for $key: ${e.message}")
+                        module.config
+                    }
+                } else {
+                    module.config
+                }
+
+            set(key, mergedConfig)
+        }
+
+        if (modules.isNotEmpty()) instance.logger.info("Config updated successfully")
+    }
 }

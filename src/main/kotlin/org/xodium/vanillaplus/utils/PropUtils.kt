@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package org.xodium.vanillaplus.utils
 
 import kotlin.properties.ReadWriteProperty
