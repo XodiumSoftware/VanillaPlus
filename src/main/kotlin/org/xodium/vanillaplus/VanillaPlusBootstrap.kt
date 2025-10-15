@@ -14,7 +14,7 @@ import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 
-@Suppress("UnstableApiUsage")
+@Suppress("UnstableApiUsage", "Unused")
 /** Main bootstrap class of the plugin. */
 internal class VanillaPlusBootstrap : PluginBootstrap {
     private val registryAccess = RegistryAccess.registryAccess()
