@@ -58,7 +58,7 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
         event: RegistryComposeEvent<Enchantment, EnchantmentRegistryEntry.Builder>,
     ) {
         builder
-            .description("Drift".mm())
+            .description(DRIFT.value().replaceFirstChar { it.uppercase() }.mm())
             .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.HARNESSES))
             .anvilCost(2)
             .maxLevel(2)
@@ -78,7 +78,7 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
         event: RegistryComposeEvent<Enchantment, EnchantmentRegistryEntry.Builder>,
     ) {
         builder
-            .description("Fortitude".mm())
+            .description(FORTITUDE.value().replaceFirstChar { it.uppercase() }.mm())
             .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.HARNESSES))
             .anvilCost(2)
             .maxLevel(4)
@@ -98,7 +98,7 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
         event: RegistryComposeEvent<Enchantment, EnchantmentRegistryEntry.Builder>,
     ) {
         builder
-            .description("Nimbus".mm())
+            .description(NIMBUS.value().replaceFirstChar { it.uppercase() }.mm())
             .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.HARNESSES))
             .anvilCost(2)
             .maxLevel(3)
@@ -118,7 +118,7 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
         event: RegistryComposeEvent<Enchantment, EnchantmentRegistryEntry.Builder>,
     ) {
         builder
-            .description("Zephyr".mm())
+            .description(ZEPHYR.value().replaceFirstChar { it.uppercase() }.mm())
             .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.HARNESSES))
             .anvilCost(2)
             .maxLevel(5)
