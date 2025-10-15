@@ -49,22 +49,22 @@ internal object ConfigManager : DataInterface<String, Any> {
 
         modules.forEach { module ->
             val configKey = module.key()
-            allConfigs[configKey]?.let { configData ->
-                try {
-                    jsonMapper
-                        .readerForUpdating(module.config)
-                        .readValue<Any>(jsonMapper.writeValueAsString(configData))
-                } catch (e: JsonProcessingException) {
-                    instance.logger.warning(
-                        "Failed to parse config for ${module::class.simpleName}. Using defaults. Error: ${e.message}",
-                    )
-                    cache[configKey] = module.config
-                }
-            } ?: run {
-                cache[configKey] = module.config
-            }
-        }
+            val defaultConfig = module.config
+            val mergedConfig =
+                allConfigs[configKey]?.let { configData ->
+                    try {
+                        val loaded = jsonMapper.convertValue(configData, defaultConfig::class.java)
+                        jsonMapper.updateValue(loaded, defaultConfig)
+                    } catch (e: JsonProcessingException) {
+                        instance.logger.warning(
+                            "Failed to parse config for ${module::class.simpleName}. Using defaults. Error: ${e.message}",
+                        )
+                        defaultConfig
+                    }
+                } ?: defaultConfig
 
-        if (!filePath.exists() || allConfigs.isEmpty()) saveConfig(cache)
+            cache[configKey] = mergedConfig
+        }
+        saveConfig(cache)
     }
 }

@@ -81,8 +81,11 @@ internal class PetModule : ModuleInterface<PetModule.Config> {
      */
     private fun findLeashedPet(player: Player): Tameable? =
         player
-            .getNearbyEntities(config.transferRadius, config.transferRadius, config.transferRadius)
-            .filterIsInstance<LivingEntity>()
+            .getNearbyEntities(
+                config.transferRadius.toDouble(),
+                config.transferRadius.toDouble(),
+                config.transferRadius.toDouble(),
+            ).filterIsInstance<LivingEntity>()
             .firstOrNull { it.isLeashed && it.leashHolder == player }
             as? Tameable
 
@@ -114,7 +117,7 @@ internal class PetModule : ModuleInterface<PetModule.Config> {
 
     data class Config(
         override var enabled: Boolean = true,
-        var transferRadius: Double = 10.0,
+        var transferRadius: Int = 10,
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
         data class I18n(
