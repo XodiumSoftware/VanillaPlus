@@ -18,22 +18,35 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 /** Main bootstrap class of the plugin. */
 internal class VanillaPlusBootstrap : PluginBootstrap {
     private val registryAccess = RegistryAccess.registryAccess()
-    private val driftKey = Key.key("vanillaplus", "drift")
-    private val fortitudeKey = Key.key("vanillaplus", "fortitude")
-    private val nimbusKey = Key.key("vanillaplus", "nimbus")
-    private val zephyrKey = Key.key("vanillaplus", "zephyr")
+
+    companion object {
+        private const val INSTANCE = "vanillaplus"
+        val DRIFT = Key.key(INSTANCE, "drift")
+        val FORTITUDE = Key.key(INSTANCE, "fortitude")
+        val NIMBUS = Key.key(INSTANCE, "nimbus")
+        val ZEPHYR = Key.key(INSTANCE, "zephyr")
+    }
 
     override fun bootstrap(ctx: BootstrapContext) {
         ctx.lifecycleManager.registerEventHandler(
             RegistryEvents.ENCHANTMENT.compose().newHandler { event ->
                 val registry = event.registry()
-                registry.register(EnchantmentKeys.create(driftKey)) { b -> setDriftEnchantment(b, event) }
-                registry.register(EnchantmentKeys.create(fortitudeKey)) { b -> setFortitudeEnchantment(b, event) }
-                registry.register(EnchantmentKeys.create(nimbusKey)) { b -> setNimbusEnchantment(b, event) }
-                registry.register(EnchantmentKeys.create(zephyrKey)) { b -> setZephyrEnchantment(b, event) }
+                registry.register(EnchantmentKeys.create(DRIFT)) { setDriftEnchantment(it, event) }
+                registry.register(EnchantmentKeys.create(FORTITUDE)) { setFortitudeEnchantment(it, event) }
+                registry.register(EnchantmentKeys.create(NIMBUS)) { setNimbusEnchantment(it, event) }
+                registry.register(EnchantmentKeys.create(ZEPHYR)) { setZephyrEnchantment(it, event) }
             },
         )
     }
+
+    /**
+     * Retrieves the enchantment from the registry.
+     * @param key The unique [Key] identifying the enchantment in the registry.
+     * @return The [Enchantment] instance corresponding to the key.
+     * @throws NoSuchElementException if the enchantment is not found in the registry.
+     */
+    fun getEnchantment(key: Key): Enchantment =
+        registryAccess.getRegistry(RegistryKey.ENCHANTMENT).getOrThrow(RegistryKey.ENCHANTMENT.typedKey(key))
 
     /**
      * Configures the Drift enchantment.
@@ -114,44 +127,4 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(24, 6))
             .activeSlots(EquipmentSlotGroup.BODY)
     }
-
-    /**
-     * Retrieves the "Drift" enchantment from the registry.
-     * @return The [Enchantment] instance corresponding to the Drift key.
-     * @throws NoSuchElementException if the enchantment is not found in the registry.
-     */
-    fun getDriftEnchantment(): Enchantment =
-        registryAccess
-            .getRegistry(RegistryKey.ENCHANTMENT)
-            .getOrThrow(RegistryKey.ENCHANTMENT.typedKey(driftKey))
-
-    /**
-     * Retrieves the "Fortitude" enchantment from the registry.
-     * @return The [Enchantment] instance corresponding to the Fortitude key.
-     * @throws NoSuchElementException if the enchantment is not found in the registry.
-     */
-    fun getFortitudeEnchantment(): Enchantment =
-        registryAccess
-            .getRegistry(RegistryKey.ENCHANTMENT)
-            .getOrThrow(RegistryKey.ENCHANTMENT.typedKey(fortitudeKey))
-
-    /**
-     * Retrieves the "Nimbus" enchantment from the registry.
-     * @return The [Enchantment] instance corresponding to the Nimbus key.
-     * @throws NoSuchElementException if the enchantment is not found in the registry.
-     */
-    fun getNimbusEnchantment(): Enchantment =
-        registryAccess
-            .getRegistry(RegistryKey.ENCHANTMENT)
-            .getOrThrow(RegistryKey.ENCHANTMENT.typedKey(nimbusKey))
-
-    /**
-     * Retrieves the "Zephyr" enchantment from the registry.
-     * @return The [Enchantment] instance corresponding to the Zephyr key.
-     * @throws NoSuchElementException if the enchantment is not found in the registry.
-     */
-    fun getZephyrEnchantment(): Enchantment =
-        registryAccess
-            .getRegistry(RegistryKey.ENCHANTMENT)
-            .getOrThrow(RegistryKey.ENCHANTMENT.typedKey(zephyrKey))
 }
