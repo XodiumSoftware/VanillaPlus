@@ -54,14 +54,14 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
     /**
      * Handles the automatic planting of crops from a dispenser.
      * @param event The block dispense event that triggered this handler.
-     * @see getTargetBlock For determining the farmland block in front of the dispenser.
-     * @see isFarmland For checking if the target block is suitable farmland.
+     * @see targetBlock For determining the farmland block in front of the dispenser.
+     * @see isFarmable For checking if the target block is suitable farmland.
      */
     private fun handleCropPlanting(event: BlockDispenseEvent) {
         val dispenser = event.block.state as? Dispenser ?: return
-        val targetBlock = getTargetBlock(event.block) ?: return
+        val targetBlock = dispenser.targetBlock() ?: return
 
-        if (!isFarmland(targetBlock.type)) return
+        if (!targetBlock.type.isFarmable()) return
 
         val blockAbove = targetBlock.getRelative(BlockFace.UP)
         if (!blockAbove.type.isAir) return
@@ -96,11 +96,11 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
     /**
      * Handles the insertion of a music disc into a jukebox via a dispenser.
      * @param event The block dispense event that triggered this handler.
-     * @see getTargetBlock For determining the block in front of the dispenser.
+     * @see targetBlock For determining the block in front of the dispenser.
      */
     private fun handleJukeboxInsertion(event: BlockDispenseEvent) {
         val dispenser = event.block.state as? Dispenser ?: return
-        val targetBlock = getTargetBlock(event.block) ?: return
+        val targetBlock = dispenser.targetBlock() ?: return
 
         if (targetBlock.type != Material.JUKEBOX) return
 
@@ -123,15 +123,15 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
     /**
      * Handles the collection of liquids from cauldrons using empty buckets via dispensers.
      * @param event The block dispense event that triggered this handler.
-     * @see getTargetBlock For determining the cauldron block in front of the dispenser.
+     * @see targetBlock For determining the cauldron block in front of the dispenser.
      * @see replaceItem For swapping the empty bucket with a filled bucket in the dispenser.
      * @see isEmptyBucket For checking if the dispensed item is an empty bucket.
      */
     private fun handleCauldronLiquidCollection(event: BlockDispenseEvent) {
         val dispenser = event.block.state as? Dispenser ?: return
-        val targetBlock = getTargetBlock(event.block) ?: return
+        val targetBlock = dispenser.targetBlock() ?: return
 
-        if (!Tag.CAULDRONS.isTagged(targetBlock.type) || targetBlock.type == Material.CAULDRON) return
+        if (!Tag.CAULDRONS.isTagged(targetBlock.type)) return
 
         val filledBucketType =
             when (targetBlock.type) {
@@ -155,24 +155,18 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
     }
 
     /**
-     * Gets the block directly in front of a dispenser based on its facing direction.
-     * @param dispenserBlock The dispenser block whose target block to find.
-     * @return The block directly in front of the dispenser, or `null` if the dispenser
-     *         has no facing direction or is not directional.
-     * @see Directional For the interface that provides facing direction.
-     * @see Block.getRelative For getting adjacent blocks based on direction.
+     * Gets the block directly in front of this dispenser based on its facing direction.
+     * @return The block directly in front of the dispenser, or `null` if it has no facing direction.
+     * @see Directional For accessing the dispenser’s facing direction.
+     * @see Block.getRelative For retrieving adjacent blocks based on direction.
      */
-    private fun getTargetBlock(dispenserBlock: Block): Block? {
-        val direction = (dispenserBlock.blockData as? Directional)?.facing ?: return null
-        return dispenserBlock.getRelative(direction)
-    }
+    private fun Dispenser.targetBlock(): Block? = (blockData as? Directional)?.facing?.let { block.getRelative(it) }
 
     /**
      * Checks if the given material is suitable farmland for planting crops.
-     * @param material The material to check.
      * @return `true` if the material is farmland or soul sand, `false` otherwise.
      */
-    private fun isFarmland(material: Material): Boolean = material == Material.FARMLAND || material == Material.SOUL_SAND
+    private fun Material.isFarmable(): Boolean = this == Material.FARMLAND || this == Material.SOUL_SAND
 
     /**
      * Replaces an item in the dispenser's inventory with a new item type.
