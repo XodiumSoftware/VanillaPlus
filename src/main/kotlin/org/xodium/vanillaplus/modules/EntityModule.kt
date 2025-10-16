@@ -6,8 +6,10 @@ import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
+import org.bukkit.block.Barrel
 import org.bukkit.entity.*
 import org.bukkit.event.EventHandler
+import org.bukkit.event.entity.EntityBreedEvent
 import org.bukkit.event.entity.EntityChangeBlockEvent
 import org.bukkit.event.entity.EntityExplodeEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
@@ -37,14 +39,27 @@ internal class EntityModule : ModuleInterface<EntityModule.Config> {
 
     @EventHandler
     fun on(event: PlayerInteractEntityEvent) {
+        if (!enabled() || event.rightClicked !is WanderingTrader) return
+        handleHorseTrade(event.player, event.rightClicked as WanderingTrader)
+        event.isCancelled = true
+    }
+
+    @EventHandler
+    fun on(event: EntityBreedEvent) {
         if (!enabled()) return
 
-        val entity = event.rightClicked
+        val breeder = event.breeder ?: return
+        if (breeder !is Animals) return
 
-        if (entity !is WanderingTrader) return
+        breeder.world
+            .getNearbyBlocks(breeder.location, config.feederRadius)
+            .firstOrNull { it.state is Barrel }
+            ?.state as? Barrel ?: return
 
-        handleHorseTrade(event.player, entity)
-        event.isCancelled = true
+        val inv = breeder.inventory
+        val food = breeder.breedingItem
+        val slot = inv.first(food.type)
+        if (slot == -1) return
     }
 
     /**
@@ -146,6 +161,7 @@ internal class EntityModule : ModuleInterface<EntityModule.Config> {
                 BukkitSound.ENTITY_WANDERING_TRADER_NO,
                 Sound.Source.NEUTRAL,
             ),
+        var feederRadius: Int = 10,
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
         data class I18n(
