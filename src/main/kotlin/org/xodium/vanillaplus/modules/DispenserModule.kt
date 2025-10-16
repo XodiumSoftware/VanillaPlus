@@ -141,11 +141,15 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
                 else -> return
             }
 
-        replaceItem(dispenser, event.item, ItemStack.of(filledBucketType))
-
         targetBlock.setType(Material.CAULDRON, true)
 
         event.isCancelled = true
+
+        instance.server.scheduler.runTaskLater(
+            instance,
+            Runnable { replaceItem(dispenser, event.item, ItemStack.of(filledBucketType)) },
+            1L,
+        )
 
         targetBlock.world.playSound(targetBlock.location, BukkitSound.ITEM_BUCKET_FILL, 1.0f, 1.0f)
     }
@@ -193,7 +197,6 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
                 break
             }
         }
-        dispenser.update()
     }
 
     data class Config(
