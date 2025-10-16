@@ -162,16 +162,18 @@ internal class PlayerModule(
             val meta = item.itemMeta as? BlockStateMeta ?: return
             val shulker = meta.blockState as? ShulkerBox ?: return
 
-            if (!shulker.lock()) shulker.lock(true)
+            if (!shulker.lock()) {
+                shulker.lock(true)
 
-            meta.blockState = shulker
-            item.itemMeta = meta
+                meta.blockState = shulker
+                item.itemMeta = meta
 
-            val inventory = player.server.createInventory(player, shulker.inventory.size, item.displayName())
+                val inventory = player.server.createInventory(player, shulker.inventory.size, item.displayName())
 
-            inventory.contents = shulker.inventory.contents
+                inventory.contents = shulker.inventory.contents
 
-            player.openInventory(inventory)
+                player.openInventory(inventory)
+            }
         }
     }
 
