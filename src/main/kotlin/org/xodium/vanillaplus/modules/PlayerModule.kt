@@ -8,12 +8,15 @@ import io.papermc.paper.datacomponent.item.ResolvableProfile
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
+import org.bukkit.Tag
+import org.bukkit.block.ShulkerBox
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.player.PlayerAdvancementDoneEvent
 import org.bukkit.event.player.PlayerJoinEvent
@@ -21,6 +24,8 @@ import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.Recipe
 import org.bukkit.inventory.ShapelessRecipe
+import org.bukkit.inventory.meta.BlockStateMeta
+import org.bukkit.metadata.FixedMetadataValue
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.bukkit.persistence.PersistentDataType
@@ -134,15 +139,55 @@ internal class PlayerModule(
 
     @EventHandler
     fun on(event: InventoryClickEvent) {
-        if (!enabled() ||
-            event.click != config.enderChestClickType ||
-            event.currentItem?.type != Material.ENDER_CHEST ||
-            event.clickedInventory?.type != InventoryType.PLAYER
+        if (!enabled()) return
+
+        val player = event.whoClicked as? Player ?: return
+
+        if (event.clickedInventory?.type != InventoryType.PLAYER) return
+
+        if (event.click == config.enderChestClickType &&
+            event.currentItem?.type == Material.ENDER_CHEST
         ) {
-            return
+            event.isCancelled = true
+            player.openInventory(player.enderChest)
         }
-        event.isCancelled = true
-        event.whoClicked.openInventory(event.whoClicked.enderChest)
+
+        val item = event.currentItem ?: return
+
+        if (event.click == config.shulkerClickType &&
+            Tag.SHULKER_BOXES.isTagged(item.type)
+        ) {
+            event.isCancelled = true
+
+            val meta = item.itemMeta as? BlockStateMeta ?: return
+            val shulker = meta.blockState as? ShulkerBox ?: return
+            val inventory =
+                player.server.createInventory(player, shulker.inventory.size, meta.displayName() ?: meta.itemName())
+
+            inventory.contents = shulker.inventory.contents
+
+            player.setMetadata("open_shulker", FixedMetadataValue(instance, item))
+            player.openInventory(inventory)
+        }
+    }
+
+    @EventHandler
+    fun on(event: InventoryCloseEvent) {
+        if (!enabled()) return
+
+        val player = event.player as? Player ?: return
+        val metaItem = player.getMetadata("open_shulker").firstOrNull()?.value() as? ItemStack ?: return
+
+        player.removeMetadata("open_shulker", instance)
+
+        val meta = metaItem.itemMeta as? BlockStateMeta ?: return
+        val shulker = meta.blockState as? ShulkerBox ?: return
+
+        shulker.inventory.contents = event.inventory.contents
+
+        meta.blockState = shulker
+
+        metaItem.itemMeta = meta
     }
 
     /**
@@ -205,7 +250,8 @@ internal class PlayerModule(
 
     data class Config(
         override var enabled: Boolean = true,
-        var enderChestClickType: ClickType = ClickType.SHIFT_LEFT,
+        var enderChestClickType: ClickType = ClickType.SHIFT_RIGHT,
+        var shulkerClickType: ClickType = ClickType.SHIFT_RIGHT,
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
         data class I18n(
