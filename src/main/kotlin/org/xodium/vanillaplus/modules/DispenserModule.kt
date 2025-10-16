@@ -10,6 +10,7 @@ import org.bukkit.block.data.Directional
 import org.bukkit.event.EventHandler
 import org.bukkit.event.block.BlockDispenseEvent
 import org.bukkit.inventory.ItemStack
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.bukkit.Sound as BukkitSound
 
@@ -121,8 +122,13 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
         jukebox.setRecord(item)
         jukebox.update()
 
-        consumeItem(block, item)
         event.isCancelled = true
+
+        instance.server.scheduler.runTaskLater(
+            instance,
+            Runnable { consumeItem(block, item) },
+            1L,
+        )
     }
 
     /**
