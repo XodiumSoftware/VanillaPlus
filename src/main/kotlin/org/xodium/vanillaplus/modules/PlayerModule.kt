@@ -168,11 +168,7 @@ internal class PlayerModule(
                 meta.blockState = shulker
                 item.itemMeta = meta
 
-                val inventory = player.server.createInventory(player, shulker.inventory.size, item.displayName())
-
-                inventory.contents = shulker.inventory.contents
-
-                player.openInventory(inventory)
+                player.openInventory(shulker.inventory)
             }
         }
     }
@@ -194,6 +190,8 @@ internal class PlayerModule(
 
                     meta.blockState = shulker
                     item.itemMeta = meta
+
+                    player.updateInventory()
 
                     break
                 }
