@@ -143,13 +143,13 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
 
         targetBlock.setType(Material.CAULDRON, true)
 
-        event.isCancelled = true
-
         instance.server.scheduler.runTaskLater(
             instance,
-            Runnable { replaceItem(dispenser, event.item, ItemStack.of(filledBucketType)) },
+            Runnable { replaceItem(dispenser, Material.BUCKET, ItemStack.of(filledBucketType)) },
             1L,
         )
+
+        event.isCancelled = true
 
         targetBlock.world.playSound(targetBlock.location, BukkitSound.ITEM_BUCKET_FILL, 1.0f, 1.0f)
     }
@@ -171,26 +171,20 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
     /**
      * Replaces an item in the dispenser's inventory with a new item type.
      * @param dispenser The dispenser block state containing the inventory.
-     * @param oldItem The item stack to be replaced.
+     * @param oldType The item type to be replaced.
      * @param newItem The new item stack to replace with (amount will be set to match old item).
      * @see Dispenser.inventory For accessing the dispenser's item storage.
      */
     private fun replaceItem(
         dispenser: Dispenser,
-        oldItem: ItemStack,
+        oldType: Material,
         newItem: ItemStack,
     ) {
         for ((index, item) in dispenser.inventory.contents.withIndex()) {
-            if (item != null && item.type == oldItem.type && item.amount > 0) {
-                val willBeEmpty = item.amount == 1
-                val emptySlot = dispenser.inventory.firstEmpty()
-
-                if (!willBeEmpty && emptySlot == -1) return
-
+            if (item != null && item.type == oldType && item.amount > 0) {
                 item.amount -= 1
 
-                val targetIndex = if (item.amount == 0) index else emptySlot
-
+                val targetIndex = if (item.amount == 0) index else dispenser.inventory.firstEmpty()
                 if (targetIndex != -1) dispenser.inventory.setItem(targetIndex, newItem.clone().apply { amount = 1 })
 
                 break
