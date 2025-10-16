@@ -25,7 +25,6 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.Recipe
 import org.bukkit.inventory.ShapelessRecipe
 import org.bukkit.inventory.meta.BlockStateMeta
-import org.bukkit.metadata.FixedMetadataValue
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.bukkit.persistence.PersistentDataType
@@ -33,6 +32,7 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
+import org.xodium.vanillaplus.pdcs.ShulkerPDC.lock
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
@@ -161,12 +161,16 @@ internal class PlayerModule(
 
             val meta = item.itemMeta as? BlockStateMeta ?: return
             val shulker = meta.blockState as? ShulkerBox ?: return
-            val inventory =
-                player.server.createInventory(player, shulker.inventory.size, meta.displayName() ?: meta.itemName())
+
+            if (!shulker.lock()) shulker.lock(true)
+
+            meta.blockState = shulker
+            item.itemMeta = meta
+
+            val inventory = player.server.createInventory(player, shulker.inventory.size, item.displayName())
 
             inventory.contents = shulker.inventory.contents
 
-            player.setMetadata("open_shulker", FixedMetadataValue(instance, item))
             player.openInventory(inventory)
         }
     }
@@ -176,18 +180,23 @@ internal class PlayerModule(
         if (!enabled()) return
 
         val player = event.player as? Player ?: return
-        val metaItem = player.getMetadata("open_shulker").firstOrNull()?.value() as? ItemStack ?: return
 
-        player.removeMetadata("open_shulker", instance)
+        for (item in player.inventory.contents) {
+            if (item != null && Tag.SHULKER_BOXES.isTagged(item.type)) {
+                val meta = item.itemMeta as? BlockStateMeta ?: continue
+                val shulker = meta.blockState as? ShulkerBox ?: continue
 
-        val meta = metaItem.itemMeta as? BlockStateMeta ?: return
-        val shulker = meta.blockState as? ShulkerBox ?: return
+                if (shulker.lock()) {
+                    shulker.inventory.contents = event.inventory.contents
+                    shulker.lock(false)
 
-        shulker.inventory.contents = event.inventory.contents
+                    meta.blockState = shulker
+                    item.itemMeta = meta
 
-        meta.blockState = shulker
-
-        metaItem.itemMeta = meta
+                    break
+                }
+            }
+        }
     }
 
     /**

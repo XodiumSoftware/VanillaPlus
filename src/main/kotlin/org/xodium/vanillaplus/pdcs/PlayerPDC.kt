@@ -4,14 +4,8 @@ import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
 import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.pdcs.PlayerPDC.NICKNAME_KEY
-import org.xodium.vanillaplus.pdcs.PlayerPDC.SCOREBOARD_VISIBILITY_KEY
 
-/**
- * Provides access to player-specific persistent data including nicknames and scoreboard preferences.
- * @property NICKNAME_KEY The namespaced key used for storing nickname data.
- * @property SCOREBOARD_VISIBILITY_KEY The namespaced key used for storing scoreboard visibility preferences.
- */
+/** Provides access to player-specific persistent data including nicknames and scoreboard preferences. */
 internal object PlayerPDC {
     private val NICKNAME_KEY = NamespacedKey(instance, "nickname")
     private val SCOREBOARD_VISIBILITY_KEY = NamespacedKey(instance, "scoreboard_visibility")
