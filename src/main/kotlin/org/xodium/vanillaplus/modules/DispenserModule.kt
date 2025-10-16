@@ -143,13 +143,13 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
 
         targetBlock.setType(Material.CAULDRON, true)
 
+        event.isCancelled = true
+
         instance.server.scheduler.runTaskLater(
             instance,
             Runnable { replaceItem(dispenser, Material.BUCKET, ItemStack.of(filledBucketType)) },
             1L,
         )
-
-        event.isCancelled = true
 
         targetBlock.world.playSound(targetBlock.location, BukkitSound.ITEM_BUCKET_FILL, 1.0f, 1.0f)
     }
