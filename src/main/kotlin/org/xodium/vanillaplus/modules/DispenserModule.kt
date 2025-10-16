@@ -26,8 +26,8 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
         val dispenser = block.state as? Dispenser ?: return
 
         when {
-            isPlantableCrop(item.type) -> handleCropPlanting(block, item, dispenser, event)
-            isMusicDisc(item.type) -> handleJukeboxInsertion(block, item, dispenser, event)
+            isPlantableCrop(item.type) -> handleCropPlanting(block, item, event)
+            isMusicDisc(item.type) -> handleJukeboxInsertion(block, item, event)
             isEmptyBucket(item.type) -> handleCauldronLiquidCollection(block, item, dispenser, event)
         }
     }
@@ -58,7 +58,6 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
      * Handles the automatic planting of crops from a dispenser.
      * @param block The dispenser block that is attempting to plant the crop.
      * @param item The seed item stack being dispensed.
-     * @param dispenser The dispenser block state from which the item is being dispensed.
      * @param event The block dispense event that triggered this handler.
      * @see getTargetBlock For determining the farmland block in front of the dispenser.
      * @see isFarmland For checking if the target block is suitable farmland.
@@ -67,7 +66,6 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
     private fun handleCropPlanting(
         block: Block,
         item: ItemStack,
-        dispenser: Dispenser,
         event: BlockDispenseEvent,
     ) {
         val targetBlock = getTargetBlock(block) ?: return
@@ -93,7 +91,7 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
             }
 
         blockAbove.type = cropType
-        consumeItem(dispenser, item)
+        consumeItem(block, item)
         event.isCancelled = true
 
         blockAbove.world.playSound(blockAbove.location, BukkitSound.ITEM_CROP_PLANT, 1.0f, 1.0f)
@@ -103,7 +101,6 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
      * Handles the insertion of a music disc into a jukebox via a dispenser.
      * @param block The dispenser block that is attempting to insert the item.
      * @param item The item stack being dispensed (expected to be a music disc).
-     * @param dispenser The dispenser block state from which the item is being dispensed.
      * @param event The block dispense event that triggered this handler.
      * @see getTargetBlock For determining the block in front of the dispenser.
      * @see consumeItem For removing the item from the dispenser's inventory.
@@ -111,7 +108,6 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
     private fun handleJukeboxInsertion(
         block: Block,
         item: ItemStack,
-        dispenser: Dispenser,
         event: BlockDispenseEvent,
     ) {
         val targetBlock = getTargetBlock(block) ?: return
@@ -125,7 +121,7 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
         jukebox.setRecord(item)
         jukebox.update()
 
-        consumeItem(dispenser, item)
+        consumeItem(block, item)
         event.isCancelled = true
     }
 
@@ -194,16 +190,28 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
 
     /**
      * Consumes one item from the dispenser's inventory.
-     * @param dispenser The dispenser block state containing the inventory.
+     * @param block The block to consume the item from.
      * @param item The item stack to consume one unit from.
      * @see Dispenser.inventory For accessing the dispenser's item storage.
      */
     private fun consumeItem(
-        dispenser: Dispenser,
+        block: Block,
         item: ItemStack,
     ) {
-        dispenser.inventory.removeItem(item.apply { amount = 1 })
-        dispenser.update()
+        val dispenserState = block.state as? Dispenser ?: return
+        val inventory = dispenserState.inventory
+
+        for (slot in 0 until inventory.size) {
+            val stack = inventory.getItem(slot)
+            if (stack != null && stack.isSimilar(item)) {
+                if (stack.amount > 1) {
+                    stack.amount -= 1
+                } else {
+                    inventory.clear(slot)
+                }
+                return
+            }
+        }
     }
 
     /**
