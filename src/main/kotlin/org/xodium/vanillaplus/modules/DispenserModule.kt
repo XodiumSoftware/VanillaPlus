@@ -17,9 +17,6 @@ import org.bukkit.Sound as BukkitSound
 internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
     override val config: Config = Config()
 
-    private val plantableCrops: Set<Material> = Tag.CROPS.values
-    private val musicDiscs: Set<Material> = Material.entries.filter { it.name.startsWith("MUSIC_DISC") }.toSet()
-
     @EventHandler
     fun on(event: BlockDispenseEvent) {
         if (!enabled()) return
@@ -35,12 +32,38 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
         }
     }
 
-    private fun isPlantableCrop(material: Material): Boolean = material in plantableCrops
+    /**
+     * Checks if the given material is a plantable crop.
+     * @param material The material to check.
+     * @return `true` if the material is a plantable crop, `false` otherwise.
+     * @see Tag.CROPS For the complete list of crop materials.
+     */
+    private fun isPlantableCrop(material: Material): Boolean = material in Tag.CROPS.values
 
-    private fun isMusicDisc(material: Material): Boolean = material in musicDiscs
+    /**
+     * Checks if the given material is a music disc.
+     * @param material The material to check.
+     * @return `true` if the material is a music disc, `false` otherwise.
+     */
+    private fun isMusicDisc(material: Material): Boolean = material in Material.entries.filter { it.name.startsWith("MUSIC_DISC") }
 
+    /**
+     * Checks if the given material is an empty bucket.
+     * @param material The material to check.
+     * @return `true` if the material is an empty bucket, `false` otherwise.
+     */
     private fun isEmptyBucket(material: Material): Boolean = material == Material.BUCKET
 
+    /**
+     * Handles the automatic planting of crops from a dispenser.
+     * @param block The dispenser block that is attempting to plant the crop.
+     * @param item The seed item stack being dispensed.
+     * @param dispenser The dispenser block state from which the item is being dispensed.
+     * @param event The block dispense event that triggered this handler.
+     * @see getTargetBlock For determining the farmland block in front of the dispenser.
+     * @see isFarmland For checking if the target block is suitable farmland.
+     * @see consumeItem For removing the item from the dispenser's inventory.
+     */
     private fun handleCropPlanting(
         block: Block,
         item: ItemStack,
@@ -76,6 +99,15 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
         blockAbove.world.playSound(blockAbove.location, BukkitSound.ITEM_CROP_PLANT, 1.0f, 1.0f)
     }
 
+    /**
+     * Handles the insertion of a music disc into a jukebox via a dispenser.
+     * @param block The dispenser block that is attempting to insert the item.
+     * @param item The item stack being dispensed (expected to be a music disc).
+     * @param dispenser The dispenser block state from which the item is being dispensed.
+     * @param event The block dispense event that triggered this handler.
+     * @see getTargetBlock For determining the block in front of the dispenser.
+     * @see consumeItem For removing the item from the dispenser's inventory.
+     */
     private fun handleJukeboxInsertion(
         block: Block,
         item: ItemStack,
@@ -97,6 +129,16 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
         event.isCancelled = true
     }
 
+    /**
+     * Handles the collection of liquids from cauldrons using empty buckets via dispensers.
+     * @param block The dispenser block that is attempting to collect the liquid.
+     * @param item The item stack being dispensed (must be an empty bucket).
+     * @param dispenser The dispenser block state from which the item is being dispensed.
+     * @param event The block dispense event that triggered this handler.
+     * @see getTargetBlock For determining the cauldron block in front of the dispenser.
+     * @see replaceItem For swapping the empty bucket with a filled bucket in the dispenser.
+     * @see isEmptyBucket For checking if the dispensed item is an empty bucket.
+     */
     private fun handleCauldronLiquidCollection(
         block: Block,
         item: ItemStack,
@@ -130,13 +172,32 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
         targetBlock.world.playSound(targetBlock.location, BukkitSound.ITEM_BUCKET_FILL, 1.0f, 1.0f)
     }
 
+    /**
+     * Gets the block directly in front of a dispenser based on its facing direction.
+     * @param dispenserBlock The dispenser block whose target block to find.
+     * @return The block directly in front of the dispenser, or `null` if the dispenser
+     *         has no facing direction or is not directional.
+     * @see Directional For the interface that provides facing direction.
+     * @see Block.getRelative For getting adjacent blocks based on direction.
+     */
     private fun getTargetBlock(dispenserBlock: Block): Block? {
         val direction = (dispenserBlock.blockData as? Directional)?.facing ?: return null
         return dispenserBlock.getRelative(direction)
     }
 
+    /**
+     * Checks if the given material is suitable farmland for planting crops.
+     * @param material The material to check.
+     * @return `true` if the material is farmland or soul sand, `false` otherwise.
+     */
     private fun isFarmland(material: Material): Boolean = material == Material.FARMLAND || material == Material.SOUL_SAND
 
+    /**
+     * Consumes one item from the dispenser's inventory.
+     * @param dispenser The dispenser block state containing the inventory.
+     * @param item The item stack to consume one unit from.
+     * @see Dispenser.inventory For accessing the dispenser's item storage.
+     */
     private fun consumeItem(
         dispenser: Dispenser,
         item: ItemStack,
@@ -145,6 +206,13 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
         dispenser.update()
     }
 
+    /**
+     * Replaces an item in the dispenser's inventory with a new item type.
+     * @param dispenser The dispenser block state containing the inventory.
+     * @param oldItem The item stack to be replaced.
+     * @param newItem The new item stack to replace with (amount will be set to match old item).
+     * @see Dispenser.inventory For accessing the dispenser's item storage.
+     */
     private fun replaceItem(
         dispenser: Dispenser,
         oldItem: ItemStack,
