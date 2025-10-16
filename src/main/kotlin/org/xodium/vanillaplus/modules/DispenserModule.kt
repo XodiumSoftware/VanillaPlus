@@ -131,7 +131,7 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
         val dispenser = event.block.state as? Dispenser ?: return
         val targetBlock = dispenser.targetBlock() ?: return
 
-        if (!Tag.CAULDRONS.isTagged(targetBlock.type)) return
+        if (!Tag.CAULDRONS.isTagged(targetBlock.type) || targetBlock.type == Material.CAULDRON) return
 
         val filledBucketType =
             when (targetBlock.type) {
@@ -185,9 +185,14 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
 
         for ((index, item) in contents.withIndex()) {
             if (item != null && item.type == oldItem.type) {
+                item.amount -= 1
+
                 val newStack = newItem.clone()
-                newStack.amount = item.amount
-                inventory.setItem(index, newStack)
+
+                newStack.amount = 1
+
+                if (item.amount <= 0) inventory.setItem(index, newStack)
+
                 break
             }
         }
