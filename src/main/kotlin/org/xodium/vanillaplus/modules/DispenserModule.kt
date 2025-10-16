@@ -122,7 +122,7 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
 
         if (jukebox.record.type != Material.AIR) return
 
-        jukebox.setRecord(item.clone().apply { amount = 1 })
+        jukebox.setRecord(item)
         jukebox.update()
 
         consumeItem(dispenser, item)
@@ -202,7 +202,7 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
         dispenser: Dispenser,
         item: ItemStack,
     ) {
-        dispenser.inventory.removeItem(item.clone().apply { amount = 1 })
+        dispenser.inventory.removeItem(item.apply { amount = 1 })
         dispenser.update()
     }
 
