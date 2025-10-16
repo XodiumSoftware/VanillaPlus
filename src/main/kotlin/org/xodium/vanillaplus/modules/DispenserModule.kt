@@ -22,14 +22,10 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
     fun on(event: BlockDispenseEvent) {
         if (!enabled()) return
 
-        val block = event.block
-        val item = event.item
-        val dispenser = block.state as? Dispenser ?: return
-
         when {
-            isPlantableCrop(item.type) -> handleCropPlanting(block, item, dispenser, event)
-            isMusicDisc(item.type) -> handleJukeboxInsertion(block, item, dispenser, event)
-            isEmptyBucket(item.type) -> handleCauldronLiquidCollection(block, item, dispenser, event)
+            isPlantableCrop(event.item.type) -> handleCropPlanting(event)
+            isMusicDisc(event.item.type) -> handleJukeboxInsertion(event)
+            isEmptyBucket(event.item.type) -> handleCauldronLiquidCollection(event)
         }
     }
 
@@ -57,19 +53,14 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
 
     /**
      * Handles the automatic planting of crops from a dispenser.
-     * @param block The dispenser block that is attempting to plant the crop.
-     * @param item The seed item stack being dispensed.
-     * @param dispenser The dispenser block state from which the item is being dispensed
      * @param event The block dispense event that triggered this handler.
      * @see getTargetBlock For determining the farmland block in front of the dispenser.
      * @see isFarmland For checking if the target block is suitable farmland.
      */
-    private fun handleCropPlanting(
-        block: Block,
-        item: ItemStack,
-        dispenser: Dispenser,
-        event: BlockDispenseEvent,
-    ) {
+    private fun handleCropPlanting(event: BlockDispenseEvent) {
+        val block = event.block
+        val item = event.item
+        val dispenser = block.state as? Dispenser ?: return
         val targetBlock = getTargetBlock(block) ?: return
 
         if (!isFarmland(targetBlock.type)) return
@@ -106,18 +97,13 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
 
     /**
      * Handles the insertion of a music disc into a jukebox via a dispenser.
-     * @param block The dispenser block that is attempting to insert the item.
-     * @param item The item stack being dispensed (expected to be a music disc).
-     * @param dispenser The dispenser block state from which the item is being dispensed
      * @param event The block dispense event that triggered this handler.
      * @see getTargetBlock For determining the block in front of the dispenser.
      */
-    private fun handleJukeboxInsertion(
-        block: Block,
-        item: ItemStack,
-        dispenser: Dispenser,
-        event: BlockDispenseEvent,
-    ) {
+    private fun handleJukeboxInsertion(event: BlockDispenseEvent) {
+        val block = event.block
+        val item = event.item
+        val dispenser = block.state as? Dispenser ?: return
         val targetBlock = getTargetBlock(block) ?: return
 
         if (targetBlock.type != Material.JUKEBOX) return
@@ -140,27 +126,18 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
 
     /**
      * Handles the collection of liquids from cauldrons using empty buckets via dispensers.
-     * @param block The dispenser block that is attempting to collect the liquid.
-     * @param item The item stack being dispensed (must be an empty bucket).
-     * @param dispenser The dispenser block state from which the item is being dispensed.
      * @param event The block dispense event that triggered this handler.
      * @see getTargetBlock For determining the cauldron block in front of the dispenser.
      * @see replaceItem For swapping the empty bucket with a filled bucket in the dispenser.
      * @see isEmptyBucket For checking if the dispensed item is an empty bucket.
      */
-    private fun handleCauldronLiquidCollection(
-        block: Block,
-        item: ItemStack,
-        dispenser: Dispenser,
-        event: BlockDispenseEvent,
-    ) {
+    private fun handleCauldronLiquidCollection(event: BlockDispenseEvent) {
+        val block = event.block
+        val item = event.item
+        val dispenser = block.state as? Dispenser ?: return
         val targetBlock = getTargetBlock(block) ?: return
 
-        if (targetBlock.type != Material.CAULDRON && targetBlock.type != Material.WATER_CAULDRON &&
-            targetBlock.type != Material.LAVA_CAULDRON
-        ) {
-            return
-        }
+        if (!Tag.CAULDRONS.isTagged(targetBlock.type)) return
 
         val filledBucketType =
             when (targetBlock.type) {
@@ -171,7 +148,7 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
 
         if (targetBlock.type == Material.CAULDRON) return
 
-        replaceItem(dispenser, item, ItemStack(filledBucketType))
+        replaceItem(dispenser, item, ItemStack.of(filledBucketType))
 
         targetBlock.type = Material.CAULDRON
         targetBlock.state.update()
