@@ -5,6 +5,8 @@
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fastasyncworldedit/FastAsyncWorldEdit-Libs-Core/2.13.1/81f2b50403972811fa6d7ecbe173d7e2f5451e09/FastAsyncWorldEdit-Libs-Core-2.13.1.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fastasyncworldedit/FastAsyncWorldEdit-Libs-Core/2.13.1/f8d2f97a790b48cef2052e8e2c0aefff29f89d56/FastAsyncWorldEdit-Libs-Core-2.13.1-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>
