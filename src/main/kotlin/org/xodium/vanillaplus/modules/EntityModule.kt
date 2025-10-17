@@ -17,7 +17,6 @@ import org.bukkit.event.entity.EntityExplodeEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
-import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Vector
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.SoundData
@@ -30,10 +29,6 @@ import org.bukkit.Sound as BukkitSound
 /** Represents a module handling entity mechanics within the system. */
 internal class EntityModule : ModuleInterface<EntityModule.Config> {
     override val config: Config = Config()
-
-    private val searchRadius = 8
-    private val intervalTicks = 100L
-    private val searchingKey = NamespacedKey(instance, "food_searching")
 
     init {
         if (enabled()) {
@@ -77,25 +72,26 @@ internal class EntityModule : ModuleInterface<EntityModule.Config> {
     }
 
     private fun startSearchTask(animal: Animals) {
+        // TODO: move pdc to its own object extension for Animals.
+        val searchingKey = NamespacedKey(instance, "food_searching")
         val data = animal.persistentDataContainer
+
         if (data.has(searchingKey, PersistentDataType.BYTE)) return
+
         data.set(searchingKey, PersistentDataType.BYTE, 1)
 
-        object : BukkitRunnable() {
-            override fun run() {
-                if (!animal.isValid || animal.isDead) {
-                    cancel()
-                    return
-                }
+        instance.server.scheduler.runTaskTimer(
+            instance,
+            Runnable {
+                if (!animal.isValid || animal.isDead || animal.isLoveMode) return@Runnable
 
-                if (animal.isLoveMode) return
-
-                val foods = getFoodFor(animal) ?: return
+                val foods = getFoodFor(animal) ?: return@Runnable
                 val barrel =
-                    findBarrelWithFood(animal.location.toVector(), animal.world.name, searchRadius, foods)
-                        ?: return
-
+                    // TODO: make radius configurable.
+                    findBarrelWithFood(animal.location.toVector(), animal.world.name, 8, foods)
+                        ?: return@Runnable
                 val pathfinder = animal.pathfinder
+
                 pathfinder.moveTo(barrel.location.add(0.5, 0.0, 0.5))
 
                 if (animal.location.distanceSquared(barrel.location) <= 2.25) {
@@ -103,8 +99,10 @@ internal class EntityModule : ModuleInterface<EntityModule.Config> {
                     animal.loveModeTicks = 600
                     animal.world.spawnParticle(Particle.HEART, animal.location.add(0.0, 1.0, 0.0), 5)
                 }
-            }
-        }.runTaskTimer(instance, 0L, intervalTicks)
+            },
+            0L,
+            100L,
+        )
     }
 
     /**
@@ -116,21 +114,17 @@ internal class EntityModule : ModuleInterface<EntityModule.Config> {
         barrel: Barrel,
         foods: Set<Material>,
     ) {
-        val inv = barrel.inventory
-
-        for (i in inv.contents.indices) {
-            val item = inv.getItem(i)
-
-            if (item != null && item.type in foods) {
-                item.amount = item.amount - 1
-
-                if (item.amount <= 0) inv.clear(i)
-
+        barrel.inventory.contents.indices
+            .firstOrNull { barrel.inventory.getItem(it)?.type in foods }
+            ?.let { index ->
+                val item = barrel.inventory.getItem(index)
+                if (item?.amount == 1) {
+                    barrel.inventory.clear(index)
+                } else {
+                    item?.amount = item.amount - 1
+                }
                 barrel.update()
-
-                return
             }
-        }
     }
 
     /**
@@ -149,11 +143,13 @@ internal class EntityModule : ModuleInterface<EntityModule.Config> {
         foods: Set<Material>,
     ): Barrel? {
         val world = instance.server.getWorld(worldName) ?: return null
+
         for (x in -radius..radius) {
             for (y in -radius..radius) {
                 for (z in -radius..radius) {
                     val block = world.getBlockAt(origin.blockX + x, origin.blockY + y, origin.blockZ + z)
                     val state = block.state
+
                     if (state is Barrel && state.inventory.contents.any { it != null && it.type in foods }) {
                         return state
                     }
