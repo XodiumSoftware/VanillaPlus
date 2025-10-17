@@ -49,7 +49,7 @@ internal class SitModule : ModuleInterface<SitModule.Config> {
         if (!isSitTarget) return
 
         val blockAbove = block.getRelative(BlockFace.UP)
-        if (!blockAbove.type.isAir || !blockAbove.getRelative(BlockFace.UP).type.isAir) return
+        if (blockAbove.type.isCollidable) return
 
         event.isCancelled = true
         sit(player, block.location.add(blockCenterOffset))
