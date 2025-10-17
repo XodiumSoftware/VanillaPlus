@@ -1,6 +1,8 @@
 name: Bug Report
 description: File a bug report
-labels: [ Bug ]
+type: "Bug"
+assignees: [ "illyrius666" ]
+projects: [ "XodiumSoftware/4" ]
 body:
   - type: markdown
     attributes:
