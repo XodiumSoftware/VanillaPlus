@@ -4,12 +4,8 @@ import org.bukkit.NamespacedKey
 import org.bukkit.entity.Horse
 import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.pdcs.HorsePDC.SOLD_KEY
 
-/**
- * Provides access to horse-specific persistent data including sold status.
- * @property SOLD_KEY The namespaced key used for storing sold status data.
- */
+/** Provides access to horse-specific persistent data including sold status. */
 internal object HorsePDC {
     private val SOLD_KEY = NamespacedKey(instance, "horse_sold")
 
