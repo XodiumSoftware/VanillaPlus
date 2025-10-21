@@ -69,13 +69,18 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                             ctx.cancel(false)
                             val cursor = ctx.cause().cursor
                             if (cursor.type != Material.AIR) {
+                                ctx.view().update()
                                 equipment.setHelmet(cursor)
+                                ctx.view().update()
                                 ctx.viewer().player().setItemOnCursor(null)
+                                ctx.view().update()
                             } else {
+                                ctx.view().update()
                                 ctx.viewer().player().setItemOnCursor(equipment.helmet)
+                                ctx.view().update()
                                 equipment.setHelmet(null)
+                                ctx.view().update()
                             }
-                            ctx.view().update()
                         },
                     )
             }
