@@ -6,7 +6,6 @@ import com.google.gson.JsonParser
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
-import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.CustomModelData
 import io.papermc.paper.datacomponent.item.ItemLore
 import net.kyori.adventure.text.Component
@@ -15,12 +14,9 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.Color
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.VanillaPlus
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.utils.ExtUtils.lore
-import org.xodium.vanillaplus.utils.ExtUtils.name
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import java.net.URI
@@ -216,22 +212,6 @@ internal object ExtUtils {
      * @return the snake_case version of the string.
      */
     fun String.toSnakeCase(): String = this.replace(Regex("([a-z])([A-Z])"), "$1_$2").lowercase()
-
-    /**
-     * Sets a custom display name for the ItemStack.
-     * @param name the text to be set as the custom name for this ItemStack.
-     * @return the modified ItemStack instance (`this`) with the new name applied.
-     * @see DataComponentTypes.CUSTOM_NAME
-     */
-    fun ItemStack.name(name: Component): ItemStack = apply { setData(DataComponentTypes.CUSTOM_NAME, name) }
-
-    /**
-     * Sets custom lore for the ItemStack.
-     * @param lore the lore to be set as the custom lore for this ItemStack.
-     * @return the modified ItemStack instance (`this`) with the new lore applied.
-     * @see DataComponentTypes.LORE
-     */
-    fun ItemStack.lore(vararg lore: Component): ItemStack = apply { setData(DataComponentTypes.LORE, ItemLore.lore(lore.toList())) }
 
     /**
      * Generates a configuration key for a module.

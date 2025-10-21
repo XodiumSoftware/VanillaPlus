@@ -7,18 +7,22 @@
       <w>decentholograms</w>
       <w>decentsoftware</w>
       <w>enderman</w>
+      <w>fastasyncworldedit</w>
       <w>fawe</w>
       <w>foojay</w>
       <w>ghast</w>
       <w>glorp</w>
-      <w>incendo</w>
+      <w>griefing</w>
+      <w>intellectualsites</w>
       <w>invs</w>
       <w>invsearch</w>
       <w>invu</w>
       <w>jpenilla</w>
       <w>ktlint</w>
       <w>mojang</w>
+      <w>motd</w>
       <w>playerdata</w>
+      <w>recipies</w>
       <w>redstone</w>
       <w>rrggbb</w>
       <w>searchinv</w>
@@ -28,6 +32,7 @@
       <w>vanillaplus</w>
       <w>worldedit</w>
       <w>xodium</w>
+      <w>xparser</w>
     </words>
   </dictionary>
 </component>

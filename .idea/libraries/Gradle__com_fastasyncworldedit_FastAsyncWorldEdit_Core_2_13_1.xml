@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.13.1" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="com.fastasyncworldedit" artifactId="FastAsyncWorldEdit-Core" version="2.13.1" baseVersion="2.13.1" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fastasyncworldedit/FastAsyncWorldEdit-Core/2.13.1/82a5c42e641fb57eb353d53281453ebfc2b0ca98/FastAsyncWorldEdit-Core-2.13.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fastasyncworldedit/FastAsyncWorldEdit-Core/2.13.1/be598638f70aed2da53e6e5638e342909297f9fd/FastAsyncWorldEdit-Core-2.13.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

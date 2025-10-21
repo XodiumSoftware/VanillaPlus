@@ -2,7 +2,6 @@
 
 package org.xodium.vanillaplus.managers
 
-import com.fasterxml.jackson.core.JsonProcessingException
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import org.bukkit.entity.Player
@@ -10,59 +9,50 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
-import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.modules.*
-import org.xodium.vanillaplus.utils.ExtUtils.key
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.prefix
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
-import kotlin.io.path.exists
 import kotlin.time.measureTime
 
 /** Represents the module manager within the system. */
 @Suppress("MemberVisibilityCanBePrivate")
 internal object ModuleManager {
-    val armorStandModule: ArmorStandModule = ArmorStandModule()
     val booksModule: BooksModule = BooksModule()
     val cauldronModule: CauldronModule = CauldronModule()
     val chatModule: ChatModule = ChatModule()
     val dimensionsModule: DimensionsModule = DimensionsModule()
+    val entityModule: EntityModule = EntityModule()
     val invModule: InvModule = InvModule()
     val locatorModule: LocatorModule = LocatorModule()
-    val mobsModule: MobsModule = MobsModule()
     val motdModule: MotdModule = MotdModule()
     val openableModule: OpenableModule = OpenableModule()
     val petModule: PetModule = PetModule()
     val recipiesModule: RecipiesModule = RecipiesModule()
     val scoreBoardModule: ScoreBoardModule = ScoreBoardModule()
-    val signModule: SignModule = SignModule()
     val silkTouchModule: SilkTouchModule = SilkTouchModule()
     val sitModule: SitModule = SitModule()
-    val sleepModule: SleepModule = SleepModule()
     val tabListModule: TabListModule = TabListModule()
     val playerModule: PlayerModule = PlayerModule(tabListModule)
     val treesModule: TreesModule = TreesModule()
 
     private val modules =
         listOf(
-            armorStandModule,
             booksModule,
             cauldronModule,
             chatModule,
             dimensionsModule,
+            entityModule,
             invModule,
             locatorModule,
-            mobsModule,
             motdModule,
             openableModule,
             petModule,
             playerModule,
             recipiesModule,
             scoreBoardModule,
-            signModule,
             silkTouchModule,
             sitModule,
-            sleepModule,
             tabListModule,
             treesModule,
         )
@@ -77,7 +67,7 @@ internal object ModuleManager {
                         .requires { it.sender.hasPermission(configPerm) }
                         .executes { ctx ->
                             ctx.tryCatch {
-                                updateConfig()
+                                ConfigManager.update(modules)
                                 if (it.sender is Player) {
                                     it.sender.sendMessage("${instance.prefix} <green>Config reloaded successfully".mm())
                                 }
@@ -95,7 +85,6 @@ internal object ModuleManager {
             PermissionDefault.OP,
         )
 
-    private val configsToSave: MutableMap<String, ModuleInterface.Config> = mutableMapOf()
     private val commandsToRegister: MutableList<CommandData> = mutableListOf()
 
     init {
@@ -105,7 +94,7 @@ internal object ModuleManager {
 
     /** Loads configs, registers modules' events and permissions, and collects commands. */
     private fun pluginManager() {
-        updateConfig()
+        ConfigManager.update(modules)
         commandsToRegister.add(configCmd)
         instance.server.pluginManager.addPermission(configPerm)
         modules.filter { it.enabled() }.forEach { module ->
@@ -135,33 +124,5 @@ internal object ModuleManager {
                 }
             }
         }
-    }
-
-    /** Updates the config. */
-    private fun updateConfig() {
-        val allConfigs = ConfigManager.loadConfig()
-        when {
-            allConfigs.isNotEmpty() -> instance.logger.info("Config: Loaded successfully")
-            !ConfigManager.filePath.exists() -> instance.logger.info("Config: No config file found, a new one will be created")
-            else -> instance.logger.warning("Config: Failed to load, using defaults")
-        }
-
-        modules.forEach { module ->
-            val configKey = module.key()
-            allConfigs[configKey]?.let { savedConfig ->
-                try {
-                    ConfigManager.jsonMapper
-                        .readerForUpdating(module.config)
-                        .readValue(ConfigManager.jsonMapper.writeValueAsString(savedConfig))
-                } catch (e: JsonProcessingException) {
-                    instance.logger.warning(
-                        "Failed to parse config for ${module::class.simpleName}. Using defaults. Error: ${e.message}",
-                    )
-                }
-            }
-            configsToSave[configKey] = module.config
-        }
-
-        ConfigManager.saveConfig(configsToSave)
     }
 }

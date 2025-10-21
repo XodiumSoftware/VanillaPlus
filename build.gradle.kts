@@ -8,8 +8,7 @@ plugins {
     id("idea")
     kotlin("jvm") version "2.2.20"
     id("com.gradleup.shadow") version "9.2.2"
-    id("xyz.jpenilla.run-paper") version "3.0.2"
-    id("xyz.jpenilla.resource-factory-paper-convention") version "1.3.1"
+    id("xyz.jpenilla.run-paper") version "3.0.1"
 }
 
 val mcVersion = "1.21.10"
@@ -34,7 +33,8 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:$version-R0.1-SNAPSHOT")
-    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.16") // TODO("Move away from WorldEdit")
+    compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core")
+    compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit") { isTransitive = false }
 
     implementation(kotlin("stdlib"))
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -42,6 +42,8 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.0")
     implementation("org.incendo.interfaces:interfaces-paper:1.0.0-SNAPSHOT")
     implementation("org.incendo.interfaces:interfaces-kotlin:1.0.0-SNAPSHOT")
+    implementation("org.mariuszgromada.math:MathParser.org-mXparser:6.1.0")
+    implementation(platform("com.intellectualsites.bom:bom-newest:1.55"))
 }
 
 java {
@@ -74,6 +76,6 @@ paperPluginYaml {
     authors.add("Xodium")
     apiVersion.set(version)
     dependencies {
-        server(name = "WorldEdit", load = PaperPluginYaml.Load.BEFORE, required = false, joinClasspath = true)
+        server(name = "FastAsyncWorldEdit", load = PaperPluginYaml.Load.BEFORE, required = false, joinClasspath = true)
     }
 }

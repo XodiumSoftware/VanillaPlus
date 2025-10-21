@@ -39,19 +39,19 @@ jobs:
 
       - id: setup_gradle
         name: Setup Gradle
-        uses: gradle/actions/setup-gradle@6a96db5a3f33ee3428706da0bfc3de5c5a8f698c
+        uses: gradle/actions/setup-gradle@f106089dd9553102a72aa474f9ad9a4edacde6a7
 
       - id: set_version
         name: Set Version
         run: |
-          base_version=$(grep -oP '(?<=^version: ).*' src/main/resources/paper-plugin.yml | tr -d \''"')
+          base_version=$(./gradlew properties -q | grep "version:" | awk '{print $2}')
           if [ "${{ github.ref_name }}" = "dev" ]; then
-            build_number=$(git rev-list --count HEAD)
-            VERSION="${base_version}-${build_number}"
-            echo "Calculated dev version: $VERSION"
+          build_number=$(git rev-list --count HEAD)
+          VERSION="${base_version}-${build_number}"
+          echo "Calculated dev version: $VERSION"
           else
-            VERSION="${base_version}"
-            echo "Calculated main version: $VERSION"
+          VERSION="${base_version}"
+          echo "Calculated main version: $VERSION"
           fi
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
@@ -66,30 +66,8 @@ jobs:
           name: vanillaplus
           path: build/libs/VanillaPlus-*.jar
 
-  dependency-submission:
-    needs: [ build ]
-    runs-on: ubuntu-latest
-    environment:
-      name: "${{ github.ref_name }}"
-      url: "${{ steps.generate_and_submit_dependency_graph.outputs.url }}"
-    steps:
-      - id: checkout
-        name: Checkout
-        uses: actions/checkout@v5
-
-      - id: setup_java
-        name: Setup Java
-        uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: 21
-
-      - id: generate_and_submit_dependency_graph
-        name: Generate and submit dependency graph
-        uses: gradle/actions/dependency-submission@v5
-
   release:
-    needs: [ dependency-submission, build ]
+    needs: [ build ]
     if: github.ref_name == 'main' || github.ref_name == 'dev'
     runs-on: ubuntu-latest
     environment:
@@ -103,7 +81,7 @@ jobs:
 
       - id: release_artifact
         name: Release Artifact
-        uses: softprops/action-gh-release@6da8fa9354ddfdc4aeace5fc48d7f679b5214090
+        uses: softprops/action-gh-release@5434409c2b6457c050f109d68b2547fcbf1db07b
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         with:
