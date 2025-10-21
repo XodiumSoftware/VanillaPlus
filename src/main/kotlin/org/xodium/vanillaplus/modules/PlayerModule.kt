@@ -14,7 +14,6 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
-import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.player.PlayerAdvancementDoneEvent
 import org.bukkit.event.player.PlayerJoinEvent
@@ -143,15 +142,10 @@ internal class PlayerModule(
             return
         }
         event.isCancelled = true
-        event.whoClicked.openInventory(event.whoClicked.enderChest)
-    }
-
-    @EventHandler
-    fun on(event: InventoryCloseEvent) {
-        if (!enabled()) return
-        val player = event.player as? Player ?: return
-        if (event.inventory.type != InventoryType.ENDER_CHEST || event.inventory.holder != player.enderChest.holder) return
-        player.updateInventory()
+        instance.server.scheduler.runTask(
+            instance,
+            Runnable { event.whoClicked.openInventory(event.whoClicked.enderChest) },
+        )
     }
 
     /**
@@ -214,7 +208,7 @@ internal class PlayerModule(
 
     data class Config(
         override var enabled: Boolean = true,
-        var enderChestClickType: ClickType = ClickType.SHIFT_LEFT,
+        var enderChestClickType: ClickType = ClickType.SHIFT_RIGHT,
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
         data class I18n(
