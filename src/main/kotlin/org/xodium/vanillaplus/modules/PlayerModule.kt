@@ -32,6 +32,7 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
+import org.xodium.vanillaplus.pdcs.ShulkerPDC.lock
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
@@ -148,7 +149,10 @@ internal class PlayerModule(
             event.currentItem?.type == Material.ENDER_CHEST
         ) {
             event.isCancelled = true
-            player.openInventory(player.enderChest)
+            instance.server.scheduler.runTask(
+                instance,
+                Runnable { player.openInventory(player.enderChest) },
+            )
         }
 
         val item = event.currentItem ?: return
@@ -167,7 +171,10 @@ internal class PlayerModule(
                 meta.blockState = shulker
                 item.itemMeta = meta
 
-                player.openInventory(shulker.inventory)
+                instance.server.scheduler.runTask(
+                    instance,
+                    Runnable { player.openInventory(shulker.inventory) },
+                )
             }
         }
     }
@@ -190,17 +197,15 @@ internal class PlayerModule(
                     meta.blockState = shulker
                     item.itemMeta = meta
 
-                    player.updateInventory()
+                    instance.server.scheduler.runTask(
+                        instance,
+                        Runnable { player.updateInventory() },
+                    )
 
                     break
                 }
             }
         }
-        event.isCancelled = true
-        instance.server.scheduler.runTask(
-            instance,
-            Runnable { event.whoClicked.openInventory(event.whoClicked.enderChest) },
-        )
     }
 
     /**
