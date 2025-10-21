@@ -177,6 +177,7 @@ internal class PlayerModule(
                 )
             }
         }
+        // TODO: make it so when click on enderchest/shulker it first closes current inventory before opening the new one.
     }
 
     @EventHandler
