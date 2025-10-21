@@ -5,8 +5,6 @@
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.checkerframework/checker-qual/3.49.5/f0d119b5a4adb4164e9d6fa9fd3ffa5d0e458963/checker-qual-3.49.5.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES>
-      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.checkerframework/checker-qual/3.49.5/f6aa5e830446fbe864dc30e300f6ab29b65133fc/checker-qual-3.49.5-sources.jar!/" />
-    </SOURCES>
+    <SOURCES />
   </library>
 </component>
