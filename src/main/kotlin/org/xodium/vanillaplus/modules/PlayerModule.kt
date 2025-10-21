@@ -32,7 +32,6 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
-import org.xodium.vanillaplus.pdcs.ShulkerPDC.lock
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
@@ -197,6 +196,11 @@ internal class PlayerModule(
                 }
             }
         }
+        event.isCancelled = true
+        instance.server.scheduler.runTask(
+            instance,
+            Runnable { event.whoClicked.openInventory(event.whoClicked.enderChest) },
+        )
     }
 
     /**
