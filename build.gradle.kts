@@ -26,15 +26,13 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:$version-R0.1-SNAPSHOT")
-    compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core")
-    compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit") { isTransitive = false }
+    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.16") // TODO("Move away from WorldEdit")
 
     implementation(kotlin("stdlib"))
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.20.0")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.0")
     implementation("org.mariuszgromada.math:MathParser.org-mXparser:6.1.0")
-    implementation(platform("com.intellectualsites.bom:bom-newest:1.55"))
 }
 
 java {
@@ -66,6 +64,6 @@ paperPluginYaml {
     authors.add("Xodium")
     apiVersion.set(version)
     dependencies {
-        server(name = "FastAsyncWorldEdit", load = PaperPluginYaml.Load.BEFORE, required = false, joinClasspath = true)
+        server(name = "WorldEdit", load = PaperPluginYaml.Load.BEFORE, required = false, joinClasspath = true)
     }
 }
