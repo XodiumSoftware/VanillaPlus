@@ -21,6 +21,7 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
         val FORTITUDE = FortitudeEnchantment.key
         val NIMBUS = NimbusEnchantment.key
         val ZEPHYR = ZephyrEnchantment.key
+        val ENCHANTS = setOf(DRIFT, FORTITUDE, NIMBUS, ZEPHYR)
     }
 
     override fun bootstrap(ctx: BootstrapContext) {
@@ -38,9 +39,9 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
             )
             registerEventHandler(LifecycleEvents.TAGS.postFlatten(RegistryKey.ENCHANTMENT)) { event ->
                 event.registrar().apply {
-                    addToTag(EnchantmentTagKeys.TRADEABLE, setOf(DRIFT, FORTITUDE, NIMBUS, ZEPHYR))
-                    addToTag(EnchantmentTagKeys.NON_TREASURE, setOf(DRIFT, FORTITUDE, NIMBUS, ZEPHYR))
-                    addToTag(EnchantmentTagKeys.IN_ENCHANTING_TABLE, setOf(DRIFT, FORTITUDE, NIMBUS, ZEPHYR))
+                    addToTag(EnchantmentTagKeys.TRADEABLE, ENCHANTS)
+                    addToTag(EnchantmentTagKeys.NON_TREASURE, ENCHANTS)
+                    addToTag(EnchantmentTagKeys.IN_ENCHANTING_TABLE, ENCHANTS)
                 }
             }
         }
