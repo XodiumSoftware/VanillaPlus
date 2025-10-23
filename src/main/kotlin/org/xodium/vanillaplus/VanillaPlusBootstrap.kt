@@ -2,12 +2,14 @@ package org.xodium.vanillaplus
 
 import io.papermc.paper.plugin.bootstrap.BootstrapContext
 import io.papermc.paper.plugin.bootstrap.PluginBootstrap
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
+import io.papermc.paper.registry.TypedKey
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
 import io.papermc.paper.registry.event.RegistryComposeEvent
 import io.papermc.paper.registry.event.RegistryEvents
-import io.papermc.paper.registry.keys.EnchantmentKeys
+import io.papermc.paper.registry.keys.tags.EnchantmentTagKeys
 import io.papermc.paper.registry.keys.tags.ItemTypeTagKeys
 import io.papermc.paper.registry.set.RegistrySet
 import net.kyori.adventure.key.Key
@@ -22,22 +24,32 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
 
     companion object {
         private const val INSTANCE = "vanillaplus"
-        val DRIFT = Key.key(INSTANCE, "drift")
-        val FORTITUDE = Key.key(INSTANCE, "fortitude")
-        val NIMBUS = Key.key(INSTANCE, "nimbus")
-        val ZEPHYR = Key.key(INSTANCE, "zephyr")
+        val DRIFT = TypedKey.create(RegistryKey.ENCHANTMENT, Key.key(INSTANCE, "drift"))
+        val FORTITUDE = TypedKey.create(RegistryKey.ENCHANTMENT, Key.key(INSTANCE, "fortitude"))
+        val NIMBUS = TypedKey.create(RegistryKey.ENCHANTMENT, Key.key(INSTANCE, "nimbus"))
+        val ZEPHYR = TypedKey.create(RegistryKey.ENCHANTMENT, Key.key(INSTANCE, "zephyr"))
     }
 
     override fun bootstrap(ctx: BootstrapContext) {
-        ctx.lifecycleManager.registerEventHandler(
-            RegistryEvents.ENCHANTMENT.compose().newHandler { event ->
-                val registry = event.registry()
-                registry.register(EnchantmentKeys.create(DRIFT)) { setDriftEnchantment(it, event) }
-                registry.register(EnchantmentKeys.create(FORTITUDE)) { setFortitudeEnchantment(it, event) }
-                registry.register(EnchantmentKeys.create(NIMBUS)) { setNimbusEnchantment(it, event) }
-                registry.register(EnchantmentKeys.create(ZEPHYR)) { setZephyrEnchantment(it, event) }
-            },
-        )
+        ctx.lifecycleManager.apply {
+            registerEventHandler(
+                RegistryEvents.ENCHANTMENT.compose().newHandler { event ->
+                    event.registry().apply {
+                        register(DRIFT) { setDriftEnchantment(it, event) }
+                        register(FORTITUDE) { setFortitudeEnchantment(it, event) }
+                        register(NIMBUS) { setNimbusEnchantment(it, event) }
+                        register(ZEPHYR) { setZephyrEnchantment(it, event) }
+                    }
+                },
+            )
+            registerEventHandler(LifecycleEvents.TAGS.postFlatten(RegistryKey.ENCHANTMENT)) { event ->
+                event.registrar().apply {
+                    addToTag(EnchantmentTagKeys.TRADEABLE, setOf(DRIFT, FORTITUDE, NIMBUS, ZEPHYR))
+                    addToTag(EnchantmentTagKeys.NON_TREASURE, setOf(DRIFT, FORTITUDE, NIMBUS, ZEPHYR))
+                    addToTag(EnchantmentTagKeys.IN_ENCHANTING_TABLE, setOf(DRIFT, FORTITUDE, NIMBUS, ZEPHYR))
+                }
+            }
+        }
     }
 
     /**
