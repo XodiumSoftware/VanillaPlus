@@ -34,5 +34,6 @@ internal interface EnchantmentInterface {
      * @return The [Enchantment] instance corresponding to the key.
      * @throws NoSuchElementException if the enchantment is not found in the registry.
      */
-    fun get(key: TypedKey<Enchantment>): Enchantment = RegistryAccess.registryAccess().getRegistry(RegistryKey.ENCHANTMENT).getOrThrow(key)
+    operator fun get(key: TypedKey<Enchantment>): Enchantment =
+        RegistryAccess.registryAccess().getRegistry(RegistryKey.ENCHANTMENT).getOrThrow(key)
 }

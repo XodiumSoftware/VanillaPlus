@@ -11,8 +11,8 @@ import org.xodium.vanillaplus.enchantments.FortitudeEnchantment
 import org.xodium.vanillaplus.enchantments.NimbusEnchantment
 import org.xodium.vanillaplus.enchantments.ZephyrEnchantment
 
-@Suppress("UnstableApiUsage")
 /** Main bootstrap class of the plugin. */
+@Suppress("UnstableApiUsage")
 internal class VanillaPlusBootstrap : PluginBootstrap {
     companion object {
         const val INSTANCE = "vanillaplus"

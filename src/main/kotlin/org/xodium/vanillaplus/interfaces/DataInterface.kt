@@ -74,7 +74,7 @@ interface DataInterface<K, T : Any> {
      * @param key the UUID key whose associated value is to be returned.
      * @return the value associated with the specified key, or `null` if no mapping exists.
      */
-    fun get(key: K): T? {
+    operator fun get(key: K): T? {
         if (cache.isEmpty() && filePath.toFile().exists()) load()
         return cache[key]
     }
