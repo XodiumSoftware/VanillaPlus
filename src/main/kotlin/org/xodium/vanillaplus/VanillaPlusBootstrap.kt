@@ -27,10 +27,10 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
             registerEventHandler(
                 RegistryEvents.ENCHANTMENT.compose().newHandler { event ->
                     event.registry().apply {
-                        register(DRIFT) { DriftEnchantment.set(it, event) }
-                        register(FORTITUDE) { FortitudeEnchantment.set(it, event) }
-                        register(NIMBUS) { NimbusEnchantment.set(it, event) }
-                        register(ZEPHYR) { ZephyrEnchantment.set(it, event) }
+                        register(DRIFT) { DriftEnchantment(it, event) }
+                        register(FORTITUDE) { FortitudeEnchantment(it, event) }
+                        register(NIMBUS) { NimbusEnchantment(it, event) }
+                        register(ZEPHYR) { ZephyrEnchantment(it, event) }
                     }
                 },
             )

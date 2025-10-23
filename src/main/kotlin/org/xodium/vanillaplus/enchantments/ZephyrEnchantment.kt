@@ -19,7 +19,7 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 internal object ZephyrEnchantment : EnchantmentInterface {
     override val key: TypedKey<Enchantment> = TypedKey.create(RegistryKey.ENCHANTMENT, Key.key(INSTANCE, "zephyr"))
 
-    override fun set(
+    override fun invoke(
         builder: EnchantmentRegistryEntry.Builder,
         event: RegistryComposeEvent<Enchantment, EnchantmentRegistryEntry.Builder>,
     ) {

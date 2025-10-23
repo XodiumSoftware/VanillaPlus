@@ -19,7 +19,7 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 internal object NimbusEnchantment : EnchantmentInterface {
     override val key: TypedKey<Enchantment> = TypedKey.create(RegistryKey.ENCHANTMENT, Key.key(INSTANCE, "nimbus"))
 
-    override fun set(
+    override fun invoke(
         builder: EnchantmentRegistryEntry.Builder,
         event: RegistryComposeEvent<Enchantment, EnchantmentRegistryEntry.Builder>,
     ) {

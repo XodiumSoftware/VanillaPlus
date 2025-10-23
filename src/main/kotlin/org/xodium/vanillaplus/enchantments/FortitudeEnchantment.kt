@@ -17,7 +17,7 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 internal object FortitudeEnchantment : EnchantmentInterface {
     override val key: TypedKey<Enchantment> = TypedKey.create(RegistryKey.ENCHANTMENT, Key.key(INSTANCE, "fortitude"))
 
-    override fun set(
+    override fun invoke(
         builder: EnchantmentRegistryEntry.Builder,
         event: RegistryComposeEvent<Enchantment, EnchantmentRegistryEntry.Builder>,
     ) {

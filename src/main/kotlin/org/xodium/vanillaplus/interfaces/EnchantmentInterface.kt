@@ -19,11 +19,11 @@ internal interface EnchantmentInterface {
     val key: TypedKey<Enchantment>
 
     /**
-     * Configures the Drift enchantment.
+     * Configures & Invokes the Drift enchantment.
      * @param builder The builder used to define the enchantment properties.
      * @param event The registry compose event providing access to tags and registration context.
      */
-    fun set(
+    operator fun invoke(
         builder: EnchantmentRegistryEntry.Builder,
         event: RegistryComposeEvent<Enchantment, EnchantmentRegistryEntry.Builder>,
     )
@@ -34,6 +34,5 @@ internal interface EnchantmentInterface {
      * @return The [Enchantment] instance corresponding to the key.
      * @throws NoSuchElementException if the enchantment is not found in the registry.
      */
-    operator fun get(key: TypedKey<Enchantment>): Enchantment =
-        RegistryAccess.registryAccess().getRegistry(RegistryKey.ENCHANTMENT).getOrThrow(key)
+    fun get(): Enchantment = RegistryAccess.registryAccess().getRegistry(RegistryKey.ENCHANTMENT).getOrThrow(key)
 }
