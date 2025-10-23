@@ -4,8 +4,6 @@ import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
 import io.papermc.paper.registry.TypedKey
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
-import io.papermc.paper.registry.event.RegistryComposeEvent
-import net.kyori.adventure.key.Key
 import org.bukkit.enchantments.Enchantment
 
 /** Represents a contract for enchantments within the system. */
@@ -19,18 +17,14 @@ internal interface EnchantmentInterface {
     val key: TypedKey<Enchantment>
 
     /**
-     * Configures & Invokes the Drift enchantment.
+     * Initializes the Drift enchantment.
      * @param builder The builder used to define the enchantment properties.
-     * @param event The registry compose event providing access to tags and registration context.
+     * @return The builder for method chaining.
      */
-    operator fun invoke(
-        builder: EnchantmentRegistryEntry.Builder,
-        event: RegistryComposeEvent<Enchantment, EnchantmentRegistryEntry.Builder>,
-    )
+    fun init(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder
 
     /**
      * Retrieves the enchantment from the registry.
-     * @param key The unique [Key] identifying the enchantment in the registry.
      * @return The [Enchantment] instance corresponding to the key.
      * @throws NoSuchElementException if the enchantment is not found in the registry.
      */

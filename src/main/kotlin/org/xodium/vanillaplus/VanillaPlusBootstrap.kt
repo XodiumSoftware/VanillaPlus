@@ -6,6 +6,7 @@ import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import io.papermc.paper.registry.RegistryKey
 import io.papermc.paper.registry.event.RegistryEvents
 import io.papermc.paper.registry.keys.tags.EnchantmentTagKeys
+import io.papermc.paper.registry.keys.tags.ItemTypeTagKeys
 import org.xodium.vanillaplus.enchantments.DriftEnchantment
 import org.xodium.vanillaplus.enchantments.FortitudeEnchantment
 import org.xodium.vanillaplus.enchantments.NimbusEnchantment
@@ -26,11 +27,12 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
         ctx.lifecycleManager.apply {
             registerEventHandler(
                 RegistryEvents.ENCHANTMENT.compose().newHandler { event ->
+                    val harnessesTag = event.getOrCreateTag(ItemTypeTagKeys.HARNESSES)
                     event.registry().apply {
-                        register(DRIFT) { DriftEnchantment(it, event) }
-                        register(FORTITUDE) { FortitudeEnchantment(it, event) }
-                        register(NIMBUS) { NimbusEnchantment(it, event) }
-                        register(ZEPHYR) { ZephyrEnchantment(it, event) }
+                        register(DRIFT) { DriftEnchantment.init(it).supportedItems(harnessesTag) }
+                        register(FORTITUDE) { FortitudeEnchantment.init(it).supportedItems(harnessesTag) }
+                        register(NIMBUS) { NimbusEnchantment.init(it).supportedItems(harnessesTag) }
+                        register(ZEPHYR) { ZephyrEnchantment.init(it).supportedItems(harnessesTag) }
                     }
                 },
             )
