@@ -13,7 +13,7 @@ import org.xodium.vanillaplus.enchantments.NimbusEnchantment
 import org.xodium.vanillaplus.enchantments.ZephyrEnchantment
 
 /** Main bootstrap class of the plugin. */
-@Suppress("UnstableApiUsage")
+@Suppress("UnstableApiUsage", "Unused")
 internal class VanillaPlusBootstrap : PluginBootstrap {
     companion object {
         const val INSTANCE = "vanillaplus"
