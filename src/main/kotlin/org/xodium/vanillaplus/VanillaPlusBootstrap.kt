@@ -58,8 +58,7 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
      * @return The [Enchantment] instance corresponding to the key.
      * @throws NoSuchElementException if the enchantment is not found in the registry.
      */
-    fun getEnchantment(key: Key): Enchantment =
-        registryAccess.getRegistry(RegistryKey.ENCHANTMENT).getOrThrow(RegistryKey.ENCHANTMENT.typedKey(key))
+    fun getEnchantment(key: TypedKey<Enchantment>): Enchantment = registryAccess.getRegistry(RegistryKey.ENCHANTMENT).getOrThrow(key)
 
     /**
      * Configures the Drift enchantment.
