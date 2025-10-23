@@ -5,7 +5,10 @@ import io.papermc.paper.registry.TypedKey
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
 import net.kyori.adventure.key.Key
 import org.bukkit.enchantments.Enchantment
+import org.bukkit.entity.Player
 import org.bukkit.inventory.EquipmentSlotGroup
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 import org.xodium.vanillaplus.VanillaPlusBootstrap.Companion.INSTANCE
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
@@ -23,4 +26,18 @@ internal object DriftEnchantment : EnchantmentInterface {
             .minimumCost(EnchantmentRegistryEntry.EnchantmentCost.of(4, 6))
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(24, 6))
             .activeSlots(EquipmentSlotGroup.BODY)
+
+    fun effect(): PotionEffect =
+        PotionEffect(
+            PotionEffectType.SLOW_FALLING,
+            100,
+            0,
+            true,
+            true,
+            true,
+        )
+
+    fun Player.drift() {
+        addPotionEffect(effect())
+    }
 }
