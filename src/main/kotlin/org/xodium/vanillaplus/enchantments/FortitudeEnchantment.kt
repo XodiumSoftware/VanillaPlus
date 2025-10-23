@@ -14,7 +14,7 @@ import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 
 @Suppress("UnstableApiUsage")
-internal class FortitudeEnchantment : EnchantmentInterface {
+internal object FortitudeEnchantment : EnchantmentInterface {
     override val key: TypedKey<Enchantment> = TypedKey.create(RegistryKey.ENCHANTMENT, Key.key(INSTANCE, "fortitude"))
 
     override fun set(

@@ -16,10 +16,10 @@ import org.xodium.vanillaplus.enchantments.ZephyrEnchantment
 internal class VanillaPlusBootstrap : PluginBootstrap {
     companion object {
         const val INSTANCE = "vanillaplus"
-        val DRIFT = DriftEnchantment().key
-        val FORTITUDE = FortitudeEnchantment().key
-        val NIMBUS = NimbusEnchantment().key
-        val ZEPHYR = ZephyrEnchantment().key
+        val DRIFT = DriftEnchantment.key
+        val FORTITUDE = FortitudeEnchantment.key
+        val NIMBUS = NimbusEnchantment.key
+        val ZEPHYR = ZephyrEnchantment.key
     }
 
     override fun bootstrap(ctx: BootstrapContext) {
@@ -27,10 +27,10 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
             registerEventHandler(
                 RegistryEvents.ENCHANTMENT.compose().newHandler { event ->
                     event.registry().apply {
-                        register(DRIFT) { DriftEnchantment().set(it, event) }
-                        register(FORTITUDE) { FortitudeEnchantment().set(it, event) }
-                        register(NIMBUS) { NimbusEnchantment().set(it, event) }
-                        register(ZEPHYR) { ZephyrEnchantment().set(it, event) }
+                        register(DRIFT) { DriftEnchantment.set(it, event) }
+                        register(FORTITUDE) { FortitudeEnchantment.set(it, event) }
+                        register(NIMBUS) { NimbusEnchantment.set(it, event) }
+                        register(ZEPHYR) { ZephyrEnchantment.set(it, event) }
                     }
                 },
             )

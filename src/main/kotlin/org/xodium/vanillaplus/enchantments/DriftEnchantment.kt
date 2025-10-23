@@ -13,7 +13,7 @@ import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 
 @Suppress("UnstableApiUsage")
-internal class DriftEnchantment : EnchantmentInterface {
+internal object DriftEnchantment : EnchantmentInterface {
     override val key: TypedKey<Enchantment> = TypedKey.create(RegistryKey.ENCHANTMENT, Key.key(INSTANCE, "drift"))
 
     override fun set(
