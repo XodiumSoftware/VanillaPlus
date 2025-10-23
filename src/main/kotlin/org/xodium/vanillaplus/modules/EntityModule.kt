@@ -2,6 +2,7 @@
 
 package org.xodium.vanillaplus.modules
 
+import io.papermc.paper.event.entity.EntityMoveEvent
 import org.bukkit.entity.*
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.EntityChangeBlockEvent
@@ -22,6 +23,15 @@ internal class EntityModule : ModuleInterface<EntityModule.Config> {
     fun on(event: EntityExplodeEvent) {
         if (!enabled()) return
         if (shouldCancelGrief(event.entity)) event.blockList().clear()
+    }
+
+    @EventHandler
+    fun on(event: EntityMoveEvent) {
+        if (!enabled()) return
+        val entity = event.entity as? HappyGhast ?: return
+        val location = entity.location
+        if (location.y <= 187) return
+        // TODO: implement nimbus
     }
 
     /**
