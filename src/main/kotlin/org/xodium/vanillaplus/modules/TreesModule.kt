@@ -16,7 +16,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.world.StructureGrowEvent
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.hooks.FAWEHook
+import org.xodium.vanillaplus.hooks.WorldEditHook
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.registries.MaterialRegistry
 import java.io.IOException
@@ -38,7 +38,7 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
         }
     }
 
-    override fun enabled(): Boolean = config.enabled && FAWEHook.get()
+    override fun enabled(): Boolean = config.enabled && WorldEditHook.get()
 
     /**
      * Handle the StructureGrowEvent.
@@ -139,7 +139,7 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
                                         .copyBiomes(config.copyBiomes)
                                         .copyEntities(config.copyEntities)
                                         .ignoreAirBlocks(config.ignoreAirBlocks)
-//                                        .ignoreStructureVoidBlocks(config.ignoreStructureVoidBlocks)
+                                        .ignoreStructureVoidBlocks(config.ignoreStructureVoidBlocks)
                                         .build(),
                                 )
                             }
@@ -168,7 +168,7 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
         var copyBiomes: Boolean = false,
         var copyEntities: Boolean = false,
         var ignoreAirBlocks: Boolean = true,
-//        var ignoreStructureVoidBlocks: Boolean = true,
+        var ignoreStructureVoidBlocks: Boolean = true,
         var treeMask: Set<Material> = emptySet(),
     ) : ModuleInterface.Config
 }

@@ -3,7 +3,7 @@ package org.xodium.vanillaplus.hooks
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 
 /** Utility object for checking plugin availability and handling related dependencies. */
-object FAWEHook {
+object WorldEditHook {
     /**
      * Checks if a specified plugin is available and optionally logs a warning if not found.
      * @return true if the plugin is installed and enabled, false otherwise.

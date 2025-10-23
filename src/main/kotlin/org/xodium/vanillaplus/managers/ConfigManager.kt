@@ -4,10 +4,11 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.DataInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.key
+import kotlin.reflect.KClass
 
 /** Manages module configs on disk and in-memory. */
 internal object ConfigManager : DataInterface<String, ModuleInterface.Config> {
-    override val dataClass: kotlin.reflect.KClass<ModuleInterface.Config> = ModuleInterface.Config::class
+    override val dataClass: KClass<ModuleInterface.Config> = ModuleInterface.Config::class
     override val cache: MutableMap<String, ModuleInterface.Config> = mutableMapOf()
     override val fileName: String = "config.json"
 
@@ -19,36 +20,34 @@ internal object ConfigManager : DataInterface<String, ModuleInterface.Config> {
     fun update(modules: List<ModuleInterface<ModuleInterface.Config>>) {
         modules.forEach { module ->
             val key = module.key()
-
-            val fileConfig: ModuleInterface.Config? =
-                try {
-                    if (filePath.toFile().exists()) {
-                        val tree = jsonMapper.readTree(filePath.toFile())
-                        val node = tree?.get(key)
-                        if (node != null) jsonMapper.treeToValue(node, module.config::class.java) else null
-                    } else {
-                        null
-                    }
-                } catch (e: Exception) {
-                    instance.logger.warning("Failed to read config section for $key: ${e.message}")
-                    null
-                }
-
-            val mergedConfig =
-                if (fileConfig != null) {
-                    try {
-                        jsonMapper.updateValue(module.config, fileConfig)
-                    } catch (e: Exception) {
-                        instance.logger.warning("Failed to merge config for $key: ${e.message}")
-                        module.config
-                    }
-                } else {
-                    module.config
-                }
-
+            val fileConfig = readFileConfig(key, module)
+            val mergedConfig = fileConfig?.let { jsonMapper.updateValue(module.config, it) } ?: module.config
             set(key, mergedConfig)
         }
-
         if (modules.isNotEmpty()) instance.logger.info("Config updated successfully")
     }
+
+    /**
+     * Reads a module's configuration from the JSON config file.
+     * @param key The unique identifier for the module used in the config file.
+     * @param module The module instance used to determine the correct configuration type.
+     * @return The parsed configuration object from the file, or `null` if not found or an error occurred.
+     * @see ConfigManager.update
+     */
+    private fun readFileConfig(
+        key: String,
+        module: ModuleInterface<ModuleInterface.Config>,
+    ): ModuleInterface.Config? =
+        try {
+            if (filePath.toFile().exists()) {
+                jsonMapper.readTree(filePath.toFile())?.get(key)?.let { node ->
+                    jsonMapper.treeToValue(node, module.config::class.java)
+                }
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            instance.logger.warning("Failed to read config section for $key: ${e.message}")
+            null
+        }
 }

@@ -142,7 +142,10 @@ internal class PlayerModule(
             return
         }
         event.isCancelled = true
-        event.whoClicked.openInventory(event.whoClicked.enderChest)
+        instance.server.scheduler.runTask(
+            instance,
+            Runnable { event.whoClicked.openInventory(event.whoClicked.enderChest) },
+        )
     }
 
     /**
@@ -205,7 +208,7 @@ internal class PlayerModule(
 
     data class Config(
         override var enabled: Boolean = true,
-        var enderChestClickType: ClickType = ClickType.SHIFT_LEFT,
+        var enderChestClickType: ClickType = ClickType.SHIFT_RIGHT,
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
         data class I18n(
