@@ -61,7 +61,7 @@ jobs:
 
       - id: upload_artifact
         name: Upload Artifact
-        uses: actions/upload-artifact@v4.6.2
+        uses: actions/upload-artifact@v5.0.0
         with:
           name: vanillaplus
           path: build/libs/VanillaPlus-*.jar
@@ -76,7 +76,7 @@ jobs:
     steps:
       - id: download_artifact
         name: Download Artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with: { name: vanillaplus }
 
       - id: release_artifact
@@ -99,7 +99,7 @@ jobs:
     steps:
       - id: download_artifact
         name: Download Artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with: { name: vanillaplus }
 
       - id: uts
