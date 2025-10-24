@@ -26,9 +26,12 @@ internal class SignModule : ModuleInterface<SignModule.Config> {
                     .then(
                         Commands
                             .argument("line", IntegerArgumentType.integer(1, 4))
-                            .then(
+                            .suggests { _, builder ->
+                                (1..4).forEach(builder::suggest)
+                                builder.buildFuture()
+                            }.then(
                                 Commands
-                                    .argument("text", StringArgumentType.string())
+                                    .argument("text", StringArgumentType.greedyString())
                                     .executes { ctx ->
                                         ctx.tryCatch {
                                             val player =
