@@ -1,5 +1,6 @@
 package org.xodium.vanillaplus.modules
 
+import com.destroystokyo.paper.event.player.PlayerSetSpawnEvent
 import com.mojang.brigadier.arguments.StringArgumentType
 import io.papermc.paper.chat.ChatRenderer
 import io.papermc.paper.command.brigadier.Commands
@@ -67,7 +68,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
                             ),
                     ),
                 "This command allows you to whisper to players",
-                listOf("w"),
+                listOf("w", "msg", "tell", "tellraw"),
             ),
             CommandData(
                 Commands
@@ -154,6 +155,14 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
         )
     }
 
+    @EventHandler
+    fun on(event: PlayerSetSpawnEvent) {
+        if (!enabled()) return
+
+        event.notification =
+            config.i18n.playerSetSpawn.mm(Placeholder.component("notification", event.notification ?: return))
+    }
+
     /**
      * Handles the whisper command.
      * @param sender The player who sent the command.
@@ -234,8 +243,9 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
             var clickMe: String = "Click Me!".fireFmt(),
             var clickToWhisper: String = "Click to Whisper".fireFmt(),
             var playerIsNotOnline: String = "${instance.prefix} Player is not Online!".fireFmt(),
-            var deleteMessage: String = "Click to delete your message!".fireFmt(),
+            var deleteMessage: String = "Click to delete your message".fireFmt(),
             var clickToClipboard: String = "Click to copy position to clipboard".fireFmt(),
+            var playerSetSpawn: String = "${"❗".fireFmt()} ${"›".mangoFmt(true)} <notification>",
         )
     }
 }

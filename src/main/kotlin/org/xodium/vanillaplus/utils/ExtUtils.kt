@@ -1,4 +1,4 @@
-@file:Suppress("UnstableApiUsage", "ktlint:standard:no-wildcard-imports", "unused")
+@file:Suppress("ktlint:standard:no-wildcard-imports")
 
 package org.xodium.vanillaplus.utils
 
@@ -6,21 +6,14 @@ import com.google.gson.JsonParser
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
-import io.papermc.paper.datacomponent.DataComponentTypes
-import io.papermc.paper.datacomponent.item.CustomModelData
-import io.papermc.paper.datacomponent.item.ItemLore
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
-import org.bukkit.Color
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.VanillaPlus
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.utils.ExtUtils.lore
-import org.xodium.vanillaplus.utils.ExtUtils.name
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import java.net.URI
@@ -31,7 +24,6 @@ import javax.imageio.ImageIO
 internal object ExtUtils {
     private val MM: MiniMessage = MiniMessage.miniMessage()
 
-    private const val DEFAULT_FACE_SIZE = 8
     private const val FACE_X = 8
     private const val FACE_Y = 8
     private const val FACE_WIDTH = 8
@@ -43,7 +35,6 @@ internal object ExtUtils {
     private const val ALPHA_SHIFT = 24
     private const val RED_SHIFT = 16
     private const val GREEN_SHIFT = 8
-    private const val MILLISECONDS_PER_TICK = 50L
 
     val VanillaPlus.prefix: String
         get() = "${"[".mangoFmt(true)}${this::class.simpleName.toString().fireFmt()}${"]".mangoFmt()}"
@@ -71,54 +62,8 @@ internal object ExtUtils {
     /** Serializes a [Component] into a String. */
     fun Component.mm(): String = MM.serialize(this)
 
-    /** Deserializes a list of [MiniMessage] strings into a list of Components. */
-    @JvmName("mmComponentList")
-    fun List<Component>.mm(): List<String> = this.map { it.mm() }
-
     /** Serializes a [Component] into plaintext. */
     fun Component.pt(): String = PlainTextComponentSerializer.plainText().serialize(this)
-
-    /** Creates an [ItemLore] object from a single [MiniMessage] [String]. */
-    fun String.il(): ItemLore.Builder = ItemLore.lore().addLine(this.mm())
-
-    /** Creates an [ItemLore] object from a list of [MiniMessage] strings. */
-    @JvmName("ilStringList")
-    fun List<String>.il(): ItemLore.Builder = ItemLore.lore().addLines(this.mm())
-
-    /** Creates an [ItemLore] object from a single [Component]. */
-    fun Component.il(): ItemLore.Builder = ItemLore.lore().addLine(this)
-
-    /** Creates an [ItemLore] object from a list of Components. */
-    @JvmName("ilComponentList")
-    fun List<Component>.il(): ItemLore.Builder = ItemLore.lore().addLines(this)
-
-    /** Creates a [CustomModelData] object from a single [String]. */
-    fun String.cmd(): CustomModelData.Builder = CustomModelData.customModelData().addString(this)
-
-    /** Creates a [CustomModelData] object from a list of strings. */
-    @JvmName("cmdStringList")
-    fun List<String>.cmd(): CustomModelData.Builder = CustomModelData.customModelData().addStrings(this)
-
-    /** Creates a [CustomModelData] object from a single [Float]. */
-    fun Float.cmd(): CustomModelData.Builder = CustomModelData.customModelData().addFloat(this)
-
-    /** Creates a [CustomModelData] object from a list of floats. */
-    @JvmName("cmdFloatList")
-    fun List<Float>.cmd(): CustomModelData.Builder = CustomModelData.customModelData().addFloats(this)
-
-    /** Creates a [CustomModelData] object from a single [Boolean]. */
-    fun Boolean.cmd(): CustomModelData.Builder = CustomModelData.customModelData().addFlag(this)
-
-    /** Creates a [CustomModelData] object from a list of booleans. */
-    @JvmName("cmdBooleanList")
-    fun List<Boolean>.cmd(): CustomModelData.Builder = CustomModelData.customModelData().addFlags(this)
-
-    /** Creates a [CustomModelData] object from a single [Color]. */
-    fun Color.cmd(): CustomModelData.Builder = CustomModelData.customModelData().addColor(this)
-
-    /** Creates a [CustomModelData] object from a list of colours. */
-    @JvmName("cmdColorList")
-    fun List<Color>.cmd(): CustomModelData.Builder = CustomModelData.customModelData().addColors(this)
 
     /**
      * Performs a command from a [String].
@@ -130,18 +75,6 @@ internal object ExtUtils {
             "<hover:show_text:'$hover'><click:run_command:'$this'>$this</click></hover>"
         } else {
             "<click:run_command:'$this'>$this</click>"
-        }
-
-    /**
-     * Suggests a command from a [String].
-     * @param hover Optional hover text for the command.
-     * @return The formatted [String] with the suggested command.
-     */
-    fun String.clickSuggestCmd(hover: String? = null): String =
-        if (hover != null) {
-            "<hover:show_text:'$hover'><click:suggest_command:'$this'>$this</click></hover>"
-        } else {
-            "<click:suggest_command:'$this'>$this</click>"
         }
 
     /**
@@ -222,20 +155,4 @@ internal object ExtUtils {
      * @return The generated configuration key.
      */
     fun ModuleInterface<*>.key(): String = this::class.simpleName.toString()
-
-    /**
-     * Sets a custom display name for the ItemStack.
-     * @param name the text to be set as the custom name for this ItemStack.
-     * @return the modified ItemStack instance (`this`) with the new name applied.
-     * @see DataComponentTypes.CUSTOM_NAME
-     */
-    fun ItemStack.name(name: Component): ItemStack = apply { setData(DataComponentTypes.CUSTOM_NAME, name) }
-
-    /**
-     * Sets custom lore for the ItemStack.
-     * @param lore the lore to be set as the custom lore for this ItemStack.
-     * @return the modified ItemStack instance (`this`) with the new lore applied.
-     * @see DataComponentTypes.LORE
-     */
-    fun ItemStack.lore(vararg lore: Component): ItemStack = apply { setData(DataComponentTypes.LORE, ItemLore.lore(lore.toList())) }
 }

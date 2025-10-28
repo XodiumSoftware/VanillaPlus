@@ -25,6 +25,8 @@ interface DataInterface<K, T : Any> {
     val cache: MutableMap<K, T>
     val fileName: String
         get() = "${dataClass.simpleName?.toSnakeCase()}.json"
+    val filePath: Path
+        get() = instance.dataFolder.toPath().resolve(fileName)
     val jsonMapper: ObjectMapper
         get() =
             JsonMapper
@@ -36,9 +38,6 @@ interface DataInterface<K, T : Any> {
                 .configure(MapperFeature.PROPAGATE_TRANSIENT_MARKER, true)
                 .build()
                 .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
-
-    val filePath: Path
-        get() = instance.dataFolder.toPath().resolve(fileName)
 
     /** Initializes the cache and loads existing data from the file. */
     fun load() {
