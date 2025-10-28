@@ -3,6 +3,7 @@ package org.xodium.vanillaplus.modules
 import org.bukkit.Material
 import org.bukkit.entity.ArmorStand
 import org.bukkit.event.EventHandler
+import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerInteractAtEntityEvent
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.inventories.ArmorStandInventory
@@ -22,6 +23,19 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
         }
         event.player.openInventory(ArmorStandInventory(event.rightClicked as ArmorStand).inventory)
         event.isCancelled = true
+    }
+
+    @EventHandler
+    fun on(event: InventoryClickEvent) {
+        val inventory = event.inventory
+        val clickedInventory = event.clickedInventory
+
+        if (inventory.holder is ArmorStandInventory && clickedInventory == inventory) {
+            event.isCancelled = true
+
+            val armorStandInventory = inventory.holder as ArmorStandInventory
+            armorStandInventory.handleClick(event.slot)
+        }
     }
 
     data class Config(

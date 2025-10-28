@@ -89,4 +89,58 @@ internal class ArmorStandInventory(
         isActive: Boolean,
         name: String,
     ): ItemStack = ItemStack.of(if (isActive) Material.GREEN_WOOL else Material.RED_WOOL).name(name)
+
+    private fun toggleNameTag() {
+        armorStand.isCustomNameVisible = !armorStand.isCustomNameVisible
+        updateToggleItem(NAME_TAG_SLOT, armorStand.isCustomNameVisible, TOGGLE_NAME_TAG_NAME)
+    }
+
+    private fun toggleArms() {
+        armorStand.setArms(!armorStand.hasArms())
+        updateToggleItem(ARMS_SLOT, armorStand.hasArms(), TOGGLE_ARMS_NAME)
+    }
+
+    private fun toggleSize() {
+        armorStand.isSmall = !armorStand.isSmall
+        updateToggleItem(SIZE_SLOT, armorStand.isSmall, TOGGLE_SIZE_NAME)
+    }
+
+    private fun toggleBasePlate() {
+        armorStand.setBasePlate(!armorStand.hasBasePlate())
+        updateToggleItem(BASE_PLATE_SLOT, armorStand.hasBasePlate(), TOGGLE_BASE_PLATE_NAME)
+    }
+
+    private fun updateToggleItem(
+        slot: Int,
+        isActive: Boolean,
+        name: String,
+    ) {
+        inventory.setItem(slot, createToggleItem(isActive, name))
+    }
+
+    fun handleClick(slot: Int) {
+        when (slot) {
+            NAME_TAG_SLOT -> toggleNameTag()
+            ARMS_SLOT -> toggleArms()
+            SIZE_SLOT -> toggleSize()
+            BASE_PLATE_SLOT -> toggleBasePlate()
+
+            HELMET_SLOT, CHESTPLATE_SLOT, LEGGINGS_SLOT, BOOTS_SLOT, MAIN_HAND_SLOT, OFF_HAND_SLOT ->
+                updateEquipment(slot)
+        }
+    }
+
+    private fun updateEquipment(slot: Int) {
+        val item = inventory.getItem(slot)
+        val equipment = armorStand.equipment
+
+        when (slot) {
+            HELMET_SLOT -> equipment.setHelmet(item)
+            CHESTPLATE_SLOT -> equipment.setChestplate(item)
+            LEGGINGS_SLOT -> equipment.setLeggings(item)
+            BOOTS_SLOT -> equipment.setBoots(item)
+            MAIN_HAND_SLOT -> equipment.setItemInMainHand(item)
+            OFF_HAND_SLOT -> equipment.setItemInOffHand(item)
+        }
+    }
 }
