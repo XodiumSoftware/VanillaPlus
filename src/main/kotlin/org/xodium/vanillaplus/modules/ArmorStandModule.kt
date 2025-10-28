@@ -5,6 +5,7 @@ import org.bukkit.entity.ArmorStand
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractAtEntityEvent
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.inventories.ArmorStandInventory
 
 /** Represents a module handling armor stand mechanics within the system. */
 internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
@@ -19,8 +20,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
         ) {
             return
         }
-        val armorStand = event.rightClicked as ArmorStand
-        armorStand
+        event.player.openInventory(ArmorStandInventory(event.rightClicked as ArmorStand).inventory)
         event.isCancelled = true
     }
 
