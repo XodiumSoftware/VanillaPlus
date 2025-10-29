@@ -100,8 +100,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                         return
                     }
                 }
-                // TODO: make handleClick run the scheduler inside so we dont have to repeat it in here.
-                instance.server.scheduler.runTask(instance, Runnable { handleClick(event.slot, armorStand, inventory) })
+                handleClick(event.slot, armorStand, inventory)
                 return
             }
 
@@ -118,7 +117,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                 ?.let { slot ->
                     inventory.setItem(slot, item)
                     event.currentItem = null
-                    instance.server.scheduler.runTask(instance, Runnable { handleClick(slot, armorStand, inventory) })
+                    handleClick(slot, armorStand, inventory)
                 }
         }
     }
@@ -200,14 +199,19 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
         armorStand: ArmorStand,
         inventory: Inventory,
     ) {
-        when (slot) {
-            ToggleSlot.NAME_TAG -> armorStand.toggleNameTag(inventory)
-            ToggleSlot.ARMS -> armorStand.toggleArms(inventory)
-            ToggleSlot.SIZE -> armorStand.toggleSize(inventory)
-            ToggleSlot.BASE_PLATE -> armorStand.toggleBasePlate(inventory)
+        instance.server.scheduler.runTask(
+            instance,
+            Runnable {
+                when (slot) {
+                    ToggleSlot.NAME_TAG -> armorStand.toggleNameTag(inventory)
+                    ToggleSlot.ARMS -> armorStand.toggleArms(inventory)
+                    ToggleSlot.SIZE -> armorStand.toggleSize(inventory)
+                    ToggleSlot.BASE_PLATE -> armorStand.toggleBasePlate(inventory)
 
-            in EquipmentSlot.ALL -> EquipmentSlot.update(slot, armorStand, inventory.getItem(slot))
-        }
+                    in EquipmentSlot.ALL -> EquipmentSlot.update(slot, armorStand, inventory.getItem(slot))
+                }
+            },
+        )
     }
 
     /** Toggles the visibility of the armour stand's name tag. */
