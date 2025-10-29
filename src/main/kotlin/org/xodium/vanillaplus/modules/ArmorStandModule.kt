@@ -65,6 +65,15 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
         const val EXTRA_OPTIONS = 37
     }
 
+    /** Defines constants for specific inventory slot positions used in the pose adjustment GUI. */
+    private object PoseAdjustSlot {
+        const val X_AXIS = 20
+        const val Y_AXIS = 29
+        const val Z_AXIS = 38
+        const val RESET = 40
+        const val BACK = 49
+    }
+
     @EventHandler
     fun on(event: PlayerInteractAtEntityEvent) {
         if (!enabled() ||
