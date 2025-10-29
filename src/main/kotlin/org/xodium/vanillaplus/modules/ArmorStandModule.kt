@@ -27,33 +27,23 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
 
     private val armorStandGuis = WeakHashMap<Inventory, ArmorStand>()
 
-    companion object {
-        // Slot positions for equipment
-        const val HELMET_SLOT = 13
-        const val CHESTPLATE_SLOT = 22
-        const val LEGGINGS_SLOT = 31
-        const val BOOTS_SLOT = 40
-        const val MAIN_HAND_SLOT = 21
-        const val OFF_HAND_SLOT = 23
+    object EquipmentSlot {
+        const val HELMET = 13
+        const val CHESTPLATE = 22
+        const val LEGGINGS = 31
+        const val BOOTS = 40
+        const val MAIN_HAND = 21
+        const val OFF_HAND = 23
 
-        val EQUIPMENT_SLOTS =
-            setOf(
-                HELMET_SLOT,
-                CHESTPLATE_SLOT,
-                LEGGINGS_SLOT,
-                BOOTS_SLOT,
-                MAIN_HAND_SLOT,
-                OFF_HAND_SLOT,
-            )
+        val ALL = setOf(HELMET, CHESTPLATE, LEGGINGS, BOOTS, MAIN_HAND, OFF_HAND)
+    }
 
-        // Slot positions for toggle buttons
-        const val NAME_TAG_SLOT = 16
-        const val ARMS_SLOT = 25
-        const val SIZE_SLOT = 34
-        const val BASE_PLATE_SLOT = 43
-
-        // Slot positions for the extra options button
-        const val EXTRA_OPTIONS_SLOT = 37
+    object ToggleSlot {
+        const val NAME_TAG = 16
+        const val ARMS = 25
+        const val SIZE = 34
+        const val BASE_PLATE = 43
+        const val EXTRA_OPTIONS = 37
     }
 
     @EventHandler
@@ -84,7 +74,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
         val clickedInventory = event.clickedInventory
 
         if (clickedInventory === inventory) {
-            if (event.slot in EQUIPMENT_SLOTS) {
+            if (event.slot in EquipmentSlot.ALL) {
                 val cursorItem = event.cursor
                 if (cursorItem.type != Material.AIR) {
                     if (!isValidItemForSlot(event.slot, cursorItem.type)) {
@@ -126,14 +116,14 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
         itemType: Material,
     ): Boolean =
         when (slot) {
-            HELMET_SLOT ->
+            EquipmentSlot.HELMET ->
                 Tag.ITEMS_HEAD_ARMOR.isTagged(itemType) ||
                     Tag.ITEMS_SKULLS.isTagged(itemType) ||
                     itemType == Material.CARVED_PUMPKIN
 
-            CHESTPLATE_SLOT -> Tag.ITEMS_CHEST_ARMOR.isTagged(itemType) || itemType == Material.ELYTRA
-            LEGGINGS_SLOT -> Tag.ITEMS_LEG_ARMOR.isTagged(itemType)
-            BOOTS_SLOT -> Tag.ITEMS_FOOT_ARMOR.isTagged(itemType)
+            EquipmentSlot.CHESTPLATE -> Tag.ITEMS_CHEST_ARMOR.isTagged(itemType) || itemType == Material.ELYTRA
+            EquipmentSlot.LEGGINGS -> Tag.ITEMS_LEG_ARMOR.isTagged(itemType)
+            EquipmentSlot.BOOTS -> Tag.ITEMS_FOOT_ARMOR.isTagged(itemType)
             else -> true
         }
 
@@ -146,14 +136,20 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
         when {
             Tag.ITEMS_HEAD_ARMOR.isTagged(itemType) ||
                 Tag.ITEMS_SKULLS.isTagged(itemType) ||
-                itemType == Material.CARVED_PUMPKIN -> listOf(HELMET_SLOT)
+                itemType == Material.CARVED_PUMPKIN -> listOf(EquipmentSlot.HELMET)
 
-            Tag.ITEMS_CHEST_ARMOR.isTagged(itemType) || itemType == Material.ELYTRA -> listOf(CHESTPLATE_SLOT)
-            Tag.ITEMS_LEG_ARMOR.isTagged(itemType) -> listOf(LEGGINGS_SLOT)
-            Tag.ITEMS_FOOT_ARMOR.isTagged(itemType) -> listOf(BOOTS_SLOT)
-            else -> listOf(MAIN_HAND_SLOT, OFF_HAND_SLOT)
+            Tag.ITEMS_CHEST_ARMOR.isTagged(itemType) || itemType == Material.ELYTRA -> listOf(EquipmentSlot.CHESTPLATE)
+            Tag.ITEMS_LEG_ARMOR.isTagged(itemType) -> listOf(EquipmentSlot.LEGGINGS)
+            Tag.ITEMS_FOOT_ARMOR.isTagged(itemType) -> listOf(EquipmentSlot.BOOTS)
+            else -> listOf(EquipmentSlot.MAIN_HAND, EquipmentSlot.OFF_HAND)
         }
 
+    /**
+     * Opens a graphical user interface (GUI) allowing the player to interact with
+     * the armour stand's properties and equipment slots.
+     * @param player The player for whom the GUI is being rendered.
+     * @return The inventory representing the GUI for the armour stand.
+     */
     @Suppress("UnstableApiUsage")
     fun ArmorStand.gui(player: Player): Inventory {
         val view =
@@ -168,34 +164,34 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
         inventory.fill(ItemStack.of(Material.BLACK_STAINED_GLASS_PANE).name(config.i18n.emptySlotName))
 
         // Equipment slots
-        inventory.setItem(HELMET_SLOT, equipment.helmet)
-        inventory.setItem(CHESTPLATE_SLOT, equipment.chestplate)
-        inventory.setItem(LEGGINGS_SLOT, equipment.leggings)
-        inventory.setItem(BOOTS_SLOT, equipment.boots)
-        inventory.setItem(MAIN_HAND_SLOT, equipment.itemInMainHand)
-        inventory.setItem(OFF_HAND_SLOT, equipment.itemInOffHand)
+        inventory.setItem(EquipmentSlot.HELMET, equipment.helmet)
+        inventory.setItem(EquipmentSlot.CHESTPLATE, equipment.chestplate)
+        inventory.setItem(EquipmentSlot.LEGGINGS, equipment.leggings)
+        inventory.setItem(EquipmentSlot.BOOTS, equipment.boots)
+        inventory.setItem(EquipmentSlot.MAIN_HAND, equipment.itemInMainHand)
+        inventory.setItem(EquipmentSlot.OFF_HAND, equipment.itemInOffHand)
 
         // Toggle buttons
         inventory.setItem(
-            NAME_TAG_SLOT,
+            ToggleSlot.NAME_TAG,
             createToggleItem(isCustomNameVisible, config.i18n.toggleNameTag),
         )
         inventory.setItem(
-            ARMS_SLOT,
+            ToggleSlot.ARMS,
             createToggleItem(hasArms(), config.i18n.toggleArms),
         )
         inventory.setItem(
-            SIZE_SLOT,
+            ToggleSlot.SIZE,
             createToggleItem(isSmall, config.i18n.toggleSize),
         )
         inventory.setItem(
-            BASE_PLATE_SLOT,
+            ToggleSlot.BASE_PLATE,
             createToggleItem(hasBasePlate(), config.i18n.toggleBasePlate),
         )
 
         // Extra options button
         inventory.setItem(
-            EXTRA_OPTIONS_SLOT,
+            ToggleSlot.EXTRA_OPTIONS,
             ItemStack.of(Material.ARMOR_STAND).name(config.i18n.extraOptionsName).lore(config.i18n.extraOptionsLore),
         )
 
@@ -216,25 +212,25 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
     /** Toggles the visibility of the armour stand's name tag. */
     private fun ArmorStand.toggleNameTag(inventory: Inventory) {
         isCustomNameVisible = !isCustomNameVisible
-        updateToggleItem(NAME_TAG_SLOT, isCustomNameVisible, config.i18n.toggleNameTag, inventory)
+        updateToggleItem(ToggleSlot.NAME_TAG, isCustomNameVisible, config.i18n.toggleNameTag, inventory)
     }
 
     /** Toggles whether the armour stand has arms. */
     private fun ArmorStand.toggleArms(inventory: Inventory) {
         setArms(!hasArms())
-        updateToggleItem(ARMS_SLOT, hasArms(), config.i18n.toggleArms, inventory)
+        updateToggleItem(ToggleSlot.ARMS, hasArms(), config.i18n.toggleArms, inventory)
     }
 
     /** Toggles the size of the armour stand. */
     private fun ArmorStand.toggleSize(inventory: Inventory) {
         isSmall = !isSmall
-        updateToggleItem(SIZE_SLOT, isSmall, config.i18n.toggleSize, inventory)
+        updateToggleItem(ToggleSlot.SIZE, isSmall, config.i18n.toggleSize, inventory)
     }
 
     /** Toggles the visibility of the armour stand's baseplate. */
     private fun ArmorStand.toggleBasePlate(inventory: Inventory) {
         setBasePlate(!hasBasePlate())
-        updateToggleItem(BASE_PLATE_SLOT, hasBasePlate(), config.i18n.toggleBasePlate, inventory)
+        updateToggleItem(ToggleSlot.BASE_PLATE, hasBasePlate(), config.i18n.toggleBasePlate, inventory)
     }
 
     /**
@@ -242,6 +238,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
      * @param slot The slot of the item to update.
      * @param isActive The new state of the toggle.
      * @param name The name of the toggle item.
+     * @param inventory The inventory to update.
      */
     private fun updateToggleItem(
         slot: Int,
@@ -255,6 +252,8 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
     /**
      * Handles a click event within the inventory.
      * @param slot The slot that was clicked.
+     * @param armorStand The armour stand that was clicked.
+     * @param inventory The inventory that was clicked within.
      */
     fun handleClick(
         slot: Int,
@@ -262,19 +261,20 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
         inventory: Inventory,
     ) {
         when (slot) {
-            NAME_TAG_SLOT -> armorStand.toggleNameTag(inventory)
-            ARMS_SLOT -> armorStand.toggleArms(inventory)
-            SIZE_SLOT -> armorStand.toggleSize(inventory)
-            BASE_PLATE_SLOT -> armorStand.toggleBasePlate(inventory)
+            ToggleSlot.NAME_TAG -> armorStand.toggleNameTag(inventory)
+            ToggleSlot.ARMS -> armorStand.toggleArms(inventory)
+            ToggleSlot.SIZE -> armorStand.toggleSize(inventory)
+            ToggleSlot.BASE_PLATE -> armorStand.toggleBasePlate(inventory)
 
-            HELMET_SLOT, CHESTPLATE_SLOT, LEGGINGS_SLOT, BOOTS_SLOT, MAIN_HAND_SLOT, OFF_HAND_SLOT ->
-                updateEquipment(slot, armorStand, inventory)
+            in EquipmentSlot.ALL -> updateEquipment(slot, armorStand, inventory)
         }
     }
 
     /**
      * Updates the armour stand's equipment from the inventory.
      * @param slot The slot corresponding to the equipment piece that was changed.
+     * @param armorStand The armour-stand to update.
+     * @param inventory The inventory that was clicked within.
      */
     private fun updateEquipment(
         slot: Int,
@@ -285,12 +285,12 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
         val equipment = armorStand.equipment
 
         when (slot) {
-            HELMET_SLOT -> equipment.setHelmet(item)
-            CHESTPLATE_SLOT -> equipment.setChestplate(item)
-            LEGGINGS_SLOT -> equipment.setLeggings(item)
-            BOOTS_SLOT -> equipment.setBoots(item)
-            MAIN_HAND_SLOT -> equipment.setItemInMainHand(item)
-            OFF_HAND_SLOT -> equipment.setItemInOffHand(item)
+            EquipmentSlot.HELMET -> equipment.setHelmet(item)
+            EquipmentSlot.CHESTPLATE -> equipment.setChestplate(item)
+            EquipmentSlot.LEGGINGS -> equipment.setLeggings(item)
+            EquipmentSlot.BOOTS -> equipment.setBoots(item)
+            EquipmentSlot.MAIN_HAND -> equipment.setItemInMainHand(item)
+            EquipmentSlot.OFF_HAND -> equipment.setItemInOffHand(item)
         }
     }
 
