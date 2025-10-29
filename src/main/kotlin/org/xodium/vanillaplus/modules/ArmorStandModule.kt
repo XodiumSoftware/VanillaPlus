@@ -100,6 +100,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                         return
                     }
                 }
+                // TODO: make handleClick run the scheduler inside so we dont have to repeat it in here.
                 instance.server.scheduler.runTask(instance, Runnable { handleClick(event.slot, armorStand, inventory) })
                 return
             }
