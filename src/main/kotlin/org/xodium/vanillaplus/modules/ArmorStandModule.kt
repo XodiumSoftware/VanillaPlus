@@ -19,6 +19,7 @@ import org.xodium.vanillaplus.utils.ExtUtils.fill
 import org.xodium.vanillaplus.utils.ExtUtils.lore
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.name
+import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import java.util.*
 
@@ -56,22 +57,21 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
         }
     }
 
-    /** The `ToggleSlot` object defines constant values representing specific toggleable properties for an armour stand. */
+    /** The `ToggleSlot` object defines constant values representing specific toggleable properties for an [ArmorStand]. */
     private object ToggleSlot {
         const val NAME_TAG = 16
         const val ARMS = 25
         const val SIZE = 34
         const val BASE_PLATE = 43
-        const val EXTRA_OPTIONS = 37
+        const val POSE = 38
     }
 
-    /** Defines constants for specific inventory slot positions used in the pose adjustment GUI. */
-    private object PoseAdjustSlot {
-        const val X_AXIS = 20
-        const val Y_AXIS = 29
-        const val Z_AXIS = 38
-        const val RESET = 40
-        const val BACK = 49
+    /** Represents predefined rotation slot values for an [ArmorStand]. */
+    private object RotationSlot {
+        const val X_AXIS = 10
+        const val Y_AXIS = 19
+        const val Z_AXIS = 28
+        const val RESET = 37
     }
 
     @EventHandler
@@ -85,7 +85,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
         }
 
         val armorStand = event.rightClicked as ArmorStand
-        val inventory = armorStand.mainGui(event.player)
+        val inventory = armorStand.gui(event.player)
 
         armorStandGuis[inventory] = armorStand
 
@@ -177,10 +177,12 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
      * @param name The name of the toggle item.
      * @return The created [ItemStack].
      */
-    private fun createToggleItem(
+    private fun toggleItem(
         isActive: Boolean,
         name: String,
     ): ItemStack = ItemStack.of(if (isActive) Material.GREEN_WOOL else Material.RED_WOOL).name(name)
+
+    private fun poseItem(): ItemStack = ItemStack.of(Material.BONE).name("")
 
     /**
      * Updates a toggle item in the inventory.
@@ -195,7 +197,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
         name: String,
         inventory: Inventory,
     ) {
-        inventory.setItem(slot, createToggleItem(isActive, name))
+        inventory.setItem(slot, toggleItem(isActive, name))
     }
 
     /**
@@ -263,13 +265,13 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
             .build(player)
 
     /**
-     * Creates and populates the main customization GUI for an armour stand for the specified player.
-     * @param player The player for whom the GUI is being created.
-     * @return The populated inventory instance representing the GUI.
+     * Generates and returns a custom GUI inventory for a player based on the state and properties of the [ArmorStand].
+     * @param player The player for whom the inventory GUI is being created.
+     * @return The created and populated custom inventory.
      */
-    private fun ArmorStand.mainGui(player: Player): Inventory =
+    private fun ArmorStand.gui(player: Player): Inventory =
         view(player).topInventory.apply {
-            fill(ItemStack.of(Material.BLACK_STAINED_GLASS_PANE).name(config.i18n.emptySlotName))
+            fill(ItemStack.of(Material.BLACK_STAINED_GLASS_PANE).name(config.i18n.filler))
 
             // Equipment slots
             setItem(EquipmentSlot.HELMET, equipment.helmet)
@@ -280,41 +282,20 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
             setItem(EquipmentSlot.OFF_HAND, equipment.itemInOffHand)
 
             // Toggle buttons
-            setItem(
-                ToggleSlot.NAME_TAG,
-                createToggleItem(isCustomNameVisible, config.i18n.toggleNameTag),
-            )
-            setItem(
-                ToggleSlot.ARMS,
-                createToggleItem(hasArms(), config.i18n.toggleArms),
-            )
-            setItem(
-                ToggleSlot.SIZE,
-                createToggleItem(isSmall, config.i18n.toggleSize),
-            )
-            setItem(
-                ToggleSlot.BASE_PLATE,
-                createToggleItem(hasBasePlate(), config.i18n.toggleBasePlate),
-            )
+            setItem(ToggleSlot.NAME_TAG, toggleItem(isCustomNameVisible, config.i18n.toggleNameTag))
+            setItem(ToggleSlot.ARMS, toggleItem(hasArms(), config.i18n.toggleArms))
+            setItem(ToggleSlot.SIZE, toggleItem(isSmall, config.i18n.toggleSize))
+            setItem(ToggleSlot.BASE_PLATE, toggleItem(hasBasePlate(), config.i18n.toggleBasePlate))
+            setItem(ToggleSlot.POSE, poseItem())
 
-            // Extra options button
+            // Rotation buttons
+            setItem(RotationSlot.X_AXIS, ItemStack.of(Material.RED_WOOL).name(config.i18n.rotateX))
+            setItem(RotationSlot.Y_AXIS, ItemStack.of(Material.RED_WOOL).name(config.i18n.rotateY))
+            setItem(RotationSlot.Z_AXIS, ItemStack.of(Material.RED_WOOL).name(config.i18n.rotateZ))
             setItem(
-                ToggleSlot.EXTRA_OPTIONS,
-                ItemStack
-                    .of(Material.ARMOR_STAND)
-                    .name(config.i18n.extraOptionsName)
-                    .lore(config.i18n.extraOptionsLore),
+                RotationSlot.RESET,
+                ItemStack.of(Material.RED_WOOL).name(config.i18n.reset).lore(config.i18n.resetLore),
             )
-        }
-
-    /**
-     * Creates and populates the pose customization GUI for an armour stand for the specified player.
-     * @param player The player for whom the GUI is being created.
-     * @return The populated inventory instance representing the pose customization GUI.
-     */
-    private fun ArmorStand.poseGui(player: Player): Inventory =
-        view(player).topInventory.apply {
-            fill(ItemStack.of(Material.BLACK_STAINED_GLASS_PANE).name(config.i18n.emptySlotName))
         }
 
     data class Config(
@@ -322,13 +303,17 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
         data class I18n(
-            var emptySlotName: String = "",
+            var filler: String = "",
             var toggleNameTag: String = "Toggle Name Tag".mangoFmt(true),
             var toggleArms: String = "Toggle Arms".mangoFmt(true),
             var toggleSize: String = "Toggle Size".mangoFmt(true),
             var toggleBasePlate: String = "Toggle Base Plate".mangoFmt(true),
-            var extraOptionsName: String = "Extra Options".mangoFmt(true),
-            var extraOptionsLore: String = "COMING SOON",
+            var togglePose: String = "Toggle Pose".mangoFmt(true),
+            var rotateX: String = "Rotate X".mangoFmt(true),
+            var rotateY: String = "Rotate Y".mangoFmt(true),
+            var rotateZ: String = "Rotate Z".mangoFmt(true),
+            var reset: String = "Reset".fireFmt(),
+            var resetLore: String = "Click twice to Reset!",
         )
     }
 }
