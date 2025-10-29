@@ -3,9 +3,12 @@ package org.xodium.vanillaplus.modules
 import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.entity.ArmorStand
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerInteractAtEntityEvent
+import org.bukkit.inventory.InventoryView
+import org.bukkit.inventory.MenuType
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.inventories.ArmorStandInventory
@@ -16,6 +19,7 @@ import org.xodium.vanillaplus.inventories.ArmorStandInventory.Companion.HELMET_S
 import org.xodium.vanillaplus.inventories.ArmorStandInventory.Companion.LEGGINGS_SLOT
 import org.xodium.vanillaplus.inventories.ArmorStandInventory.Companion.MAIN_HAND_SLOT
 import org.xodium.vanillaplus.inventories.ArmorStandInventory.Companion.OFF_HAND_SLOT
+import org.xodium.vanillaplus.utils.ExtUtils.mm
 
 /** Represents a module handling armour stand mechanics within the system. */
 internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
@@ -115,6 +119,15 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
             Tag.ITEMS_FOOT_ARMOR.isTagged(itemType) -> listOf(BOOTS_SLOT)
             else -> listOf(MAIN_HAND_SLOT, OFF_HAND_SLOT)
         }
+
+    @Suppress("UnstableApiUsage")
+    private fun ArmorStand.gui(player: Player): InventoryView =
+        MenuType.GENERIC_9X6
+            .builder()
+            .title(customName() ?: name.mm())
+            .checkReachable(true)
+            .location(location)
+            .build(player)
 
     data class Config(
         override var enabled: Boolean = true,
