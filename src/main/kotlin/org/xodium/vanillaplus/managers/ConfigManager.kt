@@ -31,7 +31,7 @@ internal object ConfigManager : DataInterface<String, ModuleInterface.Config> {
      * Reads a module's configuration from the JSON config file.
      * @param key The unique identifier for the module used in the config file.
      * @param module The module instance used to determine the correct configuration type.
-     * @return The parsed configuration object from the file, or `null` if not found or an error occurred.
+     * @return The parsed configuration object from the file, or `null` if not found, or an error occurred.
      * @see ConfigManager.update
      */
     private fun readFileConfig(
