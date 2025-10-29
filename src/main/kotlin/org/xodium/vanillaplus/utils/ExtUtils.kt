@@ -1,4 +1,4 @@
-@file:Suppress("UnstableApiUsage", "ktlint:standard:no-wildcard-imports")
+@file:Suppress("ktlint:standard:no-wildcard-imports")
 
 package org.xodium.vanillaplus.utils
 
@@ -61,10 +61,6 @@ internal object ExtUtils {
 
     /** Serializes a [Component] into a String. */
     fun Component.mm(): String = MM.serialize(this)
-
-    /** Deserializes a list of [MiniMessage] strings into a list of Components. */
-    @JvmName("mmComponentList")
-    fun List<Component>.mm(): List<String> = this.map { it.mm() }
 
     /** Serializes a [Component] into plaintext. */
     fun Component.pt(): String = PlainTextComponentSerializer.plainText().serialize(this)
