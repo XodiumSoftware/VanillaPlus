@@ -41,6 +41,8 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
 
     @EventHandler
     fun on(event: InventoryClickEvent) {
+        if (!enabled()) return
+
         val inventory = event.inventory
         val clickedInventory = event.clickedInventory
 
