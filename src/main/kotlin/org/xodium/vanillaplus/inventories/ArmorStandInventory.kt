@@ -33,7 +33,7 @@ internal class ArmorStandInventory(
         const val BASE_PLATE_SLOT = 43
 
         // Slot positions for the extra options button
-        const val EXTRA_OPTIONS_SLOT = 53
+        const val EXTRA_OPTIONS_SLOT = 37
 
         // Item names
         private const val EMPTY_SLOT_NAME = ""
