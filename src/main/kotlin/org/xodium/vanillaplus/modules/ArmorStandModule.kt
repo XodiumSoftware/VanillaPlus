@@ -75,9 +75,8 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
         when (slot) {
             HELMET_SLOT ->
                 Tag.ITEMS_HEAD_ARMOR.isTagged(itemType) ||
-                    itemType == Material.CARVED_PUMPKIN ||
-                    itemType.name.endsWith("_HEAD") ||
-                    Tag.ITEMS_SKULLS.isTagged(itemType)
+                    Tag.ITEMS_SKULLS.isTagged(itemType) ||
+                    itemType == Material.CARVED_PUMPKIN
 
             CHESTPLATE_SLOT -> Tag.ITEMS_CHEST_ARMOR.isTagged(itemType) || itemType == Material.ELYTRA
             LEGGINGS_SLOT -> Tag.ITEMS_LEG_ARMOR.isTagged(itemType)
