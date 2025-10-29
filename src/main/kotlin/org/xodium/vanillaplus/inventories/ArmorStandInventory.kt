@@ -12,6 +12,13 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.name
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 
+// TODO: fix equipment slot filter.
+// TODO: fix shift clicking into inventory losing item.
+
+/**
+ * Manages the inventory GUI for an [ArmorStand].
+ * @param armorStand The [ArmorStand] entity this inventory is for.
+ */
 internal class ArmorStandInventory(
     private val armorStand: ArmorStand,
 ) : InventoryHolder {
@@ -58,6 +65,7 @@ internal class ArmorStandInventory(
 
     override fun getInventory(): Inventory = inventory
 
+    /** Initializes the inventory with equipment, toggle buttons, and placeholders. */
     private fun content() {
         inventory.fill(ItemStack.of(Material.BLACK_STAINED_GLASS_PANE).name(EMPTY_SLOT_NAME))
 
@@ -94,31 +102,47 @@ internal class ArmorStandInventory(
         )
     }
 
+    /**
+     * Creates an [ItemStack] for a toggle button.
+     * @param isActive Whether the toggle is currently active.
+     * @param name The name of the toggle item.
+     * @return The created [ItemStack].
+     */
     private fun createToggleItem(
         isActive: Boolean,
         name: String,
     ): ItemStack = ItemStack.of(if (isActive) Material.GREEN_WOOL else Material.RED_WOOL).name(name)
 
+    /** Toggles the visibility of the armour stand's name tag. */
     private fun toggleNameTag() {
         armorStand.isCustomNameVisible = !armorStand.isCustomNameVisible
         updateToggleItem(NAME_TAG_SLOT, armorStand.isCustomNameVisible, TOGGLE_NAME_TAG_NAME)
     }
 
+    /** Toggles whether the armour stand has arms. */
     private fun toggleArms() {
         armorStand.setArms(!armorStand.hasArms())
         updateToggleItem(ARMS_SLOT, armorStand.hasArms(), TOGGLE_ARMS_NAME)
     }
 
+    /** Toggles the size of the armour stand. */
     private fun toggleSize() {
         armorStand.isSmall = !armorStand.isSmall
         updateToggleItem(SIZE_SLOT, armorStand.isSmall, TOGGLE_SIZE_NAME)
     }
 
+    /** Toggles the visibility of the armour stand's baseplate. */
     private fun toggleBasePlate() {
         armorStand.setBasePlate(!armorStand.hasBasePlate())
         updateToggleItem(BASE_PLATE_SLOT, armorStand.hasBasePlate(), TOGGLE_BASE_PLATE_NAME)
     }
 
+    /**
+     * Updates a toggle item in the inventory.
+     * @param slot The slot of the item to update.
+     * @param isActive The new state of the toggle.
+     * @param name The name of the toggle item.
+     */
     private fun updateToggleItem(
         slot: Int,
         isActive: Boolean,
@@ -127,6 +151,10 @@ internal class ArmorStandInventory(
         inventory.setItem(slot, createToggleItem(isActive, name))
     }
 
+    /**
+     * Handles a click event within the inventory.
+     * @param slot The slot that was clicked.
+     */
     fun handleClick(slot: Int) {
         when (slot) {
             NAME_TAG_SLOT -> toggleNameTag()
@@ -139,6 +167,10 @@ internal class ArmorStandInventory(
         }
     }
 
+    /**
+     * Updates the armour stand's equipment from the inventory.
+     * @param slot The slot corresponding to the equipment piece that was changed.
+     */
     private fun updateEquipment(slot: Int) {
         val item = inventory.getItem(slot)
         val equipment = armorStand.equipment
