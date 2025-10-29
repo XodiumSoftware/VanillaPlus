@@ -65,19 +65,8 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
 
             val item = event.currentItem ?: return
             val itemType = item.type
-            val potentialSlots =
-                when {
-                    Tag.ITEMS_HEAD_ARMOR.isTagged(itemType) ||
-                        Tag.ITEMS_SKULLS.isTagged(itemType) ||
-                        itemType == Material.CARVED_PUMPKIN -> listOf(HELMET_SLOT)
 
-                    Tag.ITEMS_CHEST_ARMOR.isTagged(itemType) || itemType == Material.ELYTRA -> listOf(CHESTPLATE_SLOT)
-                    Tag.ITEMS_LEG_ARMOR.isTagged(itemType) -> listOf(LEGGINGS_SLOT)
-                    Tag.ITEMS_FOOT_ARMOR.isTagged(itemType) -> listOf(BOOTS_SLOT)
-                    else -> listOf(MAIN_HAND_SLOT, OFF_HAND_SLOT)
-                }
-
-            for (slot in potentialSlots) {
+            for (slot in getPotentialSlotsForItem(itemType)) {
                 if (inventory.getItem(slot).let { it == null || it.type == Material.AIR }) {
                     inventory.setItem(slot, item.clone())
                     event.currentItem = null
@@ -108,6 +97,23 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
             LEGGINGS_SLOT -> Tag.ITEMS_LEG_ARMOR.isTagged(itemType)
             BOOTS_SLOT -> Tag.ITEMS_FOOT_ARMOR.isTagged(itemType)
             else -> true
+        }
+
+    /**
+     * Gets the potential equipment slots for a given item type.
+     * @param itemType The material of the item to check.
+     * @return A list of potential equipment slots for the item.
+     */
+    private fun getPotentialSlotsForItem(itemType: Material): List<Int> =
+        when {
+            Tag.ITEMS_HEAD_ARMOR.isTagged(itemType) ||
+                Tag.ITEMS_SKULLS.isTagged(itemType) ||
+                itemType == Material.CARVED_PUMPKIN -> listOf(HELMET_SLOT)
+
+            Tag.ITEMS_CHEST_ARMOR.isTagged(itemType) || itemType == Material.ELYTRA -> listOf(CHESTPLATE_SLOT)
+            Tag.ITEMS_LEG_ARMOR.isTagged(itemType) -> listOf(LEGGINGS_SLOT)
+            Tag.ITEMS_FOOT_ARMOR.isTagged(itemType) -> listOf(BOOTS_SLOT)
+            else -> listOf(MAIN_HAND_SLOT, OFF_HAND_SLOT)
         }
 
     data class Config(
