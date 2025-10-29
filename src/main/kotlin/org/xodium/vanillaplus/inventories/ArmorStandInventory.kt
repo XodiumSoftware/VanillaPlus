@@ -7,8 +7,10 @@ import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.utils.ExtUtils.fill
+import org.xodium.vanillaplus.utils.ExtUtils.lore
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.name
+import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 
 internal class ArmorStandInventory(
     private val armorStand: ArmorStand,
@@ -35,11 +37,12 @@ internal class ArmorStandInventory(
 
         // Item names
         private const val EMPTY_SLOT_NAME = ""
-        private const val TOGGLE_NAME_TAG_NAME = "Toggle Name Tag"
-        private const val TOGGLE_ARMS_NAME = "Toggle Arms"
-        private const val TOGGLE_SIZE_NAME = "Toggle Size"
-        private const val TOGGLE_BASE_PLATE_NAME = "Toggle Base Plate"
-        private const val EXTRA_OPTIONS_NAME = "Extra Options"
+        private val TOGGLE_NAME_TAG_NAME = "Toggle Name Tag".mangoFmt(true)
+        private val TOGGLE_ARMS_NAME = "Toggle Arms".mangoFmt(true)
+        private val TOGGLE_SIZE_NAME = "Toggle Size".mangoFmt(true)
+        private val TOGGLE_BASE_PLATE_NAME = "Toggle Base Plate".mangoFmt(true)
+        private val EXTRA_OPTIONS_NAME = "Extra Options".mangoFmt(true)
+        private const val EXTRA_OPTIONS_LORE = "COMING SOON"
     }
 
     private val inventory: Inventory =
@@ -85,7 +88,10 @@ internal class ArmorStandInventory(
         )
 
         // Extra options button
-        inventory.setItem(EXTRA_OPTIONS_SLOT, ItemStack.of(Material.ARMOR_STAND).name(EXTRA_OPTIONS_NAME))
+        inventory.setItem(
+            EXTRA_OPTIONS_SLOT,
+            ItemStack.of(Material.ARMOR_STAND).name(EXTRA_OPTIONS_NAME).lore(EXTRA_OPTIONS_LORE),
+        )
     }
 
     private fun createToggleItem(
