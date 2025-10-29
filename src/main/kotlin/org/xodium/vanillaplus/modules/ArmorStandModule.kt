@@ -28,7 +28,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
     private val armorStandGuis = WeakHashMap<Inventory, ArmorStand>()
 
     /** Represents predefined constants for different equipment slots and provides a utility set containing all slots. */
-    object EquipmentSlot {
+    private object EquipmentSlot {
         const val HELMET = 13
         const val CHESTPLATE = 22
         const val LEGGINGS = 31
@@ -56,7 +56,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
     }
 
     /** The `ToggleSlot` object defines constant values representing specific toggleable properties for an armour stand. */
-    object ToggleSlot {
+    private object ToggleSlot {
         const val NAME_TAG = 16
         const val ARMS = 25
         const val SIZE = 34
@@ -194,7 +194,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
      * @param armorStand The armour stand that was clicked.
      * @param inventory The inventory that was clicked within.
      */
-    fun handleClick(
+    private fun handleClick(
         slot: Int,
         armorStand: ArmorStand,
         inventory: Inventory,
@@ -240,7 +240,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
      * @return The inventory representing the GUI for the armour stand.
      */
     @Suppress("UnstableApiUsage")
-    fun ArmorStand.gui(player: Player): Inventory {
+    private fun ArmorStand.gui(player: Player): Inventory {
         val view =
             MenuType.GENERIC_9X6
                 .builder()
