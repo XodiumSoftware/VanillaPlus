@@ -5,6 +5,7 @@ import org.bukkit.Tag
 import org.bukkit.entity.ArmorStand
 import org.bukkit.event.EventHandler
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.InventoryMoveItemEvent
 import org.bukkit.event.player.PlayerInteractAtEntityEvent
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
@@ -14,8 +15,6 @@ import org.xodium.vanillaplus.inventories.ArmorStandInventory.Companion.CHESTPLA
 import org.xodium.vanillaplus.inventories.ArmorStandInventory.Companion.EQUIPMENT_SLOTS
 import org.xodium.vanillaplus.inventories.ArmorStandInventory.Companion.HELMET_SLOT
 import org.xodium.vanillaplus.inventories.ArmorStandInventory.Companion.LEGGINGS_SLOT
-
-// TODO: fix shift clicking into inventory losing item.
 
 /** Represents a module handling armour stand mechanics within the system. */
 internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
@@ -32,6 +31,12 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
         }
         event.player.openInventory(ArmorStandInventory(event.rightClicked as ArmorStand).inventory)
         event.isCancelled = true
+    }
+
+    @EventHandler
+    fun on(event: InventoryMoveItemEvent) {
+        if (!enabled()) return
+        // TODO: fix shift clicking into inventory losing item.
     }
 
     @EventHandler
