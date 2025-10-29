@@ -12,9 +12,6 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.name
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 
-// TODO: fix equipment slot filter.
-// TODO: fix shift clicking into inventory losing item.
-
 /**
  * Manages the inventory GUI for an [ArmorStand].
  * @param armorStand The [ArmorStand] entity this inventory is for.
@@ -32,6 +29,16 @@ internal class ArmorStandInventory(
         const val BOOTS_SLOT = 40
         const val MAIN_HAND_SLOT = 21
         const val OFF_HAND_SLOT = 23
+
+        val EQUIPMENT_SLOTS =
+            setOf(
+                HELMET_SLOT,
+                CHESTPLATE_SLOT,
+                LEGGINGS_SLOT,
+                BOOTS_SLOT,
+                MAIN_HAND_SLOT,
+                OFF_HAND_SLOT,
+            )
 
         // Slot positions for toggle buttons
         const val NAME_TAG_SLOT = 16
