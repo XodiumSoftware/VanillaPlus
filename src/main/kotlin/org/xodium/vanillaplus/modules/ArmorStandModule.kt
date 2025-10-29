@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package org.xodium.vanillaplus.modules
 
 import org.bukkit.Material
@@ -17,10 +19,13 @@ import org.xodium.vanillaplus.utils.ExtUtils.lore
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.name
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
+import java.util.*
 
 /** Represents a module handling armour stand mechanics within the system. */
 internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
     override val config: Config = Config()
+
+    private val armorStandGuis = WeakHashMap<Inventory, ArmorStand>()
 
     companion object {
         // Slot positions for equipment
@@ -64,6 +69,8 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
         val armorStand = event.rightClicked as ArmorStand
         val inventory = armorStand.gui(event.player)
 
+        armorStandGuis[inventory] = armorStand
+
         event.player.openInventory(inventory)
         event.isCancelled = true
     }
@@ -73,6 +80,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
         if (!enabled()) return
 
         val inventory = event.inventory
+        val armorStand = armorStandGuis[inventory] ?: return
         val clickedInventory = event.clickedInventory
 
         if (clickedInventory === inventory) {
