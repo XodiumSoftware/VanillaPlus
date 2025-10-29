@@ -27,6 +27,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
 
     private val armorStandGuis = WeakHashMap<Inventory, ArmorStand>()
 
+    /** Represents predefined constants for different equipment slots and provides a utility set containing all slots. */
     object EquipmentSlot {
         const val HELMET = 13
         const val CHESTPLATE = 22
@@ -36,8 +37,25 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
         const val OFF_HAND = 23
 
         val ALL = setOf(HELMET, CHESTPLATE, LEGGINGS, BOOTS, MAIN_HAND, OFF_HAND)
+
+        fun update(
+            slot: Int,
+            armorStand: ArmorStand,
+            item: ItemStack?,
+        ) {
+            val equipment = armorStand.equipment
+            when (slot) {
+                HELMET -> equipment.setHelmet(item)
+                CHESTPLATE -> equipment.setChestplate(item)
+                LEGGINGS -> equipment.setLeggings(item)
+                BOOTS -> equipment.setBoots(item)
+                MAIN_HAND -> equipment.setItemInMainHand(item)
+                OFF_HAND -> equipment.setItemInOffHand(item)
+            }
+        }
     }
 
+    /** The `ToggleSlot` object defines constant values representing specific toggleable properties for an armour stand. */
     object ToggleSlot {
         const val NAME_TAG = 16
         const val ARMS = 25
@@ -94,14 +112,13 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
             val item = event.currentItem ?: return
             val itemType = item.type
 
-            for (slot in getPotentialSlotsForItem(itemType)) {
-                if (inventory.getItem(slot).let { it == null || it.type == Material.AIR }) {
-                    inventory.setItem(slot, item.clone())
+            getPotentialSlotsForItem(itemType)
+                .find { slot -> inventory.getItem(slot)?.type?.isAir != false }
+                ?.let { slot ->
+                    inventory.setItem(slot, item)
                     event.currentItem = null
                     instance.server.scheduler.runTask(instance, Runnable { handleClick(slot, armorStand, inventory) })
-                    break
                 }
-            }
         }
     }
 
@@ -143,6 +160,78 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
             Tag.ITEMS_FOOT_ARMOR.isTagged(itemType) -> listOf(EquipmentSlot.BOOTS)
             else -> listOf(EquipmentSlot.MAIN_HAND, EquipmentSlot.OFF_HAND)
         }
+
+    /**
+     * Creates an [ItemStack] for a toggle button.
+     * @param isActive Whether the toggle is currently active.
+     * @param name The name of the toggle item.
+     * @return The created [ItemStack].
+     */
+    private fun createToggleItem(
+        isActive: Boolean,
+        name: String,
+    ): ItemStack = ItemStack.of(if (isActive) Material.GREEN_WOOL else Material.RED_WOOL).name(name)
+
+    /**
+     * Updates a toggle item in the inventory.
+     * @param slot The slot of the item to update.
+     * @param isActive The new state of the toggle.
+     * @param name The name of the toggle item.
+     * @param inventory The inventory to update.
+     */
+    private fun updateToggleItem(
+        slot: Int,
+        isActive: Boolean,
+        name: String,
+        inventory: Inventory,
+    ) {
+        inventory.setItem(slot, createToggleItem(isActive, name))
+    }
+
+    /**
+     * Handles a click event within the inventory.
+     * @param slot The slot that was clicked.
+     * @param armorStand The armour stand that was clicked.
+     * @param inventory The inventory that was clicked within.
+     */
+    fun handleClick(
+        slot: Int,
+        armorStand: ArmorStand,
+        inventory: Inventory,
+    ) {
+        when (slot) {
+            ToggleSlot.NAME_TAG -> armorStand.toggleNameTag(inventory)
+            ToggleSlot.ARMS -> armorStand.toggleArms(inventory)
+            ToggleSlot.SIZE -> armorStand.toggleSize(inventory)
+            ToggleSlot.BASE_PLATE -> armorStand.toggleBasePlate(inventory)
+
+            in EquipmentSlot.ALL -> EquipmentSlot.update(slot, armorStand, inventory.getItem(slot))
+        }
+    }
+
+    /** Toggles the visibility of the armour stand's name tag. */
+    private fun ArmorStand.toggleNameTag(inventory: Inventory) {
+        isCustomNameVisible = !isCustomNameVisible
+        updateToggleItem(ToggleSlot.NAME_TAG, isCustomNameVisible, config.i18n.toggleNameTag, inventory)
+    }
+
+    /** Toggles whether the armour stand has arms. */
+    private fun ArmorStand.toggleArms(inventory: Inventory) {
+        setArms(!hasArms())
+        updateToggleItem(ToggleSlot.ARMS, hasArms(), config.i18n.toggleArms, inventory)
+    }
+
+    /** Toggles the size of the armour stand. */
+    private fun ArmorStand.toggleSize(inventory: Inventory) {
+        isSmall = !isSmall
+        updateToggleItem(ToggleSlot.SIZE, isSmall, config.i18n.toggleSize, inventory)
+    }
+
+    /** Toggles the visibility of the armour stand's baseplate. */
+    private fun ArmorStand.toggleBasePlate(inventory: Inventory) {
+        setBasePlate(!hasBasePlate())
+        updateToggleItem(ToggleSlot.BASE_PLATE, hasBasePlate(), config.i18n.toggleBasePlate, inventory)
+    }
 
     /**
      * Opens a graphical user interface (GUI) allowing the player to interact with
@@ -196,102 +285,6 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
         )
 
         return inventory
-    }
-
-    /**
-     * Creates an [ItemStack] for a toggle button.
-     * @param isActive Whether the toggle is currently active.
-     * @param name The name of the toggle item.
-     * @return The created [ItemStack].
-     */
-    private fun createToggleItem(
-        isActive: Boolean,
-        name: String,
-    ): ItemStack = ItemStack.of(if (isActive) Material.GREEN_WOOL else Material.RED_WOOL).name(name)
-
-    /** Toggles the visibility of the armour stand's name tag. */
-    private fun ArmorStand.toggleNameTag(inventory: Inventory) {
-        isCustomNameVisible = !isCustomNameVisible
-        updateToggleItem(ToggleSlot.NAME_TAG, isCustomNameVisible, config.i18n.toggleNameTag, inventory)
-    }
-
-    /** Toggles whether the armour stand has arms. */
-    private fun ArmorStand.toggleArms(inventory: Inventory) {
-        setArms(!hasArms())
-        updateToggleItem(ToggleSlot.ARMS, hasArms(), config.i18n.toggleArms, inventory)
-    }
-
-    /** Toggles the size of the armour stand. */
-    private fun ArmorStand.toggleSize(inventory: Inventory) {
-        isSmall = !isSmall
-        updateToggleItem(ToggleSlot.SIZE, isSmall, config.i18n.toggleSize, inventory)
-    }
-
-    /** Toggles the visibility of the armour stand's baseplate. */
-    private fun ArmorStand.toggleBasePlate(inventory: Inventory) {
-        setBasePlate(!hasBasePlate())
-        updateToggleItem(ToggleSlot.BASE_PLATE, hasBasePlate(), config.i18n.toggleBasePlate, inventory)
-    }
-
-    /**
-     * Updates a toggle item in the inventory.
-     * @param slot The slot of the item to update.
-     * @param isActive The new state of the toggle.
-     * @param name The name of the toggle item.
-     * @param inventory The inventory to update.
-     */
-    private fun updateToggleItem(
-        slot: Int,
-        isActive: Boolean,
-        name: String,
-        inventory: Inventory,
-    ) {
-        inventory.setItem(slot, createToggleItem(isActive, name))
-    }
-
-    /**
-     * Handles a click event within the inventory.
-     * @param slot The slot that was clicked.
-     * @param armorStand The armour stand that was clicked.
-     * @param inventory The inventory that was clicked within.
-     */
-    fun handleClick(
-        slot: Int,
-        armorStand: ArmorStand,
-        inventory: Inventory,
-    ) {
-        when (slot) {
-            ToggleSlot.NAME_TAG -> armorStand.toggleNameTag(inventory)
-            ToggleSlot.ARMS -> armorStand.toggleArms(inventory)
-            ToggleSlot.SIZE -> armorStand.toggleSize(inventory)
-            ToggleSlot.BASE_PLATE -> armorStand.toggleBasePlate(inventory)
-
-            in EquipmentSlot.ALL -> updateEquipment(slot, armorStand, inventory)
-        }
-    }
-
-    /**
-     * Updates the armour stand's equipment from the inventory.
-     * @param slot The slot corresponding to the equipment piece that was changed.
-     * @param armorStand The armour-stand to update.
-     * @param inventory The inventory that was clicked within.
-     */
-    private fun updateEquipment(
-        slot: Int,
-        armorStand: ArmorStand,
-        inventory: Inventory,
-    ) {
-        val item = inventory.getItem(slot)
-        val equipment = armorStand.equipment
-
-        when (slot) {
-            EquipmentSlot.HELMET -> equipment.setHelmet(item)
-            EquipmentSlot.CHESTPLATE -> equipment.setChestplate(item)
-            EquipmentSlot.LEGGINGS -> equipment.setLeggings(item)
-            EquipmentSlot.BOOTS -> equipment.setBoots(item)
-            EquipmentSlot.MAIN_HAND -> equipment.setItemInMainHand(item)
-            EquipmentSlot.OFF_HAND -> equipment.setItemInOffHand(item)
-        }
     }
 
     data class Config(
