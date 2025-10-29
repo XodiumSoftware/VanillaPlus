@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerInteractAtEntityEvent
 import org.bukkit.inventory.Inventory
+import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.MenuType
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -75,7 +76,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
         }
 
         val armorStand = event.rightClicked as ArmorStand
-        val inventory = armorStand.gui(event.player)
+        val inventory = armorStand.mainGui(event.player)
 
         armorStandGuis[inventory] = armorStand
 
@@ -239,58 +240,73 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
     }
 
     /**
-     * Opens a graphical user interface (GUI) allowing the player to interact with
-     * the armour stand's properties and equipment slots.
-     * @param player The player for whom the GUI is being rendered.
-     * @return The inventory representing the GUI for the armour stand.
+     * Opens a custom inventory view for the specified player, based on the properties of the armour stand.
+     * @param player The player for whom the inventory view is being created.
+     * @return The created inventory view associated with the player.
      */
     @Suppress("UnstableApiUsage")
-    private fun ArmorStand.gui(player: Player): Inventory {
-        val view =
-            MenuType.GENERIC_9X6
-                .builder()
-                .title(customName() ?: name.mm())
-                .checkReachable(true)
-                .location(location)
-                .build(player)
-        val inventory = view.topInventory
+    private fun ArmorStand.view(player: Player): InventoryView =
+        MenuType.GENERIC_9X6
+            .builder()
+            .title(customName() ?: name.mm())
+            .checkReachable(true)
+            .location(location)
+            .build(player)
 
-        inventory.fill(ItemStack.of(Material.BLACK_STAINED_GLASS_PANE).name(config.i18n.emptySlotName))
+    /**
+     * Creates and populates the main customization GUI for an armour stand for the specified player.
+     * @param player The player for whom the GUI is being created.
+     * @return The populated inventory instance representing the GUI.
+     */
+    private fun ArmorStand.mainGui(player: Player): Inventory =
+        view(player).topInventory.apply {
+            fill(ItemStack.of(Material.BLACK_STAINED_GLASS_PANE).name(config.i18n.emptySlotName))
 
-        // Equipment slots
-        inventory.setItem(EquipmentSlot.HELMET, equipment.helmet)
-        inventory.setItem(EquipmentSlot.CHESTPLATE, equipment.chestplate)
-        inventory.setItem(EquipmentSlot.LEGGINGS, equipment.leggings)
-        inventory.setItem(EquipmentSlot.BOOTS, equipment.boots)
-        inventory.setItem(EquipmentSlot.MAIN_HAND, equipment.itemInMainHand)
-        inventory.setItem(EquipmentSlot.OFF_HAND, equipment.itemInOffHand)
+            // Equipment slots
+            setItem(EquipmentSlot.HELMET, equipment.helmet)
+            setItem(EquipmentSlot.CHESTPLATE, equipment.chestplate)
+            setItem(EquipmentSlot.LEGGINGS, equipment.leggings)
+            setItem(EquipmentSlot.BOOTS, equipment.boots)
+            setItem(EquipmentSlot.MAIN_HAND, equipment.itemInMainHand)
+            setItem(EquipmentSlot.OFF_HAND, equipment.itemInOffHand)
 
-        // Toggle buttons
-        inventory.setItem(
-            ToggleSlot.NAME_TAG,
-            createToggleItem(isCustomNameVisible, config.i18n.toggleNameTag),
-        )
-        inventory.setItem(
-            ToggleSlot.ARMS,
-            createToggleItem(hasArms(), config.i18n.toggleArms),
-        )
-        inventory.setItem(
-            ToggleSlot.SIZE,
-            createToggleItem(isSmall, config.i18n.toggleSize),
-        )
-        inventory.setItem(
-            ToggleSlot.BASE_PLATE,
-            createToggleItem(hasBasePlate(), config.i18n.toggleBasePlate),
-        )
+            // Toggle buttons
+            setItem(
+                ToggleSlot.NAME_TAG,
+                createToggleItem(isCustomNameVisible, config.i18n.toggleNameTag),
+            )
+            setItem(
+                ToggleSlot.ARMS,
+                createToggleItem(hasArms(), config.i18n.toggleArms),
+            )
+            setItem(
+                ToggleSlot.SIZE,
+                createToggleItem(isSmall, config.i18n.toggleSize),
+            )
+            setItem(
+                ToggleSlot.BASE_PLATE,
+                createToggleItem(hasBasePlate(), config.i18n.toggleBasePlate),
+            )
 
-        // Extra options button
-        inventory.setItem(
-            ToggleSlot.EXTRA_OPTIONS,
-            ItemStack.of(Material.ARMOR_STAND).name(config.i18n.extraOptionsName).lore(config.i18n.extraOptionsLore),
-        )
+            // Extra options button
+            setItem(
+                ToggleSlot.EXTRA_OPTIONS,
+                ItemStack
+                    .of(Material.ARMOR_STAND)
+                    .name(config.i18n.extraOptionsName)
+                    .lore(config.i18n.extraOptionsLore),
+            )
+        }
 
-        return inventory
-    }
+    /**
+     * Creates and populates the pose customization GUI for an armour stand for the specified player.
+     * @param player The player for whom the GUI is being created.
+     * @return The populated inventory instance representing the pose customization GUI.
+     */
+    private fun ArmorStand.poseGui(player: Player): Inventory =
+        view(player).topInventory.apply {
+            fill(ItemStack.of(Material.BLACK_STAINED_GLASS_PANE).name(config.i18n.emptySlotName))
+        }
 
     data class Config(
         override var enabled: Boolean = true,
