@@ -202,7 +202,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
     }
 
     /**
-     * Creates the delete cross component for message deletion.
+     * Creates to delete cross-component for message deletion.
      * @param event The [AsyncChatEvent] containing the message to be deleted.
      * @return A [Component] representing the delete cross with hover text and click action.
      */

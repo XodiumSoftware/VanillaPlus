@@ -78,7 +78,7 @@ internal object ExtUtils {
         }
 
     /**
-     * A helper  function to wrap command execution with standardized error handling.
+     * A helper function to wrap command execution with standardized error handling.
      * @param action The action to execute, receiving a CommandSourceStack as a parameter.
      * @return Command.SINGLE_SUCCESS after execution.
      */
@@ -145,8 +145,8 @@ internal object ExtUtils {
     }
 
     /**
-     * Converts a CamelCase string to snake_case.
-     * @return the snake_case version of the string.
+     * Converts a CamelCase string to snake case.
+     * @return the snake case version of the string.
      */
     fun String.toSnakeCase(): String = this.replace(Regex("([a-z])([A-Z])"), "$1_$2").lowercase()
 

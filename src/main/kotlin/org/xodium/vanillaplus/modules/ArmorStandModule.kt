@@ -5,10 +5,17 @@ import org.bukkit.entity.ArmorStand
 import org.bukkit.event.EventHandler
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerInteractAtEntityEvent
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.inventories.ArmorStandInventory
+import org.xodium.vanillaplus.inventories.ArmorStandInventory.Companion.BOOTS_SLOT
+import org.xodium.vanillaplus.inventories.ArmorStandInventory.Companion.CHESTPLATE_SLOT
+import org.xodium.vanillaplus.inventories.ArmorStandInventory.Companion.HELMET_SLOT
+import org.xodium.vanillaplus.inventories.ArmorStandInventory.Companion.LEGGINGS_SLOT
+import org.xodium.vanillaplus.inventories.ArmorStandInventory.Companion.MAIN_HAND_SLOT
+import org.xodium.vanillaplus.inventories.ArmorStandInventory.Companion.OFF_HAND_SLOT
 
-/** Represents a module handling armor stand mechanics within the system. */
+/** Represents a module handling armour stand mechanics within the system. */
 internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
     override val config: Config = Config()
 
@@ -31,9 +38,27 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
         val clickedInventory = event.clickedInventory
 
         if (inventory.holder is ArmorStandInventory && clickedInventory == inventory) {
-            event.isCancelled = true
-
             val armorStandInventory = inventory.holder as ArmorStandInventory
+
+            val equipmentSlots =
+                setOf(
+                    HELMET_SLOT,
+                    CHESTPLATE_SLOT,
+                    LEGGINGS_SLOT,
+                    BOOTS_SLOT,
+                    MAIN_HAND_SLOT,
+                    OFF_HAND_SLOT,
+                )
+
+            if (event.slot in equipmentSlots) {
+                instance.server.scheduler.runTask(
+                    instance,
+                    Runnable { armorStandInventory.handleClick(event.slot) },
+                )
+                return
+            }
+
+            event.isCancelled = true
             armorStandInventory.handleClick(event.slot)
         }
     }
