@@ -1,15 +1,15 @@
 package org.xodium.vanillaplus.inventories
 
-import io.papermc.paper.datacomponent.DataComponentTypes
 import org.bukkit.Material
 import org.bukkit.entity.ArmorStand
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.utils.ExtUtils.fill
 import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.ExtUtils.name
 
-@Suppress("UnstableApiUsage")
 internal class ArmorStandInventory(
     private val armorStand: ArmorStand,
 ) : InventoryHolder {
@@ -30,12 +30,16 @@ internal class ArmorStandInventory(
         const val SIZE_SLOT = 34
         const val BASE_PLATE_SLOT = 43
 
+        // Slot positions for the extra options button
+        const val EXTRA_OPTIONS_SLOT = 53
+
         // Item names
         private const val EMPTY_SLOT_NAME = ""
         private const val TOGGLE_NAME_TAG_NAME = "Toggle Name Tag"
         private const val TOGGLE_ARMS_NAME = "Toggle Arms"
         private const val TOGGLE_SIZE_NAME = "Toggle Size"
         private const val TOGGLE_BASE_PLATE_NAME = "Toggle Base Plate"
+        private const val EXTRA_OPTIONS_NAME = "Extra Options"
     }
 
     private val inventory: Inventory =
@@ -54,6 +58,7 @@ internal class ArmorStandInventory(
     private fun content() {
         inventory.fill(ItemStack.of(Material.BLACK_STAINED_GLASS_PANE).name(EMPTY_SLOT_NAME))
 
+        // Equipment slots
         inventory.setItem(HELMET_SLOT, armorStand.equipment.helmet)
         inventory.setItem(CHESTPLATE_SLOT, armorStand.equipment.chestplate)
         inventory.setItem(LEGGINGS_SLOT, armorStand.equipment.leggings)
@@ -61,6 +66,7 @@ internal class ArmorStandInventory(
         inventory.setItem(MAIN_HAND_SLOT, armorStand.equipment.itemInMainHand)
         inventory.setItem(OFF_HAND_SLOT, armorStand.equipment.itemInOffHand)
 
+        // Toggle buttons
         inventory.setItem(
             NAME_TAG_SLOT,
             createToggleItem(armorStand.isCustomNameVisible, TOGGLE_NAME_TAG_NAME),
@@ -77,12 +83,9 @@ internal class ArmorStandInventory(
             BASE_PLATE_SLOT,
             createToggleItem(armorStand.hasBasePlate(), TOGGLE_BASE_PLATE_NAME),
         )
-    }
 
-    private fun ItemStack.name(name: String): ItemStack = apply { setData(DataComponentTypes.CUSTOM_NAME, name.mm()) }
-
-    private fun Inventory.fill(item: ItemStack) {
-        for (i in 0 until size) setItem(i, item)
+        // Extra options button
+        inventory.setItem(EXTRA_OPTIONS_SLOT, ItemStack.of(Material.ARMOR_STAND).name(EXTRA_OPTIONS_NAME))
     }
 
     private fun createToggleItem(

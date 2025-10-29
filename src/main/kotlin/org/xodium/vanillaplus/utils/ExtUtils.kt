@@ -1,4 +1,4 @@
-@file:Suppress("ktlint:standard:no-wildcard-imports")
+@file:Suppress("ktlint:standard:no-wildcard-imports", "UnstableApiUsage")
 
 package org.xodium.vanillaplus.utils
 
@@ -6,14 +6,20 @@ import com.google.gson.JsonParser
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
+import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.ItemLore
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.entity.Player
+import org.bukkit.inventory.Inventory
+import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.VanillaPlus
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.ExtUtils.lore
+import org.xodium.vanillaplus.utils.ExtUtils.name
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import java.net.URI
@@ -52,12 +58,12 @@ internal object ExtUtils {
         }
 
     /**
-     * Deserializes a list of [MiniMessage] strings into a list of Components.
+     * Deserializes an iterable collection of [MiniMessage] strings into a list of Components.
      * @param resolvers Optional tag resolvers for custom tags.
      * @return The list of deserialized Components.
      */
-    @JvmName("mmStringList")
-    fun List<String>.mm(vararg resolvers: TagResolver): List<Component> = this.map { it.mm(*resolvers) }
+    @JvmName("mmStringIterable")
+    fun Iterable<String>.mm(vararg resolvers: TagResolver): List<Component> = map { it.mm(*resolvers) }
 
     /** Serializes a [Component] into a String. */
     fun Component.mm(): String = MM.serialize(this)
@@ -155,4 +161,26 @@ internal object ExtUtils {
      * @return The generated configuration key.
      */
     fun ModuleInterface<*>.key(): String = this::class.simpleName.toString()
+
+    /**
+     * Sets the name of the [ItemStack].
+     * @param name The name to set, with [MiniMessage] support.
+     * @return The modified [ItemStack].
+     */
+    fun ItemStack.name(name: String): ItemStack = apply { setData(DataComponentTypes.CUSTOM_NAME, name.mm()) }
+
+    /**
+     * Sets the lore of the [ItemStack].
+     * @param lore The lines of lore to set, with [MiniMessage] support.
+     * @return The modified [ItemStack].
+     */
+    fun ItemStack.lore(vararg lore: String): ItemStack = apply { setData(DataComponentTypes.LORE, ItemLore.lore(lore.toList().mm())) }
+
+    /**
+     * Fills the entire [Inventory] with the given [ItemStack].
+     * @param item The [ItemStack] to fill the inventory with.
+     */
+    fun Inventory.fill(item: ItemStack) {
+        for (i in 0 until size) setItem(i, item)
+    }
 }
