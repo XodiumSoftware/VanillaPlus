@@ -42,6 +42,7 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
             AdjacentBlockData(1, 0, Door.Hinge.LEFT, BlockFace.NORTH),
         )
 
+    // TODO: might be cancelling the one in Playermodule.
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerInteractEvent) {
         if (!enabled()) return

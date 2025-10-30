@@ -141,7 +141,7 @@ internal class PlayerModule(
         )
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = false)
     fun on(event: PlayerInteractEvent) {
         if (!enabled() ||
             event.action != Action.RIGHT_CLICK_AIR &&
@@ -155,6 +155,7 @@ internal class PlayerModule(
 
         if (player.totalExperience < config.xpCostToBottle) return
 
+        event.isCancelled = true
         player.giveExp(-config.xpCostToBottle)
         event.item?.subtract(1)
         player.inventory
@@ -182,7 +183,6 @@ internal class PlayerModule(
      * Creates a custom player skull item when a player is killed.
      * @param entity The player whose head is being created.
      * @param killer The player who killed the entity.
-     * @param xp The amount of experience associated with the kill, stored in the skull.
      * @return An [ItemStack] representing the customized player head.
      */
     @Suppress("UnstableApiUsage")
