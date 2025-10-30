@@ -2,6 +2,7 @@
 
 package org.xodium.vanillaplus.modules
 
+import io.papermc.paper.math.Rotations
 import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.entity.ArmorStand
@@ -28,6 +29,9 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
     override val config: Config = Config()
 
     private val armorStandGuis = WeakHashMap<Inventory, ArmorStand>()
+
+    // TODO: move to pdc.
+    private val armorStandBodyPart = WeakHashMap<Inventory, BodyPart>()
 
     /** Represents predefined constants for different equipment slots and provides a utility set containing all slots. */
     private object EquipmentSlot {
@@ -63,7 +67,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
         const val ARMS = 25
         const val SIZE = 34
         const val BASE_PLATE = 43
-        const val POSE = 38
+        const val BODY_PART = 38
     }
 
     /** Represents predefined rotation slot values for an [ArmorStand]. */
@@ -72,6 +76,23 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
         const val Y_AXIS = 19
         const val Z_AXIS = 28
         const val RESET = 37
+
+        val AXIS = setOf(X_AXIS, Y_AXIS, Z_AXIS)
+    }
+
+    /**
+     * Represents the body parts of an ArmorStand for customization and interaction purposes.
+     * @property displayName The display name of the body part.
+     */
+    private enum class BodyPart(
+        val displayName: String,
+    ) {
+        HEAD("Head"),
+        BODY("Body"),
+        RIGHT_ARM("Right Arm"),
+        LEFT_ARM("Left Arm"),
+        RIGHT_LEG("Right Leg"),
+        LEFT_LEG("Left Leg"),
     }
 
     @EventHandler
@@ -115,7 +136,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
             }
 
             event.isCancelled = true
-            handleClick(event.slot, armorStand, inventory)
+            handleClick(event.slot, armorStand, inventory, event)
         } else if (event.isShiftClick) {
             event.isCancelled = true
 
@@ -182,8 +203,6 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
         name: String,
     ): ItemStack = ItemStack.of(if (isActive) Material.GREEN_WOOL else Material.RED_WOOL).name(name)
 
-    private fun poseItem(): ItemStack = ItemStack.of(Material.BONE).name("")
-
     /**
      * Updates a toggle item in the inventory.
      * @param slot The slot of the item to update.
@@ -210,6 +229,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
         slot: Int,
         armorStand: ArmorStand,
         inventory: Inventory,
+        event: InventoryClickEvent? = null,
     ) {
         instance.server.scheduler.runTask(
             instance,
@@ -219,6 +239,37 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
                     ToggleSlot.ARMS -> armorStand.toggleArms(inventory)
                     ToggleSlot.SIZE -> armorStand.toggleSize(inventory)
                     ToggleSlot.BASE_PLATE -> armorStand.toggleBasePlate(inventory)
+                    ToggleSlot.BODY_PART -> toggleBodyPart(inventory)
+
+                    in RotationSlot.AXIS -> {
+                        if (event == null) return@Runnable
+
+                        val bodyPart = armorStandBodyPart.getOrDefault(inventory, BodyPart.HEAD)
+                        val currentRotation = armorStand.getRotation(bodyPart)
+
+                        var amount = Math.toRadians(15.0)
+
+                        if (event.isShiftClick) amount = Math.toRadians(45.0)
+                        if (event.isRightClick) amount *= -1
+
+                        val x = currentRotation.x()
+                        val y = currentRotation.y()
+                        val z = currentRotation.z()
+                        val newRotation =
+                            when (slot) {
+                                RotationSlot.X_AXIS -> Rotations.ofDegrees((x + amount), y, z)
+                                RotationSlot.Y_AXIS -> Rotations.ofDegrees(x, (y + amount), z)
+                                RotationSlot.Z_AXIS -> Rotations.ofDegrees(x, y, (z + amount))
+                                else -> currentRotation
+                            }
+                        armorStand.changeRotation(bodyPart, newRotation)
+                    }
+
+                    RotationSlot.RESET -> {
+                        // TODO: make it double click.
+                        val bodyPart = armorStandBodyPart.getOrDefault(inventory, BodyPart.HEAD)
+                        armorStand.changeRotation(bodyPart, Rotations.ZERO)
+                    }
 
                     in EquipmentSlot.ALL -> EquipmentSlot.update(slot, armorStand, inventory.getItem(slot))
                 }
@@ -249,6 +300,54 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
         setBasePlate(!hasBasePlate())
         updateToggleItem(ToggleSlot.BASE_PLATE, hasBasePlate(), config.i18n.toggleBasePlate, inventory)
     }
+
+    /**
+     * Toggles the current selected body part of the [ArmorStand] for the provided inventory.
+     * @param inventory The inventory associated with the [ArmorStand]. Used to determine and update the selected body part.
+     */
+    private fun toggleBodyPart(inventory: Inventory) {
+        val currentPart = armorStandBodyPart.getOrDefault(inventory, BodyPart.HEAD)
+        val nextPart = BodyPart.entries[(currentPart.ordinal + 1) % BodyPart.entries.size]
+        armorStandBodyPart[inventory] = nextPart
+        inventory.setItem(
+            ToggleSlot.BODY_PART,
+            ItemStack.of(Material.BONE).name(config.i18n.bodyPart.format(nextPart.displayName)),
+        )
+    }
+
+    /**
+     * Changes the rotation of a specific body part of the ArmorStand.
+     * @param bodyPart The body part of the ArmorStand to update the rotation for.
+     * @param rotations The new rotation values to apply to the specified body part.
+     */
+    private fun ArmorStand.changeRotation(
+        bodyPart: BodyPart,
+        rotations: Rotations,
+    ) {
+        when (bodyPart) {
+            BodyPart.HEAD -> headRotations = rotations
+            BodyPart.BODY -> bodyRotations = rotations
+            BodyPart.RIGHT_ARM -> rightArmRotations = rotations
+            BodyPart.LEFT_ARM -> leftArmRotations = rotations
+            BodyPart.RIGHT_LEG -> rightLegRotations = rotations
+            BodyPart.LEFT_LEG -> leftLegRotations = rotations
+        }
+    }
+
+    /**
+     * Retrieves the current rotation of the specified body part of an [ArmorStand].
+     * @param bodyPart The body part of the [ArmorStand] for which the rotation is being retrieved.
+     * @return The current rotation values of the specified body part.
+     */
+    private fun ArmorStand.getRotation(bodyPart: BodyPart): Rotations =
+        when (bodyPart) {
+            BodyPart.HEAD -> headRotations
+            BodyPart.BODY -> bodyRotations
+            BodyPart.RIGHT_ARM -> rightArmRotations
+            BodyPart.LEFT_ARM -> leftArmRotations
+            BodyPart.RIGHT_LEG -> rightLegRotations
+            BodyPart.LEFT_LEG -> leftLegRotations
+        }
 
     /**
      * Opens a custom inventory view for the specified player, based on the properties of the armour stand.
@@ -286,7 +385,12 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
             setItem(ToggleSlot.ARMS, toggleItem(hasArms(), config.i18n.toggleArms))
             setItem(ToggleSlot.SIZE, toggleItem(isSmall, config.i18n.toggleSize))
             setItem(ToggleSlot.BASE_PLATE, toggleItem(hasBasePlate(), config.i18n.toggleBasePlate))
-            setItem(ToggleSlot.POSE, poseItem())
+            setItem(
+                ToggleSlot.BODY_PART,
+                ItemStack
+                    .of(Material.BONE)
+                    .name(config.i18n.bodyPart.format(armorStandBodyPart.getOrPut(this) { BodyPart.HEAD }.displayName)),
+            )
 
             // Rotation buttons
             setItem(RotationSlot.X_AXIS, ItemStack.of(Material.RED_WOOL).name(config.i18n.rotateX))
@@ -308,12 +412,12 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
             var toggleArms: String = "Toggle Arms".mangoFmt(true),
             var toggleSize: String = "Toggle Size".mangoFmt(true),
             var toggleBasePlate: String = "Toggle Base Plate".mangoFmt(true),
-            var togglePose: String = "Toggle Pose".mangoFmt(true),
+            var bodyPart: String = "Body Part: %s".mangoFmt(true),
             var rotateX: String = "Rotate X".mangoFmt(true),
             var rotateY: String = "Rotate Y".mangoFmt(true),
             var rotateZ: String = "Rotate Z".mangoFmt(true),
             var reset: String = "Reset".fireFmt(),
-            var resetLore: String = "Click twice to Reset!",
+            var resetLore: String = "Click twice to Reset",
         )
     }
 }
