@@ -10,11 +10,13 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
+import org.bukkit.event.block.Action
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.player.PlayerAdvancementDoneEvent
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.ItemStack
@@ -139,6 +141,28 @@ internal class PlayerModule(
         )
     }
 
+    @EventHandler
+    fun on(event: PlayerInteractEvent) {
+        if (!enabled() ||
+            event.action != Action.RIGHT_CLICK_AIR &&
+            event.action != Action.RIGHT_CLICK_BLOCK ||
+            event.item?.type != Material.GLASS_BOTTLE
+        ) {
+            return
+        }
+
+        val player = event.player
+
+        if (player.totalExperience < config.xpCostToBottle) return
+
+        player.giveExp(-config.xpCostToBottle)
+        event.item?.subtract(1)
+        player.inventory
+            .addItem(ItemStack.of(Material.EXPERIENCE_BOTTLE, 1))
+            .values
+            .forEach { player.world.dropItemNaturally(player.location, it) }
+    }
+
     /**
      * Sets the nickname of the player to the given name.
      * @param player The player whose nickname is to be set.
@@ -189,6 +213,7 @@ internal class PlayerModule(
         override var enabled: Boolean = true,
         var enderChestClickType: ClickType = ClickType.SHIFT_RIGHT,
         var skullDropChance: Double = 0.1,
+        var xpCostToBottle: Int = 11,
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
         data class I18n(
