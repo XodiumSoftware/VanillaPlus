@@ -7,7 +7,6 @@ import io.papermc.paper.datacomponent.item.ItemLore
 import io.papermc.paper.datacomponent.item.ResolvableProfile
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Material
-import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -35,9 +34,6 @@ internal class PlayerModule(
     private val tabListModule: TabListModule,
 ) : ModuleInterface<PlayerModule.Config> {
     override val config: Config = Config()
-
-    private val playerSkullXpKey = NamespacedKey(instance, "player_head_xp")
-    private val playerSkullXpRecipeKey = NamespacedKey(instance, "player_head_xp_recipe")
 
     override fun enabled(): Boolean = config.enabled && tabListModule.enabled()
 
@@ -105,10 +101,12 @@ internal class PlayerModule(
     fun on(event: PlayerDeathEvent) {
         if (!enabled()) return
         val killer = event.entity.killer ?: return
-        event.entity.world.dropItemNaturally(
-            event.entity.location,
-            playerSkull(event.entity, killer),
-        )
+        if (Math.random() < config.skullDropChance) {
+            event.entity.world.dropItemNaturally(
+                event.entity.location,
+                playerSkull(event.entity, killer),
+            )
+        }
         // TODO
 //        if (config.i18n.playerDeathMsg.isNotEmpty()) event.deathMessage()
 //        if (config.i18n.playerDeathScreenMsg.isNotEmpty()) event.deathScreenMessageOverride()
@@ -190,6 +188,7 @@ internal class PlayerModule(
     data class Config(
         override var enabled: Boolean = true,
         var enderChestClickType: ClickType = ClickType.SHIFT_RIGHT,
+        var skullDropChance: Double = 0.1,
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
         data class I18n(
