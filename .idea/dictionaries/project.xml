@@ -2,6 +2,7 @@
   <dictionary name="project">
     <words>
       <w>appleboy</w>
+      <w>armorposer</w>
       <w>birdflop</w>
       <w>cmds</w>
       <w>decentholograms</w>
@@ -12,6 +13,7 @@
       <w>foojay</w>
       <w>ghast</w>
       <w>glorp</w>
+      <w>gradleup</w>
       <w>griefing</w>
       <w>intellectualsites</w>
       <w>invs</w>
@@ -27,9 +29,12 @@
       <w>rrggbb</w>
       <w>searchinv</w>
       <w>shulker</w>
+      <w>signedit</w>
       <w>spellbite</w>
+      <w>tellraw</w>
       <w>triumphteam</w>
       <w>unloadinv</w>
+      <w>userdev</w>
       <w>vanillaplus</w>
       <w>worldedit</w>
       <w>xodium</w>
