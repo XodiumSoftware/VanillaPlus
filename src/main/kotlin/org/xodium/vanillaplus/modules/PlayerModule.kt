@@ -19,11 +19,8 @@ import org.bukkit.event.player.PlayerAdvancementDoneEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.Recipe
-import org.bukkit.inventory.ShapelessRecipe
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
-import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
@@ -79,10 +76,6 @@ internal class PlayerModule(
             ),
         )
 
-    init {
-        if (enabled()) instance.server.addRecipe(skullToXPRecipe())
-    }
-
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
         if (!enabled()) return
@@ -114,7 +107,7 @@ internal class PlayerModule(
         val killer = event.entity.killer ?: return
         event.entity.world.dropItemNaturally(
             event.entity.location,
-            playerSkull(event.entity, killer, event.droppedExp),
+            playerSkull(event.entity, killer),
         )
         // TODO
 //        if (config.i18n.playerDeathMsg.isNotEmpty()) event.deathMessage()
@@ -174,7 +167,6 @@ internal class PlayerModule(
     private fun playerSkull(
         entity: Player,
         killer: Player,
-        xp: Int,
     ): ItemStack =
         ItemStack.of(Material.PLAYER_HEAD).apply {
             setData(DataComponentTypes.PROFILE, ResolvableProfile.resolvableProfile(entity.playerProfile))
@@ -190,21 +182,10 @@ internal class PlayerModule(
                             .mm(
                                 Placeholder.component("player", entity.name.mm()),
                                 Placeholder.component("killer", killer.name.mm()),
-                                Placeholder.parsed("xp", xp.toString()),
                             ),
                     ),
             )
-            editPersistentDataContainer { it.set(playerSkullXpKey, PersistentDataType.INTEGER, xp) }
         }
-
-    /**
-     * Creates a shapeless recipe for converting a player skull into an experience bottle.
-     * @return A [Recipe] representing the custom shapeless crafting recipe.
-     */
-    private fun skullToXPRecipe(): Recipe =
-        ShapelessRecipe(playerSkullXpRecipeKey, ItemStack.of(Material.EXPERIENCE_BOTTLE))
-            .addIngredient(1, Material.GLASS_BOTTLE)
-            .addIngredient(1, Material.PLAYER_HEAD)
 
     data class Config(
         override var enabled: Boolean = true,
@@ -213,7 +194,7 @@ internal class PlayerModule(
     ) : ModuleInterface.Config {
         data class I18n(
             var playerHeadName: String = "<player>’s Skull",
-            var playerHeadLore: List<String> = listOf("<player> killed by <killer>", "Stored XP: <xp>"),
+            var playerHeadLore: List<String> = listOf("<player> killed by <killer>"),
 //            var playerDeathMsg: String = "<killer> ${"⚔".mangoFmt(true)} <player>",
             var playerJoinMsg: String = "<green>➕<reset> ${"›".mangoFmt(true)} <player>",
             var playerQuitMsg: String = "<red>➖<reset> ${"›".mangoFmt(true)} <player>",
