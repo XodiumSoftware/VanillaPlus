@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Gradle: net.neoforged.javadoctor:spec:2.0.17" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="net.neoforged.javadoctor" artifactId="spec" version="2.0.17" baseVersion="2.0.17" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.neoforged.javadoctor/spec/2.0.17/fbe5da0da41957dccf9004014781bd8d05d16192/spec-2.0.17.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

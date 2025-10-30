@@ -2,6 +2,7 @@
   <dictionary name="project">
     <words>
       <w>appleboy</w>
+      <w>armorposer</w>
       <w>birdflop</w>
       <w>cmds</w>
       <w>decentholograms</w>
@@ -32,6 +33,7 @@
       <w>tellraw</w>
       <w>triumphteam</w>
       <w>unloadinv</w>
+      <w>userdev</w>
       <w>vanillaplus</w>
       <w>worldedit</w>
       <w>xodium</w>
