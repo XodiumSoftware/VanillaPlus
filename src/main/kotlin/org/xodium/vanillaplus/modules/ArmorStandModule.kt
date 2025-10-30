@@ -21,8 +21,8 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
         if (enabled()) {
             instance.server.messenger.apply {
                 registerIncomingPluginChannel(instance, "armorposer:sync_packet", SyncHandler())
-                registerOutgoingPluginChannel(instance, "armorposer:swap_packet", SwapHandler())
-                registerOutgoingPluginChannel(instance, "armorposer:rename_packet", RenameHandler())
+                registerIncomingPluginChannel(instance, "armorposer:swap_packet", SwapHandler())
+                registerIncomingPluginChannel(instance, "armorposer:rename_packet", RenameHandler())
             }
         }
     }
