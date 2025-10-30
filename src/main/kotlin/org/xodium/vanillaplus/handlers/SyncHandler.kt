@@ -3,7 +3,6 @@ package org.xodium.vanillaplus.handlers
 import io.netty.buffer.Unpooled
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.ListTag
-import net.minecraft.nbt.Tag
 import net.minecraft.network.FriendlyByteBuf
 import org.bukkit.Location
 import org.bukkit.attribute.Attribute
@@ -29,31 +28,25 @@ class SyncHandler : PluginMessageListener {
         val entity = instance.server.getEntity(uuid)
 
         if (tag != null && entity is ArmorStand) {
-            if (tag.contains("Invisible")) entity.setInvisible(tag.getBoolean("Invisible"))
-            if (tag.contains("NoBasePlate")) entity.setBasePlate(!tag.getBoolean("NoBasePlate"))
-            if (tag.contains("NoGravity")) entity.setGravity(!tag.getBoolean("NoGravity"))
-            if (tag.contains("ShowArms")) entity.setArms(tag.getBoolean("ShowArms"))
-            if (tag.contains("Small")) entity.setSmall(tag.getBoolean("Small"))
-            if (tag.contains("CustomNameVisible")) entity.setCustomNameVisible(tag.getBoolean("CustomNameVisible"))
-            if (tag.contains("Rotation")) {
-                val tagList: ListTag = tag.getList("Rotation", Tag.TAG_FLOAT)
-                val yaw: Float = tagList.getFloat(0)
-                entity.bodyYaw = yaw
-                entity.setRotation(yaw, entity.pitch)
-            }
-
-            if (tag.contains("DisabledSlots")) {
-                val disabledSlots: Int = tag.getInt("DisabledSlots")
-                entity.removeDisabledSlots(*EquipmentSlot.entries.toTypedArray())
-                for (slot in EquipmentSlot.entries) {
-                    if (isSlotDisabled(entity, slot, disabledSlots)) {
-                        entity.addDisabledSlots(slot)
-                    }
+            tag.getBoolean("Invisible").ifPresent(entity::setInvisible)
+            tag.getBoolean("NoBasePlate").ifPresent { entity.setBasePlate(!it) }
+            tag.getBoolean("NoGravity").ifPresent { entity.setGravity(!it) }
+            tag.getBoolean("ShowArms").ifPresent(entity::setArms)
+            tag.getBoolean("Small").ifPresent(entity::setSmall)
+            tag.getBoolean("CustomNameVisible").ifPresent(entity::setCustomNameVisible)
+            tag.getList("Rotation").ifPresent { tagList ->
+                tagList.getFloat(0).ifPresent {
+                    entity.bodyYaw = it
+                    entity.setRotation(it, entity.pitch)
                 }
             }
-
-            if (tag.contains("Scale") && canResize(player)) {
-                val scale: Double = tag.getDouble("Scale")
+            tag.getInt("DisabledSlots").ifPresent { disabledSlots ->
+                entity.removeDisabledSlots(*EquipmentSlot.entries.toTypedArray())
+                for (slot in EquipmentSlot.entries) {
+                    if (isSlotDisabled(entity, slot, disabledSlots)) entity.addDisabledSlots(slot)
+                }
+            }
+            tag.getDouble("Scale").ifPresent { scale ->
                 val attribute = entity.getAttribute(Attribute.SCALE)
                 if (attribute != null && scale > 0) {
                     attribute.baseValue = scale
@@ -61,23 +54,25 @@ class SyncHandler : PluginMessageListener {
             }
 
             if (tag.contains("Pose")) {
-                val poseTag: CompoundTag = tag.getCompound("Pose")
-                readPose(entity, poseTag)
+                tag.getCompound("Pose").ifPresent { poseTag ->
+                    readPose(entity, poseTag)
+                }
 
-                val tagList: ListTag = tag.getList("Move", Tag.TAG_DOUBLE)
-                val x: Double = tagList.getDouble(0)
-                val y: Double = tagList.getDouble(1)
-                val z: Double = tagList.getDouble(2)
-                if (x != 0.0 || y != 0.0 || z != 0.0) {
-                    entity.teleport(
-                        Location(
-                            entity.world,
-                            entity.x + x,
-                            entity.y + y,
-                            entity.z + z,
-                        ),
-                        PlayerTeleportEvent.TeleportCause.PLUGIN,
-                    )
+                tag.getList("Move").ifPresent { tagList ->
+                    val x = tagList.getDouble(0).orElse(0.0)
+                    val y = tagList.getDouble(1).orElse(0.0)
+                    val z = tagList.getDouble(2).orElse(0.0)
+                    if (x != 0.0 || y != 0.0 || z != 0.0) {
+                        entity.teleport(
+                            Location(
+                                entity.world,
+                                entity.x + x,
+                                entity.y + y,
+                                entity.z + z,
+                            ),
+                            PlayerTeleportEvent.TeleportCause.PLUGIN,
+                        )
+                    }
                 }
             }
         }
@@ -105,18 +100,24 @@ class SyncHandler : PluginMessageListener {
         armorStand: ArmorStand,
         tag: CompoundTag,
     ) {
-        val head: ListTag = tag.getList("Head", 5)
-        armorStand.headPose = if (head.isEmpty) DEFAULT_HEAD_POSE else getAngle(head)
-        val body: ListTag = tag.getList("Body", 5)
-        armorStand.bodyPose = if (body.isEmpty) DEFAULT_BODY_POSE else getAngle(body)
-        val leftArm: ListTag = tag.getList("LeftArm", 5)
-        armorStand.leftArmPose = if (leftArm.isEmpty) DEFAULT_LEFT_ARM_POSE else getAngle(leftArm)
-        val rightArm: ListTag = tag.getList("RightArm", 5)
-        armorStand.rightArmPose = if (rightArm.isEmpty) DEFAULT_RIGHT_ARM_POSE else getAngle(rightArm)
-        val leftLeg: ListTag = tag.getList("LeftLeg", 5)
-        armorStand.leftLegPose = if (leftLeg.isEmpty) DEFAULT_LEFT_LEG_POSE else getAngle(leftLeg)
-        val rightLeg: ListTag = tag.getList("RightLeg", 5)
-        armorStand.rightLegPose = if (rightLeg.isEmpty) DEFAULT_RIGHT_LEG_POSE else getAngle(rightLeg)
+        tag.getList("Head").ifPresent { head ->
+            armorStand.headPose = if (head.isEmpty) DEFAULT_HEAD_POSE else getAngle(head)
+        }
+        tag.getList("Body").ifPresent { body ->
+            armorStand.bodyPose = if (body.isEmpty) DEFAULT_BODY_POSE else getAngle(body)
+        }
+        tag.getList("LeftArm").ifPresent { leftArm ->
+            armorStand.leftArmPose = if (leftArm.isEmpty) DEFAULT_LEFT_ARM_POSE else getAngle(leftArm)
+        }
+        tag.getList("RightArm").ifPresent { rightArm ->
+            armorStand.rightArmPose = if (rightArm.isEmpty) DEFAULT_RIGHT_ARM_POSE else getAngle(rightArm)
+        }
+        tag.getList("LeftLeg").ifPresent { leftLeg ->
+            armorStand.leftLegPose = if (leftLeg.isEmpty) DEFAULT_LEFT_LEG_POSE else getAngle(leftLeg)
+        }
+        tag.getList("RightLeg").ifPresent { rightLeg ->
+            armorStand.rightLegPose = if (rightLeg.isEmpty) DEFAULT_RIGHT_LEG_POSE else getAngle(rightLeg)
+        }
     }
 
     companion object {
@@ -127,7 +128,12 @@ class SyncHandler : PluginMessageListener {
         private val DEFAULT_LEFT_LEG_POSE: EulerAngle = getAngle(-1.0f, 0.0f, -1.0f)
         private val DEFAULT_RIGHT_LEG_POSE: EulerAngle = getAngle(1.0f, 0.0f, 1.0f)
 
-        private fun getAngle(tag: ListTag): EulerAngle = Companion.getAngle(tag.getFloat(0), tag.getFloat(1), tag.getFloat(2))
+        private fun getAngle(tag: ListTag): EulerAngle =
+            getAngle(
+                tag.getFloat(0).orElse(0.0f),
+                tag.getFloat(1).orElse(0.0f),
+                tag.getFloat(2).orElse(0.0f),
+            )
 
         private fun getAngle(
             xDeg: Float,
