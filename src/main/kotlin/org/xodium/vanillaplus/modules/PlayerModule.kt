@@ -80,7 +80,7 @@ internal class PlayerModule(
         )
 
     init {
-        if (enabled()) instance.server.addRecipe(recipe())
+        if (enabled()) instance.server.addRecipe(skullToXPRecipe())
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -201,7 +201,7 @@ internal class PlayerModule(
      * Creates a shapeless recipe for converting a player skull into an experience bottle.
      * @return A [Recipe] representing the custom shapeless crafting recipe.
      */
-    private fun recipe(): Recipe =
+    private fun skullToXPRecipe(): Recipe =
         ShapelessRecipe(playerSkullXpRecipeKey, ItemStack.of(Material.EXPERIENCE_BOTTLE))
             .addIngredient(1, Material.GLASS_BOTTLE)
             .addIngredient(1, Material.PLAYER_HEAD)
