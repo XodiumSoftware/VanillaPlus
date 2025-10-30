@@ -14,7 +14,8 @@ import org.bukkit.plugin.messaging.PluginMessageListener
 import org.bukkit.util.EulerAngle
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 
-class SyncHandler : PluginMessageListener {
+/** Handles plugin messages related to synchronizing [ArmorStand] properties. */
+internal class SyncHandler : PluginMessageListener {
     override fun onPluginMessageReceived(
         channel: String,
         player: Player,
