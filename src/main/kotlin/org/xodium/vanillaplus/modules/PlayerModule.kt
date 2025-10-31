@@ -10,7 +10,6 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
-import org.bukkit.event.block.Action
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -141,21 +140,29 @@ internal class PlayerModule(
         )
     }
 
-    @EventHandler(ignoreCancelled = false)
+    @EventHandler(ignoreCancelled = true)
     fun on(event: PlayerInteractEvent) {
-        if (!enabled() ||
-            event.action != Action.RIGHT_CLICK_AIR &&
-            event.action != Action.RIGHT_CLICK_BLOCK ||
-            event.item?.type != Material.GLASS_BOTTLE
+        if (!enabled()) return
+        xpToBottle(event)
+    }
+
+    /**
+     * Handles the interaction event where a player can convert their experience points into an experience bottle
+     * if specific conditions are met.
+     * @param event The PlayerInteractEvent triggered when a player interacts with the world or an object.
+     */
+    private fun xpToBottle(event: PlayerInteractEvent) {
+        if (event.clickedBlock?.type != Material.ENCHANTING_TABLE ||
+            event.item?.type != Material.GLASS_BOTTLE ||
+            !event.player.isSneaking
         ) {
             return
         }
 
         val player = event.player
 
-        if (player.totalExperience < config.xpCostToBottle) return
+        if (player.calculateTotalExperiencePoints() < config.xpCostToBottle) return
 
-        event.isCancelled = true
         player.giveExp(-config.xpCostToBottle)
         event.item?.subtract(1)
         player.inventory
