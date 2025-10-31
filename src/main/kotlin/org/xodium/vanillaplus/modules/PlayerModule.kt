@@ -15,6 +15,7 @@ import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.player.PlayerAdvancementDoneEvent
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.ItemStack
@@ -139,6 +140,37 @@ internal class PlayerModule(
         )
     }
 
+    @EventHandler(ignoreCancelled = true)
+    fun on(event: PlayerInteractEvent) {
+        if (!enabled()) return
+        xpToBottle(event)
+    }
+
+    /**
+     * Handles the interaction event where a player can convert their experience points into an experience bottle
+     * if specific conditions are met.
+     * @param event The PlayerInteractEvent triggered when a player interacts with the world or an object.
+     */
+    private fun xpToBottle(event: PlayerInteractEvent) {
+        if (event.clickedBlock?.type != Material.ENCHANTING_TABLE ||
+            event.item?.type != Material.GLASS_BOTTLE ||
+            !event.player.isSneaking
+        ) {
+            return
+        }
+
+        val player = event.player
+
+        if (player.calculateTotalExperiencePoints() < config.xpCostToBottle) return
+
+        player.giveExp(-config.xpCostToBottle)
+        event.item?.subtract(1)
+        player.inventory
+            .addItem(ItemStack.of(Material.EXPERIENCE_BOTTLE, 1))
+            .values
+            .forEach { player.world.dropItemNaturally(player.location, it) }
+    }
+
     /**
      * Sets the nickname of the player to the given name.
      * @param player The player whose nickname is to be set.
@@ -158,7 +190,6 @@ internal class PlayerModule(
      * Creates a custom player skull item when a player is killed.
      * @param entity The player whose head is being created.
      * @param killer The player who killed the entity.
-     * @param xp The amount of experience associated with the kill, stored in the skull.
      * @return An [ItemStack] representing the customized player head.
      */
     @Suppress("UnstableApiUsage")
@@ -189,6 +220,7 @@ internal class PlayerModule(
         override var enabled: Boolean = true,
         var enderChestClickType: ClickType = ClickType.SHIFT_RIGHT,
         var skullDropChance: Double = 0.1,
+        var xpCostToBottle: Int = 11,
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
         data class I18n(
