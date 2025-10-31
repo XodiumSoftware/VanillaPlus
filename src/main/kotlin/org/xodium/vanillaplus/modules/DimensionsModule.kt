@@ -1,5 +1,6 @@
 package org.xodium.vanillaplus.modules
 
+import kotlinx.serialization.Serializable
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.World
@@ -139,6 +140,7 @@ internal class DimensionsModule : ModuleInterface<DimensionsModule.Config> {
         var portalSearchRadius: Int = 128,
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
+        @Serializable
         data class I18n(
             var portalCreationDenied: String = "No corresponding active portal found in the Overworld!".fireFmt(),
         )

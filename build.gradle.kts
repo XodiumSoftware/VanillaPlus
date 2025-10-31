@@ -32,9 +32,7 @@ dependencies {
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.17") // TODO("Move away from WorldEdit")
 
     implementation(kotlin("stdlib"))
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.20.1")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
     implementation("org.mariuszgromada.math:MathParser.org-mXparser:6.1.0")
     implementation("io.netty:netty-buffer:4.2.7.Final")
 }
@@ -54,8 +52,7 @@ tasks {
         dependsOn(processResources)
         archiveClassifier.set("")
         destinationDirectory.set(layout.projectDirectory.dir("build/libs"))
-        relocate("com.fasterxml.jackson", "$group.jackson")
-        minimize { exclude(dependency("org.jetbrains.kotlin:kotlin-reflect:.*")) }
+        minimize()
     }
     jar { enabled = false }
     runServer { minecraftVersion(mcVersion) }

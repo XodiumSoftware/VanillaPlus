@@ -1,8 +1,12 @@
 package org.xodium.vanillaplus.data
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.databind.util.StdConverter
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 
@@ -14,28 +18,26 @@ import net.kyori.adventure.sound.Sound
  * @property pitch The [pitch] of the sound. Defaults to 1.0f.
  */
 internal data class SoundData(
-    @get:JsonSerialize(converter = SoundTypeToString::class)
-    @param:JsonDeserialize(converter = StringToSoundType::class)
+    @Serializable(with = SoundTypeSerializer::class)
     val name: Sound.Type,
     private val source: Sound.Source = Sound.Source.MASTER,
     private val volume: Float = 1.0f,
     private val pitch: Float = 1.0f,
 ) {
-    companion object {
-        /**
-         * Converts a [Sound.Type] to its string representation for JSON serialization.
-         * Converts a string back to a [Sound.Type] for JSON deserialization.
-         */
-        private object SoundTypeToString : StdConverter<Sound.Type, String>() {
-            override fun convert(value: Sound.Type) = value.key().asString()
+    object SoundTypeSerializer : KSerializer<Sound.Type> {
+        override val descriptor: SerialDescriptor =
+            PrimitiveSerialDescriptor("Sound.Type", PrimitiveKind.STRING)
+
+        override fun serialize(
+            encoder: Encoder,
+            value: Sound.Type,
+        ) {
+            encoder.encodeString(value.key().asString())
         }
 
-        /**
-         * Converts a string to a [Sound.Type] for JSON deserialization.
-         * Converts a [Sound.Type] to its string representation for JSON serialization.
-         */
-        private object StringToSoundType : StdConverter<String, Sound.Type>() {
-            override fun convert(value: String) = Sound.Type { Key.key(value) }
+        override fun deserialize(decoder: Decoder): Sound.Type {
+            val keyString = decoder.decodeString()
+            return Sound.Type { Key.key(keyString) }
         }
     }
 

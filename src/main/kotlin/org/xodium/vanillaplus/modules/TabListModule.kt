@@ -2,6 +2,7 @@
 
 package org.xodium.vanillaplus.modules
 
+import kotlinx.serialization.Serializable
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
@@ -151,6 +152,7 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
             ),
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
+        @Serializable
         data class I18n(
             var weatherThundering: String = "<red>\uD83C\uDF29<reset>",
             var weatherStorm: String = "<yellow>\uD83C\uDF26<reset>",

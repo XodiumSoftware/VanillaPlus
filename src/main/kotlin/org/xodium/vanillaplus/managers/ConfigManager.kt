@@ -1,14 +1,21 @@
 package org.xodium.vanillaplus.managers
 
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.builtins.serializer
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.serializer
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.DataInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.key
-import kotlin.reflect.KClass
+import kotlin.io.path.readText
 
 /** Manages module configs on disk and in-memory. */
 internal object ConfigManager : DataInterface<String, ModuleInterface.Config> {
-    override val dataClass: KClass<ModuleInterface.Config> = ModuleInterface.Config::class
+    override val serializer: KSerializer<ModuleInterface.Config>
+        get() = throw UnsupportedOperationException("ConfigManager uses polymorphic serialization")
+    override val keySerializer: KSerializer<String> = String.serializer()
+    override val dataClassName: String = "Config"
     override val cache: MutableMap<String, ModuleInterface.Config> = mutableMapOf()
     override val fileName: String = "config.json"
 
@@ -21,7 +28,7 @@ internal object ConfigManager : DataInterface<String, ModuleInterface.Config> {
         modules.forEach { module ->
             val key = module.key()
             val fileConfig = readFileConfig(key, module)
-            val mergedConfig = fileConfig?.let { jsonMapper.updateValue(module.config, it) } ?: module.config
+            val mergedConfig = fileConfig ?: module.config
             set(key, mergedConfig)
         }
         if (modules.isNotEmpty()) instance.logger.info("Config updated successfully")
@@ -40,8 +47,14 @@ internal object ConfigManager : DataInterface<String, ModuleInterface.Config> {
     ): ModuleInterface.Config? =
         try {
             if (filePath.toFile().exists()) {
-                jsonMapper.readTree(filePath.toFile())?.get(key)?.let { node ->
-                    jsonMapper.treeToValue(node, module.config::class.java)
+                val jsonContent = filePath.readText()
+                val jsonElement = json.parseToJsonElement(jsonContent)
+                jsonElement.jsonObject[key]?.let { node ->
+                    @Suppress("UNCHECKED_CAST")
+                    json.decodeFromJsonElement(
+                        serializer(module.config::class.java) as KSerializer<ModuleInterface.Config>,
+                        node,
+                    )
                 }
             } else {
                 null
