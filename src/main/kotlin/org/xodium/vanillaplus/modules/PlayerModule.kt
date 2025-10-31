@@ -5,6 +5,7 @@ import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
 import io.papermc.paper.datacomponent.item.ResolvableProfile
+import kotlinx.serialization.Serializable
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -33,10 +34,10 @@ import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 /** Represents a module handling player mechanics within the system. */
 internal class PlayerModule(
     private val tabListModule: TabListModule,
-) : ModuleInterface<PlayerModule.Config> {
-    override val config: Config = Config()
+) : ModuleInterface {
+    val config: Config = Config()
 
-    override fun enabled(): Boolean = config.enabled && tabListModule.enabled()
+    fun enabled(): Boolean = config.enabled && tabListModule.config.enabled
 
     override fun cmds(): List<CommandData> =
         listOf(
@@ -216,13 +217,15 @@ internal class PlayerModule(
             )
         }
 
+    @Serializable
     data class Config(
-        override var enabled: Boolean = true,
+        var enabled: Boolean = true,
         var enderChestClickType: ClickType = ClickType.SHIFT_RIGHT,
         var skullDropChance: Double = 0.1,
         var xpCostToBottle: Int = 11,
         var i18n: I18n = I18n(),
-    ) : ModuleInterface.Config {
+    ) {
+        @Serializable
         data class I18n(
             var playerHeadName: String = "<player>’s Skull",
             var playerHeadLore: List<String> = listOf("<player> killed by <killer>"),

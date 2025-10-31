@@ -26,8 +26,8 @@ import java.util.*
 import org.bukkit.Sound as BukkitSound
 
 /** Represents a module handling openable blocks mechanics within the system. */
-internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
-    override val config: Config = Config()
+internal class OpenableModule : ModuleInterface {
+    val config: Config = Config()
 
     private val disallowedKnockGameModes = EnumSet.of(GameMode.CREATIVE, GameMode.SPECTATOR)
     private val possibleNeighbours: Set<AdjacentBlockData> =
@@ -44,7 +44,7 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerInteractEvent) {
-        if (!enabled()) return
+        if (!config.enabled) return
 
         val clickedBlock = event.clickedBlock ?: return
         if (!isValidInteraction(event)) return
@@ -223,7 +223,7 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
     }
 
     data class Config(
-        override var enabled: Boolean = true,
+        var enabled: Boolean = true,
         var initDelayInTicks: Long = 1,
         var allowDoubleDoors: Boolean = true,
         var allowKnocking: Boolean = true,
@@ -235,5 +235,5 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
                 Sound.Source.HOSTILE,
             ),
         var soundProximityRadius: Double = 10.0,
-    ) : ModuleInterface.Config
+    )
 }

@@ -4,6 +4,7 @@ package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes
+import kotlinx.serialization.Serializable
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.entity.Player
@@ -17,8 +18,8 @@ import java.util.*
 import java.util.concurrent.CompletableFuture
 
 /** Represents a module handling locator mechanics within the system. */
-internal class LocatorModule : ModuleInterface<LocatorModule.Config> {
-    override val config: Config = Config()
+internal class LocatorModule : ModuleInterface {
+    val config: Config = Config()
 
     private val colors = NamedTextColor.NAMES.keys().map { it.toString() } + listOf("<RRGGBB>", "reset")
 
@@ -105,7 +106,8 @@ internal class LocatorModule : ModuleInterface<LocatorModule.Config> {
         }
     }
 
+    @Serializable
     data class Config(
-        override var enabled: Boolean = true,
-    ) : ModuleInterface.Config
+        var enabled: Boolean = true,
+    )
 }

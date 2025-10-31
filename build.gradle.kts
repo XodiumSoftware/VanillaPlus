@@ -37,6 +37,7 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.1")
     implementation("org.mariuszgromada.math:MathParser.org-mXparser:6.1.0")
     implementation("io.netty:netty-buffer:4.2.7.Final")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
 }
 
 java {

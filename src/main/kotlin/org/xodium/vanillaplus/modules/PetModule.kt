@@ -1,5 +1,6 @@
 package org.xodium.vanillaplus.modules
 
+import kotlinx.serialization.Serializable
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Material
@@ -14,12 +15,12 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 
 /** Represents a module handling pet mechanics within the system. */
-internal class PetModule : ModuleInterface<PetModule.Config> {
-    override val config: Config = Config()
+internal class PetModule : ModuleInterface {
+    val config: Config = Config()
 
     @EventHandler
     fun on(event: PlayerInteractEntityEvent) {
-        if (!enabled()) return
+        if (!config.enabled) return
 
         val source = event.player
         val target = event.rightClicked as? Player ?: return
@@ -115,11 +116,12 @@ internal class PetModule : ModuleInterface<PetModule.Config> {
         )
     }
 
+    @Serializable
     data class Config(
-        override var enabled: Boolean = true,
+        var enabled: Boolean = true,
         var transferRadius: Int = 10,
         var i18n: I18n = I18n(),
-    ) : ModuleInterface.Config {
+    ) {
         data class I18n(
             var sourceTransfer: String = "${"You have transferred".fireFmt()} <pet> ${"to".fireFmt()} <target>",
             var targetTransfer: String = "<source> ${"has transferred".fireFmt()} <pet> ${"to you".fireFmt()}",

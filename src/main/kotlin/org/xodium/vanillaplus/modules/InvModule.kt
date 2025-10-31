@@ -38,8 +38,8 @@ import java.util.concurrent.ConcurrentHashMap
 import org.bukkit.Sound as BukkitSound
 
 /** Represents a module handling inv mechanics within the system. */
-internal class InvModule : ModuleInterface<InvModule.Config> {
-    override val config: Config = Config()
+internal class InvModule : ModuleInterface {
+    val config: Config = Config()
 
     private val unloads = ConcurrentHashMap<Location, MutableMap<Material, Int>>()
     private val lastUnloads = ConcurrentHashMap<UUID, List<Block>>()
@@ -101,7 +101,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
 
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: PlayerQuitEvent) {
-        if (!enabled()) return
+        if (!config.enabled) return
 
         val uuid = event.player.uniqueId
         lastUnloads.remove(uuid)
@@ -516,7 +516,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
     }
 
     data class Config(
-        override var enabled: Boolean = true,
+        var enabled: Boolean = true,
         var searchRadius: Int = 25,
         var unloadRadius: Int = 25,
         var matchEnchantments: Boolean = true,
@@ -528,7 +528,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
             ),
         var scheduleInitDelayInTicks: Long = 5,
         var i18n: I18n = I18n(),
-    ) : ModuleInterface.Config {
+    ) {
         data class I18n(
             var noMaterialSpecified: String = "You must specify a valid material or hold something in your hand".fireFmt(),
             var noChestsFound: String = "No usable chests found for ${"<material>".roseFmt()}".fireFmt(),

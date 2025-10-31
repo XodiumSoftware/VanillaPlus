@@ -2,6 +2,7 @@ package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
+import kotlinx.serialization.Serializable
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -21,14 +22,14 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 
 /** Represents a module handling silk touch mechanics within the system. */
-internal class SilkTouchModule : ModuleInterface<SilkTouchModule.Config> {
-    override val config: Config = Config()
+internal class SilkTouchModule : ModuleInterface {
+    val config: Config = Config()
 
     private val spawnerKey = NamespacedKey(instance, "spawner_type")
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun on(event: BlockBreakEvent) {
-        if (!enabled() ||
+        if (!config.enabled ||
             event.player.gameMode != GameMode.SURVIVAL ||
             !isValidTool(event.player.inventory.itemInMainHand)
         ) {
@@ -44,7 +45,7 @@ internal class SilkTouchModule : ModuleInterface<SilkTouchModule.Config> {
 
     @EventHandler
     fun on(event: BlockPlaceEvent) {
-        if (!enabled()) return
+        if (!config.enabled) return
 
         val item = event.itemInHand
         val block = event.blockPlaced
@@ -113,12 +114,14 @@ internal class SilkTouchModule : ModuleInterface<SilkTouchModule.Config> {
     private fun isValidTool(item: ItemStack?): Boolean =
         item?.let { Tag.ITEMS_PICKAXES.isTagged(it.type) && it.containsEnchantment(Enchantment.SILK_TOUCH) } == true
 
+    @Serializable
     data class Config(
-        override var enabled: Boolean = true,
+        var enabled: Boolean = true,
         var allowSpawnerSilk: Boolean = true,
         var allowBuddingAmethystSilk: Boolean = true,
         var i18n: I18n = I18n(),
-    ) : ModuleInterface.Config {
+    ) {
+        @Serializable
         data class I18n(
             var spawnerLore: List<String> = listOf("Type: <spawner_type>"),
         )

@@ -12,8 +12,8 @@ import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 
 /** Represents a module handling book mechanics within the system. */
-internal class BooksModule : ModuleInterface<BooksModule.Config> {
-    override val config: Config = Config()
+internal class BooksModule : ModuleInterface {
+    val config: Config = Config()
 
     private val permPrefix: String = "${instance::class.simpleName}.book".lowercase()
 
@@ -44,7 +44,7 @@ internal class BooksModule : ModuleInterface<BooksModule.Config> {
         }
 
     data class Config(
-        override var enabled: Boolean = true,
+        var enabled: Boolean = true,
         var books: List<BookData> =
             listOf(
                 BookData(
@@ -86,5 +86,5 @@ internal class BooksModule : ModuleInterface<BooksModule.Config> {
                         ),
                 ),
             ),
-    ) : ModuleInterface.Config
+    )
 }

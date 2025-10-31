@@ -1,5 +1,6 @@
 package org.xodium.vanillaplus.modules
 
+import kotlinx.serialization.Serializable
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.World
@@ -19,8 +20,8 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 /** Represents a module handling dimension mechanics within the system. */
-internal class DimensionsModule : ModuleInterface<DimensionsModule.Config> {
-    override val config: Config = Config()
+internal class DimensionsModule : ModuleInterface {
+    val config: Config = Config()
 
     companion object {
         private const val NETHER_TO_OVERWORLD_RATIO = 8
@@ -28,7 +29,7 @@ internal class DimensionsModule : ModuleInterface<DimensionsModule.Config> {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerPortalEvent) {
-        if (!enabled()) return
+        if (!config.enabled) return
 
         if (event.cause == TeleportCause.NETHER_PORTAL) {
             if (event.player.world.environment == World.Environment.NETHER) {
@@ -39,7 +40,7 @@ internal class DimensionsModule : ModuleInterface<DimensionsModule.Config> {
 
     @EventHandler(priority = EventPriority.HIGH)
     fun on(event: EntityPortalEvent) {
-        if (!enabled()) return
+        if (!config.enabled) return
 
         if (event.entity.world.environment == World.Environment.NETHER) {
             event.canCreatePortal = false
@@ -48,7 +49,7 @@ internal class DimensionsModule : ModuleInterface<DimensionsModule.Config> {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PortalCreateEvent) {
-        if (!enabled()) return
+        if (!config.enabled) return
 
         if (event.world.environment == World.Environment.NETHER &&
             event.reason == PortalCreateEvent.CreateReason.FIRE
@@ -134,11 +135,13 @@ internal class DimensionsModule : ModuleInterface<DimensionsModule.Config> {
      */
     private fun getOverworld(): World = instance.server.getWorld("world") ?: error("Overworld (world) is not loaded.")
 
+    @Serializable
     data class Config(
-        override var enabled: Boolean = true,
+        var enabled: Boolean = true,
         var portalSearchRadius: Int = 128,
         var i18n: I18n = I18n(),
-    ) : ModuleInterface.Config {
+    ) {
+        @Serializable
         data class I18n(
             var portalCreationDenied: String = "No corresponding active portal found in the Overworld!".fireFmt(),
         )

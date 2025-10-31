@@ -30,8 +30,8 @@ import org.xodium.vanillaplus.utils.FmtUtils.skylineFmt
 import java.util.concurrent.CompletableFuture
 
 /** Represents a module handling chat mechanics within the system. */
-internal class ChatModule : ModuleInterface<ChatModule.Config> {
-    override val config: Config = Config()
+internal class ChatModule : ModuleInterface {
+    val config: Config = Config()
 
     override fun cmds(): List<CommandData> {
         return listOf(
@@ -157,7 +157,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
 
     @EventHandler
     fun on(event: PlayerSetSpawnEvent) {
-        if (!enabled()) return
+        if (!config.enabled) return
 
         event.notification =
             config.i18n.playerSetSpawn.mm(Placeholder.component("notification", event.notification ?: return))
@@ -213,7 +213,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
             .clickEvent(ClickEvent.callback { instance.server.deleteMessage(event.signedMessage()) })
 
     data class Config(
-        override var enabled: Boolean = true,
+        var enabled: Boolean = true,
         var chatFormat: String = "<player_head> <player> <reset>${"›".mangoFmt(true)} <message>",
         var welcomeText: List<String> =
             listOf(
@@ -238,7 +238,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
             "<player> <reset>${"➛".mangoFmt(true)} ${"You".skylineFmt()} ${"›".mangoFmt(true)} <message>",
         var deleteCross: String = "<dark_gray>[<dark_red><b>X</b></dark_red><dark_gray>]",
         var i18n: I18n = I18n(),
-    ) : ModuleInterface.Config {
+    ) {
         data class I18n(
             var clickMe: String = "Click Me!".fireFmt(),
             var clickToWhisper: String = "Click to Whisper".fireFmt(),

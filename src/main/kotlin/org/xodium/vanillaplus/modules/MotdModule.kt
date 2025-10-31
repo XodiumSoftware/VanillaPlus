@@ -9,21 +9,21 @@ import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 
 /** Represents a module handling MOTD mechanics within the system. */
-internal class MotdModule : ModuleInterface<MotdModule.Config> {
-    override val config: Config = Config()
+internal class MotdModule : ModuleInterface {
+    val config: Config = Config()
 
     @EventHandler(priority = EventPriority.HIGH)
     fun on(event: ServerListPingEvent) {
-        if (!enabled()) return
+        if (!config.enabled) return
         event.motd(config.motd.joinToString("\n").mm())
     }
 
     data class Config(
-        override var enabled: Boolean = true,
+        var enabled: Boolean = true,
         val motd: List<String> =
             listOf(
                 "<b>Ultimate Private SMP</b>".fireFmt(),
                 "<b>➤ WELCOME BACK LADS!</b>".mangoFmt(),
             ),
-    ) : ModuleInterface.Config
+    )
 }

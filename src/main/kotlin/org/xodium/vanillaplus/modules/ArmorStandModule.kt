@@ -3,6 +3,7 @@
 package org.xodium.vanillaplus.modules
 
 import com.google.common.io.ByteStreams
+import kotlinx.serialization.Serializable
 import org.bukkit.entity.ArmorStand
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractAtEntityEvent
@@ -14,11 +15,11 @@ import org.xodium.vanillaplus.handlers.SyncHandler
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 
 /** Represents a module handling armour stand mechanics within the system. */
-internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
-    override val config: Config = Config()
+internal class ArmorStandModule : ModuleInterface {
+    val config: Config = Config()
 
     init {
-        if (enabled()) {
+        if (config.enabled) {
             instance.server.messenger.apply {
                 registerIncomingPluginChannel(instance, "armorposer:sync_packet", SyncHandler())
                 registerIncomingPluginChannel(instance, "armorposer:swap_packet", SwapHandler())
@@ -29,7 +30,7 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
 
     @EventHandler
     fun on(event: PlayerInteractAtEntityEvent) {
-        if (!enabled()) return
+        if (!config.enabled) return
 
         val player = event.player
         val entity = event.rightClicked
@@ -47,7 +48,8 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
         }
     }
 
+    @Serializable
     data class Config(
-        override var enabled: Boolean = true,
-    ) : ModuleInterface.Config
+        var enabled: Boolean = true,
+    )
 }

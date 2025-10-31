@@ -2,6 +2,7 @@
 
 package org.xodium.vanillaplus.modules
 
+import kotlinx.serialization.Serializable
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
@@ -21,8 +22,8 @@ import java.util.*
 import kotlin.math.roundToInt
 
 /** Represents a module handling tab-list mechanics within the system. */
-internal class TabListModule : ModuleInterface<TabListModule.Config> {
-    override val config: Config = Config()
+internal class TabListModule : ModuleInterface {
+    val config: Config = Config()
 
     companion object {
         private const val MIN_TPS = 0.0
@@ -33,7 +34,7 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
     }
 
     init {
-        if (enabled()) {
+        if (config.enabled) {
             instance.server.onlinePlayers.forEach {
                 updateTabList(it)
                 updatePlayerDisplayName(it)
@@ -50,20 +51,20 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
-        if (!enabled()) return
+        if (!config.enabled) return
         updateTabList(event.player)
         updatePlayerDisplayName(event.player)
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: WeatherChangeEvent) {
-        if (!enabled()) return
+        if (!config.enabled) return
         event.world.players.forEach { updateTabList(it) }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: ThunderChangeEvent) {
-        if (!enabled()) return
+        if (!config.enabled) return
         event.world.players.forEach { updateTabList(it) }
     }
 
@@ -129,8 +130,9 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
         }
     }
 
+    @Serializable
     data class Config(
-        override var enabled: Boolean = true,
+        var enabled: Boolean = true,
         var initDelayInTicks: Long = 0,
         var intervalInTicks: Long = 10,
         var header: List<String> =
@@ -150,7 +152,8 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
                 }",
             ),
         var i18n: I18n = I18n(),
-    ) : ModuleInterface.Config {
+    ) {
+        @Serializable
         data class I18n(
             var weatherThundering: String = "<red>\uD83C\uDF29<reset>",
             var weatherStorm: String = "<yellow>\uD83C\uDF26<reset>",

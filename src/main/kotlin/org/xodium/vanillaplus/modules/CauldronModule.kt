@@ -10,14 +10,14 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 
 /** Represents a module handling cauldron mechanics within the system. */
-internal class CauldronModule : ModuleInterface<CauldronModule.Config> {
-    override val config: Config = Config()
+internal class CauldronModule : ModuleInterface {
+    val config: Config = Config()
 
     private val schedulerDelay = 0L
     private val schedulerPeriod = 20L
 
     init {
-        if (enabled()) {
+        if (config.enabled) {
             instance.server.scheduler.runTaskTimer(
                 instance,
                 Runnable {
@@ -106,10 +106,10 @@ internal class CauldronModule : ModuleInterface<CauldronModule.Config> {
     }
 
     data class Config(
-        override var enabled: Boolean = true,
+        var enabled: Boolean = true,
         var convertConcretePowder: Boolean = true,
         var convertDirt: Boolean = true,
         var convertCoarseDirt: Boolean = true,
         var convertRootedDirt: Boolean = true,
-    ) : ModuleInterface.Config
+    )
 }

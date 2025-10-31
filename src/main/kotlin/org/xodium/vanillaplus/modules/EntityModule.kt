@@ -2,6 +2,7 @@
 
 package org.xodium.vanillaplus.modules
 
+import kotlinx.serialization.Serializable
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Material
@@ -20,24 +21,24 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.bukkit.Sound as BukkitSound
 
 /** Represents a module handling entity mechanics within the system. */
-internal class EntityModule : ModuleInterface<EntityModule.Config> {
-    override val config: Config = Config()
+internal class EntityModule : ModuleInterface {
+    val config: Config = Config()
 
     @EventHandler
     fun on(event: EntityChangeBlockEvent) {
-        if (!enabled()) return
+        if (!config.enabled) return
         if (shouldCancelGrief(event.entity)) event.isCancelled = true
     }
 
     @EventHandler
     fun on(event: EntityExplodeEvent) {
-        if (!enabled()) return
+        if (!config.enabled) return
         if (shouldCancelGrief(event.entity)) event.blockList().clear()
     }
 
     @EventHandler
     fun on(event: PlayerInteractEntityEvent) {
-        if (!enabled()) return
+        if (!config.enabled) return
 
         val entity = event.rightClicked
 
@@ -125,8 +126,9 @@ internal class EntityModule : ModuleInterface<EntityModule.Config> {
             ).toInt()
             .coerceAtLeast(1)
 
+    @Serializable
     data class Config(
-        override var enabled: Boolean = true,
+        var enabled: Boolean = true,
         var disableBlazeGrief: Boolean = true,
         var disableCreeperGrief: Boolean = true,
         var disableEnderDragonGrief: Boolean = true,
@@ -147,7 +149,8 @@ internal class EntityModule : ModuleInterface<EntityModule.Config> {
                 Sound.Source.NEUTRAL,
             ),
         var i18n: I18n = I18n(),
-    ) : ModuleInterface.Config {
+    ) {
+        @Serializable
         data class I18n(
             var horseTradeSuccessfulMessage: String = "You traded your horse for: <material> <sprite:item/emerald>",
         )

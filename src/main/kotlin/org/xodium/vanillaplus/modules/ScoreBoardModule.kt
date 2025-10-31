@@ -1,6 +1,7 @@
 package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.command.brigadier.Commands
+import kotlinx.serialization.Serializable
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerJoinEvent
@@ -13,8 +14,8 @@ import org.xodium.vanillaplus.pdcs.PlayerPDC.scoreboardVisibility
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 
 /** Represents a module handling scoreboard mechanics within the system. */
-internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
-    override val config: Config = Config()
+internal class ScoreBoardModule : ModuleInterface {
+    val config: Config = Config()
 
     override fun cmds(): List<CommandData> =
         listOf(
@@ -44,7 +45,7 @@ internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
 
     @EventHandler
     fun on(event: PlayerJoinEvent) {
-        if (!enabled()) return
+        if (!config.enabled) return
         val player = event.player
         if (player.scoreboardVisibility() == true) {
             player.scoreboard = instance.server.scoreboardManager.newScoreboard
@@ -67,7 +68,8 @@ internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
         }
     }
 
+    @Serializable
     data class Config(
-        override var enabled: Boolean = true,
-    ) : ModuleInterface.Config
+        var enabled: Boolean = true,
+    )
 }

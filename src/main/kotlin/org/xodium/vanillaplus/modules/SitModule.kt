@@ -2,6 +2,7 @@
 
 package org.xodium.vanillaplus.modules
 
+import kotlinx.serialization.Serializable
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
@@ -21,8 +22,8 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import java.util.*
 
 /** Represents a module handling sit mechanics within the system. */
-internal class SitModule : ModuleInterface<SitModule.Config> {
-    override val config: Config = Config()
+internal class SitModule : ModuleInterface {
+    val config: Config = Config()
 
     private val sittingPlayers = mutableMapOf<UUID, ArmorStand>()
     private val blockCenterOffset = Vector(0.5, 0.5, 0.5)
@@ -30,7 +31,7 @@ internal class SitModule : ModuleInterface<SitModule.Config> {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun on(event: PlayerInteractEvent) {
-        if (!enabled()) return
+        if (!config.enabled) return
 
         val player = event.player
         if (event.action != Action.RIGHT_CLICK_BLOCK || player.isSneaking || player.isInsideVehicle) return
@@ -57,7 +58,7 @@ internal class SitModule : ModuleInterface<SitModule.Config> {
 
     @EventHandler
     fun on(event: EntityDismountEvent) {
-        if (!enabled()) return
+        if (!config.enabled) return
         if (event.entity !is Player) return
 
         val player = event.entity as Player
@@ -72,7 +73,7 @@ internal class SitModule : ModuleInterface<SitModule.Config> {
 
     @EventHandler
     fun on(event: PlayerQuitEvent) {
-        if (!enabled()) return
+        if (!config.enabled) return
 
         sittingPlayers.remove(event.player.uniqueId)?.remove()
     }
@@ -98,9 +99,10 @@ internal class SitModule : ModuleInterface<SitModule.Config> {
         sittingPlayers[player.uniqueId] = armorStand
     }
 
+    @Serializable
     data class Config(
-        override var enabled: Boolean = true,
+        var enabled: Boolean = true,
         var useStairs: Boolean = true,
         var useSlabs: Boolean = true,
-    ) : ModuleInterface.Config
+    )
 }
