@@ -33,7 +33,7 @@ dependencies {
 
     implementation(kotlin("stdlib"))
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.20.0")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.20.1")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.0")
     implementation("org.mariuszgromada.math:MathParser.org-mXparser:6.1.0")
     implementation("io.netty:netty-buffer:4.2.7.Final")
