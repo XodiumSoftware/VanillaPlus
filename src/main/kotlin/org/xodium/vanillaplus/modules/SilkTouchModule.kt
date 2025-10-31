@@ -2,6 +2,7 @@ package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
+import kotlinx.serialization.Serializable
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -113,6 +114,7 @@ internal class SilkTouchModule : ModuleInterface<SilkTouchModule.Config> {
     private fun isValidTool(item: ItemStack?): Boolean =
         item?.let { Tag.ITEMS_PICKAXES.isTagged(it.type) && it.containsEnchantment(Enchantment.SILK_TOUCH) } == true
 
+    @Serializable
     data class Config(
         override var enabled: Boolean = true,
         var allowSpawnerSilk: Boolean = true,

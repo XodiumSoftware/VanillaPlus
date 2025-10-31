@@ -2,6 +2,7 @@
 
 package org.xodium.vanillaplus.modules
 
+import kotlinx.serialization.Serializable
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Material
@@ -125,6 +126,7 @@ internal class EntityModule : ModuleInterface<EntityModule.Config> {
             ).toInt()
             .coerceAtLeast(1)
 
+    @Serializable
     data class Config(
         override var enabled: Boolean = true,
         var disableBlazeGrief: Boolean = true,
@@ -148,6 +150,7 @@ internal class EntityModule : ModuleInterface<EntityModule.Config> {
             ),
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
+        @Serializable
         data class I18n(
             var horseTradeSuccessfulMessage: String = "You traded your horse for: <material> <sprite:item/emerald>",
         )

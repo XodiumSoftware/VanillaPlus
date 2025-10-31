@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.StringArgumentType
 import io.papermc.paper.chat.ChatRenderer
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.event.player.AsyncChatEvent
+import kotlinx.serialization.Serializable
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
@@ -212,6 +213,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
             .hoverEvent(config.i18n.deleteMessage.mm())
             .clickEvent(ClickEvent.callback { instance.server.deleteMessage(event.signedMessage()) })
 
+    @Serializable
     data class Config(
         override var enabled: Boolean = true,
         var chatFormat: String = "<player_head> <player> <reset>${"›".mangoFmt(true)} <message>",
@@ -239,6 +241,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
         var deleteCross: String = "<dark_gray>[<dark_red><b>X</b></dark_red><dark_gray>]",
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
+        @Serializable
         data class I18n(
             var clickMe: String = "Click Me!".fireFmt(),
             var clickToWhisper: String = "Click to Whisper".fireFmt(),

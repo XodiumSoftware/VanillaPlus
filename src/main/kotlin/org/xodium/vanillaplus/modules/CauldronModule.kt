@@ -1,5 +1,6 @@
 package org.xodium.vanillaplus.modules
 
+import kotlinx.serialization.Serializable
 import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.block.Block
@@ -105,6 +106,7 @@ internal class CauldronModule : ModuleInterface<CauldronModule.Config> {
         }
     }
 
+    @Serializable
     data class Config(
         override var enabled: Boolean = true,
         var convertConcretePowder: Boolean = true,

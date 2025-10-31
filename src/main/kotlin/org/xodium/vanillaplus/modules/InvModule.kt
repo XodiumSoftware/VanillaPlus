@@ -7,6 +7,7 @@ import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
+import kotlinx.serialization.Serializable
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.*
@@ -515,6 +516,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         return loc.add(0.5, 0.5, 0.5)
     }
 
+    @Serializable
     data class Config(
         override var enabled: Boolean = true,
         var searchRadius: Int = 25,
@@ -529,6 +531,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         var scheduleInitDelayInTicks: Long = 5,
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
+        @Serializable
         data class I18n(
             var noMaterialSpecified: String = "You must specify a valid material or hold something in your hand".fireFmt(),
             var noChestsFound: String = "No usable chests found for ${"<material>".roseFmt()}".fireFmt(),

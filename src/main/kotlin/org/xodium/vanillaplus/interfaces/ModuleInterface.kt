@@ -1,5 +1,6 @@
 package org.xodium.vanillaplus.interfaces
 
+import kotlinx.serialization.Serializable
 import org.bukkit.event.Listener
 import org.bukkit.permissions.Permission
 import org.xodium.vanillaplus.data.CommandData
@@ -10,6 +11,7 @@ internal interface ModuleInterface<out T : ModuleInterface.Config> : Listener {
      * Represents the configuration settings for a module.
      * @property enabled Indicates whether the module is enabled or not.
      */
+    @Serializable
     interface Config {
         var enabled: Boolean
     }
