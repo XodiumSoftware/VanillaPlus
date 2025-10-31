@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Gradle: me.lucko:spark-api:0.1-20240720.200737-2" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="me.lucko" artifactId="spark-api" version="0.1-20240720.200737-2" baseVersion="0.1-20240720.200737-2" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/me.lucko/spark-api/0.1-20240720.200737-2/aff109f15c4c8c1a3d8d2d30cab60bcc9388e513/spark-api-0.1-20240720.200737-2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

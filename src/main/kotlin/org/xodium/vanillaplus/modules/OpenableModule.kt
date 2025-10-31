@@ -103,7 +103,7 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
     /**
      * Plays the knocking sound to all nearby players around the specified block.
      * @param block The block where the knock sound originates. The sound will be played
-     *              at this block's location and propagate to nearby players.
+     *              at this block's location and propagated to nearby players.
      */
     private fun playKnockSound(block: Block) {
         block.world
@@ -147,14 +147,14 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
     /**
      * Checks if the player is violating the sneaking requirement for knocking.
      * @param player The player attempting to knock.
-     * @return True if sneaking is required but the player isn't sneaking, false otherwise.
+     * @return True if sneaking is required, but the player isn't sneaking, false otherwise.
      */
     private fun isViolatingSneakingRequirement(player: Player): Boolean = config.knockingRequiresShifting && !player.isSneaking
 
     /**
      * Checks if the player is violating the empty hand requirement for knocking.
      * @param player The player attempting to knock.
-     * @return True if empty hand is required but the player is holding something, false otherwise.
+     * @return True if an empty hand is required, but the player is holding something, false otherwise.
      */
     private fun isViolatingEmptyHandRequirement(player: Player): Boolean =
         config.knockingRequiresEmptyHand &&
