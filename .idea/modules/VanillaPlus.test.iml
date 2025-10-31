@@ -5,6 +5,7 @@
       <configuration>
         <autoDetectTypes>
           <platformType>PAPER</platformType>
+          <platformType>MCP</platformType>
           <platformType>ADVENTURE</platformType>
         </autoDetectTypes>
         <projectReimportVersion>1</projectReimportVersion>
@@ -58,6 +59,9 @@
     <orderEntry type="module" module-name="VanillaPlus.main" />
     <orderEntry type="module-library">
       <library name="Gradle: mappedServerJar.jar">
+        <ANNOTATIONS>
+          <root url="jar://$APPLICATION_PLUGINS_DIR$/Minecraft Development/lib/resources/externalAnnotations.jar!/" />
+        </ANNOTATIONS>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../../.gradle/caches/paperweight/taskCache/mappedServerJar.jar!/" />
         </CLASSES>
