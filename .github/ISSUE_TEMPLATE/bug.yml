@@ -1,6 +1,7 @@
 name: Bug Report
 description: File a bug report
-labels: [ Bug ]
+type: "Bug"
+assignees: [ "illyrius666" ]
 body:
   - type: markdown
     attributes:

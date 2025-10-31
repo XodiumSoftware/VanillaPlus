@@ -288,9 +288,9 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
      * Schedules a repeating task for a specific player and automatically cancels it after a set duration.
      * @param player The player for whom the task is scheduled.
      * @param task The repeating task to execute.
-     * @param initialDelay Ticks to wait before the first execution. Default is 0L.
+     * @param initialDelay Ticks to wait before the first execution. Default is `0L`.
      * @param repeatDelay Ticks between each execution. Default is 2L.
-     * @param durationTicks Total duration in ticks before the task is automatically cancelled. Default is 100L.
+     * @param durationTicks Total duration in ticks before the task is automatically cancelled. Default is `100L`.
      * @return The task ID of the scheduled repeating task.
      */
     private fun schedulePlayerTask(
@@ -326,7 +326,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
      * Spawns a particle trail effect visible only to the given player.
      * @param startLocation The starting location of the trail.
      * @param endLocation The ending location of the trail.
-     * @param color The color of the trail.
+     * @param color The colour of the trail.
      * @param travelTicks The number of ticks it takes for the trail to travel from start to end.
      * @param player The player who will see the particle trail.
      * @return A [ParticleBuilder] instance for further configuration if needed.
@@ -350,7 +350,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
      * visible only to the specified player.
      * @param location The central [Location] where the particles will appear.
      * @param count The number of particles to spawn.
-     * @param dustOptions The [Particle.DustOptions] defining the color and size of the dust particles.
+     * @param dustOptions The [Particle.DustOptions] defining the colour and size of the dust particles.
      * @param player The [Player] who will see the particle effect.
      * @return A [ParticleBuilder] instance for further configuration if needed.
      */

@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Gradle: net.neoforged.javadoctor:gson-io:2.0.17" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="net.neoforged.javadoctor" artifactId="gson-io" version="2.0.17" baseVersion="2.0.17" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.neoforged.javadoctor/gson-io/2.0.17/40edf7077205615bffe214a9d250c50cd0d13de/gson-io-2.0.17.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
