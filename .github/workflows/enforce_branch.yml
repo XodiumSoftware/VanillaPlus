@@ -40,7 +40,7 @@ jobs:
 
       - id: notify_user
         name: Notify User
-        if: steps.enforce_branch.outcome == 'success'
+        if: steps.enforce_branch.outcome == true
         env:
           GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
