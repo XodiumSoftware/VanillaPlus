@@ -29,6 +29,7 @@ interface DataInterface<K, T : Any> {
                 prettyPrint = true
                 ignoreUnknownKeys = true
                 encodeDefaults = true
+                classDiscriminator = "type"
             }
 
     /** Initializes the cache and loads existing data from the file. */
