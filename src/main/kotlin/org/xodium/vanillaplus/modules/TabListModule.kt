@@ -130,7 +130,6 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
         }
     }
 
-    @Serializable
     data class Config(
         override var enabled: Boolean = true,
         var initDelayInTicks: Long = 0,

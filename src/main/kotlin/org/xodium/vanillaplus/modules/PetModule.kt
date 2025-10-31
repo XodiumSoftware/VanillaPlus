@@ -116,7 +116,6 @@ internal class PetModule : ModuleInterface<PetModule.Config> {
         )
     }
 
-    @Serializable
     data class Config(
         override var enabled: Boolean = true,
         var transferRadius: Int = 10,

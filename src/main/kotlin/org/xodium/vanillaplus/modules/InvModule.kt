@@ -516,7 +516,6 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         return loc.add(0.5, 0.5, 0.5)
     }
 
-    @Serializable
     data class Config(
         override var enabled: Boolean = true,
         var searchRadius: Int = 25,

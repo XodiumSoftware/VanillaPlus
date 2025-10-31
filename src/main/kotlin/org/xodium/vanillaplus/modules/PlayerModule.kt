@@ -217,7 +217,6 @@ internal class PlayerModule(
             )
         }
 
-    @Serializable
     data class Config(
         override var enabled: Boolean = true,
         var enderChestClickType: ClickType = ClickType.SHIFT_RIGHT,

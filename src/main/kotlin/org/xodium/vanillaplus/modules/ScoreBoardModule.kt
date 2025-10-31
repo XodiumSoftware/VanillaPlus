@@ -1,7 +1,6 @@
 package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.command.brigadier.Commands
-import kotlinx.serialization.Serializable
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerJoinEvent
@@ -68,7 +67,6 @@ internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
         }
     }
 
-    @Serializable
     data class Config(
         override var enabled: Boolean = true,
     ) : ModuleInterface.Config

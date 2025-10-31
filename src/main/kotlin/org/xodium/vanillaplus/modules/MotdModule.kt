@@ -1,6 +1,5 @@
 package org.xodium.vanillaplus.modules
 
-import kotlinx.serialization.Serializable
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.server.ServerListPingEvent
@@ -19,7 +18,6 @@ internal class MotdModule : ModuleInterface<MotdModule.Config> {
         event.motd(config.motd.joinToString("\n").mm())
     }
 
-    @Serializable
     data class Config(
         override var enabled: Boolean = true,
         val motd: List<String> =

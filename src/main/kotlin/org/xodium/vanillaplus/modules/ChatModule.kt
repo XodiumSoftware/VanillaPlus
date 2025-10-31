@@ -213,7 +213,6 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
             .hoverEvent(config.i18n.deleteMessage.mm())
             .clickEvent(ClickEvent.callback { instance.server.deleteMessage(event.signedMessage()) })
 
-    @Serializable
     data class Config(
         override var enabled: Boolean = true,
         var chatFormat: String = "<player_head> <player> <reset>${"›".mangoFmt(true)} <message>",

@@ -1,6 +1,5 @@
 package org.xodium.vanillaplus.modules
 
-import kotlinx.serialization.Serializable
 import org.bukkit.Keyed
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -26,7 +25,6 @@ internal class RecipiesModule : ModuleInterface<RecipiesModule.Config> {
         )
     }
 
-    @Serializable
     data class Config(
         override var enabled: Boolean = true,
     ) : ModuleInterface.Config

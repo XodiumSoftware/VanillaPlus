@@ -2,7 +2,6 @@
 
 package org.xodium.vanillaplus.modules
 
-import kotlinx.serialization.Serializable
 import net.kyori.adventure.sound.Sound
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -223,7 +222,6 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
             ?.getRelativeBlock(block)
     }
 
-    @Serializable
     data class Config(
         override var enabled: Boolean = true,
         var initDelayInTicks: Long = 1,

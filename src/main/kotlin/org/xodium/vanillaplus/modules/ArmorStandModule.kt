@@ -3,7 +3,6 @@
 package org.xodium.vanillaplus.modules
 
 import com.google.common.io.ByteStreams
-import kotlinx.serialization.Serializable
 import org.bukkit.entity.ArmorStand
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractAtEntityEvent
@@ -48,7 +47,6 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
         }
     }
 
-    @Serializable
     data class Config(
         override var enabled: Boolean = true,
     ) : ModuleInterface.Config

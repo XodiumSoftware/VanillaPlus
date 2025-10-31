@@ -3,7 +3,6 @@ package org.xodium.vanillaplus.modules
 import com.mojang.brigadier.arguments.IntegerArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType
 import io.papermc.paper.command.brigadier.Commands
-import kotlinx.serialization.Serializable
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.permissions.Permission
@@ -76,7 +75,6 @@ internal class SignModule : ModuleInterface<SignModule.Config> {
         sign.update()
     }
 
-    @Serializable
     data class Config(
         override var enabled: Boolean = true,
     ) : ModuleInterface.Config

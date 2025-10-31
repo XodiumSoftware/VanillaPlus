@@ -126,7 +126,6 @@ internal class EntityModule : ModuleInterface<EntityModule.Config> {
             ).toInt()
             .coerceAtLeast(1)
 
-    @Serializable
     data class Config(
         override var enabled: Boolean = true,
         var disableBlazeGrief: Boolean = true,
