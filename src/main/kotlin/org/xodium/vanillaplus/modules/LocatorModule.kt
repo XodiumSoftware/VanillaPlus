@@ -82,10 +82,6 @@ internal class LocatorModule : ModuleInterface<LocatorModule.Config> {
 
     /**
      * Modifies the colour of a player's waypoint based on the specified parameters.
-     * If a `colour` is provided, sets the waypoint to the specified named colour.
-     * If a `hex` is provided instead, sets the waypoint to the specified hex colour.
-     * If neither is provided, resets the waypoint colour to default.
-     *
      * @param player The player whose waypoint is being modified.
      * @param colour The optional named colour to apply to the waypoint.
      * @param hex The optional hex colour to apply to the waypoint.
