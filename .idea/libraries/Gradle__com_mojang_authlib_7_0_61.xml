@@ -5,6 +5,8 @@
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.mojang/authlib/7.0.61/efee1e6b54e863108576eb3b3ae71144626aaefc/authlib-7.0.61.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.mojang/authlib/7.0.61/eaff02b628c5ce49e96ef5fe8661d9198be74b20/authlib-7.0.61-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>

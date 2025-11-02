@@ -5,6 +5,8 @@
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.neoforged.javadoctor/spec/2.0.17/fbe5da0da41957dccf9004014781bd8d05d16192/spec-2.0.17.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.neoforged.javadoctor/spec/2.0.17/e76140ea31ae8576cb97d987b1e8900d66c9dc78/spec-2.0.17-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>

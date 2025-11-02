@@ -5,6 +5,8 @@
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.sf.jopt-simple/jopt-simple/6.0-alpha-3/2ab1a73e1e22d2b73469362a0908a98644b681d/jopt-simple-6.0-alpha-3.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.sf.jopt-simple/jopt-simple/6.0-alpha-3/d8b6ef633e27e1b019878292de8d04177a69ca19/jopt-simple-6.0-alpha-3-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>

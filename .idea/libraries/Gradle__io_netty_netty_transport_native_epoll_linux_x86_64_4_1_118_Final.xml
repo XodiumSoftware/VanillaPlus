@@ -5,6 +5,8 @@
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport-native-epoll/4.1.118.Final/7e6b89e3746acb7cf6f0aad993bbd058fc6d912e/netty-transport-native-epoll-4.1.118.Final-linux-x86_64.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport-native-epoll/4.1.118.Final/5ee728dc59bcd335b42ef10cd7c8b19fba698244/netty-transport-native-epoll-4.1.118.Final-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>
