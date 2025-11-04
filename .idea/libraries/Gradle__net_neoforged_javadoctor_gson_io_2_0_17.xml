@@ -5,6 +5,8 @@
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.neoforged.javadoctor/gson-io/2.0.17/40edf7077205615bffe214a9d250c50cd0d13de/gson-io-2.0.17.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.neoforged.javadoctor/gson-io/2.0.17/aea31ca84351c92749d35fc605ae4ff530eeec6c/gson-io-2.0.17-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>

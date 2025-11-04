@@ -5,6 +5,8 @@
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-codec-haproxy/4.1.118.Final/b8a82b07009c45de868245f8125d6f8002368613/netty-codec-haproxy-4.1.118.Final.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-codec-haproxy/4.1.118.Final/5e670816b539e5c412012219d19c89e8cf9fb1a0/netty-codec-haproxy-4.1.118.Final-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>

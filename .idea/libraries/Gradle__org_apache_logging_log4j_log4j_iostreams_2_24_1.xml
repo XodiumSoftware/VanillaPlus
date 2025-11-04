@@ -5,6 +5,8 @@
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-iostreams/2.24.1/9e63b5f1ab94f73eaf4c7b0655e2cff743528497/log4j-iostreams-2.24.1.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-iostreams/2.24.1/9ed0ef9e4d93d248148172849fb9a0febafe3d51/log4j-iostreams-2.24.1-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>

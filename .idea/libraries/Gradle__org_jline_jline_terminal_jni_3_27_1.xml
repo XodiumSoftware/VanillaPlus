@@ -5,6 +5,8 @@
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jline/jline-terminal-jni/3.27.1/b5c841eabc71895061b8850cc8c2b988aa045952/jline-terminal-jni-3.27.1.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jline/jline-terminal-jni/3.27.1/35ab3823cd6e78619a129453b6f8f3a0150e48f/jline-terminal-jni-3.27.1-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>

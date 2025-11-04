@@ -5,6 +5,8 @@
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-buffer/4.2.7.Final/5555ff561643bf2f8430fb57c24403c0efe15994/netty-buffer-4.2.7.Final.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-buffer/4.2.7.Final/50436608c4a1cf11ff7c5d94e8228e98af436c0a/netty-buffer-4.2.7.Final-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>

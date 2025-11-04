@@ -5,6 +5,8 @@
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.neoforged/AutoRenamingTool/2.0.3/6f4e301832e5dcf159b2eee661983815d74e555e/AutoRenamingTool-2.0.3.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.neoforged/AutoRenamingTool/2.0.3/fd4861eb08b4d392d90a0dc11fd516b171f789f2/AutoRenamingTool-2.0.3-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>

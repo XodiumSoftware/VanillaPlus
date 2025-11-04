@@ -5,6 +5,8 @@
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.nimbusds/oauth2-oidc-sdk/11.18/7c7ec4f4066625ff07a711ad856fa04da1ff9de/oauth2-oidc-sdk-11.18.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.nimbusds/oauth2-oidc-sdk/11.18/d96bef00c004c72a622163cbc7ece51ed4b27cc9/oauth2-oidc-sdk-11.18-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>

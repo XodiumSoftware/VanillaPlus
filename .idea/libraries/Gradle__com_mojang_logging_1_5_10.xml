@@ -5,6 +5,8 @@
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.mojang/logging/1.5.10/9ab1202793717af9df9c1704d0a02892067001eb/logging-1.5.10.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.mojang/logging/1.5.10/cf41b5ead0d671bc70afd981fc4be9ede5dacb14/logging-1.5.10-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>
