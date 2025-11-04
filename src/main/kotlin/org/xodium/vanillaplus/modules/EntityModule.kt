@@ -2,11 +2,15 @@
 
 package org.xodium.vanillaplus.modules
 
+import org.bukkit.Material
 import org.bukkit.entity.*
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.EntityChangeBlockEvent
+import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.entity.EntityExplodeEvent
+import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import kotlin.random.Random
 
 /** Represents a module handling entity mechanics within the system. */
 internal class EntityModule : ModuleInterface<EntityModule.Config> {
@@ -22,6 +26,14 @@ internal class EntityModule : ModuleInterface<EntityModule.Config> {
     fun on(event: EntityExplodeEvent) {
         if (!enabled()) return
         if (shouldCancelGrief(event.entity)) event.blockList().clear()
+    }
+
+    @EventHandler
+    fun on(event: EntityDeathEvent) {
+        if (!enabled() || event.entity.killer == null) return
+        if (Random.nextDouble() <= config.entityEggDropChance) {
+            event.drops.add(ItemStack.of(Material.matchMaterial("${event.entity.type.name}_SPAWN_EGG") ?: return))
+        }
     }
 
     /**
@@ -49,5 +61,6 @@ internal class EntityModule : ModuleInterface<EntityModule.Config> {
         var disableEndermanGrief: Boolean = true,
         var disableGhastGrief: Boolean = true,
         var disableWitherGrief: Boolean = true,
+        var entityEggDropChance: Double = 0.1,
     ) : ModuleInterface.Config
 }
