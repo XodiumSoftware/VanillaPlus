@@ -7,6 +7,7 @@ import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
+import io.papermc.paper.datacomponent.DataComponentTypes
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.*
@@ -18,7 +19,6 @@ import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.meta.EnchantmentStorageMeta
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.bukkit.util.BoundingBox
@@ -374,26 +374,20 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
      * @param second The second ItemStack.
      * @return True if the enchantments match, false otherwise.
      */
+    @Suppress("UnstableApiUsage")
     private fun hasMatchingEnchantments(
         first: ItemStack,
         second: ItemStack,
     ): Boolean {
         if (!config.matchEnchantments && (!config.matchEnchantmentsOnBooks || first.type != Material.ENCHANTED_BOOK)) return true
-
-        val firstMeta = first.itemMeta
-        val secondMeta = second.itemMeta
-
-        if (firstMeta == null && secondMeta == null) return true
-        if (firstMeta == null || secondMeta == null) return false
-
-        if (firstMeta is EnchantmentStorageMeta && secondMeta is EnchantmentStorageMeta) {
-            return firstMeta.storedEnchants == secondMeta.storedEnchants
-        }
-
-        if (!firstMeta.hasEnchants() && !secondMeta.hasEnchants()) return true
-        if (firstMeta.hasEnchants() != secondMeta.hasEnchants()) return false
-
-        return firstMeta.enchants == secondMeta.enchants
+        // Gets enchantments from the ItemStack Data.
+        val firstEnchants = first.getData(DataComponentTypes.ENCHANTMENTS)
+        val secondEnchants = second.getData(DataComponentTypes.ENCHANTMENTS)
+        // Gets the stored enchantments from the ItemStack Data.
+        val firstStoredEnchants = first.getData(DataComponentTypes.STORED_ENCHANTMENTS)
+        val secondStoredEnchants = second.getData(DataComponentTypes.STORED_ENCHANTMENTS)
+        // Compares the enchantments and stored enchantments between the 2 ItemStack Data's.
+        return firstEnchants == secondEnchants && firstStoredEnchants == secondStoredEnchants
     }
 
     /**
@@ -471,9 +465,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         return mutableListOf<Chunk>().apply {
             for (x in minChunkX..maxChunkX) {
                 for (z in minChunkZ..maxChunkZ) {
-                    if (world.isChunkLoaded(x, z)) {
-                        add(world.getChunkAt(x, z))
-                    }
+                    if (world.isChunkLoaded(x, z)) add(world.getChunkAt(x, z))
                 }
             }
         }
