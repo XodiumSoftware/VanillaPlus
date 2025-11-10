@@ -43,13 +43,11 @@ internal object ChunkUtils {
         val centerX = location.blockX
         val centerZ = location.blockZ
         val radiusSquared = radius * radius
-
         // Calculate chunk bounds using bit shifting for performance
         val minChunkX = (centerX - radius) shr 4
         val maxChunkX = (centerX + radius) shr 4
         val minChunkZ = (centerZ - radius) shr 4
         val maxChunkZ = (centerZ + radius) shr 4
-
         val containers = mutableListOf<Block>()
 
         // Iterate through chunks first (more efficient)

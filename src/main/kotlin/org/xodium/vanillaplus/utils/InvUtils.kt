@@ -58,7 +58,7 @@ internal object InvUtils {
      * @param destination The destination inventory.
      * @param startSlot The starting slot in source inventory.
      * @param endSlot The ending slot in source inventory.
-     * @param onlyMatching If true, only transfer items that already exist in destination.
+     * @param onlyMatching If true, only transfer items that already exist in the destination.
      * @param enchantmentChecker Function to check if enchantments match.
      * @return Pair<Boolean success, Int itemsTransferred>
      */
@@ -77,7 +77,6 @@ internal object InvUtils {
             val item = source.getItem(i) ?: continue
 
             if (!isValidTransfer(item, destination)) continue
-
             if (onlyMatching && !containsMatchingItem(destination, item, enchantmentChecker)) continue
 
             val leftovers = destination.addItem(item)

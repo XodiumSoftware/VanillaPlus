@@ -10,28 +10,35 @@ import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.datacomponent.DataComponentTypes
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
-import org.bukkit.*
-import org.bukkit.block.*
+import org.bukkit.Color
+import org.bukkit.Location
+import org.bukkit.Material
+import org.bukkit.Particle
+import org.bukkit.block.Block
+import org.bukkit.block.Container
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.Inventory
-import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
-import org.bukkit.util.BoundingBox
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.SoundData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.registries.MaterialRegistry
+import org.xodium.vanillaplus.utils.BlockUtils.center
+import org.xodium.vanillaplus.utils.ChunkUtils.filterAndSortContainers
+import org.xodium.vanillaplus.utils.ChunkUtils.findContainersInRadius
+import org.xodium.vanillaplus.utils.ChunkUtils.isContainerAccessible
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.glorpFmt
 import org.xodium.vanillaplus.utils.FmtUtils.roseFmt
+import org.xodium.vanillaplus.utils.InvUtils.transferItems
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
@@ -141,27 +148,30 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
             activeVisualizations.remove(player.uniqueId)
         }
 
-        val chests =
-            findBlocksInRadius(player.location, config.searchRadius)
-                .filter { it.state is Container }
-                .filter { searchItemInContainers(material, (it.state as Container).inventory) }
-
-        if (chests.isEmpty()) {
-            return player.sendActionBar(
-                config.i18n.noMatchingItems.mm(Placeholder.component("material", material.name.mm())),
+        val containers =
+            findContainersInRadius(
+                location = player.location,
+                radius = config.searchRadius,
+                containerTypes = MaterialRegistry.CONTAINER_TYPES,
+                containerFilter = ::isRelevantContainer,
             )
-        }
 
-        val seenDoubleChests = mutableSetOf<InventoryHolder?>()
-        val filteredChests =
-            chests.filter { block ->
-                val inventory = (block.state as Container).inventory
-                val holder = inventory.holder
-                if (holder is DoubleChest && !seenDoubleChests.add(holder.leftSide)) return@filter false
-                true
+        val matchingContainers =
+            containers.filter { container ->
+                val inventory = (container.state as Container).inventory
+                inventory.contents.any { item ->
+                    item?.type == material && hasMatchingEnchantments(ItemStack(material), item)
+                }
             }
 
-        val sortedChests = filteredChests.sortedBy { it.location.distanceSquared(player.location) }
+        if (matchingContainers.isEmpty()) {
+            player.sendActionBar(
+                config.i18n.noMatchingItems.mm(Placeholder.component("material", material.name.mm())),
+            )
+            return
+        }
+
+        val sortedChests = filterAndSortContainers(matchingContainers, player.location)
         if (sortedChests.isEmpty()) return
 
         val closestChest = sortedChests.first()
@@ -188,19 +198,30 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
     private fun unload(player: Player) {
         val startSlot = 9
         val endSlot = 35
-        val chests =
-            findBlocksInRadius(player.location, config.unloadRadius)
-                .filter { it.state is Container }
-                .sortedBy { it.location.distanceSquared(player.location) }
-        if (chests.isEmpty()) return player.sendActionBar(config.i18n.noNearbyChests.mm())
+        val containers =
+            findContainersInRadius(
+                location = player.location,
+                radius = config.unloadRadius,
+                containerTypes = MaterialRegistry.CONTAINER_TYPES,
+                containerFilter = ::isRelevantContainer,
+            )
 
-        val affectedChests = mutableListOf<Block>()
-        for (block in chests) {
-            val inv = (block.state as Container).inventory
-            if (stuffInventoryIntoAnother(player, inv, true, startSlot, endSlot)) affectedChests.add(block)
+        val sortedChests = filterAndSortContainers(containers, player.location)
+        if (sortedChests.isEmpty()) {
+            player.sendActionBar(config.i18n.noNearbyChests.mm())
+            return
         }
 
-        if (affectedChests.isEmpty()) return player.sendActionBar(config.i18n.noItemsUnloaded.mm())
+        val affectedChests = mutableListOf<Block>()
+        for (block in sortedChests) {
+            val inv = (block.state as Container).inventory
+            if (performUnload(player, inv, startSlot, endSlot)) affectedChests.add(block)
+        }
+
+        if (affectedChests.isEmpty()) {
+            player.sendActionBar(config.i18n.noItemsUnloaded.mm())
+            return
+        }
 
         player.sendActionBar(config.i18n.inventoryUnloaded.mm())
         lastUnloads[player.uniqueId] = affectedChests
@@ -211,78 +232,30 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
     }
 
     /**
-     * Moves items from the player's inventory to another inventory.
-     * @param player The player whose inventory is being moved.
-     * @param destination The destination inventory to move items into.
-     * @param onlyMatchingStuff If true, only moves items that match the destination's contents.
-     * @param startSlot The starting slot in the player's inventory to move items from.
-     * @param endSlot The ending slot in the player's inventory to move items from.
-     * @return True if items were moved, false otherwise.
+     * TODO
      */
-    private fun stuffInventoryIntoAnother(
+    private fun performUnload(
         player: Player,
         destination: Inventory,
-        onlyMatchingStuff: Boolean,
         startSlot: Int,
         endSlot: Int,
     ): Boolean {
-        val source = player.inventory
-        val initialCount = countInventoryContents(source)
-        var moved = false
+        val (success, itemsTransferred) =
+            transferItems(
+                source = player.inventory,
+                destination = destination,
+                startSlot = startSlot,
+                endSlot = endSlot,
+                onlyMatching = true,
+                enchantmentChecker = ::hasMatchingEnchantments,
+            )
 
-        for (i in startSlot..endSlot) {
-            val item = source.getItem(i) ?: continue
-            if (Tag.SHULKER_BOXES.isTagged(item.type) && destination.holder is ShulkerBox) continue
-            if (onlyMatchingStuff && !doesChestContain(destination, item)) continue
-
-            val leftovers = destination.addItem(item)
-            val movedAmount = item.amount - leftovers.values.sumOf { it.amount }
-            if (movedAmount > 0) {
-                moved = true
-                source.clear(i)
-                leftovers.values.firstOrNull()?.let { source.setItem(i, it) }
-                destination.location?.let { protocolUnload(it, item.type, movedAmount) }
-            }
+        if (success && itemsTransferred > 0) {
+            destination.location?.let { location -> unloads.computeIfAbsent(location) { mutableMapOf() } }
         }
-        return moved && initialCount != countInventoryContents(source)
+
+        return success
     }
-
-    /**
-     * Counts the total number of items in the given inventory.
-     * @param inventory The inventory to count items in.
-     * @return The total number of items in the inventory.
-     */
-    private fun countInventoryContents(inventory: Inventory): Int = inventory.contents.filterNotNull().sumOf { it.amount }
-
-    /**
-     * Searches for a specific item in the given inventory and its containers.
-     * @param material The material to search for.
-     * @param destination The inventory to search in.
-     * @return True if the item was found in the inventory or its containers, false otherwise.
-     */
-    private fun searchItemInContainers(
-        material: Material,
-        destination: Inventory,
-    ): Boolean {
-        val item = ItemStack.of(material)
-        val count = doesChestContainCount(destination, material)
-        if (count > 0 && doesChestContain(destination, item)) {
-            destination.location?.let { protocolUnload(it, material, count) }
-            return true
-        }
-        return false
-    }
-
-    /**
-     * Get the amount of a specific material in a chest.
-     * @param inventory The inventory to check.
-     * @param material The material to count.
-     * @return The amount of the material in the chest.
-     */
-    private fun doesChestContainCount(
-        inventory: Inventory,
-        material: Material,
-    ): Int = inventory.contents.filter { it?.type == material }.sumOf { it?.amount ?: 0 }
 
     /**
      * Schedules a repeating task for a specific player and automatically cancels it after a set duration.
@@ -380,6 +353,8 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         second: ItemStack,
     ): Boolean {
         if (!config.matchEnchantments && (!config.matchEnchantmentsOnBooks || first.type != Material.ENCHANTED_BOOK)) return true
+        // Early return if both items have no enchantments
+        if (first.enchantments.isEmpty() && second.enchantments.isEmpty()) return true
         // Gets enchantments from the ItemStack Data.
         val firstEnchants = first.getData(DataComponentTypes.ENCHANTMENTS)
         val secondEnchants = second.getData(DataComponentTypes.ENCHANTMENTS)
@@ -391,120 +366,13 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
     }
 
     /**
-     * Find all blocks in a given radius from a location.
-     * @param location The location to search from.
-     * @param radius The radius to search within.
-     * @return A list of blocks found within the radius.
+     * Helper function to determine if a block is a relevant container.
+     * @param block The block to check.
+     * @return True if the block is a relevant container, false otherwise.
      */
-    private fun findBlocksInRadius(
-        location: Location,
-        radius: Int,
-    ): List<Block> {
-        val searchArea = BoundingBox.of(location, radius.toDouble(), radius.toDouble(), radius.toDouble())
-        return getChunksInBox(location.world, searchArea)
-            .asSequence()
-            .flatMap { it.tileEntities.asSequence() }
-            .filterIsInstance<Container>()
-            .filter { isRelevantContainer(it, location, radius) }
-            .map { it.block }
-            .toList()
-    }
-
-    /**
-     * Helper function to determine if a block state is a relevant container.
-     * @param blockState The block state to check. Must be a Container.
-     * @param center The centre location of the search area.
-     * @param radius The radius of the search area.
-     * @return True if the block state is a relevant container, false otherwise.
-     */
-    private fun isRelevantContainer(
-        blockState: BlockState,
-        center: Location,
-        radius: Int,
-    ): Boolean {
-        when {
-            blockState !is Container || !MaterialRegistry.CONTAINER_TYPES.contains(blockState.type) -> return false
-            blockState.location.distanceSquared(center) > radius * radius -> return false
-            blockState.type == Material.CHEST -> {
-                val blockAbove = blockState.block.getRelative(BlockFace.UP)
-                if (blockAbove.type.isSolid && blockAbove.type.isOccluding) return false
-            }
-        }
+    private fun isRelevantContainer(block: Block): Boolean {
+        if (block.type == Material.CHEST) return isContainerAccessible(block)
         return true
-    }
-
-    /**
-     * Check if a chest contains an item with matching enchantments.
-     * @param inventory The inventory to check.
-     * @param item The item to check for.
-     * @return True if the chest contains the item, false otherwise.
-     */
-    private fun doesChestContain(
-        inventory: Inventory,
-        item: ItemStack,
-    ): Boolean =
-        inventory.contents
-            .asSequence()
-            .filterNotNull()
-            .any { it.type == item.type && hasMatchingEnchantments(item, it) }
-
-    /**
-     * Get all chunks in a bounding box.
-     * @param world The world to get chunks from.
-     * @param box The bounding box to get chunks from.
-     * @return A list of chunks in the bounding box.
-     */
-    private fun getChunksInBox(
-        world: World,
-        box: BoundingBox,
-    ): List<Chunk> {
-        val minChunkX = Math.floorDiv(box.minX.toInt(), 16)
-        val maxChunkX = Math.floorDiv(box.maxX.toInt(), 16)
-        val minChunkZ = Math.floorDiv(box.minZ.toInt(), 16)
-        val maxChunkZ = Math.floorDiv(box.maxZ.toInt(), 16)
-        return mutableListOf<Chunk>().apply {
-            for (x in minChunkX..maxChunkX) {
-                for (z in minChunkZ..maxChunkZ) {
-                    if (world.isChunkLoaded(x, z)) add(world.getChunkAt(x, z))
-                }
-            }
-        }
-    }
-
-    /**
-     * Unloads the specified amount of material from the given location.
-     * @param location The location to unload from.
-     * @param material The material to unload.
-     * @param amount The amount of material to unload.
-     */
-    private fun protocolUnload(
-        location: Location,
-        material: Material,
-        amount: Int,
-    ) {
-        if (amount == 0) return
-        unloads.computeIfAbsent(location) { mutableMapOf() }.merge(material, amount, Int::plus)
-    }
-
-    /**
-     * Get the centre of a block.
-     * @return The centre location of the block.
-     */
-    private fun Block.center(): Location {
-        val loc = location.clone()
-        val stateChest = state as? Chest ?: return loc.add(0.5, 0.5, 0.5)
-        val holder = stateChest.inventory.holder as? DoubleChest
-        if (holder != null) {
-            val leftLoc = (holder.leftSide as? Chest)?.block?.location
-            val rightLoc = (holder.rightSide as? Chest)?.block?.location
-            if (leftLoc != null && rightLoc != null) {
-                loc.x = (leftLoc.x + rightLoc.x) / 2.0 + 0.5
-                loc.y = (leftLoc.y + rightLoc.y) / 2.0 + 0.5
-                loc.z = (leftLoc.z + rightLoc.z) / 2.0 + 0.5
-                return loc.add(0.5, 0.5, 0.5)
-            }
-        }
-        return loc.add(0.5, 0.5, 0.5)
     }
 
     data class Config(
