@@ -1,0 +1,155 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
+package org.xodium.vanillaplus.utils
+
+import org.bukkit.Chunk
+import org.bukkit.Location
+import org.bukkit.Material
+import org.bukkit.World
+import org.bukkit.block.Block
+import org.bukkit.block.BlockFace
+import org.bukkit.block.Container
+import org.bukkit.block.DoubleChest
+import org.bukkit.inventory.InventoryHolder
+import org.bukkit.util.BoundingBox
+import java.util.*
+import java.util.concurrent.ConcurrentHashMap
+
+/** Chunk utilities. */
+internal object ChunkUtils {
+    private val cache = ConcurrentHashMap<ChunkCoord, Boolean>()
+
+    private data class ChunkCoord(
+        val world: UUID,
+        val x: Int,
+        val z: Int,
+    )
+
+    /**
+     * Find all container blocks in a given radius from a location.
+     * @param location The location to search from.
+     * @param radius The radius to search within.
+     * @param containerTypes Set of valid container materials.
+     * @param containerFilter An additional filter for containers.
+     * @return List of container blocks found within the radius.
+     */
+    fun findContainersInRadius(
+        location: Location,
+        radius: Int,
+        containerTypes: Set<Material>,
+        containerFilter: (Block) -> Boolean = { true },
+    ): List<Block> {
+        val world = location.world
+        val centerX = location.blockX
+        val centerZ = location.blockZ
+        val radiusSquared = radius * radius
+
+        // Calculate chunk bounds using bit shifting for performance
+        val minChunkX = (centerX - radius) shr 4
+        val maxChunkX = (centerX + radius) shr 4
+        val minChunkZ = (centerZ - radius) shr 4
+        val maxChunkZ = (centerZ + radius) shr 4
+
+        val containers = mutableListOf<Block>()
+
+        // Iterate through chunks first (more efficient)
+        for (chunkX in minChunkX..maxChunkX) {
+            for (chunkZ in minChunkZ..maxChunkZ) {
+                val chunkCoord = ChunkCoord(world.uid, chunkX, chunkZ)
+
+                // Check if chunk is loaded using cache
+                if (!cache.computeIfAbsent(chunkCoord) {
+                        world.isChunkLoaded(chunkX, chunkZ)
+                    }
+                ) {
+                    continue
+                }
+
+                val chunk = world.getChunkAt(chunkX, chunkZ)
+
+                // Process tile entities in this chunk
+                for (tileEntity in chunk.tileEntities) {
+                    if (tileEntity !is Container) continue
+
+                    val block = tileEntity.block
+
+                    // Fast material check
+                    if (!containerTypes.contains(block.type)) continue
+
+                    // Fast distance check using integer math
+                    val dx = block.x - centerX
+                    val dz = block.z - centerZ
+                    if (dx * dx + dz * dz > radiusSquared) continue
+
+                    // Apply additional filters
+                    if (containerFilter(block)) {
+                        containers.add(block)
+                    }
+                }
+            }
+        }
+
+        // Clear cache periodically to prevent memory leaks
+        if (cache.size > 1000) cache.clear()
+
+        return containers
+    }
+
+    /**
+     * Filter out double chest duplicates and sort by distance.
+     * @param containers List of container blocks.
+     * @param centerLocation The center location for distance calculation.
+     * @return Filtered and sorted list of containers.
+     */
+    fun filterAndSortContainers(
+        containers: List<Block>,
+        centerLocation: Location,
+    ): List<Block> {
+        val seenDoubleChests = mutableSetOf<InventoryHolder?>()
+        val filteredContainers =
+            containers.filter { block ->
+                val inventory = (block.state as Container).inventory
+                val holder = inventory.holder
+                if (holder is DoubleChest) seenDoubleChests.add(holder.leftSide)
+                true
+            }
+
+        return filteredContainers.sortedBy { it.location.distanceSquared(centerLocation) }
+    }
+
+    /**
+     * Check if a container block is accessible (not blocked, etc.)
+     * @param block The container block to check.
+     * @return True if the container is accessible.
+     */
+    fun isContainerAccessible(block: Block): Boolean {
+        if (block.type == Material.CHEST) {
+            val blockAbove = block.getRelative(BlockFace.UP)
+            if (blockAbove.type.isSolid && blockAbove.type.isOccluding) return false
+        }
+        return true
+    }
+
+    /**
+     * Get all chunks in a bounding box (legacy method for compatibility)
+     * @param world The world to get chunks from.
+     * @param box The bounding box to get chunks from.
+     * @return List of chunks in the bounding box.
+     */
+    fun getChunksInBox(
+        world: World,
+        box: BoundingBox,
+    ): List<Chunk> {
+        val minChunkX = Math.floorDiv(box.minX.toInt(), 16)
+        val maxChunkX = Math.floorDiv(box.maxX.toInt(), 16)
+        val minChunkZ = Math.floorDiv(box.minZ.toInt(), 16)
+        val maxChunkZ = Math.floorDiv(box.maxZ.toInt(), 16)
+        return mutableListOf<Chunk>().apply {
+            for (x in minChunkX..maxChunkX) {
+                for (z in minChunkZ..maxChunkZ) {
+                    if (world.isChunkLoaded(x, z)) add(world.getChunkAt(x, z))
+                }
+            }
+        }
+    }
+}
