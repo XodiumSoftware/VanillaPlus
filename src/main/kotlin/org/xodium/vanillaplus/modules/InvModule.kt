@@ -2,7 +2,6 @@
 
 package org.xodium.vanillaplus.modules
 
-import com.destroystokyo.paper.ParticleBuilder
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
@@ -111,6 +110,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         if (!enabled()) return
 
         val uuid = event.player.uniqueId
+
         lastUnloads.remove(uuid)
         activeVisualizations.remove(uuid)
     }
@@ -125,12 +125,14 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         val materialName = runCatching { StringArgumentType.getString(ctx, "material") }.getOrNull()
         val material =
             materialName?.let { Material.getMaterial(it.uppercase()) } ?: player.inventory.itemInMainHand.type
+
         if (material == Material.AIR) {
             player.sendActionBar(config.i18n.noMaterialSpecified.mm())
             return 0
         }
 
         search(player, material)
+
         return 1
     }
 
@@ -155,7 +157,6 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                 containerTypes = MaterialRegistry.CONTAINER_TYPES,
                 containerFilter = ::isRelevantContainer,
             )
-
         val matchingContainers =
             containers.filter { container ->
                 val inventory = (container.state as Container).inventory
@@ -172,20 +173,45 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         }
 
         val sortedChests = filterAndSortContainers(matchingContainers, player.location)
+
         if (sortedChests.isEmpty()) return
 
         val closestChest = sortedChests.first()
+
         schedulePlayerTask(player, {
-            searchEffect(player.location, closestChest.center(), Color.MAROON, 40, player)
-            chestEffect(closestChest.center(), 10, Particle.DustOptions(Color.MAROON, 5.0f), player)
+            Particle.TRAIL
+                .builder()
+                .location(player.location)
+                .data(Particle.Trail(closestChest.center(), Color.MAROON, 40))
+                .receivers(player)
+                .spawn()
+            Particle.DUST
+                .builder()
+                .location(closestChest.center())
+                .count(10)
+                .data(Particle.DustOptions(Color.MAROON, 5.0f))
+                .receivers(player)
+                .spawn()
         })
 
         val otherChests = sortedChests.drop(1)
+
         if (otherChests.isNotEmpty()) {
             schedulePlayerTask(player, {
                 otherChests.forEach {
-                    searchEffect(player.location, it.center(), Color.RED, 40, player)
-                    chestEffect(it.center(), 10, Particle.DustOptions(Color.RED, 5.0f), player)
+                    Particle.TRAIL
+                        .builder()
+                        .location(player.location)
+                        .data(Particle.Trail(it.center(), Color.RED, 40))
+                        .receivers(player)
+                        .spawn()
+                    Particle.DUST
+                        .builder()
+                        .location(it.center())
+                        .count(10)
+                        .data(Particle.DustOptions(Color.RED, 5.0f))
+                        .receivers(player)
+                        .spawn()
                 }
             })
         }
@@ -205,14 +231,15 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                 containerTypes = MaterialRegistry.CONTAINER_TYPES,
                 containerFilter = ::isRelevantContainer,
             )
-
         val sortedChests = filterAndSortContainers(containers, player.location)
+
         if (sortedChests.isEmpty()) {
             player.sendActionBar(config.i18n.noNearbyChests.mm())
             return
         }
 
         val affectedChests = mutableListOf<Block>()
+
         for (block in sortedChests) {
             val inv = (block.state as Container).inventory
             if (performUnload(player, inv, startSlot, endSlot)) affectedChests.add(block)
@@ -226,13 +253,29 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         player.sendActionBar(config.i18n.inventoryUnloaded.mm())
         lastUnloads[player.uniqueId] = affectedChests
 
-        for (chest in affectedChests) chestEffect(chest.center(), 10, Particle.DustOptions(Color.LIME, 5.0f), player)
+        for (chest in affectedChests) {
+            Particle.DUST
+                .builder()
+                .location(chest.center())
+                .count(10)
+                .data(Particle.DustOptions(Color.LIME, 5.0f))
+                .receivers(player)
+                .spawn()
+        }
 
         player.playSound(config.soundOnUnload.toSound(), Sound.Emitter.self())
     }
 
     /**
-     * TODO
+     * Transfers items from the specified player's inventory to the destination inventory within the given slot range.
+     *
+     * Only items matching certain criteria (e.g., matching enchantments) are transferred.
+     *
+     * @param player The player whose inventory items are to be transferred.
+     * @param destination The inventory to which items will be transferred.
+     * @param startSlot The starting slot index in the player's inventory to consider for transfer.
+     * @param endSlot The ending slot index in the player's inventory to consider for transfer.
+     * @return `true` if any items were successfully transferred, `false` otherwise.
      */
     private fun performUnload(
         player: Player,
@@ -294,52 +337,6 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
 
         return taskId
     }
-
-    /**
-     * Spawns a particle trail effect visible only to the given player.
-     * @param startLocation The starting location of the trail.
-     * @param endLocation The ending location of the trail.
-     * @param color The colour of the trail.
-     * @param travelTicks The number of ticks it takes for the trail to travel from start to end.
-     * @param player The player who will see the particle trail.
-     * @return A [ParticleBuilder] instance for further configuration if needed.
-     */
-    private fun searchEffect(
-        startLocation: Location,
-        endLocation: Location,
-        color: Color,
-        travelTicks: Int,
-        player: Player,
-    ): ParticleBuilder =
-        Particle.TRAIL
-            .builder()
-            .location(startLocation)
-            .data(Particle.Trail(endLocation, color, travelTicks))
-            .receivers(player)
-            .spawn()
-
-    /**
-     * Spawns a critical hit particle effect at the given location,
-     * visible only to the specified player.
-     * @param location The central [Location] where the particles will appear.
-     * @param count The number of particles to spawn.
-     * @param dustOptions The [Particle.DustOptions] defining the colour and size of the dust particles.
-     * @param player The [Player] who will see the particle effect.
-     * @return A [ParticleBuilder] instance for further configuration if needed.
-     */
-    private fun chestEffect(
-        location: Location,
-        count: Int,
-        dustOptions: Particle.DustOptions,
-        player: Player,
-    ): ParticleBuilder =
-        Particle.DUST
-            .builder()
-            .location(location)
-            .count(count)
-            .data(dustOptions)
-            .receivers(player)
-            .spawn()
 
     /**
      * Checks if two ItemStacks have matching enchantments.
