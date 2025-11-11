@@ -36,5 +36,6 @@ internal object BlockUtils {
      * @return True if the container is accessible.
      */
     val Block.isContainerAccessible: Boolean
+        // TODO: Expand this to other container types. make it generic.
         get() = type != Material.CHEST || !getRelative(BlockFace.UP).type.let { it.isSolid && it.isOccluding }
 }
