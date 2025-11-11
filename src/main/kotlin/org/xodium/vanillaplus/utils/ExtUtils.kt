@@ -77,15 +77,36 @@ internal object ExtUtils {
 
     /**
      * Performs a command from a [String].
-     * @param hover Optional hover text for the command.
+     * @param cmd The command to perform.
+     * @param hover Optional hover text for the command. Defaults to "Click me!".
      * @return The formatted [String] with the command.
      */
-    fun String.clickRunCmd(hover: String? = null): String =
-        if (hover != null) {
-            "<hover:show_text:'$hover'><click:run_command:'$this'>$this</click></hover>"
-        } else {
-            "<click:run_command:'$this'>$this</click>"
-        }
+    fun String.clickRunCmd(
+        cmd: String,
+        hover: String? = "Click me!".mangoFmt(),
+    ): String = "<hover:show_text:'$hover'><click:run_command:'$cmd'>$this</click></hover>"
+
+    /**
+     * Suggests a command from a [String].
+     * @param cmd The command to suggest.
+     * @param hover Optional hover text for the command. Defaults to "Click me!".
+     * @return The formatted [String] with the suggested command.
+     */
+    fun String.clickSuggestCmd(
+        cmd: String,
+        hover: String? = "Click me!".mangoFmt(),
+    ): String = "<hover:show_text:'$hover'><click:suggest_command:'$cmd'>$this</click></hover>"
+
+    /**
+     * Opens a URL from a [String].
+     * @param url The URL to open.
+     * @param hover Optional hover text for the URL. Defaults to "Click me!".
+     * @return The formatted [String] with the URL.
+     */
+    fun String.clickOpenUrl(
+        url: String,
+        hover: String? = "Click me!".mangoFmt(),
+    ): String = "<hover:show_text:'$hover'><click:open_url:'$url'>$this</click></hover>"
 
     /**
      * A helper function to wrap command execution with standardized error handling.

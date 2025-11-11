@@ -18,7 +18,9 @@ import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.ExtUtils.clickOpenUrl
 import org.xodium.vanillaplus.utils.ExtUtils.clickRunCmd
+import org.xodium.vanillaplus.utils.ExtUtils.clickSuggestCmd
 import org.xodium.vanillaplus.utils.ExtUtils.face
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.prefix
@@ -70,25 +72,6 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
                 "This command allows you to whisper to players",
                 listOf("w", "msg", "tell", "tellraw"),
             ),
-            CommandData(
-                Commands
-                    .literal("guide")
-                    .requires { it.sender.hasPermission(perms()[1]) }
-                    .executes { ctx ->
-                        ctx.tryCatch {
-                            if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
-                            val sender = it.sender as Player
-                            sender.sendMessage(
-                                instance.prefix +
-                                    "Click me to open url!".mangoFmt(true).mm().clickEvent(
-                                        ClickEvent.openUrl("https://illyria.fandom.com/"),
-                                    ),
-                            )
-                        }
-                    },
-                "This command redirects you to the wiki",
-                emptyList(),
-            ),
         )
     }
 
@@ -97,11 +80,6 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
             Permission(
                 "${instance::class.simpleName}.whisper".lowercase(),
                 "Allows use of the whisper command",
-                PermissionDefault.TRUE,
-            ),
-            Permission(
-                "${instance::class.simpleName}.guide".lowercase(),
-                "Allows use of the guide command",
                 PermissionDefault.TRUE,
             ),
         )
@@ -139,13 +117,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
             Regex("<image>")
                 .replace(config.welcomeText.joinToString("\n")) { "<image${++imageIndex}>" }
                 .mm(
-                    Placeholder.component(
-                        "player",
-                        player
-                            .displayName()
-                            .clickEvent(ClickEvent.suggestCommand("/nickname ${player.name}"))
-                            .hoverEvent(HoverEvent.showText(config.i18n.clickMe.mm())),
-                    ),
+                    Placeholder.component("player", player.displayName()),
                     *player
                         .face()
                         .lines()
@@ -220,15 +192,26 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
                 "]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true),
                 "<image>${"⯈".mangoFmt(true)}",
                 "<image>${"⯈".mangoFmt(true)}",
-                "<image>${"⯈".mangoFmt(true)} ${"Welcome".fireFmt()} <player>",
-                "<image>${"⯈".mangoFmt(true)}",
-                "<image>${"⯈".mangoFmt(true)}",
-                "<image>${"⯈".mangoFmt(true)} ${"Check out".fireFmt()}<gray>: ${
-                    "/rules".clickRunCmd("Click Me!".fireFmt()).skylineFmt()
-                } <gray>🟅 ${
-                    "/guide".clickRunCmd("Click Me!".fireFmt()).skylineFmt()
+                "<image>${"⯈".mangoFmt(true)} ${"Welcome".fireFmt()} <player> ${
+                    "<white><sprite:item/name_tag></white>".clickSuggestCmd(
+                        "/nickname ",
+                        "Set your nickname!".mangoFmt(),
+                    )
                 }",
                 "<image>${"⯈".mangoFmt(true)}",
+                "<image>${"⯈".mangoFmt(true)} ${"Check out".fireFmt()}<gray>:",
+                "<image>${"⯈".mangoFmt(true)} ${
+                    "<white><sprite:item/writable_book></white>".clickRunCmd(
+                        "/rules",
+                        "View the server /rules".mangoFmt(),
+                    )
+                }",
+                "<image>${"⯈".mangoFmt(true)} ${
+                    "<white><sprite:item/light></white>".clickOpenUrl(
+                        "https://illyria.fandom.com",
+                        "Visit the wiki!".mangoFmt(),
+                    )
+                }",
                 "<image>${"⯈".mangoFmt(true)}",
                 "]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true),
             ),
@@ -240,11 +223,11 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
         data class I18n(
-            var clickMe: String = "Click Me!".fireFmt(),
-            var clickToWhisper: String = "Click to Whisper".fireFmt(),
+            var clickMe: String = "Click me!".mangoFmt(),
+            var clickToWhisper: String = "Click to Whisper".mangoFmt(),
             var playerIsNotOnline: String = "${instance.prefix} Player is not Online!".fireFmt(),
-            var deleteMessage: String = "Click to delete your message".fireFmt(),
-            var clickToClipboard: String = "Click to copy position to clipboard".fireFmt(),
+            var deleteMessage: String = "Click to delete your message".mangoFmt(),
+            var clickToClipboard: String = "Click to copy position to clipboard".mangoFmt(),
             var playerSetSpawn: String = "${"❗".fireFmt()} ${"›".mangoFmt(true)} <notification>",
         )
     }
