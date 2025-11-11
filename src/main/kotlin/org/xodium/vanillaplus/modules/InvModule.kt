@@ -159,8 +159,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
             )
         val matchingContainers =
             containers.filter { container ->
-                val inventory = (container.state as Container).inventory
-                inventory.contents.any { item ->
+                (container as Container).inventory.contents.any { item ->
                     item?.type == material && hasMatchingEnchantments(ItemStack(material), item)
                 }
             }
@@ -182,12 +181,12 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
             Particle.TRAIL
                 .builder()
                 .location(player.location)
-                .data(Particle.Trail(closestChest.center(), Color.MAROON, 40))
+                .data(Particle.Trail(closestChest.center, Color.MAROON, 40))
                 .receivers(player)
                 .spawn()
             Particle.DUST
                 .builder()
-                .location(closestChest.center())
+                .location(closestChest.center)
                 .count(10)
                 .data(Particle.DustOptions(Color.MAROON, 5.0f))
                 .receivers(player)
@@ -202,12 +201,12 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                     Particle.TRAIL
                         .builder()
                         .location(player.location)
-                        .data(Particle.Trail(it.center(), Color.RED, 40))
+                        .data(Particle.Trail(it.center, Color.RED, 40))
                         .receivers(player)
                         .spawn()
                     Particle.DUST
                         .builder()
-                        .location(it.center())
+                        .location(it.center)
                         .count(10)
                         .data(Particle.DustOptions(Color.RED, 5.0f))
                         .receivers(player)
@@ -241,8 +240,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         val affectedChests = mutableListOf<Block>()
 
         for (block in sortedChests) {
-            val inv = (block.state as Container).inventory
-            if (performUnload(player, inv, startSlot, endSlot)) affectedChests.add(block)
+            if (performUnload(player, (block as Container).inventory, startSlot, endSlot)) affectedChests.add(block)
         }
 
         if (affectedChests.isEmpty()) {
@@ -256,7 +254,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         for (chest in affectedChests) {
             Particle.DUST
                 .builder()
-                .location(chest.center())
+                .location(chest.center)
                 .count(10)
                 .data(Particle.DustOptions(Color.LIME, 5.0f))
                 .receivers(player)

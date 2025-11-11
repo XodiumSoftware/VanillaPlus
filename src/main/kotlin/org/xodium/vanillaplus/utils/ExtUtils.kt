@@ -36,8 +36,24 @@ internal object ExtUtils {
     private const val RED_SHIFT = 16
     private const val GREEN_SHIFT = 8
 
+    /** The standardized prefix for [VanillaPlus] messages. */
     val VanillaPlus.prefix: String
         get() = "${"[".mangoFmt(true)}${this::class.simpleName.toString().fireFmt()}${"]".mangoFmt()}"
+
+    /** Serializes a [Component] into plaintext. */
+    val Component.pt: String get() = PlainTextComponentSerializer.plainText().serialize(this)
+
+    /**
+     * Converts a CamelCase string to snake case.
+     * @return the snake case version of the string.
+     */
+    val String.snakeCase: String get() = replace(Regex("([a-z])([A-Z])"), "$1_$2").lowercase()
+
+    /**
+     * Generates a configuration key for a module.
+     * @return The generated configuration key.
+     */
+    val ModuleInterface<*>.key: String get() = this::class.simpleName.toString()
 
     /**
      * Deserializes a [MiniMessage] [String] into a [Component].
@@ -59,12 +75,6 @@ internal object ExtUtils {
     @JvmName("mmStringIterable")
     fun Iterable<String>.mm(vararg resolvers: TagResolver): List<Component> = map { it.mm(*resolvers) }
 
-    /** Serializes a [Component] into a String. */
-    fun Component.mm(): String = MM.serialize(this)
-
-    /** Serializes a [Component] into plaintext. */
-    fun Component.pt(): String = PlainTextComponentSerializer.plainText().serialize(this)
-
     /**
      * Performs a command from a [String].
      * @param hover Optional hover text for the command.
@@ -83,7 +93,7 @@ internal object ExtUtils {
      * @return Command.SINGLE_SUCCESS after execution.
      */
     fun CommandContext<CommandSourceStack>.tryCatch(action: (CommandSourceStack) -> Unit): Int {
-        runCatching { action(this.source) }
+        runCatching { action(source) }
             .onFailure { e ->
                 instance.logger.severe(
                     """
@@ -91,7 +101,7 @@ internal object ExtUtils {
                     ${e.stackTraceToString()}
                     """.trimIndent(),
                 )
-                (this.source.sender as? Player)?.sendMessage(
+                (source.sender as? Player)?.sendMessage(
                     "${instance.prefix} <red>An error has occurred. Check server logs for details.".mm(),
                 )
             }
@@ -143,16 +153,4 @@ internal object ExtUtils {
         }
         return builder.toString()
     }
-
-    /**
-     * Converts a CamelCase string to snake case.
-     * @return the snake case version of the string.
-     */
-    fun String.toSnakeCase(): String = this.replace(Regex("([a-z])([A-Z])"), "$1_$2").lowercase()
-
-    /**
-     * Generates a configuration key for a module.
-     * @return The generated configuration key.
-     */
-    fun ModuleInterface<*>.key(): String = this::class.simpleName.toString()
 }
