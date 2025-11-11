@@ -6,7 +6,6 @@ import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
-import io.papermc.paper.datacomponent.DataComponentTypes
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Color
@@ -37,6 +36,7 @@ import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.glorpFmt
 import org.xodium.vanillaplus.utils.FmtUtils.roseFmt
 import org.xodium.vanillaplus.utils.InvUtils.transferItems
+import org.xodium.vanillaplus.utils.ItemStackUtils
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
@@ -158,7 +158,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         val matchingContainers =
             containers.filter { container ->
                 (container as Container).inventory.contents.any { item ->
-                    item?.type == material && hasMatchingEnchantments(ItemStack(material), item)
+                    item?.type == material && ItemStackUtils.hasMatchingEnchantments(ItemStack.of(material), item)
                 }
             }
 
@@ -285,7 +285,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                 startSlot = startSlot,
                 endSlot = endSlot,
                 onlyMatching = true,
-                enchantmentChecker = ::hasMatchingEnchantments,
+                enchantmentChecker = ItemStackUtils::hasMatchingEnchantments,
             )
 
         if (success && itemsTransferred > 0) {
@@ -333,36 +333,10 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         return taskId
     }
 
-    /**
-     * Checks if two ItemStacks have matching enchantments.
-     * @param first The first ItemStack.
-     * @param second The second ItemStack.
-     * @return True if the enchantments match, false otherwise.
-     */
-    @Suppress("UnstableApiUsage")
-    private fun hasMatchingEnchantments(
-        first: ItemStack,
-        second: ItemStack,
-    ): Boolean {
-        if (!config.matchEnchantments && (!config.matchEnchantmentsOnBooks || first.type != Material.ENCHANTED_BOOK)) return true
-        // Early return if both items have no enchantments
-        if (first.enchantments.isEmpty() && second.enchantments.isEmpty()) return true
-        // Gets enchantments from the ItemStack Data.
-        val firstEnchants = first.getData(DataComponentTypes.ENCHANTMENTS)
-        val secondEnchants = second.getData(DataComponentTypes.ENCHANTMENTS)
-        // Gets the stored enchantments from the ItemStack Data.
-        val firstStoredEnchants = first.getData(DataComponentTypes.STORED_ENCHANTMENTS)
-        val secondStoredEnchants = second.getData(DataComponentTypes.STORED_ENCHANTMENTS)
-        // Compares the enchantments and stored enchantments between the 2 ItemStack Data's.
-        return firstEnchants == secondEnchants && firstStoredEnchants == secondStoredEnchants
-    }
-
     data class Config(
         override var enabled: Boolean = true,
         var searchRadius: Int = 25,
         var unloadRadius: Int = 25,
-        var matchEnchantments: Boolean = true,
-        var matchEnchantmentsOnBooks: Boolean = true,
         var soundOnUnload: SoundData =
             SoundData(
                 BukkitSound.ENTITY_PLAYER_LEVELUP,
