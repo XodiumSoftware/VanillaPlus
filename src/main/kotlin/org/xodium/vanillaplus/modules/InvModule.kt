@@ -29,7 +29,6 @@ import org.xodium.vanillaplus.data.SoundData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.registries.MaterialRegistry
 import org.xodium.vanillaplus.utils.BlockUtils.center
-import org.xodium.vanillaplus.utils.BlockUtils.isContainerAccessible
 import org.xodium.vanillaplus.utils.ChunkUtils.filterAndSortContainers
 import org.xodium.vanillaplus.utils.ChunkUtils.findContainersInRadius
 import org.xodium.vanillaplus.utils.ExtUtils.mm
@@ -155,7 +154,6 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                 location = player.location,
                 radius = config.searchRadius,
                 containerTypes = MaterialRegistry.CONTAINER_TYPES,
-                containerFilter = { it.isContainerAccessible },
             )
         val matchingContainers =
             containers.filter { container ->
@@ -228,7 +226,6 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                 location = player.location,
                 radius = config.unloadRadius,
                 containerTypes = MaterialRegistry.CONTAINER_TYPES,
-                containerFilter = { it.isContainerAccessible },
             )
         val sortedChests = filterAndSortContainers(containers, player.location)
 
