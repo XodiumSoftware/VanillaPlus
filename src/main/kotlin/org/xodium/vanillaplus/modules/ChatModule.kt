@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.StringArgumentType
 import io.papermc.paper.chat.ChatRenderer
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.event.player.AsyncChatEvent
+import net.kyori.adventure.chat.SignedMessage
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
@@ -102,7 +103,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
                     ),
                     Placeholder.component("message", message.pt.mm()),
                 )
-            if (audience == player) base = base.appendSpace().append(createDeleteCross(event))
+            if (audience == player) base = base.appendSpace().append(createDeleteCross(event.signedMessage()))
             base
         }
     }
@@ -175,14 +176,14 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
 
     /**
      * Creates to delete cross-component for message deletion.
-     * @param event The [AsyncChatEvent] containing the message to be deleted.
+     * @param signedMessage The signed message to be deleted.
      * @return A [Component] representing the delete cross with hover text and click action.
      */
-    private fun createDeleteCross(event: AsyncChatEvent): Component =
+    private fun createDeleteCross(signedMessage: SignedMessage): Component =
         config.deleteCross
             .mm()
             .hoverEvent(config.i18n.deleteMessage.mm())
-            .clickEvent(ClickEvent.callback { instance.server.deleteMessage(event.signedMessage()) })
+            .clickEvent(ClickEvent.callback { instance.server.deleteMessage(signedMessage) })
 
     data class Config(
         override var enabled: Boolean = true,
