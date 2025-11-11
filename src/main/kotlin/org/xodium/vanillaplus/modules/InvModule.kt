@@ -47,7 +47,6 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
     override val config: Config = Config()
 
     private val unloads = ConcurrentHashMap<Location, MutableMap<Material, Int>>()
-    private val lastUnloads = ConcurrentHashMap<UUID, List<Block>>()
     private val activeVisualizations = ConcurrentHashMap<UUID, MutableList<Int>>()
 
     override fun cmds(): List<CommandData> =
@@ -108,10 +107,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
     fun on(event: PlayerQuitEvent) {
         if (!enabled()) return
 
-        val uuid = event.player.uniqueId
-
-        lastUnloads.remove(uuid)
-        activeVisualizations.remove(uuid)
+        activeVisualizations.remove(event.player.uniqueId)
     }
 
     /**
@@ -246,7 +242,6 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         }
 
         player.sendActionBar(config.i18n.inventoryUnloaded.mm())
-        lastUnloads[player.uniqueId] = affectedChests
 
         for (chest in affectedChests) {
             Particle.DUST
