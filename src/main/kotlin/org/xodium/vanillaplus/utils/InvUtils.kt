@@ -35,9 +35,8 @@ internal object InvUtils {
         endSlot: Int = 35,
         onlyMatching: Boolean = false,
         enchantmentChecker: (ItemStack, ItemStack) -> Boolean = { _, _ -> true },
-    ): Pair<Boolean, Int> {
+    ): Boolean {
         var moved = false
-        var totalTransferred = 0
 
         for (i in startSlot..endSlot) {
             val item = source.getItem(i) ?: continue
@@ -50,13 +49,12 @@ internal object InvUtils {
 
             if (movedAmount > 0) {
                 moved = true
-                totalTransferred += movedAmount
                 source.clear(i)
                 leftovers.values.firstOrNull()?.let { source.setItem(i, it) }
             }
         }
 
-        return Pair(moved, totalTransferred)
+        return moved
     }
 
     /**

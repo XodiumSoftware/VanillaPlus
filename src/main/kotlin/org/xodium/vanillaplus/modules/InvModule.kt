@@ -9,7 +9,6 @@ import io.papermc.paper.command.brigadier.Commands
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Color
-import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.block.Block
@@ -18,7 +17,6 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.player.PlayerQuitEvent
-import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
@@ -46,7 +44,6 @@ import org.bukkit.Sound as BukkitSound
 internal class InvModule : ModuleInterface<InvModule.Config> {
     override val config: Config = Config()
 
-    private val unloads = ConcurrentHashMap<Location, MutableMap<Material, Int>>()
     private val activeVisualizations = ConcurrentHashMap<UUID, MutableList<Int>>()
 
     override fun cmds(): List<CommandData> =
@@ -233,7 +230,17 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         val affectedChests = mutableListOf<Block>()
 
         for (block in sortedChests) {
-            if (performUnload(player, (block as Container).inventory, startSlot, endSlot)) affectedChests.add(block)
+            val transfer =
+                transferItems(
+                    source = player.inventory,
+                    destination = (block as Container).inventory,
+                    startSlot = startSlot,
+                    endSlot = endSlot,
+                    onlyMatching = true,
+                    enchantmentChecker = ItemStackUtils::hasMatchingEnchantments,
+                )
+
+            if (transfer) affectedChests.add(block)
         }
 
         if (affectedChests.isEmpty()) {
@@ -254,40 +261,6 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         }
 
         player.playSound(config.soundOnUnload.toSound(), Sound.Emitter.self())
-    }
-
-    /**
-     * Transfers items from the specified player's inventory to the destination inventory within the given slot range.
-     *
-     * Only items matching certain criteria (e.g., matching enchantments) are transferred.
-     *
-     * @param player The player whose inventory items are to be transferred.
-     * @param destination The inventory to which items will be transferred.
-     * @param startSlot The starting slot index in the player's inventory to consider for transfer.
-     * @param endSlot The ending slot index in the player's inventory to consider for transfer.
-     * @return `true` if any items were successfully transferred, `false` otherwise.
-     */
-    private fun performUnload(
-        player: Player,
-        destination: Inventory,
-        startSlot: Int,
-        endSlot: Int,
-    ): Boolean {
-        val (success, itemsTransferred) =
-            transferItems(
-                source = player.inventory,
-                destination = destination,
-                startSlot = startSlot,
-                endSlot = endSlot,
-                onlyMatching = true,
-                enchantmentChecker = ItemStackUtils::hasMatchingEnchantments,
-            )
-
-        if (success && itemsTransferred > 0) {
-            destination.location?.let { location -> unloads.computeIfAbsent(location) { mutableMapOf() } }
-        }
-
-        return success
     }
 
     /**
