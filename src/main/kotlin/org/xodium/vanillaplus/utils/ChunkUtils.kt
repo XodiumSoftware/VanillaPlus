@@ -7,7 +7,6 @@ import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.Block
-import org.bukkit.block.BlockFace
 import org.bukkit.block.Container
 import org.bukkit.block.DoubleChest
 import org.bukkit.inventory.InventoryHolder
@@ -113,19 +112,6 @@ internal object ChunkUtils {
             }
 
         return filteredContainers.sortedBy { it.location.distanceSquared(centerLocation) }
-    }
-
-    /**
-     * Check if a container block is accessible (not blocked, etc.)
-     * @param block The container block to check.
-     * @return True if the container is accessible.
-     */
-    fun isContainerAccessible(block: Block): Boolean {
-        if (block.type == Material.CHEST) {
-            val blockAbove = block.getRelative(BlockFace.UP)
-            if (blockAbove.type.isSolid && blockAbove.type.isOccluding) return false
-        }
-        return true
     }
 
     /**

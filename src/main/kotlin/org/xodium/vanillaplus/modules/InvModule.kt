@@ -29,9 +29,9 @@ import org.xodium.vanillaplus.data.SoundData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.registries.MaterialRegistry
 import org.xodium.vanillaplus.utils.BlockUtils.center
+import org.xodium.vanillaplus.utils.BlockUtils.isContainerAccessible
 import org.xodium.vanillaplus.utils.ChunkUtils.filterAndSortContainers
 import org.xodium.vanillaplus.utils.ChunkUtils.findContainersInRadius
-import org.xodium.vanillaplus.utils.ChunkUtils.isContainerAccessible
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
@@ -155,7 +155,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                 location = player.location,
                 radius = config.searchRadius,
                 containerTypes = MaterialRegistry.CONTAINER_TYPES,
-                containerFilter = ::isRelevantContainer,
+                containerFilter = { it.isContainerAccessible },
             )
         val matchingContainers =
             containers.filter { container ->
@@ -228,7 +228,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                 location = player.location,
                 radius = config.unloadRadius,
                 containerTypes = MaterialRegistry.CONTAINER_TYPES,
-                containerFilter = ::isRelevantContainer,
+                containerFilter = { it.isContainerAccessible },
             )
         val sortedChests = filterAndSortContainers(containers, player.location)
 
@@ -358,16 +358,6 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         val secondStoredEnchants = second.getData(DataComponentTypes.STORED_ENCHANTMENTS)
         // Compares the enchantments and stored enchantments between the 2 ItemStack Data's.
         return firstEnchants == secondEnchants && firstStoredEnchants == secondStoredEnchants
-    }
-
-    /**
-     * Helper function to determine if a block is a relevant container.
-     * @param block The block to check.
-     * @return True if the block is a relevant container, false otherwise.
-     */
-    private fun isRelevantContainer(block: Block): Boolean {
-        if (block.type == Material.CHEST) return isContainerAccessible(block)
-        return true
     }
 
     data class Config(

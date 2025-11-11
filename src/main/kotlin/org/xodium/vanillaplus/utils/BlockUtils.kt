@@ -1,7 +1,9 @@
 package org.xodium.vanillaplus.utils
 
 import org.bukkit.Location
+import org.bukkit.Material
 import org.bukkit.block.Block
+import org.bukkit.block.BlockFace
 import org.bukkit.block.Chest
 import org.bukkit.block.DoubleChest
 
@@ -28,4 +30,11 @@ internal object BlockUtils {
 
             return Location(world, cx, cy, cz)
         }
+
+    /**
+     * Check if a container block is accessible (not blocked from above).
+     * @return True if the container is accessible.
+     */
+    val Block.isContainerAccessible: Boolean
+        get() = type != Material.CHEST || !getRelative(BlockFace.UP).type.let { it.isSolid && it.isOccluding }
 }
