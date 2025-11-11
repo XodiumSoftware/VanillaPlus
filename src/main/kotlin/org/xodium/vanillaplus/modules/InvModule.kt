@@ -149,8 +149,9 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                 containerTypes = MaterialRegistry.CONTAINER_TYPES,
             )
         val matchingContainers =
-            containers.filter { container ->
-                (container as Container).inventory.contents.any { item ->
+            containers.filter { block ->
+                val state = block.state as? Container ?: return@filter false
+                state.inventory.contents.any { item ->
                     item?.type == material && ItemStackUtils.hasMatchingEnchantments(ItemStack.of(material), item)
                 }
             }
@@ -230,10 +231,11 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         val affectedChests = mutableListOf<Block>()
 
         for (block in sortedChests) {
+            val destination = (block.state as? Container)?.inventory ?: continue
             val transfer =
                 transferItems(
                     source = player.inventory,
-                    destination = (block as Container).inventory,
+                    destination = destination,
                     startSlot = startSlot,
                     endSlot = endSlot,
                     onlyMatching = true,
