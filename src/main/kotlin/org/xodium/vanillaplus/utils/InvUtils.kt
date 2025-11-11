@@ -1,46 +1,12 @@
 package org.xodium.vanillaplus.utils
 
-import org.bukkit.Material
 import org.bukkit.Tag
-import org.bukkit.block.Container
 import org.bukkit.block.ShulkerBox
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 
 /** Inventory utilities. */
 internal object InvUtils {
-    /**
-     * Counts the total number of items in the given inventory.
-     * @param inventory The inventory to count items in.
-     * @return The total number of items in the inventory.
-     */
-    fun countContents(inventory: Inventory): Int = inventory.contents.filterNotNull().sumOf { it.amount }
-
-    /**
-     * Get the amount of a specific material in an inventory.
-     * @param inventory The inventory to check.
-     * @param material The material to count.
-     * @return The amount of the material in the inventory.
-     */
-    fun getMaterialCount(
-        inventory: Inventory,
-        material: Material,
-    ): Int =
-        inventory.contents
-            .filter { it?.type == material }
-            .sumOf { it?.amount ?: 0 }
-
-    /**
-     * Check if an inventory contains an item with the same type.
-     * @param inventory The inventory to check.
-     * @param item The item to check for.
-     * @return True if the inventory contains the item type, false otherwise.
-     */
-    fun containsItemType(
-        inventory: Inventory,
-        item: ItemStack,
-    ): Boolean = inventory.contents.any { it?.type == item.type }
-
     /**
      * Check if transferring an item would be valid (not putting shulker in shulker, etc.)
      * @param item The item to transfer.
@@ -109,22 +75,4 @@ internal object InvUtils {
             .asSequence()
             .filterNotNull()
             .any { it.type == item.type && enchantmentChecker(item, it) }
-
-    /**
-     * Search containers for specific material.
-     * @param containers List of containers to search.
-     * @param material The material to search for.
-     * @param enchantmentChecker Function to check enchantment compatibility.
-     * @return List of containers that contain the material.
-     */
-    fun searchContainersForMaterial(
-        containers: List<Container>,
-        material: Material,
-        enchantmentChecker: (ItemStack, ItemStack) -> Boolean,
-    ): List<Container> =
-        containers.filter { container ->
-            container.inventory.contents.any { item ->
-                item?.type == material && enchantmentChecker(ItemStack(material), item)
-            }
-        }
 }

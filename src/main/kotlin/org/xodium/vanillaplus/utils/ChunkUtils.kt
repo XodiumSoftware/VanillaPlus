@@ -2,15 +2,12 @@
 
 package org.xodium.vanillaplus.utils
 
-import org.bukkit.Chunk
 import org.bukkit.Location
 import org.bukkit.Material
-import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.block.Container
 import org.bukkit.block.DoubleChest
 import org.bukkit.inventory.InventoryHolder
-import org.bukkit.util.BoundingBox
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -112,28 +109,5 @@ internal object ChunkUtils {
             }
 
         return filteredContainers.sortedBy { it.location.distanceSquared(centerLocation) }
-    }
-
-    /**
-     * Get all chunks in a bounding box (legacy method for compatibility)
-     * @param world The world to get chunks from.
-     * @param box The bounding box to get chunks from.
-     * @return List of chunks in the bounding box.
-     */
-    fun getChunksInBox(
-        world: World,
-        box: BoundingBox,
-    ): List<Chunk> {
-        val minChunkX = Math.floorDiv(box.minX.toInt(), 16)
-        val maxChunkX = Math.floorDiv(box.maxX.toInt(), 16)
-        val minChunkZ = Math.floorDiv(box.minZ.toInt(), 16)
-        val maxChunkZ = Math.floorDiv(box.maxZ.toInt(), 16)
-        return mutableListOf<Chunk>().apply {
-            for (x in minChunkX..maxChunkX) {
-                for (z in minChunkZ..maxChunkZ) {
-                    if (world.isChunkLoaded(x, z)) add(world.getChunkAt(x, z))
-                }
-            }
-        }
     }
 }
