@@ -40,6 +40,8 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
 import org.bukkit.Sound as BukkitSound
 
+// FIX: [15:55:57 WARN]: [org.bukkit.craftbukkit.legacy.CraftLegacy] Initializing Legacy Material Support. Unless you have legacy plugins and/or data this is a bug!
+
 /** Represents a module handling inv mechanics within the system. */
 internal class InvModule : ModuleInterface<InvModule.Config> {
     override val config: Config = Config()
