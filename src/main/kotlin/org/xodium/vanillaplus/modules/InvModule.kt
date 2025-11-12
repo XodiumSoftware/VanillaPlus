@@ -40,8 +40,6 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
 import org.bukkit.Sound as BukkitSound
 
-// FIX: [15:55:57 WARN]: [org.bukkit.craftbukkit.legacy.CraftLegacy] Initializing Legacy Material Support. Unless you have legacy plugins and/or data this is a bug!
-
 /** Represents a module handling inv mechanics within the system. */
 internal class InvModule : ModuleInterface<InvModule.Config> {
     override val config: Config = Config()
@@ -118,7 +116,9 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         val player = ctx.source.sender as? Player ?: return 0
         val materialName = runCatching { StringArgumentType.getString(ctx, "material") }.getOrNull()
         val material =
-            materialName?.let { Material.getMaterial(it.uppercase()) } ?: player.inventory.itemInMainHand.type
+            runCatching { materialName?.let { Material.valueOf(it.uppercase(Locale.ROOT)) } }
+                .getOrNull()
+                ?: player.inventory.itemInMainHand.type
 
         if (material == Material.AIR) {
             player.sendActionBar(config.i18n.noMaterialSpecified.mm())
