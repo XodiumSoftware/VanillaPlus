@@ -101,7 +101,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
                             .clickEvent(ClickEvent.suggestCommand("/w ${player.name} "))
                             .hoverEvent(HoverEvent.showText(config.i18n.clickToWhisper.mm())),
                     ),
-                    Placeholder.component("message", message.pt.mm()),
+                    Placeholder.component("message", message),
                 )
             if (audience == player) base = base.appendSpace().append(createDeleteCross(event.signedMessage()))
             base
