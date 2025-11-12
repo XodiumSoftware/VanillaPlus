@@ -17,16 +17,7 @@ internal object ItemStackUtils {
         first: ItemStack,
         second: ItemStack,
     ): Boolean {
-        if (first.type != Material.ENCHANTED_BOOK) return true
-        // Early return if both items have no enchantments
-        if (first.enchantments.isEmpty() && second.enchantments.isEmpty()) return true
-        // Gets enchantments from the ItemStack Data.
-        val firstEnchants = first.getData(DataComponentTypes.ENCHANTMENTS)
-        val secondEnchants = second.getData(DataComponentTypes.ENCHANTMENTS)
-        // Gets the stored enchantments from the ItemStack Data.
-        val firstStoredEnchants = first.getData(DataComponentTypes.STORED_ENCHANTMENTS)
-        val secondStoredEnchants = second.getData(DataComponentTypes.STORED_ENCHANTMENTS)
-        // Compares the enchantments and stored enchantments between the 2 ItemStack Data's.
-        return firstEnchants == secondEnchants && firstStoredEnchants == secondStoredEnchants
+        if (first.type != Material.ENCHANTED_BOOK || (first.enchantments.isEmpty() && second.enchantments.isEmpty())) return true
+        return first.getData(DataComponentTypes.ENCHANTMENTS) == second.getData(DataComponentTypes.ENCHANTMENTS)
     }
 }
