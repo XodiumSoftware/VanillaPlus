@@ -13,6 +13,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
+import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityDismountEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerQuitEvent
@@ -33,12 +34,12 @@ internal class SitModule : ModuleInterface<SitModule.Config> {
         if (!enabled()) return
 
         val player = event.player
+
         if (event.action != Action.RIGHT_CLICK_BLOCK || player.isSneaking || player.isInsideVehicle) return
         if (player.inventory.itemInMainHand.type != Material.AIR) return
 
         val block = event.clickedBlock ?: return
         val blockData = block.blockData
-
         val isSitTarget =
             when {
                 config.useStairs && blockData is Stairs && blockData.half == Bisected.Half.BOTTOM -> true
@@ -49,6 +50,7 @@ internal class SitModule : ModuleInterface<SitModule.Config> {
         if (!isSitTarget) return
 
         val blockAbove = block.getRelative(BlockFace.UP)
+
         if (blockAbove.type.isCollidable) return
 
         event.isCancelled = true
@@ -61,6 +63,7 @@ internal class SitModule : ModuleInterface<SitModule.Config> {
         if (event.entity !is Player) return
 
         val player = event.entity as Player
+
         sittingPlayers.remove(player.uniqueId)?.let { armorStand ->
             val safeLocation = armorStand.location.clone().add(playerStandUpOffset)
             safeLocation.yaw = player.location.yaw
@@ -75,6 +78,18 @@ internal class SitModule : ModuleInterface<SitModule.Config> {
         if (!enabled()) return
 
         sittingPlayers.remove(event.player.uniqueId)?.remove()
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    fun on(event: EntityDamageEvent) {
+        if (!enabled()) return
+
+        val player = event.entity as? Player ?: return
+
+        sittingPlayers[player.uniqueId]?.let { armorStand ->
+            armorStand.removePassenger(player)
+            sittingPlayers.remove(player.uniqueId)
+        }
     }
 
     /**
@@ -94,6 +109,7 @@ internal class SitModule : ModuleInterface<SitModule.Config> {
                 it.isSmall = true
                 it.isMarker = true
             }
+
         armorStand.addPassenger(player)
         sittingPlayers[player.uniqueId] = armorStand
     }

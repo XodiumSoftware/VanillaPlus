@@ -5,6 +5,8 @@
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.kyori/ansi/1.1.1/beeb71e49b25cac87c22975014e74c7b5940d1b7/ansi-1.1.1.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.kyori/ansi/1.1.1/9669dfec0bb1678a4514ab07ade2a27d9df02041/ansi-1.1.1-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>

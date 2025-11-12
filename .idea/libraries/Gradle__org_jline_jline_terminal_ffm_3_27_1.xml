@@ -5,6 +5,8 @@
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jline/jline-terminal-ffm/3.27.1/ef894cf08d9375c7d6935f44e83583ee366f98b2/jline-terminal-ffm-3.27.1.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jline/jline-terminal-ffm/3.27.1/da52714cece8e0cdb9fbfcecae6d85544f8c99ef/jline-terminal-ffm-3.27.1-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>
