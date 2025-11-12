@@ -39,51 +39,36 @@ internal object ChunkUtils {
         val centerX = location.blockX
         val centerZ = location.blockZ
         val radiusSquared = radius * radius
-        // Calculate chunk bounds using bit shifting for performance
         val minChunkX = (centerX - radius) shr 4
         val maxChunkX = (centerX + radius) shr 4
         val minChunkZ = (centerZ - radius) shr 4
         val maxChunkZ = (centerZ + radius) shr 4
         val containers = mutableListOf<Block>()
 
-        // Iterate through chunks first (more efficient)
         for (chunkX in minChunkX..maxChunkX) {
             for (chunkZ in minChunkZ..maxChunkZ) {
                 val chunkCoord = ChunkCoord(world.uid, chunkX, chunkZ)
 
-                // Check if chunk is loaded using cache
-                if (!cache.computeIfAbsent(chunkCoord) {
-                        world.isChunkLoaded(chunkX, chunkZ)
-                    }
-                ) {
-                    continue
-                }
+                if (!cache.computeIfAbsent(chunkCoord) { world.isChunkLoaded(chunkX, chunkZ) }) continue
 
                 val chunk = world.getChunkAt(chunkX, chunkZ)
 
-                // Process tile entities in this chunk
                 for (tileEntity in chunk.tileEntities) {
                     if (tileEntity !is Container) continue
 
                     val block = tileEntity.block
 
-                    // Fast material check
                     if (!containerTypes.contains(block.type)) continue
 
-                    // Fast distance check using integer math
                     val dx = block.x - centerX
                     val dz = block.z - centerZ
-                    if (dx * dx + dz * dz > radiusSquared) continue
 
-                    // Apply additional filters
-                    if (containerFilter(block)) {
-                        containers.add(block)
-                    }
+                    if (dx * dx + dz * dz > radiusSquared) continue
+                    if (containerFilter(block)) containers.add(block)
                 }
             }
         }
 
-        // Clear cache periodically to prevent memory leaks
         if (cache.size > 1000) cache.clear()
 
         return containers

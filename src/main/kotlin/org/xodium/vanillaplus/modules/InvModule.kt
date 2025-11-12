@@ -157,9 +157,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
             }
 
         if (matchingContainers.isEmpty()) {
-            player.sendActionBar(
-                config.i18n.noMatchingItems.mm(Placeholder.component("material", material.name.mm())),
-            )
+            player.sendActionBar(config.i18n.noMatchingItems.mm(Placeholder.component("material", material.name.mm())))
             return
         }
 
