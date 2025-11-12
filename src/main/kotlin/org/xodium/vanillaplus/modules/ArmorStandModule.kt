@@ -8,7 +8,6 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractAtEntityEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.handlers.RenameHandler
 import org.xodium.vanillaplus.handlers.SwapHandler
 import org.xodium.vanillaplus.handlers.SyncHandler
 import org.xodium.vanillaplus.interfaces.ModuleInterface
@@ -22,7 +21,6 @@ internal class ArmorStandModule : ModuleInterface<ArmorStandModule.Config> {
             instance.server.messenger.apply {
                 registerIncomingPluginChannel(instance, "armorposer:sync_packet", SyncHandler())
                 registerIncomingPluginChannel(instance, "armorposer:swap_packet", SwapHandler())
-                registerIncomingPluginChannel(instance, "armorposer:rename_packet", RenameHandler())
             }
         }
     }
