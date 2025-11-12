@@ -36,8 +36,24 @@ internal object ExtUtils {
     private const val RED_SHIFT = 16
     private const val GREEN_SHIFT = 8
 
+    /** The standardized prefix for [VanillaPlus] messages. */
     val VanillaPlus.prefix: String
         get() = "${"[".mangoFmt(true)}${this::class.simpleName.toString().fireFmt()}${"]".mangoFmt()}"
+
+    /** Serializes a [Component] into plaintext. */
+    val Component.pt: String get() = PlainTextComponentSerializer.plainText().serialize(this)
+
+    /**
+     * Converts a CamelCase string to snake case.
+     * @return the snake case version of the string.
+     */
+    val String.snakeCase: String get() = replace(Regex("([a-z])([A-Z])"), "$1_$2").lowercase()
+
+    /**
+     * Generates a configuration key for a module.
+     * @return The generated configuration key.
+     */
+    val ModuleInterface<*>.key: String get() = this::class.simpleName.toString()
 
     /**
      * Deserializes a [MiniMessage] [String] into a [Component].
@@ -59,23 +75,38 @@ internal object ExtUtils {
     @JvmName("mmStringIterable")
     fun Iterable<String>.mm(vararg resolvers: TagResolver): List<Component> = map { it.mm(*resolvers) }
 
-    /** Serializes a [Component] into a String. */
-    fun Component.mm(): String = MM.serialize(this)
-
-    /** Serializes a [Component] into plaintext. */
-    fun Component.pt(): String = PlainTextComponentSerializer.plainText().serialize(this)
-
     /**
      * Performs a command from a [String].
-     * @param hover Optional hover text for the command.
+     * @param cmd The command to perform.
+     * @param hover Optional hover text for the command. Defaults to "Click me!".
      * @return The formatted [String] with the command.
      */
-    fun String.clickRunCmd(hover: String? = null): String =
-        if (hover != null) {
-            "<hover:show_text:'$hover'><click:run_command:'$this'>$this</click></hover>"
-        } else {
-            "<click:run_command:'$this'>$this</click>"
-        }
+    fun String.clickRunCmd(
+        cmd: String,
+        hover: String? = "Click me!".mangoFmt(),
+    ): String = "<hover:show_text:'$hover'><click:run_command:'$cmd'>$this</click></hover>"
+
+    /**
+     * Suggests a command from a [String].
+     * @param cmd The command to suggest.
+     * @param hover Optional hover text for the command. Defaults to "Click me!".
+     * @return The formatted [String] with the suggested command.
+     */
+    fun String.clickSuggestCmd(
+        cmd: String,
+        hover: String? = "Click me!".mangoFmt(),
+    ): String = "<hover:show_text:'$hover'><click:suggest_command:'$cmd'>$this</click></hover>"
+
+    /**
+     * Opens a URL from a [String].
+     * @param url The URL to open.
+     * @param hover Optional hover text for the URL. Defaults to "Click me!".
+     * @return The formatted [String] with the URL.
+     */
+    fun String.clickOpenUrl(
+        url: String,
+        hover: String? = "Click me!".mangoFmt(),
+    ): String = "<hover:show_text:'$hover'><click:open_url:'$url'>$this</click></hover>"
 
     /**
      * A helper function to wrap command execution with standardized error handling.
@@ -83,7 +114,7 @@ internal object ExtUtils {
      * @return Command.SINGLE_SUCCESS after execution.
      */
     fun CommandContext<CommandSourceStack>.tryCatch(action: (CommandSourceStack) -> Unit): Int {
-        runCatching { action(this.source) }
+        runCatching { action(source) }
             .onFailure { e ->
                 instance.logger.severe(
                     """
@@ -91,7 +122,7 @@ internal object ExtUtils {
                     ${e.stackTraceToString()}
                     """.trimIndent(),
                 )
-                (this.source.sender as? Player)?.sendMessage(
+                (source.sender as? Player)?.sendMessage(
                     "${instance.prefix} <red>An error has occurred. Check server logs for details.".mm(),
                 )
             }
@@ -143,16 +174,4 @@ internal object ExtUtils {
         }
         return builder.toString()
     }
-
-    /**
-     * Converts a CamelCase string to snake case.
-     * @return the snake case version of the string.
-     */
-    fun String.toSnakeCase(): String = this.replace(Regex("([a-z])([A-Z])"), "$1_$2").lowercase()
-
-    /**
-     * Generates a configuration key for a module.
-     * @return The generated configuration key.
-     */
-    fun ModuleInterface<*>.key(): String = this::class.simpleName.toString()
 }

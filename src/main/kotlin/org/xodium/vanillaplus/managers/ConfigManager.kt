@@ -19,7 +19,7 @@ internal object ConfigManager : DataInterface<String, ModuleInterface.Config> {
      */
     fun update(modules: List<ModuleInterface<ModuleInterface.Config>>) {
         modules.forEach { module ->
-            val key = module.key()
+            val key = module.key
             val fileConfig = readFileConfig(key, module)
             val mergedConfig = fileConfig?.let { jsonMapper.updateValue(module.config, it) } ?: module.config
             set(key, mergedConfig)

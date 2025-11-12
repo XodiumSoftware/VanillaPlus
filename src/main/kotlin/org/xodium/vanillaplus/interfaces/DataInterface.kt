@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.utils.ExtUtils.toSnakeCase
+import org.xodium.vanillaplus.utils.ExtUtils.snakeCase
 import java.io.IOException
 import java.nio.file.Path
 import kotlin.io.path.createDirectories
@@ -24,7 +24,7 @@ interface DataInterface<K, T : Any> {
     val dataClass: KClass<T>
     val cache: MutableMap<K, T>
     val fileName: String
-        get() = "${dataClass.simpleName?.toSnakeCase()}.json"
+        get() = "${dataClass.simpleName?.snakeCase}.json"
     val filePath: Path
         get() = instance.dataFolder.toPath().resolve(fileName)
     val jsonMapper: ObjectMapper
