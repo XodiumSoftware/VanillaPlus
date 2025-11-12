@@ -37,19 +37,13 @@ internal class SwapHandler : PluginMessageListener {
                     if (entity is ArmorStand) {
                         when (action) {
                             Action.SWAP_HANDS -> {
-                                val handItem = entity.getItem(EquipmentSlot.HAND)
-                                val offHandItem = entity.getItem(EquipmentSlot.OFF_HAND)
-
-                                entity.setItem(EquipmentSlot.HAND, offHandItem)
-                                entity.setItem(EquipmentSlot.OFF_HAND, handItem)
+                                entity.setItem(EquipmentSlot.HAND, entity.getItem(EquipmentSlot.OFF_HAND))
+                                entity.setItem(EquipmentSlot.OFF_HAND, entity.getItem(EquipmentSlot.HAND))
                             }
 
                             Action.SWAP_WITH_HEAD -> {
-                                val handItem = entity.getItem(EquipmentSlot.HAND)
-                                val headItem = entity.getItem(EquipmentSlot.HEAD)
-
-                                entity.setItem(EquipmentSlot.HAND, headItem)
-                                entity.setItem(EquipmentSlot.HEAD, handItem)
+                                entity.setItem(EquipmentSlot.HAND, entity.getItem(EquipmentSlot.HEAD))
+                                entity.setItem(EquipmentSlot.HEAD, entity.getItem(EquipmentSlot.HAND))
                             }
                         }
                     }
