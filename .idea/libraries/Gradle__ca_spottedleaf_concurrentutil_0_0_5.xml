@@ -5,6 +5,8 @@
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/ca.spottedleaf/concurrentutil/0.0.5/5f9f57d1f89afdc54ed4a5013ce685bebd22cb61/concurrentutil-0.0.5.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/ca.spottedleaf/concurrentutil/0.0.5/bd16da98381adcf552548155bedad1b6b5cca952/concurrentutil-0.0.5-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>

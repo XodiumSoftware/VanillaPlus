@@ -5,6 +5,8 @@
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.kyori/adventure-text-serializer-ansi/4.25.0/bdd2546ac76e725072b26bb22a73afbfc077ba73/adventure-text-serializer-ansi-4.25.0.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.kyori/adventure-text-serializer-ansi/4.25.0/7b4b21c36ec01d8b580e28ae6000950b94943b09/adventure-text-serializer-ansi-4.25.0-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>

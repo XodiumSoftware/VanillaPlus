@@ -5,6 +5,8 @@
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jline/jline-native/3.27.1/d0b198908023385a089379a1c854aadc7a7dd99b/jline-native-3.27.1.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jline/jline-native/3.27.1/e54c16315be588dda4a16fad43949f8cca4d7858/jline-native-3.27.1-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>
