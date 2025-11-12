@@ -116,9 +116,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         val player = ctx.source.sender as? Player ?: return 0
         val materialName = runCatching { StringArgumentType.getString(ctx, "material") }.getOrNull()
         val material =
-            runCatching { materialName?.let { Material.valueOf(it.uppercase(Locale.ROOT)) } }
-                .getOrNull()
-                ?: player.inventory.itemInMainHand.type
+            materialName?.let { Material.getMaterial(it.uppercase()) } ?: player.inventory.itemInMainHand.type
 
         if (material == Material.AIR) {
             player.sendActionBar(config.i18n.noMaterialSpecified.mm())
