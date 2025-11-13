@@ -9,25 +9,24 @@ import io.papermc.paper.registry.RegistryKey
 import io.papermc.paper.registry.event.RegistryEvents
 import io.papermc.paper.registry.keys.tags.EnchantmentTagKeys
 import io.papermc.paper.registry.keys.tags.ItemTypeTagKeys
-import org.xodium.vanillaplus.enchantments.VeinMineEnchantment
+import org.xodium.vanillaplus.enchantments.ReplantEnchantment
 
 /** Main bootstrap class of the plugin. */
 @Suppress("UnstableApiUsage", "Unused")
 internal class VanillaPlusBootstrap : PluginBootstrap {
     companion object {
         const val INSTANCE = "vanillaplus"
-        val VEINMINE = VeinMineEnchantment.key
-        val ENCHANTS = setOf(VEINMINE)
+        val REPLANT = ReplantEnchantment.key
+        val ENCHANTS = setOf(REPLANT)
     }
 
     override fun bootstrap(ctx: BootstrapContext) {
         ctx.lifecycleManager.apply {
             registerEventHandler(
                 RegistryEvents.ENCHANTMENT.compose().newHandler { event ->
-                    event.getOrCreateTag(ItemTypeTagKeys.HARNESSES)
                     val enchantableMiningTag = event.getOrCreateTag(ItemTypeTagKeys.ENCHANTABLE_MINING)
                     event.registry().apply {
-                        register(VEINMINE) { VeinMineEnchantment.init(it).supportedItems(enchantableMiningTag) }
+                        register(REPLANT) { ReplantEnchantment.init(it).supportedItems(enchantableMiningTag) }
                     }
                 },
             )
