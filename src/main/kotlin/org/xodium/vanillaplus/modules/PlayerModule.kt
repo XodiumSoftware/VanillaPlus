@@ -7,9 +7,12 @@ import io.papermc.paper.datacomponent.item.ItemLore
 import io.papermc.paper.datacomponent.item.ResolvableProfile
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Material
+import org.bukkit.block.Block
+import org.bukkit.block.data.Ageable
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
+import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -23,6 +26,7 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
+import org.xodium.vanillaplus.enchantments.ReplantEnchantment
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
 import org.xodium.vanillaplus.utils.ExtUtils.mm
@@ -76,11 +80,15 @@ internal class PlayerModule(
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
         if (!enabled()) return
+
         val player = event.player
+
         player.displayName(player.nickname?.mm())
 
         if (config.i18n.playerJoinMsg.isEmpty()) return
+
         event.joinMessage(null)
+
         instance.server.onlinePlayers
             .filter { it.uniqueId != player.uniqueId }
             .forEach {
@@ -95,13 +103,16 @@ internal class PlayerModule(
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerQuitEvent) {
         if (!enabled() || config.i18n.playerQuitMsg.isEmpty()) return
+
         event.quitMessage(config.i18n.playerQuitMsg.mm(Placeholder.component("player", event.player.displayName())))
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerDeathEvent) {
         if (!enabled()) return
+
         val killer = event.entity.killer ?: return
+
         if (Math.random() < config.skullDropChance) {
             event.entity.world.dropItemNaturally(
                 event.entity.location,
@@ -116,6 +127,7 @@ internal class PlayerModule(
     @EventHandler
     fun on(event: PlayerAdvancementDoneEvent) {
         if (!enabled() || config.i18n.playerAdvancementDoneMsg.isEmpty()) return
+
         event.message(
             config.i18n.playerAdvancementDoneMsg.mm(
                 Placeholder.component("player", event.player.displayName()),
@@ -133,7 +145,9 @@ internal class PlayerModule(
         ) {
             return
         }
+
         event.isCancelled = true
+
         instance.server.scheduler.runTask(
             instance,
             Runnable { event.whoClicked.openInventory(event.whoClicked.enderChest) },
@@ -143,7 +157,41 @@ internal class PlayerModule(
     @EventHandler(ignoreCancelled = true)
     fun on(event: PlayerInteractEvent) {
         if (!enabled()) return
+
         xpToBottle(event)
+    }
+
+    @EventHandler
+    fun on(event: BlockBreakEvent) {
+        if (!enabled()) return
+
+        replant(event.block, event.player.inventory.itemInMainHand)
+    }
+
+    /**
+     * Automatically replants a crop block after it has been fully grown and harvested.
+     * @param block The block that was broken.
+     * @param tool The tool used to break the block.
+     */
+    private fun replant(
+        block: Block,
+        tool: ItemStack,
+    ) {
+        val ageable = block.blockData as? Ageable ?: return
+
+        if (ageable.age < ageable.maximumAge) return
+        if (!tool.hasItemMeta() || !tool.itemMeta.hasEnchant(ReplantEnchantment.get())) return
+
+        instance.server.scheduler.runTaskLater(
+            instance,
+            Runnable {
+                val blockType = block.type
+
+                block.type = blockType
+                block.blockData = ageable.apply { age = 0 }
+            },
+            2,
+        )
     }
 
     /**
