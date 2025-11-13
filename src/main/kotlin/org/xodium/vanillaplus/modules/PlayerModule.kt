@@ -7,24 +7,32 @@ import io.papermc.paper.datacomponent.item.ItemLore
 import io.papermc.paper.datacomponent.item.ResolvableProfile
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Material
+import org.bukkit.NamespacedKey
+import org.bukkit.Tag
+import org.bukkit.block.ShulkerBox
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.player.PlayerAdvancementDoneEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.Recipe
+import org.bukkit.inventory.ShapelessRecipe
+import org.bukkit.inventory.meta.BlockStateMeta
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
+import org.xodium.vanillaplus.pdcs.ShulkerPDC.lock
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
@@ -126,18 +134,74 @@ internal class PlayerModule(
 
     @EventHandler
     fun on(event: InventoryClickEvent) {
-        if (!enabled() ||
-            event.click != config.enderChestClickType ||
-            event.currentItem?.type != Material.ENDER_CHEST ||
-            event.clickedInventory?.type != InventoryType.PLAYER
+        if (!enabled()) return
+
+        val player = event.whoClicked as? Player ?: return
+
+        if (event.clickedInventory?.type != InventoryType.PLAYER) return
+
+        if (event.click == config.enderChestClickType &&
+            event.currentItem?.type == Material.ENDER_CHEST
         ) {
-            return
+            event.isCancelled = true
+            instance.server.scheduler.runTask(
+                instance,
+                Runnable { player.openInventory(player.enderChest) },
+            )
         }
-        event.isCancelled = true
-        instance.server.scheduler.runTask(
-            instance,
-            Runnable { event.whoClicked.openInventory(event.whoClicked.enderChest) },
-        )
+
+        val item = event.currentItem ?: return
+
+        if (event.click == config.shulkerClickType &&
+            Tag.SHULKER_BOXES.isTagged(item.type)
+        ) {
+            event.isCancelled = true
+
+            val meta = item.itemMeta as? BlockStateMeta ?: return
+            val shulker = meta.blockState as? ShulkerBox ?: return
+
+            if (!shulker.lock()) {
+                shulker.lock(true)
+
+                meta.blockState = shulker
+                item.itemMeta = meta
+
+                instance.server.scheduler.runTask(
+                    instance,
+                    Runnable { player.openInventory(shulker.inventory) },
+                )
+            }
+        }
+        // TODO: make it so when click on enderchest/shulker it first closes current inventory before opening the new one.
+    }
+
+    @EventHandler
+    fun on(event: InventoryCloseEvent) {
+        if (!enabled()) return
+
+        val player = event.player as? Player ?: return
+
+        for (item in player.inventory.contents) {
+            if (item != null && Tag.SHULKER_BOXES.isTagged(item.type)) {
+                val meta = item.itemMeta as? BlockStateMeta ?: continue
+                val shulker = meta.blockState as? ShulkerBox ?: continue
+
+                if (shulker.lock()) {
+                    shulker.inventory.contents = event.inventory.contents
+                    shulker.lock(false)
+
+                    meta.blockState = shulker
+                    item.itemMeta = meta
+
+                    instance.server.scheduler.runTask(
+                        instance,
+                        Runnable { player.updateInventory() },
+                    )
+
+                    break
+                }
+            }
+        }
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -218,6 +282,7 @@ internal class PlayerModule(
 
     data class Config(
         var enderChestClickType: ClickType = ClickType.SHIFT_RIGHT,
+        var shulkerClickType: ClickType = ClickType.SHIFT_RIGHT,
         var skullDropChance: Double = 0.1,
         var xpCostToBottle: Int = 11,
         var i18n: I18n = I18n(),
