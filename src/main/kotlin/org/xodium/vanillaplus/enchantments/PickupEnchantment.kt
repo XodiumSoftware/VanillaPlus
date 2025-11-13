@@ -12,8 +12,8 @@ import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 
 @Suppress("UnstableApiUsage")
-internal object ReplantEnchantment : EnchantmentInterface {
-    override val key: TypedKey<Enchantment> = TypedKey.create(RegistryKey.ENCHANTMENT, Key.key(INSTANCE, "replant"))
+internal object PickupEnchantment : EnchantmentInterface {
+    override val key: TypedKey<Enchantment> = TypedKey.create(RegistryKey.ENCHANTMENT, Key.key(INSTANCE, "pickup"))
 
     override fun builder(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
