@@ -18,11 +18,10 @@ internal object ReplantEnchantment : EnchantmentInterface {
     override fun init(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
             .description(REPLANT.value().replaceFirstChar { it.uppercase() }.mm())
-            // TODO: adjust config values.
-            .anvilCost(7)
+            .anvilCost(8)
             .maxLevel(1)
-            .weight(1)
-            .minimumCost(EnchantmentRegistryEntry.EnchantmentCost.of(15, 0))
-            .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(65, 0))
+            .weight(5)
+            .minimumCost(EnchantmentRegistryEntry.EnchantmentCost.of(1, 10))
+            .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(8, 20))
             .activeSlots(EquipmentSlotGroup.MAINHAND)
 }

@@ -24,9 +24,9 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
         ctx.lifecycleManager.apply {
             registerEventHandler(
                 RegistryEvents.ENCHANTMENT.compose().newHandler { event ->
-                    val enchantableMiningTag = event.getOrCreateTag(ItemTypeTagKeys.ENCHANTABLE_MINING)
+                    val hoeTag = event.getOrCreateTag(ItemTypeTagKeys.HOES)
                     event.registry().apply {
-                        register(REPLANT) { ReplantEnchantment.init(it).supportedItems(enchantableMiningTag) }
+                        register(REPLANT) { ReplantEnchantment.init(it).supportedItems(hoeTag) }
                     }
                 },
             )
