@@ -9,7 +9,6 @@ import io.papermc.paper.command.brigadier.CommandSourceStack
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.entity.Player
 import org.xodium.vanillaplus.VanillaPlus
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -39,9 +38,6 @@ internal object ExtUtils {
     /** The standardized prefix for [VanillaPlus] messages. */
     val VanillaPlus.prefix: String
         get() = "${"[".mangoFmt(true)}${this::class.simpleName.toString().fireFmt()}${"]".mangoFmt()}"
-
-    /** Serializes a [Component] into plaintext. */
-    val Component.pt: String get() = PlainTextComponentSerializer.plainText().serialize(this)
 
     /**
      * Converts a CamelCase string to snake case.
