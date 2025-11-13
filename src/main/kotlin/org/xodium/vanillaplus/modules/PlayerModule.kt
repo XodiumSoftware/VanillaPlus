@@ -7,8 +7,6 @@ import io.papermc.paper.datacomponent.item.ItemLore
 import io.papermc.paper.datacomponent.item.ResolvableProfile
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Material
-import org.bukkit.block.Block
-import org.bukkit.block.data.Ageable
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -26,6 +24,7 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
+import org.xodium.vanillaplus.enchantments.PickupEnchantment
 import org.xodium.vanillaplus.enchantments.ReplantEnchantment
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
@@ -165,33 +164,8 @@ internal class PlayerModule(
     fun on(event: BlockBreakEvent) {
         if (!enabled()) return
 
-        replant(event.block, event.player.inventory.itemInMainHand)
-    }
-
-    /**
-     * Automatically replants a crop block after it has been fully grown and harvested.
-     * @param block The block that was broken.
-     * @param tool The tool used to break the block.
-     */
-    private fun replant(
-        block: Block,
-        tool: ItemStack,
-    ) {
-        val ageable = block.blockData as? Ageable ?: return
-
-        if (ageable.age < ageable.maximumAge) return
-        if (!tool.hasItemMeta() || !tool.itemMeta.hasEnchant(ReplantEnchantment.get())) return
-
-        instance.server.scheduler.runTaskLater(
-            instance,
-            Runnable {
-                val blockType = block.type
-
-                block.type = blockType
-                block.blockData = ageable.apply { age = 0 }
-            },
-            2,
-        )
+        ReplantEnchantment.replant(event.block, event.player.inventory.itemInMainHand)
+        PickupEnchantment.pickup()
     }
 
     /**

@@ -25,4 +25,8 @@ internal object PickupEnchantment : EnchantmentInterface {
             .minimumCost(EnchantmentRegistryEntry.EnchantmentCost.of(1, 10))
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(8, 20))
             .activeSlots(EquipmentSlotGroup.MAINHAND)
+
+    fun pickup() {
+        // Implementation for pickup functionality goes here
+    }
 }
