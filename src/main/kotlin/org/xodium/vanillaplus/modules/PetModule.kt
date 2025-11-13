@@ -116,7 +116,6 @@ internal class PetModule : ModuleInterface<PetModule.Config> {
     }
 
     data class Config(
-        override var enabled: Boolean = true,
         var transferRadius: Int = 10,
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {

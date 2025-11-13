@@ -223,7 +223,6 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
     }
 
     data class Config(
-        override var enabled: Boolean = true,
         var initDelayInTicks: Long = 1,
         var allowDoubleDoors: Boolean = true,
         var allowKnocking: Boolean = true,

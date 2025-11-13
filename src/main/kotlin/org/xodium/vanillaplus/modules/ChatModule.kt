@@ -25,7 +25,6 @@ import org.xodium.vanillaplus.utils.ExtUtils.clickSuggestCmd
 import org.xodium.vanillaplus.utils.ExtUtils.face
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.prefix
-import org.xodium.vanillaplus.utils.ExtUtils.pt
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
@@ -186,7 +185,6 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
             .clickEvent(ClickEvent.callback { instance.server.deleteMessage(signedMessage) })
 
     data class Config(
-        override var enabled: Boolean = true,
         var chatFormat: String = "<player_head> <player> <reset>${"›".mangoFmt(true)} <message>",
         var welcomeText: List<String> =
             listOf(

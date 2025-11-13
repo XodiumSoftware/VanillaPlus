@@ -13,9 +13,7 @@ import org.xodium.vanillaplus.pdcs.PlayerPDC.scoreboardVisibility
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 
 /** Represents a module handling scoreboard mechanics within the system. */
-internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
-    override val config: Config = Config()
-
+internal class ScoreBoardModule : ModuleInterface<ModuleInterface.Config> {
     override fun cmds(): List<CommandData> =
         listOf(
             CommandData(
@@ -66,8 +64,4 @@ internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
             player.scoreboardVisibility = true
         }
     }
-
-    data class Config(
-        override var enabled: Boolean = true,
-    ) : ModuleInterface.Config
 }

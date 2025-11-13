@@ -302,7 +302,6 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
     }
 
     data class Config(
-        override var enabled: Boolean = true,
         var searchRadius: Int = 25,
         var unloadRadius: Int = 25,
         var soundOnUnload: SoundData =
