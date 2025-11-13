@@ -164,8 +164,8 @@ internal class PlayerModule(
     fun on(event: BlockBreakEvent) {
         if (!enabled()) return
 
-        ReplantEnchantment.replant(event.block, event.player.inventory.itemInMainHand)
-        PickupEnchantment.pickup()
+        ReplantEnchantment.replant(event)
+        PickupEnchantment.pickup(event)
     }
 
     /**

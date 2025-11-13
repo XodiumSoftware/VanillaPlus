@@ -4,11 +4,10 @@ import io.papermc.paper.registry.RegistryKey
 import io.papermc.paper.registry.TypedKey
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
 import net.kyori.adventure.key.Key
-import org.bukkit.block.Block
 import org.bukkit.block.data.Ageable
 import org.bukkit.enchantments.Enchantment
+import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.inventory.EquipmentSlotGroup
-import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.VanillaPlusBootstrap.Companion.INSTANCE
 import org.xodium.vanillaplus.VanillaPlusBootstrap.Companion.REPLANT
@@ -32,17 +31,15 @@ internal object ReplantEnchantment : EnchantmentInterface {
 
     /**
      * Automatically replants a crop block after it has been fully grown and harvested.
-     * @param block The block that was broken.
-     * @param tool The tool used to break the block.
+     * @param event The BlockBreakEvent triggered when a block is broken.
      */
-    fun replant(
-        block: Block,
-        tool: ItemStack,
-    ) {
+    fun replant(event: BlockBreakEvent) {
+        val block = event.block
         val ageable = block.blockData as? Ageable ?: return
+        val itemInHand = event.player.inventory.itemInMainHand
 
         if (ageable.age < ageable.maximumAge) return
-        if (!tool.hasItemMeta() || !tool.itemMeta.hasEnchant(get())) return
+        if (!itemInHand.hasItemMeta() || !itemInHand.itemMeta.hasEnchant(get())) return
 
         instance.server.scheduler.runTaskLater(
             instance,
