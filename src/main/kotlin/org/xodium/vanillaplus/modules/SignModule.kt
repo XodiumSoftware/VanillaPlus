@@ -14,9 +14,7 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 
 /** Represents a module handling sign mechanics within the system. */
-internal class SignModule : ModuleInterface<SignModule.Config> {
-    override val config: Config = Config()
-
+internal class SignModule : ModuleInterface<ModuleInterface.Config> {
     override fun cmds(): List<CommandData> =
         listOf(
             CommandData(
@@ -74,8 +72,4 @@ internal class SignModule : ModuleInterface<SignModule.Config> {
         signSide.line(line, text.mm())
         sign.update()
     }
-
-    data class Config(
-        override var enabled: Boolean = true,
-    ) : ModuleInterface.Config
 }

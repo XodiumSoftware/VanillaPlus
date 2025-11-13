@@ -8,9 +8,7 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 
 /** Represents a module handling recipe mechanics within the system. */
-internal class RecipiesModule : ModuleInterface<RecipiesModule.Config> {
-    override val config: Config = Config()
-
+internal class RecipiesModule : ModuleInterface<ModuleInterface.Config> {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
         if (!enabled()) return
@@ -24,8 +22,4 @@ internal class RecipiesModule : ModuleInterface<RecipiesModule.Config> {
                 .toList(),
         )
     }
-
-    data class Config(
-        override var enabled: Boolean = true,
-    ) : ModuleInterface.Config
 }

@@ -1,4 +1,4 @@
-@file:Suppress("ktlint:standard:no-wildcard-imports", "UnstableApiUsage")
+@file:Suppress("ktlint:standard:no-wildcard-imports")
 
 package org.xodium.vanillaplus.utils
 
@@ -6,20 +6,13 @@ import com.google.gson.JsonParser
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
-import io.papermc.paper.datacomponent.DataComponentTypes
-import io.papermc.paper.datacomponent.item.ItemLore
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.entity.Player
-import org.bukkit.inventory.Inventory
-import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.VanillaPlus
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.utils.ExtUtils.lore
-import org.xodium.vanillaplus.utils.ExtUtils.name
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import java.net.URI
@@ -42,8 +35,21 @@ internal object ExtUtils {
     private const val RED_SHIFT = 16
     private const val GREEN_SHIFT = 8
 
+    /** The standardized prefix for [VanillaPlus] messages. */
     val VanillaPlus.prefix: String
         get() = "${"[".mangoFmt(true)}${this::class.simpleName.toString().fireFmt()}${"]".mangoFmt()}"
+
+    /**
+     * Converts a CamelCase string to snake case.
+     * @return the snake case version of the string.
+     */
+    val String.snakeCase: String get() = replace(Regex("([a-z])([A-Z])"), "$1_$2").lowercase()
+
+    /**
+     * Generates a configuration key for a module.
+     * @return The generated configuration key.
+     */
+    val ModuleInterface<*>.key: String get() = this::class.simpleName.toString()
 
     /**
      * Deserializes a [MiniMessage] [String] into a [Component].
@@ -65,23 +71,38 @@ internal object ExtUtils {
     @JvmName("mmStringIterable")
     fun Iterable<String>.mm(vararg resolvers: TagResolver): List<Component> = map { it.mm(*resolvers) }
 
-    /** Serializes a [Component] into a String. */
-    fun Component.mm(): String = MM.serialize(this)
-
-    /** Serializes a [Component] into plaintext. */
-    fun Component.pt(): String = PlainTextComponentSerializer.plainText().serialize(this)
-
     /**
      * Performs a command from a [String].
-     * @param hover Optional hover text for the command.
+     * @param cmd The command to perform.
+     * @param hover Optional hover text for the command. Defaults to "Click me!".
      * @return The formatted [String] with the command.
      */
-    fun String.clickRunCmd(hover: String? = null): String =
-        if (hover != null) {
-            "<hover:show_text:'$hover'><click:run_command:'$this'>$this</click></hover>"
-        } else {
-            "<click:run_command:'$this'>$this</click>"
-        }
+    fun String.clickRunCmd(
+        cmd: String,
+        hover: String? = "Click me!".mangoFmt(),
+    ): String = "<hover:show_text:'$hover'><click:run_command:'$cmd'>$this</click></hover>"
+
+    /**
+     * Suggests a command from a [String].
+     * @param cmd The command to suggest.
+     * @param hover Optional hover text for the command. Defaults to "Click me!".
+     * @return The formatted [String] with the suggested command.
+     */
+    fun String.clickSuggestCmd(
+        cmd: String,
+        hover: String? = "Click me!".mangoFmt(),
+    ): String = "<hover:show_text:'$hover'><click:suggest_command:'$cmd'>$this</click></hover>"
+
+    /**
+     * Opens a URL from a [String].
+     * @param url The URL to open.
+     * @param hover Optional hover text for the URL. Defaults to "Click me!".
+     * @return The formatted [String] with the URL.
+     */
+    fun String.clickOpenUrl(
+        url: String,
+        hover: String? = "Click me!".mangoFmt(),
+    ): String = "<hover:show_text:'$hover'><click:open_url:'$url'>$this</click></hover>"
 
     /**
      * A helper function to wrap command execution with standardized error handling.
@@ -89,7 +110,7 @@ internal object ExtUtils {
      * @return Command.SINGLE_SUCCESS after execution.
      */
     fun CommandContext<CommandSourceStack>.tryCatch(action: (CommandSourceStack) -> Unit): Int {
-        runCatching { action(this.source) }
+        runCatching { action(source) }
             .onFailure { e ->
                 instance.logger.severe(
                     """
@@ -97,7 +118,7 @@ internal object ExtUtils {
                     ${e.stackTraceToString()}
                     """.trimIndent(),
                 )
-                (this.source.sender as? Player)?.sendMessage(
+                (source.sender as? Player)?.sendMessage(
                     "${instance.prefix} <red>An error has occurred. Check server logs for details.".mm(),
                 )
             }
@@ -148,39 +169,5 @@ internal object ExtUtils {
             builder.append("\n")
         }
         return builder.toString()
-    }
-
-    /**
-     * Converts a CamelCase string to snake case.
-     * @return the snake case version of the string.
-     */
-    fun String.toSnakeCase(): String = this.replace(Regex("([a-z])([A-Z])"), "$1_$2").lowercase()
-
-    /**
-     * Generates a configuration key for a module.
-     * @return The generated configuration key.
-     */
-    fun ModuleInterface<*>.key(): String = this::class.simpleName.toString()
-
-    /**
-     * Sets the name of the [ItemStack].
-     * @param name The name to set, with [MiniMessage] support.
-     * @return The modified [ItemStack].
-     */
-    fun ItemStack.name(name: String): ItemStack = apply { setData(DataComponentTypes.CUSTOM_NAME, name.mm()) }
-
-    /**
-     * Sets the lore of the [ItemStack].
-     * @param lore The lines of lore to set, with [MiniMessage] support.
-     * @return The modified [ItemStack].
-     */
-    fun ItemStack.lore(vararg lore: String): ItemStack = apply { setData(DataComponentTypes.LORE, ItemLore.lore(lore.toList().mm())) }
-
-    /**
-     * Fills the entire [Inventory] with the given [ItemStack].
-     * @param item The [ItemStack] to fill the inventory with.
-     */
-    fun Inventory.fill(item: ItemStack) {
-        for (i in 0 until size) setItem(i, item)
     }
 }
