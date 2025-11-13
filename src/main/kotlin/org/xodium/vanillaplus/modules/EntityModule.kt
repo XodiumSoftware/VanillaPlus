@@ -92,7 +92,7 @@ internal class EntityModule : ModuleInterface<EntityModule.Config> {
                         instance,
                         Runnable {
                             loveModeTicks = 600
-                            playEffect(EntityEffect.LOVE_HEARTS)
+                            if (canBreed()) playEffect(EntityEffect.LOVE_HEARTS)
                         },
                         5L,
                     )
