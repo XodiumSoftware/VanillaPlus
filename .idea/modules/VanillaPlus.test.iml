@@ -12,7 +12,7 @@
       </configuration>
     </facet>
     <facet external-system-id="GRADLE" type="kotlin-language" name="Kotlin">
-      <configuration version="5" platform="JVM 21" allPlatforms="JVM [21]" useProjectSettings="false" pureKotlinSourceFolders="C:\Users\admin\Documents\Projects\VanillaPlus\src\main\kotlin;C:\Users\admin\Documents\Projects\VanillaPlus\src\test\kotlin">
+      <configuration version="5" platform="JVM 21" allPlatforms="JVM [21]" useProjectSettings="false" pureKotlinSourceFolders="$MODULE_DIR$/../../src/test/kotlin;/mnt/hdd/Projects/VanillaPlus/src/main/kotlin">
         <additionalVisibleModuleNames>VanillaPlus:main</additionalVisibleModuleNames>
         <compilerSettings />
         <compilerArguments>
@@ -54,7 +54,7 @@
       <sourceFolder url="file://$MODULE_DIR$/../../build/generated/resourceFactory/test" type="java-test-resource" />
     </content>
     <content url="file://$MODULE_DIR$/../../src/test" />
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="jbr-21 (2)" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="VanillaPlus.main" />
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.1" level="project" />

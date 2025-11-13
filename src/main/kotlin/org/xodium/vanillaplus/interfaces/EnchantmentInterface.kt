@@ -17,11 +17,11 @@ internal interface EnchantmentInterface {
     val key: TypedKey<Enchantment>
 
     /**
-     * Initializes the Drift enchantment.
+     * Configures the properties of the enchantment using the provided builder.
      * @param builder The builder used to define the enchantment properties.
      * @return The builder for method chaining.
      */
-    fun init(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder
+    fun builder(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder
 
     /**
      * Retrieves the enchantment from the registry.
