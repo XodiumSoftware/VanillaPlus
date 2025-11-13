@@ -4,7 +4,6 @@ package org.xodium.vanillaplus.modules
 
 import org.bukkit.Material
 import org.bukkit.Particle
-import org.bukkit.attribute.Attribute
 import org.bukkit.block.Barrel
 import org.bukkit.entity.*
 import org.bukkit.event.EventHandler
@@ -15,13 +14,8 @@ import org.bukkit.event.entity.EntityExplodeEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.data.SoundData
-import org.xodium.vanillaplus.engines.ExpressionEngine
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.pdcs.AnimalsPDC.searchedFood
-import org.xodium.vanillaplus.pdcs.HorsePDC.sold
-import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.bukkit.Sound as BukkitSound
 import kotlin.random.Random
 
 /** Represents a module handling entity mechanics within the system. */
