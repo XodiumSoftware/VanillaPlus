@@ -70,10 +70,13 @@ internal class EntityModule : ModuleInterface<EntityModule.Config> {
                 if (!animal.isValid || animal.isDead || animal.isLoveMode) return@Runnable
 
                 val foods = getFoodFor(animal) ?: return@Runnable
-
                 val barrel =
-                    // TODO: make radius configurable.
-                    findBarrelWithFood(animal.location.toVector(), animal.world.name, 8, foods)
+                    findBarrelWithFood(
+                        animal.location.toVector(),
+                        animal.world.name,
+                        config.animalDetectFeederRadius,
+                        foods,
+                    )
                         ?: return@Runnable
                 val pathfinder = animal.pathfinder
 
@@ -103,11 +106,9 @@ internal class EntityModule : ModuleInterface<EntityModule.Config> {
             .firstOrNull { barrel.inventory.getItem(it)?.type in foods }
             ?.let { index ->
                 val item = barrel.inventory.getItem(index)
-                if (item?.amount == 1) {
-                    barrel.inventory.clear(index)
-                } else {
-                    item?.amount = item.amount - 1
-                }
+
+                if (item?.amount == 1) barrel.inventory.clear(index) else item?.amount = item.amount - 1
+
                 barrel.update()
             }
     }
@@ -135,9 +136,7 @@ internal class EntityModule : ModuleInterface<EntityModule.Config> {
                     val block = world.getBlockAt(origin.blockX + x, origin.blockY + y, origin.blockZ + z)
                     val state = block.state
 
-                    if (state is Barrel && state.inventory.contents.any { it != null && it.type in foods }) {
-                        return state
-                    }
+                    if (state is Barrel && state.inventory.contents.any { it != null && it.type in foods }) return state
                 }
             }
         }
@@ -194,5 +193,6 @@ internal class EntityModule : ModuleInterface<EntityModule.Config> {
         var disableGhastGrief: Boolean = true,
         var disableWitherGrief: Boolean = true,
         var entityEggDropChance: Double = 0.1,
+        var animalDetectFeederRadius: Int = 8,
     ) : ModuleInterface.Config
 }
