@@ -12,7 +12,6 @@ import org.bukkit.event.entity.EntityChangeBlockEvent
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.entity.EntityExplodeEvent
 import org.bukkit.inventory.ItemStack
-import org.bukkit.util.Vector
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.pdcs.AnimalsPDC.searchingFood
@@ -81,9 +80,9 @@ internal class EntityModule : ModuleInterface<EntityModule.Config> {
 
                 if (location.distanceSquared(item.location) <= 2.25) {
                     item.pickupDelay = 0
-                    item.velocity = Vector(0.0, 0.1, 0.0)
 
                     playPickupItemAnimation(item, 1)
+
                     when (this) {
                         // TODO: Add more animals that have eating effects
                         is Sheep -> playEffect(EntityEffect.SHEEP_EAT_GRASS)
