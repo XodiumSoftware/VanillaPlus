@@ -2,9 +2,9 @@
 
 package org.xodium.vanillaplus.modules
 
+import org.bukkit.EntityEffect
 import org.bukkit.Location
 import org.bukkit.Material
-import org.bukkit.Particle
 import org.bukkit.entity.*
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.CreatureSpawnEvent
@@ -15,7 +15,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.pdcs.AnimalsPDC.searchedFood
+import org.xodium.vanillaplus.pdcs.AnimalsPDC.searchingFood
 import kotlin.random.Random
 
 /** Represents a module handling entity mechanics within the system. */
@@ -58,32 +58,39 @@ internal class EntityModule : ModuleInterface<EntityModule.Config> {
     }
 
     private fun Animals.searchFood() {
-        if (searchedFood()) return
+        if (searchingFood) return
 
-        searchedFood(true)
+        searchingFood = true
 
         instance.server.scheduler.runTaskTimer(
             instance,
             Runnable {
                 if (!isValid || isDead || isLoveMode) return@Runnable
 
-                val foods = getFood() ?: return@Runnable
                 val item =
-                    findNearbyFoodItem(location, config.animalDetectFoodRadius.toDouble(), foods) ?: return@Runnable
+                    findNearbyItem(
+                        location,
+                        config.animalDetectFoodRadius.toDouble(),
+                        Material.entries.filter { isBreedItem(it) }.toSet(),
+                    ) ?: return@Runnable
 
                 pathfinder.moveTo(item.location)
 
                 if (location.distanceSquared(item.location) <= 2.25) {
                     item.pickupDelay = 0
                     item.velocity = Vector(0.0, 0.1, 0.0)
+
+                    playPickupItemAnimation(item, 1)
+                    when (this) {
+                        // TODO: Add more animals that have eating effects
+                        is Sheep -> playEffect(EntityEffect.SHEEP_EAT_GRASS)
+                    }
+
                     instance.server.scheduler.runTaskLater(
                         instance,
                         Runnable {
-                            if (item.isValid) {
-                                item.remove()
-                                loveModeTicks = 600
-                                world.spawnParticle(Particle.HEART, location.add(0.0, 1.0, 0.0), 5)
-                            }
+                            loveModeTicks = 600
+                            playEffect(EntityEffect.LOVE_HEARTS)
                         },
                         5L,
                     )
@@ -95,44 +102,21 @@ internal class EntityModule : ModuleInterface<EntityModule.Config> {
     }
 
     /**
-     * Finds a nearby food item on the ground that matches the animal's preferred-food.
-     * @param origin The animal's position.
-     * @param radius The search radius.
-     * @param foods The valid food materials.
-     * @return An item entity containing food, or null if none found.
+     * Finds a nearby item of specified types within a given radius from the origin location.
+     * @param origin The origin location to search from.
+     * @param radius The radius within which to search for items.
+     * @param items The set of item types to look for.
+     * @return The first found item of the specified types within the radius, or `null` if none are found.
      */
-    private fun findNearbyFoodItem(
+    private fun findNearbyItem(
         origin: Location,
         radius: Double,
-        foods: Set<Material>,
+        items: Set<Material>,
     ): Item? =
         origin.world
             .getNearbyEntities(origin, radius, radius, radius)
             .filterIsInstance<Item>()
-            .firstOrNull { item -> item.itemStack.type in foods && item.pickupDelay <= 0 }
-
-    /**
-     * Returns the valid food materials for the specified animal.
-     * @return The set of valid food materials, or null if not applicable.
-     */
-    private fun Animals.getFood(): Set<Material>? =
-        when (type) {
-            EntityType.COW, EntityType.SHEEP -> setOf(Material.WHEAT)
-
-            EntityType.PIG -> setOf(Material.CARROT, Material.BEETROOT, Material.POTATO)
-
-            EntityType.CHICKEN ->
-                setOf(
-                    Material.WHEAT_SEEDS,
-                    Material.BEETROOT_SEEDS,
-                    Material.MELON_SEEDS,
-                    Material.PUMPKIN_SEEDS,
-                )
-
-            EntityType.RABBIT -> setOf(Material.DANDELION, Material.CARROT, Material.BEETROOT)
-
-            else -> null
-        }
+            .firstOrNull { it.itemStack.type in items && it.pickupDelay <= 0 }
 
     /**
      * Determines whether an entity's griefing behaviour should be cancelled based on configuration settings.

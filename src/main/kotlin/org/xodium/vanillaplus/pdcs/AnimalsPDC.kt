@@ -14,16 +14,13 @@ internal object AnimalsPDC {
     private val FOOD_SEARCHING_KEY = NamespacedKey(instance, "food_searching")
 
     /**
-     * Retrieves the food searching status of this animal from its persistent data container.
-     * @receiver The [Animals] whose food searching status to retrieve.
-     * @return `true` if the animal is marked as searching for food, `false` if not or if the data is not set.
+     * Gets or sets the food searching status of this animal in its persistent data container.
+     * @receiver The [Animals] whose food searching status to access.
+     * @return `true` if the animal is marked as searching for `food`, `false` if not or if the data is not set.
      */
-    fun Animals.searchedFood(): Boolean = persistentDataContainer.get(FOOD_SEARCHING_KEY, PersistentDataType.BOOLEAN) ?: false
-
-    /**
-     * Sets the food searching status of this animal in its persistent data container.
-     * @receiver The [Animals] whose food searching status to modify.
-     * @param boolean The food searching state to set (`true` for searching, `false` for not searching).
-     */
-    fun Animals.searchedFood(boolean: Boolean) = persistentDataContainer.set(FOOD_SEARCHING_KEY, PersistentDataType.BOOLEAN, boolean)
+    var Animals.searchingFood: Boolean
+        get() = persistentDataContainer.get(FOOD_SEARCHING_KEY, PersistentDataType.BOOLEAN) ?: false
+        set(value) {
+            persistentDataContainer.set(FOOD_SEARCHING_KEY, PersistentDataType.BOOLEAN, value)
+        }
 }
