@@ -64,7 +64,10 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
         if (!targetBlock.type.isFarmable()) return
 
         val blockAbove = targetBlock.getRelative(BlockFace.UP)
-        if (!blockAbove.type.isAir) return
+
+        if (blockAbove.type.isAir) return
+
+        Tag.CROPS.isTagged(event.item.type) // NOTE: use this as a check.
 
         val cropType =
             when (event.item.type) {
@@ -74,8 +77,6 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
                 Material.BEETROOT_SEEDS -> Material.BEETROOTS
                 Material.MELON_SEEDS -> Material.MELON_STEM
                 Material.PUMPKIN_SEEDS -> Material.PUMPKIN_STEM
-                Material.COCOA_BEANS -> Material.COCOA
-                Material.NETHER_WART -> Material.NETHER_WART
                 Material.TORCHFLOWER_SEEDS -> Material.TORCHFLOWER_CROP
                 Material.PITCHER_POD -> Material.PITCHER_CROP
                 else -> return
