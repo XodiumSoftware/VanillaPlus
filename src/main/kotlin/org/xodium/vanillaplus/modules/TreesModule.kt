@@ -33,9 +33,7 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
     override val config: Config = Config()
 
     private val schematicCache: Map<Material, List<Clipboard>> by lazy {
-        MaterialRegistry.SAPLING_LINKS.mapValues { (_, dirs) ->
-            dirs.flatMap { dir -> loadSchematics("/schematics/$dir") }
-        }
+        MaterialRegistry.SAPLING_LINKS.mapValues { loadSchematics("/schematics/${it.value}") }
     }
 
     override fun enabled(): Boolean = config.enabled && WorldEditHook.get()
