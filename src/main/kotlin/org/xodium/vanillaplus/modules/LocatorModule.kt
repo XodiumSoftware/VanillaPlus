@@ -17,9 +17,7 @@ import java.util.*
 import java.util.concurrent.CompletableFuture
 
 /** Represents a module handling locator mechanics within the system. */
-internal class LocatorModule : ModuleInterface<LocatorModule.Config> {
-    override val config: Config = Config()
-
+internal class LocatorModule : ModuleInterface<ModuleInterface.Config> {
     private val colors = NamedTextColor.NAMES.keys().map { it.toString() } + listOf("<RRGGBB>", "reset")
 
     override fun cmds(): List<CommandData> =
@@ -104,8 +102,4 @@ internal class LocatorModule : ModuleInterface<LocatorModule.Config> {
             else -> instance.server.dispatchCommand(player, "$cmd color reset")
         }
     }
-
-    data class Config(
-        override var enabled: Boolean = true,
-    ) : ModuleInterface.Config
 }

@@ -20,7 +20,9 @@ internal interface ModuleInterface<out T : ModuleInterface.Config> : Listener {
      * Retrieves the configuration for this module.
      * @return A [Config] object containing the module's configuration settings.
      */
+    @Suppress("UNCHECKED_CAST")
     val config: T
+        get() = object : Config {} as T
 
     /**
      * Determines if this module is currently enabled.
