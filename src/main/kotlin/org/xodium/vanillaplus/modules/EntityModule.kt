@@ -71,7 +71,10 @@ internal class EntityModule : ModuleInterface<EntityModule.Config> {
                     findNearbyItem(
                         location,
                         config.animalDetectFoodRadius.toDouble(),
-                        Material.entries.filter { isBreedItem(it) }.toSet(),
+                        Material.entries
+                            .filter { it.isItem }
+                            .filter { isBreedItem(it) }
+                            .toSet(),
                     ) ?: return@Runnable
 
                 pathfinder.moveTo(item.location)
