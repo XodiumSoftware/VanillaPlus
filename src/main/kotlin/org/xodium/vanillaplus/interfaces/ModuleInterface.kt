@@ -12,6 +12,8 @@ internal interface ModuleInterface<out T : ModuleInterface.Config> : Listener {
      */
     interface Config {
         var enabled: Boolean
+            get() = true
+            set(_) {}
     }
 
     /**

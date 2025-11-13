@@ -42,7 +42,6 @@ internal class BooksModule : ModuleInterface<BooksModule.Config> {
         }
 
     data class Config(
-        override var enabled: Boolean = true,
         var books: List<BookData> =
             listOf(
                 BookData(

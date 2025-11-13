@@ -114,7 +114,6 @@ internal class SilkTouchModule : ModuleInterface<SilkTouchModule.Config> {
         item?.let { Tag.ITEMS_PICKAXES.isTagged(it.type) && it.containsEnchantment(Enchantment.SILK_TOUCH) } == true
 
     data class Config(
-        override var enabled: Boolean = true,
         var allowSpawnerSilk: Boolean = true,
         var allowBuddingAmethystSilk: Boolean = true,
         var i18n: I18n = I18n(),
