@@ -2,9 +2,9 @@
 
 package org.xodium.vanillaplus.modules
 
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Particle
-import org.bukkit.block.Barrel
 import org.bukkit.entity.*
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.CreatureSpawnEvent
@@ -25,7 +25,7 @@ internal class EntityModule : ModuleInterface<EntityModule.Config> {
     init {
         if (enabled()) {
             instance.server.worlds.forEach { world ->
-                world.livingEntities.filterIsInstance<Animals>().forEach { animal -> startSearchTask(animal) }
+                world.livingEntities.filterIsInstance<Animals>().forEach { it.searchFood() }
             }
         }
     }
@@ -33,13 +33,13 @@ internal class EntityModule : ModuleInterface<EntityModule.Config> {
     @EventHandler
     fun on(event: EntityChangeBlockEvent) {
         if (!enabled()) return
-        if (shouldCancelGrief(event.entity)) event.isCancelled = true
+        if (event.entity.cancelGrief()) event.isCancelled = true
     }
 
     @EventHandler
     fun on(event: EntityExplodeEvent) {
         if (!enabled()) return
-        if (shouldCancelGrief(event.entity)) event.blockList().clear()
+        if (event.entity.cancelGrief()) event.blockList().clear()
     }
 
     @EventHandler
@@ -54,38 +54,39 @@ internal class EntityModule : ModuleInterface<EntityModule.Config> {
     fun on(event: CreatureSpawnEvent) {
         if (!enabled()) return
 
-        val animal = event.entity
-
-        if (animal is Animals) startSearchTask(animal)
+        (event.entity as Animals).searchFood()
     }
 
-    private fun startSearchTask(animal: Animals) {
-        if (animal.searchedFood()) return
+    private fun Animals.searchFood() {
+        if (searchedFood()) return
 
-        animal.searchedFood(true)
+        searchedFood(true)
 
         instance.server.scheduler.runTaskTimer(
             instance,
             Runnable {
-                if (!animal.isValid || animal.isDead || animal.isLoveMode) return@Runnable
+                if (!isValid || isDead || isLoveMode) return@Runnable
 
-                val foods = getFoodFor(animal) ?: return@Runnable
-                val barrel =
-                    findBarrelWithFood(
-                        animal.location.toVector(),
-                        animal.world.name,
-                        config.animalDetectFeederRadius,
-                        foods,
+                val foods = getFood() ?: return@Runnable
+                val item =
+                    findNearbyFoodItem(location, config.animalDetectFoodRadius.toDouble(), foods) ?: return@Runnable
+
+                pathfinder.moveTo(item.location)
+
+                if (location.distanceSquared(item.location) <= 2.25) {
+                    item.pickupDelay = 0
+                    item.velocity = Vector(0.0, 0.1, 0.0)
+                    instance.server.scheduler.runTaskLater(
+                        instance,
+                        Runnable {
+                            if (item.isValid) {
+                                item.remove()
+                                loveModeTicks = 600
+                                world.spawnParticle(Particle.HEART, location.add(0.0, 1.0, 0.0), 5)
+                            }
+                        },
+                        5L,
                     )
-                        ?: return@Runnable
-                val pathfinder = animal.pathfinder
-
-                pathfinder.moveTo(barrel.location.add(0.5, 0.0, 0.5))
-
-                if (animal.location.distanceSquared(barrel.location) <= 2.25) {
-                    consumeOneFood(barrel, foods)
-                    animal.loveModeTicks = 600
-                    animal.world.spawnParticle(Particle.HEART, animal.location.add(0.0, 1.0, 0.0), 5)
                 }
             },
             0L,
@@ -94,63 +95,28 @@ internal class EntityModule : ModuleInterface<EntityModule.Config> {
     }
 
     /**
-     * Removes one valid food item from the barrel inventory.
-     * @param barrel The barrel containing the food.
-     * @param foods The valid food materials.
-     */
-    private fun consumeOneFood(
-        barrel: Barrel,
-        foods: Set<Material>,
-    ) {
-        barrel.inventory.contents.indices
-            .firstOrNull { barrel.inventory.getItem(it)?.type in foods }
-            ?.let { index ->
-                val item = barrel.inventory.getItem(index)
-
-                if (item?.amount == 1) barrel.inventory.clear(index) else item?.amount = item.amount - 1
-
-                barrel.update()
-            }
-    }
-
-    /**
-     * Finds a nearby barrel that contains any of the provided food items.
-     *
-     * @param origin The animal’s position.
-     * @param worldName The world name.
+     * Finds a nearby food item on the ground that matches the animal's preferred-food.
+     * @param origin The animal's position.
      * @param radius The search radius.
-     * @param foods The valid food items.
-     * @return A barrel containing food, or null if none found.
+     * @param foods The valid food materials.
+     * @return An item entity containing food, or null if none found.
      */
-    private fun findBarrelWithFood(
-        origin: Vector,
-        worldName: String,
-        radius: Int,
+    private fun findNearbyFoodItem(
+        origin: Location,
+        radius: Double,
         foods: Set<Material>,
-    ): Barrel? {
-        val world = instance.server.getWorld(worldName) ?: return null
-
-        for (x in -radius..radius) {
-            for (y in -radius..radius) {
-                for (z in -radius..radius) {
-                    val block = world.getBlockAt(origin.blockX + x, origin.blockY + y, origin.blockZ + z)
-                    val state = block.state
-
-                    if (state is Barrel && state.inventory.contents.any { it != null && it.type in foods }) return state
-                }
-            }
-        }
-        return null
-    }
+    ): Item? =
+        origin.world
+            .getNearbyEntities(origin, radius, radius, radius)
+            .filterIsInstance<Item>()
+            .firstOrNull { item -> item.itemStack.type in foods && item.pickupDelay <= 0 }
 
     /**
      * Returns the valid food materials for the specified animal.
-     *
-     * @param animal The target animal.
      * @return The set of valid food materials, or null if not applicable.
      */
-    private fun getFoodFor(animal: Animals): Set<Material>? =
-        when (animal.type) {
+    private fun Animals.getFood(): Set<Material>? =
+        when (type) {
             EntityType.COW, EntityType.SHEEP -> setOf(Material.WHEAT)
 
             EntityType.PIG -> setOf(Material.CARROT, Material.BEETROOT, Material.POTATO)
@@ -170,11 +136,10 @@ internal class EntityModule : ModuleInterface<EntityModule.Config> {
 
     /**
      * Determines whether an entity's griefing behaviour should be cancelled based on configuration settings.
-     * @param entity The entity whose griefing behaviour is being evaluated.
      * @return `true` if the entity's griefing behaviour should be cancelled; `false` otherwise.
      */
-    private fun shouldCancelGrief(entity: Entity): Boolean =
-        when (entity) {
+    private fun Entity.cancelGrief(): Boolean =
+        when (this) {
             is WitherSkull -> config.disableWitherGrief
             is Fireball -> config.disableGhastGrief
             is Blaze -> config.disableBlazeGrief
@@ -193,6 +158,6 @@ internal class EntityModule : ModuleInterface<EntityModule.Config> {
         var disableGhastGrief: Boolean = true,
         var disableWitherGrief: Boolean = true,
         var entityEggDropChance: Double = 0.1,
-        var animalDetectFeederRadius: Int = 8,
+        var animalDetectFoodRadius: Int = 8,
     ) : ModuleInterface.Config
 }
