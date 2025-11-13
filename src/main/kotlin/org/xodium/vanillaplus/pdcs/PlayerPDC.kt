@@ -17,38 +17,32 @@ internal object PlayerPDC {
     private val SCOREBOARD_VISIBILITY_KEY = NamespacedKey(instance, "scoreboard_visibility")
 
     /**
-     * Retrieves the [Player]'s nickname from their persistent data container.
-     * @receiver The [Player] whose nickname to retrieve.
-     * @return The [Player]'s nickname, or null if no nickname is set.
+     * Gets or sets the player's nickname in their persistent data container.
+     * @receiver The player whose nickname to access.
+     * @return The player's nickname, or null if not set.
      */
-    fun Player.nickname(): String? = persistentDataContainer.get(NICKNAME_KEY, PersistentDataType.STRING)
-
-    /**
-     * Sets or removes the [Player]'s nickname in their persistent data container.
-     * @receiver The [Player] whose nickname to modify.
-     * @param name The nickname to set, or null/empty to remove the current nickname.
-     */
-    fun Player.nickname(name: String?) {
-        if (name.isNullOrEmpty()) {
-            persistentDataContainer.remove(NICKNAME_KEY)
-        } else {
-            persistentDataContainer.set(NICKNAME_KEY, PersistentDataType.STRING, name)
+    var Player.nickname: String?
+        get() = persistentDataContainer.get(NICKNAME_KEY, PersistentDataType.STRING)
+        set(value) {
+            if (value.isNullOrEmpty()) {
+                persistentDataContainer.remove(NICKNAME_KEY)
+            } else {
+                persistentDataContainer.set(NICKNAME_KEY, PersistentDataType.STRING, value)
+            }
         }
-    }
 
     /**
-     * Retrieves the [Player]'s scoreboard visibility setting from their persistent data container.
-     * @receiver The [Player] whose scoreboard visibility to check.
-     * @return The scoreboard visibility state, or null if not set.
+     * Gets or sets the player's scoreboard visibility preference in their persistent data container.
+     * @receiver The player whose scoreboard visibility to access.
+     * @return True if the scoreboard is visible, false if hidden, or null if not set.
      */
-    fun Player.scoreboardVisibility(): Boolean? = persistentDataContainer.get(SCOREBOARD_VISIBILITY_KEY, PersistentDataType.BOOLEAN)
-
-    /**
-     * Sets the [Player]'s scoreboard visibility in their persistent data container.
-     * @receiver The [Player] whose scoreboard visibility to modify.
-     * @param visible The visibility state to set (true for visible, false for hidden).
-     */
-    fun Player.scoreboardVisibility(visible: Boolean) {
-        persistentDataContainer.set(SCOREBOARD_VISIBILITY_KEY, PersistentDataType.BOOLEAN, visible)
-    }
+    var Player.scoreboardVisibility: Boolean?
+        get() = persistentDataContainer.get(SCOREBOARD_VISIBILITY_KEY, PersistentDataType.BOOLEAN)
+        set(value) {
+            if (value == null) {
+                persistentDataContainer.remove(SCOREBOARD_VISIBILITY_KEY)
+            } else {
+                persistentDataContainer.set(SCOREBOARD_VISIBILITY_KEY, PersistentDataType.BOOLEAN, value)
+            }
+        }
 }

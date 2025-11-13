@@ -77,7 +77,7 @@ internal class PlayerModule(
     fun on(event: PlayerJoinEvent) {
         if (!enabled()) return
         val player = event.player
-        player.displayName(player.nickname()?.mm())
+        player.displayName(player.nickname?.mm())
 
         if (config.i18n.playerJoinMsg.isEmpty()) return
         event.joinMessage(null)
@@ -180,8 +180,8 @@ internal class PlayerModule(
         player: Player,
         name: String,
     ) {
-        player.nickname(name)
-        player.displayName(player.nickname()?.mm())
+        player.nickname = name
+        player.displayName(player.nickname?.mm())
         tabListModule.updatePlayerDisplayName(player)
         player.sendActionBar(config.i18n.nicknameUpdated.mm(Placeholder.component("nickname", player.displayName())))
     }
@@ -217,7 +217,6 @@ internal class PlayerModule(
         }
 
     data class Config(
-        override var enabled: Boolean = true,
         var enderChestClickType: ClickType = ClickType.SHIFT_RIGHT,
         var skullDropChance: Double = 0.1,
         var xpCostToBottle: Int = 11,

@@ -135,7 +135,6 @@ internal class DimensionsModule : ModuleInterface<DimensionsModule.Config> {
     private fun getOverworld(): World = instance.server.getWorld("world") ?: error("Overworld (world) is not loaded.")
 
     data class Config(
-        override var enabled: Boolean = true,
         var portalSearchRadius: Int = 128,
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
