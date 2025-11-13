@@ -33,9 +33,7 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
     override val config: Config = Config()
 
     private val schematicCache: Map<Material, List<Clipboard>> by lazy {
-        MaterialRegistry.SAPLING_LINKS.mapValues { (_, dirs) ->
-            dirs.flatMap { dir -> loadSchematics("/schematics/$dir") }
-        }
+        MaterialRegistry.SAPLING_LINKS.mapValues { loadSchematics("/schematics/${it.value}") }
     }
 
     override fun enabled(): Boolean = config.enabled && WorldEditHook.get()
@@ -164,11 +162,63 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
     }
 
     data class Config(
-        override var enabled: Boolean = true,
         var copyBiomes: Boolean = false,
         var copyEntities: Boolean = false,
         var ignoreAirBlocks: Boolean = true,
         var ignoreStructureVoidBlocks: Boolean = true,
-        var treeMask: Set<Material> = emptySet(),
+        var treeMask: Set<Material> =
+            setOf(
+                Material.AZALEA,
+                Material.WEEPING_VINES,
+                Material.CORNFLOWER,
+                Material.CLOSED_EYEBLOSSOM,
+                Material.PINK_TULIP,
+                Material.OPEN_EYEBLOSSOM,
+                Material.WHITE_TULIP,
+                Material.SNOW,
+                Material.FERN,
+                Material.AZALEA_LEAVES,
+                Material.SUNFLOWER,
+                Material.PEONY,
+                Material.PINK_PETALS,
+                Material.LILAC,
+                Material.LARGE_FERN,
+                Material.VINE,
+                Material.CAVE_VINES_PLANT,
+                Material.TORCHFLOWER,
+                Material.RED_TULIP,
+                Material.ORANGE_TULIP,
+                Material.KELP,
+                Material.AIR,
+                Material.FLOWERING_AZALEA,
+                Material.AZURE_BLUET,
+                Material.MOSS_BLOCK,
+                Material.PITCHER_PLANT,
+                Material.WEEPING_VINES_PLANT,
+                Material.TALL_SEAGRASS,
+                Material.TWISTING_VINES,
+                Material.BLUE_ORCHID,
+                Material.CAVE_VINES,
+                Material.ROSE_BUSH,
+                Material.SPORE_BLOSSOM,
+                Material.FLOWERING_AZALEA_LEAVES,
+                Material.POPPY,
+                Material.TWISTING_VINES_PLANT,
+                Material.DANDELION,
+                Material.DEAD_BUSH,
+                Material.LILY_OF_THE_VALLEY,
+                Material.KELP_PLANT,
+                Material.SHORT_GRASS,
+                Material.CHORUS_FLOWER,
+                Material.ALLIUM,
+                Material.MANGROVE_PROPAGULE,
+                Material.CHERRY_LEAVES,
+                Material.SUGAR_CANE,
+                Material.SEAGRASS,
+                Material.MOSS_CARPET,
+                Material.WITHER_ROSE,
+                Material.TALL_GRASS,
+                Material.OXEYE_DAISY,
+            ),
     ) : ModuleInterface.Config
 }
