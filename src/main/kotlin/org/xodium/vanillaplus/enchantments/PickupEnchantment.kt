@@ -8,7 +8,6 @@ import org.bukkit.enchantments.Enchantment
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.xodium.vanillaplus.VanillaPlusBootstrap.Companion.INSTANCE
-import org.xodium.vanillaplus.VanillaPlusBootstrap.Companion.PICKUP
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 
@@ -18,7 +17,7 @@ internal object PickupEnchantment : EnchantmentInterface {
 
     override fun builder(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
-            .description(PICKUP.value().replaceFirstChar { it.uppercase() }.mm())
+            .description(key.value().replaceFirstChar { it.uppercase() }.mm())
             // TODO: Adjust costs and levels as needed
             .anvilCost(8)
             .maxLevel(1)
