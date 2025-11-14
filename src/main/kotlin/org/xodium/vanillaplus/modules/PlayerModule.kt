@@ -5,6 +5,7 @@ import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
 import io.papermc.paper.datacomponent.item.ResolvableProfile
+import io.papermc.paper.event.entity.EntityEquipmentChangedEvent
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -24,6 +25,7 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
+import org.xodium.vanillaplus.enchantments.NightVisionEnchantment
 import org.xodium.vanillaplus.enchantments.PickupEnchantment
 import org.xodium.vanillaplus.enchantments.ReplantEnchantment
 import org.xodium.vanillaplus.interfaces.ModuleInterface
@@ -166,6 +168,13 @@ internal class PlayerModule(
 
         ReplantEnchantment.replant(event)
         PickupEnchantment.pickup(event)
+    }
+
+    @EventHandler
+    fun on(event: EntityEquipmentChangedEvent) {
+        if (!enabled()) return
+
+        NightVisionEnchantment.nightVision(event)
     }
 
     /**
