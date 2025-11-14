@@ -22,10 +22,6 @@ import org.xodium.vanillaplus.enchantments.ReplantEnchantment
 internal class VanillaPlusBootstrap : PluginBootstrap {
     companion object {
         const val INSTANCE = "vanillaplus"
-        val REPLANT = ReplantEnchantment.key
-        val PICKUP = PickupEnchantment.key
-        val NIGHT_VISION = NightVisionEnchantment.key
-        val ENCHANTS = setOf(REPLANT, PICKUP, NIGHT_VISION)
         val TOOLS = TagKey.create(RegistryKey.ITEM, Key.key(INSTANCE, "tools"))
         val WEAPONS = TagKey.create(RegistryKey.ITEM, Key.key(INSTANCE, "weapons"))
         val TOOLS_WEAPONS = TagKey.create(RegistryKey.ITEM, Key.key(INSTANCE, "tools_weapons"))
@@ -70,17 +66,17 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
             registerEventHandler(
                 RegistryEvents.ENCHANTMENT.compose().newHandler { event ->
                     event.registry().apply {
-                        register(REPLANT) { builder ->
+                        register(ReplantEnchantment.key) { builder ->
                             ReplantEnchantment
                                 .invoke(builder)
                                 .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.HOES))
                         }
-                        register(PICKUP) { builder ->
+                        register(PickupEnchantment.key) { builder ->
                             PickupEnchantment
                                 .invoke(builder)
                                 .supportedItems(event.getOrCreateTag(TOOLS_WEAPONS))
                         }
-                        register(NIGHT_VISION) { builder ->
+                        register(NightVisionEnchantment.key) { builder ->
                             NightVisionEnchantment
                                 .invoke(builder)
                                 .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.HEAD_ARMOR))
@@ -90,9 +86,10 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
             )
             registerEventHandler(LifecycleEvents.TAGS.postFlatten(RegistryKey.ENCHANTMENT)) { event ->
                 event.registrar().apply {
-                    addToTag(EnchantmentTagKeys.TRADEABLE, ENCHANTS)
-                    addToTag(EnchantmentTagKeys.NON_TREASURE, ENCHANTS)
-                    addToTag(EnchantmentTagKeys.IN_ENCHANTING_TABLE, ENCHANTS)
+                    val enchants = setOf(ReplantEnchantment.key, PickupEnchantment.key, NightVisionEnchantment.key)
+                    addToTag(EnchantmentTagKeys.TRADEABLE, enchants)
+                    addToTag(EnchantmentTagKeys.NON_TREASURE, enchants)
+                    addToTag(EnchantmentTagKeys.IN_ENCHANTING_TABLE, enchants)
                 }
             }
         }
