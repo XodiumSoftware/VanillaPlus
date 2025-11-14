@@ -16,6 +16,7 @@ import net.kyori.adventure.key.Key
 import org.xodium.vanillaplus.enchantments.NightVisionEnchantment
 import org.xodium.vanillaplus.enchantments.PickupEnchantment
 import org.xodium.vanillaplus.enchantments.ReplantEnchantment
+import org.xodium.vanillaplus.enchantments.VeinMineEnchantment
 
 /** Main bootstrap class of the plugin. */
 @Suppress("UnstableApiUsage", "Unused")
@@ -25,7 +26,8 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
         val REPLANT = ReplantEnchantment.key
         val PICKUP = PickupEnchantment.key
         val NIGHT_VISION = NightVisionEnchantment.key
-        val ENCHANTS = setOf(REPLANT, PICKUP, NIGHT_VISION)
+        val VEIN_MINE = VeinMineEnchantment.key
+        val ENCHANTS = setOf(REPLANT, PICKUP, NIGHT_VISION, VEIN_MINE)
         val TOOLS = TagKey.create(RegistryKey.ITEM, Key.key(INSTANCE, "tools"))
     }
 
@@ -62,6 +64,11 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                             NightVisionEnchantment
                                 .builder(it)
                                 .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.HEAD_ARMOR))
+                        }
+                        register(VEIN_MINE) {
+                            VeinMineEnchantment
+                                .builder(it)
+                                .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.PICKAXES))
                         }
                     }
                 },
