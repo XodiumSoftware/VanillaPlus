@@ -54,6 +54,7 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                             TagEntry.valueEntry(ItemTypeKeys.BOW),
                             TagEntry.valueEntry(ItemTypeKeys.CROSSBOW),
                             TagEntry.valueEntry(ItemTypeKeys.TRIDENT),
+                            TagEntry.valueEntry(ItemTypeKeys.MACE),
                         ),
                     )
                     setTag(
