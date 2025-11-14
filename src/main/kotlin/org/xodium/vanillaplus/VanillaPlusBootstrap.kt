@@ -13,6 +13,7 @@ import io.papermc.paper.registry.keys.tags.ItemTypeTagKeys
 import io.papermc.paper.registry.tag.TagKey
 import io.papermc.paper.tag.TagEntry
 import net.kyori.adventure.key.Key
+import org.xodium.vanillaplus.enchantments.NightVisionEnchantment
 import org.xodium.vanillaplus.enchantments.PickupEnchantment
 import org.xodium.vanillaplus.enchantments.ReplantEnchantment
 
@@ -23,7 +24,8 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
         const val INSTANCE = "vanillaplus"
         val REPLANT = ReplantEnchantment.key
         val PICKUP = PickupEnchantment.key
-        val ENCHANTS = setOf(REPLANT, PICKUP)
+        val NIGHT_VISION = NightVisionEnchantment.key
+        val ENCHANTS = setOf(REPLANT, PICKUP, NIGHT_VISION)
         val TOOLS = TagKey.create(RegistryKey.ITEM, Key.key(INSTANCE, "tools"))
     }
 
@@ -47,9 +49,20 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                 RegistryEvents.ENCHANTMENT.compose().newHandler { event ->
                     event.registry().apply {
                         register(REPLANT) {
-                            ReplantEnchantment.builder(it).supportedItems(event.getOrCreateTag(ItemTypeTagKeys.HOES))
+                            ReplantEnchantment
+                                .builder(it)
+                                .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.HOES))
                         }
-                        register(PICKUP) { PickupEnchantment.builder(it).supportedItems(event.getOrCreateTag(TOOLS)) }
+                        register(PICKUP) {
+                            PickupEnchantment
+                                .builder(it)
+                                .supportedItems(event.getOrCreateTag(TOOLS))
+                        }
+                        register(NIGHT_VISION) {
+                            NightVisionEnchantment
+                                .builder(it)
+                                .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.HEAD_ARMOR))
+                        }
                     }
                 },
             )
