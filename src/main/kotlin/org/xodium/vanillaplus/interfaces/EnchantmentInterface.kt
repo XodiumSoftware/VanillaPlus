@@ -26,6 +26,7 @@ internal interface EnchantmentInterface {
                         .simpleName
                         ?.removeSuffix("Enchantment")
                         ?.split(Regex("(?=[A-Z])"))
+                        ?.filter { it.isNotEmpty() }
                         ?.joinToString("_") { it.lowercase() }
                         .toString(),
                 ),

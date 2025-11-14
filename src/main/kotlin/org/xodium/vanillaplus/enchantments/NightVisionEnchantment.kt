@@ -27,16 +27,15 @@ internal object NightVisionEnchantment : EnchantmentInterface {
      * @param event The EntityEquipmentChangedEvent triggered when an entity's equipment changes.
      */
     fun nightVision(event: EntityEquipmentChangedEvent) {
-        val player = event.entity as Player
-        val helmet = player.inventory.helmet ?: return
+        val player = event.entity as? Player ?: return
+        val helmet = player.inventory.helmet
 
-        if (!helmet.hasItemMeta()) return
-        if (helmet.itemMeta.hasEnchant(get())) {
-            player.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 0, true, false, true))
+        if (helmet != null && helmet.hasItemMeta() && helmet.itemMeta.hasEnchant(get())) {
+            player.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, -1, 0, true, false, true))
         } else {
-            if (player.hasPotionEffect(PotionEffectType.NIGHT_VISION)) {
-                player.removePotionEffect(PotionEffectType.NIGHT_VISION)
-            }
+            player.activePotionEffects
+                .filter { it.type == PotionEffectType.NIGHT_VISION }
+                .forEach { if (it.duration == -1) player.removePotionEffect(PotionEffectType.NIGHT_VISION) }
         }
     }
 }
