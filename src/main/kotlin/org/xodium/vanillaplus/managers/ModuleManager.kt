@@ -22,6 +22,7 @@ internal object ModuleManager {
     val cauldronModule: CauldronModule = CauldronModule()
     val chatModule: ChatModule = ChatModule()
     val dimensionsModule: DimensionsModule = DimensionsModule()
+    val dispenserModule: DispenserModule = DispenserModule()
     val entityModule: EntityModule = EntityModule()
     val invModule: InvModule = InvModule()
     val locatorModule: LocatorModule = LocatorModule()
@@ -43,6 +44,7 @@ internal object ModuleManager {
             cauldronModule,
             chatModule,
             dimensionsModule,
+            dispenserModule,
             entityModule,
             invModule,
             locatorModule,
