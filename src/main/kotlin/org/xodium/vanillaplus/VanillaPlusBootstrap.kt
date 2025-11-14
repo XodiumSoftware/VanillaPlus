@@ -7,6 +7,7 @@ import io.papermc.paper.plugin.bootstrap.PluginBootstrap
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import io.papermc.paper.registry.RegistryKey
 import io.papermc.paper.registry.event.RegistryEvents
+import io.papermc.paper.registry.keys.ItemTypeKeys
 import io.papermc.paper.registry.keys.tags.EnchantmentTagKeys
 import io.papermc.paper.registry.keys.tags.ItemTypeTagKeys
 import io.papermc.paper.registry.tag.TagKey
@@ -36,6 +37,7 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                         TagEntry.tagEntry(ItemTypeTagKeys.AXES),
                         TagEntry.tagEntry(ItemTypeTagKeys.SHOVELS),
                         TagEntry.tagEntry(ItemTypeTagKeys.HOES),
+                        TagEntry.valueEntry(ItemTypeKeys.SHEARS),
                     ),
                 )
             }
