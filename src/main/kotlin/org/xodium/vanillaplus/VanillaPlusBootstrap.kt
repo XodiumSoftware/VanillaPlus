@@ -39,6 +39,7 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                         TagEntry.tagEntry(ItemTypeTagKeys.HOES),
                         TagEntry.valueEntry(ItemTypeKeys.SHEARS),
                         TagEntry.valueEntry(ItemTypeKeys.BRUSH),
+                        TagEntry.valueEntry(ItemTypeKeys.FISHING_ROD),
                     ),
                 )
             }
