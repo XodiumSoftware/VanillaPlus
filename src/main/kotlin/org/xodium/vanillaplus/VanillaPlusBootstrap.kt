@@ -45,12 +45,11 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
             }
             registerEventHandler(
                 RegistryEvents.ENCHANTMENT.compose().newHandler { event ->
-                    val hoeTag = event.getOrCreateTag(ItemTypeTagKeys.HOES)
-                    val toolsTag = event.getOrCreateTag(TOOLS)
-
                     event.registry().apply {
-                        register(REPLANT) { ReplantEnchantment.builder(it).supportedItems(hoeTag) }
-                        register(PICKUP) { PickupEnchantment.builder(it).supportedItems(toolsTag) }
+                        register(REPLANT) {
+                            ReplantEnchantment.builder(it).supportedItems(event.getOrCreateTag(ItemTypeTagKeys.HOES))
+                        }
+                        register(PICKUP) { PickupEnchantment.builder(it).supportedItems(event.getOrCreateTag(TOOLS)) }
                     }
                 },
             )
