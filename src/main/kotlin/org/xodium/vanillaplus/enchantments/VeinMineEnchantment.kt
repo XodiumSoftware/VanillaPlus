@@ -1,6 +1,7 @@
 package org.xodium.vanillaplus.enchantments
 
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
+import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
@@ -17,4 +18,14 @@ internal object VeinMineEnchantment : EnchantmentInterface {
             .minimumCost(EnchantmentRegistryEntry.EnchantmentCost.of(25, 0))
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(75, 0))
             .activeSlots(EquipmentSlotGroup.MAINHAND)
+
+    fun veinMine(event: BlockBreakEvent) {
+        val player = event.player
+        val itemInHand = player.inventory.itemInMainHand
+
+        if (!itemInHand.hasItemMeta() || !itemInHand.itemMeta.hasEnchant(get())) return
+
+        event.isDropItems = false
+        // TODO
+    }
 }

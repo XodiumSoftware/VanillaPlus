@@ -28,6 +28,7 @@ import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.enchantments.NightVisionEnchantment
 import org.xodium.vanillaplus.enchantments.PickupEnchantment
 import org.xodium.vanillaplus.enchantments.ReplantEnchantment
+import org.xodium.vanillaplus.enchantments.VeinMineEnchantment
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
 import org.xodium.vanillaplus.utils.ExtUtils.mm
@@ -168,6 +169,7 @@ internal class PlayerModule(
 
         ReplantEnchantment.replant(event)
         PickupEnchantment.pickup(event)
+        VeinMineEnchantment.veinMine(event)
     }
 
     @EventHandler
