@@ -55,6 +55,7 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                             TagEntry.valueEntry(ItemTypeKeys.CROSSBOW),
                             TagEntry.valueEntry(ItemTypeKeys.TRIDENT),
                             TagEntry.valueEntry(ItemTypeKeys.MACE),
+                            // TODO: add spear when the upcoming update is released.
                         ),
                     )
                     setTag(
@@ -69,19 +70,19 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
             registerEventHandler(
                 RegistryEvents.ENCHANTMENT.compose().newHandler { event ->
                     event.registry().apply {
-                        register(REPLANT) {
+                        register(REPLANT) { builder ->
                             ReplantEnchantment
-                                .builder(it)
+                                .invoke(builder)
                                 .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.HOES))
                         }
-                        register(PICKUP) {
+                        register(PICKUP) { builder ->
                             PickupEnchantment
-                                .builder(it)
+                                .invoke(builder)
                                 .supportedItems(event.getOrCreateTag(TOOLS_WEAPONS))
                         }
-                        register(NIGHT_VISION) {
+                        register(NIGHT_VISION) { builder ->
                             NightVisionEnchantment
-                                .builder(it)
+                                .invoke(builder)
                                 .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.HEAD_ARMOR))
                         }
                     }

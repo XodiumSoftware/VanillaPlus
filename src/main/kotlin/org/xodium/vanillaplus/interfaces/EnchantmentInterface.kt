@@ -34,10 +34,10 @@ internal interface EnchantmentInterface {
 
     /**
      * Configures the properties of the enchantment using the provided builder.
-     * @param builder The builder used to define the enchantment properties.
+     * @param invoke The builder used to define the enchantment properties.
      * @return The builder for method chaining.
      */
-    fun builder(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder
+    fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder
 
     /**
      * Retrieves the enchantment from the registry.

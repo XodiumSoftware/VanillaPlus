@@ -12,7 +12,7 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 /** Represents an object handling night vision enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
 internal object NightVisionEnchantment : EnchantmentInterface {
-    override fun builder(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
+    override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
             .description(key.value().replaceFirstChar { it.uppercase() }.mm())
             .anvilCost(2)
