@@ -1,22 +1,16 @@
 package org.xodium.vanillaplus.enchantments
 
-import io.papermc.paper.registry.RegistryKey
-import io.papermc.paper.registry.TypedKey
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
-import net.kyori.adventure.key.Key
 import org.bukkit.block.data.Ageable
-import org.bukkit.enchantments.Enchantment
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.VanillaPlusBootstrap.Companion.INSTANCE
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 
+/** Represents an object handling replant enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
 internal object ReplantEnchantment : EnchantmentInterface {
-    override val key: TypedKey<Enchantment> = TypedKey.create(RegistryKey.ENCHANTMENT, Key.key(INSTANCE, "replant"))
-
     override fun builder(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
             .description(key.value().replaceFirstChar { it.uppercase() }.mm())
