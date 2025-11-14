@@ -2,7 +2,6 @@ name: Feature Request
 description: File a feature request.
 type: "Feature"
 assignees: [ "illyrius666" ]
-projects: [ "XodiumSoftware/4" ]
 body:
   - type: markdown
     attributes:

@@ -5,27 +5,29 @@ import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
 import io.papermc.paper.datacomponent.item.ResolvableProfile
+import io.papermc.paper.event.entity.EntityEquipmentChangedEvent
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Material
-import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
+import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.player.PlayerAdvancementDoneEvent
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.Recipe
-import org.bukkit.inventory.ShapelessRecipe
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
-import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
+import org.xodium.vanillaplus.enchantments.NightVisionEnchantment
+import org.xodium.vanillaplus.enchantments.PickupEnchantment
+import org.xodium.vanillaplus.enchantments.ReplantEnchantment
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
 import org.xodium.vanillaplus.utils.ExtUtils.mm
@@ -38,9 +40,6 @@ internal class PlayerModule(
     private val tabListModule: TabListModule,
 ) : ModuleInterface<PlayerModule.Config> {
     override val config: Config = Config()
-
-    private val playerSkullXpKey = NamespacedKey(instance, "player_head_xp")
-    private val playerSkullXpRecipeKey = NamespacedKey(instance, "player_head_xp_recipe")
 
     override fun enabled(): Boolean = config.enabled && tabListModule.enabled()
 
@@ -79,18 +78,18 @@ internal class PlayerModule(
             ),
         )
 
-    init {
-        if (enabled()) instance.server.addRecipe(recipe())
-    }
-
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
         if (!enabled()) return
+
         val player = event.player
-        player.displayName(player.nickname()?.mm())
+
+        player.displayName(player.nickname?.mm())
 
         if (config.i18n.playerJoinMsg.isEmpty()) return
+
         event.joinMessage(null)
+
         instance.server.onlinePlayers
             .filter { it.uniqueId != player.uniqueId }
             .forEach {
@@ -105,17 +104,22 @@ internal class PlayerModule(
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerQuitEvent) {
         if (!enabled() || config.i18n.playerQuitMsg.isEmpty()) return
+
         event.quitMessage(config.i18n.playerQuitMsg.mm(Placeholder.component("player", event.player.displayName())))
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerDeathEvent) {
         if (!enabled()) return
+
         val killer = event.entity.killer ?: return
-        event.entity.world.dropItemNaturally(
-            event.entity.location,
-            playerSkull(event.entity, killer, event.droppedExp),
-        )
+
+        if (Math.random() < config.skullDropChance) {
+            event.entity.world.dropItemNaturally(
+                event.entity.location,
+                playerSkull(event.entity, killer),
+            )
+        }
         // TODO
 //        if (config.i18n.playerDeathMsg.isNotEmpty()) event.deathMessage()
 //        if (config.i18n.playerDeathScreenMsg.isNotEmpty()) event.deathScreenMessageOverride()
@@ -124,6 +128,7 @@ internal class PlayerModule(
     @EventHandler
     fun on(event: PlayerAdvancementDoneEvent) {
         if (!enabled() || config.i18n.playerAdvancementDoneMsg.isEmpty()) return
+
         event.message(
             config.i18n.playerAdvancementDoneMsg.mm(
                 Placeholder.component("player", event.player.displayName()),
@@ -141,8 +146,60 @@ internal class PlayerModule(
         ) {
             return
         }
+
         event.isCancelled = true
-        event.whoClicked.openInventory(event.whoClicked.enderChest)
+
+        instance.server.scheduler.runTask(
+            instance,
+            Runnable { event.whoClicked.openInventory(event.whoClicked.enderChest) },
+        )
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    fun on(event: PlayerInteractEvent) {
+        if (!enabled()) return
+
+        xpToBottle(event)
+    }
+
+    @EventHandler
+    fun on(event: BlockBreakEvent) {
+        if (!enabled()) return
+
+        ReplantEnchantment.replant(event)
+        PickupEnchantment.pickup(event)
+    }
+
+    @EventHandler
+    fun on(event: EntityEquipmentChangedEvent) {
+        if (!enabled()) return
+
+        NightVisionEnchantment.nightVision(event)
+    }
+
+    /**
+     * Handles the interaction event where a player can convert their experience points into an experience bottle
+     * if specific conditions are met.
+     * @param event The PlayerInteractEvent triggered when a player interacts with the world or an object.
+     */
+    private fun xpToBottle(event: PlayerInteractEvent) {
+        if (event.clickedBlock?.type != Material.ENCHANTING_TABLE ||
+            event.item?.type != Material.GLASS_BOTTLE ||
+            !event.player.isSneaking
+        ) {
+            return
+        }
+
+        val player = event.player
+
+        if (player.calculateTotalExperiencePoints() < config.xpCostToBottle) return
+
+        player.giveExp(-config.xpCostToBottle)
+        event.item?.subtract(1)
+        player.inventory
+            .addItem(ItemStack.of(Material.EXPERIENCE_BOTTLE, 1))
+            .values
+            .forEach { player.world.dropItemNaturally(player.location, it) }
     }
 
     /**
@@ -154,8 +211,8 @@ internal class PlayerModule(
         player: Player,
         name: String,
     ) {
-        player.nickname(name)
-        player.displayName(player.nickname()?.mm())
+        player.nickname = name
+        player.displayName(player.nickname?.mm())
         tabListModule.updatePlayerDisplayName(player)
         player.sendActionBar(config.i18n.nicknameUpdated.mm(Placeholder.component("nickname", player.displayName())))
     }
@@ -164,14 +221,12 @@ internal class PlayerModule(
      * Creates a custom player skull item when a player is killed.
      * @param entity The player whose head is being created.
      * @param killer The player who killed the entity.
-     * @param xp The amount of experience associated with the kill, stored in the skull.
      * @return An [ItemStack] representing the customized player head.
      */
     @Suppress("UnstableApiUsage")
     private fun playerSkull(
         entity: Player,
         killer: Player,
-        xp: Int,
     ): ItemStack =
         ItemStack.of(Material.PLAYER_HEAD).apply {
             setData(DataComponentTypes.PROFILE, ResolvableProfile.resolvableProfile(entity.playerProfile))
@@ -187,30 +242,20 @@ internal class PlayerModule(
                             .mm(
                                 Placeholder.component("player", entity.name.mm()),
                                 Placeholder.component("killer", killer.name.mm()),
-                                Placeholder.parsed("xp", xp.toString()),
                             ),
                     ),
             )
-            editPersistentDataContainer { it.set(playerSkullXpKey, PersistentDataType.INTEGER, xp) }
         }
 
-    /**
-     * Creates a shapeless recipe for converting a player skull into an experience bottle.
-     * @return A [Recipe] representing the custom shapeless crafting recipe.
-     */
-    private fun recipe(): Recipe =
-        ShapelessRecipe(playerSkullXpRecipeKey, ItemStack.of(Material.EXPERIENCE_BOTTLE))
-            .addIngredient(1, Material.GLASS_BOTTLE)
-            .addIngredient(1, Material.PLAYER_HEAD)
-
     data class Config(
-        override var enabled: Boolean = true,
-        var enderChestClickType: ClickType = ClickType.SHIFT_LEFT,
+        var enderChestClickType: ClickType = ClickType.SHIFT_RIGHT,
+        var skullDropChance: Double = 0.1,
+        var xpCostToBottle: Int = 11,
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
         data class I18n(
             var playerHeadName: String = "<player>’s Skull",
-            var playerHeadLore: List<String> = listOf("<player> killed by <killer>", "Stored XP: <xp>"),
+            var playerHeadLore: List<String> = listOf("<player> killed by <killer>"),
 //            var playerDeathMsg: String = "<killer> ${"⚔".mangoFmt(true)} <player>",
             var playerJoinMsg: String = "<green>➕<reset> ${"›".mangoFmt(true)} <player>",
             var playerQuitMsg: String = "<red>➖<reset> ${"›".mangoFmt(true)} <player>",

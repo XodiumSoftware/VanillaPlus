@@ -22,9 +22,9 @@ internal object ModuleManager {
     val cauldronModule: CauldronModule = CauldronModule()
     val chatModule: ChatModule = ChatModule()
     val dimensionsModule: DimensionsModule = DimensionsModule()
+    val entityModule: EntityModule = EntityModule()
     val invModule: InvModule = InvModule()
     val locatorModule: LocatorModule = LocatorModule()
-    val mobsModule: MobsModule = MobsModule()
     val motdModule: MotdModule = MotdModule()
     val openableModule: OpenableModule = OpenableModule()
     val petModule: PetModule = PetModule()
@@ -33,7 +33,6 @@ internal object ModuleManager {
     val signModule: SignModule = SignModule()
     val silkTouchModule: SilkTouchModule = SilkTouchModule()
     val sitModule: SitModule = SitModule()
-    val sleepModule: SleepModule = SleepModule()
     val tabListModule: TabListModule = TabListModule()
     val playerModule: PlayerModule = PlayerModule(tabListModule)
     val treesModule: TreesModule = TreesModule()
@@ -44,9 +43,9 @@ internal object ModuleManager {
             cauldronModule,
             chatModule,
             dimensionsModule,
+            entityModule,
             invModule,
             locatorModule,
-            mobsModule,
             motdModule,
             openableModule,
             petModule,
@@ -56,7 +55,6 @@ internal object ModuleManager {
             signModule,
             silkTouchModule,
             sitModule,
-            sleepModule,
             tabListModule,
             treesModule,
         )
@@ -71,7 +69,7 @@ internal object ModuleManager {
                         .requires { it.sender.hasPermission(configPerm) }
                         .executes { ctx ->
                             ctx.tryCatch {
-                                ConfigManager.updateConfig(modules)
+                                ConfigManager.update(modules)
                                 if (it.sender is Player) {
                                     it.sender.sendMessage("${instance.prefix} <green>Config reloaded successfully".mm())
                                 }
@@ -98,7 +96,7 @@ internal object ModuleManager {
 
     /** Loads configs, registers modules' events and permissions, and collects commands. */
     private fun pluginManager() {
-        ConfigManager.updateConfig(modules)
+        ConfigManager.update(modules)
         commandsToRegister.add(configCmd)
         instance.server.pluginManager.addPermission(configPerm)
         modules.filter { it.enabled() }.forEach { module ->

@@ -130,7 +130,6 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
     }
 
     data class Config(
-        override var enabled: Boolean = true,
         var initDelayInTicks: Long = 0,
         var intervalInTicks: Long = 10,
         var header: List<String> =

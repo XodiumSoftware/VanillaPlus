@@ -106,7 +106,6 @@ internal class CauldronModule : ModuleInterface<CauldronModule.Config> {
     }
 
     data class Config(
-        override var enabled: Boolean = true,
         var convertConcretePowder: Boolean = true,
         var convertDirt: Boolean = true,
         var convertCoarseDirt: Boolean = true,

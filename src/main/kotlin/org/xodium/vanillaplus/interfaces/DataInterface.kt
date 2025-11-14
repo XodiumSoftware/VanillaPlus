@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.utils.ExtUtils.toSnakeCase
+import org.xodium.vanillaplus.utils.ExtUtils.snakeCase
 import java.io.IOException
 import java.nio.file.Path
 import kotlin.io.path.createDirectories
@@ -24,7 +24,9 @@ interface DataInterface<K, T : Any> {
     val dataClass: KClass<T>
     val cache: MutableMap<K, T>
     val fileName: String
-        get() = "${dataClass.simpleName?.toSnakeCase()}.json"
+        get() = "${dataClass.simpleName?.snakeCase}.json"
+    val filePath: Path
+        get() = instance.dataFolder.toPath().resolve(fileName)
     val jsonMapper: ObjectMapper
         get() =
             JsonMapper
@@ -36,9 +38,6 @@ interface DataInterface<K, T : Any> {
                 .configure(MapperFeature.PROPAGATE_TRANSIENT_MARKER, true)
                 .build()
                 .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
-
-    val filePath: Path
-        get() = instance.dataFolder.toPath().resolve(fileName)
 
     /** Initializes the cache and loads existing data from the file. */
     fun load() {
@@ -76,13 +75,8 @@ interface DataInterface<K, T : Any> {
      * @return the value associated with the specified key, or `null` if no mapping exists.
      */
     fun get(key: K): T? {
-        if (!cache.containsKey(key) && filePath.toFile().exists()) load()
-        return cache[key]
-    }
-
-    fun getAll(): Map<K, T> {
         if (cache.isEmpty() && filePath.toFile().exists()) load()
-        return cache
+        return cache[key]
     }
 
     /**
@@ -95,12 +89,6 @@ interface DataInterface<K, T : Any> {
         data: T,
     ) {
         cache[key] = data
-        save()
-    }
-
-    fun setAll(data: Map<K, T>) {
-        cache.clear()
-        cache.putAll(data)
         save()
     }
 }

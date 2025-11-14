@@ -7,7 +7,7 @@ import org.bukkit.block.data.type.Door
 import org.bukkit.block.data.type.Door.Hinge
 
 /**
- * This data class stores information about the block's position relative to another block,
+ * This data class stores information about the block’s position relative to another block,
  * as well as metadata about its orientation and hinge type (used primarily for doors).
  * @property offsetX The X-axis offset of the adjacent block relative to the original block.
  *                   A positive value indicates the block is farther to the east,

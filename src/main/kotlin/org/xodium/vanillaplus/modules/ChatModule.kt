@@ -1,9 +1,11 @@
 package org.xodium.vanillaplus.modules
 
+import com.destroystokyo.paper.event.player.PlayerSetSpawnEvent
 import com.mojang.brigadier.arguments.StringArgumentType
 import io.papermc.paper.chat.ChatRenderer
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.event.player.AsyncChatEvent
+import net.kyori.adventure.chat.SignedMessage
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
@@ -17,11 +19,12 @@ import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.ExtUtils.clickOpenUrl
 import org.xodium.vanillaplus.utils.ExtUtils.clickRunCmd
+import org.xodium.vanillaplus.utils.ExtUtils.clickSuggestCmd
 import org.xodium.vanillaplus.utils.ExtUtils.face
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.prefix
-import org.xodium.vanillaplus.utils.ExtUtils.pt
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
@@ -67,7 +70,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
                             ),
                     ),
                 "This command allows you to whisper to players",
-                listOf("w"),
+                listOf("w", "msg", "tell", "tellraw"),
             ),
         )
     }
@@ -90,15 +93,16 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
         event.renderer { player, displayName, message, audience ->
             var base =
                 config.chatFormat.mm(
+                    Placeholder.component("player_head", "<head:${player.uniqueId}>".mm()),
                     Placeholder.component(
                         "player",
                         displayName
                             .clickEvent(ClickEvent.suggestCommand("/w ${player.name} "))
                             .hoverEvent(HoverEvent.showText(config.i18n.clickToWhisper.mm())),
                     ),
-                    Placeholder.component("message", message.pt().mm()),
+                    Placeholder.component("message", message),
                 )
-            if (audience == player) base = base.appendSpace().append(createDeleteCross(event))
+            if (audience == player) base = base.appendSpace().append(createDeleteCross(event.signedMessage()))
             base
         }
     }
@@ -113,13 +117,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
             Regex("<image>")
                 .replace(config.welcomeText.joinToString("\n")) { "<image${++imageIndex}>" }
                 .mm(
-                    Placeholder.component(
-                        "player",
-                        player
-                            .displayName()
-                            .clickEvent(ClickEvent.suggestCommand("/nickname ${player.name}"))
-                            .hoverEvent(HoverEvent.showText(config.i18n.clickMe.mm())),
-                    ),
+                    Placeholder.component("player", player.displayName()),
                     *player
                         .face()
                         .lines()
@@ -127,6 +125,14 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
                         .toTypedArray(),
                 ),
         )
+    }
+
+    @EventHandler
+    fun on(event: PlayerSetSpawnEvent) {
+        if (!enabled()) return
+
+        event.notification =
+            config.i18n.playerSetSpawn.mm(Placeholder.component("notification", event.notification ?: return))
     }
 
     /**
@@ -168,33 +174,43 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
     }
 
     /**
-     * Creates the delete cross component for message deletion.
-     * @param event The [AsyncChatEvent] containing the message to be deleted.
+     * Creates to delete cross-component for message deletion.
+     * @param signedMessage The signed message to be deleted.
      * @return A [Component] representing the delete cross with hover text and click action.
      */
-    private fun createDeleteCross(event: AsyncChatEvent): Component =
+    private fun createDeleteCross(signedMessage: SignedMessage): Component =
         config.deleteCross
             .mm()
             .hoverEvent(config.i18n.deleteMessage.mm())
-            .clickEvent(ClickEvent.callback { instance.server.deleteMessage(event.signedMessage()) })
+            .clickEvent(ClickEvent.callback { instance.server.deleteMessage(signedMessage) })
 
     data class Config(
-        override var enabled: Boolean = true,
-        var chatFormat: String = "<player> <reset>${"›".mangoFmt(true)} <message>",
+        var chatFormat: String = "<player_head> <player> <reset>${"›".mangoFmt(true)} <message>",
         var welcomeText: List<String> =
             listOf(
                 "]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true),
                 "<image>${"⯈".mangoFmt(true)}",
                 "<image>${"⯈".mangoFmt(true)}",
-                "<image>${"⯈".mangoFmt(true)} ${"Welcome".fireFmt()} <player>",
-                "<image>${"⯈".mangoFmt(true)}",
-                "<image>${"⯈".mangoFmt(true)}",
-                "<image>${"⯈".mangoFmt(true)} ${"Check out".fireFmt()}<gray>: ${
-                    "/rules".clickRunCmd("Click Me!".fireFmt()).skylineFmt()
-                } <gray>🟅 ${
-                    "/guide".clickRunCmd("Click Me!".fireFmt()).skylineFmt()
+                "<image>${"⯈".mangoFmt(true)} ${"Welcome".fireFmt()} <player> ${
+                    "<white><sprite:item/name_tag></white>".clickSuggestCmd(
+                        "/nickname ",
+                        "Set your nickname!".mangoFmt(),
+                    )
                 }",
                 "<image>${"⯈".mangoFmt(true)}",
+                "<image>${"⯈".mangoFmt(true)} ${"Check out".fireFmt()}<gray>:",
+                "<image>${"⯈".mangoFmt(true)} ${
+                    "<white><sprite:item/writable_book></white>".clickRunCmd(
+                        "/rules",
+                        "View the server /rules".mangoFmt(),
+                    )
+                }",
+                "<image>${"⯈".mangoFmt(true)} ${
+                    "<white><sprite:item/light></white>".clickOpenUrl(
+                        "https://illyria.fandom.com",
+                        "Visit the wiki!".mangoFmt(),
+                    )
+                }",
                 "<image>${"⯈".mangoFmt(true)}",
                 "]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true),
             ),
@@ -206,11 +222,12 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
         data class I18n(
-            var clickMe: String = "Click Me!".fireFmt(),
-            var clickToWhisper: String = "Click to Whisper".fireFmt(),
+            var clickMe: String = "Click me!".mangoFmt(),
+            var clickToWhisper: String = "Click to Whisper".mangoFmt(),
             var playerIsNotOnline: String = "${instance.prefix} Player is not Online!".fireFmt(),
-            var deleteMessage: String = "Click to delete your message!".fireFmt(),
-            var clickToClipboard: String = "Click to copy position to clipboard".fireFmt(),
+            var deleteMessage: String = "Click to delete your message".mangoFmt(),
+            var clickToClipboard: String = "Click to copy position to clipboard".mangoFmt(),
+            var playerSetSpawn: String = "${"❗".fireFmt()} ${"›".mangoFmt(true)} <notification>",
         )
     }
 }
