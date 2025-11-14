@@ -27,23 +27,43 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
         val NIGHT_VISION = NightVisionEnchantment.key
         val ENCHANTS = setOf(REPLANT, PICKUP, NIGHT_VISION)
         val TOOLS = TagKey.create(RegistryKey.ITEM, Key.key(INSTANCE, "tools"))
+        val WEAPONS = TagKey.create(RegistryKey.ITEM, Key.key(INSTANCE, "weapons"))
+        val TOOLS_WEAPONS = TagKey.create(RegistryKey.ITEM, Key.key(INSTANCE, "tools_weapons"))
     }
 
     override fun bootstrap(ctx: BootstrapContext) {
         ctx.lifecycleManager.apply {
             registerEventHandler(LifecycleEvents.TAGS.preFlatten(RegistryKey.ITEM)) { event ->
-                event.registrar().setTag(
-                    TOOLS,
-                    setOf(
-                        TagEntry.tagEntry(ItemTypeTagKeys.PICKAXES),
-                        TagEntry.tagEntry(ItemTypeTagKeys.AXES),
-                        TagEntry.tagEntry(ItemTypeTagKeys.SHOVELS),
-                        TagEntry.tagEntry(ItemTypeTagKeys.HOES),
-                        TagEntry.valueEntry(ItemTypeKeys.SHEARS),
-                        TagEntry.valueEntry(ItemTypeKeys.BRUSH),
-                        TagEntry.valueEntry(ItemTypeKeys.FISHING_ROD),
-                    ),
-                )
+                event.registrar().apply {
+                    setTag(
+                        TOOLS,
+                        setOf(
+                            TagEntry.tagEntry(ItemTypeTagKeys.PICKAXES),
+                            TagEntry.tagEntry(ItemTypeTagKeys.AXES),
+                            TagEntry.tagEntry(ItemTypeTagKeys.SHOVELS),
+                            TagEntry.tagEntry(ItemTypeTagKeys.HOES),
+                            TagEntry.valueEntry(ItemTypeKeys.SHEARS),
+                            TagEntry.valueEntry(ItemTypeKeys.BRUSH),
+                            TagEntry.valueEntry(ItemTypeKeys.FISHING_ROD),
+                        ),
+                    )
+                    setTag(
+                        WEAPONS,
+                        setOf(
+                            TagEntry.tagEntry(ItemTypeTagKeys.SWORDS),
+                            TagEntry.valueEntry(ItemTypeKeys.BOW),
+                            TagEntry.valueEntry(ItemTypeKeys.CROSSBOW),
+                            TagEntry.valueEntry(ItemTypeKeys.TRIDENT),
+                        ),
+                    )
+                    setTag(
+                        TOOLS_WEAPONS,
+                        setOf(
+                            TagEntry.tagEntry(TOOLS),
+                            TagEntry.tagEntry(WEAPONS),
+                        ),
+                    )
+                }
             }
             registerEventHandler(
                 RegistryEvents.ENCHANTMENT.compose().newHandler { event ->
@@ -56,7 +76,7 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                         register(PICKUP) {
                             PickupEnchantment
                                 .builder(it)
-                                .supportedItems(event.getOrCreateTag(TOOLS))
+                                .supportedItems(event.getOrCreateTag(TOOLS_WEAPONS))
                         }
                         register(NIGHT_VISION) {
                             NightVisionEnchantment
