@@ -3,6 +3,7 @@ package org.xodium.vanillaplus.enchantments
 import io.papermc.paper.event.entity.EntityEquipmentChangedEvent
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
 import org.bukkit.entity.Player
+import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
@@ -14,12 +15,12 @@ internal object NightVisionEnchantment : EnchantmentInterface {
     override fun builder(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
             .description(key.value().replaceFirstChar { it.uppercase() }.mm())
-            .anvilCost(TODO())
-            .maxLevel(TODO())
-            .weight(TODO())
-            .minimumCost(EnchantmentRegistryEntry.EnchantmentCost.of(TODO()))
-            .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(TODO()))
-            .activeSlots(TODO())
+            .anvilCost(2)
+            .maxLevel(1)
+            .weight(2)
+            .minimumCost(EnchantmentRegistryEntry.EnchantmentCost.of(25, 0))
+            .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(75, 0))
+            .activeSlots(EquipmentSlotGroup.ARMOR)
 
     /**
      * Handles the equipment change event to apply or remove night vision effect based on the helmet enchantment.

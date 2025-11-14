@@ -14,12 +14,11 @@ internal object ReplantEnchantment : EnchantmentInterface {
     override fun builder(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
             .description(key.value().replaceFirstChar { it.uppercase() }.mm())
-            // TODO: Adjust costs and levels as needed
-            .anvilCost(8)
+            .anvilCost(2)
             .maxLevel(1)
-            .weight(5)
-            .minimumCost(EnchantmentRegistryEntry.EnchantmentCost.of(1, 10))
-            .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(8, 20))
+            .weight(2)
+            .minimumCost(EnchantmentRegistryEntry.EnchantmentCost.of(25, 0))
+            .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(75, 0))
             .activeSlots(EquipmentSlotGroup.MAINHAND)
 
     /**
