@@ -26,15 +26,16 @@ internal object PickupEnchantment : EnchantmentInterface {
     fun pickup(event: BlockBreakEvent) {
         val player = event.player
         val itemInHand = player.inventory.itemInMainHand
+        val block = event.block
 
         if (!itemInHand.hasItemMeta() || !itemInHand.itemMeta.hasEnchant(get())) return
 
         event.isDropItems = false
 
-        for (drop in event.block.drops) {
+        for (drop in block.drops) {
             val remaining = player.inventory.addItem(drop)
 
-            for (item in remaining.values) player.world.dropItemNaturally(player.location, item)
+            for (item in remaining.values) player.world.dropItemNaturally(block.location, item)
         }
     }
 }
