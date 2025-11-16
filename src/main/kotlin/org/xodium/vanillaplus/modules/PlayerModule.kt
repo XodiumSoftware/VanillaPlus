@@ -168,7 +168,6 @@ internal class PlayerModule(
         if (!enabled()) return
 
         ReplantEnchantment.replant(event)
-        PickupEnchantment.checkPreferredTool(event)
     }
 
     @EventHandler
