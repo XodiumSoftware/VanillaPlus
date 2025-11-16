@@ -1,7 +1,7 @@
 package org.xodium.vanillaplus.enchantments
 
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
-import org.bukkit.event.block.BlockBreakEvent
+import org.bukkit.event.block.BlockDropItemEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
@@ -23,19 +23,20 @@ internal object PickupEnchantment : EnchantmentInterface {
      * Handles the block break event to automatically pick up drops when the tool has the Pickup enchantment.
      * @param event The BlockBreakEvent triggered when a block is broken.
      */
-    fun pickup(event: BlockBreakEvent) {
+    fun pickup(event: BlockDropItemEvent) {
         val player = event.player
         val itemInHand = player.inventory.itemInMainHand
         val block = event.block
 
-        if (!itemInHand.hasItemMeta() || !itemInHand.itemMeta.hasEnchant(get())) return
+        if (!itemInHand.hasItemMeta() || !itemInHand.itemMeta.hasEnchant(get()) || !block.isPreferredTool(itemInHand)) return
 
-        event.isDropItems = false
+        val inventory = player.inventory
 
-        for (drop in block.drops) {
-            val remaining = player.inventory.addItem(drop)
+        event.items.removeIf { item ->
+            val remaining = inventory.addItem(item.itemStack)
+            val remainingItem = remaining[0] ?: return@removeIf true
 
-            for (item in remaining.values) player.world.dropItemNaturally(block.location, item)
+            remainingItem.takeIf { it.amount > 0 }?.let { item.itemStack = it } == null
         }
     }
 }

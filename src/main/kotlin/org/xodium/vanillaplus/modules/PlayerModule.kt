@@ -12,6 +12,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockBreakEvent
+import org.bukkit.event.block.BlockDropItemEvent
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -167,6 +168,12 @@ internal class PlayerModule(
         if (!enabled()) return
 
         ReplantEnchantment.replant(event)
+    }
+
+    @EventHandler
+    fun on(event: BlockDropItemEvent) {
+        if (!enabled()) return
+
         PickupEnchantment.pickup(event)
     }
 
