@@ -12,15 +12,16 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 /** Represents an object handling nimbus enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
 internal object NimbusEnchantment : EnchantmentInterface {
-    // TODO: add maxLevel 5 and adjust flying speed accordingly.
+    const val DEFAULT_FLY_SPEED = 0.05
+
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
             .description(key.value().replaceFirstChar { it.uppercase() }.mm())
             .anvilCost(2)
-            .maxLevel(1)
+            .maxLevel(5)
             .weight(2)
-            .minimumCost(EnchantmentRegistryEntry.EnchantmentCost.of(25, 0))
-            .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(75, 0))
+            .minimumCost(EnchantmentRegistryEntry.EnchantmentCost.of(25, 5))
+            .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(75, 10))
             .activeSlots(EquipmentSlotGroup.SADDLE)
 
     /**
@@ -29,12 +30,30 @@ internal object NimbusEnchantment : EnchantmentInterface {
      */
     fun nimbus(event: EntityEquipmentChangedEvent) {
         val entity = event.entity as? HappyGhast ?: return
-        val harness = entity.equipment.getItem(EquipmentSlot.SADDLE)
+        val harness = entity.equipment.getItem(EquipmentSlot.BODY)
+        val attribute = entity.getAttribute(Attribute.FLYING_SPEED)
 
         if (harness.hasItemMeta() && harness.itemMeta.hasEnchant(get())) {
-            entity.getAttribute(Attribute.FLYING_SPEED)?.baseValue = 10.0
+            val level = harness.itemMeta.getEnchantLevel(get())
+            val speedMultiplier = getSpeedMultiplier(level)
+            attribute?.baseValue = DEFAULT_FLY_SPEED * speedMultiplier
         } else {
-            entity.getAttribute(Attribute.FLYING_SPEED)?.defaultValue
+            attribute?.baseValue = DEFAULT_FLY_SPEED
         }
     }
+
+    /**
+     * Calculates the flying speed multiplier based on the enchantment level.
+     * @param level The enchantment level (1-5)
+     * @return The flying speed multiplier for the given level
+     */
+    private fun getSpeedMultiplier(level: Int): Double =
+        when (level) {
+            1 -> 1.0
+            2 -> 1.5
+            3 -> 2.0
+            4 -> 2.5
+            5 -> 3.0
+            else -> 1.0
+        }
 }
