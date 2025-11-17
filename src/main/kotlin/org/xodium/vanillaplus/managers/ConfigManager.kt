@@ -4,11 +4,9 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.DataInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.key
-import kotlin.reflect.KClass
 
 /** Manages module configs on disk and in-memory. */
 internal object ConfigManager : DataInterface<String, ModuleInterface.Config> {
-    override val dataClass: KClass<ModuleInterface.Config> = ModuleInterface.Config::class
     override val cache: MutableMap<String, ModuleInterface.Config> = mutableMapOf()
     override val fileName: String = "config.json"
 
