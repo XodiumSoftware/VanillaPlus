@@ -57,13 +57,13 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
                                         ctx.tryCatch {
                                             if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
                                             val sender = it.sender as Player
-                                            val targetName = ctx.getArgument("target", String::class.java)
+                                            val targetName = ctx.getArgument("target", String().javaClass)
                                             val target =
                                                 instance.server.getPlayer(targetName)
                                                     ?: return@tryCatch sender.sendMessage(
                                                         config.i18n.playerIsNotOnline.mm(),
                                                     )
-                                            val message = ctx.getArgument("message", String::class.java)
+                                            val message = ctx.getArgument("message", String().javaClass)
                                             whisper(sender, target, message)
                                         }
                                     },

@@ -42,7 +42,7 @@ interface DataInterface<K, T : Any> {
         if (filePath.toFile().exists()) {
             try {
                 cache.clear()
-                val type = jsonMapper.typeFactory.constructMapType(cache.javaClass, Any::class.java, this.javaClass)
+                val type = jsonMapper.typeFactory.constructMapType(cache.javaClass, Any().javaClass, this.javaClass)
                 val rawMap: Map<K, T> = jsonMapper.readValue(filePath.toFile(), type)
                 cache.putAll(rawMap)
                 save()
