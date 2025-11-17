@@ -49,11 +49,11 @@ internal object NimbusEnchantment : EnchantmentInterface {
      */
     private fun getSpeedMultiplier(level: Int): Double =
         when (level) {
-            1 -> 1.0
-            2 -> 1.5
-            3 -> 2.0
-            4 -> 2.5
-            5 -> 3.0
+            1 -> 1.5
+            2 -> 2.0
+            3 -> 2.5
+            4 -> 3.0
+            5 -> 3.5
             else -> 1.0
         }
 }
