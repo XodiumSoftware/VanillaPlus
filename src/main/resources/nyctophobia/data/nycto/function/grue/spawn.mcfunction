@@ -1,0 +1,4 @@
+summon husk ~ ~ ~ {Silent:1b,Health:800f,CanBreakDoors:1b,Tags:["grue.gruemob"],CustomName:'{"text":"Unknown"}',ArmorItems:[{},{},{},{id:"string",components:{custom_model_data:557001},count:1}],ArmorDropChances:[0.000F,0.000F,0.000F,0.000F],active_effects:[{id:"minecraft:invisibility",amplifier:1,duration:1000000,show_particles:0b}],attributes:[{id:"minecraft:generic.attack_damage",base:500},{id:"minecraft:generic.max_health",base:800},{id:"minecraft:generic.movement_speed",base:0.5}]}
+playsound minecraft:grue.growl1 hostile @a ~ ~ ~ 1
+execute as @a[distance=..8] at @s run playsound minecraft:grue.spawn hostile @s ~ ~ ~ 0.8
+execute as @a[distance=9..30] at @s run playsound minecraft:grue.mistake hostile @s ~ ~ ~ 0.8
