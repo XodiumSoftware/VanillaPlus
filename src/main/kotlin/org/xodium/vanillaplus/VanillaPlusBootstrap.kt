@@ -14,6 +14,7 @@ import io.papermc.paper.registry.tag.TagKey
 import io.papermc.paper.tag.TagEntry
 import net.kyori.adventure.key.Key
 import org.xodium.vanillaplus.enchantments.NightVisionEnchantment
+import org.xodium.vanillaplus.enchantments.NimbusEnchantment
 import org.xodium.vanillaplus.enchantments.PickupEnchantment
 import org.xodium.vanillaplus.enchantments.ReplantEnchantment
 
@@ -81,12 +82,23 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                                 .invoke(builder)
                                 .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.HEAD_ARMOR))
                         }
+                        register(NimbusEnchantment.key) { builder ->
+                            NimbusEnchantment
+                                .invoke(builder)
+                                .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.HARNESSES))
+                        }
                     }
                 },
             )
             registerEventHandler(LifecycleEvents.TAGS.postFlatten(RegistryKey.ENCHANTMENT)) { event ->
                 event.registrar().apply {
-                    val enchants = setOf(ReplantEnchantment.key, PickupEnchantment.key, NightVisionEnchantment.key)
+                    val enchants =
+                        setOf(
+                            ReplantEnchantment.key,
+                            PickupEnchantment.key,
+                            NightVisionEnchantment.key,
+                            NimbusEnchantment.key,
+                        )
                     addToTag(EnchantmentTagKeys.TRADEABLE, enchants)
                     addToTag(EnchantmentTagKeys.NON_TREASURE, enchants)
                     addToTag(EnchantmentTagKeys.IN_ENCHANTING_TABLE, enchants)
