@@ -37,7 +37,7 @@ internal object ExtUtils {
 
     /** The standardized prefix for [VanillaPlus] messages. */
     val VanillaPlus.prefix: String
-        get() = "${"[".mangoFmt(true)}${this::class.simpleName.toString().fireFmt()}${"]".mangoFmt()}"
+        get() = "${"[".mangoFmt(true)}${this.javaClass.simpleName.toString().fireFmt()}${"]".mangoFmt()}"
 
     /**
      * Converts a CamelCase string to snake case.
@@ -49,7 +49,7 @@ internal object ExtUtils {
      * Generates a configuration key for a module.
      * @return The generated configuration key.
      */
-    val ModuleInterface<*>.key: String get() = this::class.simpleName.toString()
+    val ModuleInterface<*>.key: String get() = this.javaClass.simpleName.toString()
 
     /**
      * Deserializes a [MiniMessage] [String] into a [Component].

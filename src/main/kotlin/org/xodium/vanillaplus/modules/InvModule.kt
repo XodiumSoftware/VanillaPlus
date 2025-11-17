@@ -89,12 +89,12 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
     override fun perms(): List<Permission> =
         listOf(
             Permission(
-                "${instance::class.simpleName}.invsearch".lowercase(),
+                "${instance.javaClass.simpleName}.invsearch".lowercase(),
                 "Allows use of the invsearch command",
                 PermissionDefault.TRUE,
             ),
             Permission(
-                "${instance::class.simpleName}.invunload".lowercase(),
+                "${instance.javaClass.simpleName}.invunload".lowercase(),
                 "Allows use of the invunload command",
                 PermissionDefault.TRUE,
             ),

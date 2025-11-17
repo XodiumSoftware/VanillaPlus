@@ -39,7 +39,7 @@ internal object ConfigManager : DataInterface<String, ModuleInterface.Config> {
         try {
             if (filePath.toFile().exists()) {
                 jsonMapper.readTree(filePath.toFile())?.get(key)?.let { node ->
-                    jsonMapper.treeToValue(node, module.config::class.java)
+                    jsonMapper.treeToValue(node, module.config.javaClass)
                 }
             } else {
                 null

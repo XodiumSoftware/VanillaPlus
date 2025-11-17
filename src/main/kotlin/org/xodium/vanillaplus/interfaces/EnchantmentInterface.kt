@@ -22,13 +22,12 @@ internal interface EnchantmentInterface {
                 RegistryKey.ENCHANTMENT,
                 Key.key(
                     INSTANCE,
-                    this::class
+                    this.javaClass
                         .simpleName
-                        ?.removeSuffix("Enchantment")
-                        ?.split(Regex("(?=[A-Z])"))
-                        ?.filter { it.isNotEmpty() }
-                        ?.joinToString("_") { it.lowercase() }
-                        .toString(),
+                        .removeSuffix("Enchantment")
+                        .split(Regex("(?=[A-Z])"))
+                        .filter { it.isNotEmpty() }
+                        .joinToString("_") { it.lowercase() },
                 ),
             )
 

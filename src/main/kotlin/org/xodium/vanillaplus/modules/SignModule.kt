@@ -51,7 +51,7 @@ internal class SignModule : ModuleInterface<ModuleInterface.Config> {
     override fun perms(): List<Permission> =
         listOf(
             Permission(
-                "${instance::class.simpleName}.signedit".lowercase(),
+                "${instance.javaClass.simpleName}.signedit".lowercase(),
                 "Allows use of the signedit command",
                 PermissionDefault.TRUE,
             ),

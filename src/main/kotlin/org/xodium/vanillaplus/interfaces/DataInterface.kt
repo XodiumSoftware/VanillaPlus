@@ -22,7 +22,7 @@ import kotlin.io.path.writeText
 interface DataInterface<K, T : Any> {
     val cache: MutableMap<K, T>
     val fileName: String
-        get() = "${this::class.simpleName?.snakeCase}.json"
+        get() = "${this.javaClass.simpleName.snakeCase}.json"
     val filePath: Path
         get() = instance.dataFolder.toPath().resolve(fileName)
     val jsonMapper: ObjectMapper
@@ -42,12 +42,12 @@ interface DataInterface<K, T : Any> {
         if (filePath.toFile().exists()) {
             try {
                 cache.clear()
-                val type = jsonMapper.typeFactory.constructMapType(cache::class.java, Any::class.java, this::class.java)
+                val type = jsonMapper.typeFactory.constructMapType(cache.javaClass, Any::class.java, this.javaClass)
                 val rawMap: Map<K, T> = jsonMapper.readValue(filePath.toFile(), type)
                 cache.putAll(rawMap)
                 save()
             } catch (e: IOException) {
-                instance.logger.severe("Failed to load ${this::class.simpleName}: ${e.message}")
+                instance.logger.severe("Failed to load ${this.javaClass.simpleName}: ${e.message}")
             }
         }
     }
@@ -61,7 +61,7 @@ interface DataInterface<K, T : Any> {
                     filePath.parent.createDirectories()
                     filePath.writeText(jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsString(cache))
                 } catch (e: IOException) {
-                    instance.logger.severe("Failed to write ${this::class.simpleName} to file: ${e.message}")
+                    instance.logger.severe("Failed to write ${this.javaClass.simpleName} to file: ${e.message}")
                 }
             },
         )

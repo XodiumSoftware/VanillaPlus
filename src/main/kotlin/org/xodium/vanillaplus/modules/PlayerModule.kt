@@ -73,7 +73,7 @@ internal class PlayerModule(
     override fun perms(): List<Permission> =
         listOf(
             Permission(
-                "${instance::class.simpleName}.nickname".lowercase(),
+                "${instance.javaClass.simpleName}.nickname".lowercase(),
                 "Allows use of the nickname command",
                 PermissionDefault.TRUE,
             ),
