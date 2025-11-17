@@ -16,6 +16,7 @@ internal object NimbusEnchantment : EnchantmentInterface {
         const val HAPPY_GHAST_DEFAULT_FLYING_SPEED = 0.05
     }
 
+    // TODO: add maxLevel 5 and adjust flying speed accordingly.
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
             .description(key.value().replaceFirstChar { it.uppercase() }.mm())
@@ -35,7 +36,7 @@ internal object NimbusEnchantment : EnchantmentInterface {
         val harness = entity.equipment.getItem(EquipmentSlot.SADDLE)
 
         if (harness.hasItemMeta() && harness.itemMeta.hasEnchant(get())) {
-            entity.getAttribute(Attribute.FLYING_SPEED)?.baseValue = 0.1
+            entity.getAttribute(Attribute.FLYING_SPEED)?.baseValue = 10.0 // TODO: Adjust flying speed value as needed
         } else {
             entity.getAttribute(Attribute.FLYING_SPEED)?.baseValue = DEFAULTS.HAPPY_GHAST_DEFAULT_FLYING_SPEED
         }
