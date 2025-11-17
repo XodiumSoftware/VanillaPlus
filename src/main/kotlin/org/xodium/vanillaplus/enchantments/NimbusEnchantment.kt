@@ -12,10 +12,6 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 /** Represents an object handling nimbus enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
 internal object NimbusEnchantment : EnchantmentInterface {
-    private object DEFAULTS {
-        const val HAPPY_GHAST_DEFAULT_FLYING_SPEED = 0.05
-    }
-
     // TODO: add maxLevel 5 and adjust flying speed accordingly.
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
@@ -36,9 +32,9 @@ internal object NimbusEnchantment : EnchantmentInterface {
         val harness = entity.equipment.getItem(EquipmentSlot.SADDLE)
 
         if (harness.hasItemMeta() && harness.itemMeta.hasEnchant(get())) {
-            entity.getAttribute(Attribute.FLYING_SPEED)?.baseValue = 10.0 // TODO: Adjust flying speed value as needed
+            entity.getAttribute(Attribute.FLYING_SPEED)?.baseValue = 10.0
         } else {
-            entity.getAttribute(Attribute.FLYING_SPEED)?.baseValue = DEFAULTS.HAPPY_GHAST_DEFAULT_FLYING_SPEED
+            entity.getAttribute(Attribute.FLYING_SPEED)?.defaultValue
         }
     }
 }
