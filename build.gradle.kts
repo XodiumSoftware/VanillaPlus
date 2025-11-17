@@ -62,6 +62,7 @@ paperPluginYaml {
     main.set(group.toString())
     authors.add("Xodium")
     apiVersion.set(version)
+    bootstrapper.set("org.xodium.vanillaplus.VanillaPlusBootstrap")
     dependencies {
         server(name = "WorldEdit", load = PaperPluginYaml.Load.BEFORE, required = false, joinClasspath = true)
     }

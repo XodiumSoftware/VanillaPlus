@@ -12,7 +12,7 @@
       </configuration>
     </facet>
     <facet external-system-id="GRADLE" type="kotlin-language" name="Kotlin">
-      <configuration version="5" platform="JVM 21" allPlatforms="JVM [21]" useProjectSettings="false" pureKotlinSourceFolders="$MODULE_DIR$/../../src/test/kotlin;/run/media/illyrius/HDD/JetBrains/Projects/VanillaPlus/src/main/kotlin">
+      <configuration version="5" platform="JVM 21" allPlatforms="JVM [21]" useProjectSettings="false" pureKotlinSourceFolders="$MODULE_DIR$/../../src/test/kotlin;/mnt/hdd/Projects/VanillaPlus/src/main/kotlin">
         <additionalVisibleModuleNames>VanillaPlus:main</additionalVisibleModuleNames>
         <compilerSettings />
         <compilerArguments>

@@ -2,6 +2,7 @@
 
 package org.xodium.vanillaplus.modules
 
+import io.papermc.paper.event.entity.EntityEquipmentChangedEvent
 import org.bukkit.Material
 import org.bukkit.entity.*
 import org.bukkit.event.EventHandler
@@ -9,6 +10,7 @@ import org.bukkit.event.entity.EntityChangeBlockEvent
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.entity.EntityExplodeEvent
 import org.bukkit.inventory.ItemStack
+import org.xodium.vanillaplus.enchantments.NimbusEnchantment
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import kotlin.random.Random
 
@@ -34,6 +36,13 @@ internal class EntityModule : ModuleInterface<EntityModule.Config> {
         if (Random.nextDouble() <= config.entityEggDropChance) {
             event.drops.add(ItemStack.of(Material.matchMaterial("${event.entity.type.name}_SPAWN_EGG") ?: return))
         }
+    }
+
+    @EventHandler
+    fun on(event: EntityEquipmentChangedEvent) {
+        if (!enabled()) return
+
+        NimbusEnchantment.nimbus(event)
     }
 
     /**
