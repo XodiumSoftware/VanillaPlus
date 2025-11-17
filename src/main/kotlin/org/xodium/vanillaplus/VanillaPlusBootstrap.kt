@@ -17,7 +17,7 @@ import org.xodium.vanillaplus.enchantments.NightVisionEnchantment
 import org.xodium.vanillaplus.enchantments.NimbusEnchantment
 import org.xodium.vanillaplus.enchantments.PickupEnchantment
 import org.xodium.vanillaplus.enchantments.ReplantEnchantment
-import java.util.*
+import java.util.Objects.requireNonNull
 
 /** Main bootstrap class of the plugin. */
 @Suppress("UnstableApiUsage", "Unused")
@@ -108,7 +108,7 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
             registerEventHandler(
                 LifecycleEvents.DATAPACK_DISCOVERY.newHandler { event ->
                     try {
-                        val uri = Objects.requireNonNull(this.javaClass.getResource("/nyctophobia")).toURI()
+                        val uri = requireNonNull(javaClass.getResource("/nyctophobia")).toURI()
                         event.registrar().discoverPack(uri, "provided")
                     } catch (e: Exception) {
                         e.printStackTrace()
