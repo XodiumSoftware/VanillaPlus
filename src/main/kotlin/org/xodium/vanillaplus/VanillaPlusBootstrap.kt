@@ -14,6 +14,7 @@ import io.papermc.paper.registry.tag.TagKey
 import io.papermc.paper.tag.TagEntry
 import net.kyori.adventure.key.Key
 import org.xodium.vanillaplus.enchantments.NightVisionEnchantment
+import org.xodium.vanillaplus.enchantments.NimbusEnchantment
 import org.xodium.vanillaplus.enchantments.PickupEnchantment
 import org.xodium.vanillaplus.enchantments.ReplantEnchantment
 import org.xodium.vanillaplus.enchantments.VeinMineEnchantment
@@ -23,51 +24,73 @@ import org.xodium.vanillaplus.enchantments.VeinMineEnchantment
 internal class VanillaPlusBootstrap : PluginBootstrap {
     companion object {
         const val INSTANCE = "vanillaplus"
-        val REPLANT = ReplantEnchantment.key
-        val PICKUP = PickupEnchantment.key
-        val NIGHT_VISION = NightVisionEnchantment.key
-        val VEIN_MINE = VeinMineEnchantment.key
-        val ENCHANTS = setOf(REPLANT, PICKUP, NIGHT_VISION, VEIN_MINE)
         val TOOLS = TagKey.create(RegistryKey.ITEM, Key.key(INSTANCE, "tools"))
+        val WEAPONS = TagKey.create(RegistryKey.ITEM, Key.key(INSTANCE, "weapons"))
+        val TOOLS_WEAPONS = TagKey.create(RegistryKey.ITEM, Key.key(INSTANCE, "tools_weapons"))
     }
 
     override fun bootstrap(ctx: BootstrapContext) {
         ctx.lifecycleManager.apply {
             registerEventHandler(LifecycleEvents.TAGS.preFlatten(RegistryKey.ITEM)) { event ->
-                event.registrar().setTag(
-                    TOOLS,
-                    setOf(
-                        TagEntry.tagEntry(ItemTypeTagKeys.PICKAXES),
-                        TagEntry.tagEntry(ItemTypeTagKeys.AXES),
-                        TagEntry.tagEntry(ItemTypeTagKeys.SHOVELS),
-                        TagEntry.tagEntry(ItemTypeTagKeys.HOES),
-                        TagEntry.valueEntry(ItemTypeKeys.SHEARS),
-                        TagEntry.valueEntry(ItemTypeKeys.BRUSH),
-                        TagEntry.valueEntry(ItemTypeKeys.FISHING_ROD),
-                    ),
-                )
+                event.registrar().apply {
+                    setTag(
+                        TOOLS,
+                        setOf(
+                            TagEntry.tagEntry(ItemTypeTagKeys.PICKAXES),
+                            TagEntry.tagEntry(ItemTypeTagKeys.AXES),
+                            TagEntry.tagEntry(ItemTypeTagKeys.SHOVELS),
+                            TagEntry.tagEntry(ItemTypeTagKeys.HOES),
+                            TagEntry.valueEntry(ItemTypeKeys.SHEARS),
+                            TagEntry.valueEntry(ItemTypeKeys.BRUSH),
+                            TagEntry.valueEntry(ItemTypeKeys.FISHING_ROD),
+                        ),
+                    )
+                    setTag(
+                        WEAPONS,
+                        setOf(
+                            TagEntry.tagEntry(ItemTypeTagKeys.SWORDS),
+                            TagEntry.valueEntry(ItemTypeKeys.BOW),
+                            TagEntry.valueEntry(ItemTypeKeys.CROSSBOW),
+                            TagEntry.valueEntry(ItemTypeKeys.TRIDENT),
+                            TagEntry.valueEntry(ItemTypeKeys.MACE),
+                            // TODO: add spear when the upcoming update is released.
+                        ),
+                    )
+                    setTag(
+                        TOOLS_WEAPONS,
+                        setOf(
+                            TagEntry.tagEntry(TOOLS),
+                            TagEntry.tagEntry(WEAPONS),
+                        ),
+                    )
+                }
             }
             registerEventHandler(
                 RegistryEvents.ENCHANTMENT.compose().newHandler { event ->
                     event.registry().apply {
-                        register(REPLANT) {
+                        register(ReplantEnchantment.key) { builder ->
                             ReplantEnchantment
-                                .builder(it)
+                                .invoke(builder)
                                 .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.HOES))
                         }
-                        register(PICKUP) {
+                        register(PickupEnchantment.key) { builder ->
                             PickupEnchantment
-                                .builder(it)
-                                .supportedItems(event.getOrCreateTag(TOOLS))
+                                .invoke(builder)
+                                .supportedItems(event.getOrCreateTag(TOOLS_WEAPONS))
                         }
-                        register(NIGHT_VISION) {
+                        register(NightVisionEnchantment.key) { builder ->
                             NightVisionEnchantment
-                                .builder(it)
+                                .invoke(builder)
                                 .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.HEAD_ARMOR))
                         }
-                        register(VEIN_MINE) {
+                        register(NimbusEnchantment.key) { builder ->
+                            NimbusEnchantment
+                                .invoke(builder)
+                                .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.HARNESSES))
+                        }
+                        register(VeinMineEnchantment.key) { builder ->
                             VeinMineEnchantment
-                                .builder(it)
+                                .builder(builder)
                                 .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.PICKAXES))
                         }
                     }
@@ -75,9 +98,17 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
             )
             registerEventHandler(LifecycleEvents.TAGS.postFlatten(RegistryKey.ENCHANTMENT)) { event ->
                 event.registrar().apply {
-                    addToTag(EnchantmentTagKeys.TRADEABLE, ENCHANTS)
-                    addToTag(EnchantmentTagKeys.NON_TREASURE, ENCHANTS)
-                    addToTag(EnchantmentTagKeys.IN_ENCHANTING_TABLE, ENCHANTS)
+                    val enchants =
+                        setOf(
+                            ReplantEnchantment.key,
+                            PickupEnchantment.key,
+                            NightVisionEnchantment.key,
+                            NimbusEnchantment.key,
+                            VeinMineEnchantment.key,
+                        )
+                    addToTag(EnchantmentTagKeys.TRADEABLE, enchants)
+                    addToTag(EnchantmentTagKeys.NON_TREASURE, enchants)
+                    addToTag(EnchantmentTagKeys.IN_ENCHANTING_TABLE, enchants)
                 }
             }
         }

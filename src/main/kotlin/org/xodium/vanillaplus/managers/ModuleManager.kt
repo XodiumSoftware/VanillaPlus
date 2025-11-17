@@ -82,7 +82,7 @@ internal object ModuleManager {
 
     private val configPerm =
         Permission(
-            "${instance::class.simpleName}.reload".lowercase(),
+            "${instance.javaClass.simpleName}.reload".lowercase(),
             "Allows use of the vanillaplus reload command",
             PermissionDefault.OP,
         )
@@ -101,7 +101,7 @@ internal object ModuleManager {
         instance.server.pluginManager.addPermission(configPerm)
         modules.filter { it.enabled() }.forEach { module ->
             instance.logger.info(
-                "Loaded: ${module::class.simpleName} | Took ${
+                "Loaded: ${module.javaClass.simpleName} | Took ${
                     measureTime {
                         instance.server.pluginManager.registerEvents(module, instance)
                         @Suppress("UnstableApiUsage")

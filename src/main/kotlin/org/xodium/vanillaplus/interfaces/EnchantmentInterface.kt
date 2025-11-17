@@ -22,22 +22,21 @@ internal interface EnchantmentInterface {
                 RegistryKey.ENCHANTMENT,
                 Key.key(
                     INSTANCE,
-                    this::class
+                    this.javaClass
                         .simpleName
-                        ?.removeSuffix("Enchantment")
-                        ?.split(Regex("(?=[A-Z])"))
-                        ?.filter { it.isNotEmpty() }
-                        ?.joinToString("_") { it.lowercase() }
-                        .toString(),
+                        .removeSuffix("Enchantment")
+                        .split(Regex("(?=[A-Z])"))
+                        .filter { it.isNotEmpty() }
+                        .joinToString("_") { it.lowercase() },
                 ),
             )
 
     /**
      * Configures the properties of the enchantment using the provided builder.
-     * @param builder The builder used to define the enchantment properties.
+     * @param invoke The builder used to define the enchantment properties.
      * @return The builder for method chaining.
      */
-    fun builder(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder
+    fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder
 
     /**
      * Retrieves the enchantment from the registry.

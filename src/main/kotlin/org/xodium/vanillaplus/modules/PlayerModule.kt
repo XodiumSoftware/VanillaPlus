@@ -12,6 +12,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockBreakEvent
+import org.bukkit.event.block.BlockDropItemEvent
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -73,7 +74,7 @@ internal class PlayerModule(
     override fun perms(): List<Permission> =
         listOf(
             Permission(
-                "${instance::class.simpleName}.nickname".lowercase(),
+                "${instance.javaClass.simpleName}.nickname".lowercase(),
                 "Allows use of the nickname command",
                 PermissionDefault.TRUE,
             ),
@@ -168,6 +169,12 @@ internal class PlayerModule(
         if (!enabled()) return
 
         ReplantEnchantment.replant(event)
+    }
+
+    @EventHandler
+    fun on(event: BlockDropItemEvent) {
+        if (!enabled()) return
+
         PickupEnchantment.pickup(event)
         VeinMineEnchantment.veinMine(event)
     }
