@@ -26,10 +26,7 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
-import org.xodium.vanillaplus.enchantments.NightVisionEnchantment
-import org.xodium.vanillaplus.enchantments.PickupEnchantment
-import org.xodium.vanillaplus.enchantments.ReplantEnchantment
-import org.xodium.vanillaplus.enchantments.SilkTouchEnchantment
+import org.xodium.vanillaplus.enchantments.*
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
 import org.xodium.vanillaplus.utils.ExtUtils.mm
@@ -162,6 +159,7 @@ internal class PlayerModule(
         if (!enabled()) return
 
         xpToBottle(event)
+        FeatherFallingEnchantment.featherFalling(event)
     }
 
     @EventHandler
