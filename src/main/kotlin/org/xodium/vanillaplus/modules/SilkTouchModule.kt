@@ -1,5 +1,6 @@
 package org.xodium.vanillaplus.modules
 
+import kotlinx.serialization.Serializable
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.Tag
@@ -71,6 +72,7 @@ internal class SilkTouchModule : ModuleInterface<SilkTouchModule.Config> {
     private fun isValidTool(item: ItemStack?): Boolean =
         item?.let { Tag.ITEMS_PICKAXES.isTagged(it.type) && it.containsEnchantment(Enchantment.SILK_TOUCH) } == true
 
+    @Serializable
     data class Config(
         var allowSpawnerSilk: Boolean = true,
         var allowBuddingAmethystSilk: Boolean = true,

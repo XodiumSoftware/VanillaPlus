@@ -3,6 +3,7 @@
 package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.event.entity.EntityEquipmentChangedEvent
+import kotlinx.serialization.Serializable
 import org.bukkit.Material
 import org.bukkit.entity.*
 import org.bukkit.event.EventHandler
@@ -62,6 +63,7 @@ internal class EntityModule : ModuleInterface<EntityModule.Config> {
             else -> false
         }
 
+    @Serializable
     data class Config(
         var disableBlazeGrief: Boolean = true,
         var disableCreeperGrief: Boolean = true,

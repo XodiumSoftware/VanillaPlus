@@ -1,6 +1,7 @@
 package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.command.brigadier.Commands
+import kotlinx.serialization.Serializable
 import org.bukkit.entity.Player
 import org.bukkit.permissions.Permission
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -41,6 +42,7 @@ internal class BooksModule : ModuleInterface<BooksModule.Config> {
             )
         }
 
+    @Serializable
     data class Config(
         var books: List<BookData> =
             listOf(

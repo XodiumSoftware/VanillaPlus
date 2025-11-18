@@ -17,6 +17,7 @@ import net.kyori.adventure.sound.Sound
  * @property volume The [volume] of the sound. Defaults to 1.0f.
  * @property pitch The [pitch] of the sound. Defaults to 1.0f.
  */
+@Serializable
 internal data class SoundData(
     @Serializable(with = SoundTypeSerializer::class)
     val name: Sound.Type,
