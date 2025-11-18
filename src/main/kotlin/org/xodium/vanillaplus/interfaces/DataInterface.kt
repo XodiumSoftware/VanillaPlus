@@ -2,6 +2,8 @@
 
 package org.xodium.vanillaplus.interfaces
 
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.json.Json
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.utils.ExtUtils.snakeCase
@@ -14,6 +16,8 @@ import kotlin.io.path.writeText
 /** Represents a contract for data within the system. */
 interface DataInterface<K, T : Any> {
     val cache: MutableMap<K, T>
+    val keySerializer: KSerializer<K>
+    val valueSerializer: KSerializer<T>
     val fileName: String
         get() = "${this.javaClass.simpleName.snakeCase}.json"
     val filePath: Path
@@ -31,7 +35,8 @@ interface DataInterface<K, T : Any> {
         if (filePath.toFile().exists()) {
             try {
                 cache.clear()
-                val rawMap = json.decodeFromString<Map<K, T>>(filePath.readText())
+                val mapSerializer = MapSerializer(keySerializer, valueSerializer)
+                val rawMap = json.decodeFromString(mapSerializer, filePath.readText())
                 cache.putAll(rawMap)
                 save()
             } catch (e: IOException) {
@@ -47,7 +52,8 @@ interface DataInterface<K, T : Any> {
             Runnable {
                 try {
                     filePath.parent.createDirectories()
-                    filePath.writeText(json.encodeToString(cache))
+                    val mapSerializer = MapSerializer(keySerializer, valueSerializer)
+                    filePath.writeText(json.encodeToString(mapSerializer, cache))
                 } catch (e: IOException) {
                     instance.logger.severe("Failed to write ${this.javaClass.simpleName} to file: ${e.message}")
                 }

@@ -1,5 +1,8 @@
 package org.xodium.vanillaplus.managers
 
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.PolymorphicSerializer
+import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.serializer
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -11,6 +14,9 @@ import kotlin.io.path.readText
 /** Manages module configs on disk and in-memory. */
 internal object ConfigManager : DataInterface<String, ModuleInterface.Config> {
     override val cache: MutableMap<String, ModuleInterface.Config> = mutableMapOf()
+    override val keySerializer: KSerializer<String> = String.serializer()
+    override val valueSerializer: KSerializer<ModuleInterface.Config> =
+        PolymorphicSerializer(ModuleInterface.Config::class)
     override val fileName: String = "config.json"
 
     /**
