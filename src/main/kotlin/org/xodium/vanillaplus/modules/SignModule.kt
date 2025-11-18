@@ -3,6 +3,7 @@ package org.xodium.vanillaplus.modules
 import com.mojang.brigadier.arguments.IntegerArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType
 import io.papermc.paper.command.brigadier.Commands
+import kotlinx.serialization.Serializable
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.permissions.Permission
@@ -15,6 +16,8 @@ import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 
 /** Represents a module handling sign mechanics within the system. */
 internal class SignModule : ModuleInterface<ModuleInterface.Config> {
+    override val config: ModuleInterface.Config = Config()
+
     override fun cmds(): List<CommandData> =
         listOf(
             CommandData(
@@ -72,4 +75,9 @@ internal class SignModule : ModuleInterface<ModuleInterface.Config> {
         signSide.line(line, text.mm())
         sign.update()
     }
+
+    @Serializable
+    data class Config(
+        override var enabled: Boolean = true,
+    ) : ModuleInterface.Config
 }

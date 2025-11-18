@@ -117,6 +117,7 @@ internal class SitModule : ModuleInterface<SitModule.Config> {
 
     @Serializable
     data class Config(
+        override var enabled: Boolean = true,
         var useStairs: Boolean = true,
         var useSlabs: Boolean = true,
     ) : ModuleInterface.Config

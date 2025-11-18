@@ -44,6 +44,7 @@ internal class BooksModule : ModuleInterface<BooksModule.Config> {
 
     @Serializable
     data class Config(
+        override var enabled: Boolean = true,
         var books: List<BookData> =
             listOf(
                 BookData(

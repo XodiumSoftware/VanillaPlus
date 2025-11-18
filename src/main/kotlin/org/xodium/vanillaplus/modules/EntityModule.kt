@@ -65,6 +65,7 @@ internal class EntityModule : ModuleInterface<EntityModule.Config> {
 
     @Serializable
     data class Config(
+        override var enabled: Boolean = true,
         var disableBlazeGrief: Boolean = true,
         var disableCreeperGrief: Boolean = true,
         var disableEnderDragonGrief: Boolean = true,

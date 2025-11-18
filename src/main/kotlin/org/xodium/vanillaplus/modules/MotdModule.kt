@@ -21,6 +21,7 @@ internal class MotdModule : ModuleInterface<MotdModule.Config> {
 
     @Serializable
     data class Config(
+        override var enabled: Boolean = true,
         val motd: List<String> =
             listOf(
                 "<b>Ultimate Private SMP</b>".fireFmt(),

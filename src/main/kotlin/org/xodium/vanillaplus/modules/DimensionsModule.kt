@@ -137,6 +137,7 @@ internal class DimensionsModule : ModuleInterface<DimensionsModule.Config> {
 
     @Serializable
     data class Config(
+        override var enabled: Boolean = true,
         var portalSearchRadius: Int = 128,
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {

@@ -257,6 +257,7 @@ internal class PlayerModule(
 
     @Serializable
     data class Config(
+        override var enabled: Boolean = true,
         var enderChestClickType: ClickType = ClickType.SHIFT_RIGHT,
         var skullDropChance: Double = 0.1,
         var xpCostToBottle: Int = 11,

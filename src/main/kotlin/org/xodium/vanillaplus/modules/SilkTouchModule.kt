@@ -74,6 +74,7 @@ internal class SilkTouchModule : ModuleInterface<SilkTouchModule.Config> {
 
     @Serializable
     data class Config(
+        override var enabled: Boolean = true,
         var allowSpawnerSilk: Boolean = true,
         var allowBuddingAmethystSilk: Boolean = true,
     ) : ModuleInterface.Config

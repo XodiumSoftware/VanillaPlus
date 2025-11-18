@@ -1,5 +1,6 @@
 package org.xodium.vanillaplus.modules
 
+import kotlinx.serialization.Serializable
 import org.bukkit.Keyed
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -9,6 +10,8 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 
 /** Represents a module handling recipe mechanics within the system. */
 internal class RecipiesModule : ModuleInterface<ModuleInterface.Config> {
+    override val config: ModuleInterface.Config = Config()
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
         if (!enabled()) return
@@ -22,4 +25,9 @@ internal class RecipiesModule : ModuleInterface<ModuleInterface.Config> {
                 .toList(),
         )
     }
+
+    @Serializable
+    data class Config(
+        override var enabled: Boolean = true,
+    ) : ModuleInterface.Config
 }

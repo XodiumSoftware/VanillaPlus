@@ -4,6 +4,7 @@ package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes
+import kotlinx.serialization.Serializable
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.entity.Player
@@ -18,6 +19,8 @@ import java.util.concurrent.CompletableFuture
 
 /** Represents a module handling locator mechanics within the system. */
 internal class LocatorModule : ModuleInterface<ModuleInterface.Config> {
+    override val config: Config = Config()
+
     private val colors = NamedTextColor.NAMES.keys().map { it.toString() } + listOf("<RRGGBB>", "reset")
 
     override fun cmds(): List<CommandData> =
@@ -102,4 +105,9 @@ internal class LocatorModule : ModuleInterface<ModuleInterface.Config> {
             else -> instance.server.dispatchCommand(player, "$cmd color reset")
         }
     }
+
+    @Serializable
+    data class Config(
+        override var enabled: Boolean = true,
+    ) : ModuleInterface.Config
 }

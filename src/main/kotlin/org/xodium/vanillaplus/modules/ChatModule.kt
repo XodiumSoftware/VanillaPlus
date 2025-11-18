@@ -187,6 +187,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
 
     @Serializable
     data class Config(
+        override var enabled: Boolean = true,
         var chatFormat: String = "<player_head> <player> <reset>${"›".mangoFmt(true)} <message>",
         var welcomeText: List<String> =
             listOf(

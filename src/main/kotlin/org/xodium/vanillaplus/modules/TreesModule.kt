@@ -164,6 +164,7 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
 
     @Serializable
     data class Config(
+        override var enabled: Boolean = true,
         var copyBiomes: Boolean = false,
         var copyEntities: Boolean = false,
         var ignoreAirBlocks: Boolean = true,
