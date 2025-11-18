@@ -29,6 +29,7 @@ import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.enchantments.NightVisionEnchantment
 import org.xodium.vanillaplus.enchantments.PickupEnchantment
 import org.xodium.vanillaplus.enchantments.ReplantEnchantment
+import org.xodium.vanillaplus.enchantments.SilkTouchEnchantment
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
 import org.xodium.vanillaplus.utils.ExtUtils.mm
@@ -168,6 +169,7 @@ internal class PlayerModule(
         if (!enabled()) return
 
         ReplantEnchantment.replant(event)
+        SilkTouchEnchantment.silkTouch(event)
     }
 
     @EventHandler
@@ -258,6 +260,7 @@ internal class PlayerModule(
         var enderChestClickType: ClickType = ClickType.SHIFT_RIGHT,
         var skullDropChance: Double = 0.1,
         var xpCostToBottle: Int = 11,
+        var silkTouchConfig: SilkTouchEnchantment.Config = SilkTouchEnchantment.Config(),
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
         data class I18n(

@@ -31,7 +31,6 @@ internal object ModuleManager {
     val recipiesModule: RecipiesModule = RecipiesModule()
     val scoreBoardModule: ScoreBoardModule = ScoreBoardModule()
     val signModule: SignModule = SignModule()
-    val silkTouchModule: SilkTouchModule = SilkTouchModule()
     val sitModule: SitModule = SitModule()
     val tabListModule: TabListModule = TabListModule()
     val playerModule: PlayerModule = PlayerModule(tabListModule)
@@ -53,7 +52,6 @@ internal object ModuleManager {
             recipiesModule,
             scoreBoardModule,
             signModule,
-            silkTouchModule,
             sitModule,
             tabListModule,
             treesModule,
