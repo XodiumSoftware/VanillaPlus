@@ -10,6 +10,10 @@ import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 
 /** Represents an object handling feather falling enchantment implementation within the system. */
 internal object FeatherFallingEnchantment : EnchantmentInterface {
+    /**
+     * Handles the PlayerInteractEvent to prevent farmland trampling when wearing boots with Feather Falling enchantment.
+     * @param event The PlayerInteractEvent to handle.
+     */
     fun featherFalling(event: PlayerInteractEvent) {
         if (event.action != Action.PHYSICAL) return
         if (event.clickedBlock?.type != Material.FARMLAND) return
