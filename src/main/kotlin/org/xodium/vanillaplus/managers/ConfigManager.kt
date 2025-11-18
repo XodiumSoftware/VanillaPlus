@@ -1,9 +1,12 @@
 package org.xodium.vanillaplus.managers
 
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.serializer
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.DataInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.key
+import kotlin.io.path.readText
 
 /** Manages module configs on disk and in-memory. */
 internal object ConfigManager : DataInterface<String, ModuleInterface.Config> {
@@ -19,7 +22,7 @@ internal object ConfigManager : DataInterface<String, ModuleInterface.Config> {
         modules.forEach { module ->
             val key = module.key
             val fileConfig = readFileConfig(key, module)
-            val mergedConfig = fileConfig?.let { jsonMapper.updateValue(module.config, it) } ?: module.config
+            val mergedConfig = fileConfig ?: module.config
             set(key, mergedConfig)
         }
         if (modules.isNotEmpty()) instance.logger.info("Config updated successfully")
@@ -38,8 +41,9 @@ internal object ConfigManager : DataInterface<String, ModuleInterface.Config> {
     ): ModuleInterface.Config? =
         try {
             if (filePath.toFile().exists()) {
-                jsonMapper.readTree(filePath.toFile())?.get(key)?.let { node ->
-                    jsonMapper.treeToValue(node, module.config.javaClass)
+                val jsonTree = json.parseToJsonElement(filePath.readText()) as? JsonObject
+                jsonTree?.get(key)?.let { element ->
+                    json.decodeFromJsonElement(serializer(module.config::class.java), element) as ModuleInterface.Config
                 }
             } else {
                 null

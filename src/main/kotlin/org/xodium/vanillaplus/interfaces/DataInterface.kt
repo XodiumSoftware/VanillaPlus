@@ -2,20 +2,13 @@
 
 package org.xodium.vanillaplus.interfaces
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect
-import com.fasterxml.jackson.annotation.PropertyAccessor
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.MapperFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.databind.json.JsonMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
+import kotlinx.serialization.json.Json
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.utils.ExtUtils.snakeCase
 import java.io.IOException
 import java.nio.file.Path
 import kotlin.io.path.createDirectories
+import kotlin.io.path.readText
 import kotlin.io.path.writeText
 
 /** Represents a contract for data within the system. */
@@ -25,25 +18,20 @@ interface DataInterface<K, T : Any> {
         get() = "${this.javaClass.simpleName.snakeCase}.json"
     val filePath: Path
         get() = instance.dataFolder.toPath().resolve(fileName)
-    val jsonMapper: ObjectMapper
+    val json: Json
         get() =
-            JsonMapper
-                .builder()
-                .addModule(KotlinModule.Builder().build())
-                .addModule(JavaTimeModule())
-                .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
-                .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-                .configure(MapperFeature.PROPAGATE_TRANSIENT_MARKER, true)
-                .build()
-                .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
+            Json {
+                prettyPrint = true
+                ignoreUnknownKeys = true
+                encodeDefaults = true
+            }
 
     /** Initializes the cache and loads existing data from the file. */
     fun load() {
         if (filePath.toFile().exists()) {
             try {
                 cache.clear()
-                val type = jsonMapper.typeFactory.constructMapType(cache.javaClass, Any().javaClass, this.javaClass)
-                val rawMap: Map<K, T> = jsonMapper.readValue(filePath.toFile(), type)
+                val rawMap = json.decodeFromString<Map<K, T>>(filePath.readText())
                 cache.putAll(rawMap)
                 save()
             } catch (e: IOException) {
@@ -59,7 +47,7 @@ interface DataInterface<K, T : Any> {
             Runnable {
                 try {
                     filePath.parent.createDirectories()
-                    filePath.writeText(jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsString(cache))
+                    filePath.writeText(json.encodeToString(cache))
                 } catch (e: IOException) {
                     instance.logger.severe("Failed to write ${this.javaClass.simpleName} to file: ${e.message}")
                 }
