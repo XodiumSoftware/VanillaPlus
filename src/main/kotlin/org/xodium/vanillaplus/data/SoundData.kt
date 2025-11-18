@@ -25,23 +25,24 @@ internal data class SoundData(
     private val volume: Float = 1.0f,
     private val pitch: Float = 1.0f,
 ) {
-    private object SoundTypeSerializer : KSerializer<Sound.Type> {
-        override val descriptor: SerialDescriptor
-            get() = PrimitiveSerialDescriptor("Sound.Type", PrimitiveKind.STRING)
-
-        override fun serialize(
-            encoder: Encoder,
-            value: Sound.Type,
-        ) {
-            encoder.encodeString(value.key().toString())
-        }
-
-        override fun deserialize(decoder: Decoder): Sound.Type = Sound.Type { Key.key(decoder.decodeString()) }
-    }
-
     /**
      * Converts this [SoundData] instance to a [Sound] instance.
      * @return A [Sound] instance with the properties of this [SoundData].
      */
     fun toSound(): Sound = Sound.sound(name, source, volume, pitch)
+}
+
+/** Serializer for [Sound.Type] to handle its serialization and deserialization. */
+private object SoundTypeSerializer : KSerializer<Sound.Type> {
+    override val descriptor: SerialDescriptor
+        get() = PrimitiveSerialDescriptor("Sound.Type", PrimitiveKind.STRING)
+
+    override fun serialize(
+        encoder: Encoder,
+        value: Sound.Type,
+    ) {
+        encoder.encodeString(value.key().toString())
+    }
+
+    override fun deserialize(decoder: Decoder): Sound.Type = Sound.Type { Key.key(decoder.decodeString()) }
 }
