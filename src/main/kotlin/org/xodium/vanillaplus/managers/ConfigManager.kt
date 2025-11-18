@@ -1,13 +1,19 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package org.xodium.vanillaplus.managers
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
+import kotlinx.serialization.modules.subclass
 import kotlinx.serialization.serializer
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.DataInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.modules.*
 import org.xodium.vanillaplus.utils.ExtUtils.key
 import kotlin.io.path.readText
 
@@ -18,6 +24,29 @@ internal object ConfigManager : DataInterface<String, ModuleInterface.Config> {
     override val valueSerializer: KSerializer<ModuleInterface.Config> =
         PolymorphicSerializer(ModuleInterface.Config::class)
     override val fileName: String = "config.json"
+    override val serializersModule: SerializersModule =
+        SerializersModule {
+            polymorphic(ModuleInterface.Config::class) {
+                subclass(BooksModule.Config::class)
+                subclass(CauldronModule.Config::class)
+                subclass(ChatModule.Config::class)
+                subclass(DimensionsModule.Config::class)
+                subclass(EntityModule.Config::class)
+                subclass(InvModule.Config::class)
+                subclass(LocatorModule.Config::class)
+                subclass(MotdModule.Config::class)
+                subclass(OpenableModule.Config::class)
+                subclass(PetModule.Config::class)
+                subclass(PlayerModule.Config::class)
+                subclass(RecipiesModule.Config::class)
+                subclass(ScoreBoardModule.Config::class)
+                subclass(SignModule.Config::class)
+                subclass(SilkTouchModule.Config::class)
+                subclass(SitModule.Config::class)
+                subclass(TabListModule.Config::class)
+                subclass(TreesModule.Config::class)
+            }
+        }
 
     /**
      * Updates module configurations by merging existing file values into

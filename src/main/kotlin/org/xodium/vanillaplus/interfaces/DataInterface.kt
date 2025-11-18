@@ -5,6 +5,7 @@ package org.xodium.vanillaplus.interfaces
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.SerializersModule
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.utils.ExtUtils.snakeCase
 import java.io.IOException
@@ -18,6 +19,8 @@ interface DataInterface<K, T : Any> {
     val cache: MutableMap<K, T>
     val keySerializer: KSerializer<K>
     val valueSerializer: KSerializer<T>
+    val serializersModule: SerializersModule
+        get() = SerializersModule {}
     val fileName: String
         get() = "${this.javaClass.simpleName.snakeCase}.json"
     val filePath: Path
@@ -28,6 +31,7 @@ interface DataInterface<K, T : Any> {
                 prettyPrint = true
                 ignoreUnknownKeys = true
                 encodeDefaults = true
+                serializersModule = this@DataInterface.serializersModule
             }
 
     /** Initializes the cache and loads existing data from the file. */
