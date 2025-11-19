@@ -270,7 +270,6 @@ internal class PlayerModule : ModuleInterface<PlayerModule.Config> {
         var skullDropChance: Double = 0.1,
         var xpCostToBottle: Int = 11,
         var silkTouchConfig: SilkTouchEnchantment.Config = SilkTouchEnchantment.Config(),
-        var unlockAllRecipes: Boolean = true,
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
         data class I18n(
