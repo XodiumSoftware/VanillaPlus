@@ -89,7 +89,9 @@ internal object ChunkUtils {
             containers.filter { block ->
                 val inventory = (block.state as Container).inventory
                 val holder = inventory.holder
+
                 if (holder is DoubleChest) seenDoubleChests.add(holder.leftSide)
+
                 true
             }
 

@@ -20,6 +20,7 @@ internal object ConfigManager : DataInterface<String, ModuleInterface.Config> {
             val key = module.key
             val fileConfig = readFileConfig(key, module)
             val mergedConfig = fileConfig?.let { jsonMapper.updateValue(module.config, it) } ?: module.config
+
             set(key, mergedConfig)
         }
         if (modules.isNotEmpty()) instance.logger.info("Config updated successfully")

@@ -151,6 +151,7 @@ internal object ExtUtils {
         // 3. scale & build MiniMessage
         val scale = FACE_WIDTH.toDouble() / size
         val builder = StringBuilder()
+
         for (y in 0 until size) {
             for (x in 0 until size) {
                 val px = (x * scale).toInt().coerceAtMost(MAX_COORDINATE)
@@ -160,6 +161,7 @@ internal object ExtUtils {
                 val r = (rgb shr RED_SHIFT) and COLOR_MASK
                 val g = (rgb shr GREEN_SHIFT) and COLOR_MASK
                 val b = rgb and COLOR_MASK
+
                 if (a == 0) {
                     builder.append("<color:$BLACK_COLOR>$PIXEL_CHAR</color>")
                 } else {

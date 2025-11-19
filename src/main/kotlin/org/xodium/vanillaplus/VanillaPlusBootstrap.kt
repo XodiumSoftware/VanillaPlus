@@ -99,6 +99,7 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                             NightVisionEnchantment.key,
                             NimbusEnchantment.key,
                         )
+
                     addToTag(EnchantmentTagKeys.TRADEABLE, enchants)
                     addToTag(EnchantmentTagKeys.NON_TREASURE, enchants)
                     addToTag(EnchantmentTagKeys.IN_ENCHANTING_TABLE, enchants)
