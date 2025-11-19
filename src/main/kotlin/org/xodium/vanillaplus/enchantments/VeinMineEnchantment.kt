@@ -3,6 +3,7 @@ package org.xodium.vanillaplus.enchantments
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
 import org.bukkit.GameMode
 import org.bukkit.Material
+import org.bukkit.Tag
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.event.block.BlockBreakEvent
@@ -44,7 +45,6 @@ internal object VeinMineEnchantment : EnchantmentInterface {
     fun veinMine(event: BlockBreakEvent) {
         val player = event.player
 
-        // TODO: make it only work on ores.
         if (player.gameMode == GameMode.CREATIVE) return
 
         val itemInHand = player.inventory.itemInMainHand
@@ -52,6 +52,9 @@ internal object VeinMineEnchantment : EnchantmentInterface {
         if (!itemInHand.hasItemMeta() || !itemInHand.itemMeta.hasEnchant(get())) return
 
         val block = event.block
+
+        if (!isOre(block.type)) return
+
         val blockType = block.type
         val connectedBlocks = findConnectedBlocks(block, blockType, MAX_BLOCKS)
 
@@ -125,4 +128,21 @@ internal object VeinMineEnchantment : EnchantmentInterface {
 
         return visited.toList()
     }
+
+    /**
+     * Checks if a material is considered an ore for vein mining purposes.
+     * @param material The material to check.
+     * @return True if the material is a valid ore, false otherwise.
+     */
+    private fun isOre(material: Material): Boolean =
+        setOf(
+            Tag.COAL_ORES,
+            Tag.COPPER_ORES,
+            Tag.IRON_ORES,
+            Tag.GOLD_ORES,
+            Tag.DIAMOND_ORES,
+            Tag.EMERALD_ORES,
+            Tag.REDSTONE_ORES,
+            Tag.LAPIS_ORES,
+        ).any { tag -> tag.isTagged(material) } || material == Material.ANCIENT_DEBRIS
 }
