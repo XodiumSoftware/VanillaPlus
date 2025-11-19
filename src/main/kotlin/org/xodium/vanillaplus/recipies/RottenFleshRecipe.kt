@@ -11,7 +11,7 @@ import org.xodium.vanillaplus.interfaces.RecipeInterface
 
 /** Handles the registration of wood to log conversion recipes. */
 internal object RottenFleshRecipe : RecipeInterface {
-    override fun getRecipes() =
+    override fun recipes() =
         setOf(
             FurnaceRecipe(
                 NamespacedKey(instance, "rotten_flesh_to_leather_furnace"),

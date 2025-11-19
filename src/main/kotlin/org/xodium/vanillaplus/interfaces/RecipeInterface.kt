@@ -9,8 +9,8 @@ internal interface RecipeInterface {
      * Retrieves the set of recipes to be registered.
      * @return A set of [Recipe] instances.
      */
-    fun getRecipes(): Set<Recipe>
+    fun recipes(): Set<Recipe>
 
-    /** Registers all recipes returned by [getRecipes] with the server. */
-    fun register() = getRecipes().forEach { recipe -> instance.server.addRecipe(recipe) }
+    /** Registers all recipes returned by [recipes] with the server. */
+    fun register() = recipes().forEach { recipe -> instance.server.addRecipe(recipe) }
 }
