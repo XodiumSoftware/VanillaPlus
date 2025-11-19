@@ -9,7 +9,7 @@ import org.bukkit.inventory.SmokingRecipe
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.RecipeInterface
 
-/** Handles the registration of wood to log conversion recipes. */
+/** Represents an object handling rotten-flesh recipe implementation within the system. */
 internal object RottenFleshRecipe : RecipeInterface {
     override fun recipes() =
         setOf(
