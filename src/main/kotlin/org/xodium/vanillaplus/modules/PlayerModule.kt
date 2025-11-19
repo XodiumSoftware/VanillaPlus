@@ -9,6 +9,7 @@ import io.papermc.paper.datacomponent.item.ItemLore
 import io.papermc.paper.datacomponent.item.ResolvableProfile
 import io.papermc.paper.event.entity.EntityEquipmentChangedEvent
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
+import org.bukkit.Keyed
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -81,6 +82,8 @@ internal class PlayerModule : ModuleInterface<PlayerModule.Config> {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
         if (!enabled()) return
+
+        recipes(event)
 
         val player = event.player
 
@@ -172,6 +175,23 @@ internal class PlayerModule : ModuleInterface<PlayerModule.Config> {
         if (!enabled()) return
 
         NightVisionEnchantment.nightVision(event)
+    }
+
+    /**
+     * Handles the discovery of recipes for a player upon joining the server.
+     * @param event The PlayerJoinEvent triggered when a player joins the server.
+     */
+    private fun recipes(event: PlayerJoinEvent) {
+        if (!config.unlockAllRecipes) return
+
+        event.player.discoverRecipes(
+            instance.server
+                .recipeIterator()
+                .asSequence()
+                .filterIsInstance<Keyed>()
+                .map { it.key }
+                .toList(),
+        )
     }
 
     /**
@@ -270,6 +290,7 @@ internal class PlayerModule : ModuleInterface<PlayerModule.Config> {
         var skullDropChance: Double = 0.1,
         var xpCostToBottle: Int = 11,
         var silkTouchConfig: SilkTouchEnchantment.Config = SilkTouchEnchantment.Config(),
+        var unlockAllRecipes: Boolean = true,
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
         data class I18n(
