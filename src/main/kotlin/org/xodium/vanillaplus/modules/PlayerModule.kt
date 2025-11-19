@@ -32,7 +32,6 @@ import org.xodium.vanillaplus.enchantments.*
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.ModuleManager
 import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
-import org.xodium.vanillaplus.recipies.RottenFleshRecipe
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
@@ -78,10 +77,6 @@ internal class PlayerModule : ModuleInterface<PlayerModule.Config> {
                 PermissionDefault.TRUE,
             ),
         )
-
-    init {
-        if (enabled()) RottenFleshRecipe.register()
-    }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
