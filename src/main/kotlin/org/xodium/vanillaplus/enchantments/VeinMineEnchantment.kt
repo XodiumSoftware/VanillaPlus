@@ -44,6 +44,7 @@ internal object VeinMineEnchantment : EnchantmentInterface {
     fun veinMine(event: BlockBreakEvent) {
         val player = event.player
 
+        // TODO: make it only work on ores.
         if (player.gameMode == GameMode.CREATIVE) return
 
         val itemInHand = player.inventory.itemInMainHand
