@@ -133,15 +133,26 @@ internal object VeinMineEnchantment : EnchantmentInterface {
      * @param material The material to check.
      * @return True if the material is a valid ore, false otherwise.
      */
-    private fun isOre(material: Material): Boolean =
-        setOf(
-            Tag.COAL_ORES,
-            Tag.COPPER_ORES,
-            Tag.IRON_ORES,
-            Tag.GOLD_ORES,
-            Tag.DIAMOND_ORES,
-            Tag.EMERALD_ORES,
-            Tag.REDSTONE_ORES,
-            Tag.LAPIS_ORES,
-        ).any { tag -> tag.isTagged(material) } || material == Material.ANCIENT_DEBRIS
+    private fun isOre(material: Material): Boolean {
+        val oreTags =
+            setOf(
+                Tag.COAL_ORES,
+                Tag.COPPER_ORES,
+                Tag.IRON_ORES,
+                Tag.GOLD_ORES,
+                Tag.DIAMOND_ORES,
+                Tag.EMERALD_ORES,
+                Tag.REDSTONE_ORES,
+                Tag.LAPIS_ORES,
+            )
+
+        val specialOres =
+            setOf(
+                Material.ANCIENT_DEBRIS,
+                Material.NETHER_QUARTZ_ORE,
+                Material.NETHER_GOLD_ORE,
+            )
+
+        return oreTags.any { it.isTagged(material) } || material in specialOres
+    }
 }

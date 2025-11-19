@@ -12,7 +12,8 @@ import org.xodium.vanillaplus.utils.ExtUtils.displayName
 /** Represents an object handling nimbus enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
 internal object NimbusEnchantment : EnchantmentInterface {
-    const val DEFAULT_FLY_SPEED = 0.05
+    private const val DEFAULT_FLY_SPEED = 0.05
+    private val SPEED_MODIFIER = mapOf(1 to 1.5, 2 to 2.0, 3 to 2.5, 4 to 3.0, 5 to 3.5)
 
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
@@ -34,26 +35,11 @@ internal object NimbusEnchantment : EnchantmentInterface {
         val attribute = entity.getAttribute(Attribute.FLYING_SPEED)
 
         if (harness.hasItemMeta() && harness.itemMeta.hasEnchant(get())) {
-            val level = harness.itemMeta.getEnchantLevel(get())
-            val speedMultiplier = getSpeedMultiplier(level)
-            attribute?.baseValue = DEFAULT_FLY_SPEED * speedMultiplier
+            val enchantLevel = harness.itemMeta.getEnchantLevel(get())
+
+            attribute?.baseValue = DEFAULT_FLY_SPEED * (SPEED_MODIFIER[enchantLevel] ?: return)
         } else {
             attribute?.baseValue = DEFAULT_FLY_SPEED
         }
     }
-
-    /**
-     * Calculates the flying speed multiplier based on the enchantment level.
-     * @param level The enchantment level (1-5)
-     * @return The flying speed multiplier for the given level
-     */
-    private fun getSpeedMultiplier(level: Int): Double =
-        when (level) {
-            1 -> 1.5
-            2 -> 2.0
-            3 -> 2.5
-            4 -> 3.0
-            5 -> 3.5
-            else -> 1.0
-        }
 }
