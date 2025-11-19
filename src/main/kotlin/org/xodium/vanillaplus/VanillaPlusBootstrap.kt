@@ -13,10 +13,7 @@ import io.papermc.paper.registry.keys.tags.ItemTypeTagKeys
 import io.papermc.paper.registry.tag.TagKey
 import io.papermc.paper.tag.TagEntry
 import net.kyori.adventure.key.Key
-import org.xodium.vanillaplus.enchantments.NightVisionEnchantment
-import org.xodium.vanillaplus.enchantments.NimbusEnchantment
-import org.xodium.vanillaplus.enchantments.PickupEnchantment
-import org.xodium.vanillaplus.enchantments.ReplantEnchantment
+import org.xodium.vanillaplus.enchantments.*
 
 /** Main bootstrap class of the plugin. */
 @Suppress("UnstableApiUsage", "Unused")
@@ -87,6 +84,11 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                                 .invoke(builder)
                                 .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.HARNESSES))
                         }
+                        register(VeinMineEnchantment.key) { builder ->
+                            VeinMineEnchantment
+                                .invoke(builder)
+                                .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.PICKAXES))
+                        }
                     }
                 },
             )
@@ -98,6 +100,7 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                             PickupEnchantment.key,
                             NightVisionEnchantment.key,
                             NimbusEnchantment.key,
+                            VeinMineEnchantment.key,
                         )
 
                     addToTag(EnchantmentTagKeys.TRADEABLE, enchants)

@@ -158,6 +158,7 @@ internal class PlayerModule : ModuleInterface<PlayerModule.Config> {
 
         ReplantEnchantment.replant(event)
         SilkTouchEnchantment.silkTouch(event)
+        VeinMineEnchantment.veinMine(event)
     }
 
     @EventHandler

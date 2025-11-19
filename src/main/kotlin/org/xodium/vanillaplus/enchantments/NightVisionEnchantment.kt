@@ -7,14 +7,14 @@ import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
-import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.ExtUtils.displayName
 
 /** Represents an object handling night vision enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
 internal object NightVisionEnchantment : EnchantmentInterface {
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
-            .description(key.value().replaceFirstChar { it.uppercase() }.mm())
+            .description(key.displayName())
             .anvilCost(2)
             .maxLevel(1)
             .weight(2)

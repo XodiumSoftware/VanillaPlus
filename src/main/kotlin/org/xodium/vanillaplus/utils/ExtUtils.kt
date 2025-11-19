@@ -6,9 +6,11 @@ import com.google.gson.JsonParser
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
+import io.papermc.paper.registry.TypedKey
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
+import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.xodium.vanillaplus.VanillaPlus
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -172,4 +174,10 @@ internal object ExtUtils {
         }
         return builder.toString()
     }
+
+    /** Extension function to convert snake_case to Proper Case with spaces. */
+    fun String.snakeToProperCase(): String = split('_').joinToString(" ") { word -> word.replaceFirstChar { it.uppercase() } }
+
+    /** Extension function specifically for enchantment keys */
+    fun TypedKey<Enchantment>.displayName(): Component = value().snakeToProperCase().mm()
 }
