@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package org.xodium.vanillaplus.modules
 
 import com.mojang.brigadier.arguments.StringArgumentType
@@ -138,20 +140,9 @@ internal class PlayerModule(
 
     @EventHandler
     fun on(event: InventoryClickEvent) {
-        if (!enabled() ||
-            event.click != config.enderChestClickType ||
-            event.currentItem?.type != Material.ENDER_CHEST ||
-            event.clickedInventory?.type != InventoryType.PLAYER
-        ) {
-            return
-        }
+        if (!enabled()) return
 
-        event.isCancelled = true
-
-        instance.server.scheduler.runTask(
-            instance,
-            Runnable { event.whoClicked.openInventory(event.whoClicked.enderChest) },
-        )
+        enderchest(event)
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -182,6 +173,27 @@ internal class PlayerModule(
         if (!enabled()) return
 
         NightVisionEnchantment.nightVision(event)
+    }
+
+    /**
+     * Handles the inventory click event where a player can open their ender chest by clicking on an ender chest item
+     * in their inventory.
+     * @param event The InventoryClickEvent triggered when a player clicks in an inventory.
+     */
+    private fun enderchest(event: InventoryClickEvent) {
+        if (event.click != config.enderChestClickType ||
+            event.currentItem?.type != Material.ENDER_CHEST ||
+            event.clickedInventory?.type != InventoryType.PLAYER
+        ) {
+            return
+        }
+
+        event.isCancelled = true
+
+        instance.server.scheduler.runTask(
+            instance,
+            Runnable { event.whoClicked.openInventory(event.whoClicked.enderChest) },
+        )
     }
 
     /**
