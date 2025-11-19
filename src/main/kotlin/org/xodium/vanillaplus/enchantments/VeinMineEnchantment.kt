@@ -3,7 +3,6 @@ package org.xodium.vanillaplus.enchantments
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
 import org.bukkit.GameMode
 import org.bukkit.Material
-import org.bukkit.Sound
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.event.block.BlockBreakEvent
@@ -57,21 +56,35 @@ internal object VeinMineEnchantment : EnchantmentInterface {
 
         if (connectedBlocks.size <= 1) return
 
+        val hasPickupEnchant = itemInHand.itemMeta.hasEnchant(PickupEnchantment.get())
         val damageableMeta = itemInHand.itemMeta as? Damageable ?: return
-        val maxDurability = itemInHand.type.maxDurability.toInt()
         var currentDamage = damageableMeta.damage
 
         for (connectedBlock in connectedBlocks) {
             if (connectedBlock == block) continue
+            if (hasPickupEnchant) {
+                val drops = connectedBlock.getDrops(itemInHand, player)
 
-            connectedBlock.breakNaturally(itemInHand)
+                connectedBlock.type = Material.AIR
+
+                if (drops.isNotEmpty()) {
+                    val inventory = player.inventory
+
+                    for (drop in drops) {
+                        val remaining = inventory.addItem(drop)
+
+                        for (remainingItem in remaining.values) {
+                            connectedBlock.world.dropItem(connectedBlock.location, remainingItem)
+                        }
+                    }
+                }
+            } else {
+                connectedBlock.breakNaturally(itemInHand)
+            }
+
             currentDamage++
 
-            if (currentDamage >= maxDurability) {
-                itemInHand.amount = 0
-                player.playSound(player.location, Sound.ENTITY_ITEM_BREAK, 1.0f, 1.0f)
-                break
-            }
+            if (currentDamage >= itemInHand.type.maxDurability.toInt()) break
         }
 
         if (currentDamage > damageableMeta.damage) {
