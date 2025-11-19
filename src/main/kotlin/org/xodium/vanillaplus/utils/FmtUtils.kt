@@ -17,6 +17,7 @@ internal object FmtUtils {
         require(colors.size >= 2) { "At least 2 colors are required for a gradient." }
         val gradientColors = if (inverted) colors.reversed().toTypedArray() else colors
         val gradientTags = gradientColors.joinToString(":")
+
         return "<gradient:$gradientTags>$this<reset>"
     }
 

@@ -90,6 +90,7 @@ internal class LocatorModule : ModuleInterface<ModuleInterface.Config> {
         hex: TextColor? = null,
     ) {
         val cmd = "waypoint modify ${player.name}"
+
         when {
             colour != null -> instance.server.dispatchCommand(player, "$cmd color $colour")
 

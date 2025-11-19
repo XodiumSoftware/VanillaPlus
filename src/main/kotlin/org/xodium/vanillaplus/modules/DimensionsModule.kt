@@ -29,7 +29,6 @@ internal class DimensionsModule : ModuleInterface<DimensionsModule.Config> {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerPortalEvent) {
         if (!enabled()) return
-
         if (event.cause == TeleportCause.NETHER_PORTAL) {
             if (event.player.world.environment == World.Environment.NETHER) {
                 event.canCreatePortal = false
@@ -40,7 +39,6 @@ internal class DimensionsModule : ModuleInterface<DimensionsModule.Config> {
     @EventHandler(priority = EventPriority.HIGH)
     fun on(event: EntityPortalEvent) {
         if (!enabled()) return
-
         if (event.entity.world.environment == World.Environment.NETHER) {
             event.canCreatePortal = false
         }
@@ -49,7 +47,6 @@ internal class DimensionsModule : ModuleInterface<DimensionsModule.Config> {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PortalCreateEvent) {
         if (!enabled()) return
-
         if (event.world.environment == World.Environment.NETHER &&
             event.reason == PortalCreateEvent.CreateReason.FIRE
         ) {

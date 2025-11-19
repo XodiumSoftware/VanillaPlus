@@ -18,6 +18,7 @@ internal object ItemStackUtils {
         second: ItemStack,
     ): Boolean {
         if (first.type != Material.ENCHANTED_BOOK && (first.enchantments.isEmpty() && second.enchantments.isEmpty())) return true
+
         return first.getData(DataComponentTypes.ENCHANTMENTS) == second.getData(DataComponentTypes.ENCHANTMENTS)
     }
 }

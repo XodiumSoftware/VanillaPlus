@@ -56,6 +56,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
                                     .executes { ctx ->
                                         ctx.tryCatch {
                                             if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+
                                             val sender = it.sender as Player
                                             val targetName = ctx.getArgument("target", String().javaClass)
                                             val target =
@@ -64,6 +65,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
                                                         config.i18n.playerIsNotOnline.mm(),
                                                     )
                                             val message = ctx.getArgument("message", String().javaClass)
+
                                             whisper(sender, target, message)
                                         }
                                     },
@@ -89,7 +91,6 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
         if (!config.enabled) return
 
         event.renderer(ChatRenderer.defaultRenderer())
-
         event.renderer { player, displayName, message, audience ->
             var base =
                 config.chatFormat.mm(
@@ -112,7 +113,9 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
         if (!config.enabled) return
 
         val player = event.player
+
         var imageIndex = 0
+
         player.sendMessage(
             Regex("<image>")
                 .replace(config.welcomeText.joinToString("\n")) { "<image${++imageIndex}>" }

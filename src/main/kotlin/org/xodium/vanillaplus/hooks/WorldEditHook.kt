@@ -10,9 +10,11 @@ object WorldEditHook {
      */
     fun get(): Boolean {
         val plugin = instance.server.pluginManager.getPlugin("WorldEdit") != null
+
         if (!plugin) {
             val callerClassName = Thread.currentThread().stackTrace[2].className
             val simpleName = callerClassName.substringAfterLast('.')
+
             instance.logger.warning("FAWE or WorldEdit not found, disabling $simpleName")
         }
 

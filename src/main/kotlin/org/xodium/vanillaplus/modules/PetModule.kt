@@ -23,11 +23,12 @@ internal class PetModule : ModuleInterface<PetModule.Config> {
 
         val source = event.player
         val target = event.rightClicked as? Player ?: return
-        if (source == target) return
 
+        if (source == target) return
         if (source.inventory.itemInMainHand.type != Material.LEAD) return
 
         val leashedEntity = findLeashedPet(source) ?: return
+
         if (!isTransferablePet(leashedEntity, source)) return
 
         transferPetOwnership(source, target, leashedEntity)

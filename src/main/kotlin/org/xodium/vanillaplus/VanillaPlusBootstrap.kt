@@ -106,6 +106,7 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                             NimbusEnchantment.key,
                             VeinMineEnchantment.key,
                         )
+
                     addToTag(EnchantmentTagKeys.TRADEABLE, enchants)
                     addToTag(EnchantmentTagKeys.NON_TREASURE, enchants)
                     addToTag(EnchantmentTagKeys.IN_ENCHANTING_TABLE, enchants)

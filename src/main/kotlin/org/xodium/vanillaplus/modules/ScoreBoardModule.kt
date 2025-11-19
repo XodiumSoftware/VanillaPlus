@@ -43,7 +43,9 @@ internal class ScoreBoardModule : ModuleInterface<ModuleInterface.Config> {
     @EventHandler
     fun on(event: PlayerJoinEvent) {
         if (!enabled()) return
+
         val player = event.player
+
         if (player.scoreboardVisibility == true) {
             player.scoreboard = instance.server.scoreboardManager.newScoreboard
         } else {

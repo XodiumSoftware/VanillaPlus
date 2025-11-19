@@ -1,28 +1,23 @@
-package org.xodium.vanillaplus.modules
+package org.xodium.vanillaplus.enchantments
 
-import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.block.CreatureSpawner
 import org.bukkit.enchantments.Enchantment
-import org.bukkit.event.EventHandler
-import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.inventory.ItemStack
-import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 
-/** Represents a module handling silk touch mechanics within the system. */
-internal class SilkTouchModule : ModuleInterface<SilkTouchModule.Config> {
-    override val config: Config = Config()
+/** Represents an object handling silk touch enchantment implementation within the system. */
+internal object SilkTouchEnchantment : EnchantmentInterface {
+    private val config = Config()
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    fun on(event: BlockBreakEvent) {
-        if (!enabled() ||
-            event.player.gameMode != GameMode.SURVIVAL ||
-            !isValidTool(event.player.inventory.itemInMainHand)
-        ) {
-            return
-        }
+    /**
+     * Handles breaking blocks with Silk Touch.
+     * @param event The block break event.
+     */
+    fun silkTouch(event: BlockBreakEvent) {
+        if (!isValidTool(event.player.inventory.itemInMainHand)) return
 
         when (event.block.type) {
             Material.SPAWNER -> handleSpawnerBreak(event)
@@ -71,8 +66,9 @@ internal class SilkTouchModule : ModuleInterface<SilkTouchModule.Config> {
     private fun isValidTool(item: ItemStack?): Boolean =
         item?.let { Tag.ITEMS_PICKAXES.isTagged(it.type) && it.containsEnchantment(Enchantment.SILK_TOUCH) } == true
 
+    /** Configuration data class for Silk Touch enchantment settings. */
     data class Config(
         var allowSpawnerSilk: Boolean = true,
         var allowBuddingAmethystSilk: Boolean = true,
-    ) : ModuleInterface.Config
+    )
 }

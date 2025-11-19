@@ -51,6 +51,7 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
         if (!enabled()) return
+
         updateTabList(event.player)
         updatePlayerDisplayName(event.player)
     }
@@ -58,12 +59,14 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: WeatherChangeEvent) {
         if (!enabled()) return
+
         event.world.players.forEach { updateTabList(it) }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: ThunderChangeEvent) {
         if (!enabled()) return
+
         event.world.players.forEach { updateTabList(it) }
     }
 
@@ -79,6 +82,7 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
      */
     private fun updateTabList(audience: Audience) {
         val joinConfig = JoinConfiguration.separator(Component.newline())
+
         audience.sendPlayerListHeaderAndFooter(
             Component.join(joinConfig, config.header.mm()),
             Component.join(
@@ -101,6 +105,7 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
         val ratio = clampedTps / MAX_TPS
         val color = getColorForTps(ratio)
         val formattedTps = String.format(Locale.ENGLISH, TPS_DECIMAL_FORMAT, tps)
+
         return "<color:$color>$formattedTps</color>"
     }
 
@@ -113,6 +118,7 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
         val clamped = ratio.coerceIn(0.0, 1.0)
         val r = (MAX_COLOR_VALUE * (1 - clamped)).roundToInt()
         val g = (MAX_COLOR_VALUE * clamped).roundToInt()
+
         return String.format(Locale.ENGLISH, COLOR_FORMAT, r, g, 0)
     }
 
@@ -122,6 +128,7 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
      */
     private fun getWeather(): String {
         val world = instance.server.worlds[0]
+
         return when {
             world.isThundering -> config.i18n.weatherThundering
             world.hasStorm() -> config.i18n.weatherStorm

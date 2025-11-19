@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package org.xodium.vanillaplus.modules
 
 import com.mojang.brigadier.arguments.StringArgumentType
@@ -26,11 +28,9 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
-import org.xodium.vanillaplus.enchantments.NightVisionEnchantment
-import org.xodium.vanillaplus.enchantments.PickupEnchantment
-import org.xodium.vanillaplus.enchantments.ReplantEnchantment
-import org.xodium.vanillaplus.enchantments.VeinMineEnchantment
+import org.xodium.vanillaplus.enchantments.*
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.managers.ModuleManager
 import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
@@ -38,12 +38,10 @@ import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 
 /** Represents a module handling player mechanics within the system. */
-internal class PlayerModule(
-    private val tabListModule: TabListModule,
-) : ModuleInterface<PlayerModule.Config> {
+internal class PlayerModule : ModuleInterface<PlayerModule.Config> {
     override val config: Config = Config()
 
-    override fun enabled(): Boolean = config.enabled && tabListModule.enabled()
+    private val tabListModule by lazy { ModuleManager.tabListModule }
 
     override fun cmds(): List<CommandData> =
         listOf(
@@ -141,20 +139,9 @@ internal class PlayerModule(
 
     @EventHandler
     fun on(event: InventoryClickEvent) {
-        if (!enabled() ||
-            event.click != config.enderChestClickType ||
-            event.currentItem?.type != Material.ENDER_CHEST ||
-            event.clickedInventory?.type != InventoryType.PLAYER
-        ) {
-            return
-        }
+        if (!enabled()) return
 
-        event.isCancelled = true
-
-        instance.server.scheduler.runTask(
-            instance,
-            Runnable { event.whoClicked.openInventory(event.whoClicked.enderChest) },
-        )
+        enderchest(event)
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -162,6 +149,7 @@ internal class PlayerModule(
         if (!enabled()) return
 
         xpToBottle(event)
+        FeatherFallingEnchantment.featherFalling(event)
     }
 
     @EventHandler
@@ -169,6 +157,7 @@ internal class PlayerModule(
         if (!enabled()) return
 
         ReplantEnchantment.replant(event)
+        SilkTouchEnchantment.silkTouch(event)
     }
 
     @EventHandler
@@ -184,6 +173,27 @@ internal class PlayerModule(
         if (!enabled()) return
 
         NightVisionEnchantment.nightVision(event)
+    }
+
+    /**
+     * Handles the inventory click event where a player can open their ender chest by clicking on an ender chest item
+     * in their inventory.
+     * @param event The InventoryClickEvent triggered when a player clicks in an inventory.
+     */
+    private fun enderchest(event: InventoryClickEvent) {
+        if (event.click != config.enderChestClickType ||
+            event.currentItem?.type != Material.ENDER_CHEST ||
+            event.clickedInventory?.type != InventoryType.PLAYER
+        ) {
+            return
+        }
+
+        event.isCancelled = true
+
+        instance.server.scheduler.runTask(
+            instance,
+            Runnable { event.whoClicked.openInventory(event.whoClicked.enderChest) },
+        )
     }
 
     /**
@@ -222,7 +232,7 @@ internal class PlayerModule(
     ) {
         player.nickname = name
         player.displayName(player.nickname?.mm())
-        tabListModule.updatePlayerDisplayName(player)
+        if (tabListModule.enabled()) tabListModule.updatePlayerDisplayName(player)
         player.sendActionBar(config.i18n.nicknameUpdated.mm(Placeholder.component("nickname", player.displayName())))
     }
 
@@ -260,6 +270,7 @@ internal class PlayerModule(
         var enderChestClickType: ClickType = ClickType.SHIFT_RIGHT,
         var skullDropChance: Double = 0.1,
         var xpCostToBottle: Int = 11,
+        var silkTouchConfig: SilkTouchEnchantment.Config = SilkTouchEnchantment.Config(),
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
         data class I18n(
