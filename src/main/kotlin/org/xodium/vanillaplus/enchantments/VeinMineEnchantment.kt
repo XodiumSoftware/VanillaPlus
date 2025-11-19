@@ -24,18 +24,16 @@ internal object VeinMineEnchantment : EnchantmentInterface {
             BlockFace.SOUTH,
             BlockFace.NORTH,
         )
-
-    // TODO: create map of maxLevel to maxBlocks and adjust accordingly
-    const val MAX_BLOCKS = 32
+    private val LEVEL_TO_MAX_BLOCKS = mapOf(1 to 16, 2 to 32, 3 to 48)
 
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
             .description(key.displayName())
             .anvilCost(2)
-            .maxLevel(1)
+            .maxLevel(3)
             .weight(2)
-            .minimumCost(EnchantmentRegistryEntry.EnchantmentCost.of(25, 0))
-            .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(75, 0))
+            .minimumCost(EnchantmentRegistryEntry.EnchantmentCost.of(25, 5))
+            .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(75, 10))
             .activeSlots(EquipmentSlotGroup.MAINHAND)
 
     /**
@@ -56,7 +54,8 @@ internal object VeinMineEnchantment : EnchantmentInterface {
         if (!isOre(block.type)) return
 
         val blockType = block.type
-        val connectedBlocks = findConnectedBlocks(block, blockType, MAX_BLOCKS)
+        val enchantLevel = itemInHand.itemMeta.getEnchantLevel(get())
+        val connectedBlocks = findConnectedBlocks(block, blockType, LEVEL_TO_MAX_BLOCKS[enchantLevel] ?: return)
 
         if (connectedBlocks.size <= 1) return
 
