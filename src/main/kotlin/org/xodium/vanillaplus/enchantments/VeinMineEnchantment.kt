@@ -1,6 +1,7 @@
 package org.xodium.vanillaplus.enchantments
 
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
+import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.block.Block
@@ -42,6 +43,9 @@ internal object VeinMineEnchantment : EnchantmentInterface {
      */
     fun veinMine(event: BlockBreakEvent) {
         val player = event.player
+
+        if (player.gameMode == GameMode.CREATIVE) return
+
         val itemInHand = player.inventory.itemInMainHand
 
         if (!itemInHand.hasItemMeta() || !itemInHand.itemMeta.hasEnchant(get())) return
