@@ -1,6 +1,8 @@
 package org.xodium.vanillaplus.enchantments
 
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
+import org.bukkit.entity.Item
+import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockDropItemEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
@@ -26,14 +28,23 @@ internal object PickupEnchantment : EnchantmentInterface {
     fun pickup(event: BlockDropItemEvent) {
         val player = event.player
         val itemInHand = player.inventory.itemInMainHand
-        event.block
 
         if (!itemInHand.hasItemMeta() || !itemInHand.itemMeta.hasEnchant(get())) return
 
-        val inventory = player.inventory
+        transferItemEntitiesToInventory(player, event.items)
+    }
 
-        event.items.removeIf { item ->
-            val remaining = inventory.addItem(item.itemStack)
+    /**
+     * Transfers item entities to a player's inventory using the same removeIf pattern.
+     * @param player The player whose inventory to transfer to
+     * @param items The mutable collection of item entities to transfer
+     */
+    fun transferItemEntitiesToInventory(
+        player: Player,
+        items: MutableCollection<Item>,
+    ) {
+        items.removeIf { item ->
+            val remaining = player.inventory.addItem(item.itemStack)
             val remainingItem = remaining[0] ?: return@removeIf true
 
             remainingItem.takeIf { it.amount > 0 }?.let { item.itemStack = it } == null
