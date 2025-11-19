@@ -28,12 +28,12 @@ internal object ModuleManager {
     val motdModule: MotdModule = MotdModule()
     val openableModule: OpenableModule = OpenableModule()
     val petModule: PetModule = PetModule()
+    val playerModule: PlayerModule = PlayerModule()
     val recipiesModule: RecipiesModule = RecipiesModule()
     val scoreBoardModule: ScoreBoardModule = ScoreBoardModule()
     val signModule: SignModule = SignModule()
     val sitModule: SitModule = SitModule()
     val tabListModule: TabListModule = TabListModule()
-    val playerModule: PlayerModule = PlayerModule(tabListModule)
     val treesModule: TreesModule = TreesModule()
 
     private val modules =
