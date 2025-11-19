@@ -22,7 +22,7 @@ internal interface EnchantmentInterface {
                 RegistryKey.ENCHANTMENT,
                 Key.key(
                     INSTANCE,
-                    this.javaClass
+                    javaClass
                         .simpleName
                         .removeSuffix("Enchantment")
                         .split(Regex("(?=[A-Z])"))
