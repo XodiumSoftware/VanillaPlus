@@ -10,7 +10,7 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.inventory.meta.Damageable
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
-import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.ExtUtils.displayName
 
 /** Represents an object handling vein mine enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
@@ -25,11 +25,12 @@ internal object VeinMineEnchantment : EnchantmentInterface {
             BlockFace.NORTH,
         )
 
+    // TODO: create map of maxLevel to maxBlocks and adjust accordingly
     const val MAX_BLOCKS = 32
 
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
-            .description(key.value().replaceFirstChar { it.uppercase() }.mm())
+            .description(key.displayName())
             .anvilCost(2)
             .maxLevel(1)
             .weight(2)

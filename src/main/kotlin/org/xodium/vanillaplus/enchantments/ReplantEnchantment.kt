@@ -6,14 +6,14 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
-import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.ExtUtils.displayName
 
 /** Represents an object handling replant enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
 internal object ReplantEnchantment : EnchantmentInterface {
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
-            .description(key.value().replaceFirstChar { it.uppercase() }.mm())
+            .description(key.displayName())
             .anvilCost(2)
             .maxLevel(1)
             .weight(2)

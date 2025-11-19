@@ -7,7 +7,7 @@ import org.bukkit.entity.HappyGhast
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
-import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.ExtUtils.displayName
 
 /** Represents an object handling nimbus enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
@@ -16,7 +16,7 @@ internal object NimbusEnchantment : EnchantmentInterface {
 
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
-            .description(key.value().replaceFirstChar { it.uppercase() }.mm())
+            .description(key.displayName())
             .anvilCost(2)
             .maxLevel(5)
             .weight(2)
