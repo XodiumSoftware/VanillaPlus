@@ -123,8 +123,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
 
         if (foundChests.isNotEmpty()) {
             player.sendActionBar(
-                "<gradient:#FFE259:#FFA751>Found ${"<gradient:#F4C4F3:#FC67FA><b>$material</b></gradient>"} in chest(s), follow trail(s)</gradient>"
-                    .mm(),
+                config.i18n.foundItemsInChests.mm(Placeholder.component("material", material.name.mm())),
             )
 
             ScheduleUtils.schedule(duration = 200L) {
@@ -173,6 +172,8 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
             var noMatchingItems: String =
                 "<gradient:#CB2D3E:#EF473A>No chests contain " +
                     "<gradient:#F4C4F3:#FC67FA><b><material></b></gradient></gradient>",
+            var foundItemsInChests: String =
+                "<gradient:#FFE259:#FFA751>Found <gradient:#F4C4F3:#FC67FA><b><material></b></gradient> in chest(s), follow trail(s)</gradient>",
             var noItemsUnloaded: String = "<gradient:#CB2D3E:#EF473A>No items were unloaded</gradient>",
             var inventoryUnloaded: String = "<gradient:#B3E94A:#54F47F>Inventory unloaded</gradient>",
         )
