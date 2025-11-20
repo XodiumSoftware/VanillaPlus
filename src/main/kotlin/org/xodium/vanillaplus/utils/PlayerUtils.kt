@@ -3,21 +3,21 @@
 package org.xodium.vanillaplus.utils
 
 import org.bukkit.Chunk
-import org.bukkit.block.Chest
+import org.bukkit.block.Container
 import org.bukkit.entity.Player
 
 /** Player utilities. */
 internal object PlayerUtils {
     /**
-     * Get chests around a player (3x3 area).
+     * Get containers around a player (3x3 area).
      * @param player The player.
-     * @return Collection of chests around the player.
+     * @return Collection of containers around the player.
      */
-    fun getChestsAroundPlayer(player: Player): Set<Chest> =
+    fun getContainersAroundPlayer(player: Player): Set<Container> =
         buildSet {
             for (chunk in getChunksAroundPlayer(player)) {
                 for (state in chunk.tileEntities) {
-                    if (state is Chest) add(state)
+                    if (state is Container) add(state)
                 }
             }
         }

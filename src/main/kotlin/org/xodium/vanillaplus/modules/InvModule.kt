@@ -22,6 +22,7 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.BlockUtils.center
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
+import org.xodium.vanillaplus.utils.InvUtils
 import org.xodium.vanillaplus.utils.PlayerUtils
 import org.xodium.vanillaplus.utils.ScheduleUtils
 import java.util.concurrent.CompletableFuture
@@ -115,36 +116,37 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         player: Player,
         material: Material,
     ) {
-        val foundChests = mutableListOf<Block>()
+        val foundContainers = mutableListOf<Block>()
 
-        for (chest in PlayerUtils.getChestsAroundPlayer(player)) {
-            if (chest.blockInventory.contains(material)) foundChests.add(chest.block)
+        for (container in PlayerUtils.getContainersAroundPlayer(player)) {
+            if (container.inventory.contains(material)) foundContainers.add(container.block)
         }
 
-        if (foundChests.isNotEmpty()) {
-            player.sendActionBar(
-                config.i18n.foundItemsInChests.mm(Placeholder.component("material", material.name.mm())),
-            )
-
-            ScheduleUtils.schedule(duration = 200L) {
-                foundChests.forEach { chestBlock ->
-                    Particle.TRAIL
-                        .builder()
-                        .location(player.location)
-                        .data(Particle.Trail(chestBlock.center, Color.MAROON, 40))
-                        .receivers(player)
-                        .spawn()
-                    Particle.DUST
-                        .builder()
-                        .location(chestBlock.center)
-                        .count(10)
-                        .data(Particle.DustOptions(Color.MAROON, 5.0f))
-                        .receivers(player)
-                        .spawn()
-                }
-            }
-        } else {
+        if (foundContainers.isEmpty()) {
             player.sendActionBar(config.i18n.noMatchingItems.mm(Placeholder.component("material", material.name.mm())))
+            return
+        }
+
+        player.sendActionBar(
+            config.i18n.foundItemsInChests.mm(Placeholder.component("material", material.name.mm())),
+        )
+
+        ScheduleUtils.schedule(duration = 200L) {
+            foundContainers.forEach { container ->
+                Particle.TRAIL
+                    .builder()
+                    .location(player.location)
+                    .data(Particle.Trail(container.center, Color.MAROON, 40))
+                    .receivers(player)
+                    .spawn()
+                Particle.DUST
+                    .builder()
+                    .location(container.center)
+                    .count(10)
+                    .data(Particle.DustOptions(Color.MAROON, 5.0f))
+                    .receivers(player)
+                    .spawn()
+            }
         }
     }
 
@@ -153,8 +155,39 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
      * @param player The player whose inventory is to be unloaded.
      */
     private fun unload(player: Player) {
-        player.sendActionBar("<gradient:#CB2D3E:#EF473A>Feature not implemented yet!</gradient>".mm())
-        // TODO
+        val foundContainers = mutableListOf<Block>()
+
+        var anyItemsMoved = false
+
+        for (container in PlayerUtils.getContainersAroundPlayer(player)) {
+            val moved =
+                InvUtils.transferItems(
+                    source = player.inventory,
+                    destination = container.inventory,
+                    startSlot = 9,
+                    endSlot = 35,
+                    onlyMatching = true,
+                    enchantmentChecker = { item1, item2 -> item1.enchantments == item2.enchantments },
+                )
+
+            if (moved) anyItemsMoved = true
+        }
+
+        if (!anyItemsMoved) return player.sendActionBar(config.i18n.noItemsUnloaded.mm())
+
+        player.sendActionBar(config.i18n.inventoryUnloaded.mm())
+        player.playSound(config.soundOnUnload.toSound(), Sound.Emitter.self())
+
+        ScheduleUtils.schedule(duration = 200L) {
+            foundContainers.forEach { container ->
+                Particle.TRAIL
+                    .builder()
+                    .location(player.location)
+                    .data(Particle.Trail(container.center, Color.MAROON, 40))
+                    .receivers(player)
+                    .spawn()
+            }
+        }
     }
 
     data class Config(
@@ -170,10 +203,10 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                 "<gradient:#CB2D3E:#EF473A>You must specify a valid material " +
                     "or hold something in your hand</gradient>",
             var noMatchingItems: String =
-                "<gradient:#CB2D3E:#EF473A>No chests contain " +
+                "<gradient:#CB2D3E:#EF473A>No containers contain " +
                     "<gradient:#F4C4F3:#FC67FA><b><material></b></gradient></gradient>",
             var foundItemsInChests: String =
-                "<gradient:#FFE259:#FFA751>Found <gradient:#F4C4F3:#FC67FA><b><material></b></gradient> in chest(s), follow trail(s)</gradient>",
+                "<gradient:#FFE259:#FFA751>Found <gradient:#F4C4F3:#FC67FA><b><material></b></gradient> in container(s), follow trail(s)</gradient>",
             var noItemsUnloaded: String = "<gradient:#CB2D3E:#EF473A>No items were unloaded</gradient>",
             var inventoryUnloaded: String = "<gradient:#B3E94A:#54F47F>Inventory unloaded</gradient>",
         )

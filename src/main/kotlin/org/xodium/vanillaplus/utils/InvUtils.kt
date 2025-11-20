@@ -8,17 +8,6 @@ import org.bukkit.inventory.ItemStack
 /** Inventory utilities. */
 internal object InvUtils {
     /**
-     * Check if transferring an item would be valid (not putting shulker in shulker, etc.)
-     * @param item The item to transfer.
-     * @param destination The destination inventory.
-     * @return True if the transfer is valid, false otherwise.
-     */
-    fun isValidTransfer(
-        item: ItemStack,
-        destination: Inventory,
-    ): Boolean = !(Tag.SHULKER_BOXES.isTagged(item.type) && destination.holder is ShulkerBox)
-
-    /**
      * Transfer items from source to destination inventory.
      * @param source The source inventory.
      * @param destination The destination inventory.
@@ -56,6 +45,17 @@ internal object InvUtils {
 
         return moved
     }
+
+    /**
+     * Check if transferring an item would be valid (not putting shulker in shulker, etc.)
+     * @param item The item to transfer.
+     * @param destination The destination inventory.
+     * @return True if the transfer is valid, false otherwise.
+     */
+    private fun isValidTransfer(
+        item: ItemStack,
+        destination: Inventory,
+    ): Boolean = !(Tag.SHULKER_BOXES.isTagged(item.type) && destination.holder is ShulkerBox)
 
     /**
      * Check if inventory contains an item with matching type and enchantments.
