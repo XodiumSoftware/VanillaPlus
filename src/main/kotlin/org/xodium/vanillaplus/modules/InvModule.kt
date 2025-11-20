@@ -180,9 +180,9 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
             foundContainers.forEach { container ->
                 Particle.DUST
                     .builder()
-                    .location(container.location)
+                    .location(container.center)
                     .count(10)
-                    .data(Particle.DustOptions(Color.MAROON, 5.0f))
+                    .data(Particle.DustOptions(Color.LIME, 5.0f))
                     .receivers(player)
                     .spawn()
             }
