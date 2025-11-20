@@ -135,7 +135,7 @@ internal class DimensionsModule : ModuleInterface<DimensionsModule.Config> {
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
         data class I18n(
-            var portalCreationDenied: String = "<fire>No corresponding active portal found in the Overworld!</fire>",
+            var portalCreationDenied: String = "<gradient:#CB2D3E:#EF473A>No corresponding active portal found in the Overworld!</gradient>",
         )
     }
 }

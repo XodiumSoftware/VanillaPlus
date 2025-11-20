@@ -144,7 +144,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
      * @param player The player whose inventory is to be unloaded.
      */
     private fun unload(player: Player) {
-        player.sendActionBar("<fire>Feature not implemented yet!</fire>".mm())
+        player.sendActionBar("<gradient:#CB2D3E:#EF473A>Feature not implemented yet!</gradient>".mm())
         // TODO
     }
 
@@ -159,12 +159,18 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
         data class I18n(
-            var noMaterialSpecified: String = "<fire>You must specify a valid material or hold something in your hand</fire>",
-            var noChestsFound: String = "<fire>No usable chests found for <rose><material></rose></fire>",
-            var noMatchingItems: String = "<fire>No chests contain <rose><material></rose></fire>",
-            var noNearbyChests: String = "<fire>No chests found nearby</fire>",
-            var noItemsUnloaded: String = "<fire>No items were unloaded</fire>",
-            var inventoryUnloaded: String = "<glorp>Inventory unloaded</glorp>",
+            var noMaterialSpecified: String =
+                "<gradient:#CB2D3E:#EF473A>You must specify a valid material " +
+                    "or hold something in your hand</gradient>",
+            var noChestsFound: String =
+                "<gradient:#CB2D3E:#EF473A>No usable chests found for " +
+                    "<gradient:#F4C4F3:#FC67FA><material></gradient></gradient>",
+            var noMatchingItems: String =
+                "<gradient:#CB2D3E:#EF473A>No chests contain " +
+                    "<gradient:#F4C4F3:#FC67FA><material></gradient></gradient>",
+            var noNearbyChests: String = "<gradient:#CB2D3E:#EF473A>No chests found nearby</gradient>",
+            var noItemsUnloaded: String = "<gradient:#CB2D3E:#EF473A>No items were unloaded</gradient>",
+            var inventoryUnloaded: String = "<gradient:#B3E94A:#54F47F>Inventory unloaded</gradient>",
         )
     }
 }

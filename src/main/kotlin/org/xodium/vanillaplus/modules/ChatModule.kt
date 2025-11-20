@@ -185,44 +185,44 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
             .clickEvent(ClickEvent.callback { instance.server.deleteMessage(signedMessage) })
 
     data class Config(
-        var chatFormat: String = "<player_head> <player> <reset><mango_inverted>›</mango_inverted> <message>",
+        var chatFormat: String = "<player_head> <player> <reset><gradient:#FFE259:#FFA751>›</gradient> <message>",
         var welcomeText: List<String> =
             listOf(
-                "<mango_inverted>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</mango_inverted>",
-                "<image><mango_inverted>⯈</mango_inverted>",
-                "<image><mango_inverted>⯈</mango_inverted>",
-                "<image><mango_inverted>⯈</mango_inverted> <fire>Welcome</fire> <player> <white><sprite:item/name_tag></white></white>"
+                "<gradient:#FFE259:#FFA751>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gradient:#CB2D3E:#EF473A>Welcome</gradient> <player> <white><sprite:item/name_tag></white>"
                     .clickSuggestCmd(
                         "/nickname",
-                        "<mango>Set your nickname!</mango>",
+                        "<gradient:#FFE259:#FFA751>Set your nickname!</gradient>",
                     ),
-                "<image><mango_inverted>⯈</mango_inverted>",
-                "<image><mango_inverted>⯈</mango_inverted> <fire>Check out</fire><gray>:",
-                "<image><mango_inverted>⯈</mango_inverted> <white><sprite:item/writable_book></white>".clickRunCmd(
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gradient:#CB2D3E:#EF473A>Check out</gradient><gray>:",
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <white><sprite:item/writable_book></white>".clickRunCmd(
                     "/rules",
-                    "<mango>View the server /rules</mango>",
+                    "<gradient:#FFE259:#FFA751>View the server /rules</gradient>",
                 ),
-                "<image><mango_inverted>⯈</mango_inverted> <white><sprite:item/light></white>".clickOpenUrl(
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <white><sprite:item/light></white>".clickOpenUrl(
                     "https://illyria.fandom.com",
-                    "<mango>Visit the wiki!</mango>",
+                    "<gradient:#FFE259:#FFA751>Visit the wiki!</gradient>",
                 ),
-                "<image><mango_inverted>⯈</mango_inverted>",
-                "<mango_inverted>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</mango_inverted>",
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
+                "<gradient:#FFE259:#FFA751>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
             ),
         var whisperToFormat: String =
-            "<skyline>You</skyline> <mango_inverted>➛</mango_inverted> <player> <reset><mango_inverted>›</mango_inverted> <message>",
+            "<gradient:#1488CC:#2B32B2>You</gradient> <gradient:#FFE259:#FFA751>➛</gradient> <player> <reset><gradient:#FFE259:#FFA751>›</gradient> <message>",
         var whisperFromFormat: String =
-            "<player> <reset><mango_inverted>➛</mango_inverted> <skyline>You</skyline> <mango_inverted>›</mango_inverted> <message>",
+            "<player> <reset><gradient:#FFE259:#FFA751>➛</gradient> <gradient:#1488CC:#2B32B2>You</gradient> <gradient:#FFE259:#FFA751>›</gradient> <message>",
         var deleteCross: String = "<dark_gray>[<dark_red><b>X</b></dark_red><dark_gray>]",
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
         data class I18n(
-            var clickMe: String = "<mango>Click me!</mango>",
-            var clickToWhisper: String = "<mango>Click to Whisper</mango>",
-            var playerIsNotOnline: String = "${instance.prefix} <fire>Player is not Online!</fire>",
-            var deleteMessage: String = "<mango>Click to delete your message</mango>",
-            var clickToClipboard: String = "<mango>Click to copy position to clipboard</mango>",
-            var playerSetSpawn: String = "<fire>❗</fire> <mango_inverted>›</mango_inverted> <notification>",
+            var clickMe: String = "<gradient:#FFE259:#FFA751>Click me!</gradient>",
+            var clickToWhisper: String = "<gradient:#FFE259:#FFA751>Click to Whisper</gradient>",
+            var playerIsNotOnline: String = "${instance.prefix} <gradient:#CB2D3E:#EF473A>Player is not Online!</gradient>",
+            var deleteMessage: String = "<gradient:#FFE259:#FFA751>Click to delete your message</gradient>",
+            var clickToClipboard: String = "<gradient:#FFE259:#FFA751>Click to copy position to clipboard</gradient>",
+            var playerSetSpawn: String = "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> <notification>",
         )
     }
 }

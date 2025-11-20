@@ -139,7 +139,7 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
         var intervalInTicks: Long = 10,
         var header: List<String> =
             listOf(
-                "<mango>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</mango>   <fire>⚡ IllyriaRPG ⚡</fire>   <mango_inverted>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</mango_inverted>",
+                "<mango>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[<mango_>   <fire>⚡ IllyriaRPG ⚡<fire_>   <mango_inverted>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</mango_inverted>",
                 "",
             ),
         var footer: List<String> =

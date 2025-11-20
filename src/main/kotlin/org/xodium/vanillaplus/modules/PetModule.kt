@@ -120,8 +120,12 @@ internal class PetModule : ModuleInterface<PetModule.Config> {
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
         data class I18n(
-            var sourceTransfer: String = "<fire>You have transferred</fire> <pet> <fire>to</fire> <target>",
-            var targetTransfer: String = "<source> <fire>has transferred</fire> <pet> <fire>to you</fire>",
+            var sourceTransfer: String =
+                "<gradient:#CB2D3E:#EF473A>You have transferred</gradient> <pet> " +
+                    "<gradient:#CB2D3E:#EF473A>to</gradient> <target>",
+            var targetTransfer: String =
+                "<source> <gradient:#CB2D3E:#EF473A>has transferred</gradient> <pet> " +
+                    "<gradient:#CB2D3E:#EF473A>to you</gradient>",
         )
     }
 }

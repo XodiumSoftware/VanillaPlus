@@ -20,8 +20,8 @@ internal class MotdModule : ModuleInterface<MotdModule.Config> {
     data class Config(
         val motd: List<String> =
             listOf(
-                "<fire><b>Ultimate Private SMP</b></fire>",
-                "<mango><b>➤ WELCOME BACK LADS!</b></mango>",
+                "<gradient:#CB2D3E:#EF473A><b>Ultimate Private SMP</b></gradient>",
+                "<gradient:#FFE259:#FFA751><b>➤ WELCOME BACK LADS!</b></gradient>",
             ),
     ) : ModuleInterface.Config
 }

@@ -274,15 +274,15 @@ internal class PlayerModule : ModuleInterface<PlayerModule.Config> {
         data class I18n(
             var playerHeadName: String = "<player>’s Skull",
             var playerHeadLore: List<String> = listOf("<player> killed by <killer>"),
-//            var playerDeathMsg: String = "<killer> ${"⚔".mangoFmt(true)} <player>",
-            var playerJoinMsg: String = "<green>➕<reset> <mango_inverted>›</mango_inverted> <player>",
-            var playerQuitMsg: String = "<red>➖<reset> <mango_inverted>›</mango_inverted> <player>",
-            var playerDeathMsg: String = "☠ <mango_inverted>›</mango_inverted>",
+//          var playerDeathMsg: String = "<killer> <gradient:#FFE259:#FFA751>⚔</gradient> <player>",
+            var playerJoinMsg: String = "<green>➕<reset> <gradient:#FFE259:#FFA751>›</gradient> <player>",
+            var playerQuitMsg: String = "<red>➖<reset> <gradient:#FFE259:#FFA751>›</gradient> <player>",
+            var playerDeathMsg: String = "☠ <gradient:#FFE259:#FFA751>›</gradient>",
             var playerDeathScreenMsg: String = "☠",
             var playerAdvancementDoneMsg: String =
-                "\uD83C\uDF89 <mango_inverted>›</mango_inverted> <player> " +
-                    "<mango>has made the advancement:</mango> <advancement>",
-            var nicknameUpdated: String = "<fire>Nickname has been updated to: <nickname></fire>",
+                "\uD83C\uDF89 <gradient:#FFE259:#FFA751>›</gradient> <player> " +
+                    "<gradient:#FFE259:#FFA751>has made the advancement:</gradient> <advancement>",
+            var nicknameUpdated: String = "<gradient:#CB2D3E:#EF473A>Nickname has been updated to: <nickname></gradient>",
         )
     }
 }

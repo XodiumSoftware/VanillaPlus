@@ -10,7 +10,6 @@ import io.papermc.paper.registry.TypedKey
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
-import net.kyori.adventure.text.minimessage.tag.standard.StandardTags
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.xodium.vanillaplus.VanillaPlus
@@ -22,11 +21,7 @@ import javax.imageio.ImageIO
 
 /** Extension utilities. */
 internal object ExtUtils {
-    private val MM: MiniMessage =
-        MiniMessage
-            .builder()
-            .tags(TagResolver.builder().resolvers(StandardTags.defaults(), *FmtUtils.getAll()).build())
-            .build()
+    private val MM: MiniMessage = MiniMessage.miniMessage()
 
     private const val FACE_X = 8
     private const val FACE_Y = 8
