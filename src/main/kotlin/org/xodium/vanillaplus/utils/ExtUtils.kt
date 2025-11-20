@@ -79,7 +79,7 @@ internal object ExtUtils {
      */
     fun String.clickRunCmd(
         cmd: String,
-        hover: String? = "<mango>Click me!</mango>",
+        hover: String? = "<mango>Click me!</mango>", // FIX
     ): String = "<hover:show_text:'$hover'><click:run_command:'$cmd'>$this</click></hover>"
 
     /**
@@ -90,7 +90,7 @@ internal object ExtUtils {
      */
     fun String.clickSuggestCmd(
         cmd: String,
-        hover: String? = "<mango>Click me!</mango>",
+        hover: String? = "<mango>Click me!</mango>", // FIX
     ): String = "<hover:show_text:'$hover'><click:suggest_command:'$cmd'>$this</click></hover>"
 
     /**
@@ -101,7 +101,7 @@ internal object ExtUtils {
      */
     fun String.clickOpenUrl(
         url: String,
-        hover: String? = "<mango>Click me!</mango>",
+        hover: String? = "<mango>Click me!</mango>", // FIX
     ): String = "<hover:show_text:'$hover'><click:open_url:'$url'>$this</click></hover>"
 
     /**
