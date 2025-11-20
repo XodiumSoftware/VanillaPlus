@@ -139,13 +139,13 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
         var intervalInTicks: Long = 10,
         var header: List<String> =
             listOf(
-                "<mango>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[<mango_>   <fire>⚡ IllyriaRPG ⚡<fire_>   <mango_inverted>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</mango_inverted>",
+                "<gradient:#FFE259:#FFA751>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>   <gradient:#CB2D3E:#EF473A>⚡ IllyriaRPG ⚡</gradient>   <gradient:#FFA751:#FFE259>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
                 "",
             ),
         var footer: List<String> =
             listOf(
                 "",
-                "<mango>]|[=]|[=]|[=]|[=]|[=]|[=]|[</mango>  <fire>TPS:</fire> <tps> <mango>|</mango> <fire>Weather:</fire> <weather>  <mango_inverted>]|[=]|[=]|[=]|[=]|[=]|[=]|[</mango_inverted>",
+                "<gradient:#FFE259:#FFA751>]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>  <gradient:#CB2D3E:#EF473A>TPS:</gradient> <tps> <gradient:#FFE259:#FFA751>|</gradient> <gradient:#CB2D3E:#EF473A>Weather:</gradient> <weather>  <gradient:#FFA751:#FFE259>]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
             ),
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {

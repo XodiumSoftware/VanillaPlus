@@ -188,7 +188,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
         var chatFormat: String = "<player_head> <player> <reset><gradient:#FFE259:#FFA751>›</gradient> <message>",
         var welcomeText: List<String> =
             listOf(
-                "<gradient:#FFE259:#FFA751>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
+                "<gradient:#FFA751:#FFE259>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
                 "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
                 "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
                 "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gradient:#CB2D3E:#EF473A>Welcome</gradient> <player> <white><sprite:item/name_tag></white>"
@@ -207,7 +207,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
                     "<gradient:#FFE259:#FFA751>Visit the wiki!</gradient>",
                 ),
                 "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
-                "<gradient:#FFE259:#FFA751>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
+                "<gradient:#FFA751:#FFE259>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
             ),
         var whisperToFormat: String =
             "<gradient:#1488CC:#2B32B2>You</gradient> <gradient:#FFE259:#FFA751>➛</gradient> <player> <reset><gradient:#FFE259:#FFA751>›</gradient> <message>",
