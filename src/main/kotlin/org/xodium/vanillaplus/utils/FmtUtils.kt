@@ -1,19 +1,19 @@
 package org.xodium.vanillaplus.utils
 
-import net.kyori.adventure.text.format.TextColor
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 
 /** Formatting utilities. */
 internal object FmtUtils {
-    val fire = Placeholder.styling("fire", TextColor.fromHexString("<gradient:#CB2D3E:#EF473A>"))
-    val mango = Placeholder.styling("mango", TextColor.fromHexString("<gradient:#FFE259:#FFA751>"))
-    val birdflop = Placeholder.styling("birdflop", TextColor.fromHexString("<gradient:#54DAf4:#545EB6>"))
-    val skyline = Placeholder.styling("skyline", TextColor.fromHexString("<gradient:#1488CC:#2B32B2>"))
-    val rose = Placeholder.styling("rose", TextColor.fromHexString("<gradient:#F4C4F3:#FC67FA>"))
-    val dawn = Placeholder.styling("dawn", TextColor.fromHexString("<gradient:#F3904F:#3B4371>"))
-    val glorp = Placeholder.styling("glorp", TextColor.fromHexString("<gradient:#B3E94A:#54F47F>"))
-    val spellbite = Placeholder.styling("spellbite", TextColor.fromHexString("<gradient:#832466:#BF4299:#832466>"))
+    private val fire = Placeholder.component("fire", Component.text("<gradient:#CB2D3E:#EF473A>"))
+    private val mango = Placeholder.component("mango", Component.text("<gradient:#FFE259:#FFA751>"))
+    private val birdflop = Placeholder.component("birdflop", Component.text("<gradient:#54DAf4:#545EB6>"))
+    private val skyline = Placeholder.component("skyline", Component.text("<gradient:#1488CC:#2B32B2>"))
+    private val rose = Placeholder.component("rose", Component.text("<gradient:#F4C4F3:#FC67FA>"))
+    private val dawn = Placeholder.component("dawn", Component.text("<gradient:#F3904F:#3B4371>"))
+    private val glorp = Placeholder.component("glorp", Component.text("<gradient:#B3E94A:#54F47F>"))
+    private val spellbite = Placeholder.component("spellbite", Component.text("<gradient:#832466:#BF4299:#832466>"))
 
     /**
      * Get all resolvers as a TagResolver array.
