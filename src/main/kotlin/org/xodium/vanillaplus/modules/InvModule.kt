@@ -119,7 +119,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
 
                 player.sendActionBar(
                     (
-                        "<mango>Found $material in chest at </mango>" +
+                        "<gradient:#FFE259:#FFA751>Found $material in chest at </gradient>" +
                             "<yellow>X: ${loc.x.toInt()} </yellow>" +
                             "<green>Y: ${loc.y.toInt()} </green>" +
                             "<blue>Z: ${loc.z.toInt()}</blue>"
@@ -130,7 +130,6 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                     Particle.TRAIL
                         .builder()
                         .location(player.location)
-                        // TODO: Change to the closest face of the block.
                         .data(Particle.Trail(chest.block.center, Color.MAROON, 40))
                         .receivers(player)
                         .spawn()
