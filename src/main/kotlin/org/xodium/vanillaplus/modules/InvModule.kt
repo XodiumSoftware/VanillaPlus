@@ -13,7 +13,6 @@ import org.bukkit.Particle
 import org.bukkit.entity.Player
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
-import org.bukkit.scheduler.BukkitTask
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.SoundData
@@ -22,6 +21,7 @@ import org.xodium.vanillaplus.utils.BlockUtils.center
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.PlayerUtils
+import org.xodium.vanillaplus.utils.ScheduleUtils
 import java.util.concurrent.CompletableFuture
 import org.bukkit.Sound as BukkitSound
 
@@ -126,10 +126,11 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                     ).mm(),
                 )
 
-                schedule(duration = 40L) {
+                ScheduleUtils.schedule(duration = 200L) {
                     Particle.TRAIL
                         .builder()
                         .location(player.location)
+                        // TODO: Change to the closest face of the block.
                         .data(Particle.Trail(chest.block.center, Color.MAROON, 40))
                         .receivers(player)
                         .spawn()
@@ -147,24 +148,6 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         // TODO
     }
 
-    /**
-     * Schedules a repeating task.
-     * @param delay The initial delay before the first particle spawn in ticks.
-     * @param period The interval between particle spawns in ticks.
-     * @param duration The total duration for which the task should run in ticks. If null, the task runs indefinitely.
-     * @param content The content to execute in the scheduled task.
-     * @return The scheduled BukkitTask.
-     */
-    private fun schedule(
-        delay: Long = 0L,
-        period: Long = 2L,
-        duration: Long? = null,
-        content: () -> Unit,
-    ): BukkitTask =
-        instance.server.scheduler.runTaskTimer(instance, content, delay, period).also { task ->
-            duration?.let { instance.server.scheduler.runTaskLater(instance, task::cancel, it) }
-        }
-
     data class Config(
         var searchRadius: Int = 25,
         var unloadRadius: Int = 25,
@@ -173,7 +156,6 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                 BukkitSound.ENTITY_PLAYER_LEVELUP,
                 Sound.Source.PLAYER,
             ),
-        var scheduleInitDelayInTicks: Long = 5,
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
         data class I18n(
