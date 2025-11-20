@@ -13,6 +13,7 @@ import org.bukkit.Particle
 import org.bukkit.entity.Player
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
+import org.bukkit.scheduler.BukkitTask
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.SoundData
@@ -125,12 +126,14 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                     ).mm(),
                 )
 
-                Particle.TRAIL
-                    .builder()
-                    .location(player.location)
-                    .data(Particle.Trail(chest.block.center, Color.MAROON, 40))
-                    .receivers(player)
-                    .spawn()
+                schedule(duration = 40L) {
+                    Particle.TRAIL
+                        .builder()
+                        .location(player.location)
+                        .data(Particle.Trail(chest.block.center, Color.MAROON, 40))
+                        .receivers(player)
+                        .spawn()
+                }
             }
         }
     }
@@ -143,6 +146,24 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         player.sendActionBar("<fire>Feature not implemented yet!</fire>".mm())
         // TODO
     }
+
+    /**
+     * Schedules a repeating task.
+     * @param delay The initial delay before the first particle spawn in ticks.
+     * @param period The interval between particle spawns in ticks.
+     * @param duration The total duration for which the task should run in ticks. If null, the task runs indefinitely.
+     * @param content The content to execute in the scheduled task.
+     * @return The scheduled BukkitTask.
+     */
+    private fun schedule(
+        delay: Long = 0L,
+        period: Long = 2L,
+        duration: Long? = null,
+        content: () -> Unit,
+    ): BukkitTask =
+        instance.server.scheduler.runTaskTimer(instance, content, delay, period).also { task ->
+            duration?.let { instance.server.scheduler.runTaskLater(instance, task::cancel, it) }
+        }
 
     data class Config(
         var searchRadius: Int = 25,
