@@ -15,7 +15,6 @@ import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.xodium.vanillaplus.VanillaPlus
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.enums.CustomTagResolversEnum
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import java.net.URI
 import java.util.*
@@ -26,7 +25,7 @@ internal object ExtUtils {
     private val MM: MiniMessage =
         MiniMessage
             .builder()
-            .tags(TagResolver.builder().resolvers(StandardTags.defaults(), *CustomTagResolversEnum.getAll()).build())
+            .tags(TagResolver.builder().resolvers(StandardTags.defaults(), *FmtUtils.getAll()).build())
             .build()
 
     private const val FACE_X = 8
