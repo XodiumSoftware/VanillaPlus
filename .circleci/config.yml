@@ -29,4 +29,4 @@ jobs:
 workflows:
   build:
     jobs:
-      - shadowJar
+      - build
