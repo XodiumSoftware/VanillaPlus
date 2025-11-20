@@ -157,10 +157,8 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
     private fun unload(player: Player) {
         val foundContainers = mutableListOf<Block>()
 
-        var anyItemsMoved = false
-
         for (container in PlayerUtils.getContainersAroundPlayer(player)) {
-            val moved =
+            val transferred =
                 InvUtils.transferItems(
                     source = player.inventory,
                     destination = container.inventory,
@@ -170,20 +168,21 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                     enchantmentChecker = { item1, item2 -> item1.enchantments == item2.enchantments },
                 )
 
-            if (moved) anyItemsMoved = true
+            if (transferred) foundContainers.add(container.block)
         }
 
-        if (!anyItemsMoved) return player.sendActionBar(config.i18n.noItemsUnloaded.mm())
+        if (foundContainers.isEmpty()) return player.sendActionBar(config.i18n.noItemsUnloaded.mm())
 
         player.sendActionBar(config.i18n.inventoryUnloaded.mm())
         player.playSound(config.soundOnUnload.toSound(), Sound.Emitter.self())
 
         ScheduleUtils.schedule(duration = 200L) {
             foundContainers.forEach { container ->
-                Particle.TRAIL
+                Particle.DUST
                     .builder()
-                    .location(player.location)
-                    .data(Particle.Trail(container.center, Color.MAROON, 40))
+                    .location(container.location)
+                    .count(10)
+                    .data(Particle.DustOptions(Color.MAROON, 5.0f))
                     .receivers(player)
                     .spawn()
             }
