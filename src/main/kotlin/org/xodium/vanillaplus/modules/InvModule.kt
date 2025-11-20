@@ -7,9 +7,11 @@ import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import net.kyori.adventure.sound.Sound
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Color
 import org.bukkit.Material
 import org.bukkit.Particle
+import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
@@ -113,28 +115,37 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         player: Player,
         material: Material,
     ) {
+        val foundChests = mutableListOf<Block>()
+
         for (chest in PlayerUtils.getChestsAroundPlayer(player)) {
-            if (chest.blockInventory.contains(material)) {
-                val loc = chest.location
+            if (chest.blockInventory.contains(material)) foundChests.add(chest.block)
+        }
 
-                player.sendActionBar(
-                    (
-                        "<gradient:#FFE259:#FFA751>Found $material in chest at </gradient>" +
-                            "<yellow>X: ${loc.x.toInt()} </yellow>" +
-                            "<green>Y: ${loc.y.toInt()} </green>" +
-                            "<blue>Z: ${loc.z.toInt()}</blue>"
-                    ).mm(),
-                )
+        if (foundChests.isNotEmpty()) {
+            player.sendActionBar(
+                "<gradient:#FFE259:#FFA751>Found ${"<gradient:#F4C4F3:#FC67FA><b>$material</b></gradient>"} in chest(s), follow trail(s)</gradient>"
+                    .mm(),
+            )
 
-                ScheduleUtils.schedule(duration = 200L) {
+            ScheduleUtils.schedule(duration = 200L) {
+                foundChests.forEach { chestBlock ->
                     Particle.TRAIL
                         .builder()
                         .location(player.location)
-                        .data(Particle.Trail(chest.block.center, Color.MAROON, 40))
+                        .data(Particle.Trail(chestBlock.center, Color.MAROON, 40))
+                        .receivers(player)
+                        .spawn()
+                    Particle.DUST
+                        .builder()
+                        .location(chestBlock.center)
+                        .count(10)
+                        .data(Particle.DustOptions(Color.MAROON, 5.0f))
                         .receivers(player)
                         .spawn()
                 }
             }
+        } else {
+            player.sendActionBar(config.i18n.noMatchingItems.mm(Placeholder.component("material", material.name.mm())))
         }
     }
 
@@ -148,8 +159,6 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
     }
 
     data class Config(
-        var searchRadius: Int = 25,
-        var unloadRadius: Int = 25,
         var soundOnUnload: SoundData =
             SoundData(
                 BukkitSound.ENTITY_PLAYER_LEVELUP,
@@ -161,13 +170,9 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
             var noMaterialSpecified: String =
                 "<gradient:#CB2D3E:#EF473A>You must specify a valid material " +
                     "or hold something in your hand</gradient>",
-            var noChestsFound: String =
-                "<gradient:#CB2D3E:#EF473A>No usable chests found for " +
-                    "<gradient:#F4C4F3:#FC67FA><material></gradient></gradient>",
             var noMatchingItems: String =
                 "<gradient:#CB2D3E:#EF473A>No chests contain " +
-                    "<gradient:#F4C4F3:#FC67FA><material></gradient></gradient>",
-            var noNearbyChests: String = "<gradient:#CB2D3E:#EF473A>No chests found nearby</gradient>",
+                    "<gradient:#F4C4F3:#FC67FA><b><material></b></gradient></gradient>",
             var noItemsUnloaded: String = "<gradient:#CB2D3E:#EF473A>No items were unloaded</gradient>",
             var inventoryUnloaded: String = "<gradient:#B3E94A:#54F47F>Inventory unloaded</gradient>",
         )
