@@ -1,8 +1,8 @@
 package org.xodium.vanillaplus.modules
 
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.recipies.RottenFleshRecipe
-import org.xodium.vanillaplus.recipies.WoodLogRecipe
+import org.xodium.vanillaplus.recipes.RottenFleshRecipe
+import org.xodium.vanillaplus.recipes.WoodLogRecipe
 
 /** Represents a module handling recipe mechanics within the system. */
 internal class RecipeModule : ModuleInterface<RecipeModule.Config> {

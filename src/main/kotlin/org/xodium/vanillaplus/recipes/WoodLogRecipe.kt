@@ -1,4 +1,4 @@
-package org.xodium.vanillaplus.recipies
+package org.xodium.vanillaplus.recipes
 
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
