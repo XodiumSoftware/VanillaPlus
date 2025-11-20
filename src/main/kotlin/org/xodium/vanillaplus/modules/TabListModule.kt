@@ -15,8 +15,6 @@ import org.bukkit.event.weather.WeatherChangeEvent
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
-import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import java.util.*
 import kotlin.math.roundToInt
 
@@ -141,19 +139,13 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
         var intervalInTicks: Long = 10,
         var header: List<String> =
             listOf(
-                "${"]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt()}   ${"⚡ IllyriaRPG ⚡".fireFmt()}   ${
-                    "]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)
-                }",
+                "<mango>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</mango>   <fire>⚡ IllyriaRPG ⚡</fire>   <mango_inverted>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</mango_inverted>",
                 "",
             ),
         var footer: List<String> =
             listOf(
                 "",
-                "${"]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt()}  ${"TPS:".fireFmt()} <tps> ${"|".mangoFmt()} ${
-                    "Weather:".fireFmt()
-                } <weather>  ${
-                    "]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)
-                }",
+                "<mango>]|[=]|[=]|[=]|[=]|[=]|[=]|[</mango>  <fire>TPS:</fire> <tps> <mango>|</mango> <fire>Weather:</fire> <weather>  <mango_inverted>]|[=]|[=]|[=]|[=]|[=]|[=]|[</mango_inverted>",
             ),
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {

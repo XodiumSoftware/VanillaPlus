@@ -10,20 +10,24 @@ import io.papermc.paper.registry.TypedKey
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
+import net.kyori.adventure.text.minimessage.tag.standard.StandardTags
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.xodium.vanillaplus.VanillaPlus
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.enums.CustomTagResolversEnum
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
-import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import java.net.URI
 import java.util.*
 import javax.imageio.ImageIO
 
 /** Extension utilities. */
 internal object ExtUtils {
-    private val MM: MiniMessage = MiniMessage.miniMessage()
+    private val MM: MiniMessage =
+        MiniMessage
+            .builder()
+            .tags(TagResolver.builder().resolvers(StandardTags.defaults(), *CustomTagResolversEnum.getAll()).build())
+            .build()
 
     private const val FACE_X = 8
     private const val FACE_Y = 8
@@ -39,7 +43,7 @@ internal object ExtUtils {
 
     /** The standardized prefix for [VanillaPlus] messages. */
     val VanillaPlus.prefix: String
-        get() = "${"[".mangoFmt(true)}${this.javaClass.simpleName.toString().fireFmt()}${"]".mangoFmt()}"
+        get() = "<mango_inverted>[</mango_inverted><fire>${this.javaClass.simpleName}</fire><mango>]</mango>"
 
     /**
      * Converts a CamelCase string to snake case.
@@ -81,7 +85,7 @@ internal object ExtUtils {
      */
     fun String.clickRunCmd(
         cmd: String,
-        hover: String? = "Click me!".mangoFmt(),
+        hover: String? = "<mango>Click me!</mango>",
     ): String = "<hover:show_text:'$hover'><click:run_command:'$cmd'>$this</click></hover>"
 
     /**
@@ -92,7 +96,7 @@ internal object ExtUtils {
      */
     fun String.clickSuggestCmd(
         cmd: String,
-        hover: String? = "Click me!".mangoFmt(),
+        hover: String? = "<mango>Click me!</mango>",
     ): String = "<hover:show_text:'$hover'><click:suggest_command:'$cmd'>$this</click></hover>"
 
     /**
@@ -103,7 +107,7 @@ internal object ExtUtils {
      */
     fun String.clickOpenUrl(
         url: String,
-        hover: String? = "Click me!".mangoFmt(),
+        hover: String? = "<mango>Click me!</mango>",
     ): String = "<hover:show_text:'$hover'><click:open_url:'$url'>$this</click></hover>"
 
     /**

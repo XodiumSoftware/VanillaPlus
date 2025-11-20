@@ -26,9 +26,6 @@ import org.xodium.vanillaplus.utils.ExtUtils.face
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.prefix
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
-import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
-import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
-import org.xodium.vanillaplus.utils.FmtUtils.skylineFmt
 import java.util.concurrent.CompletableFuture
 
 /** Represents a module handling chat mechanics within the system. */
@@ -188,49 +185,44 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
             .clickEvent(ClickEvent.callback { instance.server.deleteMessage(signedMessage) })
 
     data class Config(
-        var chatFormat: String = "<player_head> <player> <reset>${"›".mangoFmt(true)} <message>",
+        var chatFormat: String = "<player_head> <player> <reset><mango_inverted>›</mango_inverted> <message>",
         var welcomeText: List<String> =
             listOf(
-                "]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true),
-                "<image>${"⯈".mangoFmt(true)}",
-                "<image>${"⯈".mangoFmt(true)}",
-                "<image>${"⯈".mangoFmt(true)} ${"Welcome".fireFmt()} <player> ${
-                    "<white><sprite:item/name_tag></white>".clickSuggestCmd(
-                        "/nickname ",
-                        "Set your nickname!".mangoFmt(),
-                    )
-                }",
-                "<image>${"⯈".mangoFmt(true)}",
-                "<image>${"⯈".mangoFmt(true)} ${"Check out".fireFmt()}<gray>:",
-                "<image>${"⯈".mangoFmt(true)} ${
-                    "<white><sprite:item/writable_book></white>".clickRunCmd(
-                        "/rules",
-                        "View the server /rules".mangoFmt(),
-                    )
-                }",
-                "<image>${"⯈".mangoFmt(true)} ${
-                    "<white><sprite:item/light></white>".clickOpenUrl(
-                        "https://illyria.fandom.com",
-                        "Visit the wiki!".mangoFmt(),
-                    )
-                }",
-                "<image>${"⯈".mangoFmt(true)}",
-                "]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true),
+                "<mango_inverted>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</mango_inverted>",
+                "<image><mango_inverted>⯈</mango_inverted>",
+                "<image><mango_inverted>⯈</mango_inverted>",
+                "<image><mango_inverted>⯈</mango_inverted> <fire>Welcome</fire> <player> <white><sprite:item/name_tag></white></white>"
+                    .clickSuggestCmd(
+                        "/nickname",
+                        "<mango>Set your nickname!</mango>",
+                    ),
+                "<image><mango_inverted>⯈</mango_inverted>",
+                "<image><mango_inverted>⯈</mango_inverted> <fire>Check out</fire><gray>:",
+                "<image><mango_inverted>⯈</mango_inverted> <white><sprite:item/writable_book></white>".clickRunCmd(
+                    "/rules",
+                    "<mango>View the server /rules</mango>",
+                ),
+                "<image><mango_inverted>⯈</mango_inverted> <white><sprite:item/light></white>".clickOpenUrl(
+                    "https://illyria.fandom.com",
+                    "<mango>Visit the wiki!</mango>",
+                ),
+                "<image><mango_inverted>⯈</mango_inverted>",
+                "<mango_inverted>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</mango_inverted>",
             ),
         var whisperToFormat: String =
-            "${"You".skylineFmt()} ${"➛".mangoFmt(true)} <player> <reset>${"›".mangoFmt(true)} <message>",
+            "<skyline>You</skyline> <mango_inverted>➛</mango_inverted> <player> <reset><mango_inverted>›</mango_inverted> <message>",
         var whisperFromFormat: String =
-            "<player> <reset>${"➛".mangoFmt(true)} ${"You".skylineFmt()} ${"›".mangoFmt(true)} <message>",
+            "<player> <reset><mango_inverted>➛</mango_inverted> <skyline>You</skyline> <mango_inverted>›</mango_inverted> <message>",
         var deleteCross: String = "<dark_gray>[<dark_red><b>X</b></dark_red><dark_gray>]",
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
         data class I18n(
-            var clickMe: String = "Click me!".mangoFmt(),
-            var clickToWhisper: String = "Click to Whisper".mangoFmt(),
-            var playerIsNotOnline: String = "${instance.prefix} Player is not Online!".fireFmt(),
-            var deleteMessage: String = "Click to delete your message".mangoFmt(),
-            var clickToClipboard: String = "Click to copy position to clipboard".mangoFmt(),
-            var playerSetSpawn: String = "${"❗".fireFmt()} ${"›".mangoFmt(true)} <notification>",
+            var clickMe: String = "<mango>Click me!</mango>",
+            var clickToWhisper: String = "<mango>Click to Whisper</mango>",
+            var playerIsNotOnline: String = "${instance.prefix} <fire>Player is not Online!</fire>",
+            var deleteMessage: String = "<mango>Click to delete your message</mango>",
+            var clickToClipboard: String = "<mango>Click to copy position to clipboard</mango>",
+            var playerSetSpawn: String = "<fire>❗</fire> <mango_inverted>›</mango_inverted> <notification>",
         )
     }
 }

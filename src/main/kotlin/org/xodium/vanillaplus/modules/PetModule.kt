@@ -11,7 +11,6 @@ import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 
 /** Represents a module handling pet mechanics within the system. */
 internal class PetModule : ModuleInterface<PetModule.Config> {
@@ -121,8 +120,8 @@ internal class PetModule : ModuleInterface<PetModule.Config> {
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
         data class I18n(
-            var sourceTransfer: String = "${"You have transferred".fireFmt()} <pet> ${"to".fireFmt()} <target>",
-            var targetTransfer: String = "<source> ${"has transferred".fireFmt()} <pet> ${"to you".fireFmt()}",
+            var sourceTransfer: String = "<fire>You have transferred</fire> <pet> <fire>to</fire> <target>",
+            var targetTransfer: String = "<source> <fire>has transferred</fire> <pet> <fire>to you</fire>",
         )
     }
 }

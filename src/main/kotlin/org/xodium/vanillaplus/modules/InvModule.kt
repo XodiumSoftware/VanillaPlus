@@ -20,9 +20,6 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.BlockUtils.center
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
-import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
-import org.xodium.vanillaplus.utils.FmtUtils.glorpFmt
-import org.xodium.vanillaplus.utils.FmtUtils.roseFmt
 import org.xodium.vanillaplus.utils.PlayerUtils
 import java.util.concurrent.CompletableFuture
 import org.bukkit.Sound as BukkitSound
@@ -117,7 +114,17 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
     ) {
         for (chest in PlayerUtils.getChestsAroundPlayer(player)) {
             if (chest.blockInventory.contains(material)) {
-                player.sendActionBar("Found $material in chest at ${chest.location}".mm())
+                val loc = chest.location
+
+                player.sendActionBar(
+                    (
+                        "<mango>Found $material in chest at </mango>" +
+                            "<yellow>X: ${loc.x.toInt()} </yellow>" +
+                            "<green>Y: ${loc.y.toInt()} </green>" +
+                            "<blue>Z: ${loc.z.toInt()}</blue>"
+                    ).mm(),
+                )
+
                 Particle.TRAIL
                     .builder()
                     .location(player.location)
@@ -133,7 +140,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
      * @param player The player whose inventory is to be unloaded.
      */
     private fun unload(player: Player) {
-        player.sendActionBar("Feature not implemented yet!".fireFmt().mm())
+        player.sendActionBar("<fire>Feature not implemented yet!</fire>".mm())
         // TODO
     }
 
@@ -149,12 +156,12 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
         data class I18n(
-            var noMaterialSpecified: String = "You must specify a valid material or hold something in your hand".fireFmt(),
-            var noChestsFound: String = "No usable chests found for ${"<material>".roseFmt()}".fireFmt(),
-            var noMatchingItems: String = "No chests contain ${"<material>".roseFmt()}".fireFmt(),
-            var noNearbyChests: String = "No chests found nearby".fireFmt(),
-            var noItemsUnloaded: String = "No items were unloaded".fireFmt(),
-            var inventoryUnloaded: String = "Inventory unloaded".glorpFmt(),
+            var noMaterialSpecified: String = "<fire>You must specify a valid material or hold something in your hand</fire>",
+            var noChestsFound: String = "<fire>No usable chests found for <rose><material></rose></fire>",
+            var noMatchingItems: String = "<fire>No chests contain <rose><material></rose></fire>",
+            var noNearbyChests: String = "<fire>No chests found nearby</fire>",
+            var noItemsUnloaded: String = "<fire>No items were unloaded</fire>",
+            var inventoryUnloaded: String = "<glorp>Inventory unloaded</glorp>",
         )
     }
 }

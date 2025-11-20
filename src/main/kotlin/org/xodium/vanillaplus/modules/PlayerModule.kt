@@ -34,8 +34,6 @@ import org.xodium.vanillaplus.managers.ModuleManager
 import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
-import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
-import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 
 /** Represents a module handling player mechanics within the system. */
 internal class PlayerModule : ModuleInterface<PlayerModule.Config> {
@@ -277,17 +275,14 @@ internal class PlayerModule : ModuleInterface<PlayerModule.Config> {
             var playerHeadName: String = "<player>’s Skull",
             var playerHeadLore: List<String> = listOf("<player> killed by <killer>"),
 //            var playerDeathMsg: String = "<killer> ${"⚔".mangoFmt(true)} <player>",
-            var playerJoinMsg: String = "<green>➕<reset> ${"›".mangoFmt(true)} <player>",
-            var playerQuitMsg: String = "<red>➖<reset> ${"›".mangoFmt(true)} <player>",
-            var playerDeathMsg: String = "☠ ${"›".mangoFmt(true)}",
+            var playerJoinMsg: String = "<green>➕<reset> <mango_inverted>›</mango_inverted> <player>",
+            var playerQuitMsg: String = "<red>➖<reset> <mango_inverted>›</mango_inverted> <player>",
+            var playerDeathMsg: String = "☠ <mango_inverted>›</mango_inverted>",
             var playerDeathScreenMsg: String = "☠",
             var playerAdvancementDoneMsg: String =
-                "\uD83C\uDF89 ${
-                    "›".mangoFmt(
-                        true,
-                    )
-                } <player> ${"has made the advancement:".mangoFmt()} <advancement>".mangoFmt(),
-            var nicknameUpdated: String = "Nickname has been updated to: <nickname>".fireFmt(),
+                "\uD83C\uDF89 <mango_inverted>›</mango_inverted> <player> " +
+                    "<mango>has made the advancement:</mango> <advancement>",
+            var nicknameUpdated: String = "<fire>Nickname has been updated to: <nickname></fire>",
         )
     }
 }
