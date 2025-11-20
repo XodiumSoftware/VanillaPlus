@@ -4,7 +4,6 @@ import net.kyori.adventure.inventory.Book
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 
 /**
  * Represents the data structure for a book in the game.
@@ -17,7 +16,7 @@ import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 internal data class BookData(
     val cmd: String,
     val permission: PermissionDefault = PermissionDefault.TRUE,
-    private val title: String = cmd.replaceFirstChar { it.uppercase() }.fireFmt(),
+    private val title: String = "<fire>${cmd.replaceFirstChar { it.uppercase() }}</fire>",
     private val author: String = instance.javaClass.simpleName.toString(),
     private val pages: List<List<String>>,
 ) {
