@@ -34,8 +34,6 @@ import org.xodium.vanillaplus.managers.ModuleManager
 import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
-import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
-import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 
 /** Represents a module handling player mechanics within the system. */
 internal class PlayerModule : ModuleInterface<PlayerModule.Config> {
@@ -276,18 +274,15 @@ internal class PlayerModule : ModuleInterface<PlayerModule.Config> {
         data class I18n(
             var playerHeadName: String = "<player>’s Skull",
             var playerHeadLore: List<String> = listOf("<player> killed by <killer>"),
-//            var playerDeathMsg: String = "<killer> ${"⚔".mangoFmt(true)} <player>",
-            var playerJoinMsg: String = "<green>➕<reset> ${"›".mangoFmt(true)} <player>",
-            var playerQuitMsg: String = "<red>➖<reset> ${"›".mangoFmt(true)} <player>",
-            var playerDeathMsg: String = "☠ ${"›".mangoFmt(true)}",
+//          var playerDeathMsg: String = "<killer> <gradient:#FFE259:#FFA751>⚔</gradient> <player>",
+            var playerJoinMsg: String = "<green>➕<reset> <gradient:#FFE259:#FFA751>›</gradient> <player>",
+            var playerQuitMsg: String = "<red>➖<reset> <gradient:#FFE259:#FFA751>›</gradient> <player>",
+            var playerDeathMsg: String = "☠ <gradient:#FFE259:#FFA751>›</gradient>",
             var playerDeathScreenMsg: String = "☠",
             var playerAdvancementDoneMsg: String =
-                "\uD83C\uDF89 ${
-                    "›".mangoFmt(
-                        true,
-                    )
-                } <player> ${"has made the advancement:".mangoFmt()} <advancement>".mangoFmt(),
-            var nicknameUpdated: String = "Nickname has been updated to: <nickname>".fireFmt(),
+                "\uD83C\uDF89 <gradient:#FFE259:#FFA751>›</gradient> <player> " +
+                    "<gradient:#FFE259:#FFA751>has made the advancement:</gradient> <advancement>",
+            var nicknameUpdated: String = "<gradient:#CB2D3E:#EF473A>Nickname has been updated to: <nickname></gradient>",
         )
     }
 }
