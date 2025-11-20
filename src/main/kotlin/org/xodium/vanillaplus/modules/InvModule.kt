@@ -176,7 +176,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         player.sendActionBar(config.i18n.inventoryUnloaded.mm())
         player.playSound(config.soundOnUnload.toSound(), Sound.Emitter.self())
 
-        ScheduleUtils.schedule(duration = 200L) {
+        ScheduleUtils.schedule(duration = 60L) {
             foundContainers.forEach { container ->
                 Particle.DUST
                     .builder()
