@@ -35,7 +35,7 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
      * @return `true` if the material is a plantable crop, `false` otherwise.
      * @see Tag.CROPS For the complete list of crop materials.
      */
-    private fun isPlantableCrop(material: Material): Boolean = material in Tag.CROPS.values
+    private fun isPlantableCrop(material: Material): Boolean = Tag.CROPS.isTagged(material)
 
     /**
      * Checks if the given material is a music disc.
@@ -58,6 +58,8 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
      * @see isFarmable For checking if the target block is suitable farmland.
      */
     private fun handleCropPlanting(event: BlockDispenseEvent) {
+        if (!config.enableCropPlanting) return
+
         val dispenser = event.block.state as? Dispenser ?: return
         val targetBlock = dispenser.targetBlock() ?: return
 
@@ -66,8 +68,6 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
         val blockAbove = targetBlock.getRelative(BlockFace.UP)
 
         if (blockAbove.type.isAir) return
-
-        Tag.CROPS.isTagged(event.item.type) // NOTE: use this as a check.
 
         val cropType =
             when (event.item.type) {
@@ -100,6 +100,8 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
      * @see targetBlock For determining the block in front of the dispenser.
      */
     private fun handleJukeboxInsertion(event: BlockDispenseEvent) {
+        if (!config.enableJukeboxInsertion) return
+
         val dispenser = event.block.state as? Dispenser ?: return
         val targetBlock = dispenser.targetBlock() ?: return
 
@@ -129,6 +131,8 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
      * @see isEmptyBucket For checking if the dispensed item is an empty bucket.
      */
     private fun handleCauldronLiquidCollection(event: BlockDispenseEvent) {
+        if (!config.enableCauldronLiquidCollection) return
+
         val dispenser = event.block.state as? Dispenser ?: return
         val targetBlock = dispenser.targetBlock() ?: return
 
@@ -195,5 +199,8 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
 
     data class Config(
         override var enabled: Boolean = true,
+        var enableCropPlanting: Boolean = true,
+        var enableJukeboxInsertion: Boolean = true,
+        var enableCauldronLiquidCollection: Boolean = true,
     ) : ModuleInterface.Config
 }
