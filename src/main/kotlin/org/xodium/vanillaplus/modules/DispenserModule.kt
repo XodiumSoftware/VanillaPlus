@@ -1,17 +1,18 @@
 package org.xodium.vanillaplus.modules
 
+import io.papermc.paper.event.block.BlockFailedDispenseEvent
 import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Dispenser
-import org.bukkit.block.Jukebox
 import org.bukkit.block.data.Directional
 import org.bukkit.event.EventHandler
 import org.bukkit.event.block.BlockDispenseEvent
 import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.JukeboxUtils
 import org.bukkit.Sound as BukkitSound
 
 /** Represents a module handling dispenser mechanics within the system. */
@@ -24,9 +25,16 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
 
         when {
             isPlantableCrop(event.item.type) -> handleCropPlanting(event)
-            isMusicDisc(event.item.type) -> handleJukeboxInsertion(event)
+            isMusicDisc(event.item.type) -> JukeboxUtils.insert(event)
             isEmptyBucket(event.item.type) -> handleCauldronLiquidCollection(event)
         }
+    }
+
+    @EventHandler
+    fun on(event: BlockFailedDispenseEvent) {
+        if (!enabled()) return
+
+        JukeboxUtils.extract(event)
     }
 
     /**
@@ -92,35 +100,6 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
         )
 
         blockAbove.world.playSound(blockAbove.location, BukkitSound.ITEM_CROP_PLANT, 1.0f, 1.0f)
-    }
-
-    /**
-     * Handles the insertion of a music disc into a jukebox via a dispenser.
-     * @param event The block dispense event that triggered this handler.
-     * @see targetBlock For determining the block in front of the dispenser.
-     */
-    private fun handleJukeboxInsertion(event: BlockDispenseEvent) {
-        if (!config.enableJukeboxInsertion) return
-
-        val dispenser = event.block.state as? Dispenser ?: return
-        val targetBlock = dispenser.targetBlock() ?: return
-
-        if (targetBlock.type != Material.JUKEBOX) return
-
-        val jukebox = targetBlock.state as? Jukebox ?: return
-
-        if (jukebox.record.type != Material.AIR) return
-
-        jukebox.setRecord(event.item)
-        jukebox.update()
-
-        event.isCancelled = true
-
-        instance.server.scheduler.runTaskLater(
-            instance,
-            Runnable { dispenser.inventory.removeItem(event.item) },
-            1L,
-        )
     }
 
     /**
@@ -200,7 +179,7 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
     data class Config(
         override var enabled: Boolean = true,
         var enableCropPlanting: Boolean = true,
-        var enableJukeboxInsertion: Boolean = true,
+        var jukeboxConfig: JukeboxUtils.Config = JukeboxUtils.Config(),
         var enableCauldronLiquidCollection: Boolean = true,
     ) : ModuleInterface.Config
 }
