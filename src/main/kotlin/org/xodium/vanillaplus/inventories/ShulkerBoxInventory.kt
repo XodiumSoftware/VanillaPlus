@@ -5,6 +5,7 @@ import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
+import org.bukkit.inventory.meta.BlockStateMeta
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 
@@ -24,8 +25,8 @@ internal object ShulkerBoxInventory {
      */
     fun shulker(event: InventoryClickEvent) {
         if (event.click != ClickType.SHIFT_RIGHT ||
-            event.clickedInventory?.type != InventoryType.PLAYER ||
-            event.currentItem !is ShulkerBox
+            // Tag.SHULKER_BOXES.isTagged(event.currentItem?.type ?: return) ||
+            event.clickedInventory?.type != InventoryType.PLAYER
         ) {
             return
         }
@@ -34,7 +35,13 @@ internal object ShulkerBoxInventory {
 
         instance.server.scheduler.runTask(
             instance,
-            Runnable { event.whoClicked.openInventory((event.currentItem as ShulkerBox).inventory) },
+            Runnable {
+                val item = event.currentItem ?: return@Runnable
+                val itemMeta = item.itemMeta as? BlockStateMeta ?: return@Runnable
+                val shulkerBox = itemMeta.blockState as? ShulkerBox ?: return@Runnable
+
+                event.whoClicked.openInventory(shulkerBox.inventory)
+            },
         )
     }
 }
