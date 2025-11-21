@@ -47,7 +47,9 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
         if (!enabled()) return
 
         val clickedBlock = event.clickedBlock ?: return
+
         if (!isValidInteraction(event)) return
+
         when (event.action) {
             Action.LEFT_CLICK_BLOCK -> handleLeftClick(event, clickedBlock)
             Action.RIGHT_CLICK_BLOCK -> handleRightClick(clickedBlock)
@@ -103,7 +105,7 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
     /**
      * Plays the knocking sound to all nearby players around the specified block.
      * @param block The block where the knock sound originates. The sound will be played
-     *              at this block's location and propagate to nearby players.
+     *              at this block's location and propagated to nearby players.
      */
     private fun playKnockSound(block: Block) {
         block.world
@@ -118,6 +120,7 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
     private fun processDoorOrGateInteraction(block: Block) {
         val door2Block = getOtherPart(getDoorBottom(block), block) ?: return
         val secondDoor = door2Block.blockData as? Door ?: return
+
         toggleOtherDoor(block, door2Block, !secondDoor.isOpen)
     }
 
@@ -147,14 +150,14 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
     /**
      * Checks if the player is violating the sneaking requirement for knocking.
      * @param player The player attempting to knock.
-     * @return True if sneaking is required but the player isn't sneaking, false otherwise.
+     * @return True if sneaking is required, but the player isn't sneaking, false otherwise.
      */
     private fun isViolatingSneakingRequirement(player: Player): Boolean = config.knockingRequiresShifting && !player.isSneaking
 
     /**
      * Checks if the player is violating the empty hand requirement for knocking.
      * @param player The player attempting to knock.
-     * @return True if empty hand is required but the player is holding something, false otherwise.
+     * @return True if an empty hand is required, but the player is holding something, false otherwise.
      */
     private fun isViolatingEmptyHandRequirement(player: Player): Boolean =
         config.knockingRequiresEmptyHand &&
@@ -182,6 +185,7 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
         delay: Long = config.initDelayInTicks,
     ) {
         if (block.blockData !is Door || block2.blockData !is Door) return
+
         instance.server.scheduler.runTaskLater(
             instance,
             Runnable {
@@ -200,6 +204,7 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
      */
     private fun getDoorBottom(block: Block): Door? {
         val door = block.blockData as? Door ?: return null
+
         return if (door.half == Bisected.Half.BOTTOM) door else block.getRelative(BlockFace.DOWN).blockData as? Door
     }
 
@@ -214,6 +219,7 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
         block: Block,
     ): Block? {
         if (door == null) return null
+
         return possibleNeighbours
             .map { it to block.getRelative(it.offsetX, 0, it.offsetZ).blockData as? Door }
             .firstOrNull { (neighbour, otherDoor) ->
@@ -223,7 +229,6 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
     }
 
     data class Config(
-        override var enabled: Boolean = true,
         var initDelayInTicks: Long = 1,
         var allowDoubleDoors: Boolean = true,
         var allowKnocking: Boolean = true,

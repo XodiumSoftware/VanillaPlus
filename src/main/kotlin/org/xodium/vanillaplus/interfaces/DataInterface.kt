@@ -12,19 +12,19 @@ import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.utils.ExtUtils.toSnakeCase
+import org.xodium.vanillaplus.utils.ExtUtils.snakeCase
 import java.io.IOException
 import java.nio.file.Path
 import kotlin.io.path.createDirectories
 import kotlin.io.path.writeText
-import kotlin.reflect.KClass
 
 /** Represents a contract for data within the system. */
 interface DataInterface<K, T : Any> {
-    val dataClass: KClass<T>
     val cache: MutableMap<K, T>
     val fileName: String
-        get() = "${dataClass.simpleName?.toSnakeCase()}.json"
+        get() = "${this.javaClass.simpleName.snakeCase}.json"
+    val filePath: Path
+        get() = instance.dataFolder.toPath().resolve(fileName)
     val jsonMapper: ObjectMapper
         get() =
             JsonMapper
@@ -37,20 +37,17 @@ interface DataInterface<K, T : Any> {
                 .build()
                 .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
 
-    val filePath: Path
-        get() = instance.dataFolder.toPath().resolve(fileName)
-
     /** Initializes the cache and loads existing data from the file. */
     fun load() {
         if (filePath.toFile().exists()) {
             try {
                 cache.clear()
-                val type = jsonMapper.typeFactory.constructMapType(cache::class.java, Any::class.java, dataClass.java)
+                val type = jsonMapper.typeFactory.constructMapType(cache.javaClass, Any().javaClass, this.javaClass)
                 val rawMap: Map<K, T> = jsonMapper.readValue(filePath.toFile(), type)
                 cache.putAll(rawMap)
                 save()
             } catch (e: IOException) {
-                instance.logger.severe("Failed to load ${dataClass.simpleName}: ${e.message}")
+                instance.logger.severe("Failed to load ${this.javaClass.simpleName}: ${e.message}")
             }
         }
     }
@@ -64,7 +61,7 @@ interface DataInterface<K, T : Any> {
                     filePath.parent.createDirectories()
                     filePath.writeText(jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsString(cache))
                 } catch (e: IOException) {
-                    instance.logger.severe("Failed to write ${dataClass.simpleName} to file: ${e.message}")
+                    instance.logger.severe("Failed to write ${this.javaClass.simpleName} to file: ${e.message}")
                 }
             },
         )
@@ -76,13 +73,8 @@ interface DataInterface<K, T : Any> {
      * @return the value associated with the specified key, or `null` if no mapping exists.
      */
     fun get(key: K): T? {
-        if (!cache.containsKey(key) && filePath.toFile().exists()) load()
-        return cache[key]
-    }
-
-    fun getAll(): Map<K, T> {
         if (cache.isEmpty() && filePath.toFile().exists()) load()
-        return cache
+        return cache[key]
     }
 
     /**
@@ -95,12 +87,6 @@ interface DataInterface<K, T : Any> {
         data: T,
     ) {
         cache[key] = data
-        save()
-    }
-
-    fun setAll(data: Map<K, T>) {
-        cache.clear()
-        cache.putAll(data)
         save()
     }
 }

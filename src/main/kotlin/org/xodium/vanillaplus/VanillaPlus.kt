@@ -18,7 +18,9 @@ internal class VanillaPlus : JavaPlugin() {
     override fun onEnable() {
         val unsupportedVersionMsg =
             "This plugin requires a supported server version. Supported versions: ${pluginMeta.version}."
+
         if (!server.version.contains(pluginMeta.version)) disablePlugin(unsupportedVersionMsg)
+
         ModuleManager.run {}
     }
 

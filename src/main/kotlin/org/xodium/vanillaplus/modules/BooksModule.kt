@@ -3,19 +3,17 @@ package org.xodium.vanillaplus.modules
 import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.entity.Player
 import org.bukkit.permissions.Permission
-import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.BookData
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
-import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 
 /** Represents a module handling book mechanics within the system. */
 internal class BooksModule : ModuleInterface<BooksModule.Config> {
     override val config: Config = Config()
 
-    private val permPrefix: String = "${instance::class.simpleName}.book".lowercase()
+    private val permPrefix: String = "${instance.javaClass.simpleName}.book".lowercase()
 
     override fun cmds(): List<CommandData> =
         config.books.map { book ->
@@ -44,14 +42,10 @@ internal class BooksModule : ModuleInterface<BooksModule.Config> {
         }
 
     data class Config(
-        override var enabled: Boolean = true,
         var books: List<BookData> =
             listOf(
                 BookData(
                     cmd = "rules",
-                    permission = PermissionDefault.TRUE,
-                    title = "Rules".fireFmt(),
-                    author = instance::class.simpleName.toString(),
                     pages =
                         listOf(
                             // Page 1: Player Rules (1-7)

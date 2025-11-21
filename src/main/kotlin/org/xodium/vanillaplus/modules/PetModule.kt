@@ -11,7 +11,6 @@ import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 
 /** Represents a module handling pet mechanics within the system. */
 internal class PetModule : ModuleInterface<PetModule.Config> {
@@ -23,11 +22,12 @@ internal class PetModule : ModuleInterface<PetModule.Config> {
 
         val source = event.player
         val target = event.rightClicked as? Player ?: return
-        if (source == target) return
 
+        if (source == target) return
         if (source.inventory.itemInMainHand.type != Material.LEAD) return
 
         val leashedEntity = findLeashedPet(source) ?: return
+
         if (!isTransferablePet(leashedEntity, source)) return
 
         transferPetOwnership(source, target, leashedEntity)
@@ -81,8 +81,11 @@ internal class PetModule : ModuleInterface<PetModule.Config> {
      */
     private fun findLeashedPet(player: Player): Tameable? =
         player
-            .getNearbyEntities(config.transferRadius, config.transferRadius, config.transferRadius)
-            .filterIsInstance<LivingEntity>()
+            .getNearbyEntities(
+                config.transferRadius.toDouble(),
+                config.transferRadius.toDouble(),
+                config.transferRadius.toDouble(),
+            ).filterIsInstance<LivingEntity>()
             .firstOrNull { it.isLeashed && it.leashHolder == player }
             as? Tameable
 
@@ -113,13 +116,16 @@ internal class PetModule : ModuleInterface<PetModule.Config> {
     }
 
     data class Config(
-        override var enabled: Boolean = true,
-        var transferRadius: Double = 10.0,
+        var transferRadius: Int = 10,
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
         data class I18n(
-            var sourceTransfer: String = "${"You have transferred".fireFmt()} <pet> ${"to".fireFmt()} <target>",
-            var targetTransfer: String = "<source> ${"has transferred".fireFmt()} <pet> ${"to you".fireFmt()}",
+            var sourceTransfer: String =
+                "<gradient:#CB2D3E:#EF473A>You have transferred</gradient> <pet> " +
+                    "<gradient:#CB2D3E:#EF473A>to</gradient> <target>",
+            var targetTransfer: String =
+                "<source> <gradient:#CB2D3E:#EF473A>has transferred</gradient> <pet> " +
+                    "<gradient:#CB2D3E:#EF473A>to you</gradient>",
         )
     }
 }

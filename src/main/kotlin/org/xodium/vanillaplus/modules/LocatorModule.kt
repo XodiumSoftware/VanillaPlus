@@ -17,9 +17,7 @@ import java.util.*
 import java.util.concurrent.CompletableFuture
 
 /** Represents a module handling locator mechanics within the system. */
-internal class LocatorModule : ModuleInterface<LocatorModule.Config> {
-    override val config: Config = Config()
-
+internal class LocatorModule : ModuleInterface<ModuleInterface.Config> {
     private val colors = NamedTextColor.NAMES.keys().map { it.toString() } + listOf("<RRGGBB>", "reset")
 
     override fun cmds(): List<CommandData> =
@@ -74,7 +72,7 @@ internal class LocatorModule : ModuleInterface<LocatorModule.Config> {
     override fun perms(): List<Permission> =
         listOf(
             Permission(
-                "${instance::class.simpleName}.locator".lowercase(),
+                "${instance.javaClass.simpleName}.locator".lowercase(),
                 "Allows use of the locator command",
                 PermissionDefault.TRUE,
             ),
@@ -82,10 +80,6 @@ internal class LocatorModule : ModuleInterface<LocatorModule.Config> {
 
     /**
      * Modifies the colour of a player's waypoint based on the specified parameters.
-     * If a `colour` is provided, sets the waypoint to the specified named colour.
-     * If a `hex` is provided instead, sets the waypoint to the specified hex colour.
-     * If neither is provided, resets the waypoint colour to default.
-     *
      * @param player The player whose waypoint is being modified.
      * @param colour The optional named colour to apply to the waypoint.
      * @param hex The optional hex colour to apply to the waypoint.
@@ -96,6 +90,7 @@ internal class LocatorModule : ModuleInterface<LocatorModule.Config> {
         hex: TextColor? = null,
     ) {
         val cmd = "waypoint modify ${player.name}"
+
         when {
             colour != null -> instance.server.dispatchCommand(player, "$cmd color $colour")
 
@@ -108,8 +103,4 @@ internal class LocatorModule : ModuleInterface<LocatorModule.Config> {
             else -> instance.server.dispatchCommand(player, "$cmd color reset")
         }
     }
-
-    data class Config(
-        override var enabled: Boolean = true,
-    ) : ModuleInterface.Config
 }

@@ -22,20 +22,18 @@ internal object ModuleManager {
     val cauldronModule: CauldronModule = CauldronModule()
     val chatModule: ChatModule = ChatModule()
     val dimensionsModule: DimensionsModule = DimensionsModule()
+    val entityModule: EntityModule = EntityModule()
     val invModule: InvModule = InvModule()
     val locatorModule: LocatorModule = LocatorModule()
-    val mobsModule: MobsModule = MobsModule()
     val motdModule: MotdModule = MotdModule()
     val openableModule: OpenableModule = OpenableModule()
     val petModule: PetModule = PetModule()
-    val recipiesModule: RecipiesModule = RecipiesModule()
+    val playerModule: PlayerModule = PlayerModule()
+    val recipeModule: RecipeModule = RecipeModule()
     val scoreBoardModule: ScoreBoardModule = ScoreBoardModule()
     val signModule: SignModule = SignModule()
-    val silkTouchModule: SilkTouchModule = SilkTouchModule()
     val sitModule: SitModule = SitModule()
-    val sleepModule: SleepModule = SleepModule()
     val tabListModule: TabListModule = TabListModule()
-    val playerModule: PlayerModule = PlayerModule(tabListModule)
     val treesModule: TreesModule = TreesModule()
 
     private val modules =
@@ -44,19 +42,17 @@ internal object ModuleManager {
             cauldronModule,
             chatModule,
             dimensionsModule,
+            entityModule,
             invModule,
             locatorModule,
-            mobsModule,
             motdModule,
             openableModule,
             petModule,
             playerModule,
-            recipiesModule,
+            recipeModule,
             scoreBoardModule,
             signModule,
-            silkTouchModule,
             sitModule,
-            sleepModule,
             tabListModule,
             treesModule,
         )
@@ -71,7 +67,7 @@ internal object ModuleManager {
                         .requires { it.sender.hasPermission(configPerm) }
                         .executes { ctx ->
                             ctx.tryCatch {
-                                ConfigManager.updateConfig(modules)
+                                ConfigManager.update(modules)
                                 if (it.sender is Player) {
                                     it.sender.sendMessage("${instance.prefix} <green>Config reloaded successfully".mm())
                                 }
@@ -84,7 +80,7 @@ internal object ModuleManager {
 
     private val configPerm =
         Permission(
-            "${instance::class.simpleName}.reload".lowercase(),
+            "${instance.javaClass.simpleName}.reload".lowercase(),
             "Allows use of the vanillaplus reload command",
             PermissionDefault.OP,
         )
@@ -98,12 +94,12 @@ internal object ModuleManager {
 
     /** Loads configs, registers modules' events and permissions, and collects commands. */
     private fun pluginManager() {
-        ConfigManager.updateConfig(modules)
+        ConfigManager.update(modules)
         commandsToRegister.add(configCmd)
         instance.server.pluginManager.addPermission(configPerm)
         modules.filter { it.enabled() }.forEach { module ->
             instance.logger.info(
-                "Loaded: ${module::class.simpleName} | Took ${
+                "Loaded: ${module.javaClass.simpleName} | Took ${
                     measureTime {
                         instance.server.pluginManager.registerEvents(module, instance)
                         @Suppress("UnstableApiUsage")

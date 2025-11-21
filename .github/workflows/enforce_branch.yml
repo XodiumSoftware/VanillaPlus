@@ -2,7 +2,7 @@ name: Xodium CI/CD - Enforce Target Branch
 
 on:
   pull_request_target:
-    types: [ opened, reopened, synchronize, edited, ready_for_review ]
+    types: [ opened ]
 
 concurrency:
   group: "${{ github.workflow }}-${{ github.ref }}"
@@ -47,4 +47,4 @@ jobs:
           REPO: ${{ github.repository }}
         run: |
           gh pr comment "$PR_NUMBER" --repo "$REPO" --body \
-            "🤖 The target branch has been automatically changed from \`main\` to \`dev\`.\n\nPRs to \`main\` are only allowed from the \`dev\` branch. Please merge to \`dev\` first."
+            "🤖 The target branch has been automatically changed from \`main\` to \`dev\`. PRs to \`main\` are only allowed from the \`dev\` branch. Please merge to \`dev\` first."
