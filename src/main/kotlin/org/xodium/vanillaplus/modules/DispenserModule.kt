@@ -1,6 +1,5 @@
 package org.xodium.vanillaplus.modules
 
-import io.papermc.paper.event.block.BlockFailedDispenseEvent
 import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.block.Block
@@ -28,13 +27,6 @@ internal class DispenserModule : ModuleInterface<DispenserModule.Config> {
             isMusicDisc(event.item.type) -> JukeboxUtils.insert(event)
             isEmptyBucket(event.item.type) -> handleCauldronLiquidCollection(event)
         }
-    }
-
-    @EventHandler
-    fun on(event: BlockFailedDispenseEvent) {
-        if (!enabled()) return
-
-        JukeboxUtils.extract(event)
     }
 
     /**

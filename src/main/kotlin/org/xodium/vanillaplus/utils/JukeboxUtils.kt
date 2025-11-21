@@ -42,6 +42,8 @@ internal object JukeboxUtils {
         )
     }
 
+    // NOTE: there is no event that detects if it can extract since a dispenser only inserts?
+
     /**
      * Extracts a record from a jukebox using a dispenser.
      * @param event The [BlockFailedDispenseEvent].
