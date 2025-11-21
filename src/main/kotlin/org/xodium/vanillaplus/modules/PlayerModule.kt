@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package org.xodium.vanillaplus.modules
 
 import com.mojang.brigadier.arguments.StringArgumentType
@@ -5,14 +7,14 @@ import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
 import io.papermc.paper.datacomponent.item.ResolvableProfile
+import io.papermc.paper.event.entity.EntityEquipmentChangedEvent
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Material
-import org.bukkit.block.Block
-import org.bukkit.block.data.Ageable
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockBreakEvent
+import org.bukkit.event.block.BlockDropItemEvent
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -26,21 +28,18 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
-import org.xodium.vanillaplus.enchantments.ReplantEnchantment
+import org.xodium.vanillaplus.enchantments.*
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.managers.ModuleManager
 import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
-import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
-import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 
 /** Represents a module handling player mechanics within the system. */
-internal class PlayerModule(
-    private val tabListModule: TabListModule,
-) : ModuleInterface<PlayerModule.Config> {
+internal class PlayerModule : ModuleInterface<PlayerModule.Config> {
     override val config: Config = Config()
 
-    override fun enabled(): Boolean = config.enabled && tabListModule.enabled()
+    private val tabListModule by lazy { ModuleManager.tabListModule }
 
     override fun cmds(): List<CommandData> =
         listOf(
@@ -71,7 +70,7 @@ internal class PlayerModule(
     override fun perms(): List<Permission> =
         listOf(
             Permission(
-                "${instance::class.simpleName}.nickname".lowercase(),
+                "${instance.javaClass.simpleName}.nickname".lowercase(),
                 "Allows use of the nickname command",
                 PermissionDefault.TRUE,
             ),
@@ -138,8 +137,49 @@ internal class PlayerModule(
 
     @EventHandler
     fun on(event: InventoryClickEvent) {
-        if (!enabled() ||
-            event.click != config.enderChestClickType ||
+        if (!enabled()) return
+
+        enderchest(event)
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    fun on(event: PlayerInteractEvent) {
+        if (!enabled()) return
+
+        xpToBottle(event)
+        FeatherFallingEnchantment.featherFalling(event)
+    }
+
+    @EventHandler
+    fun on(event: BlockBreakEvent) {
+        if (!enabled()) return
+
+        ReplantEnchantment.replant(event)
+        SilkTouchEnchantment.silkTouch(event)
+        VeinMineEnchantment.veinMine(event)
+    }
+
+    @EventHandler
+    fun on(event: BlockDropItemEvent) {
+        if (!enabled()) return
+
+        PickupEnchantment.pickup(event)
+    }
+
+    @EventHandler
+    fun on(event: EntityEquipmentChangedEvent) {
+        if (!enabled()) return
+
+        NightVisionEnchantment.nightVision(event)
+    }
+
+    /**
+     * Handles the inventory click event where a player can open their ender chest by clicking on an ender chest item
+     * in their inventory.
+     * @param event The InventoryClickEvent triggered when a player clicks in an inventory.
+     */
+    private fun enderchest(event: InventoryClickEvent) {
+        if (event.click != config.enderChestClickType ||
             event.currentItem?.type != Material.ENDER_CHEST ||
             event.clickedInventory?.type != InventoryType.PLAYER
         ) {
@@ -151,46 +191,6 @@ internal class PlayerModule(
         instance.server.scheduler.runTask(
             instance,
             Runnable { event.whoClicked.openInventory(event.whoClicked.enderChest) },
-        )
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    fun on(event: PlayerInteractEvent) {
-        if (!enabled()) return
-
-        xpToBottle(event)
-    }
-
-    @EventHandler
-    fun on(event: BlockBreakEvent) {
-        if (!enabled()) return
-
-        replant(event.block, event.player.inventory.itemInMainHand)
-    }
-
-    /**
-     * Automatically replants a crop block after it has been fully grown and harvested.
-     * @param block The block that was broken.
-     * @param tool The tool used to break the block.
-     */
-    private fun replant(
-        block: Block,
-        tool: ItemStack,
-    ) {
-        val ageable = block.blockData as? Ageable ?: return
-
-        if (ageable.age < ageable.maximumAge) return
-        if (!tool.hasItemMeta() || !tool.itemMeta.hasEnchant(ReplantEnchantment.get())) return
-
-        instance.server.scheduler.runTaskLater(
-            instance,
-            Runnable {
-                val blockType = block.type
-
-                block.type = blockType
-                block.blockData = ageable.apply { age = 0 }
-            },
-            2,
         )
     }
 
@@ -230,7 +230,7 @@ internal class PlayerModule(
     ) {
         player.nickname = name
         player.displayName(player.nickname?.mm())
-        tabListModule.updatePlayerDisplayName(player)
+        if (tabListModule.enabled()) tabListModule.updatePlayerDisplayName(player)
         player.sendActionBar(config.i18n.nicknameUpdated.mm(Placeholder.component("nickname", player.displayName())))
     }
 
@@ -268,23 +268,21 @@ internal class PlayerModule(
         var enderChestClickType: ClickType = ClickType.SHIFT_RIGHT,
         var skullDropChance: Double = 0.1,
         var xpCostToBottle: Int = 11,
+        var silkTouchConfig: SilkTouchEnchantment.Config = SilkTouchEnchantment.Config(),
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
         data class I18n(
             var playerHeadName: String = "<player>’s Skull",
             var playerHeadLore: List<String> = listOf("<player> killed by <killer>"),
-//            var playerDeathMsg: String = "<killer> ${"⚔".mangoFmt(true)} <player>",
-            var playerJoinMsg: String = "<green>➕<reset> ${"›".mangoFmt(true)} <player>",
-            var playerQuitMsg: String = "<red>➖<reset> ${"›".mangoFmt(true)} <player>",
-            var playerDeathMsg: String = "☠ ${"›".mangoFmt(true)}",
+//          var playerDeathMsg: String = "<killer> <gradient:#FFE259:#FFA751>⚔</gradient> <player>",
+            var playerJoinMsg: String = "<green>➕<reset> <gradient:#FFE259:#FFA751>›</gradient> <player>",
+            var playerQuitMsg: String = "<red>➖<reset> <gradient:#FFE259:#FFA751>›</gradient> <player>",
+            var playerDeathMsg: String = "☠ <gradient:#FFE259:#FFA751>›</gradient>",
             var playerDeathScreenMsg: String = "☠",
             var playerAdvancementDoneMsg: String =
-                "\uD83C\uDF89 ${
-                    "›".mangoFmt(
-                        true,
-                    )
-                } <player> ${"has made the advancement:".mangoFmt()} <advancement>".mangoFmt(),
-            var nicknameUpdated: String = "Nickname has been updated to: <nickname>".fireFmt(),
+                "\uD83C\uDF89 <gradient:#FFE259:#FFA751>›</gradient> <player> " +
+                    "<gradient:#FFE259:#FFA751>has made the advancement:</gradient> <advancement>",
+            var nicknameUpdated: String = "<gradient:#CB2D3E:#EF473A>Nickname has been updated to: <nickname></gradient>",
         )
     }
 }

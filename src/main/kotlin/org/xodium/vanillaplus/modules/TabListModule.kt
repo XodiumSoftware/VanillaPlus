@@ -15,8 +15,6 @@ import org.bukkit.event.weather.WeatherChangeEvent
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
-import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import java.util.*
 import kotlin.math.roundToInt
 
@@ -51,6 +49,7 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
         if (!enabled()) return
+
         updateTabList(event.player)
         updatePlayerDisplayName(event.player)
     }
@@ -58,12 +57,14 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: WeatherChangeEvent) {
         if (!enabled()) return
+
         event.world.players.forEach { updateTabList(it) }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: ThunderChangeEvent) {
         if (!enabled()) return
+
         event.world.players.forEach { updateTabList(it) }
     }
 
@@ -79,6 +80,7 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
      */
     private fun updateTabList(audience: Audience) {
         val joinConfig = JoinConfiguration.separator(Component.newline())
+
         audience.sendPlayerListHeaderAndFooter(
             Component.join(joinConfig, config.header.mm()),
             Component.join(
@@ -101,6 +103,7 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
         val ratio = clampedTps / MAX_TPS
         val color = getColorForTps(ratio)
         val formattedTps = String.format(Locale.ENGLISH, TPS_DECIMAL_FORMAT, tps)
+
         return "<color:$color>$formattedTps</color>"
     }
 
@@ -113,6 +116,7 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
         val clamped = ratio.coerceIn(0.0, 1.0)
         val r = (MAX_COLOR_VALUE * (1 - clamped)).roundToInt()
         val g = (MAX_COLOR_VALUE * clamped).roundToInt()
+
         return String.format(Locale.ENGLISH, COLOR_FORMAT, r, g, 0)
     }
 
@@ -122,6 +126,7 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
      */
     private fun getWeather(): String {
         val world = instance.server.worlds[0]
+
         return when {
             world.isThundering -> config.i18n.weatherThundering
             world.hasStorm() -> config.i18n.weatherStorm
@@ -134,19 +139,13 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
         var intervalInTicks: Long = 10,
         var header: List<String> =
             listOf(
-                "${"]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt()}   ${"⚡ IllyriaRPG ⚡".fireFmt()}   ${
-                    "]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)
-                }",
+                "<gradient:#FFE259:#FFA751>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>   <gradient:#CB2D3E:#EF473A>⚡ IllyriaRPG ⚡</gradient>   <gradient:#FFA751:#FFE259>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
                 "",
             ),
         var footer: List<String> =
             listOf(
                 "",
-                "${"]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt()}  ${"TPS:".fireFmt()} <tps> ${"|".mangoFmt()} ${
-                    "Weather:".fireFmt()
-                } <weather>  ${
-                    "]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)
-                }",
+                "<gradient:#FFE259:#FFA751>]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>  <gradient:#CB2D3E:#EF473A>TPS:</gradient> <tps> <gradient:#FFE259:#FFA751>|</gradient> <gradient:#CB2D3E:#EF473A>Weather:</gradient> <weather>  <gradient:#FFA751:#FFE259>]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
             ),
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {

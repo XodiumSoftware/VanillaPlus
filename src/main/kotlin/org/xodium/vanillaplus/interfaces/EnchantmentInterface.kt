@@ -4,24 +4,39 @@ import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
 import io.papermc.paper.registry.TypedKey
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
+import net.kyori.adventure.key.Key
 import org.bukkit.enchantments.Enchantment
+import org.xodium.vanillaplus.VanillaPlusBootstrap.Companion.INSTANCE
 
 /** Represents a contract for enchantments within the system. */
 @Suppress("UnstableApiUsage")
 internal interface EnchantmentInterface {
     /**
-     * The unique typed key that identifies this enchantment in the registry.
+     * The unique typed key identifies this enchantment in the registry.
      * @see TypedKey
      * @see RegistryKey.ENCHANTMENT
      */
     val key: TypedKey<Enchantment>
+        get() =
+            TypedKey.create(
+                RegistryKey.ENCHANTMENT,
+                Key.key(
+                    INSTANCE,
+                    javaClass
+                        .simpleName
+                        .removeSuffix("Enchantment")
+                        .split(Regex("(?=[A-Z])"))
+                        .filter { it.isNotEmpty() }
+                        .joinToString("_") { it.lowercase() },
+                ),
+            )
 
     /**
-     * Initializes the Drift enchantment.
-     * @param builder The builder used to define the enchantment properties.
+     * Configures the properties of the enchantment using the provided builder.
+     * @param invoke The builder used to define the enchantment properties.
      * @return The builder for method chaining.
      */
-    fun init(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder
+    fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder = builder
 
     /**
      * Retrieves the enchantment from the registry.

@@ -13,7 +13,7 @@ import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 internal class BooksModule : ModuleInterface<BooksModule.Config> {
     override val config: Config = Config()
 
-    private val permPrefix: String = "${instance::class.simpleName}.book".lowercase()
+    private val permPrefix: String = "${instance.javaClass.simpleName}.book".lowercase()
 
     override fun cmds(): List<CommandData> =
         config.books.map { book ->

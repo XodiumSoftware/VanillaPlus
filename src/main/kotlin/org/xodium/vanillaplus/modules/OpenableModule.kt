@@ -47,7 +47,9 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
         if (!enabled()) return
 
         val clickedBlock = event.clickedBlock ?: return
+
         if (!isValidInteraction(event)) return
+
         when (event.action) {
             Action.LEFT_CLICK_BLOCK -> handleLeftClick(event, clickedBlock)
             Action.RIGHT_CLICK_BLOCK -> handleRightClick(clickedBlock)
@@ -118,6 +120,7 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
     private fun processDoorOrGateInteraction(block: Block) {
         val door2Block = getOtherPart(getDoorBottom(block), block) ?: return
         val secondDoor = door2Block.blockData as? Door ?: return
+
         toggleOtherDoor(block, door2Block, !secondDoor.isOpen)
     }
 
@@ -182,6 +185,7 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
         delay: Long = config.initDelayInTicks,
     ) {
         if (block.blockData !is Door || block2.blockData !is Door) return
+
         instance.server.scheduler.runTaskLater(
             instance,
             Runnable {
@@ -200,6 +204,7 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
      */
     private fun getDoorBottom(block: Block): Door? {
         val door = block.blockData as? Door ?: return null
+
         return if (door.half == Bisected.Half.BOTTOM) door else block.getRelative(BlockFace.DOWN).blockData as? Door
     }
 
@@ -214,6 +219,7 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
         block: Block,
     ): Block? {
         if (door == null) return null
+
         return possibleNeighbours
             .map { it to block.getRelative(it.offsetX, 0, it.offsetZ).blockData as? Door }
             .firstOrNull { (neighbour, otherDoor) ->

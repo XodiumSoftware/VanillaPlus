@@ -6,15 +6,15 @@ import com.google.gson.JsonParser
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
+import io.papermc.paper.registry.TypedKey
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
+import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.xodium.vanillaplus.VanillaPlus
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
-import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import java.net.URI
 import java.util.*
 import javax.imageio.ImageIO
@@ -37,7 +37,7 @@ internal object ExtUtils {
 
     /** The standardized prefix for [VanillaPlus] messages. */
     val VanillaPlus.prefix: String
-        get() = "${"[".mangoFmt(true)}${this::class.simpleName.toString().fireFmt()}${"]".mangoFmt()}"
+        get() = "<mango_inverted>[</mango_inverted><fire>${this.javaClass.simpleName}</fire><mango>]</mango>"
 
     /**
      * Converts a CamelCase string to snake case.
@@ -49,7 +49,7 @@ internal object ExtUtils {
      * Generates a configuration key for a module.
      * @return The generated configuration key.
      */
-    val ModuleInterface<*>.key: String get() = this::class.simpleName.toString()
+    val ModuleInterface<*>.key: String get() = this.javaClass.simpleName.toString()
 
     /**
      * Deserializes a [MiniMessage] [String] into a [Component].
@@ -79,7 +79,7 @@ internal object ExtUtils {
      */
     fun String.clickRunCmd(
         cmd: String,
-        hover: String? = "Click me!".mangoFmt(),
+        hover: String? = "<mango>Click me!</mango>", // FIX
     ): String = "<hover:show_text:'$hover'><click:run_command:'$cmd'>$this</click></hover>"
 
     /**
@@ -90,7 +90,7 @@ internal object ExtUtils {
      */
     fun String.clickSuggestCmd(
         cmd: String,
-        hover: String? = "Click me!".mangoFmt(),
+        hover: String? = "<mango>Click me!</mango>", // FIX
     ): String = "<hover:show_text:'$hover'><click:suggest_command:'$cmd'>$this</click></hover>"
 
     /**
@@ -101,7 +101,7 @@ internal object ExtUtils {
      */
     fun String.clickOpenUrl(
         url: String,
-        hover: String? = "Click me!".mangoFmt(),
+        hover: String? = "<mango>Click me!</mango>", // FIX
     ): String = "<hover:show_text:'$hover'><click:open_url:'$url'>$this</click></hover>"
 
     /**
@@ -151,6 +151,7 @@ internal object ExtUtils {
         // 3. scale & build MiniMessage
         val scale = FACE_WIDTH.toDouble() / size
         val builder = StringBuilder()
+
         for (y in 0 until size) {
             for (x in 0 until size) {
                 val px = (x * scale).toInt().coerceAtMost(MAX_COORDINATE)
@@ -160,6 +161,7 @@ internal object ExtUtils {
                 val r = (rgb shr RED_SHIFT) and COLOR_MASK
                 val g = (rgb shr GREEN_SHIFT) and COLOR_MASK
                 val b = rgb and COLOR_MASK
+
                 if (a == 0) {
                     builder.append("<color:$BLACK_COLOR>$PIXEL_CHAR</color>")
                 } else {
@@ -170,4 +172,10 @@ internal object ExtUtils {
         }
         return builder.toString()
     }
+
+    /** Extension function to convert snake_case to Proper Case with spaces. */
+    fun String.snakeToProperCase(): String = split('_').joinToString(" ") { word -> word.replaceFirstChar { it.uppercase() } }
+
+    /** Extension function specifically for enchantment keys */
+    fun TypedKey<Enchantment>.displayName(): Component = value().snakeToProperCase().mm()
 }

@@ -26,9 +26,6 @@ import org.xodium.vanillaplus.utils.ExtUtils.face
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.prefix
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
-import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
-import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
-import org.xodium.vanillaplus.utils.FmtUtils.skylineFmt
 import java.util.concurrent.CompletableFuture
 
 /** Represents a module handling chat mechanics within the system. */
@@ -56,14 +53,16 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
                                     .executes { ctx ->
                                         ctx.tryCatch {
                                             if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+
                                             val sender = it.sender as Player
-                                            val targetName = ctx.getArgument("target", String::class.java)
+                                            val targetName = ctx.getArgument("target", String().javaClass)
                                             val target =
                                                 instance.server.getPlayer(targetName)
                                                     ?: return@tryCatch sender.sendMessage(
                                                         config.i18n.playerIsNotOnline.mm(),
                                                     )
-                                            val message = ctx.getArgument("message", String::class.java)
+                                            val message = ctx.getArgument("message", String().javaClass)
+
                                             whisper(sender, target, message)
                                         }
                                     },
@@ -78,7 +77,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
     override fun perms(): List<Permission> =
         listOf(
             Permission(
-                "${instance::class.simpleName}.whisper".lowercase(),
+                "${instance.javaClass.simpleName}.whisper".lowercase(),
                 "Allows use of the whisper command",
                 PermissionDefault.TRUE,
             ),
@@ -89,7 +88,6 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
         if (!config.enabled) return
 
         event.renderer(ChatRenderer.defaultRenderer())
-
         event.renderer { player, displayName, message, audience ->
             var base =
                 config.chatFormat.mm(
@@ -112,7 +110,9 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
         if (!config.enabled) return
 
         val player = event.player
+
         var imageIndex = 0
+
         player.sendMessage(
             Regex("<image>")
                 .replace(config.welcomeText.joinToString("\n")) { "<image${++imageIndex}>" }
@@ -185,49 +185,44 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
             .clickEvent(ClickEvent.callback { instance.server.deleteMessage(signedMessage) })
 
     data class Config(
-        var chatFormat: String = "<player_head> <player> <reset>${"›".mangoFmt(true)} <message>",
+        var chatFormat: String = "<player_head> <player> <reset><gradient:#FFE259:#FFA751>›</gradient> <message>",
         var welcomeText: List<String> =
             listOf(
-                "]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true),
-                "<image>${"⯈".mangoFmt(true)}",
-                "<image>${"⯈".mangoFmt(true)}",
-                "<image>${"⯈".mangoFmt(true)} ${"Welcome".fireFmt()} <player> ${
-                    "<white><sprite:item/name_tag></white>".clickSuggestCmd(
-                        "/nickname ",
-                        "Set your nickname!".mangoFmt(),
-                    )
-                }",
-                "<image>${"⯈".mangoFmt(true)}",
-                "<image>${"⯈".mangoFmt(true)} ${"Check out".fireFmt()}<gray>:",
-                "<image>${"⯈".mangoFmt(true)} ${
-                    "<white><sprite:item/writable_book></white>".clickRunCmd(
-                        "/rules",
-                        "View the server /rules".mangoFmt(),
-                    )
-                }",
-                "<image>${"⯈".mangoFmt(true)} ${
-                    "<white><sprite:item/light></white>".clickOpenUrl(
-                        "https://illyria.fandom.com",
-                        "Visit the wiki!".mangoFmt(),
-                    )
-                }",
-                "<image>${"⯈".mangoFmt(true)}",
-                "]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true),
+                "<gradient:#FFA751:#FFE259>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gradient:#CB2D3E:#EF473A>Welcome</gradient> <player> <white><sprite:item/name_tag></white>"
+                    .clickSuggestCmd(
+                        "/nickname",
+                        "<gradient:#FFE259:#FFA751>Set your nickname!</gradient>",
+                    ),
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gradient:#CB2D3E:#EF473A>Check out</gradient><gray>:",
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <white><sprite:item/writable_book></white>".clickRunCmd(
+                    "/rules",
+                    "<gradient:#FFE259:#FFA751>View the server /rules</gradient>",
+                ),
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <white><sprite:item/light></white>".clickOpenUrl(
+                    "https://illyria.fandom.com",
+                    "<gradient:#FFE259:#FFA751>Visit the wiki!</gradient>",
+                ),
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
+                "<gradient:#FFA751:#FFE259>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
             ),
         var whisperToFormat: String =
-            "${"You".skylineFmt()} ${"➛".mangoFmt(true)} <player> <reset>${"›".mangoFmt(true)} <message>",
+            "<gradient:#1488CC:#2B32B2>You</gradient> <gradient:#FFE259:#FFA751>➛</gradient> <player> <reset><gradient:#FFE259:#FFA751>›</gradient> <message>",
         var whisperFromFormat: String =
-            "<player> <reset>${"➛".mangoFmt(true)} ${"You".skylineFmt()} ${"›".mangoFmt(true)} <message>",
+            "<player> <reset><gradient:#FFE259:#FFA751>➛</gradient> <gradient:#1488CC:#2B32B2>You</gradient> <gradient:#FFE259:#FFA751>›</gradient> <message>",
         var deleteCross: String = "<dark_gray>[<dark_red><b>X</b></dark_red><dark_gray>]",
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
         data class I18n(
-            var clickMe: String = "Click me!".mangoFmt(),
-            var clickToWhisper: String = "Click to Whisper".mangoFmt(),
-            var playerIsNotOnline: String = "${instance.prefix} Player is not Online!".fireFmt(),
-            var deleteMessage: String = "Click to delete your message".mangoFmt(),
-            var clickToClipboard: String = "Click to copy position to clipboard".mangoFmt(),
-            var playerSetSpawn: String = "${"❗".fireFmt()} ${"›".mangoFmt(true)} <notification>",
+            var clickMe: String = "<gradient:#FFE259:#FFA751>Click me!</gradient>",
+            var clickToWhisper: String = "<gradient:#FFE259:#FFA751>Click to Whisper</gradient>",
+            var playerIsNotOnline: String = "${instance.prefix} <gradient:#CB2D3E:#EF473A>Player is not Online!</gradient>",
+            var deleteMessage: String = "<gradient:#FFE259:#FFA751>Click to delete your message</gradient>",
+            var clickToClipboard: String = "<gradient:#FFE259:#FFA751>Click to copy position to clipboard</gradient>",
+            var playerSetSpawn: String = "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> <notification>",
         )
     }
 }

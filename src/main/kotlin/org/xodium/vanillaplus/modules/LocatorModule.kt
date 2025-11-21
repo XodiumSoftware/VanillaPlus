@@ -72,7 +72,7 @@ internal class LocatorModule : ModuleInterface<ModuleInterface.Config> {
     override fun perms(): List<Permission> =
         listOf(
             Permission(
-                "${instance::class.simpleName}.locator".lowercase(),
+                "${instance.javaClass.simpleName}.locator".lowercase(),
                 "Allows use of the locator command",
                 PermissionDefault.TRUE,
             ),
@@ -90,6 +90,7 @@ internal class LocatorModule : ModuleInterface<ModuleInterface.Config> {
         hex: TextColor? = null,
     ) {
         val cmd = "waypoint modify ${player.name}"
+
         when {
             colour != null -> instance.server.dispatchCommand(player, "$cmd color $colour")
 

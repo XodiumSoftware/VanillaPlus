@@ -23,9 +23,7 @@ internal class CauldronModule : ModuleInterface<CauldronModule.Config> {
                 Runnable {
                     for (world in instance.server.worlds) {
                         for (entity in world.entities) {
-                            if (entity is Item && isConvertible(entity.itemStack.type)) {
-                                checkItemInCauldron(entity)
-                            }
+                            if (entity is Item && isConvertible(entity.itemStack.type)) checkItemInCauldron(entity)
                         }
                     }
                 },
@@ -41,9 +39,11 @@ internal class CauldronModule : ModuleInterface<CauldronModule.Config> {
      */
     private fun checkItemInCauldron(item: Item) {
         val blockBelow = item.location.clone().block
+
         if (blockBelow.type != Material.WATER_CAULDRON) return
 
         val cauldronData = blockBelow.blockData as? Levelled ?: return
+
         if (cauldronData.level <= 0) return
 
         val convertedMaterial =
@@ -97,6 +97,7 @@ internal class CauldronModule : ModuleInterface<CauldronModule.Config> {
         )
 
         val newLevel = cauldronData.level - 1
+
         if (newLevel <= 0) {
             cauldronBlock.type = Material.CAULDRON
         } else {

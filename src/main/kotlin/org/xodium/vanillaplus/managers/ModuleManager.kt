@@ -29,13 +29,12 @@ internal object ModuleManager {
     val motdModule: MotdModule = MotdModule()
     val openableModule: OpenableModule = OpenableModule()
     val petModule: PetModule = PetModule()
-    val recipiesModule: RecipiesModule = RecipiesModule()
+    val playerModule: PlayerModule = PlayerModule()
+    val recipeModule: RecipeModule = RecipeModule()
     val scoreBoardModule: ScoreBoardModule = ScoreBoardModule()
     val signModule: SignModule = SignModule()
-    val silkTouchModule: SilkTouchModule = SilkTouchModule()
     val sitModule: SitModule = SitModule()
     val tabListModule: TabListModule = TabListModule()
-    val playerModule: PlayerModule = PlayerModule(tabListModule)
     val treesModule: TreesModule = TreesModule()
 
     private val modules =
@@ -52,10 +51,9 @@ internal object ModuleManager {
             openableModule,
             petModule,
             playerModule,
-            recipiesModule,
+            recipeModule,
             scoreBoardModule,
             signModule,
-            silkTouchModule,
             sitModule,
             tabListModule,
             treesModule,
@@ -84,7 +82,7 @@ internal object ModuleManager {
 
     private val configPerm =
         Permission(
-            "${instance::class.simpleName}.reload".lowercase(),
+            "${instance.javaClass.simpleName}.reload".lowercase(),
             "Allows use of the vanillaplus reload command",
             PermissionDefault.OP,
         )
@@ -103,7 +101,7 @@ internal object ModuleManager {
         instance.server.pluginManager.addPermission(configPerm)
         modules.filter { it.enabled() }.forEach { module ->
             instance.logger.info(
-                "Loaded: ${module::class.simpleName} | Took ${
+                "Loaded: ${module.javaClass.simpleName} | Took ${
                     measureTime {
                         instance.server.pluginManager.registerEvents(module, instance)
                         @Suppress("UnstableApiUsage")

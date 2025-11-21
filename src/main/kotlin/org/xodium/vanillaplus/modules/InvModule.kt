@@ -12,39 +12,25 @@ import org.bukkit.Color
 import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.block.Block
-import org.bukkit.block.Container
 import org.bukkit.entity.Player
-import org.bukkit.event.EventHandler
-import org.bukkit.event.EventPriority
-import org.bukkit.event.player.PlayerQuitEvent
-import org.bukkit.inventory.ItemStack
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.SoundData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.registries.MaterialRegistry
 import org.xodium.vanillaplus.utils.BlockUtils.center
-import org.xodium.vanillaplus.utils.ChunkUtils.filterAndSortContainers
-import org.xodium.vanillaplus.utils.ChunkUtils.findContainersInRadius
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
-import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
-import org.xodium.vanillaplus.utils.FmtUtils.glorpFmt
-import org.xodium.vanillaplus.utils.FmtUtils.roseFmt
-import org.xodium.vanillaplus.utils.InvUtils.transferItems
-import org.xodium.vanillaplus.utils.ItemStackUtils
-import java.util.*
+import org.xodium.vanillaplus.utils.InvUtils
+import org.xodium.vanillaplus.utils.PlayerUtils
+import org.xodium.vanillaplus.utils.ScheduleUtils
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.ConcurrentHashMap
 import org.bukkit.Sound as BukkitSound
 
 /** Represents a module handling inv mechanics within the system. */
 internal class InvModule : ModuleInterface<InvModule.Config> {
     override val config: Config = Config()
-
-    private val activeVisualizations = ConcurrentHashMap<UUID, MutableList<Int>>()
 
     override fun cmds(): List<CommandData> =
         listOf(
@@ -89,23 +75,16 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
     override fun perms(): List<Permission> =
         listOf(
             Permission(
-                "${instance::class.simpleName}.invsearch".lowercase(),
+                "${instance.javaClass.simpleName}.invsearch".lowercase(),
                 "Allows use of the invsearch command",
                 PermissionDefault.TRUE,
             ),
             Permission(
-                "${instance::class.simpleName}.invunload".lowercase(),
+                "${instance.javaClass.simpleName}.invunload".lowercase(),
                 "Allows use of the invunload command",
                 PermissionDefault.TRUE,
             ),
         )
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    fun on(event: PlayerQuitEvent) {
-        if (!enabled()) return
-
-        activeVisualizations.remove(event.player.uniqueId)
-    }
 
     /**
      * Handles the search command execution.
@@ -137,188 +116,98 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         player: Player,
         material: Material,
     ) {
-        activeVisualizations[player.uniqueId]?.let { taskIds ->
-            taskIds.forEach { instance.server.scheduler.cancelTask(it) }
-            activeVisualizations.remove(player.uniqueId)
+        val foundContainers = mutableListOf<Block>()
+
+        for (container in PlayerUtils.getContainersAroundPlayer(player)) {
+            if (container.inventory.contains(material)) foundContainers.add(container.block)
         }
 
-        val containers =
-            findContainersInRadius(
-                location = player.location,
-                radius = config.searchRadius,
-                containerTypes = MaterialRegistry.CONTAINER_TYPES,
-            )
-        val matchingContainers =
-            containers.filter { block ->
-                val state = block.state as? Container ?: return@filter false
-                state.inventory.contents.any { item ->
-                    item?.type == material && ItemStackUtils.hasMatchingEnchantments(ItemStack.of(material), item)
-                }
-            }
-
-        if (matchingContainers.isEmpty()) {
+        if (foundContainers.isEmpty()) {
             player.sendActionBar(config.i18n.noMatchingItems.mm(Placeholder.component("material", material.name.mm())))
             return
         }
 
-        val sortedChests = filterAndSortContainers(matchingContainers, player.location)
-
-        if (sortedChests.isEmpty()) return
-
-        val closestChest = sortedChests.first()
-
-        schedulePlayerTask(player, {
-            Particle.TRAIL
-                .builder()
-                .location(player.location)
-                .data(Particle.Trail(closestChest.center, Color.MAROON, 40))
-                .receivers(player)
-                .spawn()
-            Particle.DUST
-                .builder()
-                .location(closestChest.center)
-                .count(10)
-                .data(Particle.DustOptions(Color.MAROON, 5.0f))
-                .receivers(player)
-                .spawn()
-        })
-
-        val otherChests = sortedChests.drop(1)
-
-        if (otherChests.isNotEmpty()) {
-            schedulePlayerTask(player, {
-                otherChests.forEach {
-                    Particle.TRAIL
-                        .builder()
-                        .location(player.location)
-                        .data(Particle.Trail(it.center, Color.RED, 40))
-                        .receivers(player)
-                        .spawn()
-                    Particle.DUST
-                        .builder()
-                        .location(it.center)
-                        .count(10)
-                        .data(Particle.DustOptions(Color.RED, 5.0f))
-                        .receivers(player)
-                        .spawn()
-                }
-            })
-        }
-    }
-
-    /**
-     * Unloads the inventory of the specified player.
-     * @param player The player whose inventory to unload.
-     */
-    private fun unload(player: Player) {
-        val startSlot = 9
-        val endSlot = 35
-        val containers =
-            findContainersInRadius(
-                location = player.location,
-                radius = config.unloadRadius,
-                containerTypes = MaterialRegistry.CONTAINER_TYPES,
-            )
-        val sortedChests = filterAndSortContainers(containers, player.location)
-
-        if (sortedChests.isEmpty()) {
-            player.sendActionBar(config.i18n.noNearbyChests.mm())
-            return
-        }
-
-        val affectedChests = mutableListOf<Block>()
-
-        for (block in sortedChests) {
-            val destination = (block.state as? Container)?.inventory ?: continue
-            val transfer =
-                transferItems(
-                    source = player.inventory,
-                    destination = destination,
-                    startSlot = startSlot,
-                    endSlot = endSlot,
-                    onlyMatching = true,
-                    enchantmentChecker = ItemStackUtils::hasMatchingEnchantments,
-                )
-
-            if (transfer) affectedChests.add(block)
-        }
-
-        if (affectedChests.isEmpty()) {
-            player.sendActionBar(config.i18n.noItemsUnloaded.mm())
-            return
-        }
-
-        player.sendActionBar(config.i18n.inventoryUnloaded.mm())
-
-        for (chest in affectedChests) {
-            Particle.DUST
-                .builder()
-                .location(chest.center)
-                .count(10)
-                .data(Particle.DustOptions(Color.LIME, 5.0f))
-                .receivers(player)
-                .spawn()
-        }
-
-        player.playSound(config.soundOnUnload.toSound(), Sound.Emitter.self())
-    }
-
-    /**
-     * Schedules a repeating task for a specific player and automatically cancels it after a set duration.
-     * @param player The player for whom the task is scheduled.
-     * @param task The repeating task to execute.
-     * @param initialDelay Ticks to wait before the first execution. Default is `0L`.
-     * @param repeatDelay Ticks between each execution. Default is 2L.
-     * @param durationTicks Total duration in ticks before the task is automatically cancelled. Default is `100L`.
-     * @return The task ID of the scheduled repeating task.
-     */
-    private fun schedulePlayerTask(
-        player: Player,
-        task: () -> Unit,
-        initialDelay: Long = 0L,
-        repeatDelay: Long = 2L,
-        durationTicks: Long = 100L,
-    ): Int {
-        val taskId =
-            instance.server.scheduler.scheduleSyncRepeatingTask(
-                instance,
-                task,
-                initialDelay,
-                repeatDelay,
-            )
-
-        activeVisualizations.computeIfAbsent(player.uniqueId) { mutableListOf() }.add(taskId)
-
-        instance.server.scheduler.runTaskLater(
-            instance,
-            Runnable {
-                activeVisualizations[player.uniqueId]?.remove(taskId)
-                instance.server.scheduler.cancelTask(taskId)
-            },
-            durationTicks,
+        player.sendActionBar(
+            config.i18n.foundItemsInChests.mm(Placeholder.component("material", material.name.mm())),
         )
 
-        return taskId
+        ScheduleUtils.schedule(duration = 200L) {
+            foundContainers.forEach { container ->
+                Particle.TRAIL
+                    .builder()
+                    .location(player.location)
+                    .data(Particle.Trail(container.center, Color.MAROON, 40))
+                    .receivers(player)
+                    .spawn()
+                Particle.DUST
+                    .builder()
+                    .location(container.center)
+                    .count(10)
+                    .data(Particle.DustOptions(Color.MAROON, 5.0f))
+                    .receivers(player)
+                    .spawn()
+            }
+        }
+    }
+
+    /**
+     * Unloads items from the player's inventory into nearby chests.
+     * @param player The player whose inventory is to be unloaded.
+     */
+    private fun unload(player: Player) {
+        val foundContainers = mutableListOf<Block>()
+
+        for (container in PlayerUtils.getContainersAroundPlayer(player)) {
+            val transferred =
+                InvUtils.transferItems(
+                    source = player.inventory,
+                    destination = container.inventory,
+                    startSlot = 9,
+                    endSlot = 35,
+                    onlyMatching = true,
+                    enchantmentChecker = { item1, item2 -> item1.enchantments == item2.enchantments },
+                )
+
+            if (transferred) foundContainers.add(container.block)
+        }
+
+        if (foundContainers.isEmpty()) return player.sendActionBar(config.i18n.noItemsUnloaded.mm())
+
+        player.sendActionBar(config.i18n.inventoryUnloaded.mm())
+        player.playSound(config.soundOnUnload.toSound(), Sound.Emitter.self())
+
+        ScheduleUtils.schedule(duration = 60L) {
+            foundContainers.forEach { container ->
+                Particle.DUST
+                    .builder()
+                    .location(container.center)
+                    .count(10)
+                    .data(Particle.DustOptions(Color.LIME, 5.0f))
+                    .receivers(player)
+                    .spawn()
+            }
+        }
     }
 
     data class Config(
-        var searchRadius: Int = 25,
-        var unloadRadius: Int = 25,
         var soundOnUnload: SoundData =
             SoundData(
                 BukkitSound.ENTITY_PLAYER_LEVELUP,
                 Sound.Source.PLAYER,
             ),
-        var scheduleInitDelayInTicks: Long = 5,
         var i18n: I18n = I18n(),
     ) : ModuleInterface.Config {
         data class I18n(
-            var noMaterialSpecified: String = "You must specify a valid material or hold something in your hand".fireFmt(),
-            var noChestsFound: String = "No usable chests found for ${"<material>".roseFmt()}".fireFmt(),
-            var noMatchingItems: String = "No chests contain ${"<material>".roseFmt()}".fireFmt(),
-            var noNearbyChests: String = "No chests found nearby".fireFmt(),
-            var noItemsUnloaded: String = "No items were unloaded".fireFmt(),
-            var inventoryUnloaded: String = "Inventory unloaded".glorpFmt(),
+            var noMaterialSpecified: String =
+                "<gradient:#CB2D3E:#EF473A>You must specify a valid material " +
+                    "or hold something in your hand</gradient>",
+            var noMatchingItems: String =
+                "<gradient:#CB2D3E:#EF473A>No containers contain " +
+                    "<gradient:#F4C4F3:#FC67FA><b><material></b></gradient></gradient>",
+            var foundItemsInChests: String =
+                "<gradient:#FFE259:#FFA751>Found <gradient:#F4C4F3:#FC67FA><b><material></b></gradient> in container(s), follow trail(s)</gradient>",
+            var noItemsUnloaded: String = "<gradient:#CB2D3E:#EF473A>No items were unloaded</gradient>",
+            var inventoryUnloaded: String = "<gradient:#B3E94A:#54F47F>Inventory unloaded</gradient>",
         )
     }
 }

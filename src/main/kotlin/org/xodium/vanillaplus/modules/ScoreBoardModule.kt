@@ -34,7 +34,7 @@ internal class ScoreBoardModule : ModuleInterface<ModuleInterface.Config> {
     override fun perms(): List<Permission> =
         listOf(
             Permission(
-                "${instance::class.simpleName}.leaderboard".lowercase(),
+                "${instance.javaClass.simpleName}.leaderboard".lowercase(),
                 "Allows use of the leaderboard command",
                 PermissionDefault.TRUE,
             ),
@@ -43,7 +43,9 @@ internal class ScoreBoardModule : ModuleInterface<ModuleInterface.Config> {
     @EventHandler
     fun on(event: PlayerJoinEvent) {
         if (!enabled()) return
+
         val player = event.player
+
         if (player.scoreboardVisibility == true) {
             player.scoreboard = instance.server.scoreboardManager.newScoreboard
         } else {
