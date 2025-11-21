@@ -30,6 +30,7 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.enchantments.*
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.inventories.ShulkerBoxInventory
 import org.xodium.vanillaplus.managers.ModuleManager
 import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
 import org.xodium.vanillaplus.utils.ExtUtils.mm
@@ -140,6 +141,7 @@ internal class PlayerModule : ModuleInterface<PlayerModule.Config> {
         if (!enabled()) return
 
         enderchest(event)
+        ShulkerBoxInventory.shulker(event)
     }
 
     @EventHandler(ignoreCancelled = true)
