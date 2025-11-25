@@ -16,7 +16,7 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
-import org.xodium.vanillaplus.VanillaPlus
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.FeatureInterface
 import org.xodium.vanillaplus.utils.ExtUtils.clickOpenUrl
@@ -42,7 +42,7 @@ internal object ChatFeature : FeatureInterface {
                         Commands
                             .argument("target", StringArgumentType.string())
                             .suggests { _, builder ->
-                                VanillaPlus.instance.server.onlinePlayers
+                                instance.server.onlinePlayers
                                     .map { it.name }
                                     .filter { it.lowercase().startsWith(builder.remaining.lowercase()) }
                                     .forEach(builder::suggest)
@@ -53,7 +53,7 @@ internal object ChatFeature : FeatureInterface {
                                     .executes { ctx ->
                                         ctx.tryCatch {
                                             if (it.sender !is Player) {
-                                                VanillaPlus.instance.logger.warning(
+                                                instance.logger.warning(
                                                     "Command can only be executed by a Player!",
                                                 )
                                             }
@@ -61,7 +61,7 @@ internal object ChatFeature : FeatureInterface {
                                             val sender = it.sender as Player
                                             val targetName = ctx.getArgument("target", String().javaClass)
                                             val target =
-                                                VanillaPlus.instance.server
+                                                instance.server
                                                     .getPlayer(targetName)
                                                     ?: return@tryCatch sender.sendMessage(
                                                         config.i18n.playerIsNotOnline.mm(),
@@ -82,7 +82,7 @@ internal object ChatFeature : FeatureInterface {
     override fun perms(): List<Permission> =
         listOf(
             Permission(
-                "${VanillaPlus.instance.javaClass.simpleName}.whisper".lowercase(),
+                "${instance.javaClass.simpleName}.whisper".lowercase(),
                 "Allows use of the whisper command",
                 PermissionDefault.TRUE,
             ),
@@ -183,7 +183,7 @@ internal object ChatFeature : FeatureInterface {
             .hoverEvent(config.i18n.deleteMessage.mm())
             .clickEvent(
                 ClickEvent.callback {
-                    VanillaPlus.instance.server
+                    instance.server
                         .deleteMessage(signedMessage)
                 },
             )
@@ -223,7 +223,7 @@ internal object ChatFeature : FeatureInterface {
         data class I18n(
             var clickMe: String = "<gradient:#FFE259:#FFA751>Click me!</gradient>",
             var clickToWhisper: String = "<gradient:#FFE259:#FFA751>Click to Whisper</gradient>",
-            var playerIsNotOnline: String = "${VanillaPlus.instance.prefix} <gradient:#CB2D3E:#EF473A>Player is not Online!</gradient>",
+            var playerIsNotOnline: String = "${instance.prefix} <gradient:#CB2D3E:#EF473A>Player is not Online!</gradient>",
             var deleteMessage: String = "<gradient:#FFE259:#FFA751>Click to delete your message</gradient>",
             var clickToClipboard: String = "<gradient:#FFE259:#FFA751>Click to copy position to clipboard</gradient>",
             var playerSetSpawn: String = "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> <notification>",

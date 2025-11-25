@@ -1,4 +1,4 @@
-package org.xodium.vanillaplus.modules
+package org.xodium.vanillaplus.features
 
 import org.bukkit.Location
 import org.bukkit.Material
@@ -9,43 +9,34 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.EntityPortalEvent
 import org.bukkit.event.player.PlayerPortalEvent
-import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause
+import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.event.world.PortalCreateEvent
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.interfaces.FeatureInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-/** Represents a module handling dimension mechanics within the system. */
-internal class DimensionsModule : ModuleInterface<DimensionsModule.Config> {
-    override val config: Config = Config()
+/** Represents a feature handling dimension mechanics within the system. */
+internal object DimensionsFeature : FeatureInterface {
+    private val config: Config = Config()
 
-    companion object {
-        private const val NETHER_TO_OVERWORLD_RATIO = 8
-    }
+    private const val NETHER_TO_OVERWORLD_RATIO = 8
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerPortalEvent) {
-        if (!enabled()) return
-        if (event.cause == TeleportCause.NETHER_PORTAL) {
-            if (event.player.world.environment == World.Environment.NETHER) {
-                event.canCreatePortal = false
-            }
+        if (event.cause == PlayerTeleportEvent.TeleportCause.NETHER_PORTAL) {
+            if (event.player.world.environment == World.Environment.NETHER) event.canCreatePortal = false
         }
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     fun on(event: EntityPortalEvent) {
-        if (!enabled()) return
-        if (event.entity.world.environment == World.Environment.NETHER) {
-            event.canCreatePortal = false
-        }
+        if (event.entity.world.environment == World.Environment.NETHER) event.canCreatePortal = false
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PortalCreateEvent) {
-        if (!enabled()) return
         if (event.world.environment == World.Environment.NETHER &&
             event.reason == PortalCreateEvent.CreateReason.FIRE
         ) {
@@ -114,7 +105,7 @@ internal class DimensionsModule : ModuleInterface<DimensionsModule.Config> {
 
     /**
      * Calculates the centre point of a portal structure by averaging the positions of its constituent blocks.
-     * @param blockStates The list of [BlockState]s representing the portal frame and portal blocks.
+     * @param blockStates The list of [org.bukkit.block.BlockState]s representing the portal frame and portal blocks.
      * @return The [Location] representing the geometric centre of the portal.
      */
     private fun calcPortalCentre(blockStates: List<BlockState>): Location =
@@ -133,9 +124,10 @@ internal class DimensionsModule : ModuleInterface<DimensionsModule.Config> {
     data class Config(
         var portalSearchRadius: Int = 128,
         var i18n: I18n = I18n(),
-    ) : ModuleInterface.Config {
+    ) {
         data class I18n(
-            var portalCreationDenied: String = "<gradient:#CB2D3E:#EF473A>No corresponding active portal found in the Overworld!</gradient>",
+            var portalCreationDenied: String =
+                "<gradient:#CB2D3E:#EF473A>No corresponding active portal found in the Overworld!</gradient>",
         )
     }
 }
