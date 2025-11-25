@@ -3,6 +3,7 @@ package org.xodium.vanillaplus
 import org.bukkit.plugin.java.JavaPlugin
 import org.xodium.vanillaplus.features.BooksFeature
 import org.xodium.vanillaplus.features.CauldronFeature
+import org.xodium.vanillaplus.features.ChatFeature
 import org.xodium.vanillaplus.features.MotdFeature
 import org.xodium.vanillaplus.managers.ModuleManager
 
@@ -27,6 +28,7 @@ internal class VanillaPlus : JavaPlugin() {
         ModuleManager.run {}
         BooksFeature.register()
         CauldronFeature.register()
+        ChatFeature.register()
         MotdFeature.register()
     }
 

@@ -1,4 +1,4 @@
-package org.xodium.vanillaplus.modules
+package org.xodium.vanillaplus.features
 
 import com.destroystokyo.paper.event.player.PlayerSetSpawnEvent
 import com.mojang.brigadier.arguments.StringArgumentType
@@ -16,9 +16,9 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
-import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.VanillaPlus
 import org.xodium.vanillaplus.data.CommandData
-import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.interfaces.FeatureInterface
 import org.xodium.vanillaplus.utils.ExtUtils.clickOpenUrl
 import org.xodium.vanillaplus.utils.ExtUtils.clickRunCmd
 import org.xodium.vanillaplus.utils.ExtUtils.clickSuggestCmd
@@ -28,9 +28,9 @@ import org.xodium.vanillaplus.utils.ExtUtils.prefix
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import java.util.concurrent.CompletableFuture
 
-/** Represents a module handling chat mechanics within the system. */
-internal class ChatModule : ModuleInterface<ChatModule.Config> {
-    override val config: Config = Config()
+/** Represents a feature handling chat mechanics within the system. */
+internal object ChatFeature : FeatureInterface {
+    private val config: Config = Config()
 
     override fun cmds(): List<CommandData> {
         return listOf(
@@ -42,7 +42,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
                         Commands
                             .argument("target", StringArgumentType.string())
                             .suggests { _, builder ->
-                                instance.server.onlinePlayers
+                                VanillaPlus.instance.server.onlinePlayers
                                     .map { it.name }
                                     .filter { it.lowercase().startsWith(builder.remaining.lowercase()) }
                                     .forEach(builder::suggest)
@@ -52,12 +52,17 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
                                     .argument("message", StringArgumentType.greedyString())
                                     .executes { ctx ->
                                         ctx.tryCatch {
-                                            if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+                                            if (it.sender !is Player) {
+                                                VanillaPlus.instance.logger.warning(
+                                                    "Command can only be executed by a Player!",
+                                                )
+                                            }
 
                                             val sender = it.sender as Player
                                             val targetName = ctx.getArgument("target", String().javaClass)
                                             val target =
-                                                instance.server.getPlayer(targetName)
+                                                VanillaPlus.instance.server
+                                                    .getPlayer(targetName)
                                                     ?: return@tryCatch sender.sendMessage(
                                                         config.i18n.playerIsNotOnline.mm(),
                                                     )
@@ -77,7 +82,7 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
     override fun perms(): List<Permission> =
         listOf(
             Permission(
-                "${instance.javaClass.simpleName}.whisper".lowercase(),
+                "${VanillaPlus.instance.javaClass.simpleName}.whisper".lowercase(),
                 "Allows use of the whisper command",
                 PermissionDefault.TRUE,
             ),
@@ -85,8 +90,6 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: AsyncChatEvent) {
-        if (!config.enabled) return
-
         event.renderer(ChatRenderer.defaultRenderer())
         event.renderer { player, displayName, message, audience ->
             var base =
@@ -107,8 +110,6 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
-        if (!config.enabled) return
-
         val player = event.player
 
         var imageIndex = 0
@@ -129,8 +130,6 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
 
     @EventHandler
     fun on(event: PlayerSetSpawnEvent) {
-        if (!enabled()) return
-
         event.notification =
             config.i18n.playerSetSpawn.mm(Placeholder.component("notification", event.notification ?: return))
     }
@@ -176,13 +175,18 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
     /**
      * Creates to delete cross-component for message deletion.
      * @param signedMessage The signed message to be deleted.
-     * @return A [Component] representing the delete cross with hover text and click action.
+     * @return A [net.kyori.adventure.text.Component] representing the delete cross with hover text and click action.
      */
     private fun createDeleteCross(signedMessage: SignedMessage): Component =
         config.deleteCross
             .mm()
             .hoverEvent(config.i18n.deleteMessage.mm())
-            .clickEvent(ClickEvent.callback { instance.server.deleteMessage(signedMessage) })
+            .clickEvent(
+                ClickEvent.callback {
+                    VanillaPlus.instance.server
+                        .deleteMessage(signedMessage)
+                },
+            )
 
     data class Config(
         var chatFormat: String = "<player_head> <player> <reset><gradient:#FFE259:#FFA751>›</gradient> <message>",
@@ -215,11 +219,11 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
             "<player> <reset><gradient:#FFE259:#FFA751>➛</gradient> <gradient:#1488CC:#2B32B2>You</gradient> <gradient:#FFE259:#FFA751>›</gradient> <message>",
         var deleteCross: String = "<dark_gray>[<dark_red><b>X</b></dark_red><dark_gray>]",
         var i18n: I18n = I18n(),
-    ) : ModuleInterface.Config {
+    ) {
         data class I18n(
             var clickMe: String = "<gradient:#FFE259:#FFA751>Click me!</gradient>",
             var clickToWhisper: String = "<gradient:#FFE259:#FFA751>Click to Whisper</gradient>",
-            var playerIsNotOnline: String = "${instance.prefix} <gradient:#CB2D3E:#EF473A>Player is not Online!</gradient>",
+            var playerIsNotOnline: String = "${VanillaPlus.instance.prefix} <gradient:#CB2D3E:#EF473A>Player is not Online!</gradient>",
             var deleteMessage: String = "<gradient:#FFE259:#FFA751>Click to delete your message</gradient>",
             var clickToClipboard: String = "<gradient:#FFE259:#FFA751>Click to copy position to clipboard</gradient>",
             var playerSetSpawn: String = "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> <notification>",
