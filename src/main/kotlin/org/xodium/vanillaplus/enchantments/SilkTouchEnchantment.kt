@@ -1,6 +1,5 @@
 package org.xodium.vanillaplus.enchantments
 
-import kotlinx.serialization.Serializable
 import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.block.CreatureSpawner
@@ -11,8 +10,6 @@ import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 
 /** Represents an object handling silk touch enchantment implementation within the system. */
 internal object SilkTouchEnchantment : EnchantmentInterface {
-    private val config = Config()
-
     /**
      * Handles breaking blocks with Silk Touch.
      * @param event The block break event.
@@ -32,7 +29,7 @@ internal object SilkTouchEnchantment : EnchantmentInterface {
      * @param event The block break event.
      */
     private fun handleSpawnerBreak(event: BlockBreakEvent) {
-        if (!config.allowSpawnerSilk) return
+        if (!config.playerFeature.silkTouch.allowSpawnerSilk) return
 
         event.isDropItems = false
         event.expToDrop = 0
@@ -53,7 +50,7 @@ internal object SilkTouchEnchantment : EnchantmentInterface {
      * @param event The block break event.
      */
     private fun handleBuddingAmethystBreak(event: BlockBreakEvent) {
-        if (!config.allowBuddingAmethystSilk) return
+        if (!config.playerFeature.silkTouch.allowBuddingAmethystSilk) return
 
         event.isDropItems = false
         event.block.world.dropItemNaturally(event.block.location, ItemStack.of(Material.BUDDING_AMETHYST))
@@ -66,11 +63,4 @@ internal object SilkTouchEnchantment : EnchantmentInterface {
      */
     private fun isValidTool(item: ItemStack?): Boolean =
         item?.let { Tag.ITEMS_PICKAXES.isTagged(it.type) && it.containsEnchantment(Enchantment.SILK_TOUCH) } == true
-
-    /** Configuration data class for Silk Touch enchantment settings. */
-    @Serializable // TODO: move to ConfigData
-    data class Config(
-        var allowSpawnerSilk: Boolean = true,
-        var allowBuddingAmethystSilk: Boolean = true,
-    )
 }

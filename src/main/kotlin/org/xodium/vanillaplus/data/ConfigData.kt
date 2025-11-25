@@ -5,7 +5,6 @@ import net.kyori.adventure.sound.Sound
 import org.bukkit.Material
 import org.bukkit.event.inventory.ClickType
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.enchantments.SilkTouchEnchantment
 import org.xodium.vanillaplus.utils.ExtUtils.clickOpenUrl
 import org.xodium.vanillaplus.utils.ExtUtils.clickRunCmd
 import org.xodium.vanillaplus.utils.ExtUtils.clickSuggestCmd
@@ -215,9 +214,15 @@ internal data class ConfigData(
         var enderChestClickType: ClickType = ClickType.SHIFT_RIGHT,
         var skullDropChance: Double = 0.1,
         var xpCostToBottle: Int = 11,
-        var silkTouchConfig: SilkTouchEnchantment.Config = SilkTouchEnchantment.Config(),
+        var silkTouch: SilkTouchEnchantment = SilkTouchEnchantment(),
         var i18n: I18n = I18n(),
     ) {
+        @Serializable
+        data class SilkTouchEnchantment(
+            var allowSpawnerSilk: Boolean = true,
+            var allowBuddingAmethystSilk: Boolean = true,
+        )
+
         @Serializable
         data class I18n(
             var playerHeadName: String = "<player>’s Skull",

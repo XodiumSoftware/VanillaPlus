@@ -7,6 +7,7 @@ import io.papermc.paper.registry.data.EnchantmentRegistryEntry
 import net.kyori.adventure.key.Key
 import org.bukkit.enchantments.Enchantment
 import org.xodium.vanillaplus.VanillaPlusBootstrap.Companion.INSTANCE
+import org.xodium.vanillaplus.data.ConfigData
 
 /** Represents a contract for enchantments within the system. */
 @Suppress("UnstableApiUsage")
@@ -30,6 +31,13 @@ internal interface EnchantmentInterface {
                         .joinToString("_") { it.lowercase() },
                 ),
             )
+
+    /**
+     * Retrieves the configuration data associated with the module.
+     * @return A [ConfigData] object representing the configuration for the module.
+     */
+    val config: ConfigData
+        get() = ConfigData()
 
     /**
      * Configures the properties of the enchantment using the provided builder.
