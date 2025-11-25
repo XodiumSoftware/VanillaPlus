@@ -71,7 +71,9 @@ internal object SitFeature : FeatureInterface {
     }
 
     @EventHandler
-    fun on(event: PlayerQuitEvent) = sittingPlayers.remove(event.player.uniqueId)?.remove()
+    fun on(event: PlayerQuitEvent) {
+        sittingPlayers.remove(event.player.uniqueId)?.remove()
+    }
 
     @EventHandler(ignoreCancelled = true)
     fun on(event: EntityDamageEvent) {
