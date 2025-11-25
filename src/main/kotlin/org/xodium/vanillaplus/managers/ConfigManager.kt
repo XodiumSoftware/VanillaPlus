@@ -20,24 +20,28 @@ internal object ConfigManager {
      * @return The loaded or default configuration data.
      */
     fun load(fileName: String = "config.json"): ConfigData {
-        val file = File(instance.dataFolder, fileName)
         if (!instance.dataFolder.exists()) instance.dataFolder.mkdirs()
+
+        val file = File(instance.dataFolder, fileName)
 
         return if (file.exists()) {
             try {
                 val text = file.readText()
                 val cfg = json.decodeFromString(ConfigData.serializer(), text)
-                // Re-write normalized/pretty file (optional)
+
                 try {
                     file.writeText(json.encodeToString(ConfigData.serializer(), cfg))
                 } catch (writeEx: Exception) {
                     instance.logger.warning("Failed to re-write $fileName: ${writeEx.message}")
                 }
+
                 instance.logger.info("Loaded configuration from $fileName")
                 cfg
             } catch (ex: Exception) {
                 instance.logger.warning("Failed to load $fileName, using defaults and writing new file: ${ex.message}")
+
                 val cfg = ConfigData()
+
                 try {
                     file.writeText(json.encodeToString(ConfigData.serializer(), cfg))
                 } catch (writeEx: Exception) {
@@ -47,6 +51,7 @@ internal object ConfigManager {
             }
         } else {
             val cfg = ConfigData()
+
             try {
                 file.writeText(json.encodeToString(ConfigData.serializer(), cfg))
                 instance.logger.info("Created default $fileName")
