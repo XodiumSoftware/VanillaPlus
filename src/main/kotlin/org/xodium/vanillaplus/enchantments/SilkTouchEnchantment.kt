@@ -1,5 +1,6 @@
 package org.xodium.vanillaplus.enchantments
 
+import kotlinx.serialization.Serializable
 import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.block.CreatureSpawner
@@ -67,6 +68,7 @@ internal object SilkTouchEnchantment : EnchantmentInterface {
         item?.let { Tag.ITEMS_PICKAXES.isTagged(it.type) && it.containsEnchantment(Enchantment.SILK_TOUCH) } == true
 
     /** Configuration data class for Silk Touch enchantment settings. */
+    @Serializable
     data class Config(
         var allowSpawnerSilk: Boolean = true,
         var allowBuddingAmethystSilk: Boolean = true,

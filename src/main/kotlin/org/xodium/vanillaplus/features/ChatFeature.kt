@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.StringArgumentType
 import io.papermc.paper.chat.ChatRenderer
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.event.player.AsyncChatEvent
+import kotlinx.serialization.Serializable
 import net.kyori.adventure.chat.SignedMessage
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
@@ -188,6 +189,7 @@ internal object ChatFeature : FeatureInterface {
                 },
             )
 
+    @Serializable
     data class Config(
         var chatFormat: String = "<player_head> <player> <reset><gradient:#FFE259:#FFA751>›</gradient> <message>",
         var welcomeText: List<String> =
@@ -220,6 +222,7 @@ internal object ChatFeature : FeatureInterface {
         var deleteCross: String = "<dark_gray>[<dark_red><b>X</b></dark_red><dark_gray>]",
         var i18n: I18n = I18n(),
     ) {
+        @Serializable
         data class I18n(
             var clickMe: String = "<gradient:#FFE259:#FFA751>Click me!</gradient>",
             var clickToWhisper: String = "<gradient:#FFE259:#FFA751>Click to Whisper</gradient>",

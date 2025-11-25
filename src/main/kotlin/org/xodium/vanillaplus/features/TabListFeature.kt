@@ -2,6 +2,7 @@
 
 package org.xodium.vanillaplus.features
 
+import kotlinx.serialization.Serializable
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
@@ -120,6 +121,7 @@ internal object TabListFeature : FeatureInterface {
         }
     }
 
+    @Serializable
     data class Config(
         var initDelayInTicks: Long = 0,
         var intervalInTicks: Long = 10,
@@ -135,6 +137,7 @@ internal object TabListFeature : FeatureInterface {
             ),
         var i18n: I18n = I18n(),
     ) {
+        @Serializable
         data class I18n(
             var weatherThundering: String = "<red>\uD83C\uDF29<reset>",
             var weatherStorm: String = "<yellow>\uD83C\uDF26<reset>",

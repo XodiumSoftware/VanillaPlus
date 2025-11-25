@@ -6,6 +6,7 @@ import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
+import kotlinx.serialization.Serializable
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Color
@@ -189,6 +190,7 @@ internal object InvFeature : FeatureInterface {
         }
     }
 
+    @Serializable
     data class Config(
         var soundOnUnload: SoundData =
             SoundData(
@@ -197,6 +199,7 @@ internal object InvFeature : FeatureInterface {
             ),
         var i18n: I18n = I18n(),
     ) {
+        @Serializable
         data class I18n(
             var noMaterialSpecified: String =
                 "<gradient:#CB2D3E:#EF473A>You must specify a valid material " +

@@ -1,5 +1,6 @@
 package org.xodium.vanillaplus.features
 
+import kotlinx.serialization.Serializable
 import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.block.Block
@@ -104,6 +105,7 @@ internal object CauldronFeature : FeatureInterface {
         }
     }
 
+    @Serializable
     data class Config(
         var convertConcretePowder: Boolean = true,
         var convertDirt: Boolean = true,

@@ -1,5 +1,6 @@
 package org.xodium.vanillaplus.features
 
+import kotlinx.serialization.Serializable
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.server.ServerListPingEvent
@@ -13,6 +14,7 @@ internal object MotdFeature : FeatureInterface {
     @EventHandler(priority = EventPriority.HIGH)
     fun on(event: ServerListPingEvent) = event.motd(config.motd.joinToString("\n").mm())
 
+    @Serializable
     data class Config(
         val motd: List<String> =
             listOf(

@@ -8,6 +8,7 @@ import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
 import io.papermc.paper.datacomponent.item.ResolvableProfile
 import io.papermc.paper.event.entity.EntityEquipmentChangedEvent
+import kotlinx.serialization.Serializable
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -250,6 +251,7 @@ internal object PlayerFeature : FeatureInterface {
             )
         }
 
+    @Serializable
     data class Config(
         var enderChestClickType: ClickType = ClickType.SHIFT_RIGHT,
         var skullDropChance: Double = 0.1,
@@ -257,6 +259,7 @@ internal object PlayerFeature : FeatureInterface {
         var silkTouchConfig: SilkTouchEnchantment.Config = SilkTouchEnchantment.Config(),
         var i18n: I18n = I18n(),
     ) {
+        @Serializable
         data class I18n(
             var playerHeadName: String = "<player>’s Skull",
             var playerHeadLore: List<String> = listOf("<player> killed by <killer>"),

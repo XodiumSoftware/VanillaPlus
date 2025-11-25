@@ -2,6 +2,7 @@
 
 package org.xodium.vanillaplus.features
 
+import kotlinx.serialization.Serializable
 import net.kyori.adventure.sound.Sound
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -225,6 +226,7 @@ internal object OpenableFeature : FeatureInterface {
             ?.getRelativeBlock(block)
     }
 
+    @Serializable
     data class Config(
         var initDelayInTicks: Long = 1,
         var allowDoubleDoors: Boolean = true,
