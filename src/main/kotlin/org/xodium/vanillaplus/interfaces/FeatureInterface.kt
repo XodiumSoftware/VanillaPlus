@@ -8,7 +8,9 @@ import org.xodium.vanillaplus.data.CommandData
 import kotlin.time.measureTime
 
 /** Represents a contract for a feature within the system. */
-internal interface FeatureInterface : Listener {
+internal interface FeatureInterface :
+    DataInterface,
+    Listener {
     /** Registers this feature as an event listener with the server. */
     @Suppress("UnstableApiUsage")
     fun register() {
