@@ -31,7 +31,7 @@ internal class VanillaPlus : JavaPlugin() {
 
         if (!server.version.contains(pluginMeta.version)) disablePlugin(unsupportedVersionMsg)
 
-        ConfigManager.load()
+        configData = ConfigManager.load()
 
         RottenFleshRecipe.register()
         WoodLogRecipe.register()
