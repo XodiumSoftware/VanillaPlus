@@ -17,7 +17,7 @@ import kotlin.random.Random
 
 /** Represents a feature handling entity mechanics within the system. */
 internal object EntityFeature : FeatureInterface {
-    private val config: Config = Config()
+    val config: Config = Config()
 
     @EventHandler
     fun on(event: EntityChangeBlockEvent) {

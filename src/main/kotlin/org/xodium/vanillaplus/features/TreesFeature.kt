@@ -31,7 +31,7 @@ import java.util.stream.Collectors
 
 /** Represents a feature handling tree mechanics within the system. */
 internal object TreesFeature : FeatureInterface {
-    private val config: Config = Config()
+    val config: Config = Config()
 
     private val schematicCache: Map<Material, List<Clipboard>> by lazy {
         MaterialRegistry.SAPLING_LINKS.mapValues { loadSchematics("/schematics/${it.value}") }

@@ -17,6 +17,7 @@ internal interface FeatureInterface :
         instance.logger.info(
             "Registering: ${this::class.simpleName} | Took ${
                 measureTime {
+                    load()
                     instance.server.pluginManager.registerEvents(this, instance)
                     instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
                         cmds().forEach { cmd ->
@@ -31,6 +32,11 @@ internal interface FeatureInterface :
                 }.inWholeMilliseconds
             }ms",
         )
+    }
+
+    /** Reloads configuration from a file. */
+    fun reloadConfig() {
+        load()
     }
 
     /**

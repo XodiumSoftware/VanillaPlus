@@ -15,7 +15,7 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 
 /** Represents a feature handling pet mechanics within the system. */
 internal object PetFeature : FeatureInterface {
-    private val config: Config = Config()
+    val config: Config = Config()
 
     @EventHandler
     fun on(event: PlayerInteractEntityEvent) {

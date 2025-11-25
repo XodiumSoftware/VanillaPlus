@@ -20,7 +20,7 @@ import kotlin.math.sqrt
 
 /** Represents a feature handling dimension mechanics within the system. */
 internal object DimensionsFeature : FeatureInterface {
-    private val config: Config = Config()
+    val config: Config = Config()
 
     private const val NETHER_TO_OVERWORLD_RATIO = 8
 

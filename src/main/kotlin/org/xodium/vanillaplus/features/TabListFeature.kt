@@ -21,7 +21,7 @@ import kotlin.math.roundToInt
 
 /** Represents a feature handling tab-list mechanics within the system. */
 internal object TabListFeature : FeatureInterface {
-    private val config: Config = Config()
+    val config: Config = Config()
 
     private const val MIN_TPS = 0.0
     private const val MAX_TPS = 20.0

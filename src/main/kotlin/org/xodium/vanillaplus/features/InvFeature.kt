@@ -31,7 +31,7 @@ import org.bukkit.Sound as BukkitSound
 
 /** Represents a feature handling inv mechanics within the system. */
 internal object InvFeature : FeatureInterface {
-    private val config: Config = Config()
+    val config: Config = Config()
 
     override fun cmds(): List<CommandData> =
         listOf(

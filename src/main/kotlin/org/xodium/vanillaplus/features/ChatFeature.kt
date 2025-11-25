@@ -31,7 +31,7 @@ import java.util.concurrent.CompletableFuture
 
 /** Represents a feature handling chat mechanics within the system. */
 internal object ChatFeature : FeatureInterface {
-    private val config: Config = Config()
+    val config: Config = Config()
 
     override fun cmds(): List<CommandData> {
         return listOf(

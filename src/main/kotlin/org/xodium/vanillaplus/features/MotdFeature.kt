@@ -9,7 +9,7 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 
 /** Represents a feature handling MOTD mechanics within the system. */
 internal object MotdFeature : FeatureInterface {
-    private val config: Config = Config()
+    val config: Config = Config()
 
     @EventHandler(priority = EventPriority.HIGH)
     fun on(event: ServerListPingEvent) = event.motd(config.motd.joinToString("\n").mm())

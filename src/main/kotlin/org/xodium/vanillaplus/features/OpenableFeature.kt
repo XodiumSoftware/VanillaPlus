@@ -28,7 +28,8 @@ import org.bukkit.Sound as BukkitSound
 
 /** Represents a feature handling openable blocks mechanics within the system. */
 internal object OpenableFeature : FeatureInterface {
-    private val config: Config = Config()
+    val config: Config = Config()
+
     private val disallowedKnockGameModes = EnumSet.of(GameMode.CREATIVE, GameMode.SPECTATOR)
     private val possibleNeighbours: Set<AdjacentBlockData> =
         setOf(

@@ -37,7 +37,7 @@ import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 
 /** Represents a feature handling player mechanics within the system. */
 internal object PlayerFeature : FeatureInterface {
-    private val config: Config = Config()
+    val config: Config = Config()
 
     private val tabListModule by lazy { TabListFeature }
 

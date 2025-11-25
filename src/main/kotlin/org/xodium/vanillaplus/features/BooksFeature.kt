@@ -12,7 +12,7 @@ import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 
 /** Represents a feature handling book mechanics within the system. */
 internal object BooksFeature : FeatureInterface {
-    private val config: Config = Config()
+    val config: Config = Config()
 
     private val permPrefix: String = "${instance.javaClass.simpleName}.book".lowercase()
 
