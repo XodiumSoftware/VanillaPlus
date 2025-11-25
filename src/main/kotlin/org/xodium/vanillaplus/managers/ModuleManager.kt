@@ -24,7 +24,6 @@ internal object ModuleManager {
     val entityModule: EntityModule = EntityModule()
     val invModule: InvModule = InvModule()
     val locatorModule: LocatorModule = LocatorModule()
-    val motdModule: MotdModule = MotdModule()
     val openableModule: OpenableModule = OpenableModule()
     val petModule: PetModule = PetModule()
     val playerModule: PlayerModule = PlayerModule()
@@ -43,7 +42,6 @@ internal object ModuleManager {
             entityModule,
             invModule,
             locatorModule,
-            motdModule,
             openableModule,
             petModule,
             playerModule,

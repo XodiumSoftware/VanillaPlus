@@ -2,6 +2,7 @@ package org.xodium.vanillaplus
 
 import org.bukkit.plugin.java.JavaPlugin
 import org.xodium.vanillaplus.features.CauldronFeature
+import org.xodium.vanillaplus.features.MotdFeature
 import org.xodium.vanillaplus.managers.ModuleManager
 
 /** Main class of the plugin. */
@@ -24,6 +25,7 @@ internal class VanillaPlus : JavaPlugin() {
 
         ModuleManager.run {}
         CauldronFeature.register()
+        MotdFeature.register()
     }
 
     /**
