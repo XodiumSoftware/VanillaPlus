@@ -1,12 +1,13 @@
 package org.xodium.vanillaplus.interfaces
 
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.serializer
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import java.io.File
+import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.memberProperties
 
 /** Represents a contract for data within the system. */
@@ -48,7 +49,7 @@ internal interface DataInterface {
                         val deserializer = json.serializersModule.serializer(configType)
                         val loadedConfig = json.decodeFromJsonElement(deserializer, configElement)
 
-                        (configProperty as? kotlin.reflect.KMutableProperty<*>)?.setter?.call(feature, loadedConfig)
+                        (configProperty as? KMutableProperty<*>)?.setter?.call(feature, loadedConfig)
                     }
                 }
 
@@ -63,18 +64,25 @@ internal interface DataInterface {
     /** Saves configuration to JSON file. */
     fun save() {
         try {
-            val configMap = mutableMapOf<String, Any?>()
+            val jsonMap = mutableMapOf<String, JsonElement>()
 
             features.forEach { feature ->
                 val featureName = feature::class.simpleName ?: return@forEach
                 val configProperty = feature::class.memberProperties.find { it.name == "config" }
 
-                configProperty?.getter?.call(feature)?.let { config -> configMap[featureName] = config }
+                configProperty?.getter?.call(feature)?.let { config ->
+                    val configType = configProperty.returnType
+                    val serializer = json.serializersModule.serializer(configType)
+                    val jsonElement = json.encodeToJsonElement(serializer, config)
+
+                    jsonMap[featureName] = jsonElement
+                }
             }
-            val jsonElement = json.encodeToJsonElement(configMap)
+
+            val jsonObject = JsonObject(jsonMap)
 
             File(instance.dataFolder, CONFIG_FILE).writeText(
-                json.encodeToString(JsonObject.serializer(), jsonElement.jsonObject),
+                json.encodeToString(JsonObject.serializer(), jsonObject),
             )
             instance.logger.info("Saved configs")
         } catch (e: Exception) {
