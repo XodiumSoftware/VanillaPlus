@@ -17,6 +17,7 @@ internal interface FeatureInterface :
         instance.logger.info(
             "Registering: ${this::class.simpleName} | Took ${
                 measureTime {
+                    DataInterface.registerFeature(this)
                     load()
                     instance.server.pluginManager.registerEvents(this, instance)
                     instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->

@@ -1,16 +1,23 @@
 package org.xodium.vanillaplus.interfaces
 
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.encodeToJsonElement
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.serializer
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.data.CentralConfigData
-import org.xodium.vanillaplus.features.BooksFeature
-import org.xodium.vanillaplus.features.CauldronFeature
 import java.io.File
+import kotlin.reflect.full.memberProperties
 
 /** Represents a contract for data within the system. */
 internal interface DataInterface {
     companion object {
         private const val CONFIG_FILE = "config.json"
+        private val features = mutableListOf<FeatureInterface>()
+
+        fun registerFeature(feature: FeatureInterface) {
+            features.add(feature)
+        }
     }
 
     val json: Json
@@ -20,20 +27,31 @@ internal interface DataInterface {
                 ignoreUnknownKeys = true
             }
 
-    val configData: CentralConfigData
-        get() = CentralConfigData(booksFeature = BooksFeature.config, cauldronFeature = CauldronFeature.config)
-
     /** Loads configuration from JSON file. */
     fun load() {
         val config = File(instance.dataFolder, CONFIG_FILE)
+
         if (!config.exists()) {
             instance.dataFolder.mkdirs()
             save()
             instance.logger.info("Created new config file.")
         } else {
             try {
-                val loadedConfig = json.decodeFromString(CentralConfigData.serializer(), config.readText())
-                updateConfigData(loadedConfig)
+                val jsonObject = json.parseToJsonElement(config.readText()).jsonObject
+
+                features.forEach { feature ->
+                    val featureName = feature::class.simpleName ?: return@forEach
+
+                    jsonObject[featureName]?.let { configElement ->
+                        val configProperty = feature::class.memberProperties.find { it.name == "config" }
+                        val configType = configProperty?.returnType ?: return@forEach
+                        val deserializer = json.serializersModule.serializer(configType)
+                        val loadedConfig = json.decodeFromJsonElement(deserializer, configElement)
+
+                        (configProperty as? kotlin.reflect.KMutableProperty<*>)?.setter?.call(feature, loadedConfig)
+                    }
+                }
+
                 instance.logger.info("Loaded configs from file.")
             } catch (e: Exception) {
                 instance.logger.warning("Failed to load configs: ${e.message}, using defaults")
@@ -45,18 +63,22 @@ internal interface DataInterface {
     /** Saves configuration to JSON file. */
     fun save() {
         try {
+            val configMap = mutableMapOf<String, Any?>()
+
+            features.forEach { feature ->
+                val featureName = feature::class.simpleName ?: return@forEach
+                val configProperty = feature::class.memberProperties.find { it.name == "config" }
+
+                configProperty?.getter?.call(feature)?.let { config -> configMap[featureName] = config }
+            }
+            val jsonElement = json.encodeToJsonElement(configMap)
+
             File(instance.dataFolder, CONFIG_FILE).writeText(
-                json.encodeToString(CentralConfigData.serializer(), configData),
+                json.encodeToString(JsonObject.serializer(), jsonElement.jsonObject),
             )
             instance.logger.info("Saved configs")
         } catch (e: Exception) {
             instance.logger.warning("Failed to save configs: ${e.message}")
         }
-    }
-
-    /** Updates the actual feature configurations with loaded data */
-    private fun updateConfigData(loadedConfig: CentralConfigData) {
-        BooksFeature.config = loadedConfig.booksFeature
-        CauldronFeature.config = loadedConfig.cauldronFeature
     }
 }
