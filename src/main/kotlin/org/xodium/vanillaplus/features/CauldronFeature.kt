@@ -5,6 +5,7 @@ import org.bukkit.Tag
 import org.bukkit.block.Block
 import org.bukkit.block.data.Levelled
 import org.bukkit.entity.Player
+import org.bukkit.event.EventHandler
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
@@ -13,6 +14,11 @@ import org.xodium.vanillaplus.interfaces.FeatureInterface
 /** Represents a feature handling cauldron mechanics within the system. */
 internal object CauldronFeature : FeatureInterface {
     private val config: Config = Config()
+
+    @EventHandler
+    fun on(event: PlayerInteractEvent) {
+        cauldron(event)
+    }
 
     /**
      * Handles all cauldron interaction mechanics for right-click conversions.

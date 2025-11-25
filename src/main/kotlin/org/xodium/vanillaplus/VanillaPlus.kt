@@ -1,6 +1,7 @@
 package org.xodium.vanillaplus
 
 import org.bukkit.plugin.java.JavaPlugin
+import org.xodium.vanillaplus.features.CauldronFeature
 import org.xodium.vanillaplus.managers.ModuleManager
 
 /** Main class of the plugin. */
@@ -22,6 +23,7 @@ internal class VanillaPlus : JavaPlugin() {
         if (!server.version.contains(pluginMeta.version)) disablePlugin(unsupportedVersionMsg)
 
         ModuleManager.run {}
+        CauldronFeature.register()
     }
 
     /**
