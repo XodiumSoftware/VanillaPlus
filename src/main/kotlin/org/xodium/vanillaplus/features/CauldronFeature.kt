@@ -14,7 +14,7 @@ import org.xodium.vanillaplus.interfaces.FeatureInterface
 
 /** Represents a feature handling cauldron mechanics within the system. */
 internal object CauldronFeature : FeatureInterface {
-    val config: Config = Config()
+    var config: Config = Config()
 
     @EventHandler
     fun on(event: PlayerInteractEvent) = cauldron(event)

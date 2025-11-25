@@ -34,11 +34,6 @@ internal interface FeatureInterface :
         )
     }
 
-    /** Reloads configuration from a file. */
-    fun reloadConfig() {
-        load()
-    }
-
     /**
      * Retrieves a list of command data associated with the module.
      * @return A list of [CommandData] objects representing the commands for the module.
