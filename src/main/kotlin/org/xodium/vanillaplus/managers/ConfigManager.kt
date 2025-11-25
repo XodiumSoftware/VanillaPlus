@@ -17,48 +17,20 @@ internal object ConfigManager {
     /**
      * Loads or creates the configuration file.
      * @param fileName The name of the configuration file.
-     * @return The loaded or default configuration data.
      */
-    fun load(fileName: String = "config.json"): ConfigData {
+    fun load(fileName: String = "config.json") {
         if (!instance.dataFolder.exists()) instance.dataFolder.mkdirs()
 
         val file = File(instance.dataFolder, fileName)
+        val exists = file.exists()
 
-        return if (file.exists()) {
-            try {
-                val text = file.readText()
-                val cfg = json.decodeFromString(ConfigData.serializer(), text)
+        file.writeText(
+            json.encodeToString(
+                ConfigData.serializer(),
+                if (exists) json.decodeFromString(ConfigData.serializer(), file.readText()) else ConfigData(),
+            ),
+        )
 
-                try {
-                    file.writeText(json.encodeToString(ConfigData.serializer(), cfg))
-                } catch (writeEx: Exception) {
-                    instance.logger.warning("Failed to re-write $fileName: ${writeEx.message}")
-                }
-
-                instance.logger.info("Loaded configuration from $fileName")
-                cfg
-            } catch (ex: Exception) {
-                instance.logger.warning("Failed to load $fileName, using defaults and writing new file: ${ex.message}")
-
-                val cfg = ConfigData()
-
-                try {
-                    file.writeText(json.encodeToString(ConfigData.serializer(), cfg))
-                } catch (writeEx: Exception) {
-                    instance.logger.severe("Failed to write default $fileName: ${writeEx.message}")
-                }
-                cfg
-            }
-        } else {
-            val cfg = ConfigData()
-
-            try {
-                file.writeText(json.encodeToString(ConfigData.serializer(), cfg))
-                instance.logger.info("Created default $fileName")
-            } catch (ex: Exception) {
-                instance.logger.severe("Failed to create $fileName: ${ex.message}")
-            }
-            cfg
-        }
+        instance.logger.info(if (exists) "Loaded configuration from $fileName" else "Created default $fileName")
     }
 }
