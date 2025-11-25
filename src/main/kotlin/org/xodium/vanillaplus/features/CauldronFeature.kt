@@ -16,9 +16,7 @@ internal object CauldronFeature : FeatureInterface {
     private val config: Config = Config()
 
     @EventHandler
-    fun on(event: PlayerInteractEvent) {
-        cauldron(event)
-    }
+    fun on(event: PlayerInteractEvent) = cauldron(event)
 
     /**
      * Handles all cauldron interaction mechanics for right-click conversions.
@@ -32,6 +30,9 @@ internal object CauldronFeature : FeatureInterface {
         if (block.type != Material.WATER_CAULDRON) return
 
         val player = event.player
+
+        if (!player.isSneaking) return
+
         val item = event.item ?: return
 
         if (!isConvertible(item.type)) return
@@ -41,9 +42,8 @@ internal object CauldronFeature : FeatureInterface {
         if (cauldronData.level <= 0) return
 
         val converted = getConvertedMaterial(item.type) ?: return
-        val convertAmount = if (player.isSneaking) item.amount else 1
 
-        convertHeldItem(player, item, converted, block, cauldronData, convertAmount)
+        convertHeldItem(player, item, converted, block, cauldronData)
     }
 
     /**
@@ -83,7 +83,6 @@ internal object CauldronFeature : FeatureInterface {
      * @param newMat the result material.
      * @param cauldronBlock the cauldron block.
      * @param cauldronData the levelled cauldron data.
-     * @param amount the amount to convert.
      */
     private fun convertHeldItem(
         player: Player,
@@ -91,13 +90,9 @@ internal object CauldronFeature : FeatureInterface {
         newMat: Material,
         cauldronBlock: Block,
         cauldronData: Levelled,
-        amount: Int,
     ) {
-        val remaining = item.amount - amount
-
-        if (remaining <= 0) player.inventory.setItemInMainHand(null) else item.amount = remaining
-
-        player.inventory.addItem(ItemStack.of(newMat, amount))
+        item.amount -= 1
+        player.inventory.addItem(ItemStack.of(newMat))
 
         val newLevel = cauldronData.level - 1
 
