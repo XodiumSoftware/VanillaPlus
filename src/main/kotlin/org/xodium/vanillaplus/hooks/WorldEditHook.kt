@@ -1,6 +1,7 @@
 package org.xodium.vanillaplus.hooks
 
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.features.TreesFeature
 
 /** A utility object for checking plugin availability and handling related dependencies. */
 object WorldEditHook {
@@ -12,10 +13,7 @@ object WorldEditHook {
         val plugin = instance.server.pluginManager.getPlugin("WorldEdit") != null
 
         if (!plugin) {
-            val callerClassName = Thread.currentThread().stackTrace[2].className
-            val simpleName = callerClassName.substringAfterLast('.')
-
-            instance.logger.warning("FAWE or WorldEdit not found, disabling $simpleName")
+            instance.logger.warning("FAWE or WorldEdit not found, disabling ${TreesFeature.javaClass.simpleName}")
         }
 
         return plugin
