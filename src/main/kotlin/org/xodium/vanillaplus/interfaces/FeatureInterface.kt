@@ -21,7 +21,7 @@ internal interface FeatureInterface : Listener {
                             event.registrar().register(
                                 cmd.builder.build(),
                                 cmd.description,
-                                cmd.aliases.toMutableList(),
+                                cmd.aliases,
                             )
                         }
                     }
