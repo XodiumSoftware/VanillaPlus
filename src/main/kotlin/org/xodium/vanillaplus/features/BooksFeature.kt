@@ -1,19 +1,19 @@
-package org.xodium.vanillaplus.modules
+package org.xodium.vanillaplus.features
 
 import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.entity.Player
 import org.bukkit.permissions.Permission
-import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.VanillaPlus
 import org.xodium.vanillaplus.data.BookData
 import org.xodium.vanillaplus.data.CommandData
-import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.interfaces.FeatureInterface
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 
-/** Represents a module handling book mechanics within the system. */
-internal class BooksModule : ModuleInterface<BooksModule.Config> {
-    override val config: Config = Config()
+/** Represents a feature handling book mechanics within the system. */
+internal object BooksFeature : FeatureInterface {
+    private val config: Config = Config()
 
-    private val permPrefix: String = "${instance.javaClass.simpleName}.book".lowercase()
+    private val permPrefix: String = "${VanillaPlus.instance.javaClass.simpleName}.book".lowercase()
 
     override fun cmds(): List<CommandData> =
         config.books.map { book ->
@@ -23,7 +23,11 @@ internal class BooksModule : ModuleInterface<BooksModule.Config> {
                     .requires { it.sender.hasPermission("$permPrefix.${book.cmd.lowercase()}") }
                     .executes { ctx ->
                         ctx.tryCatch {
-                            if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+                            if (it.sender !is Player) {
+                                VanillaPlus.instance.logger.warning(
+                                    "Command can only be executed by a Player!",
+                                )
+                            }
                             it.sender.openBook(book.toBook())
                         }
                     },
@@ -80,5 +84,5 @@ internal class BooksModule : ModuleInterface<BooksModule.Config> {
                         ),
                 ),
             ),
-    ) : ModuleInterface.Config
+    )
 }

@@ -18,7 +18,6 @@ import kotlin.time.measureTime
 /** Represents the module manager within the system. */
 @Suppress("MemberVisibilityCanBePrivate")
 internal object ModuleManager {
-    val booksModule: BooksModule = BooksModule()
     val chatModule: ChatModule = ChatModule()
     val dimensionsModule: DimensionsModule = DimensionsModule()
     val entityModule: EntityModule = EntityModule()
@@ -36,7 +35,6 @@ internal object ModuleManager {
 
     private val modules =
         listOf(
-            booksModule,
             chatModule,
             dimensionsModule,
             entityModule,
