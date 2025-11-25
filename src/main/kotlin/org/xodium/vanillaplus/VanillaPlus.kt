@@ -2,7 +2,6 @@
 
 package org.xodium.vanillaplus
 
-import kotlinx.coroutines.runBlocking
 import org.bukkit.plugin.java.JavaPlugin
 import org.xodium.vanillaplus.data.ConfigData
 import org.xodium.vanillaplus.features.*
@@ -32,10 +31,7 @@ internal class VanillaPlus : JavaPlugin() {
 
         if (!server.version.contains(pluginMeta.version)) disablePlugin(unsupportedVersionMsg)
 
-        server.scheduler.runTaskAsynchronously(
-            this,
-            Runnable { configData = runBlocking { ConfigManager.loadAsync() } },
-        )
+        configData = ConfigManager.load()
 
         RottenFleshRecipe.register()
         WoodLogRecipe.register()
