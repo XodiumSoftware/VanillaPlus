@@ -4,6 +4,7 @@ import kotlinx.serialization.json.Json
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.ConfigData
 import java.io.File
+import kotlin.time.measureTime
 
 /** Manages loading and saving the configuration file. */
 internal object ConfigManager {
@@ -20,15 +21,26 @@ internal object ConfigManager {
      * @return The loaded configuration data.
      */
     fun load(fileName: String = "config.json"): ConfigData {
+        val file = File(instance.dataFolder, fileName)
+
         if (!instance.dataFolder.exists()) instance.dataFolder.mkdirs()
 
-        val file = File(instance.dataFolder, fileName)
-        val exists = file.exists()
-        val config = if (exists) json.decodeFromString(ConfigData.serializer(), file.readText()) else ConfigData()
+        var config: ConfigData
 
-        file.writeText(json.encodeToString(ConfigData.serializer(), config))
+        val time =
+            measureTime {
+                config =
+                    if (file.exists()) {
+                        json.decodeFromString(ConfigData.serializer(), file.readText())
+                    } else {
+                        ConfigData()
+                    }
+                file.writeText(json.encodeToString(ConfigData.serializer(), config))
+            }
 
-        instance.logger.info(if (exists) "Loaded configuration from $fileName" else "Created default $fileName")
+        instance.logger.info(
+            "${if (file.exists()) "Loaded configuration from $fileName" else "Created default $fileName"} | Took ${time.inWholeMilliseconds}ms",
+        )
 
         return config
     }
