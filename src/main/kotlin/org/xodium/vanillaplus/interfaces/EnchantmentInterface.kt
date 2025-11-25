@@ -6,6 +6,7 @@ import io.papermc.paper.registry.TypedKey
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
 import net.kyori.adventure.key.Key
 import org.bukkit.enchantments.Enchantment
+import org.xodium.vanillaplus.VanillaPlus.Companion.configData
 import org.xodium.vanillaplus.VanillaPlusBootstrap.Companion.INSTANCE
 import org.xodium.vanillaplus.data.ConfigData
 
@@ -37,7 +38,7 @@ internal interface EnchantmentInterface {
      * @return A [ConfigData] object representing the configuration for the module.
      */
     val config: ConfigData
-        get() = ConfigData()
+        get() = configData
 
     /**
      * Configures the properties of the enchantment using the provided builder.

@@ -3,6 +3,7 @@ package org.xodium.vanillaplus.interfaces
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import org.bukkit.event.Listener
 import org.bukkit.permissions.Permission
+import org.xodium.vanillaplus.VanillaPlus.Companion.configData
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.ConfigData
@@ -37,7 +38,7 @@ internal interface FeatureInterface : Listener {
      * @return A [ConfigData] object representing the configuration for the module.
      */
     val config: ConfigData
-        get() = ConfigData()
+        get() = configData
 
     /**
      * Retrieves a list of command data associated with the module.
