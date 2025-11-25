@@ -1,4 +1,4 @@
-package org.xodium.vanillaplus.modules
+package org.xodium.vanillaplus.features
 
 import org.bukkit.Material
 import org.bukkit.Tag
@@ -8,11 +8,11 @@ import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
-import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.interfaces.FeatureInterface
 
-/** Represents a module handling cauldron mechanics within the system. */
-internal class CauldronModule : ModuleInterface<CauldronModule.Config> {
-    override val config: Config = Config()
+/** Represents a feature handling cauldron mechanics within the system. */
+internal object CauldronFeature : FeatureInterface {
+    private val config: Config = Config()
 
     /**
      * Handles all cauldron interaction mechanics for right-click conversions.
@@ -108,5 +108,5 @@ internal class CauldronModule : ModuleInterface<CauldronModule.Config> {
         var convertDirt: Boolean = true,
         var convertCoarseDirt: Boolean = true,
         var convertRootedDirt: Boolean = true,
-    ) : ModuleInterface.Config
+    )
 }
