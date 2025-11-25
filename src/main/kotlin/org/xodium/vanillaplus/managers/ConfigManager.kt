@@ -1,5 +1,7 @@
 package org.xodium.vanillaplus.managers
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.ConfigData
@@ -16,32 +18,33 @@ internal object ConfigManager {
         }
 
     /**
-     * Loads or creates the configuration file.
+     * Loads or creates the configuration file asynchronously.
      * @param fileName The name of the configuration file.
      * @return The loaded configuration data.
      */
-    fun load(fileName: String = "config.json"): ConfigData {
-        val file = File(instance.dataFolder, fileName)
+    suspend fun loadAsync(fileName: String = "config.json"): ConfigData =
+        withContext(Dispatchers.IO) {
+            val file = File(instance.dataFolder, fileName)
 
-        if (!instance.dataFolder.exists()) instance.dataFolder.mkdirs()
+            if (!instance.dataFolder.exists()) instance.dataFolder.mkdirs()
 
-        var config: ConfigData
+            var config: ConfigData
 
-        val time =
-            measureTime {
-                config =
-                    if (file.exists()) {
-                        json.decodeFromString(ConfigData.serializer(), file.readText())
-                    } else {
-                        ConfigData()
-                    }
-                file.writeText(json.encodeToString(ConfigData.serializer(), config))
-            }
+            val time =
+                measureTime {
+                    config =
+                        if (file.exists()) {
+                            json.decodeFromString(ConfigData.serializer(), file.readText())
+                        } else {
+                            ConfigData()
+                        }
+                    file.writeText(json.encodeToString(ConfigData.serializer(), config))
+                }
 
-        instance.logger.info(
-            "${if (file.exists()) "Loaded configuration from $fileName" else "Created default $fileName"} | Took ${time.inWholeMilliseconds}ms",
-        )
+            instance.logger.info(
+                "${if (file.exists()) "Loaded configuration from $fileName" else "Created default $fileName"} | Took ${time.inWholeMilliseconds}ms",
+            )
 
-        return config
-    }
+            config
+        }
 }
