@@ -36,15 +36,16 @@ internal object TreesFeature : FeatureInterface {
         MaterialRegistry.SAPLING_LINKS.mapValues { loadSchematics("/schematics/${it.value}") }
     }
 
-    private fun enabled(): Boolean = WorldEditHook.get()
-
     /**
      * Handle the StructureGrowEvent.
      * @param event The StructureGrowEvent.
      */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: StructureGrowEvent) {
-        if (!enabled()) return
+        if (!WorldEditHook.get()) {
+            instance.logger.warning("WorldEdit not found, TreesFeature will not function properly.")
+            return
+        }
         event.location.block
             .takeIf {
                 Tag.SAPLINGS.isTagged(it.type) ||
