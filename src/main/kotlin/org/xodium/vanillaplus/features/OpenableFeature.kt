@@ -1,6 +1,6 @@
 @file:Suppress("ktlint:standard:no-wildcard-imports")
 
-package org.xodium.vanillaplus.modules
+package org.xodium.vanillaplus.features
 
 import net.kyori.adventure.sound.Sound
 import org.bukkit.GameMode
@@ -21,14 +21,13 @@ import org.bukkit.inventory.EquipmentSlot
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.AdjacentBlockData
 import org.xodium.vanillaplus.data.SoundData
-import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.interfaces.FeatureInterface
 import java.util.*
 import org.bukkit.Sound as BukkitSound
 
-/** Represents a module handling openable blocks mechanics within the system. */
-internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
-    override val config: Config = Config()
-
+/** Represents a feature handling openable blocks mechanics within the system. */
+internal object OpenableFeature : FeatureInterface {
+    private val config: Config = Config()
     private val disallowedKnockGameModes = EnumSet.of(GameMode.CREATIVE, GameMode.SPECTATOR)
     private val possibleNeighbours: Set<AdjacentBlockData> =
         setOf(
@@ -44,8 +43,6 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerInteractEvent) {
-        if (!enabled()) return
-
         val clickedBlock = event.clickedBlock ?: return
 
         if (!isValidInteraction(event)) return
@@ -240,5 +237,5 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
                 Sound.Source.HOSTILE,
             ),
         var soundProximityRadius: Double = 10.0,
-    ) : ModuleInterface.Config
+    )
 }

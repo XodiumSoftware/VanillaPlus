@@ -1,6 +1,6 @@
 @file:Suppress("ktlint:standard:no-wildcard-imports")
 
-package org.xodium.vanillaplus.modules
+package org.xodium.vanillaplus.features
 
 import io.papermc.paper.event.entity.EntityEquipmentChangedEvent
 import org.bukkit.Material
@@ -11,39 +11,32 @@ import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.entity.EntityExplodeEvent
 import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.enchantments.NimbusEnchantment
-import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.interfaces.FeatureInterface
 import kotlin.random.Random
 
-/** Represents a module handling entity mechanics within the system. */
-internal class EntityModule : ModuleInterface<EntityModule.Config> {
-    override val config: Config = Config()
+/** Represents a feature handling entity mechanics within the system. */
+internal object EntityFeature : FeatureInterface {
+    private val config: Config = Config()
 
     @EventHandler
     fun on(event: EntityChangeBlockEvent) {
-        if (!enabled()) return
         if (shouldCancelGrief(event.entity)) event.isCancelled = true
     }
 
     @EventHandler
     fun on(event: EntityExplodeEvent) {
-        if (!enabled()) return
         if (shouldCancelGrief(event.entity)) event.blockList().clear()
     }
 
     @EventHandler
     fun on(event: EntityDeathEvent) {
-        if (!enabled() || event.entity.killer == null) return
         if (Random.nextDouble() <= config.entityEggDropChance) {
             event.drops.add(ItemStack.of(Material.matchMaterial("${event.entity.type.name}_SPAWN_EGG") ?: return))
         }
     }
 
     @EventHandler
-    fun on(event: EntityEquipmentChangedEvent) {
-        if (!enabled()) return
-
-        NimbusEnchantment.nimbus(event)
-    }
+    fun on(event: EntityEquipmentChangedEvent) = NimbusEnchantment.nimbus(event)
 
     /**
      * Determines whether an entity's griefing behaviour should be cancelled based on configuration settings.
@@ -70,5 +63,5 @@ internal class EntityModule : ModuleInterface<EntityModule.Config> {
         var disableGhastGrief: Boolean = true,
         var disableWitherGrief: Boolean = true,
         var entityEggDropChance: Double = 0.1,
-    ) : ModuleInterface.Config
+    )
 }

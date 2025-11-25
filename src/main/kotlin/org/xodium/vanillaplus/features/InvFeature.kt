@@ -1,6 +1,6 @@
 @file:Suppress("ktlint:standard:no-wildcard-imports")
 
-package org.xodium.vanillaplus.modules
+package org.xodium.vanillaplus.features
 
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
@@ -18,7 +18,7 @@ import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.SoundData
-import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.interfaces.FeatureInterface
 import org.xodium.vanillaplus.utils.BlockUtils.center
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
@@ -28,9 +28,9 @@ import org.xodium.vanillaplus.utils.ScheduleUtils
 import java.util.concurrent.CompletableFuture
 import org.bukkit.Sound as BukkitSound
 
-/** Represents a module handling inv mechanics within the system. */
-internal class InvModule : ModuleInterface<InvModule.Config> {
-    override val config: Config = Config()
+/** Represents a feature handling inv mechanics within the system. */
+internal object InvFeature : FeatureInterface {
+    private val config: Config = Config()
 
     override fun cmds(): List<CommandData> =
         listOf(
@@ -196,7 +196,7 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                 Sound.Source.PLAYER,
             ),
         var i18n: I18n = I18n(),
-    ) : ModuleInterface.Config {
+    ) {
         data class I18n(
             var noMaterialSpecified: String =
                 "<gradient:#CB2D3E:#EF473A>You must specify a valid material " +

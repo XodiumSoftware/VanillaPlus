@@ -1,6 +1,6 @@
 @file:Suppress("ktlint:standard:no-wildcard-imports")
 
-package org.xodium.vanillaplus.modules
+package org.xodium.vanillaplus.features
 
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes
@@ -11,13 +11,13 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
-import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.interfaces.FeatureInterface
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
-/** Represents a module handling locator mechanics within the system. */
-internal class LocatorModule : ModuleInterface<ModuleInterface.Config> {
+/** Represents a feature handling locator mechanics within the system. */
+internal object LocatorFeature : FeatureInterface {
     private val colors = NamedTextColor.NAMES.keys().map { it.toString() } + listOf("<RRGGBB>", "reset")
 
     override fun cmds(): List<CommandData> =

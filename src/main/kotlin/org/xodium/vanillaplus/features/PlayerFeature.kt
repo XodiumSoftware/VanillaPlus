@@ -1,6 +1,6 @@
 @file:Suppress("ktlint:standard:no-wildcard-imports")
 
-package org.xodium.vanillaplus.modules
+package org.xodium.vanillaplus.features
 
 import com.mojang.brigadier.arguments.StringArgumentType
 import io.papermc.paper.command.brigadier.Commands
@@ -29,17 +29,16 @@ import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.enchantments.*
-import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.managers.ModuleManager
+import org.xodium.vanillaplus.interfaces.FeatureInterface
 import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 
-/** Represents a module handling player mechanics within the system. */
-internal class PlayerModule : ModuleInterface<PlayerModule.Config> {
-    override val config: Config = Config()
+/** Represents a feature handling player mechanics within the system. */
+internal object PlayerFeature : FeatureInterface {
+    private val config: Config = Config()
 
-    private val tabListModule by lazy { ModuleManager.tabListModule }
+    private val tabListModule by lazy { TabListFeature }
 
     override fun cmds(): List<CommandData> =
         listOf(
@@ -78,8 +77,6 @@ internal class PlayerModule : ModuleInterface<PlayerModule.Config> {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
-        if (!enabled()) return
-
         val player = event.player
 
         player.displayName(player.nickname?.mm())
@@ -101,15 +98,13 @@ internal class PlayerModule : ModuleInterface<PlayerModule.Config> {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerQuitEvent) {
-        if (!enabled() || config.i18n.playerQuitMsg.isEmpty()) return
+        if (config.i18n.playerQuitMsg.isEmpty()) return
 
         event.quitMessage(config.i18n.playerQuitMsg.mm(Placeholder.component("player", event.player.displayName())))
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerDeathEvent) {
-        if (!enabled()) return
-
         val killer = event.entity.killer ?: return
 
         if (Math.random() < config.skullDropChance) {
@@ -125,7 +120,7 @@ internal class PlayerModule : ModuleInterface<PlayerModule.Config> {
 
     @EventHandler
     fun on(event: PlayerAdvancementDoneEvent) {
-        if (!enabled() || config.i18n.playerAdvancementDoneMsg.isEmpty()) return
+        if (config.i18n.playerAdvancementDoneMsg.isEmpty()) return
 
         event.message(
             config.i18n.playerAdvancementDoneMsg.mm(
@@ -137,23 +132,17 @@ internal class PlayerModule : ModuleInterface<PlayerModule.Config> {
 
     @EventHandler
     fun on(event: InventoryClickEvent) {
-        if (!enabled()) return
-
         enderchest(event)
     }
 
     @EventHandler(ignoreCancelled = true)
     fun on(event: PlayerInteractEvent) {
-        if (!enabled()) return
-
         xpToBottle(event)
         FeatherFallingEnchantment.featherFalling(event)
     }
 
     @EventHandler
     fun on(event: BlockBreakEvent) {
-        if (!enabled()) return
-
         ReplantEnchantment.replant(event)
         SilkTouchEnchantment.silkTouch(event)
         VeinMineEnchantment.veinMine(event)
@@ -161,15 +150,11 @@ internal class PlayerModule : ModuleInterface<PlayerModule.Config> {
 
     @EventHandler
     fun on(event: BlockDropItemEvent) {
-        if (!enabled()) return
-
         PickupEnchantment.pickup(event)
     }
 
     @EventHandler
     fun on(event: EntityEquipmentChangedEvent) {
-        if (!enabled()) return
-
         NightVisionEnchantment.nightVision(event)
     }
 
@@ -230,7 +215,8 @@ internal class PlayerModule : ModuleInterface<PlayerModule.Config> {
     ) {
         player.nickname = name
         player.displayName(player.nickname?.mm())
-        if (tabListModule.enabled()) tabListModule.updatePlayerDisplayName(player)
+        // TODO: add enabled check.
+        tabListModule.updatePlayerDisplayName(player)
         player.sendActionBar(config.i18n.nicknameUpdated.mm(Placeholder.component("nickname", player.displayName())))
     }
 
@@ -270,7 +256,7 @@ internal class PlayerModule : ModuleInterface<PlayerModule.Config> {
         var xpCostToBottle: Int = 11,
         var silkTouchConfig: SilkTouchEnchantment.Config = SilkTouchEnchantment.Config(),
         var i18n: I18n = I18n(),
-    ) : ModuleInterface.Config {
+    ) {
         data class I18n(
             var playerHeadName: String = "<player>’s Skull",
             var playerHeadLore: List<String> = listOf("<player> killed by <killer>"),

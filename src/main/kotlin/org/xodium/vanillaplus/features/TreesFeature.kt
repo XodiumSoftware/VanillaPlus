@@ -1,4 +1,4 @@
-package org.xodium.vanillaplus.modules
+package org.xodium.vanillaplus.features
 
 import com.sk89q.worldedit.WorldEdit
 import com.sk89q.worldedit.bukkit.BukkitAdapter
@@ -17,7 +17,7 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.world.StructureGrowEvent
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.hooks.WorldEditHook
-import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.interfaces.FeatureInterface
 import org.xodium.vanillaplus.registries.MaterialRegistry
 import java.io.IOException
 import java.nio.channels.Channels
@@ -28,15 +28,15 @@ import java.nio.file.Path
 import java.nio.file.StandardOpenOption
 import java.util.stream.Collectors
 
-/** Represents a module handling tree mechanics within the system. */
-internal class TreesModule : ModuleInterface<TreesModule.Config> {
-    override val config: Config = Config()
+/** Represents a feature handling tree mechanics within the system. */
+internal object TreesFeature : FeatureInterface {
+    private val config: Config = Config()
 
     private val schematicCache: Map<Material, List<Clipboard>> by lazy {
         MaterialRegistry.SAPLING_LINKS.mapValues { loadSchematics("/schematics/${it.value}") }
     }
 
-    override fun enabled(): Boolean = config.enabled && WorldEditHook.get()
+    private fun enabled(): Boolean = WorldEditHook.get()
 
     /**
      * Handle the StructureGrowEvent.
@@ -220,5 +220,5 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
                 Material.TALL_GRASS,
                 Material.OXEYE_DAISY,
             ),
-    ) : ModuleInterface.Config
+    )
 }
