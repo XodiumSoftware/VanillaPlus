@@ -148,6 +148,7 @@ internal class PlayerModule : ModuleInterface<PlayerModule.Config> {
 
         xpToBottle(event)
         FeatherFallingEnchantment.featherFalling(event)
+        ModuleManager.cauldronModule.cauldron(event)
     }
 
     @EventHandler

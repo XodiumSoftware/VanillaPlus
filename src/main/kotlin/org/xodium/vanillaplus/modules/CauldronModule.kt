@@ -4,66 +4,60 @@ import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.block.Block
 import org.bukkit.block.data.Levelled
-import org.bukkit.entity.Item
+import org.bukkit.entity.Player
+import org.bukkit.event.block.Action
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
-import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 
 /** Represents a module handling cauldron mechanics within the system. */
 internal class CauldronModule : ModuleInterface<CauldronModule.Config> {
     override val config: Config = Config()
 
-    private val schedulerDelay = 0L
-    private val schedulerPeriod = 20L
-
-    init {
-        if (enabled()) {
-            instance.server.scheduler.runTaskTimer(
-                instance,
-                Runnable {
-                    for (world in instance.server.worlds) {
-                        for (entity in world.entities) {
-                            if (entity is Item && isConvertible(entity.itemStack.type)) checkItemInCauldron(entity)
-                        }
-                    }
-                },
-                schedulerDelay,
-                schedulerPeriod,
-            )
-        }
-    }
-
     /**
-     * Checks if an item entity is in a water cauldron and performs conversion if applicable.
-     * @param item the item entity to check for cauldron conversion.
+     * Handles all cauldron interaction mechanics for right-click conversions.
+     * @param event the interaction event from the player.
      */
-    private fun checkItemInCauldron(item: Item) {
-        val blockBelow = item.location.clone().block
+    fun cauldron(event: PlayerInteractEvent) {
+        if (event.action != Action.RIGHT_CLICK_BLOCK) return
 
-        if (blockBelow.type != Material.WATER_CAULDRON) return
+        val block = event.clickedBlock ?: return
 
-        val cauldronData = blockBelow.blockData as? Levelled ?: return
+        if (block.type != Material.WATER_CAULDRON) return
+
+        val player = event.player
+        val item = event.item ?: return
+
+        if (!isConvertible(item.type)) return
+
+        val cauldronData = block.blockData as? Levelled ?: return
 
         if (cauldronData.level <= 0) return
 
-        val convertedMaterial =
-            when {
-                config.convertDirt && item.itemStack.type == Material.DIRT -> Material.MUD
-                config.convertCoarseDirt && item.itemStack.type == Material.COARSE_DIRT -> Material.MUD
-                config.convertRootedDirt && item.itemStack.type == Material.ROOTED_DIRT -> Material.MUD
-                config.convertConcretePowder && Tag.CONCRETE_POWDER.isTagged(item.itemStack.type) -> {
-                    Material.entries.firstOrNull {
-                        it.name ==
-                            item.itemStack.type.name
-                                .removeSuffix("_POWDER")
-                    }
-                }
+        val converted = getConvertedMaterial(item.type) ?: return
+        val convertAmount = if (player.isSneaking) item.amount else 1
 
-                else -> null
+        convertHeldItem(player, item, converted, block, cauldronData, convertAmount)
+    }
+
+    /**
+     * Determines the conversion result for a given material.
+     * @param material the material to convert.
+     * @return the resulting material or null if not convertible.
+     */
+    private fun getConvertedMaterial(material: Material): Material? =
+        when {
+            config.convertDirt && material == Material.DIRT -> Material.MUD
+            config.convertCoarseDirt && material == Material.COARSE_DIRT -> Material.MUD
+            config.convertRootedDirt && material == Material.ROOTED_DIRT -> Material.MUD
+            config.convertConcretePowder && Tag.CONCRETE_POWDER.isTagged(material) -> {
+                Material.entries.firstOrNull {
+                    it.name == material.name.removeSuffix("_POWDER")
+                }
             }
 
-        convertedMaterial?.let { convertItem(item, it, blockBelow, cauldronData) }
-    }
+            else -> null
+        }
 
     /**
      * Determines if a material is convertible by this cauldron module.
@@ -77,24 +71,27 @@ internal class CauldronModule : ModuleInterface<CauldronModule.Config> {
             (config.convertConcretePowder && Tag.CONCRETE_POWDER.isTagged(material))
 
     /**
-     * Converts an item to a new material and updates the cauldron state.
-     * @param item the item entity to convert.
-     * @param newMaterial the target material to convert the item to.
-     * @param cauldronBlock the cauldron block where the conversion occurs.
-     * @param cauldronData the levelled block data of the cauldron.
+     * Converts the held item and drains cauldron water.
+     * @param player the player performing the action.
+     * @param item the held item stack.
+     * @param newMat the result material.
+     * @param cauldronBlock the cauldron block.
+     * @param cauldronData the levelled cauldron data.
+     * @param amount the amount to convert.
      */
-    private fun convertItem(
-        item: Item,
-        newMaterial: Material,
+    private fun convertHeldItem(
+        player: Player,
+        item: ItemStack,
+        newMat: Material,
         cauldronBlock: Block,
         cauldronData: Levelled,
+        amount: Int,
     ) {
-        item.remove()
+        val remaining = item.amount - amount
 
-        cauldronBlock.world.dropItemNaturally(
-            cauldronBlock.location.add(0.5, 1.0, 0.5),
-            ItemStack.of(newMaterial, item.itemStack.amount),
-        )
+        if (remaining <= 0) player.inventory.setItemInMainHand(null) else item.amount = remaining
+
+        player.inventory.addItem(ItemStack.of(newMat, amount))
 
         val newLevel = cauldronData.level - 1
 
