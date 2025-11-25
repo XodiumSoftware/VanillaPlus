@@ -9,7 +9,6 @@ import com.sk89q.worldedit.function.operation.Operations
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.math.transform.AffineTransform
 import com.sk89q.worldedit.session.ClipboardHolder
-import kotlinx.serialization.Serializable
 import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.block.Block
@@ -30,8 +29,7 @@ import java.util.stream.Collectors
 
 /** Represents a feature handling tree mechanics within the system. */
 internal object TreesFeature : FeatureInterface {
-    val config: Config = Config()
-
+    private val config: Config = Config()
     private val schematicCache: Map<Material, List<Clipboard>> by lazy {
         MaterialRegistry.SAPLING_LINKS.mapValues { loadSchematics("/schematics/${it.value}") }
     }
@@ -158,7 +156,6 @@ internal object TreesFeature : FeatureInterface {
         return angle.random()
     }
 
-    @Serializable
     data class Config(
         var copyBiomes: Boolean = false,
         var copyEntities: Boolean = false,

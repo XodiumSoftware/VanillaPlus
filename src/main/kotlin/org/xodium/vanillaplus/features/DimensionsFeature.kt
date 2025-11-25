@@ -1,6 +1,5 @@
 package org.xodium.vanillaplus.features
 
-import kotlinx.serialization.Serializable
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.World
@@ -20,7 +19,7 @@ import kotlin.math.sqrt
 
 /** Represents a feature handling dimension mechanics within the system. */
 internal object DimensionsFeature : FeatureInterface {
-    val config: Config = Config()
+    private val config: Config = Config()
 
     private const val NETHER_TO_OVERWORLD_RATIO = 8
 
@@ -122,12 +121,10 @@ internal object DimensionsFeature : FeatureInterface {
      */
     private fun getOverworld(): World = instance.server.getWorld("world") ?: error("Overworld (world) is not loaded.")
 
-    @Serializable
     data class Config(
         var portalSearchRadius: Int = 128,
         var i18n: I18n = I18n(),
     ) {
-        @Serializable
         data class I18n(
             var portalCreationDenied: String =
                 "<gradient:#CB2D3E:#EF473A>No corresponding active portal found in the Overworld!</gradient>",

@@ -1,6 +1,5 @@
 package org.xodium.vanillaplus.data
 
-import kotlinx.serialization.Serializable
 import net.kyori.adventure.inventory.Book
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -14,7 +13,6 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
  * @property author The [author] of the book. Defaults to the name of the main plugin instance class.
  * @property pages The content of the book, represented as a list of [pages], where each page is a list of lines.
  */
-@Serializable
 internal data class BookData(
     val cmd: String,
     val permission: PermissionDefault = PermissionDefault.TRUE,

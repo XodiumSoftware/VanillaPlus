@@ -3,7 +3,6 @@
 package org.xodium.vanillaplus.features
 
 import io.papermc.paper.event.entity.EntityEquipmentChangedEvent
-import kotlinx.serialization.Serializable
 import org.bukkit.Material
 import org.bukkit.entity.*
 import org.bukkit.event.EventHandler
@@ -17,7 +16,7 @@ import kotlin.random.Random
 
 /** Represents a feature handling entity mechanics within the system. */
 internal object EntityFeature : FeatureInterface {
-    val config: Config = Config()
+    private val config: Config = Config()
 
     @EventHandler
     fun on(event: EntityChangeBlockEvent) {
@@ -56,7 +55,6 @@ internal object EntityFeature : FeatureInterface {
             else -> false
         }
 
-    @Serializable
     data class Config(
         var disableBlazeGrief: Boolean = true,
         var disableCreeperGrief: Boolean = true,

@@ -2,7 +2,6 @@
 
 package org.xodium.vanillaplus.features
 
-import kotlinx.serialization.Serializable
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
@@ -24,8 +23,7 @@ import java.util.*
 
 /** Represents a feature handling sit mechanics within the system. */
 internal object SitFeature : FeatureInterface {
-    val config: Config = Config()
-
+    private val config: Config = Config()
     private val sittingPlayers = mutableMapOf<UUID, ArmorStand>()
     private val blockCenterOffset = Vector(0.5, 0.5, 0.5)
     private val playerStandUpOffset = Vector(0.0, 0.5, 0.0)
@@ -108,7 +106,6 @@ internal object SitFeature : FeatureInterface {
         sittingPlayers[player.uniqueId] = armorStand
     }
 
-    @Serializable
     data class Config(
         var useStairs: Boolean = true,
         var useSlabs: Boolean = true,

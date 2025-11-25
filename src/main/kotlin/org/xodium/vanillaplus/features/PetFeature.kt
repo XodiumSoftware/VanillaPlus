@@ -1,6 +1,5 @@
 package org.xodium.vanillaplus.features
 
-import kotlinx.serialization.Serializable
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Material
@@ -15,7 +14,7 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 
 /** Represents a feature handling pet mechanics within the system. */
 internal object PetFeature : FeatureInterface {
-    val config: Config = Config()
+    private val config: Config = Config()
 
     @EventHandler
     fun on(event: PlayerInteractEntityEvent) {
@@ -114,12 +113,10 @@ internal object PetFeature : FeatureInterface {
         )
     }
 
-    @Serializable
     data class Config(
         var transferRadius: Int = 10,
         var i18n: I18n = I18n(),
     ) {
-        @Serializable
         data class I18n(
             var sourceTransfer: String =
                 "<gradient:#CB2D3E:#EF473A>You have transferred</gradient> <pet> " +

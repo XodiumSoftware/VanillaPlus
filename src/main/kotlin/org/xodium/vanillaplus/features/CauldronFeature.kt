@@ -1,6 +1,5 @@
 package org.xodium.vanillaplus.features
 
-import kotlinx.serialization.Serializable
 import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.block.Block
@@ -14,7 +13,7 @@ import org.xodium.vanillaplus.interfaces.FeatureInterface
 
 /** Represents a feature handling cauldron mechanics within the system. */
 internal object CauldronFeature : FeatureInterface {
-    var config: Config = Config()
+    private val config: Config = Config()
 
     @EventHandler
     fun on(event: PlayerInteractEvent) = cauldron(event)
@@ -105,7 +104,6 @@ internal object CauldronFeature : FeatureInterface {
         }
     }
 
-    @Serializable
     data class Config(
         var convertConcretePowder: Boolean = true,
         var convertDirt: Boolean = true,

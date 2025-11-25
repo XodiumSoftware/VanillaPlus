@@ -2,7 +2,6 @@
 
 package org.xodium.vanillaplus.features
 
-import kotlinx.serialization.Serializable
 import net.kyori.adventure.sound.Sound
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -28,7 +27,7 @@ import org.bukkit.Sound as BukkitSound
 
 /** Represents a feature handling openable blocks mechanics within the system. */
 internal object OpenableFeature : FeatureInterface {
-    val config: Config = Config()
+    private val config: Config = Config()
 
     private val disallowedKnockGameModes = EnumSet.of(GameMode.CREATIVE, GameMode.SPECTATOR)
     private val possibleNeighbours: Set<AdjacentBlockData> =
@@ -227,7 +226,6 @@ internal object OpenableFeature : FeatureInterface {
             ?.getRelativeBlock(block)
     }
 
-    @Serializable
     data class Config(
         var initDelayInTicks: Long = 1,
         var allowDoubleDoors: Boolean = true,
