@@ -13,8 +13,6 @@ import org.xodium.vanillaplus.interfaces.FeatureInterface
 
 /** Represents a feature handling cauldron mechanics within the system. */
 internal object CauldronFeature : FeatureInterface {
-    private val config: Config = Config()
-
     @EventHandler
     fun on(event: PlayerInteractEvent) = cauldron(event)
 
@@ -53,10 +51,10 @@ internal object CauldronFeature : FeatureInterface {
      */
     private fun getConvertedMaterial(material: Material): Material? =
         when {
-            config.convertDirt && material == Material.DIRT -> Material.MUD
-            config.convertCoarseDirt && material == Material.COARSE_DIRT -> Material.MUD
-            config.convertRootedDirt && material == Material.ROOTED_DIRT -> Material.MUD
-            config.convertConcretePowder && Tag.CONCRETE_POWDER.isTagged(material) -> {
+            config.cauldronFeature.convertDirt && material == Material.DIRT -> Material.MUD
+            config.cauldronFeature.convertCoarseDirt && material == Material.COARSE_DIRT -> Material.MUD
+            config.cauldronFeature.convertRootedDirt && material == Material.ROOTED_DIRT -> Material.MUD
+            config.cauldronFeature.convertConcretePowder && Tag.CONCRETE_POWDER.isTagged(material) -> {
                 Material.entries.firstOrNull {
                     it.name == material.name.removeSuffix("_POWDER")
                 }
@@ -71,10 +69,10 @@ internal object CauldronFeature : FeatureInterface {
      * @return true if the material can be converted, false otherwise.
      */
     private fun isConvertible(material: Material): Boolean =
-        (config.convertDirt && material == Material.DIRT) ||
-            (config.convertCoarseDirt && material == Material.COARSE_DIRT) ||
-            (config.convertRootedDirt && material == Material.ROOTED_DIRT) ||
-            (config.convertConcretePowder && Tag.CONCRETE_POWDER.isTagged(material))
+        (config.cauldronFeature.convertDirt && material == Material.DIRT) ||
+            (config.cauldronFeature.convertCoarseDirt && material == Material.COARSE_DIRT) ||
+            (config.cauldronFeature.convertRootedDirt && material == Material.ROOTED_DIRT) ||
+            (config.cauldronFeature.convertConcretePowder && Tag.CONCRETE_POWDER.isTagged(material))
 
     /**
      * Converts the held item and drains cauldron water.
@@ -103,11 +101,4 @@ internal object CauldronFeature : FeatureInterface {
             cauldronBlock.blockData = cauldronData
         }
     }
-
-    data class Config(
-        var convertConcretePowder: Boolean = true,
-        var convertDirt: Boolean = true,
-        var convertCoarseDirt: Boolean = true,
-        var convertRootedDirt: Boolean = true,
-    )
 }

@@ -5,6 +5,7 @@ import org.bukkit.event.Listener
 import org.bukkit.permissions.Permission
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
+import org.xodium.vanillaplus.data.ConfigData
 import kotlin.time.measureTime
 
 /** Represents a contract for a feature within the system. */
@@ -30,6 +31,13 @@ internal interface FeatureInterface : Listener {
             }ms",
         )
     }
+
+    /**
+     * Retrieves the configuration data associated with the module.
+     * @return A [ConfigData] object representing the configuration for the module.
+     */
+    val config: ConfigData
+        get() = ConfigData()
 
     /**
      * Retrieves a list of command data associated with the module.

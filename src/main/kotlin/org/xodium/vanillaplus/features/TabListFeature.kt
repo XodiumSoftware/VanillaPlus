@@ -20,8 +20,6 @@ import kotlin.math.roundToInt
 
 /** Represents a feature handling tab-list mechanics within the system. */
 internal object TabListFeature : FeatureInterface {
-    private val config: Config = Config()
-
     private const val MIN_TPS = 0.0
     private const val MAX_TPS = 20.0
     private const val TPS_DECIMAL_FORMAT = "%.1f"
@@ -37,8 +35,8 @@ internal object TabListFeature : FeatureInterface {
         instance.server.scheduler.runTaskTimer(
             instance,
             Runnable { instance.server.onlinePlayers.forEach { updateTabList(it) } },
-            config.initDelayInTicks,
-            config.intervalInTicks,
+            config.tabListFeature.initDelayInTicks,
+            config.tabListFeature.intervalInTicks,
         )
     }
 
@@ -68,10 +66,10 @@ internal object TabListFeature : FeatureInterface {
         val joinConfig = JoinConfiguration.separator(Component.newline())
 
         audience.sendPlayerListHeaderAndFooter(
-            Component.join(joinConfig, config.header.mm()),
+            Component.join(joinConfig, config.tabListFeature.header.mm()),
             Component.join(
                 joinConfig,
-                config.footer.mm(
+                config.tabListFeature.footer.mm(
                     Placeholder.component("weather", getWeather().mm()),
                     Placeholder.component("tps", getTps().mm()),
                 ),
@@ -114,31 +112,9 @@ internal object TabListFeature : FeatureInterface {
         val world = instance.server.worlds[0]
 
         return when {
-            world.isThundering -> config.i18n.weatherThundering
-            world.hasStorm() -> config.i18n.weatherStorm
-            else -> config.i18n.weatherClear
+            world.isThundering -> config.tabListFeature.i18n.weatherThundering
+            world.hasStorm() -> config.tabListFeature.i18n.weatherStorm
+            else -> config.tabListFeature.i18n.weatherClear
         }
-    }
-
-    data class Config(
-        var initDelayInTicks: Long = 0,
-        var intervalInTicks: Long = 10,
-        var header: List<String> =
-            listOf(
-                "<gradient:#FFE259:#FFA751>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>   <gradient:#CB2D3E:#EF473A>⚡ IllyriaRPG ⚡</gradient>   <gradient:#FFA751:#FFE259>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
-                "",
-            ),
-        var footer: List<String> =
-            listOf(
-                "",
-                "<gradient:#FFE259:#FFA751>]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>  <gradient:#CB2D3E:#EF473A>TPS:</gradient> <tps> <gradient:#FFE259:#FFA751>|</gradient> <gradient:#CB2D3E:#EF473A>Weather:</gradient> <weather>  <gradient:#FFA751:#FFE259>]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
-            ),
-        var i18n: I18n = I18n(),
-    ) {
-        data class I18n(
-            var weatherThundering: String = "<red>\uD83C\uDF29<reset>",
-            var weatherStorm: String = "<yellow>\uD83C\uDF26<reset>",
-            var weatherClear: String = "<green>\uD83C\uDF24<reset>",
-        )
     }
 }

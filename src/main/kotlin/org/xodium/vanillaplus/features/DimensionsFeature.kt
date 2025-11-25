@@ -19,8 +19,6 @@ import kotlin.math.sqrt
 
 /** Represents a feature handling dimension mechanics within the system. */
 internal object DimensionsFeature : FeatureInterface {
-    private val config: Config = Config()
-
     private const val NETHER_TO_OVERWORLD_RATIO = 8
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -43,7 +41,10 @@ internal object DimensionsFeature : FeatureInterface {
             if (findCorrespondingPortal(calcPortalCentre(event.blocks), getOverworld()) == null) {
                 event.isCancelled = true
                 val player = event.entity as? Player ?: return
-                player.sendActionBar(config.i18n.portalCreationDenied.mm())
+                player.sendActionBar(
+                    config.dimensionsFeature.i18n.portalCreationDenied
+                        .mm(),
+                )
             }
         }
     }
@@ -58,7 +59,7 @@ internal object DimensionsFeature : FeatureInterface {
     private fun findCorrespondingPortal(
         netherPortal: Location,
         overworld: World,
-        searchRadius: Int = config.portalSearchRadius,
+        searchRadius: Int = config.dimensionsFeature.portalSearchRadius,
     ): Location? {
         val targetX = netherPortal.x * NETHER_TO_OVERWORLD_RATIO
         val targetZ = netherPortal.z * NETHER_TO_OVERWORLD_RATIO
@@ -120,14 +121,4 @@ internal object DimensionsFeature : FeatureInterface {
      * @throws IllegalStateException if the Overworld is not loaded.
      */
     private fun getOverworld(): World = instance.server.getWorld("world") ?: error("Overworld (world) is not loaded.")
-
-    data class Config(
-        var portalSearchRadius: Int = 128,
-        var i18n: I18n = I18n(),
-    ) {
-        data class I18n(
-            var portalCreationDenied: String =
-                "<gradient:#CB2D3E:#EF473A>No corresponding active portal found in the Overworld!</gradient>",
-        )
-    }
 }

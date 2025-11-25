@@ -16,8 +16,6 @@ import kotlin.random.Random
 
 /** Represents a feature handling entity mechanics within the system. */
 internal object EntityFeature : FeatureInterface {
-    private val config: Config = Config()
-
     @EventHandler
     fun on(event: EntityChangeBlockEvent) {
         if (shouldCancelGrief(event.entity)) event.isCancelled = true
@@ -30,7 +28,7 @@ internal object EntityFeature : FeatureInterface {
 
     @EventHandler
     fun on(event: EntityDeathEvent) {
-        if (Random.nextDouble() <= config.entityEggDropChance) {
+        if (Random.nextDouble() <= config.entityFeature.entityEggDropChance) {
             event.drops.add(ItemStack.of(Material.matchMaterial("${event.entity.type.name}_SPAWN_EGG") ?: return))
         }
     }
@@ -45,23 +43,13 @@ internal object EntityFeature : FeatureInterface {
      */
     private fun shouldCancelGrief(entity: Entity): Boolean =
         when (entity) {
-            is WitherSkull -> config.disableWitherGrief
-            is Fireball -> config.disableGhastGrief
-            is Blaze -> config.disableBlazeGrief
-            is Creeper -> config.disableCreeperGrief
-            is EnderDragon -> config.disableEnderDragonGrief
-            is Enderman -> config.disableEndermanGrief
-            is Wither -> config.disableWitherGrief
+            is WitherSkull -> config.entityFeature.disableWitherGrief
+            is Fireball -> config.entityFeature.disableGhastGrief
+            is Blaze -> config.entityFeature.disableBlazeGrief
+            is Creeper -> config.entityFeature.disableCreeperGrief
+            is EnderDragon -> config.entityFeature.disableEnderDragonGrief
+            is Enderman -> config.entityFeature.disableEndermanGrief
+            is Wither -> config.entityFeature.disableWitherGrief
             else -> false
         }
-
-    data class Config(
-        var disableBlazeGrief: Boolean = true,
-        var disableCreeperGrief: Boolean = true,
-        var disableEnderDragonGrief: Boolean = true,
-        var disableEndermanGrief: Boolean = true,
-        var disableGhastGrief: Boolean = true,
-        var disableWitherGrief: Boolean = true,
-        var entityEggDropChance: Double = 0.1,
-    )
 }

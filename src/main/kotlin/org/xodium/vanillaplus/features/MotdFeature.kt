@@ -8,16 +8,11 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 
 /** Represents a feature handling MOTD mechanics within the system. */
 internal object MotdFeature : FeatureInterface {
-    private val config: Config = Config()
-
     @EventHandler(priority = EventPriority.HIGH)
-    fun on(event: ServerListPingEvent) = event.motd(config.motd.joinToString("\n").mm())
-
-    data class Config(
-        val motd: List<String> =
-            listOf(
-                "<gradient:#CB2D3E:#EF473A><b>Ultimate Private SMP</b></gradient>",
-                "<gradient:#FFE259:#FFA751><b>➤ WELCOME BACK LADS!</b></gradient>",
-            ),
-    )
+    fun on(event: ServerListPingEvent) =
+        event.motd(
+            config.motdFeature.motd
+                .joinToString("\n")
+                .mm(),
+        )
 }

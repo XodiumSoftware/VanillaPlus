@@ -23,7 +23,6 @@ import java.util.*
 
 /** Represents a feature handling sit mechanics within the system. */
 internal object SitFeature : FeatureInterface {
-    private val config: Config = Config()
     private val sittingPlayers = mutableMapOf<UUID, ArmorStand>()
     private val blockCenterOffset = Vector(0.5, 0.5, 0.5)
     private val playerStandUpOffset = Vector(0.0, 0.5, 0.0)
@@ -39,8 +38,8 @@ internal object SitFeature : FeatureInterface {
         val blockData = block.blockData
         val isSitTarget =
             when {
-                config.useStairs && blockData is Stairs && blockData.half == Bisected.Half.BOTTOM -> true
-                config.useSlabs && blockData is Slab && blockData.type == Slab.Type.BOTTOM -> true
+                config.sitFeature.useStairs && blockData is Stairs && blockData.half == Bisected.Half.BOTTOM -> true
+                config.sitFeature.useSlabs && blockData is Slab && blockData.type == Slab.Type.BOTTOM -> true
                 else -> false
             }
 
@@ -105,9 +104,4 @@ internal object SitFeature : FeatureInterface {
         armorStand.addPassenger(player)
         sittingPlayers[player.uniqueId] = armorStand
     }
-
-    data class Config(
-        var useStairs: Boolean = true,
-        var useSlabs: Boolean = true,
-    )
 }
