@@ -4,6 +4,7 @@ package org.xodium.vanillaplus
 
 import org.bukkit.plugin.java.JavaPlugin
 import org.xodium.vanillaplus.features.*
+import org.xodium.vanillaplus.hooks.WorldEditHook
 import org.xodium.vanillaplus.recipes.RottenFleshRecipe
 import org.xodium.vanillaplus.recipes.WoodLogRecipe
 
@@ -43,7 +44,7 @@ internal class VanillaPlus : JavaPlugin() {
         SignFeature.register()
         SitFeature.register()
         TabListFeature.register()
-        TreesFeature.register()
+        if (WorldEditHook.get()) TreesFeature.register()
     }
 
     /**

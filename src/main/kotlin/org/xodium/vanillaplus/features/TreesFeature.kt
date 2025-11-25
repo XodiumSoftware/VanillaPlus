@@ -17,7 +17,6 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.world.StructureGrowEvent
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.hooks.WorldEditHook
 import org.xodium.vanillaplus.interfaces.FeatureInterface
 import org.xodium.vanillaplus.registries.MaterialRegistry
 import java.io.IOException
@@ -43,10 +42,6 @@ internal object TreesFeature : FeatureInterface {
      */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: StructureGrowEvent) {
-        if (!WorldEditHook.get()) {
-            instance.logger.warning("WorldEdit not found, TreesFeature will not function properly.")
-            return
-        }
         event.location.block
             .takeIf {
                 Tag.SAPLINGS.isTagged(it.type) ||
