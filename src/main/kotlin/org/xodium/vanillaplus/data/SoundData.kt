@@ -14,6 +14,7 @@ import net.kyori.adventure.sound.Sound
  * @property pitch The [pitch] of the sound. Defaults to 1.0f.
  */
 internal data class SoundData(
+    // TODO: Convert to use kotlinx.serialization instead of Jackson.
     @get:JsonSerialize(converter = SoundTypeToString::class)
     @param:JsonDeserialize(converter = StringToSoundType::class)
     val name: Sound.Type,
