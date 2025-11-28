@@ -19,7 +19,7 @@ internal data class BookData(
     val cmd: String,
     val permission: PermissionDefault = PermissionDefault.TRUE,
     private val title: String = "<fire>${cmd.replaceFirstChar { it.uppercase() }}</fire>",
-    private val author: String = instance.javaClass.simpleName.toString(),
+    private val author: String = instance.javaClass.simpleName,
     private val pages: List<List<String>>,
 ) {
     /**

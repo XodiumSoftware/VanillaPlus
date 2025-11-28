@@ -14,10 +14,10 @@ import org.xodium.vanillaplus.serializers.SoundTypeSerializer
 @Serializable
 internal data class SoundData(
     @Serializable(with = SoundTypeSerializer::class)
-    val name: Sound.Type,
-    private val source: Sound.Source = Sound.Source.MASTER,
-    private val volume: Float = 1.0f,
-    private val pitch: Float = 1.0f,
+    var name: Sound.Type,
+    var source: Sound.Source = Sound.Source.MASTER,
+    var volume: Float = 1.0f,
+    var pitch: Float = 1.0f,
 ) {
     /**
      * Converts this [SoundData] instance to a [Sound] instance.
