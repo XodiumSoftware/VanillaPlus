@@ -1,4 +1,4 @@
-package org.xodium.vanillaplus.modules
+package org.xodium.vanillaplus.features
 
 import com.sk89q.worldedit.WorldEdit
 import com.sk89q.worldedit.bukkit.BukkitAdapter
@@ -16,8 +16,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.world.StructureGrowEvent
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.hooks.WorldEditHook
-import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.interfaces.FeatureInterface
 import org.xodium.vanillaplus.registries.MaterialRegistry
 import java.io.IOException
 import java.nio.channels.Channels
@@ -28,15 +27,11 @@ import java.nio.file.Path
 import java.nio.file.StandardOpenOption
 import java.util.stream.Collectors
 
-/** Represents a module handling tree mechanics within the system. */
-internal class TreesModule : ModuleInterface<TreesModule.Config> {
-    override val config: Config = Config()
-
+/** Represents a feature handling tree mechanics within the system. */
+internal object TreesFeature : FeatureInterface {
     private val schematicCache: Map<Material, List<Clipboard>> by lazy {
         MaterialRegistry.SAPLING_LINKS.mapValues { loadSchematics("/schematics/${it.value}") }
     }
-
-    override fun enabled(): Boolean = config.enabled && WorldEditHook.get()
 
     /**
      * Handle the StructureGrowEvent.
@@ -44,7 +39,6 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
      */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: StructureGrowEvent) {
-        if (!enabled()) return
         event.location.block
             .takeIf {
                 Tag.SAPLINGS.isTagged(it.type) ||
@@ -127,17 +121,17 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
                             editSession.mask =
                                 BlockTypeMask(
                                     editSession,
-                                    config.treeMask.map { BukkitAdapter.asBlockType(it) },
+                                    config.treesFeature.treeMask.map { BukkitAdapter.asBlockType(it) },
                                 )
                             ClipboardHolder(clipboard).apply {
                                 transform = transform.combine(AffineTransform().rotateY(getRandomRotation().toDouble()))
                                 Operations.complete(
                                     createPaste(editSession)
                                         .to(BlockVector3.at(block.x, block.y, block.z))
-                                        .copyBiomes(config.copyBiomes)
-                                        .copyEntities(config.copyEntities)
-                                        .ignoreAirBlocks(config.ignoreAirBlocks)
-                                        .ignoreStructureVoidBlocks(config.ignoreStructureVoidBlocks)
+                                        .copyBiomes(config.treesFeature.copyBiomes)
+                                        .copyEntities(config.treesFeature.copyEntities)
+                                        .ignoreAirBlocks(config.treesFeature.ignoreAirBlocks)
+                                        .ignoreStructureVoidBlocks(config.treesFeature.ignoreStructureVoidBlocks)
                                         .build(),
                                 )
                             }
@@ -160,65 +154,4 @@ internal class TreesModule : ModuleInterface<TreesModule.Config> {
         require(angle.all { it in setOf(0, 90, 180, 270) }) { "Angles must be one of: 0, 90, 180, 270" }
         return angle.random()
     }
-
-    data class Config(
-        var copyBiomes: Boolean = false,
-        var copyEntities: Boolean = false,
-        var ignoreAirBlocks: Boolean = true,
-        var ignoreStructureVoidBlocks: Boolean = true,
-        var treeMask: Set<Material> =
-            setOf(
-                Material.AZALEA,
-                Material.WEEPING_VINES,
-                Material.CORNFLOWER,
-                Material.CLOSED_EYEBLOSSOM,
-                Material.PINK_TULIP,
-                Material.OPEN_EYEBLOSSOM,
-                Material.WHITE_TULIP,
-                Material.SNOW,
-                Material.FERN,
-                Material.AZALEA_LEAVES,
-                Material.SUNFLOWER,
-                Material.PEONY,
-                Material.PINK_PETALS,
-                Material.LILAC,
-                Material.LARGE_FERN,
-                Material.VINE,
-                Material.CAVE_VINES_PLANT,
-                Material.TORCHFLOWER,
-                Material.RED_TULIP,
-                Material.ORANGE_TULIP,
-                Material.KELP,
-                Material.AIR,
-                Material.FLOWERING_AZALEA,
-                Material.AZURE_BLUET,
-                Material.MOSS_BLOCK,
-                Material.PITCHER_PLANT,
-                Material.WEEPING_VINES_PLANT,
-                Material.TALL_SEAGRASS,
-                Material.TWISTING_VINES,
-                Material.BLUE_ORCHID,
-                Material.CAVE_VINES,
-                Material.ROSE_BUSH,
-                Material.SPORE_BLOSSOM,
-                Material.FLOWERING_AZALEA_LEAVES,
-                Material.POPPY,
-                Material.TWISTING_VINES_PLANT,
-                Material.DANDELION,
-                Material.DEAD_BUSH,
-                Material.LILY_OF_THE_VALLEY,
-                Material.KELP_PLANT,
-                Material.SHORT_GRASS,
-                Material.CHORUS_FLOWER,
-                Material.ALLIUM,
-                Material.MANGROVE_PROPAGULE,
-                Material.CHERRY_LEAVES,
-                Material.SUGAR_CANE,
-                Material.SEAGRASS,
-                Material.MOSS_CARPET,
-                Material.WITHER_ROSE,
-                Material.TALL_GRASS,
-                Material.OXEYE_DAISY,
-            ),
-    ) : ModuleInterface.Config
 }

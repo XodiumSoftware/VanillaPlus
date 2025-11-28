@@ -1,52 +1,47 @@
 package org.xodium.vanillaplus.managers
 
+import kotlinx.serialization.json.Json
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.interfaces.DataInterface
-import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.utils.ExtUtils.key
+import org.xodium.vanillaplus.data.ConfigData
+import java.io.File
+import kotlin.time.measureTime
 
-/** Manages module configs on disk and in-memory. */
-internal object ConfigManager : DataInterface<String, ModuleInterface.Config> {
-    override val cache: MutableMap<String, ModuleInterface.Config> = mutableMapOf()
-    override val fileName: String = "config.json"
-
-    /**
-     * Updates module configurations by merging existing file values into
-     * in-code defaults. File/user values take precedence over defaults.
-     * @param modules list of modules to update.
-     */
-    fun update(modules: List<ModuleInterface<ModuleInterface.Config>>) {
-        modules.forEach { module ->
-            val key = module.key
-            val fileConfig = readFileConfig(key, module)
-            val mergedConfig = fileConfig?.let { jsonMapper.updateValue(module.config, it) } ?: module.config
-
-            set(key, mergedConfig)
+/** Manages loading and saving the configuration file. */
+internal object ConfigManager {
+    private val json =
+        Json {
+            prettyPrint = true
+            encodeDefaults = true
+            ignoreUnknownKeys = true
         }
-        if (modules.isNotEmpty()) instance.logger.info("Config updated successfully")
-    }
 
     /**
-     * Reads a module's configuration from the JSON config file.
-     * @param key The unique identifier for the module used in the config file.
-     * @param module The module instance used to determine the correct configuration type.
-     * @return The parsed configuration object from the file, or `null` if not found, or an error occurred.
-     * @see ConfigManager.update
+     * Loads or creates the configuration file.
+     * @param fileName The name of the configuration file.
+     * @return The loaded configuration data.
      */
-    private fun readFileConfig(
-        key: String,
-        module: ModuleInterface<ModuleInterface.Config>,
-    ): ModuleInterface.Config? =
-        try {
-            if (filePath.toFile().exists()) {
-                jsonMapper.readTree(filePath.toFile())?.get(key)?.let { node ->
-                    jsonMapper.treeToValue(node, module.config.javaClass)
-                }
-            } else {
-                null
+    fun load(fileName: String = "config.json"): ConfigData {
+        val file = File(instance.dataFolder, fileName)
+
+        if (!instance.dataFolder.exists()) instance.dataFolder.mkdirs()
+
+        var config: ConfigData
+
+        val time =
+            measureTime {
+                config =
+                    if (file.exists()) {
+                        json.decodeFromString(ConfigData.serializer(), file.readText())
+                    } else {
+                        ConfigData()
+                    }
+                file.writeText(json.encodeToString(ConfigData.serializer(), config))
             }
-        } catch (e: Exception) {
-            instance.logger.warning("Failed to read config section for $key: ${e.message}")
-            null
-        }
+
+        instance.logger.info(
+            "${if (file.exists()) "Loaded configuration from $fileName" else "Created default $fileName"} | Took ${time.inWholeMilliseconds}ms",
+        )
+
+        return config
+    }
 }

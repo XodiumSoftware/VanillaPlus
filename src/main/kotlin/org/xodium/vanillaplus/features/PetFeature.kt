@@ -1,4 +1,4 @@
-package org.xodium.vanillaplus.modules
+package org.xodium.vanillaplus.features
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
@@ -9,17 +9,13 @@ import org.bukkit.entity.Tameable
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.inventory.ItemStack
-import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.interfaces.FeatureInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 
-/** Represents a module handling pet mechanics within the system. */
-internal class PetModule : ModuleInterface<PetModule.Config> {
-    override val config: Config = Config()
-
+/** Represents a feature handling pet mechanics within the system. */
+internal object PetFeature : FeatureInterface {
     @EventHandler
     fun on(event: PlayerInteractEntityEvent) {
-        if (!enabled()) return
-
         val source = event.player
         val target = event.rightClicked as? Player ?: return
 
@@ -75,16 +71,16 @@ internal class PetModule : ModuleInterface<PetModule.Config> {
     }
 
     /**
-     * Finds the first leashed pet owned by the player within the configured radius.
+     * Finds the first leashed pet owned by the player within the config radius.
      * @param player The player to search around.
      * @return The found tameable entity or `null` if none exists.
      */
     private fun findLeashedPet(player: Player): Tameable? =
         player
             .getNearbyEntities(
-                config.transferRadius.toDouble(),
-                config.transferRadius.toDouble(),
-                config.transferRadius.toDouble(),
+                config.petFeature.transferRadius.toDouble(),
+                config.petFeature.transferRadius.toDouble(),
+                config.petFeature.transferRadius.toDouble(),
             ).filterIsInstance<LivingEntity>()
             .firstOrNull { it.isLeashed && it.leashHolder == player }
             as? Tameable
@@ -101,31 +97,17 @@ internal class PetModule : ModuleInterface<PetModule.Config> {
         petName: Component,
     ) {
         source.sendActionBar(
-            config.i18n.sourceTransfer.mm(
+            config.petFeature.i18n.sourceTransfer.mm(
                 Placeholder.component("<pet>", petName),
                 Placeholder.component("<target>", target.displayName()),
             ),
         )
 
         target.sendActionBar(
-            config.i18n.targetTransfer.mm(
+            config.petFeature.i18n.targetTransfer.mm(
                 Placeholder.component("<pet>", petName),
                 Placeholder.component("<source>", source.displayName()),
             ),
-        )
-    }
-
-    data class Config(
-        var transferRadius: Int = 10,
-        var i18n: I18n = I18n(),
-    ) : ModuleInterface.Config {
-        data class I18n(
-            var sourceTransfer: String =
-                "<gradient:#CB2D3E:#EF473A>You have transferred</gradient> <pet> " +
-                    "<gradient:#CB2D3E:#EF473A>to</gradient> <target>",
-            var targetTransfer: String =
-                "<source> <gradient:#CB2D3E:#EF473A>has transferred</gradient> <pet> " +
-                    "<gradient:#CB2D3E:#EF473A>to you</gradient>",
         )
     }
 }

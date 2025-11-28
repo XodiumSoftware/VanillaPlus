@@ -1,6 +1,6 @@
 @file:Suppress("ktlint:standard:no-wildcard-imports")
 
-package org.xodium.vanillaplus.modules
+package org.xodium.vanillaplus.features
 
 import com.mojang.brigadier.arguments.StringArgumentType
 import io.papermc.paper.command.brigadier.Commands
@@ -16,7 +16,6 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockDropItemEvent
 import org.bukkit.event.entity.PlayerDeathEvent
-import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.player.PlayerAdvancementDoneEvent
@@ -29,17 +28,14 @@ import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.enchantments.*
-import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.managers.ModuleManager
+import org.xodium.vanillaplus.interfaces.FeatureInterface
 import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 
-/** Represents a module handling player mechanics within the system. */
-internal class PlayerModule : ModuleInterface<PlayerModule.Config> {
-    override val config: Config = Config()
-
-    private val tabListModule by lazy { ModuleManager.tabListModule }
+/** Represents a feature handling player mechanics within the system. */
+internal object PlayerFeature : FeatureInterface {
+    private val tabListModule by lazy { TabListFeature }
 
     override fun cmds(): List<CommandData> =
         listOf(
@@ -78,13 +74,15 @@ internal class PlayerModule : ModuleInterface<PlayerModule.Config> {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
-        if (!enabled()) return
-
         val player = event.player
 
         player.displayName(player.nickname?.mm())
 
-        if (config.i18n.playerJoinMsg.isEmpty()) return
+        if (config.playerFeature.i18n.playerJoinMsg
+                .isEmpty()
+        ) {
+            return
+        }
 
         event.joinMessage(null)
 
@@ -92,7 +90,7 @@ internal class PlayerModule : ModuleInterface<PlayerModule.Config> {
             .filter { it.uniqueId != player.uniqueId }
             .forEach {
                 it.sendMessage(
-                    config.i18n.playerJoinMsg.mm(
+                    config.playerFeature.i18n.playerJoinMsg.mm(
                         Placeholder.component("player", player.displayName()),
                     ),
                 )
@@ -101,34 +99,47 @@ internal class PlayerModule : ModuleInterface<PlayerModule.Config> {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerQuitEvent) {
-        if (!enabled() || config.i18n.playerQuitMsg.isEmpty()) return
+        if (config.playerFeature.i18n.playerQuitMsg
+                .isEmpty()
+        ) {
+            return
+        }
 
-        event.quitMessage(config.i18n.playerQuitMsg.mm(Placeholder.component("player", event.player.displayName())))
+        event.quitMessage(
+            config.playerFeature.i18n.playerQuitMsg.mm(
+                Placeholder.component(
+                    "player",
+                    event.player.displayName(),
+                ),
+            ),
+        )
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerDeathEvent) {
-        if (!enabled()) return
-
         val killer = event.entity.killer ?: return
 
-        if (Math.random() < config.skullDropChance) {
+        if (Math.random() < config.playerFeature.skullDropChance) {
             event.entity.world.dropItemNaturally(
                 event.entity.location,
                 playerSkull(event.entity, killer),
             )
         }
         // TODO
-//        if (config.i18n.playerDeathMsg.isNotEmpty()) event.deathMessage()
-//        if (config.i18n.playerDeathScreenMsg.isNotEmpty()) event.deathScreenMessageOverride()
+//        if (config.playerFeature.i18n.playerDeathMsg.isNotEmpty()) event.deathMessage()
+//        if (config.playerFeature.i18n.playerDeathScreenMsg.isNotEmpty()) event.deathScreenMessageOverride()
     }
 
     @EventHandler
     fun on(event: PlayerAdvancementDoneEvent) {
-        if (!enabled() || config.i18n.playerAdvancementDoneMsg.isEmpty()) return
+        if (config.playerFeature.i18n.playerAdvancementDoneMsg
+                .isEmpty()
+        ) {
+            return
+        }
 
         event.message(
-            config.i18n.playerAdvancementDoneMsg.mm(
+            config.playerFeature.i18n.playerAdvancementDoneMsg.mm(
                 Placeholder.component("player", event.player.displayName()),
                 Placeholder.component("advancement", event.advancement.displayName()),
             ),
@@ -137,23 +148,17 @@ internal class PlayerModule : ModuleInterface<PlayerModule.Config> {
 
     @EventHandler
     fun on(event: InventoryClickEvent) {
-        if (!enabled()) return
-
         enderchest(event)
     }
 
     @EventHandler(ignoreCancelled = true)
     fun on(event: PlayerInteractEvent) {
-        if (!enabled()) return
-
         xpToBottle(event)
         FeatherFallingEnchantment.featherFalling(event)
     }
 
     @EventHandler
     fun on(event: BlockBreakEvent) {
-        if (!enabled()) return
-
         ReplantEnchantment.replant(event)
         SilkTouchEnchantment.silkTouch(event)
         VeinMineEnchantment.veinMine(event)
@@ -161,15 +166,11 @@ internal class PlayerModule : ModuleInterface<PlayerModule.Config> {
 
     @EventHandler
     fun on(event: BlockDropItemEvent) {
-        if (!enabled()) return
-
         PickupEnchantment.pickup(event)
     }
 
     @EventHandler
     fun on(event: EntityEquipmentChangedEvent) {
-        if (!enabled()) return
-
         NightVisionEnchantment.nightVision(event)
     }
 
@@ -179,7 +180,7 @@ internal class PlayerModule : ModuleInterface<PlayerModule.Config> {
      * @param event The InventoryClickEvent triggered when a player clicks in an inventory.
      */
     private fun enderchest(event: InventoryClickEvent) {
-        if (event.click != config.enderChestClickType ||
+        if (event.click != config.playerFeature.enderChestClickType ||
             event.currentItem?.type != Material.ENDER_CHEST ||
             event.clickedInventory?.type != InventoryType.PLAYER
         ) {
@@ -209,9 +210,9 @@ internal class PlayerModule : ModuleInterface<PlayerModule.Config> {
 
         val player = event.player
 
-        if (player.calculateTotalExperiencePoints() < config.xpCostToBottle) return
+        if (player.calculateTotalExperiencePoints() < config.playerFeature.xpCostToBottle) return
 
-        player.giveExp(-config.xpCostToBottle)
+        player.giveExp(-config.playerFeature.xpCostToBottle)
         event.item?.subtract(1)
         player.inventory
             .addItem(ItemStack.of(Material.EXPERIENCE_BOTTLE, 1))
@@ -230,8 +231,16 @@ internal class PlayerModule : ModuleInterface<PlayerModule.Config> {
     ) {
         player.nickname = name
         player.displayName(player.nickname?.mm())
-        if (tabListModule.enabled()) tabListModule.updatePlayerDisplayName(player)
-        player.sendActionBar(config.i18n.nicknameUpdated.mm(Placeholder.component("nickname", player.displayName())))
+        // TODO: add enabled check.
+        tabListModule.updatePlayerDisplayName(player)
+        player.sendActionBar(
+            config.playerFeature.i18n.nicknameUpdated.mm(
+                Placeholder.component(
+                    "nickname",
+                    player.displayName(),
+                ),
+            ),
+        )
     }
 
     /**
@@ -249,13 +258,14 @@ internal class PlayerModule : ModuleInterface<PlayerModule.Config> {
             setData(DataComponentTypes.PROFILE, ResolvableProfile.resolvableProfile(entity.playerProfile))
             setData(
                 DataComponentTypes.CUSTOM_NAME,
-                config.i18n.playerHeadName.mm(Placeholder.component("player", entity.name.mm())),
+                config.playerFeature.i18n.playerHeadName
+                    .mm(Placeholder.component("player", entity.name.mm())),
             )
             setData(
                 DataComponentTypes.LORE,
                 ItemLore
                     .lore(
-                        config.i18n.playerHeadLore
+                        config.playerFeature.i18n.playerHeadLore
                             .mm(
                                 Placeholder.component("player", entity.name.mm()),
                                 Placeholder.component("killer", killer.name.mm()),
@@ -263,26 +273,4 @@ internal class PlayerModule : ModuleInterface<PlayerModule.Config> {
                     ),
             )
         }
-
-    data class Config(
-        var enderChestClickType: ClickType = ClickType.SHIFT_RIGHT,
-        var skullDropChance: Double = 0.1,
-        var xpCostToBottle: Int = 11,
-        var silkTouchConfig: SilkTouchEnchantment.Config = SilkTouchEnchantment.Config(),
-        var i18n: I18n = I18n(),
-    ) : ModuleInterface.Config {
-        data class I18n(
-            var playerHeadName: String = "<player>’s Skull",
-            var playerHeadLore: List<String> = listOf("<player> killed by <killer>"),
-//          var playerDeathMsg: String = "<killer> <gradient:#FFE259:#FFA751>⚔</gradient> <player>",
-            var playerJoinMsg: String = "<green>➕<reset> <gradient:#FFE259:#FFA751>›</gradient> <player>",
-            var playerQuitMsg: String = "<red>➖<reset> <gradient:#FFE259:#FFA751>›</gradient> <player>",
-            var playerDeathMsg: String = "☠ <gradient:#FFE259:#FFA751>›</gradient>",
-            var playerDeathScreenMsg: String = "☠",
-            var playerAdvancementDoneMsg: String =
-                "\uD83C\uDF89 <gradient:#FFE259:#FFA751>›</gradient> <player> " +
-                    "<gradient:#FFE259:#FFA751>has made the advancement:</gradient> <advancement>",
-            var nicknameUpdated: String = "<gradient:#CB2D3E:#EF473A>Nickname has been updated to: <nickname></gradient>",
-        )
-    }
 }

@@ -7,6 +7,7 @@ plugins {
     id("java")
     id("idea")
     kotlin("jvm") version "2.2.21"
+    kotlin("plugin.serialization") version "2.2.21"
     id("com.gradleup.shadow") version "9.2.2"
     id("xyz.jpenilla.run-paper") version "3.0.2"
     id("xyz.jpenilla.resource-factory-paper-convention") version "1.3.1"
@@ -30,8 +31,7 @@ dependencies {
 
     implementation(kotlin("stdlib"))
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.20.1")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
 }
 
 java {
@@ -49,7 +49,6 @@ tasks {
         dependsOn(processResources)
         archiveClassifier.set("")
         destinationDirectory.set(layout.projectDirectory.dir("build/libs"))
-        relocate("com.fasterxml.jackson", "$group.jackson")
         minimize { exclude(dependency("org.jetbrains.kotlin:kotlin-reflect:.*")) }
     }
     jar { enabled = false }

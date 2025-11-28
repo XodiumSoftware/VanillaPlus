@@ -1,6 +1,6 @@
 @file:Suppress("ktlint:standard:no-wildcard-imports")
 
-package org.xodium.vanillaplus.modules
+package org.xodium.vanillaplus.features
 
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
@@ -17,8 +17,7 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
-import org.xodium.vanillaplus.data.SoundData
-import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.interfaces.FeatureInterface
 import org.xodium.vanillaplus.utils.BlockUtils.center
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
@@ -26,12 +25,9 @@ import org.xodium.vanillaplus.utils.InvUtils
 import org.xodium.vanillaplus.utils.PlayerUtils
 import org.xodium.vanillaplus.utils.ScheduleUtils
 import java.util.concurrent.CompletableFuture
-import org.bukkit.Sound as BukkitSound
 
-/** Represents a module handling inv mechanics within the system. */
-internal class InvModule : ModuleInterface<InvModule.Config> {
-    override val config: Config = Config()
-
+/** Represents a feature handling inv mechanics within the system. */
+internal object InvFeature : FeatureInterface {
     override fun cmds(): List<CommandData> =
         listOf(
             CommandData(
@@ -98,7 +94,10 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
             materialName?.let { Material.getMaterial(it.uppercase()) } ?: player.inventory.itemInMainHand.type
 
         if (material == Material.AIR) {
-            player.sendActionBar(config.i18n.noMaterialSpecified.mm())
+            player.sendActionBar(
+                config.invFeature.i18n.noMaterialSpecified
+                    .mm(),
+            )
             return 0
         }
 
@@ -123,12 +122,20 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
         }
 
         if (foundContainers.isEmpty()) {
-            player.sendActionBar(config.i18n.noMatchingItems.mm(Placeholder.component("material", material.name.mm())))
+            player.sendActionBar(
+                config.invFeature.i18n.noMatchingItems.mm(
+                    Placeholder.component(
+                        "material",
+                        material.name.mm(),
+                    ),
+                ),
+            )
             return
         }
 
         player.sendActionBar(
-            config.i18n.foundItemsInChests.mm(Placeholder.component("material", material.name.mm())),
+            config.invFeature.i18n.foundItemsInChests
+                .mm(Placeholder.component("material", material.name.mm())),
         )
 
         ScheduleUtils.schedule(duration = 200L) {
@@ -171,10 +178,18 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
             if (transferred) foundContainers.add(container.block)
         }
 
-        if (foundContainers.isEmpty()) return player.sendActionBar(config.i18n.noItemsUnloaded.mm())
+        if (foundContainers.isEmpty()) {
+            return player.sendActionBar(
+                config.invFeature.i18n.noItemsUnloaded
+                    .mm(),
+            )
+        }
 
-        player.sendActionBar(config.i18n.inventoryUnloaded.mm())
-        player.playSound(config.soundOnUnload.toSound(), Sound.Emitter.self())
+        player.sendActionBar(
+            config.invFeature.i18n.inventoryUnloaded
+                .mm(),
+        )
+        player.playSound(config.invFeature.soundOnUnload.toSound(), Sound.Emitter.self())
 
         ScheduleUtils.schedule(duration = 60L) {
             foundContainers.forEach { container ->
@@ -187,27 +202,5 @@ internal class InvModule : ModuleInterface<InvModule.Config> {
                     .spawn()
             }
         }
-    }
-
-    data class Config(
-        var soundOnUnload: SoundData =
-            SoundData(
-                BukkitSound.ENTITY_PLAYER_LEVELUP,
-                Sound.Source.PLAYER,
-            ),
-        var i18n: I18n = I18n(),
-    ) : ModuleInterface.Config {
-        data class I18n(
-            var noMaterialSpecified: String =
-                "<gradient:#CB2D3E:#EF473A>You must specify a valid material " +
-                    "or hold something in your hand</gradient>",
-            var noMatchingItems: String =
-                "<gradient:#CB2D3E:#EF473A>No containers contain " +
-                    "<gradient:#F4C4F3:#FC67FA><b><material></b></gradient></gradient>",
-            var foundItemsInChests: String =
-                "<gradient:#FFE259:#FFA751>Found <gradient:#F4C4F3:#FC67FA><b><material></b></gradient> in container(s), follow trail(s)</gradient>",
-            var noItemsUnloaded: String = "<gradient:#CB2D3E:#EF473A>No items were unloaded</gradient>",
-            var inventoryUnloaded: String = "<gradient:#B3E94A:#54F47F>Inventory unloaded</gradient>",
-        )
     }
 }

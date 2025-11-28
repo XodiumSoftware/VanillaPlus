@@ -1,4 +1,4 @@
-package org.xodium.vanillaplus.modules
+package org.xodium.vanillaplus.features
 
 import com.destroystokyo.paper.event.player.PlayerSetSpawnEvent
 import com.mojang.brigadier.arguments.StringArgumentType
@@ -18,20 +18,14 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
-import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.utils.ExtUtils.clickOpenUrl
-import org.xodium.vanillaplus.utils.ExtUtils.clickRunCmd
-import org.xodium.vanillaplus.utils.ExtUtils.clickSuggestCmd
+import org.xodium.vanillaplus.interfaces.FeatureInterface
 import org.xodium.vanillaplus.utils.ExtUtils.face
 import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.ExtUtils.prefix
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import java.util.concurrent.CompletableFuture
 
-/** Represents a module handling chat mechanics within the system. */
-internal class ChatModule : ModuleInterface<ChatModule.Config> {
-    override val config: Config = Config()
-
+/** Represents a feature handling chat mechanics within the system. */
+internal object ChatFeature : FeatureInterface {
     override fun cmds(): List<CommandData> {
         return listOf(
             CommandData(
@@ -52,14 +46,20 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
                                     .argument("message", StringArgumentType.greedyString())
                                     .executes { ctx ->
                                         ctx.tryCatch {
-                                            if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+                                            if (it.sender !is Player) {
+                                                instance.logger.warning(
+                                                    "Command can only be executed by a Player!",
+                                                )
+                                            }
 
                                             val sender = it.sender as Player
                                             val targetName = ctx.getArgument("target", String().javaClass)
                                             val target =
-                                                instance.server.getPlayer(targetName)
+                                                instance.server
+                                                    .getPlayer(targetName)
                                                     ?: return@tryCatch sender.sendMessage(
-                                                        config.i18n.playerIsNotOnline.mm(),
+                                                        config.chatFeature.i18n.playerIsNotOnline
+                                                            .mm(),
                                                     )
                                             val message = ctx.getArgument("message", String().javaClass)
 
@@ -85,18 +85,21 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: AsyncChatEvent) {
-        if (!config.enabled) return
-
         event.renderer(ChatRenderer.defaultRenderer())
         event.renderer { player, displayName, message, audience ->
             var base =
-                config.chatFormat.mm(
+                config.chatFeature.chatFormat.mm(
                     Placeholder.component("player_head", "<head:${player.uniqueId}>".mm()),
                     Placeholder.component(
                         "player",
                         displayName
                             .clickEvent(ClickEvent.suggestCommand("/w ${player.name} "))
-                            .hoverEvent(HoverEvent.showText(config.i18n.clickToWhisper.mm())),
+                            .hoverEvent(
+                                HoverEvent.showText(
+                                    config.chatFeature.i18n.clickToWhisper
+                                        .mm(),
+                                ),
+                            ),
                     ),
                     Placeholder.component("message", message),
                 )
@@ -107,15 +110,13 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
-        if (!config.enabled) return
-
         val player = event.player
 
         var imageIndex = 0
 
         player.sendMessage(
             Regex("<image>")
-                .replace(config.welcomeText.joinToString("\n")) { "<image${++imageIndex}>" }
+                .replace(config.chatFeature.welcomeText.joinToString("\n")) { "<image${++imageIndex}>" }
                 .mm(
                     Placeholder.component("player", player.displayName()),
                     *player
@@ -129,10 +130,13 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
 
     @EventHandler
     fun on(event: PlayerSetSpawnEvent) {
-        if (!enabled()) return
-
         event.notification =
-            config.i18n.playerSetSpawn.mm(Placeholder.component("notification", event.notification ?: return))
+            config.chatFeature.i18n.playerSetSpawn.mm(
+                Placeholder.component(
+                    "notification",
+                    event.notification ?: return,
+                ),
+            )
     }
 
     /**
@@ -147,26 +151,36 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
         message: String,
     ) {
         sender.sendMessage(
-            config.whisperToFormat.mm(
+            config.chatFeature.whisperToFormat.mm(
                 Placeholder.component(
                     "player",
                     target
                         .displayName()
                         .clickEvent(ClickEvent.suggestCommand("/w ${target.name} "))
-                        .hoverEvent(HoverEvent.showText(config.i18n.clickToWhisper.mm())),
+                        .hoverEvent(
+                            HoverEvent.showText(
+                                config.chatFeature.i18n.clickToWhisper
+                                    .mm(),
+                            ),
+                        ),
                 ),
                 Placeholder.component("message", message.mm()),
             ),
         )
 
         target.sendMessage(
-            config.whisperFromFormat.mm(
+            config.chatFeature.whisperFromFormat.mm(
                 Placeholder.component(
                     "player",
                     sender
                         .displayName()
                         .clickEvent(ClickEvent.suggestCommand("/w ${sender.name} "))
-                        .hoverEvent(HoverEvent.showText(config.i18n.clickToWhisper.mm())),
+                        .hoverEvent(
+                            HoverEvent.showText(
+                                config.chatFeature.i18n.clickToWhisper
+                                    .mm(),
+                            ),
+                        ),
                 ),
                 Placeholder.component("message", message.mm()),
             ),
@@ -176,53 +190,18 @@ internal class ChatModule : ModuleInterface<ChatModule.Config> {
     /**
      * Creates to delete cross-component for message deletion.
      * @param signedMessage The signed message to be deleted.
-     * @return A [Component] representing the delete cross with hover text and click action.
+     * @return A [net.kyori.adventure.text.Component] representing the delete cross with hover text and click action.
      */
     private fun createDeleteCross(signedMessage: SignedMessage): Component =
-        config.deleteCross
+        config.chatFeature.deleteCross
             .mm()
-            .hoverEvent(config.i18n.deleteMessage.mm())
-            .clickEvent(ClickEvent.callback { instance.server.deleteMessage(signedMessage) })
-
-    data class Config(
-        var chatFormat: String = "<player_head> <player> <reset><gradient:#FFE259:#FFA751>›</gradient> <message>",
-        var welcomeText: List<String> =
-            listOf(
-                "<gradient:#FFA751:#FFE259>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
-                "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
-                "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
-                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gradient:#CB2D3E:#EF473A>Welcome</gradient> <player> <white><sprite:item/name_tag></white>"
-                    .clickSuggestCmd(
-                        "/nickname",
-                        "<gradient:#FFE259:#FFA751>Set your nickname!</gradient>",
-                    ),
-                "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
-                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gradient:#CB2D3E:#EF473A>Check out</gradient><gray>:",
-                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <white><sprite:item/writable_book></white>".clickRunCmd(
-                    "/rules",
-                    "<gradient:#FFE259:#FFA751>View the server /rules</gradient>",
-                ),
-                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <white><sprite:item/light></white>".clickOpenUrl(
-                    "https://illyria.fandom.com",
-                    "<gradient:#FFE259:#FFA751>Visit the wiki!</gradient>",
-                ),
-                "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
-                "<gradient:#FFA751:#FFE259>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
-            ),
-        var whisperToFormat: String =
-            "<gradient:#1488CC:#2B32B2>You</gradient> <gradient:#FFE259:#FFA751>➛</gradient> <player> <reset><gradient:#FFE259:#FFA751>›</gradient> <message>",
-        var whisperFromFormat: String =
-            "<player> <reset><gradient:#FFE259:#FFA751>➛</gradient> <gradient:#1488CC:#2B32B2>You</gradient> <gradient:#FFE259:#FFA751>›</gradient> <message>",
-        var deleteCross: String = "<dark_gray>[<dark_red><b>X</b></dark_red><dark_gray>]",
-        var i18n: I18n = I18n(),
-    ) : ModuleInterface.Config {
-        data class I18n(
-            var clickMe: String = "<gradient:#FFE259:#FFA751>Click me!</gradient>",
-            var clickToWhisper: String = "<gradient:#FFE259:#FFA751>Click to Whisper</gradient>",
-            var playerIsNotOnline: String = "${instance.prefix} <gradient:#CB2D3E:#EF473A>Player is not Online!</gradient>",
-            var deleteMessage: String = "<gradient:#FFE259:#FFA751>Click to delete your message</gradient>",
-            var clickToClipboard: String = "<gradient:#FFE259:#FFA751>Click to copy position to clipboard</gradient>",
-            var playerSetSpawn: String = "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> <notification>",
-        )
-    }
+            .hoverEvent(
+                config.chatFeature.i18n.deleteMessage
+                    .mm(),
+            ).clickEvent(
+                ClickEvent.callback {
+                    instance.server
+                        .deleteMessage(signedMessage)
+                },
+            )
 }

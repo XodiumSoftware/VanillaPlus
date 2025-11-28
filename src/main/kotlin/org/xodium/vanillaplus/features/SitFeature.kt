@@ -1,6 +1,6 @@
 @file:Suppress("ktlint:standard:no-wildcard-imports")
 
-package org.xodium.vanillaplus.modules
+package org.xodium.vanillaplus.features
 
 import org.bukkit.Location
 import org.bukkit.Material
@@ -18,21 +18,17 @@ import org.bukkit.event.entity.EntityDismountEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.util.Vector
-import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.interfaces.FeatureInterface
 import java.util.*
 
-/** Represents a module handling sit mechanics within the system. */
-internal class SitModule : ModuleInterface<SitModule.Config> {
-    override val config: Config = Config()
-
+/** Represents a feature handling sit mechanics within the system. */
+internal object SitFeature : FeatureInterface {
     private val sittingPlayers = mutableMapOf<UUID, ArmorStand>()
     private val blockCenterOffset = Vector(0.5, 0.5, 0.5)
     private val playerStandUpOffset = Vector(0.0, 0.5, 0.0)
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun on(event: PlayerInteractEvent) {
-        if (!enabled()) return
-
         val player = event.player
 
         if (event.action != Action.RIGHT_CLICK_BLOCK || player.isSneaking || player.isInsideVehicle) return
@@ -42,8 +38,8 @@ internal class SitModule : ModuleInterface<SitModule.Config> {
         val blockData = block.blockData
         val isSitTarget =
             when {
-                config.useStairs && blockData is Stairs && blockData.half == Bisected.Half.BOTTOM -> true
-                config.useSlabs && blockData is Slab && blockData.type == Slab.Type.BOTTOM -> true
+                config.sitFeature.useStairs && blockData is Stairs && blockData.half == Bisected.Half.BOTTOM -> true
+                config.sitFeature.useSlabs && blockData is Slab && blockData.type == Slab.Type.BOTTOM -> true
                 else -> false
             }
 
@@ -59,7 +55,6 @@ internal class SitModule : ModuleInterface<SitModule.Config> {
 
     @EventHandler
     fun on(event: EntityDismountEvent) {
-        if (!enabled()) return
         if (event.entity !is Player) return
 
         val player = event.entity as Player
@@ -75,15 +70,11 @@ internal class SitModule : ModuleInterface<SitModule.Config> {
 
     @EventHandler
     fun on(event: PlayerQuitEvent) {
-        if (!enabled()) return
-
         sittingPlayers.remove(event.player.uniqueId)?.remove()
     }
 
     @EventHandler(ignoreCancelled = true)
     fun on(event: EntityDamageEvent) {
-        if (!enabled()) return
-
         val player = event.entity as? Player ?: return
 
         sittingPlayers[player.uniqueId]?.let { armorStand ->
@@ -113,9 +104,4 @@ internal class SitModule : ModuleInterface<SitModule.Config> {
         armorStand.addPassenger(player)
         sittingPlayers[player.uniqueId] = armorStand
     }
-
-    data class Config(
-        var useStairs: Boolean = true,
-        var useSlabs: Boolean = true,
-    ) : ModuleInterface.Config
 }

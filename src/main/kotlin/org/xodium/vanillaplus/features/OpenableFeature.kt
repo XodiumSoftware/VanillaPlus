@@ -1,8 +1,7 @@
 @file:Suppress("ktlint:standard:no-wildcard-imports")
 
-package org.xodium.vanillaplus.modules
+package org.xodium.vanillaplus.features
 
-import net.kyori.adventure.sound.Sound
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.block.Block
@@ -20,15 +19,11 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.AdjacentBlockData
-import org.xodium.vanillaplus.data.SoundData
-import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.interfaces.FeatureInterface
 import java.util.*
-import org.bukkit.Sound as BukkitSound
 
-/** Represents a module handling openable blocks mechanics within the system. */
-internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
-    override val config: Config = Config()
-
+/** Represents a feature handling openable blocks mechanics within the system. */
+internal object OpenableFeature : FeatureInterface {
     private val disallowedKnockGameModes = EnumSet.of(GameMode.CREATIVE, GameMode.SPECTATOR)
     private val possibleNeighbours: Set<AdjacentBlockData> =
         setOf(
@@ -44,8 +39,6 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerInteractEvent) {
-        if (!enabled()) return
-
         val clickedBlock = event.clickedBlock ?: return
 
         if (!isValidInteraction(event)) return
@@ -99,7 +92,7 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
      * @param block The block representing the door or gate being interacted with.
      */
     private fun handleRightClick(block: Block) {
-        if (config.allowDoubleDoors && block.blockData is Openable) processDoorOrGateInteraction(block)
+        if (config.openableFeature.allowDoubleDoors && block.blockData is Openable) processDoorOrGateInteraction(block)
     }
 
     /**
@@ -109,8 +102,8 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
      */
     private fun playKnockSound(block: Block) {
         block.world
-            .getNearbyPlayers(block.location, config.soundProximityRadius)
-            .forEach { it.playSound(config.soundKnock.toSound()) }
+            .getNearbyPlayers(block.location, config.openableFeature.soundProximityRadius)
+            .forEach { it.playSound(config.openableFeature.soundKnock.toSound()) }
     }
 
     /**
@@ -140,7 +133,7 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
             !isKnockingConditionViolated(player)
 
     /**
-     * Checks if the knocking conditions are violated based on the player's state and configuration.
+     * Checks if the knocking conditions are violated based on the player's state and config.
      * @param player The player attempting to knock.
      * @return True if any knocking condition is violated, false otherwise.
      */
@@ -152,7 +145,8 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
      * @param player The player attempting to knock.
      * @return True if sneaking is required, but the player isn't sneaking, false otherwise.
      */
-    private fun isViolatingSneakingRequirement(player: Player): Boolean = config.knockingRequiresShifting && !player.isSneaking
+    private fun isViolatingSneakingRequirement(player: Player): Boolean =
+        config.openableFeature.knockingRequiresShifting && !player.isSneaking
 
     /**
      * Checks if the player is violating the empty hand requirement for knocking.
@@ -160,7 +154,7 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
      * @return True if an empty hand is required, but the player is holding something, false otherwise.
      */
     private fun isViolatingEmptyHandRequirement(player: Player): Boolean =
-        config.knockingRequiresEmptyHand &&
+        config.openableFeature.knockingRequiresEmptyHand &&
             player.inventory.itemInMainHand.type != Material.AIR
 
     /**
@@ -168,21 +162,21 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
      * @param data The block data to check.
      * @return True if the block can be knocked on, false otherwise.
      */
-    private fun isKnockableBlock(data: BlockData): Boolean = config.allowKnocking && data is Openable
+    private fun isKnockableBlock(data: BlockData): Boolean = config.openableFeature.allowKnocking && data is Openable
 
     /**
      * Toggles the state of the other door when one door is opened or closed.
      * @param block The block representing the first door.
      * @param block2 The block representing the second door.
      * @param open The desired state (open or closed) for the second door.
-     * @param delay The delay in ticks before toggling the secondary door (defaults to config.initDelayInTicks).
+     * @param delay The delay in ticks before toggling the secondary door (defaults to config.openableFeature.initDelayInTicks).
      *              This delay helps prevent race conditions with block updates.
      */
     private fun toggleOtherDoor(
         block: Block,
         block2: Block,
         open: Boolean,
-        delay: Long = config.initDelayInTicks,
+        delay: Long = config.openableFeature.initDelayInTicks,
     ) {
         if (block.blockData !is Door || block2.blockData !is Door) return
 
@@ -227,18 +221,4 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
             }?.first
             ?.getRelativeBlock(block)
     }
-
-    data class Config(
-        var initDelayInTicks: Long = 1,
-        var allowDoubleDoors: Boolean = true,
-        var allowKnocking: Boolean = true,
-        var knockingRequiresEmptyHand: Boolean = true,
-        var knockingRequiresShifting: Boolean = true,
-        var soundKnock: SoundData =
-            SoundData(
-                BukkitSound.ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR,
-                Sound.Source.HOSTILE,
-            ),
-        var soundProximityRadius: Double = 10.0,
-    ) : ModuleInterface.Config
 }

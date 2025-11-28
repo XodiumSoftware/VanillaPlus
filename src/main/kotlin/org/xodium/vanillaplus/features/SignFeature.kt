@@ -1,4 +1,4 @@
-package org.xodium.vanillaplus.modules
+package org.xodium.vanillaplus.features
 
 import com.mojang.brigadier.arguments.IntegerArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType
@@ -9,12 +9,12 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
-import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.interfaces.FeatureInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 
-/** Represents a module handling sign mechanics within the system. */
-internal class SignModule : ModuleInterface<ModuleInterface.Config> {
+/** Represents a feature handling sign mechanics within the system. */
+internal object SignFeature : FeatureInterface {
     override fun cmds(): List<CommandData> =
         listOf(
             CommandData(

@@ -14,7 +14,6 @@ import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.xodium.vanillaplus.VanillaPlus
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.interfaces.ModuleInterface
 import java.net.URI
 import java.util.*
 import javax.imageio.ImageIO
@@ -44,12 +43,6 @@ internal object ExtUtils {
      * @return the snake case version of the string.
      */
     val String.snakeCase: String get() = replace(Regex("([a-z])([A-Z])"), "$1_$2").lowercase()
-
-    /**
-     * Generates a configuration key for a module.
-     * @return The generated configuration key.
-     */
-    val ModuleInterface<*>.key: String get() = this.javaClass.simpleName.toString()
 
     /**
      * Deserializes a [MiniMessage] [String] into a [Component].
