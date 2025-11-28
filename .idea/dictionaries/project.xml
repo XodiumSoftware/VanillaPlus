@@ -1,23 +1,33 @@
 <component name="ProjectDictionaryState">
   <dictionary name="project">
     <words>
+      <w>ageable</w>
       <w>appleboy</w>
+      <w>armorposer</w>
       <w>birdflop</w>
       <w>cmds</w>
+      <w>coord</w>
       <w>decentholograms</w>
       <w>decentsoftware</w>
+      <w>enderchest</w>
       <w>enderman</w>
+      <w>fastasyncworldedit</w>
       <w>fawe</w>
       <w>foojay</w>
       <w>ghast</w>
+      <w>ghasts</w>
       <w>glorp</w>
+      <w>gradleup</w>
       <w>griefing</w>
+      <w>intellectualsites</w>
       <w>invs</w>
       <w>invsearch</w>
       <w>invu</w>
+      <w>invunload</w>
       <w>jpenilla</w>
       <w>jvmargs</w>
       <w>ktlint</w>
+      <w>levelup</w>
       <w>mojang</w>
       <w>motd</w>
       <w>playerdata</w>
@@ -25,12 +35,18 @@
       <w>redstone</w>
       <w>rrggbb</w>
       <w>searchinv</w>
+      <w>shulker</w>
+      <w>signedit</w>
       <w>spellbite</w>
+      <w>tellraw</w>
       <w>triumphteam</w>
       <w>unloadinv</w>
+      <w>userdev</w>
       <w>vanillaplus</w>
+      <w>veinmine</w>
       <w>worldedit</w>
       <w>xodium</w>
+      <w>xparser</w>
     </words>
   </dictionary>
 </component>

@@ -1,8 +1,6 @@
 package org.xodium.vanillaplus.data
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.databind.util.StdConverter
+import kotlinx.serialization.Serializable
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 
@@ -13,35 +11,16 @@ import net.kyori.adventure.sound.Sound
  * @property volume The [volume] of the sound. Defaults to 1.0f.
  * @property pitch The [pitch] of the sound. Defaults to 1.0f.
  */
+@Serializable
 internal data class SoundData(
-    @get:JsonSerialize(converter = SoundTypeToString::class)
-    @param:JsonDeserialize(converter = StringToSoundType::class)
-    val name: Sound.Type,
-    private val source: Sound.Source = Sound.Source.MASTER,
-    private val volume: Float = 1.0f,
-    private val pitch: Float = 1.0f,
+    var name: String,
+    var source: Sound.Source = Sound.Source.MASTER,
+    var volume: Float = 1.0f,
+    var pitch: Float = 1.0f,
 ) {
-    companion object {
-        /**
-         * Converts a [Sound.Type] to its string representation for JSON serialization.
-         * Converts a string back to a [Sound.Type] for JSON deserialization.
-         */
-        private object SoundTypeToString : StdConverter<Sound.Type, String>() {
-            override fun convert(value: Sound.Type) = value.key().asString()
-        }
-
-        /**
-         * Converts a string to a [Sound.Type] for JSON deserialization.
-         * Converts a [Sound.Type] to its string representation for JSON serialization.
-         */
-        private object StringToSoundType : StdConverter<String, Sound.Type>() {
-            override fun convert(value: String) = Sound.Type { Key.key(value) }
-        }
-    }
-
     /**
      * Converts this [SoundData] instance to a [Sound] instance.
      * @return A [Sound] instance with the properties of this [SoundData].
      */
-    fun toSound(): Sound = Sound.sound(name, source, volume, pitch)
+    fun toSound(): Sound = Sound.sound(Key.key(name), source, volume, pitch)
 }
