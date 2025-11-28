@@ -2,6 +2,7 @@
 
 package org.xodium.vanillaplus
 
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import org.bukkit.plugin.java.JavaPlugin
 import org.xodium.vanillaplus.data.ConfigData
 import org.xodium.vanillaplus.features.*
@@ -30,6 +31,15 @@ internal class VanillaPlus : JavaPlugin() {
             "This plugin requires a supported server version. Supported versions: ${pluginMeta.version}."
 
         if (!server.version.contains(pluginMeta.version)) disablePlugin(unsupportedVersionMsg)
+
+        instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
+            event.registrar().register(
+                ConfigManager.reloadCommand.builder.build(),
+                ConfigManager.reloadCommand.description,
+                ConfigManager.reloadCommand.aliases,
+            )
+        }
+        instance.server.pluginManager.addPermission(ConfigManager.reloadPermission)
 
         configData = ConfigManager.load()
 

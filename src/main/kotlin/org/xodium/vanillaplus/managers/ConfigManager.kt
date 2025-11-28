@@ -1,8 +1,16 @@
 package org.xodium.vanillaplus.managers
 
+import io.papermc.paper.command.brigadier.Commands
 import kotlinx.serialization.json.Json
+import org.bukkit.entity.Player
+import org.bukkit.permissions.Permission
+import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.ConfigData
+import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.ExtUtils.prefix
+import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import java.io.File
 import kotlin.time.measureTime
 
@@ -14,6 +22,36 @@ internal object ConfigManager {
             encodeDefaults = true
             ignoreUnknownKeys = true
         }
+
+    var config: ConfigData = load()
+        private set
+
+    val reloadCommand: CommandData =
+        CommandData(
+            Commands
+                .literal("vanillaplus")
+                .requires { it.sender.hasPermission(reloadPermission) }
+                .then(
+                    Commands
+                        .literal("reload")
+                        .executes { ctx ->
+                            ctx.tryCatch {
+                                if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+                                config = load()
+                                it.sender.sendMessage("${instance.prefix} <green>configuration reloaded!".mm())
+                            }
+                        },
+                ),
+            "Allows to plugin specific admin commands",
+            listOf("vp"),
+        )
+
+    val reloadPermission: Permission =
+        Permission(
+            "${instance.javaClass.simpleName}.reload".lowercase(),
+            "Allows use of the reload command",
+            PermissionDefault.OP,
+        )
 
     /**
      * Loads or creates the configuration file.
@@ -35,8 +73,6 @@ internal object ConfigManager {
 
         return config
     }
-
-    // TODO: add reload cmd.
 
     /**
      * Gets the existing configuration or creates a default one.
