@@ -25,23 +25,22 @@ internal object ConfigManager {
 
         if (!instance.dataFolder.exists()) instance.dataFolder.mkdirs()
 
-        var config: ConfigData
-
-        val time =
-            measureTime {
-                config =
-                    if (file.exists()) {
-                        json.decodeFromString(ConfigData.serializer(), file.readText())
-                    } else {
-                        ConfigData()
-                    }
-                file.writeText(json.encodeToString(ConfigData.serializer(), config))
-            }
+        val config = getOrCreateConfig(file)
 
         instance.logger.info(
-            "${if (file.exists()) "Loaded configuration from $fileName" else "Created default $fileName"} | Took ${time.inWholeMilliseconds}ms",
+            "${if (file.exists()) "Loaded configuration from $fileName" else "Created default $fileName"} | Took ${
+                measureTime { file.writeText(json.encodeToString(ConfigData.serializer(), config)) }.inWholeMilliseconds
+            }ms",
         )
 
         return config
     }
+
+    /**
+     * Gets the existing configuration or creates a default one.
+     * @param file The configuration file.
+     * @return The configuration data.
+     */
+    private fun getOrCreateConfig(file: File): ConfigData =
+        if (file.exists()) json.decodeFromString(ConfigData.serializer(), file.readText()) else ConfigData()
 }
