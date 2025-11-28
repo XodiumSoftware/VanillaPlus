@@ -9,7 +9,6 @@ import org.xodium.vanillaplus.utils.ExtUtils.clickOpenUrl
 import org.xodium.vanillaplus.utils.ExtUtils.clickRunCmd
 import org.xodium.vanillaplus.utils.ExtUtils.clickSuggestCmd
 import org.xodium.vanillaplus.utils.ExtUtils.prefix
-import org.bukkit.Sound as BukkitSound
 
 /** Configuration data for the plugin. */
 @Serializable
@@ -147,11 +146,7 @@ internal data class ConfigData(
 
     @Serializable
     data class InvFeature(
-        var soundOnUnload: SoundData =
-            SoundData(
-                BukkitSound.ENTITY_PLAYER_LEVELUP,
-                Sound.Source.PLAYER,
-            ),
+        var soundOnUnload: SoundData = SoundData("entity.player.levelup", Sound.Source.PLAYER),
         var i18n: I18n = I18n(),
     ) {
         @Serializable
@@ -185,11 +180,7 @@ internal data class ConfigData(
         var allowKnocking: Boolean = true,
         var knockingRequiresEmptyHand: Boolean = true,
         var knockingRequiresShifting: Boolean = true,
-        var soundKnock: SoundData =
-            SoundData(
-                BukkitSound.ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR,
-                Sound.Source.HOSTILE,
-            ),
+        var soundKnock: SoundData = SoundData("entity.zombie.attack_wooden_door", Sound.Source.HOSTILE),
         var soundProximityRadius: Double = 10.0,
     )
 

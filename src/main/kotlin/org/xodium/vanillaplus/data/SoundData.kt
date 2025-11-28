@@ -1,8 +1,8 @@
 package org.xodium.vanillaplus.data
 
 import kotlinx.serialization.Serializable
+import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
-import org.xodium.vanillaplus.serializers.SoundTypeSerializer
 
 /**
  * Represents sound data with its properties such as [name], [source], [volume], and [pitch].
@@ -13,8 +13,7 @@ import org.xodium.vanillaplus.serializers.SoundTypeSerializer
  */
 @Serializable
 internal data class SoundData(
-    @Serializable(with = SoundTypeSerializer::class)
-    var name: Sound.Type,
+    var name: String,
     var source: Sound.Source = Sound.Source.MASTER,
     var volume: Float = 1.0f,
     var pitch: Float = 1.0f,
@@ -23,5 +22,5 @@ internal data class SoundData(
      * Converts this [SoundData] instance to a [Sound] instance.
      * @return A [Sound] instance with the properties of this [SoundData].
      */
-    fun toSound(): Sound = Sound.sound(name, source, volume, pitch)
+    fun toSound(): Sound = Sound.sound(Key.key(name), source, volume, pitch)
 }
