@@ -36,6 +36,8 @@ internal object ConfigManager {
         return config
     }
 
+    // TODO: add reload cmd.
+
     /**
      * Gets the existing configuration or creates a default one.
      * @param file The configuration file.
