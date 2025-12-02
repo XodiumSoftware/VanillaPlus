@@ -41,6 +41,7 @@ internal class VanillaPlus : JavaPlugin() {
         }
         instance.server.pluginManager.addPermission(ConfigManager.reloadPermission)
 
+        // FIX: load() was ran twice.
         configData = ConfigManager.load()
 
         RottenFleshRecipe.register()
