@@ -14,12 +14,12 @@ import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 
 /** Represents a feature handling scoreboard mechanics within the system. */
 internal object ScoreBoardFeature : FeatureInterface {
-    override fun cmds(): List<CommandData> =
+    override val cmds =
         listOf(
             CommandData(
                 Commands
                     .literal("leaderboard")
-                    .requires { it.sender.hasPermission(perms()[0]) }
+                    .requires { it.sender.hasPermission(perms[0]) }
                     .executes { ctx ->
                         ctx.tryCatch {
                             if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
@@ -31,7 +31,7 @@ internal object ScoreBoardFeature : FeatureInterface {
             ),
         )
 
-    override fun perms(): List<Permission> =
+    override val perms =
         listOf(
             Permission(
                 "${instance.javaClass.simpleName}.leaderboard".lowercase(),

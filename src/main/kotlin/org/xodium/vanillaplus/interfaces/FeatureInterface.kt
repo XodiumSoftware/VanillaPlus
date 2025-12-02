@@ -19,7 +19,7 @@ internal interface FeatureInterface : Listener {
                 measureTime {
                     instance.server.pluginManager.registerEvents(this, instance)
                     instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
-                        cmds().forEach { cmd ->
+                        cmds.forEach { cmd ->
                             event.registrar().register(
                                 cmd.builder.build(),
                                 cmd.description,
@@ -27,7 +27,7 @@ internal interface FeatureInterface : Listener {
                             )
                         }
                     }
-                    instance.server.pluginManager.addPermissions(perms())
+                    instance.server.pluginManager.addPermissions(perms)
                 }.inWholeMilliseconds
             }ms",
         )
@@ -44,11 +44,13 @@ internal interface FeatureInterface : Listener {
      * Retrieves a list of command data associated with the module.
      * @return A list of [CommandData] objects representing the commands for the module.
      */
-    fun cmds(): List<CommandData> = emptyList()
+    val cmds: List<CommandData>
+        get() = emptyList()
 
     /**
      * Retrieves a list of permissions associated with this module.
      * @return A [List] of [Permission] objects representing the permissions for this module.
      */
-    fun perms(): List<Permission> = emptyList()
+    val perms: List<Permission>
+        get() = emptyList()
 }

@@ -37,12 +37,12 @@ import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 internal object PlayerFeature : FeatureInterface {
     private val tabListModule by lazy { TabListFeature }
 
-    override fun cmds(): List<CommandData> =
+    override val cmds =
         listOf(
             CommandData(
                 Commands
                     .literal("nickname")
-                    .requires { it.sender.hasPermission(perms()[0]) }
+                    .requires { it.sender.hasPermission(perms[0]) }
                     .executes { ctx ->
                         ctx.tryCatch {
                             if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
@@ -63,7 +63,7 @@ internal object PlayerFeature : FeatureInterface {
             ),
         )
 
-    override fun perms(): List<Permission> =
+    override val perms =
         listOf(
             Permission(
                 "${instance.javaClass.simpleName}.nickname".lowercase(),

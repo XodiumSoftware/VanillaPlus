@@ -15,12 +15,12 @@ import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 
 /** Represents a feature handling sign mechanics within the system. */
 internal object SignFeature : FeatureInterface {
-    override fun cmds(): List<CommandData> =
+    override val cmds =
         listOf(
             CommandData(
                 Commands
                     .literal("sign")
-                    .requires { it.sender.hasPermission(perms()[0]) }
+                    .requires { it.sender.hasPermission(perms[0]) }
                     .then(
                         Commands
                             .argument("line", IntegerArgumentType.integer(1, 4))
@@ -48,7 +48,7 @@ internal object SignFeature : FeatureInterface {
             ),
         )
 
-    override fun perms(): List<Permission> =
+    override val perms =
         listOf(
             Permission(
                 "${instance.javaClass.simpleName}.signedit".lowercase(),

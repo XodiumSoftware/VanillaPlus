@@ -26,12 +26,12 @@ import java.util.concurrent.CompletableFuture
 
 /** Represents a feature handling chat mechanics within the system. */
 internal object ChatFeature : FeatureInterface {
-    override fun cmds(): List<CommandData> {
-        return listOf(
+    override val cmds =
+        listOf(
             CommandData(
                 Commands
                     .literal("whisper")
-                    .requires { it.sender.hasPermission(perms()[0]) }
+                    .requires { it.sender.hasPermission(perms[0]) }
                     .then(
                         Commands
                             .argument("target", StringArgumentType.string())
@@ -72,9 +72,8 @@ internal object ChatFeature : FeatureInterface {
                 listOf("w", "msg", "tell", "tellraw"),
             ),
         )
-    }
 
-    override fun perms(): List<Permission> =
+    override val perms =
         listOf(
             Permission(
                 "${instance.javaClass.simpleName}.whisper".lowercase(),

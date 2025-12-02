@@ -51,16 +51,27 @@ internal object CauldronFeature : FeatureInterface {
      */
     private fun getConvertedMaterial(material: Material): Material? =
         when {
-            config.cauldronFeature.convertDirt && material == Material.DIRT -> Material.MUD
-            config.cauldronFeature.convertCoarseDirt && material == Material.COARSE_DIRT -> Material.MUD
-            config.cauldronFeature.convertRootedDirt && material == Material.ROOTED_DIRT -> Material.MUD
+            config.cauldronFeature.convertDirt && material == Material.DIRT -> {
+                Material.MUD
+            }
+
+            config.cauldronFeature.convertCoarseDirt && material == Material.COARSE_DIRT -> {
+                Material.MUD
+            }
+
+            config.cauldronFeature.convertRootedDirt && material == Material.ROOTED_DIRT -> {
+                Material.MUD
+            }
+
             config.cauldronFeature.convertConcretePowder && Tag.CONCRETE_POWDER.isTagged(material) -> {
                 Material.entries.firstOrNull {
                     it.name == material.name.removeSuffix("_POWDER")
                 }
             }
 
-            else -> null
+            else -> {
+                null
+            }
         }
 
     /**

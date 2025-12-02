@@ -12,7 +12,7 @@ import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 internal object BooksFeature : FeatureInterface {
     private val permPrefix: String = "${instance.javaClass.simpleName}.book".lowercase()
 
-    override fun cmds(): List<CommandData> =
+    override val cmds =
         config.booksFeature.books.map { book ->
             CommandData(
                 Commands
@@ -33,7 +33,7 @@ internal object BooksFeature : FeatureInterface {
             )
         }
 
-    override fun perms(): List<Permission> =
+    override val perms =
         config.booksFeature.books.map {
             Permission(
                 "$permPrefix.${it.cmd.lowercase()}",

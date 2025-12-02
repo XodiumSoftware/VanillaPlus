@@ -20,12 +20,12 @@ import java.util.concurrent.CompletableFuture
 internal object LocatorFeature : FeatureInterface {
     private val colors = NamedTextColor.NAMES.keys().map { it.toString() } + listOf("<RRGGBB>", "reset")
 
-    override fun cmds(): List<CommandData> =
+    override val cmds =
         listOf(
             CommandData(
                 Commands
                     .literal("locator")
-                    .requires { it.sender.hasPermission(perms()[0]) }
+                    .requires { it.sender.hasPermission(perms[0]) }
                     .then(
                         Commands
                             .argument("color", ArgumentTypes.namedColor())
@@ -69,7 +69,7 @@ internal object LocatorFeature : FeatureInterface {
             ),
         )
 
-    override fun perms(): List<Permission> =
+    override val perms =
         listOf(
             Permission(
                 "${instance.javaClass.simpleName}.locator".lowercase(),
@@ -92,15 +92,20 @@ internal object LocatorFeature : FeatureInterface {
         val cmd = "waypoint modify ${player.name}"
 
         when {
-            colour != null -> instance.server.dispatchCommand(player, "$cmd color $colour")
+            colour != null -> {
+                instance.server.dispatchCommand(player, "$cmd color $colour")
+            }
 
-            hex != null ->
+            hex != null -> {
                 instance.server.dispatchCommand(
                     player,
                     "$cmd color hex ${String.format(Locale.ENGLISH, "%06X", hex.value())}",
                 )
+            }
 
-            else -> instance.server.dispatchCommand(player, "$cmd color reset")
+            else -> {
+                instance.server.dispatchCommand(player, "$cmd color reset")
+            }
         }
     }
 }

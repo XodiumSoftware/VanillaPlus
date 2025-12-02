@@ -28,12 +28,12 @@ import java.util.concurrent.CompletableFuture
 
 /** Represents a feature handling inv mechanics within the system. */
 internal object InvFeature : FeatureInterface {
-    override fun cmds(): List<CommandData> =
+    override val cmds =
         listOf(
             CommandData(
                 Commands
                     .literal("invsearch")
-                    .requires { it.sender.hasPermission(perms()[0]) }
+                    .requires { it.sender.hasPermission(perms[0]) }
                     .then(
                         Commands
                             .argument("material", StringArgumentType.word())
@@ -56,7 +56,7 @@ internal object InvFeature : FeatureInterface {
             CommandData(
                 Commands
                     .literal("invunload")
-                    .requires { it.sender.hasPermission(perms()[1]) }
+                    .requires { it.sender.hasPermission(perms[1]) }
                     .executes { ctx ->
                         ctx.tryCatch {
                             if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
@@ -68,7 +68,7 @@ internal object InvFeature : FeatureInterface {
             ),
         )
 
-    override fun perms(): List<Permission> =
+    override val perms =
         listOf(
             Permission(
                 "${instance.javaClass.simpleName}.invsearch".lowercase(),
