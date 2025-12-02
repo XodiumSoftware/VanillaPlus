@@ -87,7 +87,9 @@ internal object SitFeature : FeatureInterface {
      * Handles cleanup when a player quits.
      * @param event The [PlayerQuitEvent] triggered when the player leaves the server.
      */
-    private fun handleQuit(event: PlayerQuitEvent) = sittingPlayers.remove(event.player.uniqueId)?.remove()
+    private fun handleQuit(event: PlayerQuitEvent) {
+        sittingPlayers.remove(event.player.uniqueId)?.remove()
+    }
 
     /**
      * Handles player damage while sitting.
