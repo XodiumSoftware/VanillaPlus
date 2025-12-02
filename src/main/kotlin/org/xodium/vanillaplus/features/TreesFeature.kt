@@ -33,12 +33,15 @@ internal object TreesFeature : FeatureInterface {
         MaterialRegistry.SAPLING_LINKS.mapValues { loadSchematics("/schematics/${it.value}") }
     }
 
-    /**
-     * Handle the StructureGrowEvent.
-     * @param event The StructureGrowEvent.
-     */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    fun on(event: StructureGrowEvent) {
+    fun on(event: StructureGrowEvent) = handleStructureGrow(event)
+
+    /**
+     * Handles StructureGrowEvent and attempts to paste a schematic
+     * when the grown block is a sapling or fungus.
+     * @param event The [StructureGrowEvent] triggered by natural growth.
+     */
+    private fun handleStructureGrow(event: StructureGrowEvent) {
         event.location.block
             .takeIf {
                 Tag.SAPLINGS.isTagged(it.type) ||
