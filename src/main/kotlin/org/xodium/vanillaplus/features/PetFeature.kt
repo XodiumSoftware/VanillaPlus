@@ -15,7 +15,14 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 /** Represents a feature handling pet mechanics within the system. */
 internal object PetFeature : FeatureInterface {
     @EventHandler
-    fun on(event: PlayerInteractEntityEvent) {
+    fun on(event: PlayerInteractEntityEvent) = handleInteractEntity(event)
+
+    /**
+     * Handles transferring ownership of a leashed pet when a player
+     * right-clicks another player while holding a lead.
+     * @param event The [PlayerInteractEntityEvent] triggered on entity interaction.
+     */
+    private fun handleInteractEntity(event: PlayerInteractEntityEvent) {
         val source = event.player
         val target = event.rightClicked as? Player ?: return
 
