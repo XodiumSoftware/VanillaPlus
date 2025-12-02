@@ -38,9 +38,14 @@ internal object OpenableFeature : FeatureInterface {
         )
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    fun on(event: PlayerInteractEvent) {
-        val clickedBlock = event.clickedBlock ?: return
+    fun on(event: PlayerInteractEvent) = handleInteract(event)
 
+    /**
+     * Handles block interactions and delegates to the correct click handler.
+     * @param event The [PlayerInteractEvent] triggered by the player.
+     */
+    private fun handleInteract(event: PlayerInteractEvent) {
+        val clickedBlock = event.clickedBlock ?: return
         if (!isValidInteraction(event)) return
 
         when (event.action) {
