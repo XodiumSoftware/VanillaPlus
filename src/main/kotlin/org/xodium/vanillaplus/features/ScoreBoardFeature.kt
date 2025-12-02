@@ -41,14 +41,19 @@ internal object ScoreBoardFeature : FeatureInterface {
         )
 
     @EventHandler
-    fun on(event: PlayerJoinEvent) {
-        val player = event.player
+    fun on(event: PlayerJoinEvent) = handleJoin(event)
 
-        if (player.scoreboardVisibility == true) {
-            player.scoreboard = instance.server.scoreboardManager.newScoreboard
-        } else {
-            player.scoreboard = instance.server.scoreboardManager.mainScoreboard
-        }
+    /**
+     * Applies the correct scoreboard to players when they join.
+     * @param event The [PlayerJoinEvent] triggered when the player joins.
+     */
+    private fun handleJoin(event: PlayerJoinEvent) {
+        event.player.scoreboard =
+            if (event.player.scoreboardVisibility == true) {
+                instance.server.scoreboardManager.newScoreboard
+            } else {
+                instance.server.scoreboardManager.mainScoreboard
+            }
     }
 
     /**
