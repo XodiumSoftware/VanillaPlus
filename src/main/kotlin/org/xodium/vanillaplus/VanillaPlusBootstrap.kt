@@ -49,7 +49,7 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                             TagEntry.valueEntry(ItemTypeKeys.CROSSBOW),
                             TagEntry.valueEntry(ItemTypeKeys.TRIDENT),
                             TagEntry.valueEntry(ItemTypeKeys.MACE),
-                            // TODO: add spear when the upcoming update is released.
+                            TagEntry.tagEntry(ItemTypeTagKeys.SPEARS),
                         ),
                     )
                     setTag(
