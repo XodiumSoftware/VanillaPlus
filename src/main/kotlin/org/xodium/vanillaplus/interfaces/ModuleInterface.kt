@@ -20,9 +20,9 @@ internal interface ModuleInterface : Listener {
 
     /**
      * Retrieves a list of command data associated with the module.
-     * @return A [List] of [CommandData] objects representing the commands for the module.
+     * @return A [Collection] of [CommandData] objects representing the commands for the module.
      */
-    val cmds: List<CommandData>
+    val cmds: Collection<CommandData>
         get() = emptyList()
 
     /**
