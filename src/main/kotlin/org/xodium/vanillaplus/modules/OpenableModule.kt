@@ -1,6 +1,6 @@
 @file:Suppress("ktlint:standard:no-wildcard-imports")
 
-package org.xodium.vanillaplus.features
+package org.xodium.vanillaplus.modules
 
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -19,11 +19,11 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.AdjacentBlockData
-import org.xodium.vanillaplus.interfaces.FeatureInterface
+import org.xodium.vanillaplus.interfaces.ModuleInterface
 import java.util.*
 
-/** Represents a feature handling openable blocks mechanics within the system. */
-internal object OpenableFeature : FeatureInterface {
+/** Represents a module handling openable blocks mechanics within the system. */
+internal object OpenableModule : ModuleInterface {
     private val disallowedKnockGameModes = EnumSet.of(GameMode.CREATIVE, GameMode.SPECTATOR)
     private val possibleNeighbours: Set<AdjacentBlockData> =
         setOf(

@@ -1,4 +1,4 @@
-package org.xodium.vanillaplus.features
+package org.xodium.vanillaplus.modules
 
 import org.bukkit.Location
 import org.bukkit.Material
@@ -10,12 +10,12 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.persistence.PersistentDataType
-import org.xodium.vanillaplus.interfaces.FeatureInterface
+import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.recipes.TorchArrowRecipe.torchArrow
 import org.xodium.vanillaplus.recipes.TorchArrowRecipe.torchArrowKey
 
-/** Represents a feature handling torch arrow mechanics within the system. */
-internal object TorchArrowFeature : FeatureInterface {
+/** Represents a module handling torch arrow mechanics within the system. */
+internal object TorchArrowModule : ModuleInterface {
     @EventHandler
     fun on(event: ProjectileHitEvent) = handleProjectileHit(event)
 

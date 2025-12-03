@@ -1,6 +1,6 @@
 @file:Suppress("ktlint:standard:no-wildcard-imports")
 
-package org.xodium.vanillaplus.features
+package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.event.entity.EntityEquipmentChangedEvent
 import org.bukkit.Material
@@ -11,11 +11,11 @@ import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.entity.EntityExplodeEvent
 import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.enchantments.NimbusEnchantment
-import org.xodium.vanillaplus.interfaces.FeatureInterface
+import org.xodium.vanillaplus.interfaces.ModuleInterface
 import kotlin.random.Random
 
-/** Represents a feature handling entity mechanics within the system. */
-internal object EntityFeature : FeatureInterface {
+/** Represents a module handling entity mechanics within the system. */
+internal object EntityModule : ModuleInterface {
     @EventHandler
     fun on(event: EntityChangeBlockEvent) {
         if (shouldCancelGrief(event.entity)) event.isCancelled = true
