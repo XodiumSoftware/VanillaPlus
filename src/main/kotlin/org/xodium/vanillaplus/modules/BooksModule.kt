@@ -13,7 +13,7 @@ internal object BooksModule : ModuleInterface {
     private val permPrefix: String = "${instance.javaClass.simpleName}.book".lowercase()
 
     override val cmds =
-        config.booksFeature.books.map { book ->
+        config.booksModule.books.map { book ->
             CommandData(
                 Commands
                     .literal(book.cmd.lowercase())
@@ -30,7 +30,7 @@ internal object BooksModule : ModuleInterface {
         }
 
     override val perms =
-        config.booksFeature.books.map {
+        config.booksModule.books.map {
             Permission(
                 "$permPrefix.${it.cmd.lowercase()}",
                 "Allows use of the book command: ${it.cmd}",

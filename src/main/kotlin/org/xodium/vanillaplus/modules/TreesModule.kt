@@ -124,17 +124,17 @@ internal object TreesModule : ModuleInterface {
                             editSession.mask =
                                 BlockTypeMask(
                                     editSession,
-                                    config.treesFeature.treeMask.map { BukkitAdapter.asBlockType(it) },
+                                    config.treesModule.treeMask.map { BukkitAdapter.asBlockType(it) },
                                 )
                             ClipboardHolder(clipboard).apply {
                                 transform = transform.combine(AffineTransform().rotateY(getRandomRotation().toDouble()))
                                 Operations.complete(
                                     createPaste(editSession)
                                         .to(BlockVector3.at(block.x, block.y, block.z))
-                                        .copyBiomes(config.treesFeature.copyBiomes)
-                                        .copyEntities(config.treesFeature.copyEntities)
-                                        .ignoreAirBlocks(config.treesFeature.ignoreAirBlocks)
-                                        .ignoreStructureVoidBlocks(config.treesFeature.ignoreStructureVoidBlocks)
+                                        .copyBiomes(config.treesModule.copyBiomes)
+                                        .copyEntities(config.treesModule.copyEntities)
+                                        .ignoreAirBlocks(config.treesModule.ignoreAirBlocks)
+                                        .ignoreStructureVoidBlocks(config.treesModule.ignoreStructureVoidBlocks)
                                         .build(),
                                 )
                             }

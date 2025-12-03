@@ -29,7 +29,7 @@ internal object SilkTouchEnchantment : EnchantmentInterface {
      * @param event The block break event.
      */
     private fun handleSpawnerBreak(event: BlockBreakEvent) {
-        if (!config.playerFeature.silkTouch.allowSpawnerSilk) return
+        if (!config.playerModule.silkTouch.allowSpawnerSilk) return
 
         event.isDropItems = false
         event.expToDrop = 0
@@ -50,7 +50,7 @@ internal object SilkTouchEnchantment : EnchantmentInterface {
      * @param event The block break event.
      */
     private fun handleBuddingAmethystBreak(event: BlockBreakEvent) {
-        if (!config.playerFeature.silkTouch.allowBuddingAmethystSilk) return
+        if (!config.playerModule.silkTouch.allowBuddingAmethystSilk) return
 
         event.isDropItems = false
         event.block.world.dropItemNaturally(event.block.location, ItemStack.of(Material.BUDDING_AMETHYST))

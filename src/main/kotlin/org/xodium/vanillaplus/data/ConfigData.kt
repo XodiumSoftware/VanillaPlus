@@ -13,22 +13,22 @@ import org.xodium.vanillaplus.utils.ExtUtils.prefix
 /** Configuration data for the plugin. */
 @Serializable
 internal data class ConfigData(
-    var booksFeature: BooksFeature = BooksFeature(),
-    var cauldronFeature: CauldronFeature = CauldronFeature(),
-    var chatFeature: ChatFeature = ChatFeature(),
-    var dimensionsFeature: DimensionsFeature = DimensionsFeature(),
-    var entityFeature: EntityFeature = EntityFeature(),
-    var invFeature: InvFeature = InvFeature(),
-    var motdFeature: MotdFeature = MotdFeature(),
-    var openableFeature: OpenableFeature = OpenableFeature(),
-    var petFeature: PetFeature = PetFeature(),
-    var playerFeature: PlayerFeature = PlayerFeature(),
-    var sitFeature: SitFeature = SitFeature(),
-    var tabListFeature: TabListFeature = TabListFeature(),
-    var treesFeature: TreesFeature = TreesFeature(),
+    var booksModule: BooksModule = BooksModule(),
+    var cauldronModule: CauldronModule = CauldronModule(),
+    var chatModule: ChatModule = ChatModule(),
+    var dimensionsModule: DimensionsModule = DimensionsModule(),
+    var entityModule: EntityModule = EntityModule(),
+    var invModule: InvModule = InvModule(),
+    var motdModule: MotdModule = MotdModule(),
+    var openableModule: OpenableModule = OpenableModule(),
+    var petModule: PetModule = PetModule(),
+    var playerModule: PlayerModule = PlayerModule(),
+    var sitModule: SitModule = SitModule(),
+    var tabListModule: TabListModule = TabListModule(),
+    var treesModule: TreesModule = TreesModule(),
 ) {
     @Serializable
-    data class BooksFeature(
+    data class BooksModule(
         var books: List<BookData> =
             listOf(
                 BookData(
@@ -70,7 +70,7 @@ internal data class ConfigData(
     )
 
     @Serializable
-    data class CauldronFeature(
+    data class CauldronModule(
         var convertConcretePowder: Boolean = true,
         var convertDirt: Boolean = true,
         var convertCoarseDirt: Boolean = true,
@@ -78,7 +78,7 @@ internal data class ConfigData(
     )
 
     @Serializable
-    data class ChatFeature(
+    data class ChatModule(
         var chatFormat: String = "<player_head> <player> <reset><gradient:#FFE259:#FFA751>›</gradient> <message>",
         var welcomeText: List<String> =
             listOf(
@@ -122,7 +122,7 @@ internal data class ConfigData(
     }
 
     @Serializable
-    data class DimensionsFeature(
+    data class DimensionsModule(
         var portalSearchRadius: Int = 128,
         var i18n: I18n = I18n(),
     ) {
@@ -134,7 +134,7 @@ internal data class ConfigData(
     }
 
     @Serializable
-    data class EntityFeature(
+    data class EntityModule(
         var disableBlazeGrief: Boolean = true,
         var disableCreeperGrief: Boolean = true,
         var disableEnderDragonGrief: Boolean = true,
@@ -145,7 +145,7 @@ internal data class ConfigData(
     )
 
     @Serializable
-    data class InvFeature(
+    data class InvModule(
         var soundOnUnload: SoundData = SoundData("entity.player.levelup", Sound.Source.PLAYER),
         var i18n: I18n = I18n(),
     ) {
@@ -165,7 +165,7 @@ internal data class ConfigData(
     }
 
     @Serializable
-    data class MotdFeature(
+    data class MotdModule(
         val motd: List<String> =
             listOf(
                 "<gradient:#CB2D3E:#EF473A><b>Ultimate Private SMP</b></gradient>",
@@ -174,7 +174,7 @@ internal data class ConfigData(
     )
 
     @Serializable
-    data class OpenableFeature(
+    data class OpenableModule(
         var initDelayInTicks: Long = 1,
         var allowDoubleDoors: Boolean = true,
         var allowKnocking: Boolean = true,
@@ -185,7 +185,7 @@ internal data class ConfigData(
     )
 
     @Serializable
-    data class PetFeature(
+    data class PetModule(
         var transferRadius: Int = 10,
         var i18n: I18n = I18n(),
     ) {
@@ -201,7 +201,7 @@ internal data class ConfigData(
     }
 
     @Serializable
-    data class PlayerFeature(
+    data class PlayerModule(
         var enderChestClickType: ClickType = ClickType.SHIFT_RIGHT,
         var skullDropChance: Double = 0.1,
         var xpCostToBottle: Int = 11,
@@ -231,13 +231,13 @@ internal data class ConfigData(
     }
 
     @Serializable
-    data class SitFeature(
+    data class SitModule(
         var useStairs: Boolean = true,
         var useSlabs: Boolean = true,
     )
 
     @Serializable
-    data class TabListFeature(
+    data class TabListModule(
         var initDelayInTicks: Long = 0,
         var intervalInTicks: Long = 10,
         var header: List<String> =
@@ -261,7 +261,7 @@ internal data class ConfigData(
     }
 
     @Serializable
-    data class TreesFeature(
+    data class TreesModule(
         var copyBiomes: Boolean = false,
         var copyEntities: Boolean = false,
         var ignoreAirBlocks: Boolean = true,

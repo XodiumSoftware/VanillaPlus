@@ -74,7 +74,7 @@ internal object PlayerModule : ModuleInterface {
 
         player.displayName(player.nickname?.mm())
 
-        if (config.playerFeature.i18n.playerJoinMsg
+        if (config.playerModule.i18n.playerJoinMsg
                 .isEmpty()
         ) {
             return
@@ -86,7 +86,7 @@ internal object PlayerModule : ModuleInterface {
             .filter { it.uniqueId != player.uniqueId }
             .forEach {
                 it.sendMessage(
-                    config.playerFeature.i18n.playerJoinMsg.mm(
+                    config.playerModule.i18n.playerJoinMsg.mm(
                         Placeholder.component("player", player.displayName()),
                     ),
                 )
@@ -95,14 +95,14 @@ internal object PlayerModule : ModuleInterface {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerQuitEvent) {
-        if (config.playerFeature.i18n.playerQuitMsg
+        if (config.playerModule.i18n.playerQuitMsg
                 .isEmpty()
         ) {
             return
         }
 
         event.quitMessage(
-            config.playerFeature.i18n.playerQuitMsg.mm(
+            config.playerModule.i18n.playerQuitMsg.mm(
                 Placeholder.component(
                     "player",
                     event.player.displayName(),
@@ -115,7 +115,7 @@ internal object PlayerModule : ModuleInterface {
     fun on(event: PlayerDeathEvent) {
         val killer = event.entity.killer ?: return
 
-        if (Math.random() < config.playerFeature.skullDropChance) {
+        if (Math.random() < config.playerModule.skullDropChance) {
             event.entity.world.dropItemNaturally(
                 event.entity.location,
                 playerSkull(event.entity, killer),
@@ -128,14 +128,14 @@ internal object PlayerModule : ModuleInterface {
 
     @EventHandler
     fun on(event: PlayerAdvancementDoneEvent) {
-        if (config.playerFeature.i18n.playerAdvancementDoneMsg
+        if (config.playerModule.i18n.playerAdvancementDoneMsg
                 .isEmpty()
         ) {
             return
         }
 
         event.message(
-            config.playerFeature.i18n.playerAdvancementDoneMsg.mm(
+            config.playerModule.i18n.playerAdvancementDoneMsg.mm(
                 Placeholder.component("player", event.player.displayName()),
                 Placeholder.component("advancement", event.advancement.displayName()),
             ),
@@ -176,7 +176,7 @@ internal object PlayerModule : ModuleInterface {
      * @param event The InventoryClickEvent triggered when a player clicks in an inventory.
      */
     private fun enderchest(event: InventoryClickEvent) {
-        if (event.click != config.playerFeature.enderChestClickType ||
+        if (event.click != config.playerModule.enderChestClickType ||
             event.currentItem?.type != Material.ENDER_CHEST ||
             event.clickedInventory?.type != InventoryType.PLAYER
         ) {
@@ -206,9 +206,9 @@ internal object PlayerModule : ModuleInterface {
 
         val player = event.player
 
-        if (player.calculateTotalExperiencePoints() < config.playerFeature.xpCostToBottle) return
+        if (player.calculateTotalExperiencePoints() < config.playerModule.xpCostToBottle) return
 
-        player.giveExp(-config.playerFeature.xpCostToBottle)
+        player.giveExp(-config.playerModule.xpCostToBottle)
         event.item?.subtract(1)
         player.inventory
             .addItem(ItemStack.of(Material.EXPERIENCE_BOTTLE, 1))
@@ -230,7 +230,7 @@ internal object PlayerModule : ModuleInterface {
         // TODO: add enabled check.
         tabListModule.updatePlayerDisplayName(player)
         player.sendActionBar(
-            config.playerFeature.i18n.nicknameUpdated.mm(
+            config.playerModule.i18n.nicknameUpdated.mm(
                 Placeholder.component(
                     "nickname",
                     player.displayName(),
@@ -254,14 +254,14 @@ internal object PlayerModule : ModuleInterface {
             setData(DataComponentTypes.PROFILE, ResolvableProfile.resolvableProfile(entity.playerProfile))
             setData(
                 DataComponentTypes.CUSTOM_NAME,
-                config.playerFeature.i18n.playerHeadName
+                config.playerModule.i18n.playerHeadName
                     .mm(Placeholder.component("player", entity.name.mm())),
             )
             setData(
                 DataComponentTypes.LORE,
                 ItemLore
                     .lore(
-                        config.playerFeature.i18n.playerHeadLore
+                        config.playerModule.i18n.playerHeadLore
                             .mm(
                                 Placeholder.component("player", entity.name.mm()),
                                 Placeholder.component("killer", killer.name.mm()),

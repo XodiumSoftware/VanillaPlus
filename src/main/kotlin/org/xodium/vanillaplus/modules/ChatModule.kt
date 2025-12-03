@@ -57,7 +57,7 @@ internal object ChatModule : ModuleInterface {
                                             instance.server
                                                 .getPlayer(targetName)
                                                 ?: return@executesCatching sender.sendMessage(
-                                                    config.chatFeature.i18n.playerIsNotOnline
+                                                    config.chatModule.i18n.playerIsNotOnline
                                                         .mm(),
                                                 )
                                         val message = it.getArgument("message", String().javaClass)
@@ -85,7 +85,7 @@ internal object ChatModule : ModuleInterface {
         event.renderer(ChatRenderer.defaultRenderer())
         event.renderer { player, displayName, message, audience ->
             var base =
-                config.chatFeature.chatFormat.mm(
+                config.chatModule.chatFormat.mm(
                     Placeholder.component("player_head", "<head:${player.uniqueId}>".mm()),
                     Placeholder.component(
                         "player",
@@ -93,7 +93,7 @@ internal object ChatModule : ModuleInterface {
                             .clickEvent(ClickEvent.suggestCommand("/w ${player.name} "))
                             .hoverEvent(
                                 HoverEvent.showText(
-                                    config.chatFeature.i18n.clickToWhisper
+                                    config.chatModule.i18n.clickToWhisper
                                         .mm(),
                                 ),
                             ),
@@ -113,7 +113,7 @@ internal object ChatModule : ModuleInterface {
 
         player.sendMessage(
             Regex("<image>")
-                .replace(config.chatFeature.welcomeText.joinToString("\n")) { "<image${++imageIndex}>" }
+                .replace(config.chatModule.welcomeText.joinToString("\n")) { "<image${++imageIndex}>" }
                 .mm(
                     Placeholder.component("player", player.displayName()),
                     *player
@@ -128,7 +128,7 @@ internal object ChatModule : ModuleInterface {
     @EventHandler
     fun on(event: PlayerSetSpawnEvent) {
         event.notification =
-            config.chatFeature.i18n.playerSetSpawn.mm(
+            config.chatModule.i18n.playerSetSpawn.mm(
                 Placeholder.component(
                     "notification",
                     event.notification ?: return,
@@ -148,7 +148,7 @@ internal object ChatModule : ModuleInterface {
         message: String,
     ) {
         sender.sendMessage(
-            config.chatFeature.whisperToFormat.mm(
+            config.chatModule.whisperToFormat.mm(
                 Placeholder.component(
                     "player",
                     target
@@ -156,7 +156,7 @@ internal object ChatModule : ModuleInterface {
                         .clickEvent(ClickEvent.suggestCommand("/w ${target.name} "))
                         .hoverEvent(
                             HoverEvent.showText(
-                                config.chatFeature.i18n.clickToWhisper
+                                config.chatModule.i18n.clickToWhisper
                                     .mm(),
                             ),
                         ),
@@ -166,7 +166,7 @@ internal object ChatModule : ModuleInterface {
         )
 
         target.sendMessage(
-            config.chatFeature.whisperFromFormat.mm(
+            config.chatModule.whisperFromFormat.mm(
                 Placeholder.component(
                     "player",
                     sender
@@ -174,7 +174,7 @@ internal object ChatModule : ModuleInterface {
                         .clickEvent(ClickEvent.suggestCommand("/w ${sender.name} "))
                         .hoverEvent(
                             HoverEvent.showText(
-                                config.chatFeature.i18n.clickToWhisper
+                                config.chatModule.i18n.clickToWhisper
                                     .mm(),
                             ),
                         ),
@@ -190,10 +190,10 @@ internal object ChatModule : ModuleInterface {
      * @return A [net.kyori.adventure.text.Component] representing the delete cross with hover text and click action.
      */
     private fun createDeleteCross(signedMessage: SignedMessage): Component =
-        config.chatFeature.deleteCross
+        config.chatModule.deleteCross
             .mm()
             .hoverEvent(
-                config.chatFeature.i18n.deleteMessage
+                config.chatModule.i18n.deleteMessage
                     .mm(),
             ).clickEvent(
                 ClickEvent.callback {

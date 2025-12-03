@@ -85,9 +85,9 @@ internal object PetModule : ModuleInterface {
     private fun findLeashedPet(player: Player): Tameable? =
         player
             .getNearbyEntities(
-                config.petFeature.transferRadius.toDouble(),
-                config.petFeature.transferRadius.toDouble(),
-                config.petFeature.transferRadius.toDouble(),
+                config.petModule.transferRadius.toDouble(),
+                config.petModule.transferRadius.toDouble(),
+                config.petModule.transferRadius.toDouble(),
             ).filterIsInstance<LivingEntity>()
             .firstOrNull { it.isLeashed && it.leashHolder == player }
             as? Tameable
@@ -104,14 +104,14 @@ internal object PetModule : ModuleInterface {
         petName: Component,
     ) {
         source.sendActionBar(
-            config.petFeature.i18n.sourceTransfer.mm(
+            config.petModule.i18n.sourceTransfer.mm(
                 Placeholder.component("<pet>", petName),
                 Placeholder.component("<target>", target.displayName()),
             ),
         )
 
         target.sendActionBar(
-            config.petFeature.i18n.targetTransfer.mm(
+            config.petModule.i18n.targetTransfer.mm(
                 Placeholder.component("<pet>", petName),
                 Placeholder.component("<source>", source.displayName()),
             ),

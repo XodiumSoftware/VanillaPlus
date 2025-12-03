@@ -42,7 +42,7 @@ internal object DimensionsModule : ModuleInterface {
                 event.isCancelled = true
                 val player = event.entity as? Player ?: return
                 player.sendActionBar(
-                    config.dimensionsFeature.i18n.portalCreationDenied
+                    config.dimensionsModule.i18n.portalCreationDenied
                         .mm(),
                 )
             }
@@ -59,7 +59,7 @@ internal object DimensionsModule : ModuleInterface {
     private fun findCorrespondingPortal(
         netherPortal: Location,
         overworld: World,
-        searchRadius: Int = config.dimensionsFeature.portalSearchRadius,
+        searchRadius: Int = config.dimensionsModule.portalSearchRadius,
     ): Location? {
         val targetX = netherPortal.x * NETHER_TO_OVERWORLD_RATIO
         val targetZ = netherPortal.z * NETHER_TO_OVERWORLD_RATIO

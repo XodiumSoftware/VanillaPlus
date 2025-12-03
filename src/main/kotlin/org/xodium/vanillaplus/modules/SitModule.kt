@@ -54,8 +54,8 @@ internal object SitModule : ModuleInterface {
 
         val isSitTarget =
             when {
-                config.sitFeature.useStairs && blockData is Stairs && blockData.half == Bisected.Half.BOTTOM -> true
-                config.sitFeature.useSlabs && blockData is Slab && blockData.type == Slab.Type.BOTTOM -> true
+                config.sitModule.useStairs && blockData is Stairs && blockData.half == Bisected.Half.BOTTOM -> true
+                config.sitModule.useSlabs && blockData is Slab && blockData.type == Slab.Type.BOTTOM -> true
                 else -> false
             }
 

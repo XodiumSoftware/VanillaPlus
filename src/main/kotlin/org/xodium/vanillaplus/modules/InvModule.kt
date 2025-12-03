@@ -91,7 +91,7 @@ internal object InvModule : ModuleInterface {
 
         if (material == Material.AIR) {
             player.sendActionBar(
-                config.invFeature.i18n.noMaterialSpecified
+                config.invModule.i18n.noMaterialSpecified
                     .mm(),
             )
             return 0
@@ -119,7 +119,7 @@ internal object InvModule : ModuleInterface {
 
         if (foundContainers.isEmpty()) {
             player.sendActionBar(
-                config.invFeature.i18n.noMatchingItems.mm(
+                config.invModule.i18n.noMatchingItems.mm(
                     Placeholder.component(
                         "material",
                         material.name.mm(),
@@ -130,7 +130,7 @@ internal object InvModule : ModuleInterface {
         }
 
         player.sendActionBar(
-            config.invFeature.i18n.foundItemsInChests
+            config.invModule.i18n.foundItemsInChests
                 .mm(Placeholder.component("material", material.name.mm())),
         )
 
@@ -176,16 +176,16 @@ internal object InvModule : ModuleInterface {
 
         if (foundContainers.isEmpty()) {
             return player.sendActionBar(
-                config.invFeature.i18n.noItemsUnloaded
+                config.invModule.i18n.noItemsUnloaded
                     .mm(),
             )
         }
 
         player.sendActionBar(
-            config.invFeature.i18n.inventoryUnloaded
+            config.invModule.i18n.inventoryUnloaded
                 .mm(),
         )
-        player.playSound(config.invFeature.soundOnUnload.toSound(), Sound.Emitter.self())
+        player.playSound(config.invModule.soundOnUnload.toSound(), Sound.Emitter.self())
 
         ScheduleUtils.schedule(duration = 60L) {
             foundContainers.forEach { container ->

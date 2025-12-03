@@ -28,7 +28,7 @@ internal object EntityModule : ModuleInterface {
 
     @EventHandler
     fun on(event: EntityDeathEvent) {
-        if (Random.nextDouble() <= config.entityFeature.entityEggDropChance) {
+        if (Random.nextDouble() <= config.entityModule.entityEggDropChance) {
             event.drops.add(ItemStack.of(Material.matchMaterial("${event.entity.type.name}_SPAWN_EGG") ?: return))
         }
     }
@@ -43,13 +43,13 @@ internal object EntityModule : ModuleInterface {
      */
     private fun shouldCancelGrief(entity: Entity): Boolean =
         when (entity) {
-            is WitherSkull -> config.entityFeature.disableWitherGrief
-            is Fireball -> config.entityFeature.disableGhastGrief
-            is Blaze -> config.entityFeature.disableBlazeGrief
-            is Creeper -> config.entityFeature.disableCreeperGrief
-            is EnderDragon -> config.entityFeature.disableEnderDragonGrief
-            is Enderman -> config.entityFeature.disableEndermanGrief
-            is Wither -> config.entityFeature.disableWitherGrief
+            is WitherSkull -> config.entityModule.disableWitherGrief
+            is Fireball -> config.entityModule.disableGhastGrief
+            is Blaze -> config.entityModule.disableBlazeGrief
+            is Creeper -> config.entityModule.disableCreeperGrief
+            is EnderDragon -> config.entityModule.disableEnderDragonGrief
+            is Enderman -> config.entityModule.disableEndermanGrief
+            is Wither -> config.entityModule.disableWitherGrief
             else -> false
         }
 }

@@ -35,8 +35,8 @@ internal object TabListModule : ModuleInterface {
         instance.server.scheduler.runTaskTimer(
             instance,
             Runnable { instance.server.onlinePlayers.forEach { updateTabList(it) } },
-            config.tabListFeature.initDelayInTicks,
-            config.tabListFeature.intervalInTicks,
+            config.tabListModule.initDelayInTicks,
+            config.tabListModule.intervalInTicks,
         )
     }
 
@@ -66,10 +66,10 @@ internal object TabListModule : ModuleInterface {
         val joinConfig = JoinConfiguration.separator(Component.newline())
 
         audience.sendPlayerListHeaderAndFooter(
-            Component.join(joinConfig, config.tabListFeature.header.mm()),
+            Component.join(joinConfig, config.tabListModule.header.mm()),
             Component.join(
                 joinConfig,
-                config.tabListFeature.footer.mm(
+                config.tabListModule.footer.mm(
                     Placeholder.component("weather", getWeather().mm()),
                     Placeholder.component("tps", getTps().mm()),
                 ),
@@ -112,9 +112,9 @@ internal object TabListModule : ModuleInterface {
         val world = instance.server.worlds[0]
 
         return when {
-            world.isThundering -> config.tabListFeature.i18n.weatherThundering
-            world.hasStorm() -> config.tabListFeature.i18n.weatherStorm
-            else -> config.tabListFeature.i18n.weatherClear
+            world.isThundering -> config.tabListModule.i18n.weatherThundering
+            world.hasStorm() -> config.tabListModule.i18n.weatherStorm
+            else -> config.tabListModule.i18n.weatherClear
         }
     }
 }

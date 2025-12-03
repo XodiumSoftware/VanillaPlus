@@ -17,7 +17,7 @@ internal object MotdModule : ModuleInterface {
      */
     private fun motd(event: ServerListPingEvent) =
         event.motd(
-            config.motdFeature.motd
+            config.motdModule.motd
                 .joinToString("\n")
                 .mm(),
         )
