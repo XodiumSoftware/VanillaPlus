@@ -9,6 +9,7 @@ import org.xodium.vanillaplus.features.*
 import org.xodium.vanillaplus.hooks.WorldEditHook
 import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.recipes.RottenFleshRecipe
+import org.xodium.vanillaplus.recipes.TorchArrowRecipe
 import org.xodium.vanillaplus.recipes.WoodLogRecipe
 
 /** Main class of the plugin. */
@@ -45,6 +46,7 @@ internal class VanillaPlus : JavaPlugin() {
         configData = ConfigManager.load()
 
         RottenFleshRecipe.register()
+        TorchArrowRecipe.register()
         WoodLogRecipe.register()
 
         BooksFeature.register()
