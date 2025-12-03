@@ -1,8 +1,12 @@
 package org.xodium.vanillaplus.features
 
+import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.block.BlockFace
+import org.bukkit.block.data.Directional
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.ProjectileHitEvent
+import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.interfaces.FeatureInterface
 import org.xodium.vanillaplus.recipes.TorchArrowRecipe.torchArrowKey
@@ -23,8 +27,59 @@ internal object TorchArrowFeature : FeatureInterface {
 
         if (!isTorchArrow) return
 
-        val hit = arrow.location.block
+        val hitBlock = event.hitBlock
+        val hitFace = event.hitBlockFace
 
-        if (hit.type == Material.AIR) hit.type = Material.TORCH
+        if (hitBlock == null || hitFace == null) {
+            dropTorch(arrow.location.block.location)
+            return
+        }
+
+        val target = hitBlock.getRelative(hitFace)
+
+        if (event.hitEntity != null) {
+            dropTorch(target.location)
+            return
+        }
+
+        if (hitBlock.type == Material.VINE) {
+            hitBlock.breakNaturally()
+            target.type = Material.TORCH
+            return
+        }
+
+        when (hitFace) {
+            BlockFace.UP -> {
+                if (target.type == Material.AIR) {
+                    target.type = Material.TORCH
+                } else {
+                    dropTorch(target.location)
+                }
+            }
+
+            BlockFace.DOWN -> {
+                dropTorch(target.location)
+            }
+
+            else -> {
+                if (target.type != Material.AIR) {
+                    dropTorch(target.location)
+                    return
+                }
+
+                target.type = Material.WALL_TORCH
+
+                val data = target.blockData as? Directional
+
+                data?.facing = hitFace
+                data?.let { target.blockData = it }
+            }
+        }
     }
+
+    /**
+     * Drops a torch item naturally at the specified location.
+     * @param location The location where the torch should be dropped.
+     */
+    private fun dropTorch(location: Location) = location.world.dropItemNaturally(location, ItemStack.of(Material.TORCH))
 }
