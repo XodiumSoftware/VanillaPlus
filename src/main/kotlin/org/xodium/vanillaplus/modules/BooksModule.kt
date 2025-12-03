@@ -6,7 +6,7 @@ import org.bukkit.permissions.Permission
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
+import org.xodium.vanillaplus.utils.ExtUtils.executesCatching
 
 /** Represents a module handling book mechanics within the system. */
 internal object BooksModule : ModuleInterface {
@@ -18,15 +18,11 @@ internal object BooksModule : ModuleInterface {
                 Commands
                     .literal(book.cmd.lowercase())
                     .requires { it.sender.hasPermission("$permPrefix.${book.cmd.lowercase()}") }
-                    .executes { ctx ->
-                        ctx.tryCatch {
-                            if (it.sender !is Player) {
-                                instance.logger.warning(
-                                    "Command can only be executed by a Player!",
-                                )
-                            }
-                            it.sender.openBook(book.toBook())
+                    .executesCatching {
+                        if (it.source.sender !is Player) {
+                            instance.logger.warning("Command can only be executed by a Player!")
                         }
+                        it.source.sender.openBook(book.toBook())
                     },
                 "Opens the predefined book '${book.cmd.lowercase()}'",
                 emptyList(),

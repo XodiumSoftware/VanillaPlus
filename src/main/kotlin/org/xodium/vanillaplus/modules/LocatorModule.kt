@@ -12,7 +12,7 @@ import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
+import org.xodium.vanillaplus.utils.ExtUtils.executesCatching
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
@@ -34,34 +34,28 @@ internal object LocatorModule : ModuleInterface {
                                     .filter { it.startsWith(builder.remaining.lowercase()) }
                                     .forEach(builder::suggest)
                                 CompletableFuture.completedFuture(builder.build())
-                            }.executes { ctx ->
-                                ctx.tryCatch {
-                                    if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
-                                    val player = it.sender as Player
-                                    val color = ctx.getArgument("color", NamedTextColor::class.java)
-                                    locator(player, colour = color)
-                                }
+                            }.executesCatching {
+                                if (it.source.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+                                val player = it.source.sender as Player
+                                val color = it.getArgument("color", NamedTextColor::class.java)
+                                locator(player, colour = color)
                             },
                     ).then(
                         Commands
                             .argument("hex", ArgumentTypes.hexColor())
-                            .executes { ctx ->
-                                ctx.tryCatch {
-                                    if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
-                                    val player = it.sender as Player
-                                    val hex = ctx.getArgument("hex", TextColor::class.java)
-                                    locator(player, hex = hex)
-                                }
+                            .executesCatching {
+                                if (it.source.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+                                val player = it.source.sender as Player
+                                val hex = it.getArgument("hex", TextColor::class.java)
+                                locator(player, hex = hex)
                             },
                     ).then(
                         Commands
                             .literal("reset")
-                            .executes { ctx ->
-                                ctx.tryCatch {
-                                    if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
-                                    val player = it.sender as Player
-                                    locator(player)
-                                }
+                            .executesCatching {
+                                if (it.source.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+                                val player = it.source.sender as Player
+                                locator(player)
                             },
                     ),
                 "Allows players to personalise their locator bar",

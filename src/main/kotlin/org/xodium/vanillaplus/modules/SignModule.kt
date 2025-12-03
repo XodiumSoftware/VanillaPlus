@@ -10,8 +10,8 @@ import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.ExtUtils.executesCatching
 import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 
 /** Represents a module handling sign mechanics within the system. */
 internal object SignModule : ModuleInterface {
@@ -30,16 +30,14 @@ internal object SignModule : ModuleInterface {
                             }.then(
                                 Commands
                                     .argument("text", StringArgumentType.greedyString())
-                                    .executes { ctx ->
-                                        ctx.tryCatch {
-                                            val player =
-                                                it.sender as? Player
-                                                    ?: instance.logger.warning("Command can only be executed by a Player!")
-                                            val line = IntegerArgumentType.getInteger(ctx, "line") - 1
-                                            val text = StringArgumentType.getString(ctx, "text")
+                                    .executesCatching {
+                                        val player =
+                                            it.source.sender as? Player
+                                                ?: instance.logger.warning("Command can only be executed by a Player!")
+                                        val line = IntegerArgumentType.getInteger(it, "line") - 1
+                                        val text = StringArgumentType.getString(it, "text")
 
-                                            sign(player as Player, line, text)
-                                        }
+                                        sign(player as Player, line, text)
                                     },
                             ),
                     ),

@@ -19,8 +19,8 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.BlockUtils.center
+import org.xodium.vanillaplus.utils.ExtUtils.executesCatching
 import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.InvUtils
 import org.xodium.vanillaplus.utils.PlayerUtils
 import org.xodium.vanillaplus.utils.ScheduleUtils
@@ -43,13 +43,11 @@ internal object InvModule : ModuleInterface {
                                     .filter { it.startsWith(builder.remaining.lowercase()) }
                                     .forEach(builder::suggest)
                                 CompletableFuture.completedFuture(builder.build())
-                            }.executes { ctx ->
-                                ctx.tryCatch {
-                                    if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
-                                    handleSearch(ctx)
-                                }
+                            }.executesCatching {
+                                if (it.source.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+                                handleSearch(it)
                             },
-                    ).executes { ctx -> ctx.tryCatch { handleSearch(ctx) } },
+                    ).executesCatching { handleSearch(it) },
                 "Search nearby chests for specific items",
                 listOf("search", "searchinv", "invs"),
             ),
@@ -57,11 +55,9 @@ internal object InvModule : ModuleInterface {
                 Commands
                     .literal("invunload")
                     .requires { it.sender.hasPermission(perms[1]) }
-                    .executes { ctx ->
-                        ctx.tryCatch {
-                            if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
-                            unload(it.sender as Player)
-                        }
+                    .executesCatching {
+                        if (it.source.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+                        unload(it.source.sender as Player)
                     },
                 "Unload your inventory into nearby chests",
                 listOf("unload", "unloadinv", "invu"),

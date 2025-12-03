@@ -19,9 +19,9 @@ import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.ExtUtils.executesCatching
 import org.xodium.vanillaplus.utils.ExtUtils.face
 import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import java.util.concurrent.CompletableFuture
 
 /** Represents a module handling chat mechanics within the system. */
@@ -44,27 +44,25 @@ internal object ChatModule : ModuleInterface {
                             }.then(
                                 Commands
                                     .argument("message", StringArgumentType.greedyString())
-                                    .executes { ctx ->
-                                        ctx.tryCatch {
-                                            if (it.sender !is Player) {
-                                                instance.logger.warning(
-                                                    "Command can only be executed by a Player!",
-                                                )
-                                            }
-
-                                            val sender = it.sender as Player
-                                            val targetName = ctx.getArgument("target", String().javaClass)
-                                            val target =
-                                                instance.server
-                                                    .getPlayer(targetName)
-                                                    ?: return@tryCatch sender.sendMessage(
-                                                        config.chatFeature.i18n.playerIsNotOnline
-                                                            .mm(),
-                                                    )
-                                            val message = ctx.getArgument("message", String().javaClass)
-
-                                            whisper(sender, target, message)
+                                    .executesCatching {
+                                        if (it.source.sender !is Player) {
+                                            instance.logger.warning(
+                                                "Command can only be executed by a Player!",
+                                            )
                                         }
+
+                                        val sender = it.source.sender as Player
+                                        val targetName = it.getArgument("target", String().javaClass)
+                                        val target =
+                                            instance.server
+                                                .getPlayer(targetName)
+                                                ?: return@executesCatching sender.sendMessage(
+                                                    config.chatFeature.i18n.playerIsNotOnline
+                                                        .mm(),
+                                                )
+                                        val message = it.getArgument("message", String().javaClass)
+
+                                        whisper(sender, target, message)
                                     },
                             ),
                     ),

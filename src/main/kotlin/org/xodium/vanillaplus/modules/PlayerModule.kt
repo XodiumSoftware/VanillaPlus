@@ -30,8 +30,8 @@ import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.enchantments.*
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
+import org.xodium.vanillaplus.utils.ExtUtils.executesCatching
 import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 
 /** Represents a module handling player mechanics within the system. */
 internal object PlayerModule : ModuleInterface {
@@ -43,19 +43,15 @@ internal object PlayerModule : ModuleInterface {
                 Commands
                     .literal("nickname")
                     .requires { it.sender.hasPermission(perms[0]) }
-                    .executes { ctx ->
-                        ctx.tryCatch {
-                            if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
-                            nickname(it.sender as Player, "")
-                        }
+                    .executesCatching {
+                        if (it.source.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+                        nickname(it.source.sender as Player, "")
                     }.then(
                         Commands
                             .argument("name", StringArgumentType.greedyString())
-                            .executes { ctx ->
-                                ctx.tryCatch {
-                                    if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
-                                    nickname(it.sender as Player, StringArgumentType.getString(ctx, "name"))
-                                }
+                            .executesCatching {
+                                if (it.source.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+                                nickname(it.source.sender as Player, StringArgumentType.getString(it, "name"))
                             },
                     ),
                 "Allows players to set or remove their nickname",

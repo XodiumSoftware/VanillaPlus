@@ -4,6 +4,7 @@ package org.xodium.vanillaplus.utils
 
 import com.google.gson.JsonParser
 import com.mojang.brigadier.Command
+import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.registry.TypedKey
@@ -37,12 +38,6 @@ internal object ExtUtils {
     /** The standardized prefix for [VanillaPlus] messages. */
     val VanillaPlus.prefix: String
         get() = "<mango_inverted>[</mango_inverted><fire>${this.javaClass.simpleName}</fire><mango>]</mango>"
-
-    /**
-     * Converts a CamelCase string to snake case.
-     * @return the snake case version of the string.
-     */
-    val String.snakeCase: String get() = replace(Regex("([a-z])([A-Z])"), "$1_$2").lowercase()
 
     /**
      * Deserializes a [MiniMessage] [String] into a [Component].
@@ -98,24 +93,28 @@ internal object ExtUtils {
     ): String = "<hover:show_text:'$hover'><click:open_url:'$url'>$this</click></hover>"
 
     /**
-     * A helper function to wrap command execution with standardized error handling.
-     * @param action The action to execute, receiving a CommandSourceStack as a parameter.
-     * @return Command.SINGLE_SUCCESS after execution.
+     * Registers a command execution handler with an automatic try/catch handling.
+     * @receiver The command builder this handler is attached to.
+     * @param action The action executed when the command runs.
+     * @return The same command builder for further configuration.
      */
-    fun CommandContext<CommandSourceStack>.tryCatch(action: (CommandSourceStack) -> Unit): Int {
-        runCatching { action(source) }
-            .onFailure { e ->
-                instance.logger.severe(
-                    """
-                    Command error: ${e.message}
-                    ${e.stackTraceToString()}
-                    """.trimIndent(),
-                )
-                (source.sender as? Player)?.sendMessage(
-                    "${instance.prefix} <red>An error has occurred. Check server logs for details.".mm(),
-                )
-            }
-        return Command.SINGLE_SUCCESS
+    fun <T : ArgumentBuilder<CommandSourceStack, T>> T.executesCatching(action: (CommandContext<CommandSourceStack>) -> Unit): T {
+        executes { ctx ->
+            runCatching { action(ctx) }
+                .onFailure { e ->
+                    instance.logger.severe(
+                        """
+                        Command error: ${e.message}
+                        ${e.stackTraceToString()}
+                        """.trimIndent(),
+                    )
+                    (ctx.source.sender as? Player)?.sendMessage(
+                        "${instance.prefix} <red>An error has occurred. Check server logs for details.".mm(),
+                    )
+                }
+            Command.SINGLE_SUCCESS
+        }
+        return this
     }
 
     /**
