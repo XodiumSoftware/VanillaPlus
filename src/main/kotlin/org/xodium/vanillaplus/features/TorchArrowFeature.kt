@@ -4,26 +4,51 @@ import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Directional
+import org.bukkit.entity.Arrow
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.ProjectileHitEvent
+import org.bukkit.event.entity.ProjectileLaunchEvent
 import org.bukkit.inventory.ItemStack
+import org.bukkit.metadata.FixedMetadataValue
 import org.bukkit.persistence.PersistentDataType
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.FeatureInterface
 import org.xodium.vanillaplus.recipes.TorchArrowRecipe.torchArrowKey
 
 /** Represents a feature handling torch arrow mechanics within the system. */
 internal object TorchArrowFeature : FeatureInterface {
     @EventHandler
-    fun on(event: ProjectileHitEvent) = torchArrow(event)
+    fun on(event: ProjectileLaunchEvent) = handleTorchArrowLaunch(event)
+
+    @EventHandler
+    fun on(event: ProjectileHitEvent) = handleTorchArrowHit(event)
+
+    /**
+     * Handles the logic for torch arrows when they are launched.
+     * @param event The projectile launch event to process.
+     */
+    private fun handleTorchArrowLaunch(event: ProjectileLaunchEvent) {
+        val projectile = event.entity
+
+        if (projectile !is Arrow) return
+
+        val arrowItem = projectile.itemStack
+        val isTorchArrow =
+            arrowItem.hasItemMeta() && arrowItem.itemMeta?.persistentDataContainer?.has(
+                torchArrowKey,
+                PersistentDataType.BYTE,
+            ) == true
+
+        if (isTorchArrow) projectile.setMetadata("torch_arrow", FixedMetadataValue(instance, true))
+    }
 
     /**
      * Handles the logic for torch arrows when they hit a target.
      * @param event The projectile hit event to process.
      */
-    private fun torchArrow(event: ProjectileHitEvent) {
+    private fun handleTorchArrowHit(event: ProjectileHitEvent) {
         val arrow = event.entity
-        val item = arrow.pickItemStack
-        val isTorchArrow = item.editPersistentDataContainer { it.has(torchArrowKey, PersistentDataType.BYTE) }
+        val isTorchArrow = arrow.hasMetadata("torch_arrow")
 
         if (!isTorchArrow) return
 
@@ -75,6 +100,8 @@ internal object TorchArrowFeature : FeatureInterface {
                 data?.let { target.blockData = it }
             }
         }
+
+        arrow.remove()
     }
 
     /**
