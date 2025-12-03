@@ -8,9 +8,9 @@ import org.bukkit.entity.Arrow
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.event.entity.ProjectileLaunchEvent
-import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.interfaces.FeatureInterface
+import org.xodium.vanillaplus.recipes.TorchArrowRecipe.torchArrow
 import org.xodium.vanillaplus.recipes.TorchArrowRecipe.torchArrowKey
 
 /** Represents a feature handling torch arrow mechanics within the system. */
@@ -30,9 +30,9 @@ internal object TorchArrowFeature : FeatureInterface {
 
         if (projectile.isTorchArrow) return
 
-        val item = projectile.itemStack.clone()
+        val item = projectile.itemStack
 
-        item.itemMeta?.persistentDataContainer?.set(torchArrowKey, PersistentDataType.BYTE, 1)
+        item.editPersistentDataContainer { it.set(torchArrowKey, PersistentDataType.BYTE, 1) }
         projectile.itemStack = item
     }
 
@@ -49,14 +49,14 @@ internal object TorchArrowFeature : FeatureInterface {
         val hitFace = event.hitBlockFace
 
         if (hitBlock == null || hitFace == null) {
-            dropTorch(arrow.location.block.location)
+            dropArrow(arrow.location.block.location)
             return
         }
 
         val target = hitBlock.getRelative(hitFace)
 
         if (event.hitEntity != null) {
-            dropTorch(target.location)
+            dropArrow(target.location)
             return
         }
 
@@ -68,20 +68,16 @@ internal object TorchArrowFeature : FeatureInterface {
 
         when (hitFace) {
             BlockFace.UP -> {
-                if (target.type == Material.AIR) {
-                    target.type = Material.TORCH
-                } else {
-                    dropTorch(target.location)
-                }
+                if (target.type == Material.AIR) target.type = Material.TORCH else dropArrow(target.location)
             }
 
             BlockFace.DOWN -> {
-                dropTorch(target.location)
+                dropArrow(target.location)
             }
 
             else -> {
                 if (target.type != Material.AIR) {
-                    dropTorch(target.location)
+                    dropArrow(target.location)
                     return
                 }
 
@@ -98,10 +94,10 @@ internal object TorchArrowFeature : FeatureInterface {
     }
 
     /**
-     * Drops a torch item naturally at the specified location.
-     * @param location The location where the torch should be dropped.
+     * Drops a torch arrow item at the specified location.
+     * @param location The location where the torch arrow should be dropped.
      */
-    private fun dropTorch(location: Location) = location.world.dropItemNaturally(location, ItemStack.of(Material.TORCH))
+    private fun dropArrow(location: Location) = location.world.dropItemNaturally(location, torchArrow)
 
     /**
      * Checks whether this arrow is a torch arrow based on its ItemStack metadata.

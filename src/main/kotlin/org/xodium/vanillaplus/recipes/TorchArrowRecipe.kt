@@ -13,17 +13,16 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 /** Represents an object handling torch arrow recipe implementation within the system. */
 internal object TorchArrowRecipe : RecipeInterface {
     val torchArrowKey = NamespacedKey(instance, "torch_arrow")
+    val torchArrow =
+        ItemStack.of(Material.ARROW).apply {
+            @Suppress("UnstableApiUsage")
+            setData(DataComponentTypes.CUSTOM_NAME, "Torch Arrow".mm())
+            editPersistentDataContainer { it.set(torchArrowKey, PersistentDataType.BYTE, 1) }
+        }
 
     override val recipes =
         setOf(
-            ShapelessRecipe(
-                torchArrowKey,
-                ItemStack.of(Material.ARROW).apply {
-                    @Suppress("UnstableApiUsage")
-                    setData(DataComponentTypes.CUSTOM_NAME, "Torch Arrow".mm())
-                    editPersistentDataContainer { it.set(torchArrowKey, PersistentDataType.BYTE, 1) }
-                },
-            ).apply {
+            ShapelessRecipe(torchArrowKey, torchArrow).apply {
                 addIngredient(Material.ARROW)
                 addIngredient(Material.TORCH)
             },
