@@ -78,5 +78,5 @@ internal object ConfigManager {
      * @return The configuration data.
      */
     private fun getOrCreateConfig(file: File): ConfigData =
-        if (file.exists()) json.decodeFromString(ConfigData.serializer(), file.readText()) else configData
+        if (file.exists()) json.decodeFromString(ConfigData.serializer(), file.readText()) else ConfigData()
 }
