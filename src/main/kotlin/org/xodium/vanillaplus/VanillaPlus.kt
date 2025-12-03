@@ -48,7 +48,6 @@ internal class VanillaPlus : JavaPlugin() {
         WoodLogRecipe.register()
 
         BooksFeature.register()
-        CauldronFeature.register()
         ChatFeature.register()
         DimensionsFeature.register()
         EntityFeature.register()
