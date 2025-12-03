@@ -6,6 +6,8 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Directional
 import org.bukkit.entity.Arrow
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
+import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.event.entity.ProjectileLaunchEvent
 import org.bukkit.persistence.PersistentDataType
@@ -20,6 +22,9 @@ internal object TorchArrowFeature : FeatureInterface {
 
     @EventHandler
     fun on(event: ProjectileHitEvent) = handleProjectileHit(event)
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    fun on(event: EntityDamageByEntityEvent) = handleEntityDamage(event)
 
     /**
      * Handles the logic for torch arrows when they are launched.
@@ -91,6 +96,18 @@ internal object TorchArrowFeature : FeatureInterface {
         }
 
         arrow.remove()
+    }
+
+    /**
+     * Handles the logic for torch arrows when they attempt to deal damage.
+     * @param event The entity damage event to process.
+     */
+    private fun handleEntityDamage(event: EntityDamageByEntityEvent) {
+        val damager = event.damager as? Arrow ?: return
+
+        if (!damager.isTorchArrow) return
+
+        event.isCancelled = true
     }
 
     /**
