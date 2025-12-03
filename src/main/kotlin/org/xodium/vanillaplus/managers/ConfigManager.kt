@@ -5,6 +5,7 @@ import kotlinx.serialization.json.Json
 import org.bukkit.entity.Player
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
+import org.xodium.vanillaplus.VanillaPlus.Companion.configData
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.ConfigData
@@ -23,9 +24,6 @@ internal object ConfigManager {
             ignoreUnknownKeys = true
         }
 
-    var config: ConfigData? = null
-        private set
-
     val reloadCommand: CommandData =
         CommandData(
             Commands
@@ -37,7 +35,7 @@ internal object ConfigManager {
                         .executes { ctx ->
                             ctx.tryCatch {
                                 if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
-                                config = load()
+                                configData = load()
                                 it.sender.sendMessage("${instance.prefix} <green>configuration reloaded!".mm())
                             }
                         },

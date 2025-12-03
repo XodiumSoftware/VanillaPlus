@@ -19,7 +19,6 @@ internal class VanillaPlus : JavaPlugin() {
             private set
 
         lateinit var configData: ConfigData
-            private set
     }
 
     init {
