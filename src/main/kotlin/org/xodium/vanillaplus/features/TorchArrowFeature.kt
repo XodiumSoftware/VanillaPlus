@@ -60,11 +60,6 @@ internal object TorchArrowFeature : FeatureInterface {
 
         val target = hitBlock.getRelative(hitFace)
 
-        if (event.hitEntity != null) {
-            dropArrow(target.location)
-            return
-        }
-
         if (hitBlock.type == Material.VINE) {
             hitBlock.breakNaturally()
             target.type = Material.TORCH
@@ -103,9 +98,11 @@ internal object TorchArrowFeature : FeatureInterface {
      * @param event The entity damage event to process.
      */
     private fun handleEntityDamage(event: EntityDamageByEntityEvent) {
-        val damager = event.damager as? Arrow ?: return
+        val arrow = event.damager as? Arrow ?: return
 
-        if (!damager.isTorchArrow) return
+        if (!arrow.isTorchArrow) return
+
+        arrow.remove()
 
         event.isCancelled = true
     }
