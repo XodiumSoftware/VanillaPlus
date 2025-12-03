@@ -5,10 +5,11 @@ package org.xodium.vanillaplus
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import org.bukkit.plugin.java.JavaPlugin
 import org.xodium.vanillaplus.data.ConfigData
-import org.xodium.vanillaplus.features.*
 import org.xodium.vanillaplus.hooks.WorldEditHook
 import org.xodium.vanillaplus.managers.ConfigManager
+import org.xodium.vanillaplus.modules.*
 import org.xodium.vanillaplus.recipes.RottenFleshRecipe
+import org.xodium.vanillaplus.recipes.TorchArrowRecipe
 import org.xodium.vanillaplus.recipes.WoodLogRecipe
 
 /** Main class of the plugin. */
@@ -45,23 +46,25 @@ internal class VanillaPlus : JavaPlugin() {
         configData = ConfigManager.load()
 
         RottenFleshRecipe.register()
+        TorchArrowRecipe.register()
         WoodLogRecipe.register()
 
-        BooksFeature.register()
-        ChatFeature.register()
-        DimensionsFeature.register()
-        EntityFeature.register()
-        InvFeature.register()
-        LocatorFeature.register()
-        MotdFeature.register()
-        OpenableFeature.register()
-        PetFeature.register()
-        PlayerFeature.register()
-        ScoreBoardFeature.register()
-        SignFeature.register()
-        SitFeature.register()
-        TabListFeature.register()
-        if (WorldEditHook.get()) TreesFeature.register()
+        BooksModule.register()
+        ChatModule.register()
+        DimensionsModule.register()
+        EntityModule.register()
+        InvModule.register()
+        LocatorModule.register()
+        MotdModule.register()
+        OpenableModule.register()
+        PetModule.register()
+        PlayerModule.register()
+        ScoreBoardModule.register()
+        SignModule.register()
+        SitModule.register()
+        TabListModule.register()
+        TorchArrowModule.register()
+        if (WorldEditHook.get()) TreesModule.register()
     }
 
     /**

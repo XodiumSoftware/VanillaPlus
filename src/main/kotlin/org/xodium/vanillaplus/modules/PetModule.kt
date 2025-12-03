@@ -1,4 +1,4 @@
-package org.xodium.vanillaplus.features
+package org.xodium.vanillaplus.modules
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
@@ -9,11 +9,11 @@ import org.bukkit.entity.Tameable
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.inventory.ItemStack
-import org.xodium.vanillaplus.interfaces.FeatureInterface
+import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 
-/** Represents a feature handling pet mechanics within the system. */
-internal object PetFeature : FeatureInterface {
+/** Represents a module handling pet mechanics within the system. */
+internal object PetModule : ModuleInterface {
     @EventHandler
     fun on(event: PlayerInteractEntityEvent) = handleInteractEntity(event)
 

@@ -1,4 +1,4 @@
-package org.xodium.vanillaplus.features
+package org.xodium.vanillaplus.modules
 
 import com.sk89q.worldedit.WorldEdit
 import com.sk89q.worldedit.bukkit.BukkitAdapter
@@ -16,7 +16,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.world.StructureGrowEvent
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.interfaces.FeatureInterface
+import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.registries.MaterialRegistry
 import java.io.IOException
 import java.nio.channels.Channels
@@ -27,8 +27,8 @@ import java.nio.file.Path
 import java.nio.file.StandardOpenOption
 import java.util.stream.Collectors
 
-/** Represents a feature handling tree mechanics within the system. */
-internal object TreesFeature : FeatureInterface {
+/** Represents a module handling tree mechanics within the system. */
+internal object TreesModule : ModuleInterface {
     private val schematicCache: Map<Material, List<Clipboard>> by lazy {
         MaterialRegistry.SAPLING_LINKS.mapValues { loadSchematics("/schematics/${it.value}") }
     }

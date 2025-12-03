@@ -1,6 +1,6 @@
 @file:Suppress("ktlint:standard:no-wildcard-imports")
 
-package org.xodium.vanillaplus.features
+package org.xodium.vanillaplus.modules
 
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
@@ -17,7 +17,7 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
-import org.xodium.vanillaplus.interfaces.FeatureInterface
+import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.BlockUtils.center
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
@@ -26,8 +26,8 @@ import org.xodium.vanillaplus.utils.PlayerUtils
 import org.xodium.vanillaplus.utils.ScheduleUtils
 import java.util.concurrent.CompletableFuture
 
-/** Represents a feature handling inv mechanics within the system. */
-internal object InvFeature : FeatureInterface {
+/** Represents a module handling inv mechanics within the system. */
+internal object InvModule : ModuleInterface {
     override val cmds =
         listOf(
             CommandData(

@@ -1,6 +1,6 @@
 @file:Suppress("ktlint:standard:no-wildcard-imports")
 
-package org.xodium.vanillaplus.features
+package org.xodium.vanillaplus.modules
 
 import com.mojang.brigadier.arguments.StringArgumentType
 import io.papermc.paper.command.brigadier.Commands
@@ -28,14 +28,14 @@ import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.enchantments.*
-import org.xodium.vanillaplus.interfaces.FeatureInterface
+import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 
-/** Represents a feature handling player mechanics within the system. */
-internal object PlayerFeature : FeatureInterface {
-    private val tabListModule by lazy { TabListFeature }
+/** Represents a module handling player mechanics within the system. */
+internal object PlayerModule : ModuleInterface {
+    private val tabListModule by lazy { TabListModule }
 
     override val cmds =
         listOf(

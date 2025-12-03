@@ -1,4 +1,4 @@
-package org.xodium.vanillaplus.features
+package org.xodium.vanillaplus.modules
 
 import com.destroystokyo.paper.event.player.PlayerSetSpawnEvent
 import com.mojang.brigadier.arguments.StringArgumentType
@@ -18,14 +18,14 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
-import org.xodium.vanillaplus.interfaces.FeatureInterface
+import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.face
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import java.util.concurrent.CompletableFuture
 
-/** Represents a feature handling chat mechanics within the system. */
-internal object ChatFeature : FeatureInterface {
+/** Represents a module handling chat mechanics within the system. */
+internal object ChatModule : ModuleInterface {
     override val cmds =
         listOf(
             CommandData(

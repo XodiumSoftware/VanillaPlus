@@ -1,6 +1,6 @@
 @file:Suppress("ktlint:standard:no-wildcard-imports")
 
-package org.xodium.vanillaplus.features
+package org.xodium.vanillaplus.modules
 
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
@@ -13,13 +13,13 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.weather.ThunderChangeEvent
 import org.bukkit.event.weather.WeatherChangeEvent
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.interfaces.FeatureInterface
+import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import java.util.*
 import kotlin.math.roundToInt
 
-/** Represents a feature handling tab-list mechanics within the system. */
-internal object TabListFeature : FeatureInterface {
+/** Represents a module handling tab-list mechanics within the system. */
+internal object TabListModule : ModuleInterface {
     private const val MIN_TPS = 0.0
     private const val MAX_TPS = 20.0
     private const val TPS_DECIMAL_FORMAT = "%.1f"
