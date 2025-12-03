@@ -33,12 +33,14 @@ internal object TorchArrowFeature : FeatureInterface {
         if (projectile !is Arrow) return
 
         val arrowItem = projectile.itemStack
+        // TODO: make it an extension function to Arrow.
         val isTorchArrow =
             arrowItem.hasItemMeta() && arrowItem.itemMeta?.persistentDataContainer?.has(
                 torchArrowKey,
                 PersistentDataType.BYTE,
             ) == true
 
+        // TODO: move away from deprecated stuff.
         if (isTorchArrow) projectile.setMetadata("torch_arrow", FixedMetadataValue(instance, true))
     }
 
