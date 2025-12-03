@@ -9,7 +9,6 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.ProjectileHitEvent
-import org.bukkit.event.entity.ProjectileLaunchEvent
 import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.interfaces.FeatureInterface
 import org.xodium.vanillaplus.recipes.TorchArrowRecipe.torchArrow
@@ -18,28 +17,10 @@ import org.xodium.vanillaplus.recipes.TorchArrowRecipe.torchArrowKey
 /** Represents a feature handling torch arrow mechanics within the system. */
 internal object TorchArrowFeature : FeatureInterface {
     @EventHandler
-    fun on(event: ProjectileLaunchEvent) = handleProjectileLaunch(event)
-
-    @EventHandler
     fun on(event: ProjectileHitEvent) = handleProjectileHit(event)
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun on(event: EntityDamageByEntityEvent) = handleEntityDamage(event)
-
-    /**
-     * Handles the logic for torch arrows when they are launched.
-     * @param event The projectile launch event to process.
-     */
-    private fun handleProjectileLaunch(event: ProjectileLaunchEvent) {
-        val projectile = event.entity as? Arrow ?: return
-
-        if (projectile.isTorchArrow) return
-
-        val item = projectile.itemStack
-
-        item.editPersistentDataContainer { it.set(torchArrowKey, PersistentDataType.BYTE, 1) }
-        projectile.itemStack = item
-    }
 
     /**
      * Handles the logic for torch arrows when they hit a target.
