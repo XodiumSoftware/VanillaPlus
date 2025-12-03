@@ -1,5 +1,6 @@
 package org.xodium.vanillaplus.data
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import net.kyori.adventure.sound.Sound
 import org.bukkit.Material
@@ -13,18 +14,31 @@ import org.xodium.vanillaplus.utils.ExtUtils.prefix
 /** Configuration data for the plugin. */
 @Serializable
 internal data class ConfigData(
+    @SerialName("BooksModule")
     var booksModule: BooksModule = BooksModule(),
+    @SerialName("CauldronModule")
     var cauldronModule: CauldronModule = CauldronModule(),
+    @SerialName("ChatModule")
     var chatModule: ChatModule = ChatModule(),
+    @SerialName("DimensionsModule")
     var dimensionsModule: DimensionsModule = DimensionsModule(),
+    @SerialName("EntityModule")
     var entityModule: EntityModule = EntityModule(),
+    @SerialName("InvModule")
     var invModule: InvModule = InvModule(),
+    @SerialName("MotdModule")
     var motdModule: MotdModule = MotdModule(),
+    @SerialName("OpenableModule")
     var openableModule: OpenableModule = OpenableModule(),
+    @SerialName("PetModule")
     var petModule: PetModule = PetModule(),
+    @SerialName("PlayerModule")
     var playerModule: PlayerModule = PlayerModule(),
+    @SerialName("SitModule")
     var sitModule: SitModule = SitModule(),
+    @SerialName("TabListModule")
     var tabListModule: TabListModule = TabListModule(),
+    @SerialName("TreesModule")
     var treesModule: TreesModule = TreesModule(),
 ) {
     @Serializable
