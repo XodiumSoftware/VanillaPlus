@@ -12,7 +12,7 @@ import org.xodium.vanillaplus.utils.ExtUtils.mm
 
 /** Represents an object handling torch arrow recipe implementation within the system. */
 internal object TorchArrowRecipe : RecipeInterface {
-    private val torchArrowKey = NamespacedKey(instance, "torch_arrow")
+    val torchArrowKey = NamespacedKey(instance, "torch_arrow")
 
     override val recipes =
         setOf(
