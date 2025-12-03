@@ -9,50 +9,41 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.event.entity.ProjectileLaunchEvent
 import org.bukkit.inventory.ItemStack
-import org.bukkit.metadata.FixedMetadataValue
 import org.bukkit.persistence.PersistentDataType
-import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.FeatureInterface
 import org.xodium.vanillaplus.recipes.TorchArrowRecipe.torchArrowKey
 
 /** Represents a feature handling torch arrow mechanics within the system. */
 internal object TorchArrowFeature : FeatureInterface {
     @EventHandler
-    fun on(event: ProjectileLaunchEvent) = handleTorchArrowLaunch(event)
+    fun on(event: ProjectileLaunchEvent) = handleProjectileLaunch(event)
 
     @EventHandler
-    fun on(event: ProjectileHitEvent) = handleTorchArrowHit(event)
+    fun on(event: ProjectileHitEvent) = handleProjectileHit(event)
 
     /**
      * Handles the logic for torch arrows when they are launched.
      * @param event The projectile launch event to process.
      */
-    private fun handleTorchArrowLaunch(event: ProjectileLaunchEvent) {
-        val projectile = event.entity
+    private fun handleProjectileLaunch(event: ProjectileLaunchEvent) {
+        val projectile = event.entity as? Arrow ?: return
 
-        if (projectile !is Arrow) return
+        if (projectile.isTorchArrow) return
 
-        val arrowItem = projectile.itemStack
-        // TODO: make it an extension function to Arrow.
-        val isTorchArrow =
-            arrowItem.hasItemMeta() && arrowItem.itemMeta?.persistentDataContainer?.has(
-                torchArrowKey,
-                PersistentDataType.BYTE,
-            ) == true
+        val item = projectile.itemStack.clone()
 
-        // TODO: move away from deprecated stuff.
-        if (isTorchArrow) projectile.setMetadata("torch_arrow", FixedMetadataValue(instance, true))
+        item.itemMeta?.persistentDataContainer?.set(torchArrowKey, PersistentDataType.BYTE, 1)
+        projectile.itemStack = item
     }
 
     /**
      * Handles the logic for torch arrows when they hit a target.
      * @param event The projectile hit event to process.
      */
-    private fun handleTorchArrowHit(event: ProjectileHitEvent) {
-        val arrow = event.entity
-        val isTorchArrow = arrow.hasMetadata("torch_arrow")
+    private fun handleProjectileHit(event: ProjectileHitEvent) {
+        val arrow = event.entity as? Arrow ?: return
 
-        if (!isTorchArrow) return
+        if (!arrow.isTorchArrow) return
 
         val hitBlock = event.hitBlock
         val hitFace = event.hitBlockFace
@@ -111,4 +102,11 @@ internal object TorchArrowFeature : FeatureInterface {
      * @param location The location where the torch should be dropped.
      */
     private fun dropTorch(location: Location) = location.world.dropItemNaturally(location, ItemStack.of(Material.TORCH))
+
+    /**
+     * Checks whether this arrow is a torch arrow based on its ItemStack metadata.
+     * @return True if the arrow is a torch arrow, false otherwise.
+     */
+    private val Arrow.isTorchArrow: Boolean
+        get() = itemStack.persistentDataContainer.has(torchArrowKey, PersistentDataType.BYTE)
 }
