@@ -23,7 +23,7 @@ internal object ConfigManager {
             ignoreUnknownKeys = true
         }
 
-    var config: ConfigData = load()
+    var config: ConfigData? = null
         private set
 
     val reloadCommand: CommandData =
