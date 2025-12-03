@@ -14,6 +14,13 @@ import org.xodium.vanillaplus.data.ConfigData
 @Suppress("UnstableApiUsage")
 internal interface EnchantmentInterface {
     /**
+     * Retrieves the configuration data associated with the module.
+     * @return A [ConfigData] object representing the configuration for the module.
+     */
+    val config: ConfigData
+        get() = configData
+
+    /**
      * The unique typed key identifies this enchantment in the registry.
      * @see TypedKey
      * @see RegistryKey.ENCHANTMENT
@@ -32,13 +39,6 @@ internal interface EnchantmentInterface {
                         .joinToString("_") { it.lowercase() },
                 ),
             )
-
-    /**
-     * Retrieves the configuration data associated with the module.
-     * @return A [ConfigData] object representing the configuration for the module.
-     */
-    val config: ConfigData
-        get() = configData
 
     /**
      * Configures the properties of the enchantment using the provided builder.
