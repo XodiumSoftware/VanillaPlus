@@ -61,7 +61,7 @@ internal class VanillaPlus : JavaPlugin() {
         SignModule.register()
         SitModule.register()
         TabListModule.register()
-        TorchArrowModule.register()
+        ArrowModule.register()
         if (WorldEditHook.get()) TreesModule.register()
     }
 

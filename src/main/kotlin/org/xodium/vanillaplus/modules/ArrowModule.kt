@@ -16,8 +16,8 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.recipes.TorchArrowRecipe.torchArrow
 import org.xodium.vanillaplus.recipes.TorchArrowRecipe.torchArrowKey
 
-/** Represents a module handling torch arrow mechanics within the system. */
-internal object TorchArrowModule : ModuleInterface {
+/** Represents a module handling custom arrow mechanics within the system. */
+internal object ArrowModule : ModuleInterface {
     @EventHandler
     fun on(event: ProjectileLaunchEvent) = handleProjectileLaunch(event)
 
