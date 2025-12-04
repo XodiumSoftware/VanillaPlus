@@ -13,7 +13,7 @@ plugins {
     id("xyz.jpenilla.resource-factory-paper-convention") version "1.3.1"
 }
 
-val mcVersion = "1.21.11-pre4"
+val mcVersion = "1.21.11-pre5"
 
 group = "org.xodium.vanillaplus.VanillaPlus"
 version = mcVersion
