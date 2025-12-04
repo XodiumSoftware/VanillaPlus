@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalSerializationApi::class)
+
 package org.xodium.vanillaplus.managers
 
 import io.papermc.paper.command.brigadier.Commands
@@ -18,7 +20,6 @@ import java.io.File
 import kotlin.time.measureTime
 
 /** Manages loading and saving the configuration file. */
-@ExperimentalSerializationApi
 internal object ConfigManager {
     private val json =
         Json {
