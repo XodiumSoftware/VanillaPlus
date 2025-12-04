@@ -1,4 +1,4 @@
-package org.xodium.vanillaplus.features
+package org.xodium.vanillaplus.modules
 
 import com.sk89q.worldedit.WorldEdit
 import com.sk89q.worldedit.bukkit.BukkitAdapter
@@ -16,7 +16,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.world.StructureGrowEvent
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.interfaces.FeatureInterface
+import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.registries.MaterialRegistry
 import java.io.IOException
 import java.nio.channels.Channels
@@ -27,18 +27,21 @@ import java.nio.file.Path
 import java.nio.file.StandardOpenOption
 import java.util.stream.Collectors
 
-/** Represents a feature handling tree mechanics within the system. */
-internal object TreesFeature : FeatureInterface {
+/** Represents a module handling tree mechanics within the system. */
+internal object TreesModule : ModuleInterface {
     private val schematicCache: Map<Material, List<Clipboard>> by lazy {
         MaterialRegistry.SAPLING_LINKS.mapValues { loadSchematics("/schematics/${it.value}") }
     }
 
-    /**
-     * Handle the StructureGrowEvent.
-     * @param event The StructureGrowEvent.
-     */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    fun on(event: StructureGrowEvent) {
+    fun on(event: StructureGrowEvent) = handleStructureGrow(event)
+
+    /**
+     * Handles StructureGrowEvent and attempts to paste a schematic
+     * when the grown block is a sapling or fungus.
+     * @param event The [StructureGrowEvent] triggered by natural growth.
+     */
+    private fun handleStructureGrow(event: StructureGrowEvent) {
         event.location.block
             .takeIf {
                 Tag.SAPLINGS.isTagged(it.type) ||
@@ -121,17 +124,17 @@ internal object TreesFeature : FeatureInterface {
                             editSession.mask =
                                 BlockTypeMask(
                                     editSession,
-                                    config.treesFeature.treeMask.map { BukkitAdapter.asBlockType(it) },
+                                    config.treesModule.treeMask.map { BukkitAdapter.asBlockType(it) },
                                 )
                             ClipboardHolder(clipboard).apply {
                                 transform = transform.combine(AffineTransform().rotateY(getRandomRotation().toDouble()))
                                 Operations.complete(
                                     createPaste(editSession)
                                         .to(BlockVector3.at(block.x, block.y, block.z))
-                                        .copyBiomes(config.treesFeature.copyBiomes)
-                                        .copyEntities(config.treesFeature.copyEntities)
-                                        .ignoreAirBlocks(config.treesFeature.ignoreAirBlocks)
-                                        .ignoreStructureVoidBlocks(config.treesFeature.ignoreStructureVoidBlocks)
+                                        .copyBiomes(config.treesModule.copyBiomes)
+                                        .copyEntities(config.treesModule.copyEntities)
+                                        .ignoreAirBlocks(config.treesModule.ignoreAirBlocks)
+                                        .ignoreStructureVoidBlocks(config.treesModule.ignoreStructureVoidBlocks)
                                         .build(),
                                 )
                             }

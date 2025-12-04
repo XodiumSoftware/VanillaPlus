@@ -1,4 +1,4 @@
-package org.xodium.vanillaplus.features
+package org.xodium.vanillaplus.modules
 
 import com.destroystokyo.paper.event.player.PlayerSetSpawnEvent
 import com.mojang.brigadier.arguments.StringArgumentType
@@ -18,20 +18,20 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
-import org.xodium.vanillaplus.interfaces.FeatureInterface
+import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.ExtUtils.executesCatching
 import org.xodium.vanillaplus.utils.ExtUtils.face
 import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import java.util.concurrent.CompletableFuture
 
-/** Represents a feature handling chat mechanics within the system. */
-internal object ChatFeature : FeatureInterface {
-    override fun cmds(): List<CommandData> {
-        return listOf(
+/** Represents a module handling chat mechanics within the system. */
+internal object ChatModule : ModuleInterface {
+    override val cmds =
+        listOf(
             CommandData(
                 Commands
                     .literal("whisper")
-                    .requires { it.sender.hasPermission(perms()[0]) }
+                    .requires { it.sender.hasPermission(perms[0]) }
                     .then(
                         Commands
                             .argument("target", StringArgumentType.string())
@@ -44,27 +44,25 @@ internal object ChatFeature : FeatureInterface {
                             }.then(
                                 Commands
                                     .argument("message", StringArgumentType.greedyString())
-                                    .executes { ctx ->
-                                        ctx.tryCatch {
-                                            if (it.sender !is Player) {
-                                                instance.logger.warning(
-                                                    "Command can only be executed by a Player!",
-                                                )
-                                            }
-
-                                            val sender = it.sender as Player
-                                            val targetName = ctx.getArgument("target", String().javaClass)
-                                            val target =
-                                                instance.server
-                                                    .getPlayer(targetName)
-                                                    ?: return@tryCatch sender.sendMessage(
-                                                        config.chatFeature.i18n.playerIsNotOnline
-                                                            .mm(),
-                                                    )
-                                            val message = ctx.getArgument("message", String().javaClass)
-
-                                            whisper(sender, target, message)
+                                    .executesCatching {
+                                        if (it.source.sender !is Player) {
+                                            instance.logger.warning(
+                                                "Command can only be executed by a Player!",
+                                            )
                                         }
+
+                                        val sender = it.source.sender as Player
+                                        val targetName = it.getArgument("target", String().javaClass)
+                                        val target =
+                                            instance.server
+                                                .getPlayer(targetName)
+                                                ?: return@executesCatching sender.sendMessage(
+                                                    config.chatModule.i18n.playerIsNotOnline
+                                                        .mm(),
+                                                )
+                                        val message = it.getArgument("message", String().javaClass)
+
+                                        whisper(sender, target, message)
                                     },
                             ),
                     ),
@@ -72,9 +70,8 @@ internal object ChatFeature : FeatureInterface {
                 listOf("w", "msg", "tell", "tellraw"),
             ),
         )
-    }
 
-    override fun perms(): List<Permission> =
+    override val perms =
         listOf(
             Permission(
                 "${instance.javaClass.simpleName}.whisper".lowercase(),
@@ -88,7 +85,7 @@ internal object ChatFeature : FeatureInterface {
         event.renderer(ChatRenderer.defaultRenderer())
         event.renderer { player, displayName, message, audience ->
             var base =
-                config.chatFeature.chatFormat.mm(
+                config.chatModule.chatFormat.mm(
                     Placeholder.component("player_head", "<head:${player.uniqueId}>".mm()),
                     Placeholder.component(
                         "player",
@@ -96,7 +93,7 @@ internal object ChatFeature : FeatureInterface {
                             .clickEvent(ClickEvent.suggestCommand("/w ${player.name} "))
                             .hoverEvent(
                                 HoverEvent.showText(
-                                    config.chatFeature.i18n.clickToWhisper
+                                    config.chatModule.i18n.clickToWhisper
                                         .mm(),
                                 ),
                             ),
@@ -116,7 +113,7 @@ internal object ChatFeature : FeatureInterface {
 
         player.sendMessage(
             Regex("<image>")
-                .replace(config.chatFeature.welcomeText.joinToString("\n")) { "<image${++imageIndex}>" }
+                .replace(config.chatModule.welcomeText.joinToString("\n")) { "<image${++imageIndex}>" }
                 .mm(
                     Placeholder.component("player", player.displayName()),
                     *player
@@ -131,7 +128,7 @@ internal object ChatFeature : FeatureInterface {
     @EventHandler
     fun on(event: PlayerSetSpawnEvent) {
         event.notification =
-            config.chatFeature.i18n.playerSetSpawn.mm(
+            config.chatModule.i18n.playerSetSpawn.mm(
                 Placeholder.component(
                     "notification",
                     event.notification ?: return,
@@ -151,7 +148,7 @@ internal object ChatFeature : FeatureInterface {
         message: String,
     ) {
         sender.sendMessage(
-            config.chatFeature.whisperToFormat.mm(
+            config.chatModule.whisperToFormat.mm(
                 Placeholder.component(
                     "player",
                     target
@@ -159,7 +156,7 @@ internal object ChatFeature : FeatureInterface {
                         .clickEvent(ClickEvent.suggestCommand("/w ${target.name} "))
                         .hoverEvent(
                             HoverEvent.showText(
-                                config.chatFeature.i18n.clickToWhisper
+                                config.chatModule.i18n.clickToWhisper
                                     .mm(),
                             ),
                         ),
@@ -169,7 +166,7 @@ internal object ChatFeature : FeatureInterface {
         )
 
         target.sendMessage(
-            config.chatFeature.whisperFromFormat.mm(
+            config.chatModule.whisperFromFormat.mm(
                 Placeholder.component(
                     "player",
                     sender
@@ -177,7 +174,7 @@ internal object ChatFeature : FeatureInterface {
                         .clickEvent(ClickEvent.suggestCommand("/w ${sender.name} "))
                         .hoverEvent(
                             HoverEvent.showText(
-                                config.chatFeature.i18n.clickToWhisper
+                                config.chatModule.i18n.clickToWhisper
                                     .mm(),
                             ),
                         ),
@@ -193,10 +190,10 @@ internal object ChatFeature : FeatureInterface {
      * @return A [net.kyori.adventure.text.Component] representing the delete cross with hover text and click action.
      */
     private fun createDeleteCross(signedMessage: SignedMessage): Component =
-        config.chatFeature.deleteCross
+        config.chatModule.deleteCross
             .mm()
             .hoverEvent(
-                config.chatFeature.i18n.deleteMessage
+                config.chatModule.i18n.deleteMessage
                     .mm(),
             ).clickEvent(
                 ClickEvent.callback {

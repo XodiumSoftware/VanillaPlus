@@ -3,20 +3,9 @@
 package org.xodium.vanillaplus.registries
 
 import org.bukkit.Material
-import org.bukkit.Tag
-import java.util.*
 
 /** Registry for materials. */
 internal object MaterialRegistry {
-    val CONTAINER_TYPES: EnumSet<Material> =
-        EnumSet.copyOf(
-            Material.entries.filter {
-                it.name.endsWith("BARREL") ||
-                    it.name.endsWith("CHEST") ||
-                    Tag.SHULKER_BOXES.isTagged(it)
-            },
-        )
-
     val SAPLING_LINKS: Map<Material, String> =
         mapOf(
             Material.ACACIA_SAPLING to "trees/acacia",

@@ -11,7 +11,7 @@ import org.xodium.vanillaplus.interfaces.RecipeInterface
 
 /** Represents an object handling rotten-flesh recipe implementation within the system. */
 internal object RottenFleshRecipe : RecipeInterface {
-    override fun recipes() =
+    override val recipes =
         setOf(
             FurnaceRecipe(
                 NamespacedKey(instance, "rotten_flesh_to_leather_furnace"),

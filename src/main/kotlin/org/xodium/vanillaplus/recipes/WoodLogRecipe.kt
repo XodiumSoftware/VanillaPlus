@@ -37,7 +37,7 @@ internal object WoodLogRecipe : RecipeInterface {
             Material.STRIPPED_WARPED_HYPHAE to Material.STRIPPED_WARPED_STEM,
         )
 
-    override fun recipes() =
+    override val recipes =
         woodToLog
             .map { (wood, log) ->
                 ShapelessRecipe(

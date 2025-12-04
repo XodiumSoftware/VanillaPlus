@@ -1,6 +1,6 @@
 @file:Suppress("ktlint:standard:no-wildcard-imports")
 
-package org.xodium.vanillaplus.features
+package org.xodium.vanillaplus.modules
 
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
@@ -17,23 +17,23 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
-import org.xodium.vanillaplus.interfaces.FeatureInterface
+import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.BlockUtils.center
+import org.xodium.vanillaplus.utils.ExtUtils.executesCatching
 import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import org.xodium.vanillaplus.utils.InvUtils
 import org.xodium.vanillaplus.utils.PlayerUtils
 import org.xodium.vanillaplus.utils.ScheduleUtils
 import java.util.concurrent.CompletableFuture
 
-/** Represents a feature handling inv mechanics within the system. */
-internal object InvFeature : FeatureInterface {
-    override fun cmds(): List<CommandData> =
+/** Represents a module handling inv mechanics within the system. */
+internal object InvModule : ModuleInterface {
+    override val cmds =
         listOf(
             CommandData(
                 Commands
                     .literal("invsearch")
-                    .requires { it.sender.hasPermission(perms()[0]) }
+                    .requires { it.sender.hasPermission(perms[0]) }
                     .then(
                         Commands
                             .argument("material", StringArgumentType.word())
@@ -43,32 +43,28 @@ internal object InvFeature : FeatureInterface {
                                     .filter { it.startsWith(builder.remaining.lowercase()) }
                                     .forEach(builder::suggest)
                                 CompletableFuture.completedFuture(builder.build())
-                            }.executes { ctx ->
-                                ctx.tryCatch {
-                                    if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
-                                    handleSearch(ctx)
-                                }
+                            }.executesCatching {
+                                if (it.source.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+                                handleSearch(it)
                             },
-                    ).executes { ctx -> ctx.tryCatch { handleSearch(ctx) } },
+                    ).executesCatching { handleSearch(it) },
                 "Search nearby chests for specific items",
                 listOf("search", "searchinv", "invs"),
             ),
             CommandData(
                 Commands
                     .literal("invunload")
-                    .requires { it.sender.hasPermission(perms()[1]) }
-                    .executes { ctx ->
-                        ctx.tryCatch {
-                            if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
-                            unload(it.sender as Player)
-                        }
+                    .requires { it.sender.hasPermission(perms[1]) }
+                    .executesCatching {
+                        if (it.source.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+                        unload(it.source.sender as Player)
                     },
                 "Unload your inventory into nearby chests",
                 listOf("unload", "unloadinv", "invu"),
             ),
         )
 
-    override fun perms(): List<Permission> =
+    override val perms =
         listOf(
             Permission(
                 "${instance.javaClass.simpleName}.invsearch".lowercase(),
@@ -95,7 +91,7 @@ internal object InvFeature : FeatureInterface {
 
         if (material == Material.AIR) {
             player.sendActionBar(
-                config.invFeature.i18n.noMaterialSpecified
+                config.invModule.i18n.noMaterialSpecified
                     .mm(),
             )
             return 0
@@ -123,7 +119,7 @@ internal object InvFeature : FeatureInterface {
 
         if (foundContainers.isEmpty()) {
             player.sendActionBar(
-                config.invFeature.i18n.noMatchingItems.mm(
+                config.invModule.i18n.noMatchingItems.mm(
                     Placeholder.component(
                         "material",
                         material.name.mm(),
@@ -134,7 +130,7 @@ internal object InvFeature : FeatureInterface {
         }
 
         player.sendActionBar(
-            config.invFeature.i18n.foundItemsInChests
+            config.invModule.i18n.foundItemsInChests
                 .mm(Placeholder.component("material", material.name.mm())),
         )
 
@@ -180,16 +176,16 @@ internal object InvFeature : FeatureInterface {
 
         if (foundContainers.isEmpty()) {
             return player.sendActionBar(
-                config.invFeature.i18n.noItemsUnloaded
+                config.invModule.i18n.noItemsUnloaded
                     .mm(),
             )
         }
 
         player.sendActionBar(
-            config.invFeature.i18n.inventoryUnloaded
+            config.invModule.i18n.inventoryUnloaded
                 .mm(),
         )
-        player.playSound(config.invFeature.soundOnUnload.toSound(), Sound.Emitter.self())
+        player.playSound(config.invModule.soundOnUnload.toSound(), Sound.Emitter.self())
 
         ScheduleUtils.schedule(duration = 60L) {
             foundContainers.forEach { container ->

@@ -1,6 +1,6 @@
 @file:Suppress("ktlint:standard:no-wildcard-imports")
 
-package org.xodium.vanillaplus.features
+package org.xodium.vanillaplus.modules
 
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -19,11 +19,11 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.AdjacentBlockData
-import org.xodium.vanillaplus.interfaces.FeatureInterface
+import org.xodium.vanillaplus.interfaces.ModuleInterface
 import java.util.*
 
-/** Represents a feature handling openable blocks mechanics within the system. */
-internal object OpenableFeature : FeatureInterface {
+/** Represents a module handling openable blocks mechanics within the system. */
+internal object OpenableModule : ModuleInterface {
     private val disallowedKnockGameModes = EnumSet.of(GameMode.CREATIVE, GameMode.SPECTATOR)
     private val possibleNeighbours: Set<AdjacentBlockData> =
         setOf(
@@ -38,9 +38,14 @@ internal object OpenableFeature : FeatureInterface {
         )
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    fun on(event: PlayerInteractEvent) {
-        val clickedBlock = event.clickedBlock ?: return
+    fun on(event: PlayerInteractEvent) = handleInteract(event)
 
+    /**
+     * Handles block interactions and delegates to the correct click handler.
+     * @param event The [PlayerInteractEvent] triggered by the player.
+     */
+    private fun handleInteract(event: PlayerInteractEvent) {
+        val clickedBlock = event.clickedBlock ?: return
         if (!isValidInteraction(event)) return
 
         when (event.action) {
@@ -92,7 +97,7 @@ internal object OpenableFeature : FeatureInterface {
      * @param block The block representing the door or gate being interacted with.
      */
     private fun handleRightClick(block: Block) {
-        if (config.openableFeature.allowDoubleDoors && block.blockData is Openable) processDoorOrGateInteraction(block)
+        if (config.openableModule.allowDoubleDoors && block.blockData is Openable) processDoorOrGateInteraction(block)
     }
 
     /**
@@ -102,8 +107,8 @@ internal object OpenableFeature : FeatureInterface {
      */
     private fun playKnockSound(block: Block) {
         block.world
-            .getNearbyPlayers(block.location, config.openableFeature.soundProximityRadius)
-            .forEach { it.playSound(config.openableFeature.soundKnock.toSound()) }
+            .getNearbyPlayers(block.location, config.openableModule.soundProximityRadius)
+            .forEach { it.playSound(config.openableModule.soundKnock.toSound()) }
     }
 
     /**
@@ -146,7 +151,7 @@ internal object OpenableFeature : FeatureInterface {
      * @return True if sneaking is required, but the player isn't sneaking, false otherwise.
      */
     private fun isViolatingSneakingRequirement(player: Player): Boolean =
-        config.openableFeature.knockingRequiresShifting && !player.isSneaking
+        config.openableModule.knockingRequiresShifting && !player.isSneaking
 
     /**
      * Checks if the player is violating the empty hand requirement for knocking.
@@ -154,7 +159,7 @@ internal object OpenableFeature : FeatureInterface {
      * @return True if an empty hand is required, but the player is holding something, false otherwise.
      */
     private fun isViolatingEmptyHandRequirement(player: Player): Boolean =
-        config.openableFeature.knockingRequiresEmptyHand &&
+        config.openableModule.knockingRequiresEmptyHand &&
             player.inventory.itemInMainHand.type != Material.AIR
 
     /**
@@ -162,7 +167,7 @@ internal object OpenableFeature : FeatureInterface {
      * @param data The block data to check.
      * @return True if the block can be knocked on, false otherwise.
      */
-    private fun isKnockableBlock(data: BlockData): Boolean = config.openableFeature.allowKnocking && data is Openable
+    private fun isKnockableBlock(data: BlockData): Boolean = config.openableModule.allowKnocking && data is Openable
 
     /**
      * Toggles the state of the other door when one door is opened or closed.
@@ -176,7 +181,7 @@ internal object OpenableFeature : FeatureInterface {
         block: Block,
         block2: Block,
         open: Boolean,
-        delay: Long = config.openableFeature.initDelayInTicks,
+        delay: Long = config.openableModule.initDelayInTicks,
     ) {
         if (block.blockData !is Door || block2.blockData !is Door) return
 

@@ -1,6 +1,6 @@
 @file:Suppress("ktlint:standard:no-wildcard-imports")
 
-package org.xodium.vanillaplus.features
+package org.xodium.vanillaplus.modules
 
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
@@ -13,13 +13,13 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.weather.ThunderChangeEvent
 import org.bukkit.event.weather.WeatherChangeEvent
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.interfaces.FeatureInterface
+import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import java.util.*
 import kotlin.math.roundToInt
 
-/** Represents a feature handling tab-list mechanics within the system. */
-internal object TabListFeature : FeatureInterface {
+/** Represents a module handling tab-list mechanics within the system. */
+internal object TabListModule : ModuleInterface {
     private const val MIN_TPS = 0.0
     private const val MAX_TPS = 20.0
     private const val TPS_DECIMAL_FORMAT = "%.1f"
@@ -35,8 +35,8 @@ internal object TabListFeature : FeatureInterface {
         instance.server.scheduler.runTaskTimer(
             instance,
             Runnable { instance.server.onlinePlayers.forEach { updateTabList(it) } },
-            config.tabListFeature.initDelayInTicks,
-            config.tabListFeature.intervalInTicks,
+            config.tabListModule.initDelayInTicks,
+            config.tabListModule.intervalInTicks,
         )
     }
 
@@ -66,10 +66,10 @@ internal object TabListFeature : FeatureInterface {
         val joinConfig = JoinConfiguration.separator(Component.newline())
 
         audience.sendPlayerListHeaderAndFooter(
-            Component.join(joinConfig, config.tabListFeature.header.mm()),
+            Component.join(joinConfig, config.tabListModule.header.mm()),
             Component.join(
                 joinConfig,
-                config.tabListFeature.footer.mm(
+                config.tabListModule.footer.mm(
                     Placeholder.component("weather", getWeather().mm()),
                     Placeholder.component("tps", getTps().mm()),
                 ),
@@ -112,9 +112,9 @@ internal object TabListFeature : FeatureInterface {
         val world = instance.server.worlds[0]
 
         return when {
-            world.isThundering -> config.tabListFeature.i18n.weatherThundering
-            world.hasStorm() -> config.tabListFeature.i18n.weatherStorm
-            else -> config.tabListFeature.i18n.weatherClear
+            world.isThundering -> config.tabListModule.i18n.weatherThundering
+            world.hasStorm() -> config.tabListModule.i18n.weatherStorm
+            else -> config.tabListModule.i18n.weatherClear
         }
     }
 }

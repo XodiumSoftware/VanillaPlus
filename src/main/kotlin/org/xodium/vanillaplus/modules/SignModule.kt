@@ -1,4 +1,4 @@
-package org.xodium.vanillaplus.features
+package org.xodium.vanillaplus.modules
 
 import com.mojang.brigadier.arguments.IntegerArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType
@@ -9,18 +9,18 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
-import org.xodium.vanillaplus.interfaces.FeatureInterface
+import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.ExtUtils.executesCatching
 import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 
-/** Represents a feature handling sign mechanics within the system. */
-internal object SignFeature : FeatureInterface {
-    override fun cmds(): List<CommandData> =
+/** Represents a module handling sign mechanics within the system. */
+internal object SignModule : ModuleInterface {
+    override val cmds =
         listOf(
             CommandData(
                 Commands
                     .literal("sign")
-                    .requires { it.sender.hasPermission(perms()[0]) }
+                    .requires { it.sender.hasPermission(perms[0]) }
                     .then(
                         Commands
                             .argument("line", IntegerArgumentType.integer(1, 4))
@@ -30,16 +30,14 @@ internal object SignFeature : FeatureInterface {
                             }.then(
                                 Commands
                                     .argument("text", StringArgumentType.greedyString())
-                                    .executes { ctx ->
-                                        ctx.tryCatch {
-                                            val player =
-                                                it.sender as? Player
-                                                    ?: instance.logger.warning("Command can only be executed by a Player!")
-                                            val line = IntegerArgumentType.getInteger(ctx, "line") - 1
-                                            val text = StringArgumentType.getString(ctx, "text")
+                                    .executesCatching {
+                                        val player =
+                                            it.source.sender as? Player
+                                                ?: instance.logger.warning("Command can only be executed by a Player!")
+                                        val line = IntegerArgumentType.getInteger(it, "line") - 1
+                                        val text = StringArgumentType.getString(it, "text")
 
-                                            sign(player as Player, line, text)
-                                        }
+                                        sign(player as Player, line, text)
                                     },
                             ),
                     ),
@@ -48,7 +46,7 @@ internal object SignFeature : FeatureInterface {
             ),
         )
 
-    override fun perms(): List<Permission> =
+    override val perms =
         listOf(
             Permission(
                 "${instance.javaClass.simpleName}.signedit".lowercase(),

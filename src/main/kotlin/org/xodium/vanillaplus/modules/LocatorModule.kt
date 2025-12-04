@@ -1,6 +1,6 @@
 @file:Suppress("ktlint:standard:no-wildcard-imports")
 
-package org.xodium.vanillaplus.features
+package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes
@@ -11,21 +11,21 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
-import org.xodium.vanillaplus.interfaces.FeatureInterface
-import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
+import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.ExtUtils.executesCatching
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
-/** Represents a feature handling locator mechanics within the system. */
-internal object LocatorFeature : FeatureInterface {
+/** Represents a module handling locator mechanics within the system. */
+internal object LocatorModule : ModuleInterface {
     private val colors = NamedTextColor.NAMES.keys().map { it.toString() } + listOf("<RRGGBB>", "reset")
 
-    override fun cmds(): List<CommandData> =
+    override val cmds =
         listOf(
             CommandData(
                 Commands
                     .literal("locator")
-                    .requires { it.sender.hasPermission(perms()[0]) }
+                    .requires { it.sender.hasPermission(perms[0]) }
                     .then(
                         Commands
                             .argument("color", ArgumentTypes.namedColor())
@@ -34,34 +34,28 @@ internal object LocatorFeature : FeatureInterface {
                                     .filter { it.startsWith(builder.remaining.lowercase()) }
                                     .forEach(builder::suggest)
                                 CompletableFuture.completedFuture(builder.build())
-                            }.executes { ctx ->
-                                ctx.tryCatch {
-                                    if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
-                                    val player = it.sender as Player
-                                    val color = ctx.getArgument("color", NamedTextColor::class.java)
-                                    locator(player, colour = color)
-                                }
+                            }.executesCatching {
+                                if (it.source.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+                                val player = it.source.sender as Player
+                                val color = it.getArgument("color", NamedTextColor::class.java)
+                                locator(player, colour = color)
                             },
                     ).then(
                         Commands
                             .argument("hex", ArgumentTypes.hexColor())
-                            .executes { ctx ->
-                                ctx.tryCatch {
-                                    if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
-                                    val player = it.sender as Player
-                                    val hex = ctx.getArgument("hex", TextColor::class.java)
-                                    locator(player, hex = hex)
-                                }
+                            .executesCatching {
+                                if (it.source.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+                                val player = it.source.sender as Player
+                                val hex = it.getArgument("hex", TextColor::class.java)
+                                locator(player, hex = hex)
                             },
                     ).then(
                         Commands
                             .literal("reset")
-                            .executes { ctx ->
-                                ctx.tryCatch {
-                                    if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
-                                    val player = it.sender as Player
-                                    locator(player)
-                                }
+                            .executesCatching {
+                                if (it.source.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+                                val player = it.source.sender as Player
+                                locator(player)
                             },
                     ),
                 "Allows players to personalise their locator bar",
@@ -69,7 +63,7 @@ internal object LocatorFeature : FeatureInterface {
             ),
         )
 
-    override fun perms(): List<Permission> =
+    override val perms =
         listOf(
             Permission(
                 "${instance.javaClass.simpleName}.locator".lowercase(),
@@ -92,15 +86,20 @@ internal object LocatorFeature : FeatureInterface {
         val cmd = "waypoint modify ${player.name}"
 
         when {
-            colour != null -> instance.server.dispatchCommand(player, "$cmd color $colour")
+            colour != null -> {
+                instance.server.dispatchCommand(player, "$cmd color $colour")
+            }
 
-            hex != null ->
+            hex != null -> {
                 instance.server.dispatchCommand(
                     player,
                     "$cmd color hex ${String.format(Locale.ENGLISH, "%06X", hex.value())}",
                 )
+            }
 
-            else -> instance.server.dispatchCommand(player, "$cmd color reset")
+            else -> {
+                instance.server.dispatchCommand(player, "$cmd color reset")
+            }
         }
     }
 }

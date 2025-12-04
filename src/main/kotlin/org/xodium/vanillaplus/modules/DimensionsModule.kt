@@ -1,4 +1,4 @@
-package org.xodium.vanillaplus.features
+package org.xodium.vanillaplus.modules
 
 import org.bukkit.Location
 import org.bukkit.Material
@@ -12,13 +12,13 @@ import org.bukkit.event.player.PlayerPortalEvent
 import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.event.world.PortalCreateEvent
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.interfaces.FeatureInterface
+import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-/** Represents a feature handling dimension mechanics within the system. */
-internal object DimensionsFeature : FeatureInterface {
+/** Represents a module handling dimension mechanics within the system. */
+internal object DimensionsModule : ModuleInterface {
     private const val NETHER_TO_OVERWORLD_RATIO = 8
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -42,7 +42,7 @@ internal object DimensionsFeature : FeatureInterface {
                 event.isCancelled = true
                 val player = event.entity as? Player ?: return
                 player.sendActionBar(
-                    config.dimensionsFeature.i18n.portalCreationDenied
+                    config.dimensionsModule.i18n.portalCreationDenied
                         .mm(),
                 )
             }
@@ -59,7 +59,7 @@ internal object DimensionsFeature : FeatureInterface {
     private fun findCorrespondingPortal(
         netherPortal: Location,
         overworld: World,
-        searchRadius: Int = config.dimensionsFeature.portalSearchRadius,
+        searchRadius: Int = config.dimensionsModule.portalSearchRadius,
     ): Location? {
         val targetX = netherPortal.x * NETHER_TO_OVERWORLD_RATIO
         val targetZ = netherPortal.z * NETHER_TO_OVERWORLD_RATIO

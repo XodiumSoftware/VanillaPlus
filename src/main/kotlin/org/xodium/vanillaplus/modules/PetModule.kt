@@ -1,4 +1,4 @@
-package org.xodium.vanillaplus.features
+package org.xodium.vanillaplus.modules
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
@@ -9,13 +9,20 @@ import org.bukkit.entity.Tameable
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.inventory.ItemStack
-import org.xodium.vanillaplus.interfaces.FeatureInterface
+import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 
-/** Represents a feature handling pet mechanics within the system. */
-internal object PetFeature : FeatureInterface {
+/** Represents a module handling pet mechanics within the system. */
+internal object PetModule : ModuleInterface {
     @EventHandler
-    fun on(event: PlayerInteractEntityEvent) {
+    fun on(event: PlayerInteractEntityEvent) = handleInteractEntity(event)
+
+    /**
+     * Handles transferring ownership of a leashed pet when a player
+     * right-clicks another player while holding a lead.
+     * @param event The [PlayerInteractEntityEvent] triggered on entity interaction.
+     */
+    private fun handleInteractEntity(event: PlayerInteractEntityEvent) {
         val source = event.player
         val target = event.rightClicked as? Player ?: return
 
@@ -78,9 +85,9 @@ internal object PetFeature : FeatureInterface {
     private fun findLeashedPet(player: Player): Tameable? =
         player
             .getNearbyEntities(
-                config.petFeature.transferRadius.toDouble(),
-                config.petFeature.transferRadius.toDouble(),
-                config.petFeature.transferRadius.toDouble(),
+                config.petModule.transferRadius.toDouble(),
+                config.petModule.transferRadius.toDouble(),
+                config.petModule.transferRadius.toDouble(),
             ).filterIsInstance<LivingEntity>()
             .firstOrNull { it.isLeashed && it.leashHolder == player }
             as? Tameable
@@ -97,14 +104,14 @@ internal object PetFeature : FeatureInterface {
         petName: Component,
     ) {
         source.sendActionBar(
-            config.petFeature.i18n.sourceTransfer.mm(
+            config.petModule.i18n.sourceTransfer.mm(
                 Placeholder.component("<pet>", petName),
                 Placeholder.component("<target>", target.displayName()),
             ),
         )
 
         target.sendActionBar(
-            config.petFeature.i18n.targetTransfer.mm(
+            config.petModule.i18n.targetTransfer.mm(
                 Placeholder.component("<pet>", petName),
                 Placeholder.component("<source>", source.displayName()),
             ),

@@ -1,6 +1,6 @@
 @file:Suppress("ktlint:standard:no-wildcard-imports")
 
-package org.xodium.vanillaplus.features
+package org.xodium.vanillaplus.modules
 
 import com.mojang.brigadier.arguments.StringArgumentType
 import io.papermc.paper.command.brigadier.Commands
@@ -28,34 +28,30 @@ import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.enchantments.*
-import org.xodium.vanillaplus.interfaces.FeatureInterface
+import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
+import org.xodium.vanillaplus.utils.ExtUtils.executesCatching
 import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 
-/** Represents a feature handling player mechanics within the system. */
-internal object PlayerFeature : FeatureInterface {
-    private val tabListModule by lazy { TabListFeature }
+/** Represents a module handling player mechanics within the system. */
+internal object PlayerModule : ModuleInterface {
+    private val tabListModule by lazy { TabListModule }
 
-    override fun cmds(): List<CommandData> =
+    override val cmds =
         listOf(
             CommandData(
                 Commands
                     .literal("nickname")
-                    .requires { it.sender.hasPermission(perms()[0]) }
-                    .executes { ctx ->
-                        ctx.tryCatch {
-                            if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
-                            nickname(it.sender as Player, "")
-                        }
+                    .requires { it.sender.hasPermission(perms[0]) }
+                    .executesCatching {
+                        if (it.source.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+                        nickname(it.source.sender as Player, "")
                     }.then(
                         Commands
                             .argument("name", StringArgumentType.greedyString())
-                            .executes { ctx ->
-                                ctx.tryCatch {
-                                    if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
-                                    nickname(it.sender as Player, StringArgumentType.getString(ctx, "name"))
-                                }
+                            .executesCatching {
+                                if (it.source.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+                                nickname(it.source.sender as Player, StringArgumentType.getString(it, "name"))
                             },
                     ),
                 "Allows players to set or remove their nickname",
@@ -63,7 +59,7 @@ internal object PlayerFeature : FeatureInterface {
             ),
         )
 
-    override fun perms(): List<Permission> =
+    override val perms =
         listOf(
             Permission(
                 "${instance.javaClass.simpleName}.nickname".lowercase(),
@@ -78,7 +74,7 @@ internal object PlayerFeature : FeatureInterface {
 
         player.displayName(player.nickname?.mm())
 
-        if (config.playerFeature.i18n.playerJoinMsg
+        if (config.playerModule.i18n.playerJoinMsg
                 .isEmpty()
         ) {
             return
@@ -90,7 +86,7 @@ internal object PlayerFeature : FeatureInterface {
             .filter { it.uniqueId != player.uniqueId }
             .forEach {
                 it.sendMessage(
-                    config.playerFeature.i18n.playerJoinMsg.mm(
+                    config.playerModule.i18n.playerJoinMsg.mm(
                         Placeholder.component("player", player.displayName()),
                     ),
                 )
@@ -99,14 +95,14 @@ internal object PlayerFeature : FeatureInterface {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerQuitEvent) {
-        if (config.playerFeature.i18n.playerQuitMsg
+        if (config.playerModule.i18n.playerQuitMsg
                 .isEmpty()
         ) {
             return
         }
 
         event.quitMessage(
-            config.playerFeature.i18n.playerQuitMsg.mm(
+            config.playerModule.i18n.playerQuitMsg.mm(
                 Placeholder.component(
                     "player",
                     event.player.displayName(),
@@ -119,7 +115,7 @@ internal object PlayerFeature : FeatureInterface {
     fun on(event: PlayerDeathEvent) {
         val killer = event.entity.killer ?: return
 
-        if (Math.random() < config.playerFeature.skullDropChance) {
+        if (Math.random() < config.playerModule.skullDropChance) {
             event.entity.world.dropItemNaturally(
                 event.entity.location,
                 playerSkull(event.entity, killer),
@@ -132,14 +128,14 @@ internal object PlayerFeature : FeatureInterface {
 
     @EventHandler
     fun on(event: PlayerAdvancementDoneEvent) {
-        if (config.playerFeature.i18n.playerAdvancementDoneMsg
+        if (config.playerModule.i18n.playerAdvancementDoneMsg
                 .isEmpty()
         ) {
             return
         }
 
         event.message(
-            config.playerFeature.i18n.playerAdvancementDoneMsg.mm(
+            config.playerModule.i18n.playerAdvancementDoneMsg.mm(
                 Placeholder.component("player", event.player.displayName()),
                 Placeholder.component("advancement", event.advancement.displayName()),
             ),
@@ -180,7 +176,7 @@ internal object PlayerFeature : FeatureInterface {
      * @param event The InventoryClickEvent triggered when a player clicks in an inventory.
      */
     private fun enderchest(event: InventoryClickEvent) {
-        if (event.click != config.playerFeature.enderChestClickType ||
+        if (event.click != config.playerModule.enderChestClickType ||
             event.currentItem?.type != Material.ENDER_CHEST ||
             event.clickedInventory?.type != InventoryType.PLAYER
         ) {
@@ -210,9 +206,9 @@ internal object PlayerFeature : FeatureInterface {
 
         val player = event.player
 
-        if (player.calculateTotalExperiencePoints() < config.playerFeature.xpCostToBottle) return
+        if (player.calculateTotalExperiencePoints() < config.playerModule.xpCostToBottle) return
 
-        player.giveExp(-config.playerFeature.xpCostToBottle)
+        player.giveExp(-config.playerModule.xpCostToBottle)
         event.item?.subtract(1)
         player.inventory
             .addItem(ItemStack.of(Material.EXPERIENCE_BOTTLE, 1))
@@ -234,7 +230,7 @@ internal object PlayerFeature : FeatureInterface {
         // TODO: add enabled check.
         tabListModule.updatePlayerDisplayName(player)
         player.sendActionBar(
-            config.playerFeature.i18n.nicknameUpdated.mm(
+            config.playerModule.i18n.nicknameUpdated.mm(
                 Placeholder.component(
                     "nickname",
                     player.displayName(),
@@ -258,14 +254,14 @@ internal object PlayerFeature : FeatureInterface {
             setData(DataComponentTypes.PROFILE, ResolvableProfile.resolvableProfile(entity.playerProfile))
             setData(
                 DataComponentTypes.CUSTOM_NAME,
-                config.playerFeature.i18n.playerHeadName
+                config.playerModule.i18n.playerHeadName
                     .mm(Placeholder.component("player", entity.name.mm())),
             )
             setData(
                 DataComponentTypes.LORE,
                 ItemLore
                     .lore(
-                        config.playerFeature.i18n.playerHeadLore
+                        config.playerModule.i18n.playerHeadLore
                             .mm(
                                 Placeholder.component("player", entity.name.mm()),
                                 Placeholder.component("killer", killer.name.mm()),

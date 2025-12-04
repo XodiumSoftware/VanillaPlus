@@ -5,12 +5,13 @@ import kotlinx.serialization.json.Json
 import org.bukkit.entity.Player
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
+import org.xodium.vanillaplus.VanillaPlus.Companion.configData
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.ConfigData
+import org.xodium.vanillaplus.utils.ExtUtils.executesCatching
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.prefix
-import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
 import java.io.File
 import kotlin.time.measureTime
 
@@ -23,9 +24,6 @@ internal object ConfigManager {
             ignoreUnknownKeys = true
         }
 
-    var config: ConfigData = load()
-        private set
-
     val reloadCommand: CommandData =
         CommandData(
             Commands
@@ -34,12 +32,10 @@ internal object ConfigManager {
                 .then(
                     Commands
                         .literal("reload")
-                        .executes { ctx ->
-                            ctx.tryCatch {
-                                if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
-                                config = load()
-                                it.sender.sendMessage("${instance.prefix} <green>configuration reloaded!".mm())
-                            }
+                        .executesCatching {
+                            if (it.source.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+                            configData = load()
+                            it.source.sender.sendMessage("${instance.prefix} <green>configuration reloaded!".mm())
                         },
                 ),
             "Allows to plugin specific admin commands",
