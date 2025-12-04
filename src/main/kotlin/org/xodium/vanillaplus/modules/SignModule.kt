@@ -3,6 +3,7 @@ package org.xodium.vanillaplus.modules
 import com.mojang.brigadier.arguments.IntegerArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType
 import io.papermc.paper.command.brigadier.Commands
+import kotlinx.serialization.Serializable
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.permissions.Permission
@@ -70,4 +71,9 @@ internal object SignModule : ModuleInterface {
         signSide.line(line, text.mm())
         sign.update()
     }
+
+    @Serializable
+    data class Config(
+        var enabled: Boolean = true,
+    )
 }

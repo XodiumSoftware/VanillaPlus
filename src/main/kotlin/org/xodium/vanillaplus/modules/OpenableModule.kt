@@ -2,6 +2,8 @@
 
 package org.xodium.vanillaplus.modules
 
+import kotlinx.serialization.Serializable
+import net.kyori.adventure.sound.Sound
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.block.Block
@@ -19,6 +21,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.AdjacentBlockData
+import org.xodium.vanillaplus.data.SoundData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import java.util.*
 
@@ -226,4 +229,16 @@ internal object OpenableModule : ModuleInterface {
             }?.first
             ?.getRelativeBlock(block)
     }
+
+    @Serializable
+    data class Config(
+        var enabled: Boolean = true,
+        var initDelayInTicks: Long = 1,
+        var allowDoubleDoors: Boolean = true,
+        var allowKnocking: Boolean = true,
+        var knockingRequiresEmptyHand: Boolean = true,
+        var knockingRequiresShifting: Boolean = true,
+        var soundKnock: SoundData = SoundData("entity.zombie.attack_wooden_door", Sound.Source.HOSTILE),
+        var soundProximityRadius: Double = 10.0,
+    )
 }

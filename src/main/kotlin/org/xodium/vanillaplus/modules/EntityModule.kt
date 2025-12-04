@@ -3,6 +3,7 @@
 package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.event.entity.EntityEquipmentChangedEvent
+import kotlinx.serialization.Serializable
 import org.bukkit.Material
 import org.bukkit.entity.*
 import org.bukkit.event.EventHandler
@@ -52,4 +53,16 @@ internal object EntityModule : ModuleInterface {
             is Wither -> config.entityModule.disableWitherGrief
             else -> false
         }
+
+    @Serializable
+    data class Config(
+        var enabled: Boolean = true,
+        var disableBlazeGrief: Boolean = true,
+        var disableCreeperGrief: Boolean = true,
+        var disableEnderDragonGrief: Boolean = true,
+        var disableEndermanGrief: Boolean = true,
+        var disableGhastGrief: Boolean = true,
+        var disableWitherGrief: Boolean = true,
+        var entityEggDropChance: Double = 0.1,
+    )
 }

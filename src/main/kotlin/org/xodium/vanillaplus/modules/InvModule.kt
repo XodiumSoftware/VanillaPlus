@@ -6,6 +6,7 @@ import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
+import kotlinx.serialization.Serializable
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Color
@@ -17,6 +18,7 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
+import org.xodium.vanillaplus.data.SoundData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.BlockUtils.center
 import org.xodium.vanillaplus.utils.ExtUtils.executesCatching
@@ -198,5 +200,26 @@ internal object InvModule : ModuleInterface {
                     .spawn()
             }
         }
+    }
+
+    @Serializable
+    data class Config(
+        var enabled: Boolean = true,
+        var soundOnUnload: SoundData = SoundData("entity.player.levelup", Sound.Source.PLAYER),
+        var i18n: I18n = I18n(),
+    ) {
+        @Serializable
+        data class I18n(
+            var noMaterialSpecified: String =
+                "<gradient:#CB2D3E:#EF473A>You must specify a valid material " +
+                    "or hold something in your hand</gradient>",
+            var noMatchingItems: String =
+                "<gradient:#CB2D3E:#EF473A>No containers contain " +
+                    "<gradient:#F4C4F3:#FC67FA><b><material></b></gradient></gradient>",
+            var foundItemsInChests: String =
+                "<gradient:#FFE259:#FFA751>Found <gradient:#F4C4F3:#FC67FA><b><material></b></gradient> in container(s), follow trail(s)</gradient>",
+            var noItemsUnloaded: String = "<gradient:#CB2D3E:#EF473A>No items were unloaded</gradient>",
+            var inventoryUnloaded: String = "<gradient:#B3E94A:#54F47F>Inventory unloaded</gradient>",
+        )
     }
 }

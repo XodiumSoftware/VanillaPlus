@@ -1,5 +1,6 @@
 package org.xodium.vanillaplus.modules
 
+import kotlinx.serialization.Serializable
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Material
@@ -117,4 +118,9 @@ internal object ArrowModule : ModuleInterface {
      */
     private val Arrow.isTorchArrow: Boolean
         get() = itemStack.persistentDataContainer.has(torchArrowKey, PersistentDataType.BYTE)
+
+    @Serializable
+    data class Config(
+        var enabled: Boolean = true,
+    )
 }

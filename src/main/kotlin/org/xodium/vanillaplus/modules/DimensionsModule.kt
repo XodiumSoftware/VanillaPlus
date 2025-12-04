@@ -1,5 +1,6 @@
 package org.xodium.vanillaplus.modules
 
+import kotlinx.serialization.Serializable
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.World
@@ -121,4 +122,17 @@ internal object DimensionsModule : ModuleInterface {
      * @throws IllegalStateException if the Overworld is not loaded.
      */
     private fun getOverworld(): World = instance.server.getWorld("world") ?: error("Overworld (world) is not loaded.")
+
+    @Serializable
+    data class Config(
+        var enabled: Boolean = true,
+        var portalSearchRadius: Int = 128,
+        var i18n: I18n = I18n(),
+    ) {
+        @Serializable
+        data class I18n(
+            var portalCreationDenied: String =
+                "<gradient:#CB2D3E:#EF473A>No corresponding active portal found in the Overworld!</gradient>",
+        )
+    }
 }
