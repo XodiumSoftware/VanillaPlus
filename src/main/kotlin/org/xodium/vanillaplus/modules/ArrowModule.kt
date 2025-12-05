@@ -1,5 +1,7 @@
 package org.xodium.vanillaplus.modules
 
+import kotlinx.serialization.Serializable
+import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
@@ -9,18 +11,34 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.ProjectileHitEvent
+import org.bukkit.event.entity.ProjectileLaunchEvent
 import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.recipes.TorchArrowRecipe.torchArrow
 import org.xodium.vanillaplus.recipes.TorchArrowRecipe.torchArrowKey
 
-/** Represents a module handling torch arrow mechanics within the system. */
-internal object TorchArrowModule : ModuleInterface {
+/** Represents a module handling custom arrow mechanics within the system. */
+internal object ArrowModule : ModuleInterface {
+    @EventHandler
+    fun on(event: ProjectileLaunchEvent) = handleProjectileLaunch(event)
+
     @EventHandler
     fun on(event: ProjectileHitEvent) = handleProjectileHit(event)
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun on(event: EntityDamageByEntityEvent) = handleEntityDamage(event)
+
+    /**
+     * Applies visual tipped-arrow particles to torch arrows.
+     * @param event The projectile launch event.
+     */
+    private fun handleProjectileLaunch(event: ProjectileLaunchEvent) {
+        val arrow = event.entity as? Arrow ?: return
+
+        if (!arrow.isTorchArrow) return
+
+        arrow.color = Color.YELLOW
+    }
 
     /**
      * Handles the logic for torch arrows when they hit a target.
@@ -100,4 +118,9 @@ internal object TorchArrowModule : ModuleInterface {
      */
     private val Arrow.isTorchArrow: Boolean
         get() = itemStack.persistentDataContainer.has(torchArrowKey, PersistentDataType.BYTE)
+
+    @Serializable
+    data class Config(
+        var enabled: Boolean = true,
+    )
 }

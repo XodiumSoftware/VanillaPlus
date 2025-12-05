@@ -1,6 +1,9 @@
+@file:OptIn(ExperimentalSerializationApi::class)
+
 package org.xodium.vanillaplus.managers
 
 import io.papermc.paper.command.brigadier.Commands
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import org.bukkit.entity.Player
 import org.bukkit.permissions.Permission
@@ -9,6 +12,7 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.configData
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.ConfigData
+import org.xodium.vanillaplus.strategies.CapitalizedStrategy
 import org.xodium.vanillaplus.utils.ExtUtils.executesCatching
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.prefix
@@ -22,6 +26,7 @@ internal object ConfigManager {
             prettyPrint = true
             encodeDefaults = true
             ignoreUnknownKeys = true
+            namingStrategy = CapitalizedStrategy
         }
 
     val reloadCommand: CommandData =

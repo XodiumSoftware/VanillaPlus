@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.StringArgumentType
 import io.papermc.paper.chat.ChatRenderer
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.event.player.AsyncChatEvent
+import kotlinx.serialization.Serializable
 import net.kyori.adventure.chat.SignedMessage
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
@@ -19,9 +20,13 @@ import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.ExtUtils.clickOpenUrl
+import org.xodium.vanillaplus.utils.ExtUtils.clickRunCmd
+import org.xodium.vanillaplus.utils.ExtUtils.clickSuggestCmd
 import org.xodium.vanillaplus.utils.ExtUtils.executesCatching
 import org.xodium.vanillaplus.utils.ExtUtils.face
 import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.ExtUtils.prefix
 import java.util.concurrent.CompletableFuture
 
 /** Represents a module handling chat mechanics within the system. */
@@ -201,4 +206,49 @@ internal object ChatModule : ModuleInterface {
                         .deleteMessage(signedMessage)
                 },
             )
+
+    @Serializable
+    data class Config(
+        var enabled: Boolean = true,
+        var chatFormat: String = "<player_head> <player> <reset><gradient:#FFE259:#FFA751>›</gradient> <message>",
+        var welcomeText: List<String> =
+            listOf(
+                "<gradient:#FFA751:#FFE259>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gradient:#CB2D3E:#EF473A>Welcome</gradient> <player> <white><sprite:item/name_tag></white>"
+                    .clickSuggestCmd(
+                        "/nickname",
+                        "<gradient:#FFE259:#FFA751>Set your nickname!</gradient>",
+                    ),
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gradient:#CB2D3E:#EF473A>Check out</gradient><gray>:",
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <white><sprite:item/writable_book></white>".clickRunCmd(
+                    "/rules",
+                    "<gradient:#FFE259:#FFA751>View the server /rules</gradient>",
+                ),
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <white><sprite:item/light></white>".clickOpenUrl(
+                    "https://illyria.fandom.com",
+                    "<gradient:#FFE259:#FFA751>Visit the wiki!</gradient>",
+                ),
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
+                "<gradient:#FFA751:#FFE259>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
+            ),
+        var whisperToFormat: String =
+            "<gradient:#1488CC:#2B32B2>You</gradient> <gradient:#FFE259:#FFA751>➛</gradient> <player> <reset><gradient:#FFE259:#FFA751>›</gradient> <message>",
+        var whisperFromFormat: String =
+            "<player> <reset><gradient:#FFE259:#FFA751>➛</gradient> <gradient:#1488CC:#2B32B2>You</gradient> <gradient:#FFE259:#FFA751>›</gradient> <message>",
+        var deleteCross: String = "<dark_gray>[<dark_red><b>X</b></dark_red><dark_gray>]",
+        var i18n: I18n = I18n(),
+    ) {
+        @Serializable
+        data class I18n(
+            var clickMe: String = "<gradient:#FFE259:#FFA751>Click me!</gradient>",
+            var clickToWhisper: String = "<gradient:#FFE259:#FFA751>Click to Whisper</gradient>",
+            var playerIsNotOnline: String = "${instance.prefix} <gradient:#CB2D3E:#EF473A>Player is not Online!</gradient>",
+            var deleteMessage: String = "<gradient:#FFE259:#FFA751>Click to delete your message</gradient>",
+            var clickToClipboard: String = "<gradient:#FFE259:#FFA751>Click to copy position to clipboard</gradient>",
+            var playerSetSpawn: String = "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> <notification>",
+        )
+    }
 }

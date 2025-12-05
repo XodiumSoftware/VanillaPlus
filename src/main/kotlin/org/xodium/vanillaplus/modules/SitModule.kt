@@ -2,6 +2,7 @@
 
 package org.xodium.vanillaplus.modules
 
+import kotlinx.serialization.Serializable
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
@@ -125,4 +126,11 @@ internal object SitModule : ModuleInterface {
         armorStand.addPassenger(player)
         sittingPlayers[player.uniqueId] = armorStand
     }
+
+    @Serializable
+    data class Config(
+        var enabled: Boolean = true,
+        var useStairs: Boolean = true,
+        var useSlabs: Boolean = true,
+    )
 }

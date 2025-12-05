@@ -9,6 +9,7 @@ import com.sk89q.worldedit.function.operation.Operations
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.math.transform.AffineTransform
 import com.sk89q.worldedit.session.ClipboardHolder
+import kotlinx.serialization.Serializable
 import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.block.Block
@@ -157,4 +158,67 @@ internal object TreesModule : ModuleInterface {
         require(angle.all { it in setOf(0, 90, 180, 270) }) { "Angles must be one of: 0, 90, 180, 270" }
         return angle.random()
     }
+
+    @Serializable
+    data class Config(
+        var enabled: Boolean = true,
+        var copyBiomes: Boolean = false,
+        var copyEntities: Boolean = false,
+        var ignoreAirBlocks: Boolean = true,
+        var ignoreStructureVoidBlocks: Boolean = true,
+        var treeMask: Set<Material> =
+            setOf(
+                Material.AZALEA,
+                Material.WEEPING_VINES,
+                Material.CORNFLOWER,
+                Material.CLOSED_EYEBLOSSOM,
+                Material.PINK_TULIP,
+                Material.OPEN_EYEBLOSSOM,
+                Material.WHITE_TULIP,
+                Material.SNOW,
+                Material.FERN,
+                Material.AZALEA_LEAVES,
+                Material.SUNFLOWER,
+                Material.PEONY,
+                Material.PINK_PETALS,
+                Material.LILAC,
+                Material.LARGE_FERN,
+                Material.VINE,
+                Material.CAVE_VINES_PLANT,
+                Material.TORCHFLOWER,
+                Material.RED_TULIP,
+                Material.ORANGE_TULIP,
+                Material.KELP,
+                Material.AIR,
+                Material.FLOWERING_AZALEA,
+                Material.AZURE_BLUET,
+                Material.MOSS_BLOCK,
+                Material.PITCHER_PLANT,
+                Material.WEEPING_VINES_PLANT,
+                Material.TALL_SEAGRASS,
+                Material.TWISTING_VINES,
+                Material.BLUE_ORCHID,
+                Material.CAVE_VINES,
+                Material.ROSE_BUSH,
+                Material.SPORE_BLOSSOM,
+                Material.FLOWERING_AZALEA_LEAVES,
+                Material.POPPY,
+                Material.TWISTING_VINES_PLANT,
+                Material.DANDELION,
+                Material.DEAD_BUSH,
+                Material.LILY_OF_THE_VALLEY,
+                Material.KELP_PLANT,
+                Material.SHORT_GRASS,
+                Material.CHORUS_FLOWER,
+                Material.ALLIUM,
+                Material.MANGROVE_PROPAGULE,
+                Material.CHERRY_LEAVES,
+                Material.SUGAR_CANE,
+                Material.SEAGRASS,
+                Material.MOSS_CARPET,
+                Material.WITHER_ROSE,
+                Material.TALL_GRASS,
+                Material.OXEYE_DAISY,
+            ),
+    )
 }

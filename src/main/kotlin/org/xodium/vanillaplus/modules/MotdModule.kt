@@ -1,5 +1,6 @@
 package org.xodium.vanillaplus.modules
 
+import kotlinx.serialization.Serializable
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.server.ServerListPingEvent
@@ -21,4 +22,14 @@ internal object MotdModule : ModuleInterface {
                 .joinToString("\n")
                 .mm(),
         )
+
+    @Serializable
+    data class Config(
+        var enabled: Boolean = true,
+        val motd: List<String> =
+            listOf(
+                "<gradient:#CB2D3E:#EF473A><b>Ultimate Private SMP</b></gradient>",
+                "<gradient:#FFE259:#FFA751><b>➤ WELCOME BACK LADS!</b></gradient>",
+            ),
+    )
 }

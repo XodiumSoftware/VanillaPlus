@@ -8,6 +8,7 @@ import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
 import io.papermc.paper.datacomponent.item.ResolvableProfile
 import io.papermc.paper.event.entity.EntityEquipmentChangedEvent
+import kotlinx.serialization.Serializable
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -16,6 +17,7 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockDropItemEvent
 import org.bukkit.event.entity.PlayerDeathEvent
+import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.player.PlayerAdvancementDoneEvent
@@ -269,4 +271,35 @@ internal object PlayerModule : ModuleInterface {
                     ),
             )
         }
+
+    @Serializable
+    data class Config(
+        var enabled: Boolean = true,
+        var enderChestClickType: ClickType = ClickType.SHIFT_RIGHT,
+        var skullDropChance: Double = 0.1,
+        var xpCostToBottle: Int = 11,
+        var silkTouch: SilkTouchEnchantment = SilkTouchEnchantment(),
+        var i18n: I18n = I18n(),
+    ) {
+        @Serializable
+        data class SilkTouchEnchantment(
+            var allowSpawnerSilk: Boolean = true,
+            var allowBuddingAmethystSilk: Boolean = true,
+        )
+
+        @Serializable
+        data class I18n(
+            var playerHeadName: String = "<player>’s Skull",
+            var playerHeadLore: List<String> = listOf("<player> killed by <killer>"),
+//          var playerDeathMsg: String = "<killer> <gradient:#FFE259:#FFA751>⚔</gradient> <player>",
+            var playerJoinMsg: String = "<green>➕<reset> <gradient:#FFE259:#FFA751>›</gradient> <player>",
+            var playerQuitMsg: String = "<red>➖<reset> <gradient:#FFE259:#FFA751>›</gradient> <player>",
+            var playerDeathMsg: String = "☠ <gradient:#FFE259:#FFA751>›</gradient>",
+            var playerDeathScreenMsg: String = "☠",
+            var playerAdvancementDoneMsg: String =
+                "\uD83C\uDF89 <gradient:#FFE259:#FFA751>›</gradient> <player> " +
+                    "<gradient:#FFE259:#FFA751>has made the advancement:</gradient> <advancement>",
+            var nicknameUpdated: String = "<gradient:#CB2D3E:#EF473A>Nickname has been updated to: <nickname></gradient>",
+        )
+    }
 }

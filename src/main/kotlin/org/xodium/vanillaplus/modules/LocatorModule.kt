@@ -4,6 +4,7 @@ package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes
+import kotlinx.serialization.Serializable
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.entity.Player
@@ -102,4 +103,9 @@ internal object LocatorModule : ModuleInterface {
             }
         }
     }
+
+    @Serializable
+    data class Config(
+        var enabled: Boolean = true,
+    )
 }
