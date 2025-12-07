@@ -170,6 +170,8 @@ internal object TreesModule : ModuleInterface {
         clipboard: Clipboard,
         persistence: Boolean = false,
     ) {
+        // TODO: Optimize by only iterating over leaves in the clipboard.
+        // TODO: Consider integrating with WorldEdit's API for better performance.
         val region = clipboard.region.clone()
         val origin = clipboard.origin
 
