@@ -37,7 +37,10 @@ internal object ExtUtils {
 
     /** The standardized prefix for [VanillaPlus] messages. */
     val VanillaPlus.prefix: String
-        get() = "<mango_inverted>[</mango_inverted><fire>${this.javaClass.simpleName}</fire><mango>]</mango>"
+        get() =
+            "<gradient:#FFA751:#FFE259>[</gradient><gradient:#CB2D3E:#EF473A>" +
+                "${this.javaClass.simpleName}" +
+                "</gradient><gradient:#FFE259:#FFA751>]</gradient>"
 
     /**
      * Deserializes a [MiniMessage] [String] into a [Component].
