@@ -13,6 +13,7 @@ import kotlinx.serialization.Serializable
 import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.block.Block
+import org.bukkit.block.data.type.Leaves
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.world.StructureGrowEvent
@@ -139,6 +140,7 @@ internal object TreesModule : ModuleInterface {
                                         .build(),
                                 )
                             }
+                            block.leafPersistence(clipboard)
                         }
                 } catch (e: Exception) {
                     instance.logger.severe("Error while pasting schematic: ${e.message}")
@@ -157,6 +159,33 @@ internal object TreesModule : ModuleInterface {
     private fun getRandomRotation(angle: List<Int> = listOf(0, 90, 180, 270)): Int {
         require(angle.all { it in setOf(0, 90, 180, 270) }) { "Angles must be one of: 0, 90, 180, 270" }
         return angle.random()
+    }
+
+    /**
+     * Sets the persistent property of all leaves in the pasted area.
+     * @param clipboard The clipboard that was pasted.
+     * @param persistence Whether leaves should be persistent. Defaults to false.
+     */
+    private fun Block.leafPersistence(
+        clipboard: Clipboard,
+        persistence: Boolean = false,
+    ) {
+        val region = clipboard.region.clone()
+        val origin = clipboard.origin
+
+        region.forEach { vector ->
+            val offset = vector.subtract(origin)
+            val targetBlock = world.getBlockAt(x + offset.x(), y + offset.y(), z + offset.z())
+
+            if (Tag.LEAVES.isTagged(targetBlock.type)) {
+                val blockData = targetBlock.blockData
+
+                if (blockData is Leaves) {
+                    blockData.isPersistent = persistence
+                    targetBlock.setBlockData(blockData, false)
+                }
+            }
+        }
     }
 
     @Serializable
