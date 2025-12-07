@@ -140,7 +140,7 @@ internal object TreesModule : ModuleInterface {
                                         .build(),
                                 )
                             }
-                            block.leafPersistence(clipboard)
+                            block.leafPersistence(clipboard, config.treesModule.persistentLeaves)
                         }
                 } catch (e: Exception) {
                     instance.logger.severe("Error while pasting schematic: ${e.message}")
@@ -195,6 +195,7 @@ internal object TreesModule : ModuleInterface {
         var copyEntities: Boolean = false,
         var ignoreAirBlocks: Boolean = true,
         var ignoreStructureVoidBlocks: Boolean = true,
+        var persistentLeaves: Boolean = false,
         var treeMask: Set<Material> =
             setOf(
                 Material.AZALEA,
