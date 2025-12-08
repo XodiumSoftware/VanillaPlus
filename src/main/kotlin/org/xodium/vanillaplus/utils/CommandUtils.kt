@@ -34,4 +34,24 @@ internal object CommandUtils {
         }
         return this
     }
+
+    /**
+     * Registers a command execution handler specifically for Player senders with an automatic try/catch handling.
+     * @receiver The command builder this handler is attached to.
+     * @param action The action executed when the command runs, receiving the Player and command context.
+     * @return The same command builder for further configuration.
+     * @throws IllegalStateException if the command is executed by a non-Player sender.
+     */
+    fun <T : ArgumentBuilder<CommandSourceStack, T>> T.playerExecuted(action: (Player, CommandContext<CommandSourceStack>) -> Unit): T {
+        executesCatching { ctx ->
+            action(
+                ctx.source.sender as? Player ?: run {
+                    instance.logger.warning("Command can only be executed by a Player!")
+                    return@executesCatching
+                },
+                ctx,
+            )
+        }
+        return this
+    }
 }

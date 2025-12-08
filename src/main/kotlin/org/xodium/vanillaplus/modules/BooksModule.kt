@@ -2,13 +2,12 @@ package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.command.brigadier.Commands
 import kotlinx.serialization.Serializable
-import org.bukkit.entity.Player
 import org.bukkit.permissions.Permission
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.BookData
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.utils.CommandUtils.executesCatching
+import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 
 /** Represents a module handling book mechanics within the system. */
 internal object BooksModule : ModuleInterface {
@@ -20,12 +19,7 @@ internal object BooksModule : ModuleInterface {
                 Commands
                     .literal(book.cmd.lowercase())
                     .requires { it.sender.hasPermission("$permPrefix.${book.cmd.lowercase()}") }
-                    .executesCatching {
-                        if (it.source.sender !is Player) {
-                            instance.logger.warning("Command can only be executed by a Player!")
-                        }
-                        it.source.sender.openBook(book.toBook())
-                    },
+                    .playerExecuted { player, _ -> player.openBook(book.toBook()) },
                 "Opens the predefined book '${book.cmd.lowercase()}'",
             )
         }
