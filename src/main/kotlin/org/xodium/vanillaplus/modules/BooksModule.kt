@@ -27,7 +27,6 @@ internal object BooksModule : ModuleInterface {
                         it.source.sender.openBook(book.toBook())
                     },
                 "Opens the predefined book '${book.cmd.lowercase()}'",
-                emptyList(),
             )
         }
 
