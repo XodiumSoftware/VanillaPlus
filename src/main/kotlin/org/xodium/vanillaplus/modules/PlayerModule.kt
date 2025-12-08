@@ -32,7 +32,7 @@ import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.enchantments.*
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
-import org.xodium.vanillaplus.utils.ExtUtils.executesCatching
+import org.xodium.vanillaplus.utils.CommandUtils.executesCatching
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 
 /** Represents a module handling player mechanics within the system. */

@@ -21,7 +21,7 @@ import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.SoundData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.BlockUtils.center
-import org.xodium.vanillaplus.utils.ExtUtils.executesCatching
+import org.xodium.vanillaplus.utils.CommandUtils.executesCatching
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.InvUtils
 import org.xodium.vanillaplus.utils.PlayerUtils
