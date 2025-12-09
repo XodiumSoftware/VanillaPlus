@@ -47,6 +47,7 @@ internal class VanillaPlus : JavaPlugin() {
         TorchArrowRecipe.register()
         WoodLogRecipe.register()
 
+        ArrowModule.register()
         BooksModule.register()
         ChatModule.register()
         DimensionsModule.register()
@@ -57,11 +58,11 @@ internal class VanillaPlus : JavaPlugin() {
         OpenableModule.register()
         PetModule.register()
         PlayerModule.register()
+        QuestModule.register()
         ScoreBoardModule.register()
         SignModule.register()
         SitModule.register()
         TabListModule.register()
-        ArrowModule.register()
         if (WorldEditHook.get()) TreesModule.register()
     }
 
