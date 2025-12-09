@@ -22,3 +22,4 @@ run/
 .idea/shelf/
 .idea/modules/
 copilot.*.xml
+workspace.xml
