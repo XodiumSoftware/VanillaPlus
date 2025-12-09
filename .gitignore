@@ -16,3 +16,9 @@ Thumbs.db
 
 # Server files
 run/
+
+# IDE specific files
+.idea/libraries
+.idea/shelf
+.idea/modules
+copilot.*.xml
