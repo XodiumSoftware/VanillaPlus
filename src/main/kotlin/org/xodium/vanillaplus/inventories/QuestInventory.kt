@@ -11,6 +11,9 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.data.QuestData
+import org.xodium.vanillaplus.enums.QuestDifficultyEnum
+import org.xodium.vanillaplus.enums.QuestTypeEnum
 import org.xodium.vanillaplus.interfaces.InventoryInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import java.util.*
@@ -18,33 +21,93 @@ import java.util.*
 /** Represents the inventory for quest-related items and interactions. */
 internal object QuestInventory : InventoryInterface {
     /** Map of quest difficulties to their respective quest pools. */
-    private val questPool: Map<QuestDifficulty, List<QuestData>> =
-        QuestDifficulty.entries.associateWith { difficulty ->
+    private val questPool: Map<QuestDifficultyEnum, List<QuestData>> =
+        QuestDifficultyEnum.entries.associateWith { difficulty ->
             when (difficulty) {
-                QuestDifficulty.EASY -> {
+                QuestDifficultyEnum.EASY -> {
                     listOf(
-                        QuestData(objective = "Collect 5 wooden planks", crystals = 5),
-                        QuestData(objective = "Mine 10 cobblestone", crystals = 8),
-                        QuestData(objective = "Craft a wooden pickaxe", crystals = 10),
-                        QuestData(objective = "Collect 3 wheat", crystals = 5),
+                        QuestData(
+                            objective = "Collect 5 wooden planks",
+                            crystals = 5,
+                            type = QuestTypeEnum.COLLECT_ITEM,
+                            requiredAmount = 5,
+                        ),
+                        QuestData(
+                            objective = "Mine 10 cobblestone",
+                            crystals = 8,
+                            type = QuestTypeEnum.MINE_BLOCK,
+                            requiredAmount = 10,
+                        ),
+                        QuestData(
+                            objective = "Craft a wooden pickaxe",
+                            crystals = 10,
+                            type = QuestTypeEnum.CRAFT_ITEM,
+                            requiredAmount = 1,
+                        ),
+                        QuestData(
+                            objective = "Collect 3 wheat",
+                            crystals = 5,
+                            type = QuestTypeEnum.COLLECT_ITEM,
+                            requiredAmount = 3,
+                        ),
                     )
                 }
 
-                QuestDifficulty.MEDIUM -> {
+                QuestDifficultyEnum.MEDIUM -> {
                     listOf(
-                        QuestData(objective = "Craft a stone pickaxe", crystals = 20),
-                        QuestData(objective = "Defeat 3 skeletons", crystals = 25),
-                        QuestData(objective = "Mine 5 iron ore", crystals = 30),
-                        QuestData(objective = "Cook 10 food items", crystals = 22),
+                        QuestData(
+                            objective = "Craft a stone pickaxe",
+                            crystals = 20,
+                            type = QuestTypeEnum.CRAFT_ITEM,
+                            requiredAmount = 1,
+                        ),
+                        QuestData(
+                            objective = "Defeat 3 skeletons",
+                            crystals = 25,
+                            type = QuestTypeEnum.KILL_ENTITY,
+                            requiredAmount = 3,
+                        ),
+                        QuestData(
+                            objective = "Mine 5 iron ore",
+                            crystals = 30,
+                            type = QuestTypeEnum.MINE_BLOCK,
+                            requiredAmount = 5,
+                        ),
+                        QuestData(
+                            objective = "Cook 10 food items",
+                            crystals = 22,
+                            type = QuestTypeEnum.COOK_ITEM,
+                            requiredAmount = 10,
+                        ),
                     )
                 }
 
-                QuestDifficulty.HARD -> {
+                QuestDifficultyEnum.HARD -> {
                     listOf(
-                        QuestData(objective = "Slay the cave spider boss", crystals = 100),
-                        QuestData(objective = "Defeat 5 zombies without taking damage", crystals = 80),
-                        QuestData(objective = "Mine 10 diamonds", crystals = 120),
-                        QuestData(objective = "Complete a dungeon", crystals = 150),
+                        QuestData(
+                            objective = "Slay 1 cave spider boss",
+                            crystals = 100,
+                            type = QuestTypeEnum.KILL_ENTITY,
+                            requiredAmount = 1,
+                        ),
+                        QuestData(
+                            objective = "Defeat 5 zombies without taking damage",
+                            crystals = 80,
+                            type = QuestTypeEnum.KILL_ENTITY,
+                            requiredAmount = 5,
+                        ),
+                        QuestData(
+                            objective = "Mine 10 diamonds",
+                            crystals = 120,
+                            type = QuestTypeEnum.MINE_BLOCK,
+                            requiredAmount = 10,
+                        ),
+                        QuestData(
+                            objective = "Complete 1 dungeon",
+                            crystals = 150,
+                            type = QuestTypeEnum.COLLECT_ITEM,
+                            requiredAmount = 1,
+                        ),
                     )
                 }
             }
@@ -55,15 +118,15 @@ internal object QuestInventory : InventoryInterface {
             fill(Material.GRAY_STAINED_GLASS_PANE)
 
             // EASY Quests (slots 2, 3)
-            setItem(2, randomQuestItem(QuestDifficulty.EASY))
-            setItem(3, randomQuestItem(QuestDifficulty.EASY))
+            setItem(2, randomQuestItem(QuestDifficultyEnum.EASY))
+            setItem(3, randomQuestItem(QuestDifficultyEnum.EASY))
 
             // MEDIUM Quests (slots 4, 5)
-            setItem(4, randomQuestItem(QuestDifficulty.MEDIUM))
-            setItem(5, randomQuestItem(QuestDifficulty.MEDIUM))
+            setItem(4, randomQuestItem(QuestDifficultyEnum.MEDIUM))
+            setItem(5, randomQuestItem(QuestDifficultyEnum.MEDIUM))
 
             // HARD Quest (slot 6)
-            setItem(6, randomQuestItem(QuestDifficulty.HARD))
+            setItem(6, randomQuestItem(QuestDifficultyEnum.HARD))
         }
 
     override fun getInventory(): Inventory = _inventory
@@ -75,7 +138,7 @@ internal object QuestInventory : InventoryInterface {
      * @return The created quest item as an ItemStack.
      */
     private fun randomQuestItem(
-        difficulty: QuestDifficulty,
+        difficulty: QuestDifficultyEnum,
         material: Material = Material.PAPER,
     ): ItemStack {
         val quest = questPool.getValue(difficulty).random()
@@ -93,7 +156,7 @@ internal object QuestInventory : InventoryInterface {
      */
     @Suppress("UnstableApiUsage")
     private fun questItem(
-        difficulty: QuestDifficulty,
+        difficulty: QuestDifficultyEnum,
         objective: String,
         crystals: Int,
         uuid: UUID,
@@ -152,17 +215,17 @@ internal object QuestInventory : InventoryInterface {
         val quests = mutableSetOf<UUID>()
 
         questPool
-            .getValue(QuestDifficulty.EASY)
+            .getValue(QuestDifficultyEnum.EASY)
             .shuffled()
             .take(2)
             .forEach { quests.add(it.uuid) }
         questPool
-            .getValue(QuestDifficulty.MEDIUM)
+            .getValue(QuestDifficultyEnum.MEDIUM)
             .shuffled()
             .take(2)
             .forEach { quests.add(it.uuid) }
         questPool
-            .getValue(QuestDifficulty.HARD)
+            .getValue(QuestDifficultyEnum.HARD)
             .shuffled()
             .take(1)
             .forEach { quests.add(it.uuid) }
@@ -176,26 +239,4 @@ internal object QuestInventory : InventoryInterface {
      * @return The QuestData if found, null otherwise.
      */
     fun getQuestByUuid(uuid: UUID): QuestData? = questPool.values.flatten().find { it.uuid == uuid }
-
-    /**
-     * Represents the difficulty levels for quests.
-     * @param title The title component associated with the quest difficulty.
-     * * EASY: Green title
-     * * MEDIUM: Blue title
-     * * HARD: Red title
-     */
-    enum class QuestDifficulty(
-        val title: Component,
-    ) {
-        EASY("<green>Easy Quest".mm()),
-        MEDIUM("<blue>Medium Quest".mm()),
-        HARD("<red>Hard Quest".mm()),
-    }
-
-    /** Data class representing a quest with its objective and rewards. */
-    data class QuestData(
-        val uuid: UUID = UUID.randomUUID(),
-        val objective: String,
-        val crystals: Int,
-    )
 }

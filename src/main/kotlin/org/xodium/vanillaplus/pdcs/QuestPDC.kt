@@ -71,12 +71,57 @@ internal object QuestPDC {
         }
 
     /**
-     * Adds a quest UUID to the player's active quests.
-     * @param questUuid The UUID of the quest to add.
+     * Gets or sets the player's quest progress as a map of UUID to current amount.
+     * @return A map where keys are quest UUIDs and values are progress amounts.
      */
-    fun Player.addActiveQuest(questUuid: UUID) {
-        activeQuests = activeQuests + questUuid
+    var Player.questProgress: Map<UUID, Int>
+        get() {
+            val data =
+                persistentDataContainer.get(
+                    NamespacedKey(instance, "quest_progress"),
+                    PersistentDataType.STRING,
+                ) ?: return emptyMap()
+            return data
+                .split(";")
+                .filter { it.isNotBlank() }
+                .associate {
+                    val parts = it.split(":")
+                    UUID.fromString(parts[0]) to parts[1].toInt()
+                }
+        }
+        set(value) {
+            if (value.isEmpty()) {
+                persistentDataContainer.remove(NamespacedKey(instance, "quest_progress"))
+            } else {
+                val data = value.entries.joinToString(";") { "${it.key}:${it.value}" }
+                persistentDataContainer.set(
+                    NamespacedKey(instance, "quest_progress"),
+                    PersistentDataType.STRING,
+                    data,
+                )
+            }
+        }
+
+    /**
+     * Increments quest progress for the given quest UUID.
+     * @param questUuid The UUID of the quest to increment progress for.
+     * @param amount The amount to increment by. Defaults to 1.
+     */
+    fun Player.incrementQuestProgress(
+        questUuid: UUID,
+        amount: Int = 1,
+    ) {
+        val current = questProgress.toMutableMap()
+        current[questUuid] = (current[questUuid] ?: 0) + amount
+        questProgress = current
     }
+
+    /**
+     * Gets the current progress for a quest.
+     * @param questUuid The UUID of the quest.
+     * @return The current progress amount, or 0 if not started.
+     */
+    fun Player.getQuestProgress(questUuid: UUID): Int = questProgress[questUuid] ?: 0
 
     /**
      * Removes a quest UUID from the player's active quests.
