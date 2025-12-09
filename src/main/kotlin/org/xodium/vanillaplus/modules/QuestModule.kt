@@ -257,7 +257,7 @@ internal object QuestModule : ModuleInterface {
 
     /**
      * Assigns new quests to a player.
-     * @param playerUuid The UUID of the player.
+     * @param player The player to assign quests to.
      */
     private fun assignQuestsToPlayer(player: Player) {
         val newQuests = QuestInventory.generateWeeklyQuests()
