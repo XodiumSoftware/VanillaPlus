@@ -1,5 +1,3 @@
-@file:Suppress("ktlint:standard:no-wildcard-imports")
-
 import xyz.jpenilla.resourcefactory.paper.PaperPluginYaml
 import xyz.jpenilla.runtask.task.AbstractRun
 
@@ -8,7 +6,7 @@ plugins {
     id("idea")
     kotlin("jvm") version "2.2.21"
     kotlin("plugin.serialization") version "2.2.21"
-    id("com.gradleup.shadow") version "9.2.2"
+    id("com.gradleup.shadow") version "9.3.0"
     id("xyz.jpenilla.run-paper") version "3.0.2"
     id("xyz.jpenilla.resource-factory-paper-convention") version "1.3.1"
 }

@@ -32,7 +32,7 @@ import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.enchantments.*
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
-import org.xodium.vanillaplus.utils.ExtUtils.executesCatching
+import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 
 /** Represents a module handling player mechanics within the system. */
@@ -45,15 +45,12 @@ internal object PlayerModule : ModuleInterface {
                 Commands
                     .literal("nickname")
                     .requires { it.sender.hasPermission(perms[0]) }
-                    .executesCatching {
-                        if (it.source.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
-                        nickname(it.source.sender as Player, "")
-                    }.then(
+                    .playerExecuted { player, _ -> nickname(player, "") }
+                    .then(
                         Commands
                             .argument("name", StringArgumentType.greedyString())
-                            .executesCatching {
-                                if (it.source.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
-                                nickname(it.source.sender as Player, StringArgumentType.getString(it, "name"))
+                            .playerExecuted { player, ctx ->
+                                nickname(player, StringArgumentType.getString(ctx, "name"))
                             },
                     ),
                 "Allows players to set or remove their nickname",

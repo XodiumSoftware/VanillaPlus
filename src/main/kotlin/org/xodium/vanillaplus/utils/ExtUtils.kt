@@ -3,10 +3,6 @@
 package org.xodium.vanillaplus.utils
 
 import com.google.gson.JsonParser
-import com.mojang.brigadier.Command
-import com.mojang.brigadier.builder.ArgumentBuilder
-import com.mojang.brigadier.context.CommandContext
-import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.registry.TypedKey
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -14,7 +10,6 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.xodium.vanillaplus.VanillaPlus
-import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import java.net.URI
 import java.util.*
 import javax.imageio.ImageIO
@@ -37,7 +32,10 @@ internal object ExtUtils {
 
     /** The standardized prefix for [VanillaPlus] messages. */
     val VanillaPlus.prefix: String
-        get() = "<mango_inverted>[</mango_inverted><fire>${this.javaClass.simpleName}</fire><mango>]</mango>"
+        get() =
+            "<gradient:#FFA751:#FFE259>[</gradient><gradient:#CB2D3E:#EF473A>" +
+                "${this.javaClass.simpleName}" +
+                "</gradient><gradient:#FFE259:#FFA751>]</gradient>"
 
     /**
      * Deserializes a [MiniMessage] [String] into a [Component].
@@ -91,31 +89,6 @@ internal object ExtUtils {
         url: String,
         hover: String? = "<mango>Click me!</mango>", // FIX
     ): String = "<hover:show_text:'$hover'><click:open_url:'$url'>$this</click></hover>"
-
-    /**
-     * Registers a command execution handler with an automatic try/catch handling.
-     * @receiver The command builder this handler is attached to.
-     * @param action The action executed when the command runs.
-     * @return The same command builder for further configuration.
-     */
-    fun <T : ArgumentBuilder<CommandSourceStack, T>> T.executesCatching(action: (CommandContext<CommandSourceStack>) -> Unit): T {
-        executes { ctx ->
-            runCatching { action(ctx) }
-                .onFailure { e ->
-                    instance.logger.severe(
-                        """
-                        Command error: ${e.message}
-                        ${e.stackTraceToString()}
-                        """.trimIndent(),
-                    )
-                    (ctx.source.sender as? Player)?.sendMessage(
-                        "${instance.prefix} <red>An error has occurred. Check server logs for details.".mm(),
-                    )
-                }
-            Command.SINGLE_SUCCESS
-        }
-        return this
-    }
 
     /**
      * Retrieves the player's face as a string.
