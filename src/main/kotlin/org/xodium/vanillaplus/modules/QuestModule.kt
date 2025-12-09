@@ -15,8 +15,14 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.inventories.QuestInventory
+import org.xodium.vanillaplus.pdcs.QuestPDC.activeQuests
+import org.xodium.vanillaplus.pdcs.QuestPDC.addActiveQuest
+import org.xodium.vanillaplus.pdcs.QuestPDC.assignedQuests
+import org.xodium.vanillaplus.pdcs.QuestPDC.questResetTime
+import org.xodium.vanillaplus.pdcs.QuestPDC.removeActiveQuest
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.ExtUtils.prefix
 import java.time.DayOfWeek
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -25,9 +31,6 @@ import java.util.*
 
 /** Represents a module handling quest mechanics within the system. */
 internal object QuestModule : ModuleInterface {
-    private val activeQuests = mutableMapOf<UUID, MutableSet<UUID>>()
-    private val assignedQuests = mutableMapOf<UUID, MutableSet<UUID>>()
-    private val questResetTimes = mutableMapOf<UUID, Long>()
     private val questUuidKey = NamespacedKey(instance, "quest_uuid")
 
     override val cmds =
@@ -90,8 +93,13 @@ internal object QuestModule : ModuleInterface {
                 ?.get(questUuidKey, PersistentDataType.STRING)
                 ?.let { UUID.fromString(it) } ?: return
 
-        if (activeQuests[player.uniqueId]?.contains(questUuid) == true) {
-            player.sendMessage("<red>You already have this quest active!".mm())
+        if (player.assignedQuests.contains(questUuid).not()) {
+            player.sendMessage("${instance.prefix} <red>This quest is not available for you!".mm())
+            return
+        }
+
+        if (player.activeQuests.contains(questUuid)) {
+            player.sendMessage("${instance.prefix} <red>You already have this quest active!".mm())
             return
         }
 
@@ -103,13 +111,11 @@ internal object QuestModule : ModuleInterface {
      * @param event The PlayerJoinEvent to handle.
      */
     private fun handlePlayerJoin(event: PlayerJoinEvent) {
-        val playerUuid = event.player.uniqueId
+        val player = event.player
 
-        activeQuests.putIfAbsent(playerUuid, mutableSetOf())
-
-        if (!assignedQuests.containsKey(playerUuid) || !questResetTimes.containsKey(playerUuid)) {
-            assignQuestsToPlayer(playerUuid)
-            event.player.sendMessage("<green>New weekly quests have been assigned!".mm())
+        if (player.assignedQuests.isEmpty() || player.questResetTime == null) {
+            assignQuestsToPlayer(player)
+            player.sendMessage("${instance.prefix} <green>New weekly quests have been assigned!".mm())
         }
     }
 
@@ -122,8 +128,8 @@ internal object QuestModule : ModuleInterface {
         player: Player,
         questUuid: UUID,
     ) {
-        activeQuests.getOrPut(player.uniqueId) { mutableSetOf() }.add(questUuid)
-        player.sendMessage("<green>Quest accepted! Check your progress with /quests".mm())
+        player.addActiveQuest(questUuid)
+        player.sendMessage("${instance.prefix} <green>Quest accepted! Check your progress with /quests".mm())
     }
 
     /**
@@ -137,23 +143,23 @@ internal object QuestModule : ModuleInterface {
         questUuid: UUID,
         crystalAmount: Int,
     ) {
-        if (activeQuests[player.uniqueId]?.remove(questUuid) != true) return
+        if (!player.removeActiveQuest(questUuid)) return
 
         player.inventory.addItem(QuestInventory.crystal(crystalAmount))
-        player.sendMessage("<green>Quest completed! You earned $crystalAmount crystals!".mm())
+        player.sendMessage("${instance.prefix} <green>Quest completed! You earned $crystalAmount crystals!".mm())
     }
 
     /** Checks if it's time for weekly reset and resets quests for all players. */
     private fun checkWeeklyReset() {
         val currentTime = System.currentTimeMillis()
 
-        questResetTimes.forEach { (playerUuid, resetTime) ->
-            if (currentTime >= resetTime) {
-                activeQuests[playerUuid]?.clear()
-                assignQuestsToPlayer(playerUuid)
+        instance.server.onlinePlayers.forEach { player ->
+            val resetTime = player.questResetTime ?: return@forEach
 
-                val player = instance.server.getPlayer(playerUuid)
-                player?.sendMessage("<yellow>Your weekly quests have been reset!".mm())
+            if (currentTime >= resetTime) {
+                player.activeQuests = emptySet()
+                assignQuestsToPlayer(player)
+                player.sendMessage("${instance.prefix} <yellow>Your weekly quests have been reset!".mm())
             }
         }
     }
@@ -162,10 +168,9 @@ internal object QuestModule : ModuleInterface {
      * Assigns new quests to a player.
      * @param playerUuid The UUID of the player.
      */
-    private fun assignQuestsToPlayer(playerUuid: UUID) {
-        val newQuests = QuestInventory.generateWeeklyQuests()
-        assignedQuests[playerUuid] = newQuests.toMutableSet()
-        questResetTimes[playerUuid] = getNextResetTime()
+    private fun assignQuestsToPlayer(player: Player) {
+        player.assignedQuests = QuestInventory.generateWeeklyQuests()
+        player.questResetTime = getNextResetTime()
     }
 
     /**
