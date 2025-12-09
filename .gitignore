@@ -18,7 +18,7 @@ Thumbs.db
 run/
 
 # IDE specific files
-.idea/libraries
-.idea/shelf
-.idea/modules
+.idea/libraries/
+.idea/shelf/
+.idea/modules/
 copilot.*.xml
