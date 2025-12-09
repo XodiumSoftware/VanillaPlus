@@ -6,8 +6,10 @@ import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
+import org.bukkit.NamespacedKey
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.InventoryInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
@@ -17,29 +19,36 @@ import java.util.*
 internal object QuestInventory : InventoryInterface {
     /** Map of quest difficulties to their respective quest pools. */
     private val questPool: Map<QuestDifficulty, List<QuestData>> =
-        mapOf(
-            QuestDifficulty.EASY to
-                listOf(
-                    QuestData(objective = "Collect 5 wooden planks", crystals = 5),
-                    QuestData(objective = "Mine 10 cobblestone", crystals = 8),
-                    QuestData(objective = "Craft a wooden pickaxe", crystals = 10),
-                    QuestData(objective = "Collect 3 wheat", crystals = 5),
-                ),
-            QuestDifficulty.MEDIUM to
-                listOf(
-                    QuestData(objective = "Craft a stone pickaxe", crystals = 20),
-                    QuestData(objective = "Defeat 3 skeletons", crystals = 25),
-                    QuestData(objective = "Mine 5 iron ore", crystals = 30),
-                    QuestData(objective = "Cook 10 food items", crystals = 22),
-                ),
-            QuestDifficulty.HARD to
-                listOf(
-                    QuestData(objective = "Slay the cave spider boss", crystals = 100),
-                    QuestData(objective = "Defeat 5 zombies without taking damage", crystals = 80),
-                    QuestData(objective = "Mine 10 diamonds", crystals = 120),
-                    QuestData(objective = "Complete a dungeon", crystals = 150),
-                ),
-        )
+        QuestDifficulty.entries.associateWith { difficulty ->
+            when (difficulty) {
+                QuestDifficulty.EASY -> {
+                    listOf(
+                        QuestData(objective = "Collect 5 wooden planks", crystals = 5),
+                        QuestData(objective = "Mine 10 cobblestone", crystals = 8),
+                        QuestData(objective = "Craft a wooden pickaxe", crystals = 10),
+                        QuestData(objective = "Collect 3 wheat", crystals = 5),
+                    )
+                }
+
+                QuestDifficulty.MEDIUM -> {
+                    listOf(
+                        QuestData(objective = "Craft a stone pickaxe", crystals = 20),
+                        QuestData(objective = "Defeat 3 skeletons", crystals = 25),
+                        QuestData(objective = "Mine 5 iron ore", crystals = 30),
+                        QuestData(objective = "Cook 10 food items", crystals = 22),
+                    )
+                }
+
+                QuestDifficulty.HARD -> {
+                    listOf(
+                        QuestData(objective = "Slay the cave spider boss", crystals = 100),
+                        QuestData(objective = "Defeat 5 zombies without taking damage", crystals = 80),
+                        QuestData(objective = "Mine 10 diamonds", crystals = 120),
+                        QuestData(objective = "Complete a dungeon", crystals = 150),
+                    )
+                }
+            }
+        }
 
     private val _inventory: Inventory =
         instance.server.createInventory(this, 9, "<gradient:#CB2D3E:#EF473A>Quests</gradient>".mm()).apply {
@@ -69,10 +78,8 @@ internal object QuestInventory : InventoryInterface {
         difficulty: QuestDifficulty,
         material: Material = Material.PAPER,
     ): ItemStack {
-        // TODO: Make it so the quests can only be used once every x time and then it resets. so we dont need to check for not available quests.
-        val quest = questPool[difficulty]?.random() ?: QuestData(objective = "No quest available", crystals = 0)
-
-        return questItem(difficulty, quest.objective, quest.crystals, material)
+        val quest = questPool.getValue(difficulty).random()
+        return questItem(difficulty, quest.objective, quest.crystals, quest.uuid, material)
     }
 
     /**
@@ -80,6 +87,7 @@ internal object QuestInventory : InventoryInterface {
      * @param difficulty The difficulty level of the quest.
      * @param objective The objective description of the quest.
      * @param crystals The number of crystals rewarded for completing the quest.
+     * @param uuid The unique identifier for the quest.
      * @param material The material of the quest item. Defaults to PAPER.
      * @return The created quest item as an ItemStack.
      */
@@ -88,6 +96,7 @@ internal object QuestInventory : InventoryInterface {
         difficulty: QuestDifficulty,
         objective: String,
         crystals: Int,
+        uuid: UUID,
         material: Material = Material.PAPER,
     ): ItemStack =
         ItemStack.of(material).apply {
@@ -105,6 +114,13 @@ internal object QuestInventory : InventoryInterface {
                     ),
                 ),
             )
+            editPersistentDataContainer { container ->
+                container.set(
+                    NamespacedKey(instance, "quest_uuid"),
+                    PersistentDataType.STRING,
+                    uuid.toString(),
+                )
+            }
         }
 
     /**
@@ -129,6 +145,39 @@ internal object QuestInventory : InventoryInterface {
         }
 
     /**
+     * Generates a set of weekly quest UUIDs (2 easy, 2 medium, 1 hard).
+     * @return A set of quest UUIDs for the week.
+     */
+    fun generateWeeklyQuests(): Set<UUID> {
+        val quests = mutableSetOf<UUID>()
+
+        questPool
+            .getValue(QuestDifficulty.EASY)
+            .shuffled()
+            .take(2)
+            .forEach { quests.add(it.uuid) }
+        questPool
+            .getValue(QuestDifficulty.MEDIUM)
+            .shuffled()
+            .take(2)
+            .forEach { quests.add(it.uuid) }
+        questPool
+            .getValue(QuestDifficulty.HARD)
+            .shuffled()
+            .take(1)
+            .forEach { quests.add(it.uuid) }
+
+        return quests
+    }
+
+    /**
+     * Gets a quest by its UUID.
+     * @param uuid The UUID of the quest.
+     * @return The QuestData if found, null otherwise.
+     */
+    fun getQuestByUuid(uuid: UUID): QuestData? = questPool.values.flatten().find { it.uuid == uuid }
+
+    /**
      * Represents the difficulty levels for quests.
      * @param title The title component associated with the quest difficulty.
      * * EASY: Green title
@@ -144,7 +193,7 @@ internal object QuestInventory : InventoryInterface {
     }
 
     /** Data class representing a quest with its objective and rewards. */
-    private data class QuestData(
+    data class QuestData(
         val uuid: UUID = UUID.randomUUID(),
         val objective: String,
         val crystals: Int,
