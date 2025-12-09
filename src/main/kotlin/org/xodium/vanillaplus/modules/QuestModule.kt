@@ -16,7 +16,6 @@ import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.inventories.QuestInventory
 import org.xodium.vanillaplus.pdcs.QuestPDC.activeQuests
-import org.xodium.vanillaplus.pdcs.QuestPDC.addActiveQuest
 import org.xodium.vanillaplus.pdcs.QuestPDC.assignedQuests
 import org.xodium.vanillaplus.pdcs.QuestPDC.questResetTime
 import org.xodium.vanillaplus.pdcs.QuestPDC.removeActiveQuest
@@ -93,17 +92,18 @@ internal object QuestModule : ModuleInterface {
                 ?.get(questUuidKey, PersistentDataType.STRING)
                 ?.let { UUID.fromString(it) } ?: return
 
-        if (player.assignedQuests.contains(questUuid).not()) {
+        if (!player.assignedQuests.contains(questUuid)) {
             player.sendMessage("${instance.prefix} <red>This quest is not available for you!".mm())
             return
         }
 
-        if (player.activeQuests.contains(questUuid)) {
-            player.sendMessage("${instance.prefix} <red>You already have this quest active!".mm())
+        if (!player.activeQuests.contains(questUuid)) {
+            player.sendMessage("${instance.prefix} <red>You haven't completed this quest yet!".mm())
             return
         }
 
-        acceptQuest(player, questUuid)
+        val quest = QuestInventory.getQuestByUuid(questUuid) ?: return
+        completeQuest(player, questUuid, quest.crystals)
     }
 
     /**
@@ -117,19 +117,6 @@ internal object QuestModule : ModuleInterface {
             assignQuestsToPlayer(player)
             player.sendMessage("${instance.prefix} <green>New weekly quests have been assigned!".mm())
         }
-    }
-
-    /**
-     * Accepts a quest for the player.
-     * @param player The player accepting the quest.
-     * @param questUuid The UUID of the quest being accepted.
-     */
-    private fun acceptQuest(
-        player: Player,
-        questUuid: UUID,
-    ) {
-        player.addActiveQuest(questUuid)
-        player.sendMessage("${instance.prefix} <green>Quest accepted! Check your progress with /quests".mm())
     }
 
     /**
@@ -169,7 +156,9 @@ internal object QuestModule : ModuleInterface {
      * @param playerUuid The UUID of the player.
      */
     private fun assignQuestsToPlayer(player: Player) {
-        player.assignedQuests = QuestInventory.generateWeeklyQuests()
+        val newQuests = QuestInventory.generateWeeklyQuests()
+        player.assignedQuests = newQuests
+        player.activeQuests = newQuests
         player.questResetTime = getNextResetTime()
     }
 
