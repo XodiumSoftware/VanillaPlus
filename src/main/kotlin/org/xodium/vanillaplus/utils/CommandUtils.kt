@@ -1,5 +1,3 @@
-@file:Suppress("unused")
-
 package org.xodium.vanillaplus.utils
 
 import com.mojang.brigadier.Command
@@ -18,7 +16,9 @@ internal object CommandUtils {
      * @param action The action executed when the command runs.
      * @return The same command builder for further configuration.
      */
-    fun <T : ArgumentBuilder<CommandSourceStack, T>> T.executesCatching(action: (CommandContext<CommandSourceStack>) -> Unit): T {
+    fun <T : ArgumentBuilder<CommandSourceStack, T>> T.executesCatching(
+        action: (CommandContext<CommandSourceStack>) -> Unit,
+    ): T {
         executes { ctx ->
             runCatching { action(ctx) }
                 .onFailure { e ->
@@ -44,7 +44,9 @@ internal object CommandUtils {
      * @return The same command builder for further configuration.
      * @throws IllegalStateException if the command is executed by a non-Player sender.
      */
-    fun <T : ArgumentBuilder<CommandSourceStack, T>> T.playerExecuted(action: (Player, CommandContext<CommandSourceStack>) -> Unit): T {
+    fun <T : ArgumentBuilder<CommandSourceStack, T>> T.playerExecuted(
+        action: (Player, CommandContext<CommandSourceStack>) -> Unit,
+    ): T {
         executesCatching { ctx ->
             action(
                 ctx.source.sender as? Player ?: run {
