@@ -41,6 +41,7 @@ internal object BlockUtils {
         clipboard: Clipboard,
         persistence: Boolean = false,
     ) {
+        // TODO: doesnt detect all leaves in the region, or the region is is done properly.
         val region = clipboard.region.clone()
         val origin = clipboard.origin
 
