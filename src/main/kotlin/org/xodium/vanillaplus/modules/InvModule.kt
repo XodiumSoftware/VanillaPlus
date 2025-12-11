@@ -21,7 +21,8 @@ import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.SoundData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.BlockUtils.center
-import org.xodium.vanillaplus.utils.ExtUtils.executesCatching
+import org.xodium.vanillaplus.utils.CommandUtils.executesCatching
+import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.InvUtils
 import org.xodium.vanillaplus.utils.PlayerUtils
@@ -45,10 +46,7 @@ internal object InvModule : ModuleInterface {
                                     .filter { it.startsWith(builder.remaining.lowercase()) }
                                     .forEach(builder::suggest)
                                 CompletableFuture.completedFuture(builder.build())
-                            }.executesCatching {
-                                if (it.source.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
-                                handleSearch(it)
-                            },
+                            }.playerExecuted { _, ctx -> handleSearch(ctx) },
                     ).executesCatching { handleSearch(it) },
                 "Search nearby chests for specific items",
                 listOf("search", "searchinv", "invs"),
@@ -57,10 +55,7 @@ internal object InvModule : ModuleInterface {
                 Commands
                     .literal("invunload")
                     .requires { it.sender.hasPermission(perms[1]) }
-                    .executesCatching {
-                        if (it.source.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
-                        unload(it.source.sender as Player)
-                    },
+                    .playerExecuted { player, _ -> unload(player) },
                 "Unload your inventory into nearby chests",
                 listOf("unload", "unloadinv", "invu"),
             ),

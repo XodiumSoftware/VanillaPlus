@@ -1,5 +1,3 @@
-@file:Suppress("ktlint:standard:no-wildcard-imports")
-
 import xyz.jpenilla.resourcefactory.paper.PaperPluginYaml
 import xyz.jpenilla.runtask.task.AbstractRun
 
@@ -13,7 +11,7 @@ plugins {
     id("xyz.jpenilla.resource-factory-paper-convention") version "1.3.1"
 }
 
-val mcVersion = "1.21.10"
+val mcVersion = "1.21.11"
 
 group = "org.xodium.vanillaplus.VanillaPlus"
 version = mcVersion

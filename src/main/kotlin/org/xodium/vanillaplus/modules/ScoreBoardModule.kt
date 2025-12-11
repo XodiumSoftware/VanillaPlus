@@ -11,7 +11,7 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.pdcs.PlayerPDC.scoreboardVisibility
-import org.xodium.vanillaplus.utils.ExtUtils.executesCatching
+import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 
 /** Represents a module handling scoreboard mechanics within the system. */
 internal object ScoreBoardModule : ModuleInterface {
@@ -21,10 +21,7 @@ internal object ScoreBoardModule : ModuleInterface {
                 Commands
                     .literal("leaderboard")
                     .requires { it.sender.hasPermission(perms[0]) }
-                    .executesCatching {
-                        if (it.source.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
-                        toggle(it.source.sender as Player)
-                    },
+                    .playerExecuted { player, _ -> toggle(player) },
                 "This command allows you to open the leaderboard",
                 listOf("lb", "board"),
             ),
