@@ -1,9 +1,12 @@
 package org.xodium.vanillaplus.utils
 
+import com.sk89q.worldedit.extent.clipboard.Clipboard
 import org.bukkit.Location
+import org.bukkit.Tag
 import org.bukkit.block.Block
 import org.bukkit.block.Chest
 import org.bukkit.block.DoubleChest
+import org.bukkit.block.data.type.Leaves
 
 /** Block utilities. */
 internal object BlockUtils {
@@ -28,4 +31,31 @@ internal object BlockUtils {
 
             return Location(world, cx, cy, cz)
         }
+
+    /**
+     * Sets the persistent property of all leaves in the pasted area.
+     * @param clipboard The clipboard that was pasted.
+     * @param persistence Whether leaves should be persistent. Defaults to false.
+     */
+    fun Block.leafPersistence(
+        clipboard: Clipboard,
+        persistence: Boolean = false,
+    ) {
+        val region = clipboard.region.clone()
+        val origin = clipboard.origin
+
+        region.forEach { vector ->
+            val offset = vector.subtract(origin)
+            val targetBlock = world.getBlockAt(x + offset.x(), y + offset.y(), z + offset.z())
+
+            if (Tag.LEAVES.isTagged(targetBlock.type)) {
+                val blockData = targetBlock.blockData
+
+                if (blockData is Leaves) {
+                    blockData.isPersistent = persistence
+                    targetBlock.setBlockData(blockData, false)
+                }
+            }
+        }
+    }
 }
