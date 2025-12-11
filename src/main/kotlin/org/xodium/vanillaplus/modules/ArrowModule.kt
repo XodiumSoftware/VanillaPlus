@@ -1,7 +1,6 @@
 package org.xodium.vanillaplus.modules
 
 import kotlinx.serialization.Serializable
-import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
@@ -14,8 +13,7 @@ import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.event.entity.ProjectileLaunchEvent
 import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.recipes.TorchArrowRecipe.torchArrow
-import org.xodium.vanillaplus.recipes.TorchArrowRecipe.torchArrowKey
+import org.xodium.vanillaplus.recipes.TorchArrowRecipe
 
 /** Represents a module handling custom arrow mechanics within the system. */
 internal object ArrowModule : ModuleInterface {
@@ -34,10 +32,10 @@ internal object ArrowModule : ModuleInterface {
      */
     private fun handleProjectileLaunch(event: ProjectileLaunchEvent) {
         val arrow = event.entity as? Arrow ?: return
+        val torchTypeId = arrow.torchArrowType ?: return
+        val torchType = TorchArrowRecipe.getTorchArrowTypeById(torchTypeId) ?: return
 
-        if (!arrow.isTorchArrow) return
-
-        arrow.color = Color.YELLOW
+        arrow.color = torchType.arrowColor
     }
 
     /**
@@ -46,14 +44,13 @@ internal object ArrowModule : ModuleInterface {
      */
     private fun handleProjectileHit(event: ProjectileHitEvent) {
         val arrow = event.entity as? Arrow ?: return
-
-        if (!arrow.isTorchArrow) return
-
+        val torchTypeId = arrow.torchArrowType ?: return
+        val torchType = TorchArrowRecipe.getTorchArrowTypeById(torchTypeId) ?: return
         val hitBlock = event.hitBlock
         val hitFace = event.hitBlockFace
 
         if (hitBlock == null || hitFace == null) {
-            dropArrow(arrow.location.block.location)
+            dropArrow(arrow, arrow.location.block.location)
             return
         }
 
@@ -61,26 +58,31 @@ internal object ArrowModule : ModuleInterface {
 
         if (hitBlock.type == Material.VINE) {
             hitBlock.breakNaturally()
-            target.type = Material.TORCH
+            target.type = torchType.torchMaterial
+            arrow.remove()
             return
         }
 
         when (hitFace) {
             BlockFace.UP -> {
-                if (target.type == Material.AIR) target.type = Material.TORCH else dropArrow(target.location)
+                if (target.type == Material.AIR) {
+                    target.type = torchType.torchMaterial
+                } else {
+                    dropArrow(arrow, target.location)
+                }
             }
 
             BlockFace.DOWN -> {
-                dropArrow(target.location)
+                dropArrow(arrow, target.location)
             }
 
             else -> {
                 if (target.type != Material.AIR) {
-                    dropArrow(target.location)
+                    dropArrow(arrow, target.location)
                     return
                 }
 
-                target.type = Material.WALL_TORCH
+                target.type = torchType.wallTorchMaterial
 
                 val data = target.blockData as? Directional
 
@@ -99,25 +101,30 @@ internal object ArrowModule : ModuleInterface {
     private fun handleEntityDamage(event: EntityDamageByEntityEvent) {
         val arrow = event.damager as? Arrow ?: return
 
-        if (!arrow.isTorchArrow) return
+        if (arrow.torchArrowType == null) return
 
         arrow.remove()
-
         event.isCancelled = true
     }
 
     /**
      * Drops a torch arrow item at the specified location.
      * @param location The location where the torch arrow should be dropped.
+     * @param arrow The arrow to be dropped.
      */
-    private fun dropArrow(location: Location) = location.world.dropItemNaturally(location, torchArrow)
+    private fun dropArrow(
+        arrow: Arrow,
+        location: Location,
+    ) {
+        location.world.dropItemNaturally(location, arrow.itemStack)
+    }
 
     /**
      * Checks whether this arrow is a torch arrow based on its ItemStack metadata.
      * @return True if the arrow is a torch arrow, false otherwise.
      */
-    private val Arrow.isTorchArrow: Boolean
-        get() = itemStack.persistentDataContainer.has(torchArrowKey, PersistentDataType.BYTE)
+    private val Arrow.torchArrowType: String?
+        get() = itemStack.persistentDataContainer.get(TorchArrowRecipe.torchArrowKey, PersistentDataType.STRING)
 
     @Serializable
     data class Config(

@@ -1,5 +1,3 @@
-@file:Suppress("unused")
-
 package org.xodium.vanillaplus.utils
 
 import org.bukkit.Location
