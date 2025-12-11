@@ -19,7 +19,6 @@ import org.bukkit.event.world.StructureGrowEvent
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.registries.MaterialRegistry
-import org.xodium.vanillaplus.utils.BlockUtils.leafPersistence
 import java.io.IOException
 import java.nio.channels.Channels
 import java.nio.channels.ReadableByteChannel
@@ -136,7 +135,7 @@ internal object TreesModule : ModuleInterface {
                                         .build(),
                                 )
                             }
-                            block.leafPersistence(clipboard, config.treesModule.persistentLeaves)
+                            // TODO: adjust schematics and remove persistence.
                         }
                 }.onFailure { e -> instance.logger.severe("Error while pasting schematic: ${e.message}") }
             },
@@ -162,7 +161,6 @@ internal object TreesModule : ModuleInterface {
         var copyEntities: Boolean = false,
         var ignoreAirBlocks: Boolean = true,
         var ignoreStructureVoidBlocks: Boolean = true,
-        var persistentLeaves: Boolean = false,
         var treeMask: Set<Material> =
             setOf(
                 Material.AZALEA,
