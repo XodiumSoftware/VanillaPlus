@@ -49,7 +49,7 @@ internal object TreesModule : ModuleInterface {
                 Tag.SAPLINGS.isTagged(it.type) ||
                     it.type == Material.WARPED_FUNGUS ||
                     it.type == Material.CRIMSON_FUNGUS
-            }?.let { event.isCancelled = pasteSchematic(it) }
+            }?.also { event.isCancelled = pasteSchematic(it) }
     }
 
     /**
@@ -59,7 +59,7 @@ internal object TreesModule : ModuleInterface {
      */
     private fun loadSchematics(resourceDir: String): List<Clipboard> {
         val url = javaClass.getResource(resourceDir) ?: error("Resource directory not found: $resourceDir")
-        return try {
+        return runCatching {
             FileSystems.newFileSystem(url.toURI(), mapOf("create" to false)).use { fs ->
                 Files
                     .walk(fs.getPath(resourceDir.removePrefix("/")), 1)
@@ -71,9 +71,7 @@ internal object TreesModule : ModuleInterface {
                         }
                     }
             }
-        } catch (e: IOException) {
-            error("Failed to load schematics from $resourceDir: ${e.message}")
-        }
+        }.getOrElse { e -> error("Failed to load schematics from $resourceDir: ${e.message}") }
     }
 
     /**
@@ -87,11 +85,9 @@ internal object TreesModule : ModuleInterface {
         channel: ReadableByteChannel,
     ): Clipboard {
         val format = ClipboardFormats.findByAlias("schem") ?: error("Unsupported schematic format for resource: $path")
-        return try {
+        return runCatching {
             format.getReader(Channels.newInputStream(channel)).read()
-        } catch (e: Exception) {
-            throw IOException("Failed to read schematic $path: ${e.message}", e)
-        }
+        }.getOrElse { e -> throw IOException("Failed to read schematic $path: ${e.message}", e) }
     }
 
     /**
@@ -117,7 +113,7 @@ internal object TreesModule : ModuleInterface {
         instance.server.scheduler.runTask(
             instance,
             Runnable {
-                try {
+                runCatching {
                     WorldEdit
                         .getInstance()
                         .newEditSession(BukkitAdapter.adapt(block.world))
@@ -142,9 +138,7 @@ internal object TreesModule : ModuleInterface {
                             }
                             block.leafPersistence(clipboard, config.treesModule.persistentLeaves)
                         }
-                } catch (e: Exception) {
-                    instance.logger.severe("Error while pasting schematic: ${e.message}")
-                }
+                }.onFailure { e -> instance.logger.severe("Error while pasting schematic: ${e.message}") }
             },
         )
         return true
