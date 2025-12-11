@@ -1,68 +1,85 @@
+@file:OptIn(ExperimentalSerializationApi::class)
+
 package org.xodium.vanillaplus.managers
 
-import com.fasterxml.jackson.core.JsonProcessingException
+import io.papermc.paper.command.brigadier.Commands
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.Json
+import org.bukkit.entity.Player
+import org.bukkit.permissions.Permission
+import org.bukkit.permissions.PermissionDefault
+import org.xodium.vanillaplus.VanillaPlus.Companion.configData
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.interfaces.DataInterface
-import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.utils.ExtUtils.key
-import kotlin.io.path.exists
-import kotlin.io.path.readText
+import org.xodium.vanillaplus.data.CommandData
+import org.xodium.vanillaplus.data.ConfigData
+import org.xodium.vanillaplus.strategies.CapitalizedStrategy
+import org.xodium.vanillaplus.utils.CommandUtils.executesCatching
+import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.ExtUtils.prefix
+import java.io.File
+import kotlin.time.measureTime
 
-/** Represents the config manager within the system. */
-internal object ConfigManager : DataInterface<String, Any> {
-    override val dataClass = Any::class
-    override val cache = mutableMapOf<String, Any>()
-    override val fileName = "config.json"
-
-    /**
-     * Loads all configuration settings from the config file.
-     * @return A map of module names to their respective configuration objects.
-     *         Returns an empty map if no configuration exists or if an error occurs during loading.
-     */
-    fun loadConfig(): Map<String, Any> = getAll()
-
-    /**
-     * Saves the provided configuration data to the config file.
-     * @param data A map of module names to their respective configuration objects to be saved.
-     */
-    fun saveConfig(data: Map<String, Any>) = setAll(LinkedHashMap(data))
-
-    /**
-     * Updates module configurations by loading from file and applying to modules.
-     * @param modules List of modules to update configurations for.
-     */
-    fun updateConfig(modules: List<ModuleInterface<ModuleInterface.Config>>) {
-        val allConfigs = loadConfig()
-        when {
-            allConfigs.isNotEmpty() -> instance.logger.info("Config: Loaded successfully")
-            !filePath.exists() -> instance.logger.info("Config: No config file found, a new one will be created")
-            else -> {
-                instance.logger.warning("Config: Failed to load, using defaults")
-                try {
-                    instance.logger.warning("Config file content: ${filePath.readText()}")
-                } catch (e: Exception) {
-                    instance.logger.warning("Config: Failed to read config file: ${e.message}")
-                    e.printStackTrace()
-                }
-            }
+/** Manages loading and saving the configuration file. */
+internal object ConfigManager {
+    private val json =
+        Json {
+            prettyPrint = true
+            encodeDefaults = true
+            ignoreUnknownKeys = true
+            namingStrategy = CapitalizedStrategy
         }
 
-        modules.forEach { module ->
-            val configKey = module.key()
-            allConfigs[configKey]?.let { configData ->
-                try {
-                    jsonMapper
-                        .readerForUpdating(module.config)
-                        .readValue<Any>(jsonMapper.writeValueAsString(configData))
-                } catch (e: JsonProcessingException) {
-                    instance.logger.warning(
-                        "Failed to parse config for ${module::class.simpleName}. Using defaults. Error: ${e.message}",
-                    )
-                }
-            }
-            cache[configKey] = module.config
-        }
+    val reloadCommand: CommandData =
+        CommandData(
+            Commands
+                .literal("vanillaplus")
+                .requires { it.sender.hasPermission(reloadPermission) }
+                .then(
+                    Commands
+                        .literal("reload")
+                        .executesCatching {
+                            if (it.source.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+                            configData = load()
+                            it.source.sender.sendMessage("${instance.prefix} <green>configuration reloaded!".mm())
+                        },
+                ),
+            "Allows to plugin specific admin commands",
+            listOf("vp"),
+        )
 
-        saveConfig(cache)
+    val reloadPermission: Permission =
+        Permission(
+            "${instance.javaClass.simpleName}.reload".lowercase(),
+            "Allows use of the reload command",
+            PermissionDefault.OP,
+        )
+
+    /**
+     * Loads or creates the configuration file.
+     * @param fileName The name of the configuration file.
+     * @return The loaded configuration data.
+     */
+    fun load(fileName: String = "config.json"): ConfigData {
+        val file = File(instance.dataFolder, fileName)
+
+        if (!instance.dataFolder.exists()) instance.dataFolder.mkdirs()
+
+        val config = getOrCreateConfig(file)
+
+        instance.logger.info(
+            "${if (file.exists()) "Loaded configuration from $fileName" else "Created default $fileName"} | Took ${
+                measureTime { file.writeText(json.encodeToString(ConfigData.serializer(), config)) }.inWholeMilliseconds
+            }ms",
+        )
+
+        return config
     }
+
+    /**
+     * Gets the existing configuration or creates a default one.
+     * @param file The configuration file.
+     * @return The configuration data.
+     */
+    private fun getOrCreateConfig(file: File): ConfigData =
+        if (file.exists()) json.decodeFromString(ConfigData.serializer(), file.readText()) else ConfigData()
 }

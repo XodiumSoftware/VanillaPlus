@@ -2,6 +2,7 @@
 
 package org.xodium.vanillaplus.modules
 
+import kotlinx.serialization.Serializable
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
@@ -15,57 +16,42 @@ import org.bukkit.event.weather.WeatherChangeEvent
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
-import org.xodium.vanillaplus.utils.FmtUtils.mangoFmt
 import java.util.*
 import kotlin.math.roundToInt
 
 /** Represents a module handling tab-list mechanics within the system. */
-internal class TabListModule : ModuleInterface<TabListModule.Config> {
-    override val config: Config = Config()
-
-    companion object {
-        private const val MIN_TPS = 0.0
-        private const val MAX_TPS = 20.0
-        private const val TPS_DECIMAL_FORMAT = "%.1f"
-        private const val MAX_COLOR_VALUE = 255
-        private const val COLOR_FORMAT = "#%02X%02X%02X"
-    }
+internal object TabListModule : ModuleInterface {
+    private const val MIN_TPS = 0.0
+    private const val MAX_TPS = 20.0
+    private const val TPS_DECIMAL_FORMAT = "%.1f"
+    private const val MAX_COLOR_VALUE = 255
+    private const val COLOR_FORMAT = "#%02X%02X%02X"
 
     init {
-        if (enabled()) {
-            instance.server.onlinePlayers.forEach {
-                updateTabList(it)
-                updatePlayerDisplayName(it)
-            }
-            // TPS Check.
-            instance.server.scheduler.runTaskTimer(
-                instance,
-                Runnable { instance.server.onlinePlayers.forEach { updateTabList(it) } },
-                config.initDelayInTicks,
-                config.intervalInTicks,
-            )
+        instance.server.onlinePlayers.forEach {
+            updateTabList(it)
+            updatePlayerDisplayName(it)
         }
+        // TPS Check.
+        instance.server.scheduler.runTaskTimer(
+            instance,
+            Runnable { instance.server.onlinePlayers.forEach { updateTabList(it) } },
+            config.tabListModule.initDelayInTicks,
+            config.tabListModule.intervalInTicks,
+        )
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
-        if (!enabled()) return
         updateTabList(event.player)
         updatePlayerDisplayName(event.player)
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    fun on(event: WeatherChangeEvent) {
-        if (!enabled()) return
-        event.world.players.forEach { updateTabList(it) }
-    }
+    fun on(event: WeatherChangeEvent) = event.world.players.forEach { updateTabList(it) }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    fun on(event: ThunderChangeEvent) {
-        if (!enabled()) return
-        event.world.players.forEach { updateTabList(it) }
-    }
+    fun on(event: ThunderChangeEvent) = event.world.players.forEach { updateTabList(it) }
 
     /**
      * Update the player's display name in the tab list.
@@ -79,11 +65,12 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
      */
     private fun updateTabList(audience: Audience) {
         val joinConfig = JoinConfiguration.separator(Component.newline())
+
         audience.sendPlayerListHeaderAndFooter(
-            Component.join(joinConfig, config.header.mm()),
+            Component.join(joinConfig, config.tabListModule.header.mm()),
             Component.join(
                 joinConfig,
-                config.footer.mm(
+                config.tabListModule.footer.mm(
                     Placeholder.component("weather", getWeather().mm()),
                     Placeholder.component("tps", getTps().mm()),
                 ),
@@ -101,6 +88,7 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
         val ratio = clampedTps / MAX_TPS
         val color = getColorForTps(ratio)
         val formattedTps = String.format(Locale.ENGLISH, TPS_DECIMAL_FORMAT, tps)
+
         return "<color:$color>$formattedTps</color>"
     }
 
@@ -113,6 +101,7 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
         val clamped = ratio.coerceIn(0.0, 1.0)
         val r = (MAX_COLOR_VALUE * (1 - clamped)).roundToInt()
         val g = (MAX_COLOR_VALUE * clamped).roundToInt()
+
         return String.format(Locale.ENGLISH, COLOR_FORMAT, r, g, 0)
     }
 
@@ -122,35 +111,32 @@ internal class TabListModule : ModuleInterface<TabListModule.Config> {
      */
     private fun getWeather(): String {
         val world = instance.server.worlds[0]
+
         return when {
-            world.isThundering -> config.i18n.weatherThundering
-            world.hasStorm() -> config.i18n.weatherStorm
-            else -> config.i18n.weatherClear
+            world.isThundering -> config.tabListModule.i18n.weatherThundering
+            world.hasStorm() -> config.tabListModule.i18n.weatherStorm
+            else -> config.tabListModule.i18n.weatherClear
         }
     }
 
+    @Serializable
     data class Config(
-        override var enabled: Boolean = true,
+        var enabled: Boolean = true,
         var initDelayInTicks: Long = 0,
         var intervalInTicks: Long = 10,
         var header: List<String> =
             listOf(
-                "${"]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt()}   ${"⚡ IllyriaRPG ⚡".fireFmt()}   ${
-                    "]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)
-                }",
+                "<gradient:#FFE259:#FFA751>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>   <gradient:#CB2D3E:#EF473A>⚡ IllyriaRPG ⚡</gradient>   <gradient:#FFA751:#FFE259>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
                 "",
             ),
         var footer: List<String> =
             listOf(
                 "",
-                "${"]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt()}  ${"TPS:".fireFmt()} <tps> ${"|".mangoFmt()} ${
-                    "Weather:".fireFmt()
-                } <weather>  ${
-                    "]|[=]|[=]|[=]|[=]|[=]|[=]|[".mangoFmt(true)
-                }",
+                "<gradient:#FFE259:#FFA751>]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>  <gradient:#CB2D3E:#EF473A>TPS:</gradient> <tps> <gradient:#FFE259:#FFA751>|</gradient> <gradient:#CB2D3E:#EF473A>Weather:</gradient> <weather>  <gradient:#FFA751:#FFE259>]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
             ),
         var i18n: I18n = I18n(),
-    ) : ModuleInterface.Config {
+    ) {
+        @Serializable
         data class I18n(
             var weatherThundering: String = "<red>\uD83C\uDF29<reset>",
             var weatherStorm: String = "<yellow>\uD83C\uDF26<reset>",

@@ -2,6 +2,7 @@
 
 package org.xodium.vanillaplus.modules
 
+import kotlinx.serialization.Serializable
 import net.kyori.adventure.sound.Sound
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -23,12 +24,9 @@ import org.xodium.vanillaplus.data.AdjacentBlockData
 import org.xodium.vanillaplus.data.SoundData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import java.util.*
-import org.bukkit.Sound as BukkitSound
 
 /** Represents a module handling openable blocks mechanics within the system. */
-internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
-    override val config: Config = Config()
-
+internal object OpenableModule : ModuleInterface {
     private val disallowedKnockGameModes = EnumSet.of(GameMode.CREATIVE, GameMode.SPECTATOR)
     private val possibleNeighbours: Set<AdjacentBlockData> =
         setOf(
@@ -43,11 +41,16 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
         )
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    fun on(event: PlayerInteractEvent) {
-        if (!enabled()) return
+    fun on(event: PlayerInteractEvent) = handleInteract(event)
 
+    /**
+     * Handles block interactions and delegates to the correct click handler.
+     * @param event The [PlayerInteractEvent] triggered by the player.
+     */
+    private fun handleInteract(event: PlayerInteractEvent) {
         val clickedBlock = event.clickedBlock ?: return
         if (!isValidInteraction(event)) return
+
         when (event.action) {
             Action.LEFT_CLICK_BLOCK -> handleLeftClick(event, clickedBlock)
             Action.RIGHT_CLICK_BLOCK -> handleRightClick(clickedBlock)
@@ -97,18 +100,18 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
      * @param block The block representing the door or gate being interacted with.
      */
     private fun handleRightClick(block: Block) {
-        if (config.allowDoubleDoors && block.blockData is Openable) processDoorOrGateInteraction(block)
+        if (config.openableModule.allowDoubleDoors && block.blockData is Openable) processDoorOrGateInteraction(block)
     }
 
     /**
      * Plays the knocking sound to all nearby players around the specified block.
      * @param block The block where the knock sound originates. The sound will be played
-     *              at this block's location and propagate to nearby players.
+     *              at this block's location and propagated to nearby players.
      */
     private fun playKnockSound(block: Block) {
         block.world
-            .getNearbyPlayers(block.location, config.soundProximityRadius)
-            .forEach { it.playSound(config.soundKnock.toSound()) }
+            .getNearbyPlayers(block.location, config.openableModule.soundProximityRadius)
+            .forEach { it.playSound(config.openableModule.soundKnock.toSound()) }
     }
 
     /**
@@ -118,6 +121,7 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
     private fun processDoorOrGateInteraction(block: Block) {
         val door2Block = getOtherPart(getDoorBottom(block), block) ?: return
         val secondDoor = door2Block.blockData as? Door ?: return
+
         toggleOtherDoor(block, door2Block, !secondDoor.isOpen)
     }
 
@@ -137,7 +141,7 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
             !isKnockingConditionViolated(player)
 
     /**
-     * Checks if the knocking conditions are violated based on the player's state and configuration.
+     * Checks if the knocking conditions are violated based on the player's state and config.
      * @param player The player attempting to knock.
      * @return True if any knocking condition is violated, false otherwise.
      */
@@ -147,17 +151,18 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
     /**
      * Checks if the player is violating the sneaking requirement for knocking.
      * @param player The player attempting to knock.
-     * @return True if sneaking is required but the player isn't sneaking, false otherwise.
+     * @return True if sneaking is required, but the player isn't sneaking, false otherwise.
      */
-    private fun isViolatingSneakingRequirement(player: Player): Boolean = config.knockingRequiresShifting && !player.isSneaking
+    private fun isViolatingSneakingRequirement(player: Player): Boolean =
+        config.openableModule.knockingRequiresShifting && !player.isSneaking
 
     /**
      * Checks if the player is violating the empty hand requirement for knocking.
      * @param player The player attempting to knock.
-     * @return True if empty hand is required but the player is holding something, false otherwise.
+     * @return True if an empty hand is required, but the player is holding something, false otherwise.
      */
     private fun isViolatingEmptyHandRequirement(player: Player): Boolean =
-        config.knockingRequiresEmptyHand &&
+        config.openableModule.knockingRequiresEmptyHand &&
             player.inventory.itemInMainHand.type != Material.AIR
 
     /**
@@ -165,23 +170,24 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
      * @param data The block data to check.
      * @return True if the block can be knocked on, false otherwise.
      */
-    private fun isKnockableBlock(data: BlockData): Boolean = config.allowKnocking && data is Openable
+    private fun isKnockableBlock(data: BlockData): Boolean = config.openableModule.allowKnocking && data is Openable
 
     /**
      * Toggles the state of the other door when one door is opened or closed.
      * @param block The block representing the first door.
      * @param block2 The block representing the second door.
      * @param open The desired state (open or closed) for the second door.
-     * @param delay The delay in ticks before toggling the secondary door (defaults to config.initDelayInTicks).
+     * @param delay The delay in ticks before toggling the secondary door (defaults to config.openableFeature.initDelayInTicks).
      *              This delay helps prevent race conditions with block updates.
      */
     private fun toggleOtherDoor(
         block: Block,
         block2: Block,
         open: Boolean,
-        delay: Long = config.initDelayInTicks,
+        delay: Long = config.openableModule.initDelayInTicks,
     ) {
         if (block.blockData !is Door || block2.blockData !is Door) return
+
         instance.server.scheduler.runTaskLater(
             instance,
             Runnable {
@@ -200,6 +206,7 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
      */
     private fun getDoorBottom(block: Block): Door? {
         val door = block.blockData as? Door ?: return null
+
         return if (door.half == Bisected.Half.BOTTOM) door else block.getRelative(BlockFace.DOWN).blockData as? Door
     }
 
@@ -214,6 +221,7 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
         block: Block,
     ): Block? {
         if (door == null) return null
+
         return possibleNeighbours
             .map { it to block.getRelative(it.offsetX, 0, it.offsetZ).blockData as? Door }
             .firstOrNull { (neighbour, otherDoor) ->
@@ -222,18 +230,15 @@ internal class OpenableModule : ModuleInterface<OpenableModule.Config> {
             ?.getRelativeBlock(block)
     }
 
+    @Serializable
     data class Config(
-        override var enabled: Boolean = true,
+        var enabled: Boolean = true,
         var initDelayInTicks: Long = 1,
         var allowDoubleDoors: Boolean = true,
         var allowKnocking: Boolean = true,
         var knockingRequiresEmptyHand: Boolean = true,
         var knockingRequiresShifting: Boolean = true,
-        var soundKnock: SoundData =
-            SoundData(
-                BukkitSound.ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR,
-                Sound.Source.HOSTILE,
-            ),
+        var soundKnock: SoundData = SoundData("entity.zombie.attack_wooden_door", Sound.Source.HOSTILE),
         var soundProximityRadius: Double = 10.0,
-    ) : ModuleInterface.Config
+    )
 }

@@ -4,6 +4,7 @@ package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes
+import kotlinx.serialization.Serializable
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.entity.Player
@@ -12,22 +13,20 @@ import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
+import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
 /** Represents a module handling locator mechanics within the system. */
-internal class LocatorModule : ModuleInterface<LocatorModule.Config> {
-    override val config: Config = Config()
-
+internal object LocatorModule : ModuleInterface {
     private val colors = NamedTextColor.NAMES.keys().map { it.toString() } + listOf("<RRGGBB>", "reset")
 
-    override fun cmds(): List<CommandData> =
+    override val cmds =
         listOf(
             CommandData(
                 Commands
                     .literal("locator")
-                    .requires { it.sender.hasPermission(perms()[0]) }
+                    .requires { it.sender.hasPermission(perms[0]) }
                     .then(
                         Commands
                             .argument("color", ArgumentTypes.namedColor())
@@ -36,45 +35,29 @@ internal class LocatorModule : ModuleInterface<LocatorModule.Config> {
                                     .filter { it.startsWith(builder.remaining.lowercase()) }
                                     .forEach(builder::suggest)
                                 CompletableFuture.completedFuture(builder.build())
-                            }.executes { ctx ->
-                                ctx.tryCatch {
-                                    if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
-                                    val player = it.sender as Player
-                                    val color = ctx.getArgument("color", NamedTextColor::class.java)
-                                    locator(player, colour = color)
-                                }
+                            }.playerExecuted { player, ctx ->
+                                locator(player, colour = ctx.getArgument("color", NamedTextColor::class.java))
                             },
                     ).then(
                         Commands
                             .argument("hex", ArgumentTypes.hexColor())
-                            .executes { ctx ->
-                                ctx.tryCatch {
-                                    if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
-                                    val player = it.sender as Player
-                                    val hex = ctx.getArgument("hex", TextColor::class.java)
-                                    locator(player, hex = hex)
-                                }
+                            .playerExecuted { player, ctx ->
+                                locator(player, hex = ctx.getArgument("hex", TextColor::class.java))
                             },
                     ).then(
                         Commands
                             .literal("reset")
-                            .executes { ctx ->
-                                ctx.tryCatch {
-                                    if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
-                                    val player = it.sender as Player
-                                    locator(player)
-                                }
-                            },
+                            .playerExecuted { player, _ -> locator(player) },
                     ),
                 "Allows players to personalise their locator bar",
                 listOf("lc"),
             ),
         )
 
-    override fun perms(): List<Permission> =
+    override val perms =
         listOf(
             Permission(
-                "${instance::class.simpleName}.locator".lowercase(),
+                "${instance.javaClass.simpleName}.locator".lowercase(),
                 "Allows use of the locator command",
                 PermissionDefault.TRUE,
             ),
@@ -82,10 +65,6 @@ internal class LocatorModule : ModuleInterface<LocatorModule.Config> {
 
     /**
      * Modifies the colour of a player's waypoint based on the specified parameters.
-     * If a `colour` is provided, sets the waypoint to the specified named colour.
-     * If a `hex` is provided instead, sets the waypoint to the specified hex colour.
-     * If neither is provided, resets the waypoint colour to default.
-     *
      * @param player The player whose waypoint is being modified.
      * @param colour The optional named colour to apply to the waypoint.
      * @param hex The optional hex colour to apply to the waypoint.
@@ -96,20 +75,27 @@ internal class LocatorModule : ModuleInterface<LocatorModule.Config> {
         hex: TextColor? = null,
     ) {
         val cmd = "waypoint modify ${player.name}"
-        when {
-            colour != null -> instance.server.dispatchCommand(player, "$cmd color $colour")
 
-            hex != null ->
+        when {
+            colour != null -> {
+                instance.server.dispatchCommand(player, "$cmd color $colour")
+            }
+
+            hex != null -> {
                 instance.server.dispatchCommand(
                     player,
                     "$cmd color hex ${String.format(Locale.ENGLISH, "%06X", hex.value())}",
                 )
+            }
 
-            else -> instance.server.dispatchCommand(player, "$cmd color reset")
+            else -> {
+                instance.server.dispatchCommand(player, "$cmd color reset")
+            }
         }
     }
 
+    @Serializable
     data class Config(
-        override var enabled: Boolean = true,
-    ) : ModuleInterface.Config
+        var enabled: Boolean = true,
+    )
 }

@@ -1,40 +1,56 @@
 package org.xodium.vanillaplus.interfaces
 
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import org.bukkit.event.Listener
 import org.bukkit.permissions.Permission
+import org.xodium.vanillaplus.VanillaPlus.Companion.configData
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
+import org.xodium.vanillaplus.data.ConfigData
+import kotlin.time.measureTime
 
 /** Represents a contract for a module within the system. */
-internal interface ModuleInterface<out T : ModuleInterface.Config> : Listener {
+internal interface ModuleInterface : Listener {
     /**
-     * Represents the configuration settings for a module.
-     * @property enabled Indicates whether the module is enabled or not.
+     * Retrieves the configuration data associated with the module.
+     * @return A [ConfigData] object representing the configuration for the module.
      */
-    interface Config {
-        var enabled: Boolean
-    }
-
-    /**
-     * Retrieves the configuration for this module.
-     * @return A [Config] object containing the module's configuration settings.
-     */
-    val config: T
-
-    /**
-     * Determines if this module is currently enabled.
-     * @return `true` if the module is enabled, `false` otherwise.
-     */
-    fun enabled(): Boolean = config.enabled
+    val config: ConfigData
+        get() = configData
 
     /**
      * Retrieves a list of command data associated with the module.
-     * @return A list of [CommandData] objects representing the commands for the module.
+     * @return A [Collection] of [CommandData] objects representing the commands for the module.
      */
-    fun cmds(): List<CommandData> = emptyList()
+    val cmds: Collection<CommandData>
+        get() = emptyList()
 
     /**
      * Retrieves a list of permissions associated with this module.
      * @return A [List] of [Permission] objects representing the permissions for this module.
      */
-    fun perms(): List<Permission> = emptyList()
+    val perms: List<Permission>
+        get() = emptyList()
+
+    /** Registers this feature as an event listener with the server. */
+    @Suppress("UnstableApiUsage")
+    fun register() {
+        instance.logger.info(
+            "Registering: ${this::class.simpleName} | Took ${
+                measureTime {
+                    instance.server.pluginManager.registerEvents(this, instance)
+                    instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
+                        cmds.forEach { cmd ->
+                            event.registrar().register(
+                                cmd.builder.build(),
+                                cmd.description,
+                                cmd.aliases,
+                            )
+                        }
+                    }
+                    instance.server.pluginManager.addPermissions(perms)
+                }.inWholeMilliseconds
+            }ms",
+        )
+    }
 }

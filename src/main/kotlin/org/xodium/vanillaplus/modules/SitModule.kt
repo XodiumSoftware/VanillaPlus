@@ -2,6 +2,7 @@
 
 package org.xodium.vanillaplus.modules
 
+import kotlinx.serialization.Serializable
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
@@ -13,6 +14,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
+import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityDismountEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerQuitEvent
@@ -21,18 +23,30 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import java.util.*
 
 /** Represents a module handling sit mechanics within the system. */
-internal class SitModule : ModuleInterface<SitModule.Config> {
-    override val config: Config = Config()
-
+internal object SitModule : ModuleInterface {
     private val sittingPlayers = mutableMapOf<UUID, ArmorStand>()
     private val blockCenterOffset = Vector(0.5, 0.5, 0.5)
     private val playerStandUpOffset = Vector(0.0, 0.5, 0.0)
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    fun on(event: PlayerInteractEvent) {
-        if (!enabled()) return
+    fun on(event: PlayerInteractEvent) = handleInteract(event)
 
+    @EventHandler
+    fun on(event: EntityDismountEvent) = handleDismount(event)
+
+    @EventHandler
+    fun on(event: PlayerQuitEvent) = handleQuit(event)
+
+    @EventHandler(ignoreCancelled = true)
+    fun on(event: EntityDamageEvent) = handleDamage(event)
+
+    /**
+     * Handles player interaction to initiate sitting.
+     * @param event The [PlayerInteractEvent] triggered by the player.
+     */
+    private fun handleInteract(event: PlayerInteractEvent) {
         val player = event.player
+
         if (event.action != Action.RIGHT_CLICK_BLOCK || player.isSneaking || player.isInsideVehicle) return
         if (player.inventory.itemInMainHand.type != Material.AIR) return
 
@@ -41,40 +55,54 @@ internal class SitModule : ModuleInterface<SitModule.Config> {
 
         val isSitTarget =
             when {
-                config.useStairs && blockData is Stairs && blockData.half == Bisected.Half.BOTTOM -> true
-                config.useSlabs && blockData is Slab && blockData.type == Slab.Type.BOTTOM -> true
+                config.sitModule.useStairs && blockData is Stairs && blockData.half == Bisected.Half.BOTTOM -> true
+                config.sitModule.useSlabs && blockData is Slab && blockData.type == Slab.Type.BOTTOM -> true
                 else -> false
             }
 
         if (!isSitTarget) return
 
-        val blockAbove = block.getRelative(BlockFace.UP)
-        if (!blockAbove.type.isAir || !blockAbove.getRelative(BlockFace.UP).type.isAir) return
+        if (block.getRelative(BlockFace.UP).type.isCollidable) return
 
         event.isCancelled = true
         sit(player, block.location.add(blockCenterOffset))
     }
 
-    @EventHandler
-    fun on(event: EntityDismountEvent) {
-        if (!enabled()) return
-        if (event.entity !is Player) return
+    /**
+     * Handles dismounting from the sitting ArmorStand.
+     * @param event The [EntityDismountEvent] triggered when the player dismounts.
+     */
+    private fun handleDismount(event: EntityDismountEvent) {
+        val player = event.entity as? Player ?: return
 
-        val player = event.entity as Player
         sittingPlayers.remove(player.uniqueId)?.let { armorStand ->
-            val safeLocation = armorStand.location.clone().add(playerStandUpOffset)
-            safeLocation.yaw = player.location.yaw
-            safeLocation.pitch = player.location.pitch
-            player.teleport(safeLocation)
+            val safe = armorStand.location.clone().add(playerStandUpOffset)
+            safe.yaw = player.location.yaw
+            safe.pitch = player.location.pitch
+            player.teleport(safe)
             armorStand.remove()
         }
     }
 
-    @EventHandler
-    fun on(event: PlayerQuitEvent) {
-        if (!enabled()) return
-
+    /**
+     * Handles clean-up when a player quits.
+     * @param event The [PlayerQuitEvent] triggered when the player leaves the server.
+     */
+    private fun handleQuit(event: PlayerQuitEvent) {
         sittingPlayers.remove(event.player.uniqueId)?.remove()
+    }
+
+    /**
+     * Handles player damage while sitting.
+     * @param event The [EntityDamageEvent] triggered when the player takes damage.
+     */
+    private fun handleDamage(event: EntityDamageEvent) {
+        val player = event.entity as? Player ?: return
+
+        sittingPlayers[player.uniqueId]?.let { stand ->
+            stand.removePassenger(player)
+            sittingPlayers.remove(player.uniqueId)
+        }
     }
 
     /**
@@ -94,13 +122,15 @@ internal class SitModule : ModuleInterface<SitModule.Config> {
                 it.isSmall = true
                 it.isMarker = true
             }
+
         armorStand.addPassenger(player)
         sittingPlayers[player.uniqueId] = armorStand
     }
 
+    @Serializable
     data class Config(
-        override var enabled: Boolean = true,
+        var enabled: Boolean = true,
         var useStairs: Boolean = true,
         var useSlabs: Boolean = true,
-    ) : ModuleInterface.Config
+    )
 }

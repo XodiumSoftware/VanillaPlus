@@ -1,5 +1,6 @@
 package org.xodium.vanillaplus.modules
 
+import kotlinx.serialization.Serializable
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Material
@@ -11,23 +12,26 @@ import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
 
 /** Represents a module handling pet mechanics within the system. */
-internal class PetModule : ModuleInterface<PetModule.Config> {
-    override val config: Config = Config()
-
+internal object PetModule : ModuleInterface {
     @EventHandler
-    fun on(event: PlayerInteractEntityEvent) {
-        if (!enabled()) return
+    fun on(event: PlayerInteractEntityEvent) = handleInteractEntity(event)
 
+    /**
+     * Handles transferring ownership of a leashed pet when a player
+     * right-clicks another player while holding a lead.
+     * @param event The [PlayerInteractEntityEvent] triggered on entity interaction.
+     */
+    private fun handleInteractEntity(event: PlayerInteractEntityEvent) {
         val source = event.player
         val target = event.rightClicked as? Player ?: return
-        if (source == target) return
 
+        if (source == target) return
         if (source.inventory.itemInMainHand.type != Material.LEAD) return
 
         val leashedEntity = findLeashedPet(source) ?: return
+
         if (!isTransferablePet(leashedEntity, source)) return
 
         transferPetOwnership(source, target, leashedEntity)
@@ -75,14 +79,17 @@ internal class PetModule : ModuleInterface<PetModule.Config> {
     }
 
     /**
-     * Finds the first leashed pet owned by the player within the configured radius.
+     * Finds the first leashed pet owned by the player within the config radius.
      * @param player The player to search around.
      * @return The found tameable entity or `null` if none exists.
      */
     private fun findLeashedPet(player: Player): Tameable? =
         player
-            .getNearbyEntities(config.transferRadius, config.transferRadius, config.transferRadius)
-            .filterIsInstance<LivingEntity>()
+            .getNearbyEntities(
+                config.petModule.transferRadius.toDouble(),
+                config.petModule.transferRadius.toDouble(),
+                config.petModule.transferRadius.toDouble(),
+            ).filterIsInstance<LivingEntity>()
             .firstOrNull { it.isLeashed && it.leashHolder == player }
             as? Tameable
 
@@ -98,28 +105,34 @@ internal class PetModule : ModuleInterface<PetModule.Config> {
         petName: Component,
     ) {
         source.sendActionBar(
-            config.i18n.sourceTransfer.mm(
+            config.petModule.i18n.sourceTransfer.mm(
                 Placeholder.component("<pet>", petName),
                 Placeholder.component("<target>", target.displayName()),
             ),
         )
 
         target.sendActionBar(
-            config.i18n.targetTransfer.mm(
+            config.petModule.i18n.targetTransfer.mm(
                 Placeholder.component("<pet>", petName),
                 Placeholder.component("<source>", source.displayName()),
             ),
         )
     }
 
+    @Serializable
     data class Config(
-        override var enabled: Boolean = true,
-        var transferRadius: Double = 10.0,
+        var enabled: Boolean = true,
+        var transferRadius: Int = 10,
         var i18n: I18n = I18n(),
-    ) : ModuleInterface.Config {
+    ) {
+        @Serializable
         data class I18n(
-            var sourceTransfer: String = "${"You have transferred".fireFmt()} <pet> ${"to".fireFmt()} <target>",
-            var targetTransfer: String = "<source> ${"has transferred".fireFmt()} <pet> ${"to you".fireFmt()}",
+            var sourceTransfer: String =
+                "<gradient:#CB2D3E:#EF473A>You have transferred</gradient> <pet> " +
+                    "<gradient:#CB2D3E:#EF473A>to</gradient> <target>",
+            var targetTransfer: String =
+                "<source> <gradient:#CB2D3E:#EF473A>has transferred</gradient> <pet> " +
+                    "<gradient:#CB2D3E:#EF473A>to you</gradient>",
         )
     }
 }

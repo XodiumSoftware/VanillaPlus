@@ -1,22 +1,25 @@
 package org.xodium.vanillaplus.data
 
+import kotlinx.serialization.Serializable
 import net.kyori.adventure.inventory.Book
 import org.bukkit.permissions.PermissionDefault
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 
 /**
  * Represents the data structure for a book in the game.
  * @property cmd The command associated with the book.
  * @property permission The default permission level for this book's command (defaults to TRUE).
- * @property title The [title] of the book.
- * @property author The [author] of the book.
+ * @property title The [title] of the book. Defaults to the command name with the first letter capitalized and formatted.
+ * @property author The [author] of the book. Defaults to the name of the main plugin instance class.
  * @property pages The content of the book, represented as a list of [pages], where each page is a list of lines.
  */
+@Serializable
 internal data class BookData(
     val cmd: String,
     val permission: PermissionDefault = PermissionDefault.TRUE,
-    private val title: String,
-    private val author: String,
+    private val title: String = "<fire>${cmd.replaceFirstChar { it.uppercase() }}</fire>",
+    private val author: String = instance.javaClass.simpleName,
     private val pages: List<List<String>>,
 ) {
     /**

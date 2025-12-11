@@ -1,18 +1,17 @@
-@file:Suppress("ktlint:standard:no-wildcard-imports")
-
 import xyz.jpenilla.resourcefactory.paper.PaperPluginYaml
 import xyz.jpenilla.runtask.task.AbstractRun
 
 plugins {
     id("java")
     id("idea")
-    kotlin("jvm") version "2.2.20"
-    id("com.gradleup.shadow") version "9.2.2"
+    kotlin("jvm") version "2.2.21"
+    kotlin("plugin.serialization") version "2.2.21"
+    id("com.gradleup.shadow") version "9.3.0"
     id("xyz.jpenilla.run-paper") version "3.0.2"
     id("xyz.jpenilla.resource-factory-paper-convention") version "1.3.1"
 }
 
-val mcVersion = "1.21.10"
+val mcVersion = "1.21.11"
 
 group = "org.xodium.vanillaplus.VanillaPlus"
 version = mcVersion
@@ -26,12 +25,11 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:$version-R0.1-SNAPSHOT")
-    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.16") // TODO("Move away from WorldEdit")
+    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.17") // TODO("Move away from WorldEdit")
 
     implementation(kotlin("stdlib"))
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.20.0")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
 }
 
 java {
@@ -49,7 +47,6 @@ tasks {
         dependsOn(processResources)
         archiveClassifier.set("")
         destinationDirectory.set(layout.projectDirectory.dir("build/libs"))
-        relocate("com.fasterxml.jackson", "$group.jackson")
         minimize { exclude(dependency("org.jetbrains.kotlin:kotlin-reflect:.*")) }
     }
     jar { enabled = false }
@@ -62,6 +59,7 @@ paperPluginYaml {
     main.set(group.toString())
     authors.add("Xodium")
     apiVersion.set(version)
+    bootstrapper.set("org.xodium.vanillaplus.VanillaPlusBootstrap")
     dependencies {
         server(name = "WorldEdit", load = PaperPluginYaml.Load.BEFORE, required = false, joinClasspath = true)
     }

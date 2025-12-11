@@ -1,6 +1,7 @@
 package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.command.brigadier.Commands
+import kotlinx.serialization.Serializable
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerJoinEvent
@@ -10,47 +11,45 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.pdcs.PlayerPDC.scoreboardVisibility
-import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
+import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 
 /** Represents a module handling scoreboard mechanics within the system. */
-internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
-    override val config: Config = Config()
-
-    override fun cmds(): List<CommandData> =
+internal object ScoreBoardModule : ModuleInterface {
+    override val cmds =
         listOf(
             CommandData(
                 Commands
                     .literal("leaderboard")
-                    .requires { it.sender.hasPermission(perms()[0]) }
-                    .executes { ctx ->
-                        ctx.tryCatch {
-                            if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
-                            toggle(it.sender as Player)
-                        }
-                    },
+                    .requires { it.sender.hasPermission(perms[0]) }
+                    .playerExecuted { player, _ -> toggle(player) },
                 "This command allows you to open the leaderboard",
                 listOf("lb", "board"),
             ),
         )
 
-    override fun perms(): List<Permission> =
+    override val perms =
         listOf(
             Permission(
-                "${instance::class.simpleName}.leaderboard".lowercase(),
+                "${instance.javaClass.simpleName}.leaderboard".lowercase(),
                 "Allows use of the leaderboard command",
                 PermissionDefault.TRUE,
             ),
         )
 
     @EventHandler
-    fun on(event: PlayerJoinEvent) {
-        if (!enabled()) return
-        val player = event.player
-        if (player.scoreboardVisibility() == true) {
-            player.scoreboard = instance.server.scoreboardManager.newScoreboard
-        } else {
-            player.scoreboard = instance.server.scoreboardManager.mainScoreboard
-        }
+    fun on(event: PlayerJoinEvent) = handleJoin(event)
+
+    /**
+     * Applies the correct scoreboard to players when they join.
+     * @param event The [PlayerJoinEvent] triggered when the player joins.
+     */
+    private fun handleJoin(event: PlayerJoinEvent) {
+        event.player.scoreboard =
+            if (event.player.scoreboardVisibility == true) {
+                instance.server.scoreboardManager.newScoreboard
+            } else {
+                instance.server.scoreboardManager.mainScoreboard
+            }
     }
 
     /**
@@ -58,16 +57,17 @@ internal class ScoreBoardModule : ModuleInterface<ScoreBoardModule.Config> {
      * @param player The player whose scoreboard sidebar should be toggled.
      */
     private fun toggle(player: Player) {
-        if (player.scoreboardVisibility() == true) {
+        if (player.scoreboardVisibility == true) {
             player.scoreboard = instance.server.scoreboardManager.mainScoreboard
-            player.scoreboardVisibility(false)
+            player.scoreboardVisibility = false
         } else {
             player.scoreboard = instance.server.scoreboardManager.newScoreboard
-            player.scoreboardVisibility(true)
+            player.scoreboardVisibility = true
         }
     }
 
+    @Serializable
     data class Config(
-        override var enabled: Boolean = true,
-    ) : ModuleInterface.Config
+        var enabled: Boolean = true,
+    )
 }

@@ -1,41 +1,31 @@
 package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.command.brigadier.Commands
-import org.bukkit.entity.Player
+import kotlinx.serialization.Serializable
 import org.bukkit.permissions.Permission
-import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.BookData
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.utils.ExtUtils.tryCatch
-import org.xodium.vanillaplus.utils.FmtUtils.fireFmt
+import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 
 /** Represents a module handling book mechanics within the system. */
-internal class BooksModule : ModuleInterface<BooksModule.Config> {
-    override val config: Config = Config()
+internal object BooksModule : ModuleInterface {
+    private val permPrefix: String = "${instance.javaClass.simpleName}.book".lowercase()
 
-    private val permPrefix: String = "${instance::class.simpleName}.book".lowercase()
-
-    override fun cmds(): List<CommandData> =
-        config.books.map { book ->
+    override val cmds =
+        config.booksModule.books.map { book ->
             CommandData(
                 Commands
                     .literal(book.cmd.lowercase())
                     .requires { it.sender.hasPermission("$permPrefix.${book.cmd.lowercase()}") }
-                    .executes { ctx ->
-                        ctx.tryCatch {
-                            if (it.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
-                            it.sender.openBook(book.toBook())
-                        }
-                    },
+                    .playerExecuted { player, _ -> player.openBook(book.toBook()) },
                 "Opens the predefined book '${book.cmd.lowercase()}'",
-                emptyList(),
             )
         }
 
-    override fun perms(): List<Permission> =
-        config.books.map {
+    override val perms =
+        config.booksModule.books.map {
             Permission(
                 "$permPrefix.${it.cmd.lowercase()}",
                 "Allows use of the book command: ${it.cmd}",
@@ -43,15 +33,13 @@ internal class BooksModule : ModuleInterface<BooksModule.Config> {
             )
         }
 
+    @Serializable
     data class Config(
-        override var enabled: Boolean = true,
+        var enabled: Boolean = true,
         var books: List<BookData> =
             listOf(
                 BookData(
                     cmd = "rules",
-                    permission = PermissionDefault.TRUE,
-                    title = "Rules".fireFmt(),
-                    author = instance::class.simpleName.toString(),
                     pages =
                         listOf(
                             // Page 1: Player Rules (1-7)
@@ -86,5 +74,5 @@ internal class BooksModule : ModuleInterface<BooksModule.Config> {
                         ),
                 ),
             ),
-    ) : ModuleInterface.Config
+    )
 }
