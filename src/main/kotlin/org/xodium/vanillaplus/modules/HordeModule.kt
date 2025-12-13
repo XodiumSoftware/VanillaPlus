@@ -7,7 +7,14 @@ import org.bukkit.entity.Zombie
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.CreatureSpawnEvent
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.serializers.AttributeSerializer
 import kotlin.random.Random
+
+typealias AttributeRangeMap = Map<
+    @Serializable(with = AttributeSerializer::class)
+    Attribute,
+    Pair<Double, Double>,
+>
 
 /** Represents a module handling horde mechanics within the system. */
 internal object HordeModule : ModuleInterface {
@@ -53,7 +60,7 @@ internal object HordeModule : ModuleInterface {
         val enabled: Boolean = true,
         val spawnModifier: Int = 199,
         val maxTargetDistance: Double = 32.0,
-        val attributeRanges: Map<Attribute, Pair<Double, Double>> =
+        val attributeRanges: AttributeRangeMap =
             mapOf(
                 Attribute.ATTACK_DAMAGE to Pair(2.0, 8.0),
                 Attribute.ATTACK_SPEED to Pair(3.0, 6.0),

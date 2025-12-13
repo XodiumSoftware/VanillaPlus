@@ -27,6 +27,7 @@ internal object ConfigManager {
             encodeDefaults = true
             ignoreUnknownKeys = true
             namingStrategy = CapitalizedStrategy
+            allowStructuredMapKeys = true
         }
 
     val reloadCommand: CommandData =
