@@ -4,6 +4,7 @@ package org.xodium.vanillaplus.managers
 
 import io.papermc.paper.command.brigadier.Commands
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import org.bukkit.entity.Player
 import org.bukkit.permissions.Permission
@@ -41,7 +42,7 @@ internal object ConfigManager {
                             if (it.source.sender !is Player) {
                                 instance.logger.warning("Command can only be executed by a Player!")
                             }
-                            configData = load()
+                            configData = load("config.json", ConfigData(), ConfigData.serializer())
                             it.source.sender.sendMessage("${instance.prefix} <green>configuration reloaded!".mm())
                         },
                 ),
@@ -59,18 +60,24 @@ internal object ConfigManager {
     /**
      * Loads or creates the configuration file.
      * @param fileName The name of the configuration file.
+     * @param config The default configuration data.
+     * @param serializer The serializer for the configuration data.
      * @return The loaded configuration data.
      */
-    fun load(fileName: String = "config.json"): ConfigData {
+    inline fun <reified T> load(
+        fileName: String,
+        config: T,
+        serializer: KSerializer<T>,
+    ): T {
         val file = File(instance.dataFolder, fileName)
 
         if (!instance.dataFolder.exists()) instance.dataFolder.mkdirs()
 
-        val config = getOrCreateConfig(file)
+        val config = getOrCreateConfig(file, config, serializer)
 
         instance.logger.info(
             "${if (file.exists()) "Loaded configuration from $fileName" else "Created default $fileName"} | Took ${
-                measureTime { file.writeText(json.encodeToString(ConfigData.serializer(), config)) }.inWholeMilliseconds
+                measureTime { file.writeText(json.encodeToString(serializer, config)) }.inWholeMilliseconds
             }ms",
         )
 
@@ -80,8 +87,12 @@ internal object ConfigManager {
     /**
      * Gets the existing configuration or creates a default one.
      * @param file The configuration file.
+     * @param config The default configuration data.
      * @return The configuration data.
      */
-    private fun getOrCreateConfig(file: File): ConfigData =
-        if (file.exists()) json.decodeFromString(ConfigData.serializer(), file.readText()) else ConfigData()
+    private fun <T> getOrCreateConfig(
+        file: File,
+        config: T,
+        serializer: KSerializer<T>,
+    ): T = if (file.exists()) json.decodeFromString(serializer, file.readText()) else config
 }

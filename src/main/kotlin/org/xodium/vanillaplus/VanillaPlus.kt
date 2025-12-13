@@ -41,7 +41,7 @@ internal class VanillaPlus : JavaPlugin() {
         }
         instance.server.pluginManager.addPermission(ConfigManager.reloadPermission)
 
-        configData = ConfigManager.load()
+        configData = ConfigManager.load("config.json", ConfigData(), ConfigData.serializer())
 
         listOf(
             RottenFleshRecipe,
