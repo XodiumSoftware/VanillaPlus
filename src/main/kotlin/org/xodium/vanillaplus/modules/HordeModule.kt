@@ -5,10 +5,15 @@ import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Creeper
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Monster
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.CreatureSpawnEvent
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.MonsterData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.recipes.CursedClockRecipe
+import org.xodium.vanillaplus.recipes.CursedClockRecipe.isCursedClock
+import org.xodium.vanillaplus.utils.ExtUtils.mm
 import kotlin.random.Random
 
 /** Represents a module handling horde mechanics within the system. */
@@ -16,13 +21,28 @@ internal object HordeModule : ModuleInterface {
     @EventHandler
     fun on(event: CreatureSpawnEvent) = handleCreatureSpawn(event)
 
+    init {
+        CursedClockRecipe.register()
+        instance.server.scheduler.runTaskTimer(
+            instance,
+            Runnable {
+                instance.server.onlinePlayers.forEach { player ->
+                    if (isCursedClock(player.inventory.itemInMainHand)) displayHordeTimer(player)
+                }
+            },
+            0L,
+            20L,
+        )
+    }
+
     /**
      * Handles the creature spawn event to create a horde effect.
      * @param event The creature spawn event to handle.
      */
     private fun handleCreatureSpawn(event: CreatureSpawnEvent) {
         if (event.entity.world.isDayTime ||
-            event.spawnReason != CreatureSpawnEvent.SpawnReason.NATURAL
+            event.spawnReason != CreatureSpawnEvent.SpawnReason.NATURAL ||
+            !isHordeNight(event.entity.world.fullTime)
         ) {
             return
         }
@@ -54,6 +74,34 @@ internal object HordeModule : ModuleInterface {
     }
 
     /**
+     * Displays the time until the next horde in the player's action bar.
+     * @param player The player to display the timer to.
+     */
+    private fun displayHordeTimer(player: Player) {
+        val world = player.world
+        val currentTime = world.fullTime
+        val currentDay = (currentTime / 24000) + 1
+        val nextHordeDay = ((currentDay / config.hordeModule.nightInterval) + 1) * config.hordeModule.nightInterval
+        val daysUntilHorde = nextHordeDay - currentDay
+        val message =
+            if (daysUntilHorde == 0L && !world.isDayTime) {
+                "<red>HORDE NIGHT!"
+            } else {
+                "<yellow>Next horde in: $daysUntilHorde night${if (daysUntilHorde != 1L) "s" else ""}"
+            }
+
+        player.sendActionBar(message.mm())
+    }
+
+    /**
+     * Determines if the current world time corresponds to a horde night.
+     * @param worldTime The current world time.
+     * @return True if it's a horde night, false otherwise.
+     */
+    private fun isHordeNight(worldTime: Long): Boolean =
+        (worldTime / 24000) + 1 % config.hordeModule.nightInterval == 0L
+
+    /**
      * Generates a random value within the specified range.
      * @param pair The range defined by a pair of doubles.
      * @return A random double within the specified range.
@@ -63,6 +111,7 @@ internal object HordeModule : ModuleInterface {
     @Serializable
     data class Config(
         val enabled: Boolean = true,
+        val nightInterval: Long = 7,
         val maxTargetDistance: Double = 32.0,
         val chargedCreeperChance: Double = 0.1,
         val zombie: MonsterData =

@@ -62,7 +62,7 @@ internal object TorchArrowRecipe : RecipeInterface {
     fun getTorchArrowTypeById(id: String): TorchArrowType? = torchTypes.find { it.id == id }
 
     /**
-     * Creates a torch arrow item stack with the specified type.
+     * Creates a torch arrow [ItemStack] with the specified type.
      * @param type The type of torch arrow to create.
      * @return A pair containing the namespaced key and the created item stack.
      */
