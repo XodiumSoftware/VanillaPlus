@@ -41,7 +41,7 @@ internal object ConfigManager {
                             if (it.source.sender !is Player) {
                                 instance.logger.warning("Command can only be executed by a Player!")
                             }
-                            configData = load("config.json", ConfigData())
+                            configData = ConfigData().load("config.json")
                             it.source.sender.sendMessage("${instance.prefix} <green>configuration reloaded!".mm())
                         },
                 ),
@@ -59,18 +59,14 @@ internal object ConfigManager {
     /**
      * Loads or creates the configuration file.
      * @param fileName The name of the configuration file.
-     * @param config The default configuration data.
      * @return The loaded configuration data.
      */
-    inline fun <reified T> load(
-        fileName: String,
-        config: T,
-    ): T {
+    inline fun <reified T> T.load(fileName: String): T {
         val file = File(instance.dataFolder, fileName)
 
         if (!instance.dataFolder.exists()) instance.dataFolder.mkdirs()
 
-        val loadedConfig = if (file.exists()) json.decodeFromString(file.readText()) else config
+        val loadedConfig = if (file.exists()) json.decodeFromString(file.readText()) else this
 
         instance.logger.info(
             "${if (file.exists()) "Loaded configuration from $fileName" else "Created default $fileName"} | Took ${

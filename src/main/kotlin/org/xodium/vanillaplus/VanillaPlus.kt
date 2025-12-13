@@ -7,6 +7,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import org.xodium.vanillaplus.data.ConfigData
 import org.xodium.vanillaplus.hooks.WorldEditHook
 import org.xodium.vanillaplus.managers.ConfigManager
+import org.xodium.vanillaplus.managers.ConfigManager.load
 import org.xodium.vanillaplus.modules.*
 import org.xodium.vanillaplus.recipes.RottenFleshRecipe
 import org.xodium.vanillaplus.recipes.TorchArrowRecipe
@@ -41,7 +42,7 @@ internal class VanillaPlus : JavaPlugin() {
         }
         instance.server.pluginManager.addPermission(ConfigManager.reloadPermission)
 
-        configData = ConfigManager.load("config.json", ConfigData())
+        configData = ConfigData().load("config.json")
 
         listOf(
             RottenFleshRecipe,
