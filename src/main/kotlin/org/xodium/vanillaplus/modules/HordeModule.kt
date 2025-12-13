@@ -31,21 +31,43 @@ internal object HordeModule : ModuleInterface {
 
         repeat(config.hordeModule.spawnModifier) {
             val zombie = world.spawnEntity(location, event.entityType) as Zombie
-            val scale = Random.nextDouble(config.hordeModule.scale.start, config.hordeModule.scale.endInclusive)
 
-            zombie.getAttribute(Attribute.SCALE)?.baseValue = scale
-            zombie.target =
-                world
-                    .getNearbyPlayers(location, config.hordeModule.maxTargetDistance)
-                    .randomOrNull()
+            config.hordeModule.attributeRanges.forEach { (attribute, range) ->
+                zombie.getAttribute(attribute)?.baseValue = range(range)
+            }
+
+            zombie.health = zombie.getAttribute(Attribute.MAX_HEALTH)?.baseValue ?: 20.0
+            zombie.target = world.getNearbyPlayers(location, config.hordeModule.maxTargetDistance).randomOrNull()
         }
     }
+
+    /**
+     * Generates a random value within the specified range.
+     * @param pair The range defined by a pair of doubles.
+     * @return A random double within the specified range.
+     */
+    private fun range(pair: Pair<Double, Double>): Double = Random.nextDouble(pair.first, pair.second)
 
     @Serializable
     data class Config(
         val enabled: Boolean = true,
         val spawnModifier: Int = 199,
         val maxTargetDistance: Double = 32.0,
-        val scale: ClosedRange<Double> = 0.6..1.6,
+        val attributeRanges: Map<Attribute, Pair<Double, Double>> =
+            mapOf(
+                Attribute.ATTACK_DAMAGE to Pair(2.0, 8.0),
+                Attribute.ATTACK_SPEED to Pair(3.0, 6.0),
+                Attribute.EXPLOSION_KNOCKBACK_RESISTANCE to Pair(0.0, 0.5),
+                Attribute.JUMP_STRENGTH to Pair(0.4, 1.2),
+                Attribute.KNOCKBACK_RESISTANCE to Pair(0.0, 0.6),
+                Attribute.MAX_HEALTH to Pair(10.0, 40.0),
+                Attribute.MOVEMENT_EFFICIENCY to Pair(0.0, 1.0),
+                Attribute.MOVEMENT_SPEED to Pair(0.18, 0.35),
+                Attribute.OXYGEN_BONUS to Pair(0.0, 20.0),
+                Attribute.SCALE to Pair(0.6, 1.6),
+                Attribute.SPAWN_REINFORCEMENTS to Pair(0.0, 0.3),
+                Attribute.STEP_HEIGHT to Pair(0.6, 1.2),
+                Attribute.WATER_MOVEMENT_EFFICIENCY to Pair(0.0, 1.0),
+            ),
     )
 }
