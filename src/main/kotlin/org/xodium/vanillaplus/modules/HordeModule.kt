@@ -8,7 +8,7 @@ import org.bukkit.entity.Monster
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.CreatureSpawnEvent
-import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.bukkit.event.player.PlayerItemHeldEvent
 import org.xodium.vanillaplus.data.MonsterData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.recipes.CursedClockRecipe
@@ -21,18 +21,11 @@ internal object HordeModule : ModuleInterface {
     @EventHandler
     fun on(event: CreatureSpawnEvent) = handleCreatureSpawn(event)
 
+    @EventHandler
+    fun on(event: PlayerItemHeldEvent) = handlePlayerItemHeld(event)
+
     init {
         CursedClockRecipe.register()
-        instance.server.scheduler.runTaskTimer(
-            instance,
-            Runnable {
-                instance.server.onlinePlayers.forEach { player ->
-                    if (isCursedClock(player.inventory.itemInMainHand)) displayHordeTimer(player)
-                }
-            },
-            0L,
-            20L,
-        )
     }
 
     /**
@@ -71,6 +64,17 @@ internal object HordeModule : ModuleInterface {
                 entity.isPowered = true
             }
         }
+    }
+
+    /**
+     * Handles the player item held event to display horde timer if holding a cursed clock.
+     * @param event The player item held event to handle.
+     */
+    private fun handlePlayerItemHeld(event: PlayerItemHeldEvent) {
+        val player = event.player
+        val newItem = player.inventory.getItem(event.newSlot) ?: return
+
+        if (isCursedClock(newItem)) displayHordeTimer(player)
     }
 
     /**
