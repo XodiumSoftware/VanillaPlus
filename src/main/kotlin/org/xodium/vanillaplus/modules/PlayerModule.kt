@@ -32,6 +32,8 @@ import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.enchantments.*
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
+import org.xodium.vanillaplus.recipes.RottenFleshRecipe
+import org.xodium.vanillaplus.recipes.WoodLogRecipe
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 
@@ -169,6 +171,13 @@ internal object PlayerModule : ModuleInterface {
         NightVisionEnchantment.nightVision(event)
     }
 
+    init {
+        listOf(
+            RottenFleshRecipe,
+            WoodLogRecipe,
+        ).forEach { module -> module.register() }
+    }
+
     /**
      * Handles the inventory click event where a player can open their ender chest by clicking on an ender chest item
      * in their inventory.
@@ -296,7 +305,8 @@ internal object PlayerModule : ModuleInterface {
             var playerAdvancementDoneMsg: String =
                 "\uD83C\uDF89 <gradient:#FFE259:#FFA751>›</gradient> <player> " +
                     "<gradient:#FFE259:#FFA751>has made the advancement:</gradient> <advancement>",
-            var nicknameUpdated: String = "<gradient:#CB2D3E:#EF473A>Nickname has been updated to: <nickname></gradient>",
+            var nicknameUpdated: String =
+                "<gradient:#CB2D3E:#EF473A>Nickname has been updated to: <nickname></gradient>",
         )
     }
 }

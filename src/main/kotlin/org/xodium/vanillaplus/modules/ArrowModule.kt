@@ -26,6 +26,10 @@ internal object ArrowModule : ModuleInterface {
     @EventHandler(priority = EventPriority.HIGHEST)
     fun on(event: EntityDamageByEntityEvent) = handleEntityDamage(event)
 
+    init {
+        TorchArrowRecipe.register()
+    }
+
     /**
      * Applies visual tipped-arrow particles to torch arrows.
      * @param event The projectile launch event.
