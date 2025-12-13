@@ -56,6 +56,7 @@ internal class VanillaPlus : JavaPlugin() {
             ChatModule,
             DimensionsModule,
             EntityModule,
+            HordeModule,
             InvModule,
             LocatorModule,
             MotdModule,
