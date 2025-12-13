@@ -38,7 +38,9 @@ internal object ConfigManager {
                     Commands
                         .literal("reload")
                         .executesCatching {
-                            if (it.source.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
+                            if (it.source.sender !is Player) {
+                                instance.logger.warning("Command can only be executed by a Player!")
+                            }
                             configData = load()
                             it.source.sender.sendMessage("${instance.prefix} <green>configuration reloaded!".mm())
                         },
