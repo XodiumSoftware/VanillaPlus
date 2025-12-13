@@ -43,26 +43,30 @@ internal class VanillaPlus : JavaPlugin() {
 
         configData = ConfigManager.load()
 
-        RottenFleshRecipe.register()
-        TorchArrowRecipe.register()
-        WoodLogRecipe.register()
+        listOf(
+            RottenFleshRecipe,
+            TorchArrowRecipe,
+            WoodLogRecipe,
+        ).forEach { module -> module.register() }
 
-        BooksModule.register()
-        ChatModule.register()
-        DimensionsModule.register()
-        EntityModule.register()
-        InvModule.register()
-        LocatorModule.register()
-        MotdModule.register()
-        OpenableModule.register()
-        PetModule.register()
-        PlayerModule.register()
-        ScoreBoardModule.register()
-        SignModule.register()
-        SitModule.register()
-        TabListModule.register()
-        ArrowModule.register()
-        if (WorldEditHook.get()) TreesModule.register()
+        listOfNotNull(
+            ArrowModule,
+            BooksModule,
+            ChatModule,
+            DimensionsModule,
+            EntityModule,
+            InvModule,
+            LocatorModule,
+            MotdModule,
+            OpenableModule,
+            PetModule,
+            PlayerModule,
+            ScoreBoardModule,
+            SignModule,
+            SitModule,
+            TabListModule,
+            if (WorldEditHook.get()) TreesModule else null,
+        ).forEach { module -> module.register() }
     }
 
     /**
