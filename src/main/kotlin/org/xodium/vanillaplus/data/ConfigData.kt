@@ -19,6 +19,7 @@ internal data class ConfigData(
     var openableModule: OpenableModule.Config = OpenableModule.Config(),
     var petModule: PetModule.Config = PetModule.Config(),
     var playerModule: PlayerModule.Config = PlayerModule.Config(),
+    var questModule: QuestModule.Config = QuestModule.Config(),
     var scoreboardModule: ScoreBoardModule.Config = ScoreBoardModule.Config(),
     var signModule: SignModule.Config = SignModule.Config(),
     var sitModule: SitModule.Config = SitModule.Config(),

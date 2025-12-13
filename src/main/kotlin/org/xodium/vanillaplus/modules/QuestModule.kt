@@ -3,6 +3,7 @@
 package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.command.brigadier.Commands
+import kotlinx.serialization.Serializable
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -282,4 +283,9 @@ internal object QuestModule : ModuleInterface {
                 .withNano(0)
         return nextSunday.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
     }
+
+    @Serializable
+    data class Config(
+        var enabled: Boolean = true,
+    )
 }
