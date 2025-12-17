@@ -48,7 +48,7 @@ internal object HordeModule : ModuleInterface {
             val entity = world.spawnEntity(location, event.entityType) as? Monster ?: return
 
             monsterConfig.attributes.forEach { (attribute, range) ->
-                entity.getAttribute(attribute)?.baseValue = range(range)
+                entity.getAttribute(attribute)?.baseValue = Random.nextDouble(range.first, range.second)
             }
             entity.health = entity.getAttribute(Attribute.MAX_HEALTH)?.baseValue ?: 20.0
             entity.target = world.getNearbyPlayers(location, config.hordeModule.maxTargetDistance).randomOrNull()
@@ -97,13 +97,6 @@ internal object HordeModule : ModuleInterface {
      */
     private fun isHordeNight(worldTime: Long): Boolean =
         (worldTime / 24000) + 1 % config.hordeModule.nightInterval == 0L
-
-    /**
-     * Generates a random value within the specified range.
-     * @param pair The range defined by a pair of doubles.
-     * @return A random double within the specified range.
-     */
-    private fun range(pair: Pair<Double, Double>): Double = Random.nextDouble(pair.first, pair.second)
 
     @Serializable
     data class Config(
