@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package org.xodium.vanillaplus.modules
 
 import kotlinx.serialization.Serializable
@@ -14,12 +16,22 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.ArmyData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
+import java.util.*
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.random.Random
 
 /** Represents a module handling horde mechanics within the system. */
 internal object HordeModule : ModuleInterface {
+    private val armies = mutableMapOf<UUID, Army>()
+
+    private data class Army(
+        val id: UUID = UUID.randomUUID(),
+        val members: MutableSet<UUID> = mutableSetOf(),
+        var targetLocation: Location? = null,
+        var formationCenter: Location,
+    )
+
     init {
         instance.server.worlds.forEach { world ->
             if (isHordeTime(world)) {
@@ -37,6 +49,7 @@ internal object HordeModule : ModuleInterface {
                                 0.0,
                                 spawnDistance * sin(angle),
                             )
+
                         spawnArmyOfDarkness(world, spawnLocation)
                     }
                 }
@@ -54,6 +67,8 @@ internal object HordeModule : ModuleInterface {
         center: Location,
     ) {
         val armyConfig = config.hordeModule.armies.random()
+        val army = Army(formationCenter = center.clone())
+        armies[army.id] = army
 
         repeat(armyConfig.armySize) { index ->
             instance.server.scheduler.runTaskLater(
@@ -68,11 +83,16 @@ internal object HordeModule : ModuleInterface {
                         )
 
                     spawnLocation.y = world.getHighestBlockYAt(spawnLocation).toDouble()
-                    spawnMonster(spawnLocation, monsterConfig, world)
+
+                    val entity = spawnMonster(spawnLocation, monsterConfig, world)
+
+                    entity?.let { army.members.add(it.uniqueId) }
                 },
                 (index * armyConfig.spawnDelay).toLong(),
             )
         }
+
+        startArmyCoordination(army.id)
     }
 
     /**
@@ -80,19 +100,19 @@ internal object HordeModule : ModuleInterface {
      * @param location The location where the monster will be spawned.
      * @param monsterConfig The configuration data for the monster.
      * @param world The world where the monster will be spawned.
+     * @return The spawned monster entity, or null if spawning failed.
      */
     private fun spawnMonster(
         location: Location,
         monsterConfig: ArmyData.MonsterData,
         world: World,
-    ) {
-        val entity = world.spawnEntity(location, monsterConfig.entityType) as? Monster ?: return
+    ): Monster? {
+        val entity = world.spawnEntity(location, monsterConfig.entityType) as? Monster ?: return null
 
         monsterConfig.attributes.forEach { (attribute, range) ->
             entity.getAttribute(attribute)?.baseValue = Random.nextDouble(range.first, range.second)
         }
         entity.health = entity.getAttribute(Attribute.MAX_HEALTH)?.baseValue ?: 20.0
-        entity.target = world.getNearbyPlayers(location, config.hordeModule.maxTargetDistance).randomOrNull()
 
         if (entity is Creeper && Random.nextDouble() < config.hordeModule.chargedCreeperChance) {
             entity.isPowered = true
@@ -106,6 +126,8 @@ internal object HordeModule : ModuleInterface {
             entity.customName(chosenName.mm())
             entity.isCustomNameVisible = true
         }
+
+        return entity
     }
 
     /**
@@ -146,6 +168,78 @@ internal object HordeModule : ModuleInterface {
     }
 
     /**
+     * Starts the coordination task for the specified army.
+     * @param armyId The unique identifier of the army.
+     */
+    private fun startArmyCoordination(armyId: UUID) {
+        instance.server.scheduler.runTaskTimer(
+            instance,
+            Runnable {
+                val army = armies[armyId] ?: return@Runnable
+                val livingMembers =
+                    army.members
+                        .mapNotNull {
+                            instance.server.getEntity(it) as? Monster
+                        }.filter { it.isValid }
+
+                if (livingMembers.isEmpty()) {
+                    armies.remove(armyId)
+                    return@Runnable
+                }
+
+                val avgX = livingMembers.sumOf { it.location.x } / livingMembers.size
+                val avgZ = livingMembers.sumOf { it.location.z } / livingMembers.size
+
+                army.formationCenter.x = avgX
+                army.formationCenter.z = avgZ
+
+                val nearestPlayer =
+                    livingMembers
+                        .firstOrNull()
+                        ?.world
+                        ?.getNearbyPlayers(army.formationCenter, config.hordeModule.maxTargetDistance)
+                        ?.minByOrNull { it.location.distance(army.formationCenter) }
+
+                if (nearestPlayer != null) {
+                    army.targetLocation = nearestPlayer.location
+                    coordinateArmyMovement(livingMembers, army)
+                }
+            },
+            0L,
+            20L,
+        )
+    }
+
+    /**
+     * Coordinates the movement of army members towards their target location.
+     * @param members The list of monster members in the army.
+     * @param army The army data containing target location and formation centre.
+     */
+    private fun coordinateArmyMovement(
+        members: List<Monster>,
+        army: Army,
+    ) {
+        val target = army.targetLocation ?: return
+
+        members.forEach { monster ->
+            val offsetX = monster.location.x - army.formationCenter.x
+            val offsetZ = monster.location.z - army.formationCenter.z
+            val targetPos = target.clone().add(offsetX * 0.5, 0.0, offsetZ * 0.5)
+
+            targetPos.y = monster.world.getHighestBlockYAt(targetPos).toDouble()
+
+            monster.pathfinder.moveTo(targetPos, config.hordeModule.armyMovementSpeed)
+
+            if (monster.location.distance(target) < 10.0) {
+                monster.target =
+                    monster.world
+                        .getNearbyPlayers(monster.location, 10.0)
+                        .minByOrNull { it.location.distance(monster.location) }
+            }
+        }
+    }
+
+    /**
      * Determines if the current world time corresponds to a horde night.
      * @param world The world to check.
      * @return True if it's a horde night, false otherwise.
@@ -167,6 +261,7 @@ internal object HordeModule : ModuleInterface {
         val armySpawnChancePerPlayer: Double = 0.5,
         val minSpawnDistance: Double = 40.0,
         val maxSpawnDistance: Double = 80.0,
+        val armyMovementSpeed: Double = 1.2,
         val armies: List<ArmyData> =
             listOf(
                 ArmyData(
