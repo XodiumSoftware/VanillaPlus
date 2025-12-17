@@ -139,7 +139,8 @@ internal object ExtUtils {
     }
 
     /** Extension function to convert snake_case to Proper Case with spaces. */
-    fun String.snakeToProperCase(): String = split('_').joinToString(" ") { word -> word.replaceFirstChar { it.uppercase() } }
+    fun String.snakeToProperCase(): String =
+        split('_').joinToString(" ") { word -> word.replaceFirstChar { it.uppercase() } }
 
     /** Extension function specifically for enchantment keys */
     fun TypedKey<Enchantment>.displayName(): Component = value().snakeToProperCase().mm()

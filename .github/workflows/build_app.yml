@@ -29,7 +29,7 @@ jobs:
 
       - id: setup-gradle
         name: Setup Gradle
-        uses: gradle/actions/setup-gradle@4f91d429570f31ab67924719ed3669e5c820e072
+        uses: gradle/actions/setup-gradle@b6208dca2e6d55209f73df1d80993f06c285a018
 
       - id: build-gradle
         name: Build with Gradle
@@ -38,6 +38,6 @@ jobs:
       - id: upload-artifact
         name: Upload Build Artifact
         if: ${{ success() }}
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           path: build/libs/*.jar

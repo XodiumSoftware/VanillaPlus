@@ -38,8 +38,10 @@ internal object ConfigManager {
                     Commands
                         .literal("reload")
                         .executesCatching {
-                            if (it.source.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
-                            configData = load()
+                            if (it.source.sender !is Player) {
+                                instance.logger.warning("Command can only be executed by a Player!")
+                            }
+                            configData = ConfigData().load("config.json")
                             it.source.sender.sendMessage("${instance.prefix} <green>configuration reloaded!".mm())
                         },
                 ),
@@ -59,27 +61,19 @@ internal object ConfigManager {
      * @param fileName The name of the configuration file.
      * @return The loaded configuration data.
      */
-    fun load(fileName: String = "config.json"): ConfigData {
+    inline fun <reified T> T.load(fileName: String): T {
         val file = File(instance.dataFolder, fileName)
 
         if (!instance.dataFolder.exists()) instance.dataFolder.mkdirs()
 
-        val config = getOrCreateConfig(file)
+        val loadedConfig = if (file.exists()) json.decodeFromString(file.readText()) else this
 
         instance.logger.info(
             "${if (file.exists()) "Loaded configuration from $fileName" else "Created default $fileName"} | Took ${
-                measureTime { file.writeText(json.encodeToString(ConfigData.serializer(), config)) }.inWholeMilliseconds
+                measureTime { file.writeText(json.encodeToString(loadedConfig)) }.inWholeMilliseconds
             }ms",
         )
 
-        return config
+        return loadedConfig
     }
-
-    /**
-     * Gets the existing configuration or creates a default one.
-     * @param file The configuration file.
-     * @return The configuration data.
-     */
-    private fun getOrCreateConfig(file: File): ConfigData =
-        if (file.exists()) json.decodeFromString(ConfigData.serializer(), file.readText()) else ConfigData()
 }
