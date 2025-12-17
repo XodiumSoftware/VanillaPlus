@@ -17,4 +17,5 @@ internal data class MonsterData(
     val entityType: EntityType,
     val spawnModifier: Int,
     val attributes: AttributeRangeMap,
+    val displayNames: Collection<String> = emptyList(),
 )

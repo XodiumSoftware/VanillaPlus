@@ -56,6 +56,13 @@ internal object HordeModule : ModuleInterface {
             if (entity is Creeper && Random.nextDouble() < config.hordeModule.chargedCreeperChance) {
                 entity.isPowered = true
             }
+
+            val chosenName = monsterConfig.displayNames.randomOrNull()
+
+            if (chosenName != null) {
+                entity.customName(chosenName.mm())
+                entity.isCustomNameVisible = true
+            }
         }
     }
 
@@ -125,6 +132,7 @@ internal object HordeModule : ModuleInterface {
                             Attribute.STEP_HEIGHT to Pair(0.6, 1.2),
                             Attribute.WATER_MOVEMENT_EFFICIENCY to Pair(0.0, 1.0),
                         ),
+                    displayNames = listOf("Gorath", "Thugor", "Morg", "Grimnar"),
                 ),
                 MonsterData(
                     entityType = EntityType.SPIDER,
@@ -140,6 +148,7 @@ internal object HordeModule : ModuleInterface {
                             Attribute.SCALE to Pair(0.7, 1.4),
                             Attribute.STEP_HEIGHT to Pair(0.6, 1.0),
                         ),
+                    displayNames = listOf("Silkfang", "Nightweaver", "Broodmother"),
                 ),
                 MonsterData(
                     entityType = EntityType.CREEPER,
@@ -153,6 +162,7 @@ internal object HordeModule : ModuleInterface {
                             Attribute.SCALE to Pair(0.8, 1.5),
                             Attribute.STEP_HEIGHT to Pair(0.6, 1.0),
                         ),
+                    displayNames = listOf("Singe", "Boombrood", "Skar"),
                 ),
             ),
     )
