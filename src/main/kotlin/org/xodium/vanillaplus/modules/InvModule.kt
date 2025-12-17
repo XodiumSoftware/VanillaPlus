@@ -7,7 +7,6 @@ import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import kotlinx.serialization.Serializable
-import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Color
 import org.bukkit.Material
@@ -18,13 +17,11 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
-import org.xodium.vanillaplus.data.SoundData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.BlockUtils.center
 import org.xodium.vanillaplus.utils.CommandUtils.executesCatching
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.InvUtils
 import org.xodium.vanillaplus.utils.PlayerUtils
 import org.xodium.vanillaplus.utils.ScheduleUtils
 import java.util.concurrent.CompletableFuture
@@ -51,14 +48,6 @@ internal object InvModule : ModuleInterface {
                 "Search nearby chests for specific items",
                 listOf("search", "searchinv", "invs"),
             ),
-            CommandData(
-                Commands
-                    .literal("invunload")
-                    .requires { it.sender.hasPermission(perms[1]) }
-                    .playerExecuted { player, _ -> unload(player) },
-                "Unload your inventory into nearby chests",
-                listOf("unload", "unloadinv", "invu"),
-            ),
         )
 
     override val perms =
@@ -66,11 +55,6 @@ internal object InvModule : ModuleInterface {
             Permission(
                 "${instance.javaClass.simpleName}.invsearch".lowercase(),
                 "Allows use of the invsearch command",
-                PermissionDefault.TRUE,
-            ),
-            Permission(
-                "${instance.javaClass.simpleName}.invunload".lowercase(),
-                "Allows use of the invunload command",
                 PermissionDefault.TRUE,
             ),
         )
@@ -150,57 +134,9 @@ internal object InvModule : ModuleInterface {
         }
     }
 
-    /**
-     * Unloads items from the player's inventory into nearby chests.
-     * @param player The player whose inventory is to be unloaded.
-     */
-    private fun unload(player: Player) {
-        val foundContainers = mutableListOf<Block>()
-
-        for (container in PlayerUtils.getContainersAroundPlayer(player)) {
-            val transferred =
-                InvUtils.transferItems(
-                    source = player.inventory,
-                    destination = container.inventory,
-                    startSlot = 9,
-                    endSlot = 35,
-                    onlyMatching = true,
-                    enchantmentChecker = { item1, item2 -> item1.enchantments == item2.enchantments },
-                )
-
-            if (transferred) foundContainers.add(container.block)
-        }
-
-        if (foundContainers.isEmpty()) {
-            return player.sendActionBar(
-                config.invModule.i18n.noItemsUnloaded
-                    .mm(),
-            )
-        }
-
-        player.sendActionBar(
-            config.invModule.i18n.inventoryUnloaded
-                .mm(),
-        )
-        player.playSound(config.invModule.soundOnUnload.toSound(), Sound.Emitter.self())
-
-        ScheduleUtils.schedule(duration = 60L) {
-            foundContainers.forEach { container ->
-                Particle.DUST
-                    .builder()
-                    .location(container.center)
-                    .count(10)
-                    .data(Particle.DustOptions(Color.LIME, 5.0f))
-                    .receivers(player)
-                    .spawn()
-            }
-        }
-    }
-
     @Serializable
     data class Config(
         var enabled: Boolean = true,
-        var soundOnUnload: SoundData = SoundData("entity.player.levelup", Sound.Source.PLAYER),
         var i18n: I18n = I18n(),
     ) {
         @Serializable
@@ -213,8 +149,6 @@ internal object InvModule : ModuleInterface {
                     "<gradient:#F4C4F3:#FC67FA><b><material></b></gradient></gradient>",
             var foundItemsInChests: String =
                 "<gradient:#FFE259:#FFA751>Found <gradient:#F4C4F3:#FC67FA><b><material></b></gradient> in container(s), follow trail(s)</gradient>",
-            var noItemsUnloaded: String = "<gradient:#CB2D3E:#EF473A>No items were unloaded</gradient>",
-            var inventoryUnloaded: String = "<gradient:#B3E94A:#54F47F>Inventory unloaded</gradient>",
         )
     }
 }
