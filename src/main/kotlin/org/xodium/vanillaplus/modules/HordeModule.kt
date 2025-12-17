@@ -1,58 +1,106 @@
 package org.xodium.vanillaplus.modules
 
 import kotlinx.serialization.Serializable
+import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Creeper
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Monster
-import org.bukkit.event.EventHandler
-import org.bukkit.event.entity.CreatureSpawnEvent
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.MonsterData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
+import kotlin.math.cos
+import kotlin.math.sin
 import kotlin.random.Random
 
 /** Represents a module handling horde mechanics within the system. */
 internal object HordeModule : ModuleInterface {
-    @EventHandler
-    fun on(event: CreatureSpawnEvent) = handleCreatureSpawn(event)
+    init {
+        instance.server.worlds.forEach { world ->
+            if (isHordeTime(world)) {
+                world.players.forEach { player ->
+                    if (Random.nextDouble() < config.hordeModule.armySpawnChancePerPlayer) {
+                        val spawnDistance =
+                            Random.nextDouble(
+                                config.hordeModule.minSpawnDistance,
+                                config.hordeModule.maxSpawnDistance,
+                            )
+                        val angle = Random.nextDouble(0.0, 2 * Math.PI)
+                        val spawnLocation =
+                            player.location.clone().add(
+                                spawnDistance * cos(angle),
+                                0.0,
+                                spawnDistance * sin(angle),
+                            )
+                        spawnArmyOfDarkness(world, spawnLocation)
+                    }
+                }
+            }
+        }
+    }
 
     /**
-     * Handles the creature spawn event to create a horde effect.
-     * @param event The creature spawn event to handle.
+     * Spawns an army of darkness at the specified location in the given world.
+     * @param world The world where the army will be spawned.
+     * @param center The central location for spawning the army.
      */
-    private fun handleCreatureSpawn(event: CreatureSpawnEvent) {
-        if (event.entity.world.isDayTime ||
-            event.spawnReason != CreatureSpawnEvent.SpawnReason.NATURAL ||
-            !isHordeNight(event.entity.world)
-        ) {
-            return
+    private fun spawnArmyOfDarkness(
+        world: World,
+        center: Location,
+    ) {
+        val totalMonsters = config.hordeModule.armySize
+        val spawnRadius = config.hordeModule.spawnRadius
+
+        repeat(totalMonsters) { index ->
+            instance.server.scheduler.runTaskLater(
+                instance,
+                Runnable {
+                    val monsterConfig = config.hordeModule.monsters.random()
+                    val spawnLocation =
+                        center.clone().add(
+                            Random.nextDouble(-spawnRadius, spawnRadius),
+                            0.0,
+                            Random.nextDouble(-spawnRadius, spawnRadius),
+                        )
+
+                    spawnLocation.y = world.getHighestBlockYAt(spawnLocation).toDouble()
+
+                    spawnMonster(spawnLocation, monsterConfig, world)
+                },
+                (index * config.hordeModule.spawnDelay).toLong(),
+            )
+        }
+    }
+
+    /**
+     * Spawns a single monster at the specified location with given configuration.
+     * @param location The location where the monster will be spawned.
+     * @param monsterConfig The configuration data for the monster.
+     * @param world The world where the monster will be spawned.
+     */
+    private fun spawnMonster(
+        location: Location,
+        monsterConfig: MonsterData,
+        world: World,
+    ) {
+        val entity = world.spawnEntity(location, monsterConfig.entityType) as? Monster ?: return
+
+        monsterConfig.attributes.forEach { (attribute, range) ->
+            entity.getAttribute(attribute)?.baseValue = Random.nextDouble(range.first, range.second)
+        }
+        entity.health = entity.getAttribute(Attribute.MAX_HEALTH)?.baseValue ?: 20.0
+        entity.target = world.getNearbyPlayers(location, config.hordeModule.maxTargetDistance).randomOrNull()
+
+        if (entity is Creeper && Random.nextDouble() < config.hordeModule.chargedCreeperChance) {
+            entity.isPowered = true
         }
 
-        val monsterConfig = config.hordeModule.monsters.firstOrNull { it.entityType == event.entityType } ?: return
-        val location = event.location
-        val world = location.world
-
-        repeat(monsterConfig.spawnModifier) {
-            val entity = world.spawnEntity(location, event.entityType) as? Monster ?: return
-
-            monsterConfig.attributes.forEach { (attribute, range) ->
-                entity.getAttribute(attribute)?.baseValue = Random.nextDouble(range.first, range.second)
-            }
-            entity.health = entity.getAttribute(Attribute.MAX_HEALTH)?.baseValue ?: 20.0
-            entity.target = world.getNearbyPlayers(location, config.hordeModule.maxTargetDistance).randomOrNull()
-
-            if (entity is Creeper && Random.nextDouble() < config.hordeModule.chargedCreeperChance) {
-                entity.isPowered = true
-            }
-
-            val chosenName = monsterConfig.displayNames.randomOrNull()
-
-            if (chosenName != null) {
-                entity.customName(chosenName.mm())
-                entity.isCustomNameVisible = true
-            }
+        val chosenName = monsterConfig.displayNames.randomOrNull()
+        if (chosenName != null) {
+            entity.customName(chosenName.mm())
+            entity.isCustomNameVisible = true
         }
     }
 
@@ -61,20 +109,26 @@ internal object HordeModule : ModuleInterface {
      * @param world The world to check.
      * @return True if it's a horde night, false otherwise.
      */
-    private fun isHordeNight(world: World): Boolean {
+    private fun isHordeTime(world: World): Boolean {
         val day = world.fullTime / 24000
         val seed = world.seed xor day
         val rng = Random(seed)
 
-        return rng.nextDouble() < config.hordeModule.nightChance
+        return rng.nextDouble() < config.hordeModule.hordeChance
     }
 
     @Serializable
     data class Config(
         val enabled: Boolean = true,
-        val nightChance: Double = 1.0 / 7.0,
+        val hordeChance: Double = 1.0 / 7.0,
         val maxTargetDistance: Double = 32.0,
         val chargedCreeperChance: Double = 0.1,
+        val armySize: Int = 50,
+        val spawnRadius: Double = 20.0,
+        val spawnDelay: Int = 10,
+        val armySpawnChancePerPlayer: Double = 0.5,
+        val minSpawnDistance: Double = 40.0,
+        val maxSpawnDistance: Double = 80.0,
         val monsters: List<MonsterData> =
             listOf(
                 MonsterData(
