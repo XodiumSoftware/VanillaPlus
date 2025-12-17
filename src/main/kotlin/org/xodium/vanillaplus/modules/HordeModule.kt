@@ -40,14 +40,7 @@ internal object HordeModule : ModuleInterface {
             return
         }
 
-        val monsterConfig =
-            when (event.entityType) {
-                EntityType.ZOMBIE -> config.hordeModule.zombie
-                EntityType.SPIDER -> config.hordeModule.spider
-                EntityType.CREEPER -> config.hordeModule.creeper
-                else -> return
-            }
-
+        val monsterConfig = config.hordeModule.monsters.firstOrNull { it.entityType == event.entityType } ?: return
         val location = event.location
         val world = location.world
 
@@ -118,53 +111,56 @@ internal object HordeModule : ModuleInterface {
         val nightInterval: Long = 7,
         val maxTargetDistance: Double = 32.0,
         val chargedCreeperChance: Double = 0.1,
-        val zombie: MonsterData =
-            MonsterData(
-                spawnModifier = 199,
-                attributes =
-                    mapOf(
-                        Attribute.ATTACK_DAMAGE to Pair(2.0, 8.0),
-                        Attribute.ATTACK_SPEED to Pair(3.0, 6.0),
-                        Attribute.EXPLOSION_KNOCKBACK_RESISTANCE to Pair(0.0, 0.5),
-                        Attribute.JUMP_STRENGTH to Pair(0.4, 1.2),
-                        Attribute.KNOCKBACK_RESISTANCE to Pair(0.0, 0.6),
-                        Attribute.MAX_HEALTH to Pair(10.0, 40.0),
-                        Attribute.MOVEMENT_EFFICIENCY to Pair(0.0, 1.0),
-                        Attribute.MOVEMENT_SPEED to Pair(0.18, 0.35),
-                        Attribute.OXYGEN_BONUS to Pair(0.0, 20.0),
-                        Attribute.SCALE to Pair(0.6, 1.6),
-                        Attribute.SPAWN_REINFORCEMENTS to Pair(0.0, 0.3),
-                        Attribute.STEP_HEIGHT to Pair(0.6, 1.2),
-                        Attribute.WATER_MOVEMENT_EFFICIENCY to Pair(0.0, 1.0),
-                    ),
-            ),
-        val spider: MonsterData =
-            MonsterData(
-                spawnModifier = 199,
-                attributes =
-                    mapOf(
-                        Attribute.ATTACK_DAMAGE to Pair(2.0, 6.0),
-                        Attribute.ATTACK_SPEED to Pair(3.0, 5.0),
-                        Attribute.JUMP_STRENGTH to Pair(0.5, 1.5),
-                        Attribute.KNOCKBACK_RESISTANCE to Pair(0.0, 0.4),
-                        Attribute.MAX_HEALTH to Pair(12.0, 30.0),
-                        Attribute.MOVEMENT_SPEED to Pair(0.25, 0.4),
-                        Attribute.SCALE to Pair(0.7, 1.4),
-                        Attribute.STEP_HEIGHT to Pair(0.6, 1.0),
-                    ),
-            ),
-        val creeper: MonsterData =
-            MonsterData(
-                spawnModifier = 199,
-                attributes =
-                    mapOf(
-                        Attribute.EXPLOSION_KNOCKBACK_RESISTANCE to Pair(0.0, 0.5),
-                        Attribute.KNOCKBACK_RESISTANCE to Pair(0.0, 0.4),
-                        Attribute.MAX_HEALTH to Pair(15.0, 35.0),
-                        Attribute.MOVEMENT_SPEED to Pair(0.2, 0.35),
-                        Attribute.SCALE to Pair(0.8, 1.5),
-                        Attribute.STEP_HEIGHT to Pair(0.6, 1.0),
-                    ),
+        val monsters: List<MonsterData> =
+            listOf(
+                MonsterData(
+                    entityType = EntityType.ZOMBIE,
+                    spawnModifier = 199,
+                    attributes =
+                        mapOf(
+                            Attribute.ATTACK_DAMAGE to Pair(2.0, 8.0),
+                            Attribute.ATTACK_SPEED to Pair(3.0, 6.0),
+                            Attribute.EXPLOSION_KNOCKBACK_RESISTANCE to Pair(0.0, 0.5),
+                            Attribute.JUMP_STRENGTH to Pair(0.4, 1.2),
+                            Attribute.KNOCKBACK_RESISTANCE to Pair(0.0, 0.6),
+                            Attribute.MAX_HEALTH to Pair(10.0, 40.0),
+                            Attribute.MOVEMENT_EFFICIENCY to Pair(0.0, 1.0),
+                            Attribute.MOVEMENT_SPEED to Pair(0.18, 0.35),
+                            Attribute.OXYGEN_BONUS to Pair(0.0, 20.0),
+                            Attribute.SCALE to Pair(0.6, 1.6),
+                            Attribute.SPAWN_REINFORCEMENTS to Pair(0.0, 0.3),
+                            Attribute.STEP_HEIGHT to Pair(0.6, 1.2),
+                            Attribute.WATER_MOVEMENT_EFFICIENCY to Pair(0.0, 1.0),
+                        ),
+                ),
+                MonsterData(
+                    entityType = EntityType.SPIDER,
+                    spawnModifier = 199,
+                    attributes =
+                        mapOf(
+                            Attribute.ATTACK_DAMAGE to Pair(2.0, 6.0),
+                            Attribute.ATTACK_SPEED to Pair(3.0, 5.0),
+                            Attribute.JUMP_STRENGTH to Pair(0.5, 1.5),
+                            Attribute.KNOCKBACK_RESISTANCE to Pair(0.0, 0.4),
+                            Attribute.MAX_HEALTH to Pair(12.0, 30.0),
+                            Attribute.MOVEMENT_SPEED to Pair(0.25, 0.4),
+                            Attribute.SCALE to Pair(0.7, 1.4),
+                            Attribute.STEP_HEIGHT to Pair(0.6, 1.0),
+                        ),
+                ),
+                MonsterData(
+                    entityType = EntityType.CREEPER,
+                    spawnModifier = 199,
+                    attributes =
+                        mapOf(
+                            Attribute.EXPLOSION_KNOCKBACK_RESISTANCE to Pair(0.0, 0.5),
+                            Attribute.KNOCKBACK_RESISTANCE to Pair(0.0, 0.4),
+                            Attribute.MAX_HEALTH to Pair(15.0, 35.0),
+                            Attribute.MOVEMENT_SPEED to Pair(0.2, 0.35),
+                            Attribute.SCALE to Pair(0.8, 1.5),
+                            Attribute.STEP_HEIGHT to Pair(0.6, 1.0),
+                        ),
+                ),
             ),
     )
 }
