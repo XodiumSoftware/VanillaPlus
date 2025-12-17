@@ -12,7 +12,6 @@ import org.bukkit.entity.Zombie
 import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.ArmyData
-import org.xodium.vanillaplus.data.MonsterData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import kotlin.math.cos
@@ -84,7 +83,7 @@ internal object HordeModule : ModuleInterface {
      */
     private fun spawnMonster(
         location: Location,
-        monsterConfig: MonsterData,
+        monsterConfig: ArmyData.MonsterData,
         world: World,
     ) {
         val entity = world.spawnEntity(location, monsterConfig.entityType) as? Monster ?: return
@@ -177,7 +176,7 @@ internal object HordeModule : ModuleInterface {
                     spawnDelay = 10,
                     monsters =
                         listOf(
-                            MonsterData(
+                            ArmyData.MonsterData(
                                 entityType = EntityType.ZOMBIE,
                                 spawnModifier = 199,
                                 attributes =
@@ -198,7 +197,7 @@ internal object HordeModule : ModuleInterface {
                                     ),
                                 displayNames = listOf("Gorath", "Thugor", "Morg", "Grimnar"),
                             ),
-                            MonsterData(
+                            ArmyData.MonsterData(
                                 entityType = EntityType.SPIDER,
                                 spawnModifier = 199,
                                 attributes =
@@ -214,7 +213,7 @@ internal object HordeModule : ModuleInterface {
                                     ),
                                 displayNames = listOf("Silkfang", "Nightweaver", "Broodmother"),
                             ),
-                            MonsterData(
+                            ArmyData.MonsterData(
                                 entityType = EntityType.CREEPER,
                                 spawnModifier = 199,
                                 attributes =
