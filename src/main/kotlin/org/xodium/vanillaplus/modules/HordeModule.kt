@@ -1,18 +1,15 @@
 package org.xodium.vanillaplus.modules
 
 import kotlinx.serialization.Serializable
+import org.bukkit.World
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Creeper
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Monster
-import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.CreatureSpawnEvent
-import org.bukkit.event.player.PlayerItemHeldEvent
 import org.xodium.vanillaplus.data.MonsterData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.recipes.CursedClockRecipe
-import org.xodium.vanillaplus.recipes.CursedClockRecipe.isCursedClock
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import kotlin.random.Random
 
@@ -21,13 +18,6 @@ internal object HordeModule : ModuleInterface {
     @EventHandler
     fun on(event: CreatureSpawnEvent) = handleCreatureSpawn(event)
 
-    @EventHandler
-    fun on(event: PlayerItemHeldEvent) = handlePlayerItemHeld(event)
-
-    init {
-        CursedClockRecipe.register()
-    }
-
     /**
      * Handles the creature spawn event to create a horde effect.
      * @param event The creature spawn event to handle.
@@ -35,7 +25,7 @@ internal object HordeModule : ModuleInterface {
     private fun handleCreatureSpawn(event: CreatureSpawnEvent) {
         if (event.entity.world.isDayTime ||
             event.spawnReason != CreatureSpawnEvent.SpawnReason.NATURAL ||
-            !isHordeNight(event.entity.world.fullTime)
+            !isHordeNight(event.entity.world)
         ) {
             return
         }
@@ -67,48 +57,22 @@ internal object HordeModule : ModuleInterface {
     }
 
     /**
-     * Handles the player item held event to display horde timer if holding a cursed clock.
-     * @param event The player item held event to handle.
-     */
-    private fun handlePlayerItemHeld(event: PlayerItemHeldEvent) {
-        val player = event.player
-        val newItem = player.inventory.getItem(event.newSlot) ?: return
-
-        if (isCursedClock(newItem)) displayHordeTimer(player)
-    }
-
-    /**
-     * Displays the time until the next horde in the player's action bar.
-     * @param player The player to display the timer to.
-     */
-    private fun displayHordeTimer(player: Player) {
-        val world = player.world
-        val currentTime = world.fullTime
-        val currentDay = (currentTime / 24000) + 1
-        val nextHordeDay = ((currentDay / config.hordeModule.nightInterval) + 1) * config.hordeModule.nightInterval
-        val daysUntilHorde = nextHordeDay - currentDay
-        val message =
-            if (daysUntilHorde == 0L && !world.isDayTime) {
-                "<red>HORDE NIGHT!"
-            } else {
-                "<yellow>Next horde in: $daysUntilHorde night${if (daysUntilHorde != 1L) "s" else ""}"
-            }
-
-        player.sendActionBar(message.mm())
-    }
-
-    /**
      * Determines if the current world time corresponds to a horde night.
-     * @param worldTime The current world time.
+     * @param world The world to check.
      * @return True if it's a horde night, false otherwise.
      */
-    private fun isHordeNight(worldTime: Long): Boolean =
-        (worldTime / 24000) + 1 % config.hordeModule.nightInterval == 0L
+    private fun isHordeNight(world: World): Boolean {
+        val day = world.fullTime / 24000
+        val seed = world.seed xor day
+        val rng = Random(seed)
+
+        return rng.nextDouble() < config.hordeModule.nightChance
+    }
 
     @Serializable
     data class Config(
         val enabled: Boolean = true,
-        val nightInterval: Long = 7,
+        val nightChance: Double = 1.0 / 7.0,
         val maxTargetDistance: Double = 32.0,
         val chargedCreeperChance: Double = 0.1,
         val monsters: List<MonsterData> =
