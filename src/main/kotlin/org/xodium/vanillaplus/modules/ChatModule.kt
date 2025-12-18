@@ -21,9 +21,6 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.CommandUtils.executesCatching
-import org.xodium.vanillaplus.utils.ExtUtils.clickOpenUrl
-import org.xodium.vanillaplus.utils.ExtUtils.clickRunCmd
-import org.xodium.vanillaplus.utils.ExtUtils.clickSuggestCmd
 import org.xodium.vanillaplus.utils.ExtUtils.face
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.prefix
@@ -216,21 +213,11 @@ internal object ChatModule : ModuleInterface {
                 "<gradient:#FFA751:#FFE259>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
                 "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
                 "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
-                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gradient:#CB2D3E:#EF473A>Welcome</gradient> <player> <white><sprite:item/name_tag></white>"
-                    .clickSuggestCmd(
-                        "/nickname",
-                        "<gradient:#FFE259:#FFA751>Set your nickname!</gradient>",
-                    ),
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gradient:#CB2D3E:#EF473A>Welcome</gradient> <player> <click:suggest_command:'/nickname '><hover:show_text:'<gradient:#FFE259:#FFA751>Set your nickname!</gradient>'><white><sprite:\"minecraft:items\":item/name_tag></white></hover:show_text></click:suggest_command>",
                 "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
-                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gradient:#CB2D3E:#EF473A>Check out</gradient><gray>:",
-                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <white><sprite:item/writable_book></white>".clickRunCmd(
-                    "/rules",
-                    "<gradient:#FFE259:#FFA751>View the server /rules</gradient>",
-                ),
-                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <white><sprite:item/light></white>".clickOpenUrl(
-                    "https://illyria.fandom.com",
-                    "<gradient:#FFE259:#FFA751>Visit the wiki!</gradient>",
-                ),
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gradient:#CB2D3E:#EF473A>Check out</gradient><gray>:</gray>",
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gray>✦</gray> <click:run_command:'/rules'><gradient:#13547a:#80d0c7>/rules</gradient></click:run_command>",
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gray>✦</gray> <click:open_url:'https://illyria.fandom.com'><gradient:#13547a:#80d0c7>/wiki</gradient></click:open_url>",
                 "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
                 "<gradient:#FFA751:#FFE259>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
             ),
