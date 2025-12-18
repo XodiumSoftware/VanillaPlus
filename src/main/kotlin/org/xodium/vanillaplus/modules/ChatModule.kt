@@ -245,10 +245,12 @@ internal object ChatModule : ModuleInterface {
         data class I18n(
             var clickMe: String = "<gradient:#FFE259:#FFA751>Click me!</gradient>",
             var clickToWhisper: String = "<gradient:#FFE259:#FFA751>Click to Whisper</gradient>",
-            var playerIsNotOnline: String = "${instance.prefix} <gradient:#CB2D3E:#EF473A>Player is not Online!</gradient>",
+            var playerIsNotOnline: String =
+                "${instance.prefix} <gradient:#CB2D3E:#EF473A>Player is not Online!</gradient>",
             var deleteMessage: String = "<gradient:#FFE259:#FFA751>Click to delete your message</gradient>",
             var clickToClipboard: String = "<gradient:#FFE259:#FFA751>Click to copy position to clipboard</gradient>",
-            var playerSetSpawn: String = "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> <notification>",
+            var playerSetSpawn: String =
+                "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> <notification>",
         )
     }
 }
