@@ -217,7 +217,7 @@ internal object ChatModule : ModuleInterface {
                 "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
                 "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gradient:#CB2D3E:#EF473A>Check out</gradient><gray>:</gray>",
                 "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gray>✦</gray> <click:run_command:'/rules'><gradient:#13547a:#80d0c7>/rules</gradient></click:run_command>",
-                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gray>✦</gray> <click:open_url:'https://illyria.fandom.com'><gradient:#13547a:#80d0c7>/wiki</gradient></click:open_url>",
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gray>✦</gray> <click:open_url:'https://illyria.fandom.com'><gradient:#13547a:#80d0c7>wiki</gradient></click:open_url>",
                 "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
                 "<gradient:#FFA751:#FFE259>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
             ),
