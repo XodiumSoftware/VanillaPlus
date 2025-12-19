@@ -9,6 +9,7 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.utils.ExtUtils.mm
 import org.xodium.vanillaplus.utils.ExtUtils.prefix
 
+/** Utility functions for command handling. */
 internal object CommandUtils {
     /**
      * Registers a command execution handler with an automatic try/catch handling.
