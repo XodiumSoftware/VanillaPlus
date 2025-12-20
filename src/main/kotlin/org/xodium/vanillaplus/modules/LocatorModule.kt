@@ -7,6 +7,7 @@ import io.papermc.paper.command.brigadier.argument.ArgumentTypes
 import kotlinx.serialization.Serializable
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
+import org.bukkit.Color
 import org.bukkit.entity.Player
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
@@ -14,7 +15,6 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
-import java.util.*
 import java.util.concurrent.CompletableFuture
 
 /** Represents a module handling locator mechanics within the system. */
@@ -74,23 +74,10 @@ internal object LocatorModule : ModuleInterface {
         colour: NamedTextColor? = null,
         hex: TextColor? = null,
     ) {
-        val cmd = "waypoint modify ${player.name}"
-
         when {
-            colour != null -> {
-                instance.server.dispatchCommand(player, "$cmd color $colour")
-            }
-
-            hex != null -> {
-                instance.server.dispatchCommand(
-                    player,
-                    "$cmd color hex ${String.format(Locale.ENGLISH, "%06X", hex.value())}",
-                )
-            }
-
-            else -> {
-                instance.server.dispatchCommand(player, "$cmd color reset")
-            }
+            colour != null -> player.waypointColor = Color.fromRGB(colour.value())
+            hex != null -> player.waypointColor = Color.fromRGB(hex.value())
+            else -> player.waypointColor = null
         }
     }
 
