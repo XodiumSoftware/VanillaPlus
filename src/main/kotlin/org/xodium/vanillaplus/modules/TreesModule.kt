@@ -1,5 +1,6 @@
 package org.xodium.vanillaplus.modules
 
+import com.mojang.brigadier.arguments.StringArgumentType
 import com.sk89q.worldedit.WorldEdit
 import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldedit.extent.clipboard.Clipboard
@@ -9,16 +10,24 @@ import com.sk89q.worldedit.function.operation.Operations
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.math.transform.AffineTransform
 import com.sk89q.worldedit.session.ClipboardHolder
+import io.papermc.paper.command.brigadier.Commands
 import kotlinx.serialization.Serializable
 import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.block.Block
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.world.StructureGrowEvent
+import org.bukkit.permissions.Permission
+import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.registries.MaterialRegistry
+import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
+import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.ExtUtils.prefix
 import java.io.IOException
 import java.nio.channels.Channels
 import java.nio.channels.ReadableByteChannel
@@ -30,6 +39,38 @@ import java.util.stream.Collectors
 
 /** Represents a module handling tree mechanics within the system. */
 internal object TreesModule : ModuleInterface {
+    override val cmds =
+        listOf(
+            CommandData(
+                Commands
+                    .literal("tree")
+                    .requires { it.sender.hasPermission(perms[0]) }
+                    .then(
+                        Commands
+                            .argument("type", StringArgumentType.word())
+                            .suggests { _, builder ->
+                                schematicCache.keys.forEach { material ->
+                                    builder.suggest(material.name.lowercase())
+                                }
+                                builder.buildFuture()
+                            }.playerExecuted { player, ctx ->
+                                tree(player, ctx.getArgument("type", String::class.java))
+                            },
+                    ),
+                "This command allows you to spawn a custom tree",
+                listOf("tr"),
+            ),
+        )
+
+    override val perms =
+        listOf(
+            Permission(
+                "${instance.javaClass.simpleName}.tree".lowercase(),
+                "Allows use of /tree command to spawn a custom tree",
+                PermissionDefault.OP,
+            ),
+        )
+
     private val schematicCache: Map<Material, List<Clipboard>> by lazy {
         MaterialRegistry.SAPLING_LINKS.mapValues { loadSchematics("/schematics/${it.value}") }
     }
@@ -48,7 +89,40 @@ internal object TreesModule : ModuleInterface {
                 Tag.SAPLINGS.isTagged(it.type) ||
                     it.type == Material.WARPED_FUNGUS ||
                     it.type == Material.CRIMSON_FUNGUS
-            }?.let { event.isCancelled = pasteSchematic(it) }
+            }?.also { event.isCancelled = pasteSchematic(it) }
+    }
+
+    /**
+     * Handles the /tree command to load a tree schematic into the player's clipboard.
+     * @param player The player executing the command.
+     * @param treeType The type of tree to load.
+     */
+    private fun tree(
+        player: Player,
+        treeType: String,
+    ) {
+        val material = Material.getMaterial(treeType.uppercase())
+
+        if (material == null) {
+            player.sendMessage("${instance.prefix} <red>Unknown tree type: $treeType".mm())
+            return
+        }
+
+        val clipboards = schematicCache[material]
+
+        if (clipboards.isNullOrEmpty()) {
+            player.sendMessage("${instance.prefix} <red>No schematics available for: ${material.name.lowercase()}".mm())
+            return
+        }
+
+        val clipboard = clipboards.random()
+        val session = WorldEdit.getInstance().sessionManager.get(BukkitAdapter.adapt(player))
+
+        session.clipboard = ClipboardHolder(clipboard)
+        player.sendMessage(
+            "${instance.prefix} <green>Loaded ${material.name.lowercase()} tree to your clipboard (${clipboards.size} variants available)"
+                .mm(),
+        )
     }
 
     /**
@@ -58,7 +132,7 @@ internal object TreesModule : ModuleInterface {
      */
     private fun loadSchematics(resourceDir: String): List<Clipboard> {
         val url = javaClass.getResource(resourceDir) ?: error("Resource directory not found: $resourceDir")
-        return try {
+        return runCatching {
             FileSystems.newFileSystem(url.toURI(), mapOf("create" to false)).use { fs ->
                 Files
                     .walk(fs.getPath(resourceDir.removePrefix("/")), 1)
@@ -70,9 +144,7 @@ internal object TreesModule : ModuleInterface {
                         }
                     }
             }
-        } catch (e: IOException) {
-            error("Failed to load schematics from $resourceDir: ${e.message}")
-        }
+        }.getOrElse { e -> error("Failed to load schematics from $resourceDir: ${e.message}") }
     }
 
     /**
@@ -86,11 +158,9 @@ internal object TreesModule : ModuleInterface {
         channel: ReadableByteChannel,
     ): Clipboard {
         val format = ClipboardFormats.findByAlias("schem") ?: error("Unsupported schematic format for resource: $path")
-        return try {
+        return runCatching {
             format.getReader(Channels.newInputStream(channel)).read()
-        } catch (e: Exception) {
-            throw IOException("Failed to read schematic $path: ${e.message}", e)
-        }
+        }.getOrElse { e -> throw IOException("Failed to read schematic $path: ${e.message}", e) }
     }
 
     /**
@@ -116,7 +186,7 @@ internal object TreesModule : ModuleInterface {
         instance.server.scheduler.runTask(
             instance,
             Runnable {
-                try {
+                runCatching {
                     WorldEdit
                         .getInstance()
                         .newEditSession(BukkitAdapter.adapt(block.world))
@@ -139,10 +209,9 @@ internal object TreesModule : ModuleInterface {
                                         .build(),
                                 )
                             }
+                            // TODO: adjust schematics and remove persistence.
                         }
-                } catch (e: Exception) {
-                    instance.logger.severe("Error while pasting schematic: ${e.message}")
-                }
+                }.onFailure { e -> instance.logger.severe("Error while pasting schematic: ${e.message}") }
             },
         )
         return true
