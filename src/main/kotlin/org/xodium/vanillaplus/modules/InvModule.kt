@@ -22,7 +22,7 @@ import org.xodium.vanillaplus.utils.BlockUtils.center
 import org.xodium.vanillaplus.utils.CommandUtils.executesCatching
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.PlayerUtils
+import org.xodium.vanillaplus.utils.PlayerUtils.getContainersAround
 import org.xodium.vanillaplus.utils.ScheduleUtils
 import java.util.concurrent.CompletableFuture
 
@@ -94,7 +94,7 @@ internal object InvModule : ModuleInterface {
     ) {
         val foundContainers = mutableListOf<Block>()
 
-        for (container in PlayerUtils.getContainersAroundPlayer(player)) {
+        for (container in player.getContainersAround()) {
             if (container.inventory.contains(material)) foundContainers.add(container.block)
         }
 
@@ -120,12 +120,12 @@ internal object InvModule : ModuleInterface {
                 Particle.TRAIL
                     .builder()
                     .location(player.location)
-                    .data(Particle.Trail(container.center, Color.MAROON, 40))
+                    .data(Particle.Trail(container.center(), Color.MAROON, 40))
                     .receivers(player)
                     .spawn()
                 Particle.DUST
                     .builder()
-                    .location(container.center)
+                    .location(container.center())
                     .count(10)
                     .data(Particle.DustOptions(Color.MAROON, 5.0f))
                     .receivers(player)

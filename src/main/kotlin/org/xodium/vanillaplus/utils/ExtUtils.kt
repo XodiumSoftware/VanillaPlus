@@ -2,33 +2,16 @@
 
 package org.xodium.vanillaplus.utils
 
-import com.google.gson.JsonParser
 import io.papermc.paper.registry.TypedKey
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import org.bukkit.enchantments.Enchantment
-import org.bukkit.entity.Player
 import org.xodium.vanillaplus.VanillaPlus
-import java.net.URI
-import java.util.*
-import javax.imageio.ImageIO
 
 /** Extension utilities. */
 internal object ExtUtils {
     private val MM: MiniMessage = MiniMessage.miniMessage()
-
-    private const val FACE_X = 8
-    private const val FACE_Y = 8
-    private const val FACE_WIDTH = 8
-    private const val FACE_HEIGHT = 8
-    private const val MAX_COORDINATE = 7
-    private const val COLOR_MASK = 0xFF
-    private const val BLACK_COLOR = "#000000"
-    private const val PIXEL_CHAR = "█"
-    private const val ALPHA_SHIFT = 24
-    private const val RED_SHIFT = 16
-    private const val GREEN_SHIFT = 8
 
     /** The standardized prefix for [VanillaPlus] messages. */
     val VanillaPlus.prefix: String
@@ -56,54 +39,6 @@ internal object ExtUtils {
      */
     @JvmName("mmStringIterable")
     fun Iterable<String>.mm(vararg resolvers: TagResolver): List<Component> = map { it.mm(*resolvers) }
-
-    /**
-     * Retrieves the player's face as a string.
-     * @param size The size of the face in pixels (default is 8).
-     * @return A string representing the player's face.
-     */
-    fun Player.face(size: Int = 8): String {
-        // 1. fetch skin URL from the playerProfile
-        val texturesProp =
-            playerProfile.properties
-                .firstOrNull { it.name == "textures" }
-                ?: error("Player has no skin texture")
-        val json = JsonParser.parseString(String(Base64.getDecoder().decode(texturesProp.value))).asJsonObject
-        val skinUrl =
-            json
-                .getAsJsonObject("textures")
-                .getAsJsonObject("SKIN")
-                .get("url")
-                .asString
-
-        // 2. load and crop
-        val fullImg = ImageIO.read(URI.create(skinUrl).toURL()) ?: error("Failed to load skin image from URL: $skinUrl")
-        val face = fullImg.getSubimage(FACE_X, FACE_Y, FACE_WIDTH, FACE_HEIGHT)
-
-        // 3. scale & build MiniMessage
-        val scale = FACE_WIDTH.toDouble() / size
-        val builder = StringBuilder()
-
-        for (y in 0 until size) {
-            for (x in 0 until size) {
-                val px = (x * scale).toInt().coerceAtMost(MAX_COORDINATE)
-                val py = (y * scale).toInt().coerceAtMost(MAX_COORDINATE)
-                val rgb = face.getRGB(px, py)
-                val a = (rgb ushr ALPHA_SHIFT) and COLOR_MASK
-                val r = (rgb shr RED_SHIFT) and COLOR_MASK
-                val g = (rgb shr GREEN_SHIFT) and COLOR_MASK
-                val b = rgb and COLOR_MASK
-
-                if (a == 0) {
-                    builder.append("<color:$BLACK_COLOR>$PIXEL_CHAR</color>")
-                } else {
-                    builder.append("<color:#%02x%02x%02x>$PIXEL_CHAR</color>".format(r, g, b))
-                }
-            }
-            builder.append("\n")
-        }
-        return builder.toString()
-    }
 
     /** Extension function to convert snake_case to Proper Case with spaces. */
     fun String.snakeToProperCase(): String =
