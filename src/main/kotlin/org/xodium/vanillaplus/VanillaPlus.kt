@@ -10,7 +10,6 @@ import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.managers.ConfigManager.load
 import org.xodium.vanillaplus.modules.*
 import org.xodium.vanillaplus.recipes.RottenFleshRecipe
-import org.xodium.vanillaplus.recipes.TorchArrowRecipe
 import org.xodium.vanillaplus.recipes.WoodLogRecipe
 
 /** Main class of the plugin. */
@@ -46,12 +45,10 @@ internal class VanillaPlus : JavaPlugin() {
 
         listOf(
             RottenFleshRecipe,
-            TorchArrowRecipe,
             WoodLogRecipe,
         ).forEach { module -> module.register() }
 
         listOfNotNull(
-            ArrowModule,
             BooksModule,
             ChatModule,
             DimensionsModule,

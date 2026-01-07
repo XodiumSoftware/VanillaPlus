@@ -8,7 +8,6 @@ import org.xodium.vanillaplus.modules.*
 /** Configuration data for the plugin. */
 @Serializable
 internal data class ConfigData(
-    var arrowModule: ArrowModule.Config = ArrowModule.Config(),
     var booksModule: BooksModule.Config = BooksModule.Config(),
     var chatModule: ChatModule.Config = ChatModule.Config(),
     var dimensionsModule: DimensionsModule.Config = DimensionsModule.Config(),
