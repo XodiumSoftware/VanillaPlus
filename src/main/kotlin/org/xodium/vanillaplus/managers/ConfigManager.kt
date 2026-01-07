@@ -14,7 +14,7 @@ import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.ConfigData
 import org.xodium.vanillaplus.strategies.CapitalizedStrategy
 import org.xodium.vanillaplus.utils.CommandUtils.executesCatching
-import org.xodium.vanillaplus.utils.Utils.mm
+import org.xodium.vanillaplus.utils.Utils.MM
 import org.xodium.vanillaplus.utils.Utils.prefix
 import java.io.File
 import kotlin.time.measureTime
@@ -42,7 +42,9 @@ internal object ConfigManager {
                                 instance.logger.warning("Command can only be executed by a Player!")
                             }
                             configData = ConfigData().load("config.json")
-                            it.source.sender.sendMessage("${instance.prefix} <green>configuration reloaded!".mm())
+                            it.source.sender.sendMessage(
+                                MM.deserialize("${instance.prefix} <green>configuration reloaded!"),
+                            )
                         },
                 ),
             "Allows to plugin specific admin commands",

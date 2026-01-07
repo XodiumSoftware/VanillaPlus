@@ -22,7 +22,7 @@ import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.CommandUtils.executesCatching
 import org.xodium.vanillaplus.utils.PlayerUtils.face
-import org.xodium.vanillaplus.utils.Utils.mm
+import org.xodium.vanillaplus.utils.Utils.MM
 import org.xodium.vanillaplus.utils.Utils.prefix
 import java.util.concurrent.CompletableFuture
 
@@ -59,8 +59,7 @@ internal object ChatModule : ModuleInterface {
                                             instance.server
                                                 .getPlayer(targetName)
                                                 ?: return@executesCatching sender.sendMessage(
-                                                    config.chatModule.i18n.playerIsNotOnline
-                                                        .mm(),
+                                                    MM.deserialize(config.chatModule.i18n.playerIsNotOnline),
                                                 )
                                         val message = it.getArgument("message", String().javaClass)
 
@@ -99,21 +98,20 @@ internal object ChatModule : ModuleInterface {
         event.renderer(ChatRenderer.defaultRenderer())
         event.renderer { player, displayName, message, audience ->
             var base =
-                config.chatModule.chatFormat.mm(
-                    Placeholder.component("player_head", "<head:${player.uniqueId}>".mm()),
+                MM.deserialize(
+                    config.chatModule.chatFormat,
+                    Placeholder.component("player_head", MM.deserialize("<head:${player.uniqueId}>")),
                     Placeholder.component(
                         "player",
                         displayName
                             .clickEvent(ClickEvent.suggestCommand("/w ${player.name} "))
                             .hoverEvent(
-                                HoverEvent.showText(
-                                    config.chatModule.i18n.clickToWhisper
-                                        .mm(),
-                                ),
+                                HoverEvent.showText(MM.deserialize(config.chatModule.i18n.clickToWhisper)),
                             ),
                     ),
                     Placeholder.component("message", message),
                 )
+
             if (audience == player) base = base.appendSpace().append(createDeleteCross(event.signedMessage()))
             base
         }
@@ -129,16 +127,15 @@ internal object ChatModule : ModuleInterface {
         var imageIndex = 0
 
         player.sendMessage(
-            Regex("<image>")
-                .replace(config.chatModule.welcomeText.joinToString("\n")) { "<image${++imageIndex}>" }
-                .mm(
-                    Placeholder.component("player", player.displayName()),
-                    *player
-                        .face()
-                        .lines()
-                        .mapIndexed { i, line -> Placeholder.component("image${i + 1}", line.mm()) }
-                        .toTypedArray(),
-                ),
+            MM.deserialize(
+                Regex("<image>").replace(config.chatModule.welcomeText.joinToString("\n")) { "<image${++imageIndex}>" },
+                Placeholder.component("player", player.displayName()),
+                *player
+                    .face()
+                    .lines()
+                    .mapIndexed { i, line -> Placeholder.component("image${i + 1}", MM.deserialize(line)) }
+                    .toTypedArray(),
+            ),
         )
     }
 
@@ -148,11 +145,9 @@ internal object ChatModule : ModuleInterface {
      */
     private fun playerSetSpawn(event: PlayerSetSpawnEvent) {
         event.notification =
-            config.chatModule.i18n.playerSetSpawn.mm(
-                Placeholder.component(
-                    "notification",
-                    event.notification ?: return,
-                ),
+            MM.deserialize(
+                config.chatModule.i18n.playerSetSpawn,
+                Placeholder.component("notification", event.notification ?: return),
             )
     }
 
@@ -168,38 +163,30 @@ internal object ChatModule : ModuleInterface {
         message: String,
     ) {
         sender.sendMessage(
-            config.chatModule.whisperToFormat.mm(
+            MM.deserialize(
+                config.chatModule.whisperToFormat,
                 Placeholder.component(
                     "player",
                     target
                         .displayName()
                         .clickEvent(ClickEvent.suggestCommand("/w ${target.name} "))
-                        .hoverEvent(
-                            HoverEvent.showText(
-                                config.chatModule.i18n.clickToWhisper
-                                    .mm(),
-                            ),
-                        ),
+                        .hoverEvent(HoverEvent.showText(MM.deserialize(config.chatModule.i18n.clickToWhisper))),
                 ),
-                Placeholder.component("message", message.mm()),
+                Placeholder.component("message", MM.deserialize(message)),
             ),
         )
 
         target.sendMessage(
-            config.chatModule.whisperFromFormat.mm(
+            MM.deserialize(
+                config.chatModule.whisperFromFormat,
                 Placeholder.component(
                     "player",
                     sender
                         .displayName()
                         .clickEvent(ClickEvent.suggestCommand("/w ${sender.name} "))
-                        .hoverEvent(
-                            HoverEvent.showText(
-                                config.chatModule.i18n.clickToWhisper
-                                    .mm(),
-                            ),
-                        ),
+                        .hoverEvent(HoverEvent.showText(MM.deserialize(config.chatModule.i18n.clickToWhisper))),
                 ),
-                Placeholder.component("message", message.mm()),
+                Placeholder.component("message", MM.deserialize(message)),
             ),
         )
     }
@@ -210,17 +197,10 @@ internal object ChatModule : ModuleInterface {
      * @return A [net.kyori.adventure.text.Component] representing the delete cross with hover text and click action.
      */
     private fun createDeleteCross(signedMessage: SignedMessage): Component =
-        config.chatModule.deleteCross
-            .mm()
-            .hoverEvent(
-                config.chatModule.i18n.deleteMessage
-                    .mm(),
-            ).clickEvent(
-                ClickEvent.callback {
-                    instance.server
-                        .deleteMessage(signedMessage)
-                },
-            )
+        MM
+            .deserialize(config.chatModule.deleteCross)
+            .hoverEvent(MM.deserialize(config.chatModule.i18n.deleteMessage))
+            .clickEvent(ClickEvent.callback { instance.server.deleteMessage(signedMessage) })
 
     @Serializable
     data class Config(

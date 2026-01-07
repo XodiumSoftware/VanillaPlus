@@ -11,7 +11,7 @@ import org.xodium.vanillaplus.VanillaPlus
 
 /** General utilities. */
 internal object Utils {
-    private val MM: MiniMessage = MiniMessage.miniMessage()
+    val MM: MiniMessage = MiniMessage.miniMessage()
 
     /** The standardized prefix for [VanillaPlus] messages. */
     val VanillaPlus.prefix: String
@@ -21,29 +21,17 @@ internal object Utils {
                 "</gradient><gradient:#FFE259:#FFA751>]</gradient>"
 
     /**
-     * Deserializes a [MiniMessage] [String] into a [Component].
-     * @param resolvers Optional tag resolvers for custom tags.
-     * @return The deserialized [Component].
-     */
-    fun String.mm(vararg resolvers: TagResolver): Component =
-        if (resolvers.isEmpty()) {
-            MM.deserialize(this)
-        } else {
-            MM.deserialize(this, TagResolver.resolver(*resolvers))
-        }
-
-    /**
      * Deserializes an iterable collection of [MiniMessage] strings into a list of Components.
      * @param resolvers Optional tag resolvers for custom tags.
      * @return The list of deserialized Components.
      */
     @JvmName("mmStringIterable")
-    fun Iterable<String>.mm(vararg resolvers: TagResolver): List<Component> = map { it.mm(*resolvers) }
+    fun Iterable<String>.mm(vararg resolvers: TagResolver): List<Component> = map { MM.deserialize(it, *resolvers) }
 
     /** Extension function to convert snake_case to Proper Case with spaces. */
     fun String.snakeToProperCase(): String =
         split('_').joinToString(" ") { word -> word.replaceFirstChar { it.uppercase() } }
 
     /** Extension function specifically for enchantment keys */
-    fun TypedKey<Enchantment>.displayName(): Component = value().snakeToProperCase().mm()
+    fun TypedKey<Enchantment>.displayName(): Component = MM.deserialize(value().snakeToProperCase())
 }

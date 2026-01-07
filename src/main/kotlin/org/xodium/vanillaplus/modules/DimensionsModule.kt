@@ -14,9 +14,8 @@ import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.event.world.PortalCreateEvent
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.utils.Utils.mm
-import kotlin.math.pow
-import kotlin.math.sqrt
+import org.xodium.vanillaplus.utils.Utils.MM
+import kotlin.math.hypot
 
 /** Represents a module handling dimension mechanics within the system. */
 internal object DimensionsModule : ModuleInterface {
@@ -60,10 +59,11 @@ internal object DimensionsModule : ModuleInterface {
             if (findCorrespondingPortal(calcPortalCentre(event.blocks), getOverworld()) == null) {
                 event.isCancelled = true
                 val player = event.entity as? Player ?: return
-                player.sendActionBar(
-                    config.dimensionsModule.i18n.portalCreationDenied
-                        .mm(),
-                )
+                val overworld = getOverworld()
+                val destination = player.respawnLocation?.takeIf { it.world == overworld } ?: overworld.spawnLocation
+
+                player.sendActionBar(MM.deserialize(config.dimensionsModule.i18n.portalCreationDenied))
+                player.teleport(destination, PlayerTeleportEvent.TeleportCause.PLUGIN)
             }
         }
     }
@@ -96,7 +96,7 @@ internal object DimensionsModule : ModuleInterface {
                 for (y in 0..overworld.maxHeight) {
                     val block = overworld.getBlockAt(x, y, z)
                     if (block.type == Material.NETHER_PORTAL) {
-                        val dist = distance2D(targetX, targetZ, x.toDouble(), z.toDouble())
+                        val dist = hypot(targetX - x.toDouble(), targetZ - z.toDouble())
                         if (dist < closestDistance) {
                             closestDistance = dist
                             closestPortal = block.location
@@ -107,21 +107,6 @@ internal object DimensionsModule : ModuleInterface {
         }
         return closestPortal
     }
-
-    /**
-     * Calculates the 2D Euclidean distance between two points in the X-Z plane.
-     * @param x1 The X-coordinate of the first point.
-     * @param z1 The Z-coordinate of the first point.
-     * @param x2 The X-coordinate of the second point.
-     * @param z2 The Z-coordinate of the second point.
-     * @return The distance between the two points.
-     */
-    private fun distance2D(
-        x1: Double,
-        z1: Double,
-        x2: Double,
-        z2: Double,
-    ): Double = sqrt((x1 - x2).pow(2) + (z1 - z2).pow(2))
 
     /**
      * Calculates the centre point of a portal structure by averaging the positions of its constituent blocks.

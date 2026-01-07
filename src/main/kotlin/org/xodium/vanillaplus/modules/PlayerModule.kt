@@ -32,7 +32,7 @@ import org.xodium.vanillaplus.enchantments.*
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
-import org.xodium.vanillaplus.utils.Utils.mm
+import org.xodium.vanillaplus.utils.Utils.MM
 
 /** Represents a module handling player mechanics within the system. */
 internal object PlayerModule : ModuleInterface {
@@ -105,7 +105,7 @@ internal object PlayerModule : ModuleInterface {
     private fun playerJoin(event: PlayerJoinEvent) {
         val player = event.player
 
-        player.displayName(player.nickname?.mm())
+        player.displayName(MM.deserialize(player.nickname ?: player.name))
 
         if (config.playerModule.i18n.playerJoinMsg
                 .isEmpty()
@@ -119,7 +119,8 @@ internal object PlayerModule : ModuleInterface {
             .filter { it.uniqueId != player.uniqueId }
             .forEach {
                 it.sendMessage(
-                    config.playerModule.i18n.playerJoinMsg.mm(
+                    MM.deserialize(
+                        config.playerModule.i18n.playerJoinMsg,
                         Placeholder.component("player", player.displayName()),
                     ),
                 )
@@ -157,11 +158,9 @@ internal object PlayerModule : ModuleInterface {
         }
 
         event.quitMessage(
-            config.playerModule.i18n.playerQuitMsg.mm(
-                Placeholder.component(
-                    "player",
-                    event.player.displayName(),
-                ),
+            MM.deserialize(
+                config.playerModule.i18n.playerQuitMsg,
+                Placeholder.component("player", event.player.displayName()),
             ),
         )
     }
@@ -178,7 +177,8 @@ internal object PlayerModule : ModuleInterface {
         }
 
         event.message(
-            config.playerModule.i18n.playerAdvancementDoneMsg.mm(
+            MM.deserialize(
+                config.playerModule.i18n.playerAdvancementDoneMsg,
                 Placeholder.component("player", event.player.displayName()),
                 Placeholder.component("advancement", event.advancement.displayName()),
             ),
@@ -241,13 +241,11 @@ internal object PlayerModule : ModuleInterface {
         name: String,
     ) {
         player.nickname = name
-        player.displayName(player.nickname?.mm())
+        player.displayName(MM.deserialize(player.nickname ?: player.name))
         player.sendActionBar(
-            config.playerModule.i18n.nicknameUpdated.mm(
-                Placeholder.component(
-                    "nickname",
-                    player.displayName(),
-                ),
+            MM.deserialize(
+                config.playerModule.i18n.nicknameUpdated,
+                Placeholder.component("nickname", player.displayName()),
             ),
         )
     }

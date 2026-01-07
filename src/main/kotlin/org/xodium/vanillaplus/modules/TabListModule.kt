@@ -13,6 +13,7 @@ import org.bukkit.event.weather.ThunderChangeEvent
 import org.bukkit.event.weather.WeatherChangeEvent
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.Utils.MM
 import org.xodium.vanillaplus.utils.Utils.mm
 import java.util.*
 import kotlin.math.roundToInt
@@ -57,8 +58,8 @@ internal object TabListModule : ModuleInterface {
             Component.join(
                 joinConfig,
                 config.tabListModule.footer.mm(
-                    Placeholder.component("weather", getWeather().mm()),
-                    Placeholder.component("tps", getTps().mm()),
+                    Placeholder.component("weather", MM.deserialize(getWeather())),
+                    Placeholder.component("tps", MM.deserialize(getTps())),
                 ),
             ),
         )
