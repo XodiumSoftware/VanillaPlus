@@ -5,7 +5,6 @@ package org.xodium.vanillaplus.modules
 import com.mojang.brigadier.arguments.StringArgumentType
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.datacomponent.DataComponentTypes
-import io.papermc.paper.datacomponent.item.ItemLore
 import io.papermc.paper.datacomponent.item.ResolvableProfile
 import io.papermc.paper.event.entity.EntityEquipmentChangedEvent
 import kotlinx.serialization.Serializable
@@ -68,7 +67,44 @@ internal object PlayerModule : ModuleInterface {
         )
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    fun on(event: PlayerJoinEvent) {
+    fun on(event: PlayerJoinEvent) = playerJoin(event)
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    fun on(event: PlayerQuitEvent) = playerQuit(event)
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    fun on(event: PlayerDeathEvent) = playerDeath(event)
+
+    @EventHandler
+    fun on(event: PlayerAdvancementDoneEvent) = playerAdvancementDone(event)
+
+    @EventHandler
+    fun on(event: InventoryClickEvent) = enderchest(event)
+
+    @EventHandler(ignoreCancelled = true)
+    fun on(event: PlayerInteractEvent) {
+        xpToBottle(event)
+        FeatherFallingEnchantment.featherFalling(event)
+    }
+
+    @EventHandler
+    fun on(event: BlockBreakEvent) {
+        ReplantEnchantment.replant(event)
+        SilkTouchEnchantment.silkTouch(event)
+        VeinMineEnchantment.veinMine(event)
+    }
+
+    @EventHandler
+    fun on(event: BlockDropItemEvent) = PickupEnchantment.pickup(event)
+
+    @EventHandler
+    fun on(event: EntityEquipmentChangedEvent) = NightVisionEnchantment.nightVision(event)
+
+    /**
+     * Handles the event when a player joins the game.
+     * @param event The PlayerJoinEvent triggered when a player joins.
+     */
+    private fun playerJoin(event: PlayerJoinEvent) {
         val player = event.player
 
         player.displayName(player.nickname?.mm())
@@ -92,8 +128,30 @@ internal object PlayerModule : ModuleInterface {
             }
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    fun on(event: PlayerQuitEvent) {
+    /**
+     * Handles the event when a player dies.
+     * @param event The PlayerDeathEvent triggered when a player dies.
+     */
+    private fun playerDeath(event: PlayerDeathEvent) {
+        if (Math.random() < config.playerModule.skullDropChance) {
+            event.entity.world.dropItemNaturally(
+                event.entity.location,
+                @Suppress("UnstableApiUsage")
+                ItemStack.of(Material.PLAYER_HEAD).apply {
+                    setData(DataComponentTypes.PROFILE, ResolvableProfile.resolvableProfile(event.entity.playerProfile))
+                },
+            )
+        }
+        // TODO
+//        if (config.playerFeature.i18n.playerDeathMsg.isNotEmpty()) event.deathMessage()
+//        if (config.playerFeature.i18n.playerDeathScreenMsg.isNotEmpty()) event.deathScreenMessageOverride()
+    }
+
+    /**
+     * Handles the event when a player quits the game.
+     * @param event The PlayerQuitEvent triggered when a player quits the game.
+     */
+    private fun playerQuit(event: PlayerQuitEvent) {
         if (config.playerModule.i18n.playerQuitMsg
                 .isEmpty()
         ) {
@@ -110,23 +168,11 @@ internal object PlayerModule : ModuleInterface {
         )
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    fun on(event: PlayerDeathEvent) {
-        val killer = event.entity.killer ?: return
-
-        if (Math.random() < config.playerModule.skullDropChance) {
-            event.entity.world.dropItemNaturally(
-                event.entity.location,
-                playerSkull(event.entity, killer),
-            )
-        }
-        // TODO
-//        if (config.playerFeature.i18n.playerDeathMsg.isNotEmpty()) event.deathMessage()
-//        if (config.playerFeature.i18n.playerDeathScreenMsg.isNotEmpty()) event.deathScreenMessageOverride()
-    }
-
-    @EventHandler
-    fun on(event: PlayerAdvancementDoneEvent) {
+    /**
+     * Handles the event when a player completes an advancement.
+     * @param event The PlayerAdvancementDoneEvent triggered when a player completes an advancement.
+     */
+    private fun playerAdvancementDone(event: PlayerAdvancementDoneEvent) {
         if (config.playerModule.i18n.playerAdvancementDoneMsg
                 .isEmpty()
         ) {
@@ -139,34 +185,6 @@ internal object PlayerModule : ModuleInterface {
                 Placeholder.component("advancement", event.advancement.displayName()),
             ),
         )
-    }
-
-    @EventHandler
-    fun on(event: InventoryClickEvent) {
-        enderchest(event)
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    fun on(event: PlayerInteractEvent) {
-        xpToBottle(event)
-        FeatherFallingEnchantment.featherFalling(event)
-    }
-
-    @EventHandler
-    fun on(event: BlockBreakEvent) {
-        ReplantEnchantment.replant(event)
-        SilkTouchEnchantment.silkTouch(event)
-        VeinMineEnchantment.veinMine(event)
-    }
-
-    @EventHandler
-    fun on(event: BlockDropItemEvent) {
-        PickupEnchantment.pickup(event)
-    }
-
-    @EventHandler
-    fun on(event: EntityEquipmentChangedEvent) {
-        NightVisionEnchantment.nightVision(event)
     }
 
     /**
@@ -238,42 +256,11 @@ internal object PlayerModule : ModuleInterface {
         )
     }
 
-    /**
-     * Creates a custom player skull item when a player is killed.
-     * @param entity The player whose head is being created.
-     * @param killer The player who killed the entity.
-     * @return An [ItemStack] representing the customized player head.
-     */
-    @Suppress("UnstableApiUsage")
-    private fun playerSkull(
-        entity: Player,
-        killer: Player,
-    ): ItemStack =
-        ItemStack.of(Material.PLAYER_HEAD).apply {
-            setData(DataComponentTypes.PROFILE, ResolvableProfile.resolvableProfile(entity.playerProfile))
-            setData(
-                DataComponentTypes.CUSTOM_NAME,
-                config.playerModule.i18n.playerHeadName
-                    .mm(Placeholder.component("player", entity.name.mm())),
-            )
-            setData(
-                DataComponentTypes.LORE,
-                ItemLore
-                    .lore(
-                        config.playerModule.i18n.playerHeadLore
-                            .mm(
-                                Placeholder.component("player", entity.name.mm()),
-                                Placeholder.component("killer", killer.name.mm()),
-                            ),
-                    ),
-            )
-        }
-
     @Serializable
     data class Config(
         var enabled: Boolean = true,
         var enderChestClickType: ClickType = ClickType.SHIFT_RIGHT,
-        var skullDropChance: Double = 0.1,
+        var skullDropChance: Double = 0.01,
         var xpCostToBottle: Int = 11,
         var silkTouch: SilkTouchEnchantment = SilkTouchEnchantment(),
         var i18n: I18n = I18n(),
@@ -286,8 +273,6 @@ internal object PlayerModule : ModuleInterface {
 
         @Serializable
         data class I18n(
-            var playerHeadName: String = "<player>’s Skull",
-            var playerHeadLore: List<String> = listOf("<player> killed by <killer>"),
 //          var playerDeathMsg: String = "<killer> <gradient:#FFE259:#FFA751>⚔</gradient> <player>",
             var playerJoinMsg: String = "<green>➕<reset> <gradient:#FFE259:#FFA751>›</gradient> <player>",
             var playerQuitMsg: String = "<red>➖<reset> <gradient:#FFE259:#FFA751>›</gradient> <player>",
@@ -296,7 +281,8 @@ internal object PlayerModule : ModuleInterface {
             var playerAdvancementDoneMsg: String =
                 "\uD83C\uDF89 <gradient:#FFE259:#FFA751>›</gradient> <player> " +
                     "<gradient:#FFE259:#FFA751>has made the advancement:</gradient> <advancement>",
-            var nicknameUpdated: String = "<gradient:#CB2D3E:#EF473A>Nickname has been updated to: <nickname></gradient>",
+            var nicknameUpdated: String =
+                "<gradient:#CB2D3E:#EF473A>Nickname has been updated to: <nickname></gradient>",
         )
     }
 }

@@ -23,19 +23,19 @@ internal object DimensionsModule : ModuleInterface {
     private const val NETHER_TO_OVERWORLD_RATIO = 8
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    fun on(event: PlayerPortalEvent) = handlePlayerPortal(event)
+    fun on(event: PlayerPortalEvent) = playerPortal(event)
 
     @EventHandler(priority = EventPriority.HIGH)
-    fun on(event: EntityPortalEvent) = handleEntityPortal(event)
+    fun on(event: EntityPortalEvent) = entityPortal(event)
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    fun on(event: PortalCreateEvent) = handlePortalCreate(event)
+    fun on(event: PortalCreateEvent) = portalCreate(event)
 
     /**
      * Handles the PlayerPortalEvent to prevent portal creation in the Nether.
      * @param event The PlayerPortalEvent to handle.
      */
-    private fun handlePlayerPortal(event: PlayerPortalEvent) {
+    private fun playerPortal(event: PlayerPortalEvent) {
         if (event.cause == PlayerTeleportEvent.TeleportCause.NETHER_PORTAL) {
             if (event.player.world.environment == World.Environment.NETHER) event.canCreatePortal = false
         }
@@ -45,7 +45,7 @@ internal object DimensionsModule : ModuleInterface {
      * Handles the EntityPortalEvent to prevent portal creation in the Nether.
      * @param event The EntityPortalEvent to handle.
      */
-    private fun handleEntityPortal(event: EntityPortalEvent) {
+    private fun entityPortal(event: EntityPortalEvent) {
         if (event.entity.world.environment == World.Environment.NETHER) event.canCreatePortal = false
     }
 
@@ -53,7 +53,7 @@ internal object DimensionsModule : ModuleInterface {
      * Handles the PortalCreateEvent to prevent portal creation in the Nether if no corresponding Overworld portal exists.
      * @param event The PortalCreateEvent to handle.
      */
-    private fun handlePortalCreate(event: PortalCreateEvent) {
+    private fun portalCreate(event: PortalCreateEvent) {
         if (event.world.environment == World.Environment.NETHER &&
             event.reason == PortalCreateEvent.CreateReason.FIRE
         ) {

@@ -37,13 +37,13 @@ internal object ScoreBoardModule : ModuleInterface {
         )
 
     @EventHandler
-    fun on(event: PlayerJoinEvent) = handleJoin(event)
+    fun on(event: PlayerJoinEvent) = playerJoin(event)
 
     /**
      * Applies the correct scoreboard to players when they join.
      * @param event The [PlayerJoinEvent] triggered when the player joins.
      */
-    private fun handleJoin(event: PlayerJoinEvent) {
+    private fun playerJoin(event: PlayerJoinEvent) {
         event.player.scoreboard =
             if (event.player.scoreboardVisibility == true) {
                 instance.server.scoreboardManager.newScoreboard

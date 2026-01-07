@@ -83,7 +83,19 @@ internal object ChatModule : ModuleInterface {
         )
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    fun on(event: AsyncChatEvent) {
+    fun on(event: AsyncChatEvent) = asyncChat(event)
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    fun on(event: PlayerJoinEvent) = playerJoin(event)
+
+    @EventHandler
+    fun on(event: PlayerSetSpawnEvent) = playerSetSpawn(event)
+
+    /**
+     * Handles asynchronous chat events.
+     * @param event The [AsyncChatEvent] to be processed.
+     */
+    private fun asyncChat(event: AsyncChatEvent) {
         event.renderer(ChatRenderer.defaultRenderer())
         event.renderer { player, displayName, message, audience ->
             var base =
@@ -107,8 +119,11 @@ internal object ChatModule : ModuleInterface {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    fun on(event: PlayerJoinEvent) {
+    /**
+     * Handles player join events.
+     * @param event The [PlayerJoinEvent] to be processed.
+     */
+    private fun playerJoin(event: PlayerJoinEvent) {
         val player = event.player
 
         var imageIndex = 0
@@ -127,8 +142,11 @@ internal object ChatModule : ModuleInterface {
         )
     }
 
-    @EventHandler
-    fun on(event: PlayerSetSpawnEvent) {
+    /**
+     * Handles player set spawn events.
+     * @param event The [PlayerSetSpawnEvent] to be processed.
+     */
+    private fun playerSetSpawn(event: PlayerSetSpawnEvent) {
         event.notification =
             config.chatModule.i18n.playerSetSpawn.mm(
                 Placeholder.component(
