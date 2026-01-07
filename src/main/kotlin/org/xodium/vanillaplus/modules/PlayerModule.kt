@@ -36,8 +36,6 @@ import org.xodium.vanillaplus.utils.Utils.mm
 
 /** Represents a module handling player mechanics within the system. */
 internal object PlayerModule : ModuleInterface {
-    private val tabListModule by lazy { TabListModule }
-
     override val cmds =
         listOf(
             CommandData(
@@ -244,8 +242,6 @@ internal object PlayerModule : ModuleInterface {
     ) {
         player.nickname = name
         player.displayName(player.nickname?.mm())
-        // TODO: add enabled check.
-        tabListModule.updatePlayerDisplayName(player)
         player.sendActionBar(
             config.playerModule.i18n.nicknameUpdated.mm(
                 Placeholder.component(
