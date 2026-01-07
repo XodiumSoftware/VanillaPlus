@@ -5,11 +5,13 @@ package org.xodium.vanillaplus.modules
 import io.papermc.paper.event.entity.EntityEquipmentChangedEvent
 import kotlinx.serialization.Serializable
 import org.bukkit.Material
+import org.bukkit.attribute.Attribute
 import org.bukkit.entity.*
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.EntityChangeBlockEvent
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.entity.EntityExplodeEvent
+import org.bukkit.event.entity.EntitySpawnEvent
 import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.enchantments.NimbusEnchantment
 import org.xodium.vanillaplus.interfaces.ModuleInterface
@@ -37,6 +39,9 @@ internal object EntityModule : ModuleInterface {
     @EventHandler
     fun on(event: EntityEquipmentChangedEvent) = NimbusEnchantment.nimbus(event)
 
+    @EventHandler
+    fun on(event: EntitySpawnEvent) = randomizeAnimalSize(event.entity)
+
     /**
      * Determines whether an entity's griefing behaviour should be cancelled based on configuration settings.
      * @param entity The entity whose griefing behaviour is being evaluated.
@@ -54,6 +59,18 @@ internal object EntityModule : ModuleInterface {
             else -> false
         }
 
+    /**
+     * Randomizes the size of an animal entity within a configured range for visual variety.
+     * @param entity The entity whose size should be randomized.
+     */
+    private fun randomizeAnimalSize(entity: Entity) {
+        if (!config.entityModule.randomizeAnimalSizes) return
+        if (entity !is Animals) return
+
+        entity.getAttribute(Attribute.SCALE)?.baseValue =
+            Random.nextDouble(config.entityModule.animalSizeMin, config.entityModule.animalSizeMax)
+    }
+
     @Serializable
     data class Config(
         var enabled: Boolean = true,
@@ -64,5 +81,8 @@ internal object EntityModule : ModuleInterface {
         var disableGhastGrief: Boolean = true,
         var disableWitherGrief: Boolean = true,
         var entityEggDropChance: Double = 0.1,
+        var randomizeAnimalSizes: Boolean = true,
+        var animalSizeMin: Double = 0.8,
+        var animalSizeMax: Double = 1.2,
     )
 }
