@@ -7,7 +7,7 @@ import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
-import org.xodium.vanillaplus.utils.ExtUtils.displayName
+import org.xodium.vanillaplus.utils.Utils.displayName
 
 /** Represents an object handling night vision enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")

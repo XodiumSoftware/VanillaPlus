@@ -9,8 +9,8 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import org.bukkit.enchantments.Enchantment
 import org.xodium.vanillaplus.VanillaPlus
 
-/** Extension utilities. */
-internal object ExtUtils {
+/** General utilities. */
+internal object Utils {
     private val MM: MiniMessage = MiniMessage.miniMessage()
 
     /** The standardized prefix for [VanillaPlus] messages. */

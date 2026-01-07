@@ -14,8 +14,8 @@ import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.ConfigData
 import org.xodium.vanillaplus.strategies.CapitalizedStrategy
 import org.xodium.vanillaplus.utils.CommandUtils.executesCatching
-import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.ExtUtils.prefix
+import org.xodium.vanillaplus.utils.Utils.mm
+import org.xodium.vanillaplus.utils.Utils.prefix
 import java.io.File
 import kotlin.time.measureTime
 
