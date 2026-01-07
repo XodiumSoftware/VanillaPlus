@@ -5,12 +5,12 @@ package org.xodium.vanillaplus.utils
 import io.papermc.paper.registry.TypedKey
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import org.bukkit.enchantments.Enchantment
 import org.xodium.vanillaplus.VanillaPlus
 
 /** General utilities. */
 internal object Utils {
+    /** MiniMessage instance for parsing formatted strings. */
     val MM: MiniMessage = MiniMessage.miniMessage()
 
     /** The standardized prefix for [VanillaPlus] messages. */
@@ -19,14 +19,6 @@ internal object Utils {
             "<gradient:#FFA751:#FFE259>[</gradient><gradient:#CB2D3E:#EF473A>" +
                 "${this.javaClass.simpleName}" +
                 "</gradient><gradient:#FFE259:#FFA751>]</gradient>"
-
-    /**
-     * Deserializes an iterable collection of [MiniMessage] strings into a list of Components.
-     * @param resolvers Optional tag resolvers for custom tags.
-     * @return The list of deserialized Components.
-     */
-    @JvmName("mmStringIterable")
-    fun Iterable<String>.mm(vararg resolvers: TagResolver): List<Component> = map { MM.deserialize(it, *resolvers) }
 
     /** Extension function to convert snake_case to Proper Case with spaces. */
     fun String.snakeToProperCase(): String =

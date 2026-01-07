@@ -4,8 +4,6 @@ package org.xodium.vanillaplus.modules
 
 import kotlinx.serialization.Serializable
 import net.kyori.adventure.audience.Audience
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.JoinConfiguration
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -14,7 +12,6 @@ import org.bukkit.event.weather.WeatherChangeEvent
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.Utils.MM
-import org.xodium.vanillaplus.utils.Utils.mm
 import java.util.*
 import kotlin.math.roundToInt
 
@@ -51,16 +48,12 @@ internal object TabListModule : ModuleInterface {
      * @param audience the audience to update the tab list for.
      */
     private fun tablist(audience: Audience) {
-        val joinConfig = JoinConfiguration.separator(Component.newline())
-
         audience.sendPlayerListHeaderAndFooter(
-            Component.join(joinConfig, config.tabListModule.header.mm()),
-            Component.join(
-                joinConfig,
-                config.tabListModule.footer.mm(
-                    Placeholder.component("weather", MM.deserialize(getWeather())),
-                    Placeholder.component("tps", MM.deserialize(getTps())),
-                ),
+            MM.deserialize(config.tabListModule.header.joinToString("\n")),
+            MM.deserialize(
+                config.tabListModule.footer.joinToString("\n"),
+                Placeholder.component("weather", MM.deserialize(getWeather())),
+                Placeholder.component("tps", MM.deserialize(getTps())),
             ),
         )
     }
