@@ -16,11 +16,11 @@ internal data class ConfigData(
     var locatorModule: LocatorModule.Config = LocatorModule.Config(),
     var motdModule: MotdModule.Config = MotdModule.Config(),
     var openableModule: OpenableModule.Config = OpenableModule.Config(),
-    var petModule: PetModule.Config = PetModule.Config(),
     var playerModule: PlayerModule.Config = PlayerModule.Config(),
     var scoreboardModule: ScoreBoardModule.Config = ScoreBoardModule.Config(),
     var signModule: SignModule.Config = SignModule.Config(),
     var sitModule: SitModule.Config = SitModule.Config(),
     var tabListModule: TabListModule.Config = TabListModule.Config(),
+    var tameableModule: TameableModule.Config = TameableModule.Config(),
     var treesModule: TreesModule.Config = TreesModule.Config(),
 )

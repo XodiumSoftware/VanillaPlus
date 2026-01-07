@@ -57,12 +57,12 @@ internal class VanillaPlus : JavaPlugin() {
             LocatorModule,
             MotdModule,
             OpenableModule,
-            PetModule,
             PlayerModule,
             ScoreBoardModule,
             SignModule,
             SitModule,
             TabListModule,
+            TameableModule,
             if (WorldEditHook.get()) TreesModule else null,
         ).forEach { module -> module.register() }
     }

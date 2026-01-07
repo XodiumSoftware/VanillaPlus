@@ -8,8 +8,8 @@ import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.PlayerUtils.getLeashedEntity
 
-/** Represents a module handling pet mechanics within the system. */
-internal object PetModule : ModuleInterface {
+/** Represents a module handling tameable mechanics within the system. */
+internal object TameableModule : ModuleInterface {
     @EventHandler
     fun on(event: PlayerInteractEntityEvent) = handleInteractEntity(event)
 
