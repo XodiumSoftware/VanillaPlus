@@ -14,8 +14,7 @@ internal object PetModule : ModuleInterface {
     fun on(event: PlayerInteractEntityEvent) = handleInteractEntity(event)
 
     /**
-     * Handles transferring ownership of a leashed pet when a player
-     * right-clicks another player while holding a lead.
+     * Handles the interaction event when a player interacts with another entity.
      * @param event The [PlayerInteractEntityEvent] triggered on entity interaction.
      */
     private fun handleInteractEntity(event: PlayerInteractEntityEvent) {
@@ -25,7 +24,7 @@ internal object PetModule : ModuleInterface {
         if (source == target) return
         if (source.inventory.itemInMainHand.type != Material.LEAD) return
 
-        val pet = source.getLeashedPet() ?: return
+        val pet = source.getLeashedEntity() ?: return
 
         if (!pet.isTamed || pet.owner != source) return
 
@@ -36,12 +35,12 @@ internal object PetModule : ModuleInterface {
     }
 
     /**
-     * Gets the first leashed pet owned by the player within the config radius.
-     * @receiver The player whose leashed pet is to be found.
-     * @param radius The radius within which to search for leashed pets.
+     * Gets the first leashed entity owned by the player within the config radius.
+     * @receiver The player whose leashed entity is to be found.
+     * @param radius The radius within which to search for leashed entities.
      * @return The found tameable entity or `null` if none exists.
      */
-    private fun Player.getLeashedPet(radius: Double = 10.0): Tameable? =
+    private fun Player.getLeashedEntity(radius: Double = 10.0): Tameable? =
         getNearbyEntities(radius, radius, radius)
             .filterIsInstance<Tameable>()
             .firstOrNull { it.isLeashed && it.leashHolder == player }
