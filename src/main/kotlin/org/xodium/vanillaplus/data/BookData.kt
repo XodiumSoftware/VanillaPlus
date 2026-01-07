@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 import net.kyori.adventure.inventory.Book
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.Utils.mm
 
 /**
  * Represents the data structure for a book in the game.

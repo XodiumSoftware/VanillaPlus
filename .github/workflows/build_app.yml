@@ -3,6 +3,7 @@ name: Xodium CI/CD - Build Application
 on:
   push:
     branches: [ main, dev ]
+  workflow_dispatch:
 
 concurrency:
   group: "${{ github.workflow }}-${{ github.ref }}"
@@ -29,7 +30,7 @@ jobs:
 
       - id: setup-gradle
         name: Setup Gradle
-        uses: gradle/actions/setup-gradle@030fdb2d3d26e7c77770bfe796534fcd841c69dc
+        uses: gradle/actions/setup-gradle@576fcbecfed70890e466eeffd7c78d93b30b0472
 
       - id: build-gradle
         name: Build with Gradle
