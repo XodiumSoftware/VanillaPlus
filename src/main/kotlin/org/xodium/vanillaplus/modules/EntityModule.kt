@@ -40,7 +40,7 @@ internal object EntityModule : ModuleInterface {
     fun on(event: EntityEquipmentChangedEvent) = NimbusEnchantment.nimbus(event)
 
     @EventHandler
-    fun on(event: EntitySpawnEvent) = randomizeAnimalSize(event.entity)
+    fun on(event: EntitySpawnEvent) = randomizeEntityScale(event.entity)
 
     /**
      * Determines whether an entity's griefing behaviour should be cancelled based on configuration settings.
@@ -60,16 +60,29 @@ internal object EntityModule : ModuleInterface {
         }
 
     /**
-     * Randomizes the size of an animal entity within a configured range for visual variety.
-     * @param entity The entity whose size should be randomized.
+     * Randomizes the scale of certain entities based on configuration settings.
+     * @param entity The entity whose scale should be randomized.
      */
-    private fun randomizeAnimalSize(entity: Entity) {
-        if (!config.entityModule.randomizeAnimalSizes) return
-        // TODO: do we want to apply this to other entity types?
-        if (entity !is Animals) return
+    private fun randomizeEntityScale(entity: Entity) {
+        when (entity) {
+            is Animals -> {
+                if (!config.entityModule.randomizeAnimalScale) return
+                entity.getAttribute(Attribute.SCALE)?.baseValue =
+                    Random.nextDouble(config.entityModule.animalSizeMin, config.entityModule.animalSizeMax)
+            }
 
-        entity.getAttribute(Attribute.SCALE)?.baseValue =
-            Random.nextDouble(config.entityModule.animalSizeMin, config.entityModule.animalSizeMax)
+            is Monster -> {
+                if (!config.entityModule.randomizeMonsterScale) return
+                entity.getAttribute(Attribute.SCALE)?.baseValue =
+                    Random.nextDouble(config.entityModule.monsterSizeMin, config.entityModule.monsterSizeMax)
+            }
+
+            is Villager -> {
+                if (!config.entityModule.randomizeVillagerScale) return
+                entity.getAttribute(Attribute.SCALE)?.baseValue =
+                    Random.nextDouble(config.entityModule.villagerSizeMin, config.entityModule.villagerSizeMax)
+            }
+        }
     }
 
     @Serializable
@@ -82,9 +95,15 @@ internal object EntityModule : ModuleInterface {
         var disableGhastGrief: Boolean = true,
         var disableWitherGrief: Boolean = true,
         var entityEggDropChance: Double = 0.1,
-        var randomizeAnimalSizes: Boolean = true,
+        var randomizeAnimalScale: Boolean = true,
+        var randomizeMonsterScale: Boolean = true,
+        var randomizeVillagerScale: Boolean = true,
         // TODO: check if we can use Range instead?
         var animalSizeMin: Double = 0.8,
         var animalSizeMax: Double = 1.2,
+        var monsterSizeMin: Double = 0.8,
+        var monsterSizeMax: Double = 1.2,
+        var villagerSizeMin: Double = 0.8,
+        var villagerSizeMax: Double = 1.2,
     )
 }
