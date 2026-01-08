@@ -1,5 +1,7 @@
 @file:OptIn(ExperimentalSerializationApi::class)
 
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package org.xodium.vanillaplus.managers
 
 import io.papermc.paper.command.brigadier.Commands
@@ -16,7 +18,7 @@ import org.xodium.vanillaplus.strategies.CapitalizedStrategy
 import org.xodium.vanillaplus.utils.CommandUtils.executesCatching
 import org.xodium.vanillaplus.utils.Utils.MM
 import org.xodium.vanillaplus.utils.Utils.prefix
-import java.io.File // TODO: replace with kotlin.io.path
+import kotlin.io.path.*
 import kotlin.time.measureTime
 
 /** Manages loading and saving the configuration file. */
@@ -64,9 +66,9 @@ internal object ConfigManager {
      * @return The loaded configuration data.
      */
     inline fun <reified T> T.load(fileName: String): T {
-        val file = File(instance.dataFolder, fileName)
+        val file = instance.dataFolder.toPath() / fileName
 
-        if (!instance.dataFolder.exists()) instance.dataFolder.mkdirs()
+        if (!instance.dataFolder.toPath().exists()) instance.dataFolder.toPath().createDirectories()
 
         val loadedConfig = if (file.exists()) json.decodeFromString(file.readText()) else this
 
