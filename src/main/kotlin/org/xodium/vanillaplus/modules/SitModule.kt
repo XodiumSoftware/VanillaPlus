@@ -14,6 +14,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
+import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityDismountEvent
 import org.bukkit.event.player.PlayerInteractEvent
@@ -39,6 +40,9 @@ internal object SitModule : ModuleInterface {
 
     @EventHandler(ignoreCancelled = true)
     fun on(event: EntityDamageEvent) = entityDamage(event)
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun on(event: BlockBreakEvent) = blockBreak(event)
 
     /**
      * Handles player interaction to initiate sitting.
@@ -102,6 +106,28 @@ internal object SitModule : ModuleInterface {
         sittingPlayers[player.uniqueId]?.let { stand ->
             stand.removePassenger(player)
             sittingPlayers.remove(player.uniqueId)
+        }
+    }
+
+    /**
+     * Handles block break events to remove sitting ArmorStands on broken blocks.
+     * @param event The [BlockBreakEvent] triggered when a block is broken.
+     */
+    private fun blockBreak(event: BlockBreakEvent) {
+        val brokenBlockLocation = event.block.location
+
+        sittingPlayers.entries.removeIf { (_, armorStand) ->
+            val armorStandBlock = armorStand.location.subtract(blockCenterOffset).block
+
+            if (armorStandBlock.location == brokenBlockLocation) {
+                armorStand.passengers
+                    .filterIsInstance<Player>()
+                    .forEach { player -> armorStand.removePassenger(player) }
+                armorStand.remove()
+                true
+            } else {
+                false
+            }
         }
     }
 
