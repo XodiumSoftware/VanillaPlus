@@ -93,7 +93,7 @@ internal object EntityModule : ModuleInterface {
         var disableWitherGrief: Boolean = true,
         var entityEggDropChance: Double = 0.1,
         var animalScaleRange: Range? = Range(0.8, 1.2),
-        var monsterScaleRange: Range? = Range(0.6, 1.8),
+        var monsterScaleRange: Range? = Range(0.9, 1.9),
         var villagerScaleRange: Range? = Range(0.9, 1.1),
     )
 
