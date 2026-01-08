@@ -19,8 +19,6 @@ import org.bukkit.event.world.StructureGrowEvent
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.registries.MaterialRegistry
-// TODO: replace.
-import java.io.IOException
 import java.nio.channels.Channels
 import java.nio.channels.ReadableByteChannel
 import java.nio.file.FileSystems
@@ -71,7 +69,7 @@ internal object TreesModule : ModuleInterface {
                         }
                     }
             }
-        } catch (e: IOException) {
+        } catch (e: Exception) {
             error("Failed to load schematics from $resourceDir: ${e.message}")
         }
     }
@@ -90,7 +88,7 @@ internal object TreesModule : ModuleInterface {
         return try {
             format.getReader(Channels.newInputStream(channel)).read()
         } catch (e: Exception) {
-            throw IOException("Failed to read schematic $path: ${e.message}", e)
+            error("Failed to read schematic $path: ${e.message}")
         }
     }
 
