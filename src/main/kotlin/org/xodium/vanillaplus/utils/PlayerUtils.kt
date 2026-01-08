@@ -11,10 +11,8 @@ import org.bukkit.block.Container
 import org.bukkit.entity.Player
 import org.bukkit.entity.Tameable
 import java.net.URI
-import java.util.*
 import javax.imageio.ImageIO
-
-// TODO: replace java with kotlin
+import kotlin.io.encoding.Base64
 
 /** Player utilities. */
 internal object PlayerUtils {
@@ -41,7 +39,7 @@ internal object PlayerUtils {
             playerProfile.properties
                 .firstOrNull { it.name == "textures" }
                 ?: error("Player has no skin texture")
-        val json = JsonParser.parseString(String(Base64.getDecoder().decode(texturesProp.value))).asJsonObject
+        val json = JsonParser.parseString(Base64.decode(texturesProp.value).decodeToString()).asJsonObject
         val skinUrl =
             json
                 .getAsJsonObject("textures")
