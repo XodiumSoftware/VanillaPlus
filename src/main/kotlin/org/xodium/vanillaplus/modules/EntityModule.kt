@@ -66,21 +66,18 @@ internal object EntityModule : ModuleInterface {
     private fun randomizeEntityScale(entity: Entity) {
         when (entity) {
             is Animals -> {
-                if (!config.entityModule.randomizeAnimalScale) return
-                entity.getAttribute(Attribute.SCALE)?.baseValue =
-                    Random.nextDouble(config.entityModule.animalSizeMin, config.entityModule.animalSizeMax)
+                val range = config.entityModule.animalScaleRange ?: return
+                entity.getAttribute(Attribute.SCALE)?.baseValue = Random.nextDouble(range.min, range.max)
             }
 
             is Monster -> {
-                if (!config.entityModule.randomizeMonsterScale) return
-                entity.getAttribute(Attribute.SCALE)?.baseValue =
-                    Random.nextDouble(config.entityModule.monsterSizeMin, config.entityModule.monsterSizeMax)
+                val range = config.entityModule.monsterScaleRange ?: return
+                entity.getAttribute(Attribute.SCALE)?.baseValue = Random.nextDouble(range.min, range.max)
             }
 
             is Villager -> {
-                if (!config.entityModule.randomizeVillagerScale) return
-                entity.getAttribute(Attribute.SCALE)?.baseValue =
-                    Random.nextDouble(config.entityModule.villagerSizeMin, config.entityModule.villagerSizeMax)
+                val range = config.entityModule.villagerScaleRange ?: return
+                entity.getAttribute(Attribute.SCALE)?.baseValue = Random.nextDouble(range.min, range.max)
             }
         }
     }
@@ -95,15 +92,18 @@ internal object EntityModule : ModuleInterface {
         var disableGhastGrief: Boolean = true,
         var disableWitherGrief: Boolean = true,
         var entityEggDropChance: Double = 0.1,
-        var randomizeAnimalScale: Boolean = true,
-        var randomizeMonsterScale: Boolean = true,
-        var randomizeVillagerScale: Boolean = true,
-        // TODO: check if we can use Range instead?
-        var animalSizeMin: Double = 0.8,
-        var animalSizeMax: Double = 1.2,
-        var monsterSizeMin: Double = 0.8,
-        var monsterSizeMax: Double = 1.2,
-        var villagerSizeMin: Double = 0.8,
-        var villagerSizeMax: Double = 1.2,
+        var animalScaleRange: Range? = Range(0.8, 1.2),
+        var monsterScaleRange: Range? = Range(0.8, 1.2),
+        var villagerScaleRange: Range? = Range(0.8, 1.2),
     )
+
+    @Serializable
+    data class Range(
+        val min: Double,
+        val max: Double,
+    ) {
+        init {
+            require(min <= max) { "min must be less than or equal to max" }
+        }
+    }
 }
