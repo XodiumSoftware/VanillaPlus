@@ -65,6 +65,7 @@ internal object EntityModule : ModuleInterface {
      */
     private fun randomizeAnimalSize(entity: Entity) {
         if (!config.entityModule.randomizeAnimalSizes) return
+        // TODO: do we want to apply this to other entity types?
         if (entity !is Animals) return
 
         entity.getAttribute(Attribute.SCALE)?.baseValue =
@@ -82,6 +83,7 @@ internal object EntityModule : ModuleInterface {
         var disableWitherGrief: Boolean = true,
         var entityEggDropChance: Double = 0.1,
         var randomizeAnimalSizes: Boolean = true,
+        // TODO: check if we can use Range instead?
         var animalSizeMin: Double = 0.8,
         var animalSizeMax: Double = 1.2,
     )
