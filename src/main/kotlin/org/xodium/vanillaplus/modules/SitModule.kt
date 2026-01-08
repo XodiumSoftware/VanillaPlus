@@ -14,6 +14,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
+import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityDismountEvent
 import org.bukkit.event.player.PlayerInteractEvent
@@ -29,22 +30,25 @@ internal object SitModule : ModuleInterface {
     private val playerStandUpOffset = Vector(0.0, 0.5, 0.0)
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    fun on(event: PlayerInteractEvent) = handleInteract(event)
+    fun on(event: PlayerInteractEvent) = playerInteract(event)
 
     @EventHandler
-    fun on(event: EntityDismountEvent) = handleDismount(event)
+    fun on(event: EntityDismountEvent) = entityDismount(event)
 
     @EventHandler
-    fun on(event: PlayerQuitEvent) = handleQuit(event)
+    fun on(event: PlayerQuitEvent) = playerQuit(event)
 
     @EventHandler(ignoreCancelled = true)
-    fun on(event: EntityDamageEvent) = handleDamage(event)
+    fun on(event: EntityDamageEvent) = entityDamage(event)
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun on(event: BlockBreakEvent) = blockBreak(event)
 
     /**
      * Handles player interaction to initiate sitting.
      * @param event The [PlayerInteractEvent] triggered by the player.
      */
-    private fun handleInteract(event: PlayerInteractEvent) {
+    private fun playerInteract(event: PlayerInteractEvent) {
         val player = event.player
 
         if (event.action != Action.RIGHT_CLICK_BLOCK || player.isSneaking || player.isInsideVehicle) return
@@ -72,7 +76,7 @@ internal object SitModule : ModuleInterface {
      * Handles dismounting from the sitting ArmorStand.
      * @param event The [EntityDismountEvent] triggered when the player dismounts.
      */
-    private fun handleDismount(event: EntityDismountEvent) {
+    private fun entityDismount(event: EntityDismountEvent) {
         val player = event.entity as? Player ?: return
 
         sittingPlayers.remove(player.uniqueId)?.let { armorStand ->
@@ -88,7 +92,7 @@ internal object SitModule : ModuleInterface {
      * Handles clean-up when a player quits.
      * @param event The [PlayerQuitEvent] triggered when the player leaves the server.
      */
-    private fun handleQuit(event: PlayerQuitEvent) {
+    private fun playerQuit(event: PlayerQuitEvent) {
         sittingPlayers.remove(event.player.uniqueId)?.remove()
     }
 
@@ -96,12 +100,34 @@ internal object SitModule : ModuleInterface {
      * Handles player damage while sitting.
      * @param event The [EntityDamageEvent] triggered when the player takes damage.
      */
-    private fun handleDamage(event: EntityDamageEvent) {
+    private fun entityDamage(event: EntityDamageEvent) {
         val player = event.entity as? Player ?: return
 
         sittingPlayers[player.uniqueId]?.let { stand ->
             stand.removePassenger(player)
             sittingPlayers.remove(player.uniqueId)
+        }
+    }
+
+    /**
+     * Handles block break events to remove sitting ArmorStands on broken blocks.
+     * @param event The [BlockBreakEvent] triggered when a block is broken.
+     */
+    private fun blockBreak(event: BlockBreakEvent) {
+        val brokenBlockLocation = event.block.location
+
+        sittingPlayers.entries.removeIf { (_, armorStand) ->
+            val armorStandBlock = armorStand.location.subtract(blockCenterOffset).block
+
+            if (armorStandBlock.location == brokenBlockLocation) {
+                armorStand.passengers
+                    .filterIsInstance<Player>()
+                    .forEach { player -> armorStand.removePassenger(player) }
+                armorStand.remove()
+                true
+            } else {
+                false
+            }
         }
     }
 

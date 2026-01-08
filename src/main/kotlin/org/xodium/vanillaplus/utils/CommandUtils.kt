@@ -6,7 +6,7 @@ import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import org.bukkit.entity.Player
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.utils.Utils.mm
+import org.xodium.vanillaplus.utils.Utils.MM
 import org.xodium.vanillaplus.utils.Utils.prefix
 
 /** Utility functions for command handling. */
@@ -30,7 +30,7 @@ internal object CommandUtils {
                         """.trimIndent(),
                     )
                     (ctx.source.sender as? Player)?.sendMessage(
-                        "${instance.prefix} <red>An error has occurred. Check server logs for details.".mm(),
+                        MM.deserialize("${instance.prefix} <red>An error has occurred. Check server logs for details."),
                     )
                 }
             Command.SINGLE_SUCCESS

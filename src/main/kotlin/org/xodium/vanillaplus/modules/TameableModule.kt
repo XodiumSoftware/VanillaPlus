@@ -11,13 +11,13 @@ import org.xodium.vanillaplus.utils.PlayerUtils.getLeashedEntity
 /** Represents a module handling tameable mechanics within the system. */
 internal object TameableModule : ModuleInterface {
     @EventHandler
-    fun on(event: PlayerInteractEntityEvent) = handleInteractEntity(event)
+    fun on(event: PlayerInteractEntityEvent) = playerInteractEntity(event)
 
     /**
      * Handles the interaction event when a player interacts with another entity.
      * @param event The [PlayerInteractEntityEvent] triggered on entity interaction.
      */
-    private fun handleInteractEntity(event: PlayerInteractEntityEvent) {
+    private fun playerInteractEntity(event: PlayerInteractEntityEvent) {
         val source = event.player
         val target = event.rightClicked as? Player ?: return
 

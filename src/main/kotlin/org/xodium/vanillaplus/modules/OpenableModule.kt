@@ -41,13 +41,13 @@ internal object OpenableModule : ModuleInterface {
         )
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    fun on(event: PlayerInteractEvent) = handleInteract(event)
+    fun on(event: PlayerInteractEvent) = playerInteract(event)
 
     /**
      * Handles block interactions and delegates to the correct click handler.
      * @param event The [PlayerInteractEvent] triggered by the player.
      */
-    private fun handleInteract(event: PlayerInteractEvent) {
+    private fun playerInteract(event: PlayerInteractEvent) {
         val clickedBlock = event.clickedBlock ?: return
         if (!isValidInteraction(event)) return
 

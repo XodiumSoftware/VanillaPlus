@@ -12,7 +12,7 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
-import org.xodium.vanillaplus.utils.Utils.mm
+import org.xodium.vanillaplus.utils.Utils.MM
 
 /** Represents a module handling sign mechanics within the system. */
 internal object SignModule : ModuleInterface {
@@ -65,7 +65,7 @@ internal object SignModule : ModuleInterface {
         val sign = target.state as Sign
         val signSide = sign.getSide(sign.getInteractableSideFor(player))
 
-        signSide.line(line, text.mm())
+        signSide.line(line, MM.deserialize(text))
         sign.update()
     }
 

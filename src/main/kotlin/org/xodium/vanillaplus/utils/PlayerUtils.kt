@@ -3,7 +3,10 @@
 package org.xodium.vanillaplus.utils
 
 import com.google.gson.JsonParser
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Chunk
+import org.bukkit.Color
 import org.bukkit.block.Container
 import org.bukkit.entity.Player
 import org.bukkit.entity.Tameable
@@ -114,4 +117,14 @@ internal object PlayerUtils {
         getNearbyEntities(radius, radius, radius)
             .filterIsInstance<Tameable>()
             .firstOrNull { it.isLeashed && it.leashHolder == player }
+
+    /**
+     * Modifies the colour of a player's waypoint based on the specified parameters.
+     * @receiver Player The player whose waypoint colour is to be modified.
+     * @param color The optional named colour to apply to the waypoint.
+     */
+    fun Player.locator(color: TextColor? = null) {
+        waypointColor = color?.let { Color.fromRGB(it.value()) }
+        sendActionBar(Component.text("Locator color changed!", color))
+    }
 }

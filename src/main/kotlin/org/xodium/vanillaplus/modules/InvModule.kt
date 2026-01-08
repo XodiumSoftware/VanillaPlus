@@ -23,7 +23,7 @@ import org.xodium.vanillaplus.utils.CommandUtils.executesCatching
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import org.xodium.vanillaplus.utils.PlayerUtils.getContainersAround
 import org.xodium.vanillaplus.utils.ScheduleUtils
-import org.xodium.vanillaplus.utils.Utils.mm
+import org.xodium.vanillaplus.utils.Utils.MM
 import java.util.concurrent.CompletableFuture
 
 /** Represents a module handling inv mechanics within the system. */
@@ -71,10 +71,7 @@ internal object InvModule : ModuleInterface {
             materialName?.let { Material.getMaterial(it.uppercase()) } ?: player.inventory.itemInMainHand.type
 
         if (material == Material.AIR) {
-            player.sendActionBar(
-                config.invModule.i18n.noMaterialSpecified
-                    .mm(),
-            )
+            player.sendActionBar(MM.deserialize(config.invModule.i18n.noMaterialSpecified))
             return 0
         }
 
@@ -100,19 +97,19 @@ internal object InvModule : ModuleInterface {
 
         if (foundContainers.isEmpty()) {
             player.sendActionBar(
-                config.invModule.i18n.noMatchingItems.mm(
-                    Placeholder.component(
-                        "material",
-                        material.name.mm(),
-                    ),
+                MM.deserialize(
+                    config.invModule.i18n.noMatchingItems,
+                    Placeholder.component("material", MM.deserialize(material.name)),
                 ),
             )
             return
         }
 
         player.sendActionBar(
-            config.invModule.i18n.foundItemsInChests
-                .mm(Placeholder.component("material", material.name.mm())),
+            MM.deserialize(
+                config.invModule.i18n.foundItemsInChests,
+                Placeholder.component("material", MM.deserialize(material.name)),
+            ),
         )
 
         ScheduleUtils.schedule(duration = 200L) {
