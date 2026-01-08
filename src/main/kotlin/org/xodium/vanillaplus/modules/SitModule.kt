@@ -1,5 +1,3 @@
-@file:Suppress("ktlint:standard:no-wildcard-imports")
-
 package org.xodium.vanillaplus.modules
 
 import kotlinx.serialization.Serializable
@@ -21,11 +19,14 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.util.Vector
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import java.util.*
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
+import kotlin.uuid.toKotlinUuid
 
 /** Represents a module handling sit mechanics within the system. */
+@OptIn(ExperimentalUuidApi::class)
 internal object SitModule : ModuleInterface {
-    private val sittingPlayers = mutableMapOf<UUID, ArmorStand>()
+    private val sittingPlayers = mutableMapOf<Uuid, ArmorStand>()
     private val blockCenterOffset = Vector(0.5, 0.5, 0.5)
     private val playerStandUpOffset = Vector(0.0, 0.5, 0.0)
 
@@ -79,7 +80,7 @@ internal object SitModule : ModuleInterface {
     private fun entityDismount(event: EntityDismountEvent) {
         val player = event.entity as? Player ?: return
 
-        sittingPlayers.remove(player.uniqueId)?.let { armorStand ->
+        sittingPlayers.remove(player.uniqueId.toKotlinUuid())?.let { armorStand ->
             val safe = armorStand.location.clone().add(playerStandUpOffset)
             safe.yaw = player.location.yaw
             safe.pitch = player.location.pitch
@@ -93,7 +94,7 @@ internal object SitModule : ModuleInterface {
      * @param event The [PlayerQuitEvent] triggered when the player leaves the server.
      */
     private fun playerQuit(event: PlayerQuitEvent) {
-        sittingPlayers.remove(event.player.uniqueId)?.remove()
+        sittingPlayers.remove(event.player.uniqueId.toKotlinUuid())?.remove()
     }
 
     /**
@@ -103,9 +104,9 @@ internal object SitModule : ModuleInterface {
     private fun entityDamage(event: EntityDamageEvent) {
         val player = event.entity as? Player ?: return
 
-        sittingPlayers[player.uniqueId]?.let { stand ->
+        sittingPlayers[player.uniqueId.toKotlinUuid()]?.let { stand ->
             stand.removePassenger(player)
-            sittingPlayers.remove(player.uniqueId)
+            sittingPlayers.remove(player.uniqueId.toKotlinUuid())
         }
     }
 
@@ -150,7 +151,7 @@ internal object SitModule : ModuleInterface {
             }
 
         armorStand.addPassenger(player)
-        sittingPlayers[player.uniqueId] = armorStand
+        sittingPlayers[player.uniqueId.toKotlinUuid()] = armorStand
     }
 
     @Serializable

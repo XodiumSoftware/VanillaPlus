@@ -4,6 +4,8 @@ import com.destroystokyo.paper.event.player.PlayerSetSpawnEvent
 import com.mojang.brigadier.arguments.StringArgumentType
 import io.papermc.paper.chat.ChatRenderer
 import io.papermc.paper.command.brigadier.Commands
+import io.papermc.paper.command.brigadier.argument.ArgumentTypes
+import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver
 import io.papermc.paper.event.player.AsyncChatEvent
 import kotlinx.serialization.Serializable
 import net.kyori.adventure.chat.SignedMessage
@@ -24,7 +26,6 @@ import org.xodium.vanillaplus.utils.CommandUtils.executesCatching
 import org.xodium.vanillaplus.utils.PlayerUtils.face
 import org.xodium.vanillaplus.utils.Utils.MM
 import org.xodium.vanillaplus.utils.Utils.prefix
-import java.util.concurrent.CompletableFuture
 
 /** Represents a module handling chat mechanics within the system. */
 internal object ChatModule : ModuleInterface {
@@ -36,14 +37,8 @@ internal object ChatModule : ModuleInterface {
                     .requires { it.sender.hasPermission(perms[0]) }
                     .then(
                         Commands
-                            .argument("target", StringArgumentType.string())
-                            .suggests { _, builder ->
-                                instance.server.onlinePlayers
-                                    .map { it.name }
-                                    .filter { it.lowercase().startsWith(builder.remaining.lowercase()) }
-                                    .forEach(builder::suggest)
-                                CompletableFuture.completedFuture(builder.build())
-                            }.then(
+                            .argument("target", ArgumentTypes.player())
+                            .then(
                                 Commands
                                     .argument("message", StringArgumentType.greedyString())
                                     .executesCatching {
@@ -54,10 +49,10 @@ internal object ChatModule : ModuleInterface {
                                         }
 
                                         val sender = it.source.sender as Player
-                                        val targetName = it.getArgument("target", String().javaClass)
+                                        val targetResolver =
+                                            it.getArgument("target", PlayerSelectorArgumentResolver::class.java)
                                         val target =
-                                            instance.server
-                                                .getPlayer(targetName)
+                                            targetResolver.resolve(it.source).singleOrNull()
                                                 ?: return@executesCatching sender.sendMessage(
                                                     MM.deserialize(config.chatModule.i18n.playerIsNotOnline),
                                                 )

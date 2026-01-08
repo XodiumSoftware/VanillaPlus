@@ -23,6 +23,7 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.AdjacentBlockData
 import org.xodium.vanillaplus.data.SoundData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+// TODO: replace.
 import java.util.*
 
 /** Represents a module handling openable blocks mechanics within the system. */

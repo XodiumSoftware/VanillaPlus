@@ -2,10 +2,11 @@
 
 package org.xodium.vanillaplus.modules
 
-import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
+import io.papermc.paper.command.brigadier.argument.ArgumentTypes
+import io.papermc.paper.registry.RegistryKey
 import kotlinx.serialization.Serializable
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Color
@@ -24,7 +25,6 @@ import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import org.xodium.vanillaplus.utils.PlayerUtils.getContainersAround
 import org.xodium.vanillaplus.utils.ScheduleUtils
 import org.xodium.vanillaplus.utils.Utils.MM
-import java.util.concurrent.CompletableFuture
 
 /** Represents a module handling inv mechanics within the system. */
 internal object InvModule : ModuleInterface {
@@ -36,14 +36,8 @@ internal object InvModule : ModuleInterface {
                     .requires { it.sender.hasPermission(perms[0]) }
                     .then(
                         Commands
-                            .argument("material", StringArgumentType.word())
-                            .suggests { _, builder ->
-                                Material.entries
-                                    .map { it.name.lowercase() }
-                                    .filter { it.startsWith(builder.remaining.lowercase()) }
-                                    .forEach(builder::suggest)
-                                CompletableFuture.completedFuture(builder.build())
-                            }.playerExecuted { _, ctx -> handleSearch(ctx) },
+                            .argument("material", ArgumentTypes.resource(RegistryKey.ITEM))
+                            .playerExecuted { _, ctx -> handleSearch(ctx) },
                     ).executesCatching { handleSearch(it) },
                 "Search nearby chests for specific items",
                 listOf("search", "searchinv", "invs"),
@@ -66,9 +60,9 @@ internal object InvModule : ModuleInterface {
      */
     private fun handleSearch(ctx: CommandContext<CommandSourceStack>): Int {
         val player = ctx.source.sender as? Player ?: return 0
-        val materialName = runCatching { StringArgumentType.getString(ctx, "material") }.getOrNull()
         val material =
-            materialName?.let { Material.getMaterial(it.uppercase()) } ?: player.inventory.itemInMainHand.type
+            runCatching { ctx.getArgument("material", Material::class.java) }.getOrNull()
+                ?: player.inventory.itemInMainHand.type
 
         if (material == Material.AIR) {
             player.sendActionBar(MM.deserialize(config.invModule.i18n.noMaterialSpecified))
@@ -76,7 +70,6 @@ internal object InvModule : ModuleInterface {
         }
 
         search(player, material)
-
         return 1
     }
 

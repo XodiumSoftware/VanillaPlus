@@ -33,6 +33,7 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import org.xodium.vanillaplus.utils.Utils.MM
+import kotlin.random.Random
 
 /** Represents a module handling player mechanics within the system. */
 internal object PlayerModule : ModuleInterface {
@@ -132,7 +133,7 @@ internal object PlayerModule : ModuleInterface {
      * @param event The PlayerDeathEvent triggered when a player dies.
      */
     private fun playerDeath(event: PlayerDeathEvent) {
-        if (Math.random() < config.playerModule.skullDropChance) {
+        if (Random.nextDouble() <= config.playerModule.skullDropChance) {
             event.entity.world.dropItemNaturally(
                 event.entity.location,
                 @Suppress("UnstableApiUsage")

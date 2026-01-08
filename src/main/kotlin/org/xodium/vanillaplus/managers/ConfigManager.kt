@@ -16,7 +16,7 @@ import org.xodium.vanillaplus.strategies.CapitalizedStrategy
 import org.xodium.vanillaplus.utils.CommandUtils.executesCatching
 import org.xodium.vanillaplus.utils.Utils.MM
 import org.xodium.vanillaplus.utils.Utils.prefix
-import java.io.File
+import java.io.File // TODO: replace with kotlin.io.path
 import kotlin.time.measureTime
 
 /** Manages loading and saving the configuration file. */

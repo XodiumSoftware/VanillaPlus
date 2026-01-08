@@ -12,7 +12,6 @@ import org.bukkit.event.weather.WeatherChangeEvent
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.Utils.MM
-import java.util.*
 import kotlin.math.roundToInt
 
 /** Represents a module handling tab-list mechanics within the system. */
@@ -67,7 +66,7 @@ internal object TabListModule : ModuleInterface {
         val clampedTps = tps.coerceIn(MIN_TPS, MAX_TPS)
         val ratio = clampedTps / MAX_TPS
         val color = getColorForTps(ratio)
-        val formattedTps = String.format(Locale.ENGLISH, TPS_DECIMAL_FORMAT, tps)
+        val formattedTps = TPS_DECIMAL_FORMAT.format(tps)
 
         return "<color:$color>$formattedTps</color>"
     }
@@ -82,7 +81,7 @@ internal object TabListModule : ModuleInterface {
         val r = (MAX_COLOR_VALUE * (1 - clamped)).roundToInt()
         val g = (MAX_COLOR_VALUE * clamped).roundToInt()
 
-        return String.format(Locale.ENGLISH, COLOR_FORMAT, r, g, 0)
+        return COLOR_FORMAT.format(r, g, 0)
     }
 
     /**
