@@ -15,6 +15,7 @@ import org.bukkit.event.entity.EntitySpawnEvent
 import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.enchantments.NimbusEnchantment
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.Utils
 import kotlin.random.Random
 
 /** Represents a module handling entity mechanics within the system. */
@@ -92,18 +93,8 @@ internal object EntityModule : ModuleInterface {
         var disableGhastGrief: Boolean = true,
         var disableWitherGrief: Boolean = true,
         var entityEggDropChance: Double = 0.001,
-        var animalScaleRange: Range? = Range(0.8, 1.2),
-        var monsterScaleRange: Range? = Range(0.9, 1.9),
-        var villagerScaleRange: Range? = Range(0.9, 1.1),
+        var animalScaleRange: Utils.Range? = Utils.Range(0.8, 1.2),
+        var monsterScaleRange: Utils.Range? = Utils.Range(0.9, 1.9),
+        var villagerScaleRange: Utils.Range? = Utils.Range(0.9, 1.1),
     )
-
-    @Serializable
-    data class Range(
-        val min: Double,
-        val max: Double,
-    ) {
-        init {
-            require(min <= max) { "min must be less than or equal to max" }
-        }
-    }
 }
