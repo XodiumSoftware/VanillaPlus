@@ -6,7 +6,6 @@ import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes
-import io.papermc.paper.registry.RegistryKey
 import kotlinx.serialization.Serializable
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Color
@@ -14,6 +13,7 @@ import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -36,7 +36,7 @@ internal object InventoryModule : ModuleInterface {
                     .requires { it.sender.hasPermission(perms[0]) }
                     .then(
                         Commands
-                            .argument("material", ArgumentTypes.resource(RegistryKey.ITEM))
+                            .argument("material", ArgumentTypes.itemStack())
                             .playerExecuted { _, ctx -> handleSearch(ctx) },
                     ).executesCatching { handleSearch(it) },
                 "Search nearby chests for specific items",
@@ -61,7 +61,7 @@ internal object InventoryModule : ModuleInterface {
     private fun handleSearch(ctx: CommandContext<CommandSourceStack>): Int {
         val player = ctx.source.sender as? Player ?: return 0
         val material =
-            runCatching { ctx.getArgument("material", Material::class.java) }.getOrNull()
+            runCatching { ctx.getArgument("material", ItemStack::class.java).type }.getOrNull()
                 ?: player.inventory.itemInMainHand.type
 
         if (material == Material.AIR) {
