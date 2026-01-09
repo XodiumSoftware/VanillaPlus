@@ -19,7 +19,6 @@ import org.bukkit.event.world.StructureGrowEvent
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.registries.MaterialRegistry
-import java.io.IOException
 import java.nio.channels.Channels
 import java.nio.channels.ReadableByteChannel
 import java.nio.file.FileSystems
@@ -35,14 +34,14 @@ internal object TreesModule : ModuleInterface {
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    fun on(event: StructureGrowEvent) = handleStructureGrow(event)
+    fun on(event: StructureGrowEvent) = structureGrow(event)
 
     /**
      * Handles StructureGrowEvent and attempts to paste a schematic
      * when the grown block is a sapling or fungus.
      * @param event The [StructureGrowEvent] triggered by natural growth.
      */
-    private fun handleStructureGrow(event: StructureGrowEvent) {
+    private fun structureGrow(event: StructureGrowEvent) {
         event.location.block
             .takeIf {
                 Tag.SAPLINGS.isTagged(it.type) ||
@@ -70,7 +69,7 @@ internal object TreesModule : ModuleInterface {
                         }
                     }
             }
-        } catch (e: IOException) {
+        } catch (e: Exception) {
             error("Failed to load schematics from $resourceDir: ${e.message}")
         }
     }
@@ -89,7 +88,7 @@ internal object TreesModule : ModuleInterface {
         return try {
             format.getReader(Channels.newInputStream(channel)).read()
         } catch (e: Exception) {
-            throw IOException("Failed to read schematic $path: ${e.message}", e)
+            error("Failed to read schematic $path: ${e.message}")
         }
     }
 

@@ -6,7 +6,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockDropItemEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
-import org.xodium.vanillaplus.utils.ExtUtils.displayName
+import org.xodium.vanillaplus.utils.Utils.displayName
 
 /** Represents an object handling pickup enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")

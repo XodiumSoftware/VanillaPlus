@@ -7,9 +7,9 @@ import org.bukkit.plugin.java.JavaPlugin
 import org.xodium.vanillaplus.data.ConfigData
 import org.xodium.vanillaplus.hooks.WorldEditHook
 import org.xodium.vanillaplus.managers.ConfigManager
+import org.xodium.vanillaplus.managers.ConfigManager.load
 import org.xodium.vanillaplus.modules.*
 import org.xodium.vanillaplus.recipes.RottenFleshRecipe
-import org.xodium.vanillaplus.recipes.TorchArrowRecipe
 import org.xodium.vanillaplus.recipes.WoodLogRecipe
 
 /** Main class of the plugin. */
@@ -41,28 +41,30 @@ internal class VanillaPlus : JavaPlugin() {
         }
         instance.server.pluginManager.addPermission(ConfigManager.reloadPermission)
 
-        configData = ConfigManager.load()
+        configData = ConfigData().load("config.json")
 
-        RottenFleshRecipe.register()
-        TorchArrowRecipe.register()
-        WoodLogRecipe.register()
+        listOf(
+            RottenFleshRecipe,
+            WoodLogRecipe,
+        ).forEach { module -> module.register() }
 
-        BooksModule.register()
-        ChatModule.register()
-        DimensionsModule.register()
-        EntityModule.register()
-        InvModule.register()
-        LocatorModule.register()
-        MotdModule.register()
-        OpenableModule.register()
-        PetModule.register()
-        PlayerModule.register()
-        ScoreBoardModule.register()
-        SignModule.register()
-        SitModule.register()
-        TabListModule.register()
-        ArrowModule.register()
-        if (WorldEditHook.get()) TreesModule.register()
+        listOfNotNull(
+            BooksModule,
+            ChatModule,
+            DimensionsModule,
+            EntityModule,
+            InventoryModule,
+            LocatorModule,
+            MotdModule,
+            OpenableModule,
+            PlayerModule,
+            ScoreBoardModule,
+            SignModule,
+            SitModule,
+            TabListModule,
+            TameableModule,
+            if (WorldEditHook.get()) TreesModule else null,
+        ).forEach { module -> module.register() }
     }
 
     /**

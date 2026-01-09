@@ -1,5 +1,7 @@
 @file:OptIn(ExperimentalSerializationApi::class)
 
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package org.xodium.vanillaplus.managers
 
 import io.papermc.paper.command.brigadier.Commands
@@ -14,9 +16,9 @@ import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.ConfigData
 import org.xodium.vanillaplus.strategies.CapitalizedStrategy
 import org.xodium.vanillaplus.utils.CommandUtils.executesCatching
-import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.ExtUtils.prefix
-import java.io.File
+import org.xodium.vanillaplus.utils.Utils.MM
+import org.xodium.vanillaplus.utils.Utils.prefix
+import kotlin.io.path.*
 import kotlin.time.measureTime
 
 /** Manages loading and saving the configuration file. */
@@ -38,9 +40,13 @@ internal object ConfigManager {
                     Commands
                         .literal("reload")
                         .executesCatching {
-                            if (it.source.sender !is Player) instance.logger.warning("Command can only be executed by a Player!")
-                            configData = load()
-                            it.source.sender.sendMessage("${instance.prefix} <green>configuration reloaded!".mm())
+                            if (it.source.sender !is Player) {
+                                instance.logger.warning("Command can only be executed by a Player!")
+                            }
+                            configData = ConfigData().load("config.json")
+                            it.source.sender.sendMessage(
+                                MM.deserialize("${instance.prefix} <green>configuration reloaded!"),
+                            )
                         },
                 ),
             "Allows to plugin specific admin commands",
@@ -59,27 +65,19 @@ internal object ConfigManager {
      * @param fileName The name of the configuration file.
      * @return The loaded configuration data.
      */
-    fun load(fileName: String = "config.json"): ConfigData {
-        val file = File(instance.dataFolder, fileName)
+    inline fun <reified T> T.load(fileName: String): T {
+        val file = instance.dataFolder.toPath() / fileName
 
-        if (!instance.dataFolder.exists()) instance.dataFolder.mkdirs()
+        if (!instance.dataFolder.toPath().exists()) instance.dataFolder.toPath().createDirectories()
 
-        val config = getOrCreateConfig(file)
+        val loadedConfig = if (file.exists()) json.decodeFromString(file.readText()) else this
 
         instance.logger.info(
             "${if (file.exists()) "Loaded configuration from $fileName" else "Created default $fileName"} | Took ${
-                measureTime { file.writeText(json.encodeToString(ConfigData.serializer(), config)) }.inWholeMilliseconds
+                measureTime { file.writeText(json.encodeToString(loadedConfig)) }.inWholeMilliseconds
             }ms",
         )
 
-        return config
+        return loadedConfig
     }
-
-    /**
-     * Gets the existing configuration or creates a default one.
-     * @param file The configuration file.
-     * @return The configuration data.
-     */
-    private fun getOrCreateConfig(file: File): ConfigData =
-        if (file.exists()) json.decodeFromString(ConfigData.serializer(), file.readText()) else ConfigData()
 }
