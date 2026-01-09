@@ -26,8 +26,8 @@ import org.xodium.vanillaplus.utils.PlayerUtils.getContainersAround
 import org.xodium.vanillaplus.utils.ScheduleUtils
 import org.xodium.vanillaplus.utils.Utils.MM
 
-/** Represents a module handling inv mechanics within the system. */
-internal object InvModule : ModuleInterface {
+/** Represents a module handling inventory mechanics within the system. */
+internal object InventoryModule : ModuleInterface {
     override val cmds =
         listOf(
             CommandData(
@@ -65,7 +65,7 @@ internal object InvModule : ModuleInterface {
                 ?: player.inventory.itemInMainHand.type
 
         if (material == Material.AIR) {
-            player.sendActionBar(MM.deserialize(config.invModule.i18n.noMaterialSpecified))
+            player.sendActionBar(MM.deserialize(config.inventoryModule.i18n.noMaterialSpecified))
             return 0
         }
 
@@ -91,7 +91,7 @@ internal object InvModule : ModuleInterface {
         if (foundContainers.isEmpty()) {
             player.sendActionBar(
                 MM.deserialize(
-                    config.invModule.i18n.noMatchingItems,
+                    config.inventoryModule.i18n.noMatchingItems,
                     Placeholder.component("material", MM.deserialize(material.name)),
                 ),
             )
@@ -100,7 +100,7 @@ internal object InvModule : ModuleInterface {
 
         player.sendActionBar(
             MM.deserialize(
-                config.invModule.i18n.foundItemsInChests,
+                config.inventoryModule.i18n.foundItemsInChests,
                 Placeholder.component("material", MM.deserialize(material.name)),
             ),
         )

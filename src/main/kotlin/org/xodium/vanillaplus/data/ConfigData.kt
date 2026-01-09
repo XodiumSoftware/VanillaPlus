@@ -12,7 +12,7 @@ internal data class ConfigData(
     var chatModule: ChatModule.Config = ChatModule.Config(),
     var dimensionsModule: DimensionsModule.Config = DimensionsModule.Config(),
     var entityModule: EntityModule.Config = EntityModule.Config(),
-    var invModule: InvModule.Config = InvModule.Config(),
+    var inventoryModule: InventoryModule.Config = InventoryModule.Config(),
     var locatorModule: LocatorModule.Config = LocatorModule.Config(),
     var motdModule: MotdModule.Config = MotdModule.Config(),
     var openableModule: OpenableModule.Config = OpenableModule.Config(),

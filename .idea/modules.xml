@@ -2,12 +2,14 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Projects.VanillaPlus.iml" filepath="$PROJECT_DIR$/.idea/modules/Projects.VanillaPlus.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Projects.VanillaPlus.main.iml" filepath="$PROJECT_DIR$/.idea/modules/Projects.VanillaPlus.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Projects.VanillaPlus.test.iml" filepath="$PROJECT_DIR$/.idea/modules/Projects.VanillaPlus.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/VanillaPlus.iml" filepath="$PROJECT_DIR$/.idea/modules/VanillaPlus.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/VanillaPlus.main.iml" filepath="$PROJECT_DIR$/.idea/modules/VanillaPlus.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/VanillaPlus.test.iml" filepath="$PROJECT_DIR$/.idea/modules/VanillaPlus.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/org.xodium.vanillaplus.VanillaPlus.VanillaPlus.iml" filepath="$PROJECT_DIR$/.idea/modules/org.xodium.vanillaplus.VanillaPlus.VanillaPlus.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/org.xodium.vanillaplus.VanillaPlus.VanillaPlus.main.iml" filepath="$PROJECT_DIR$/.idea/modules/org.xodium.vanillaplus.VanillaPlus.VanillaPlus.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/org.xodium.vanillaplus.VanillaPlus.VanillaPlus.test.iml" filepath="$PROJECT_DIR$/.idea/modules/org.xodium.vanillaplus.VanillaPlus.VanillaPlus.test.iml" />
     </modules>
   </component>
 </project>
