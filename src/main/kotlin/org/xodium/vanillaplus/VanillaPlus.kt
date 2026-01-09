@@ -9,6 +9,7 @@ import org.xodium.vanillaplus.hooks.WorldEditHook
 import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.managers.ConfigManager.load
 import org.xodium.vanillaplus.modules.*
+import org.xodium.vanillaplus.recipes.PaintingRecipe
 import org.xodium.vanillaplus.recipes.RottenFleshRecipe
 import org.xodium.vanillaplus.recipes.WoodLogRecipe
 
@@ -44,6 +45,7 @@ internal class VanillaPlus : JavaPlugin() {
         configData = ConfigData().load("config.json")
 
         listOf(
+            PaintingRecipe,
             RottenFleshRecipe,
             WoodLogRecipe,
         ).forEach { module -> module.register() }
