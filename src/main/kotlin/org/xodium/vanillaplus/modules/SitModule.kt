@@ -1,6 +1,7 @@
 package org.xodium.vanillaplus.modules
 
 import kotlinx.serialization.Serializable
+import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
@@ -52,6 +53,7 @@ internal object SitModule : ModuleInterface {
     private fun playerInteract(event: PlayerInteractEvent) {
         val player = event.player
 
+        if (player.gameMode != GameMode.SURVIVAL) return
         if (event.action != Action.RIGHT_CLICK_BLOCK || player.isSneaking || player.isInsideVehicle) return
         if (player.inventory.itemInMainHand.type != Material.AIR) return
 
