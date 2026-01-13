@@ -179,7 +179,6 @@ internal object QuestModule : ModuleInterface {
 
         giveReward(player, reward)
         allQuestsRewardClaimed.add(id)
-        store.setClaimedAllReward(id, true)
 
         player.showTitle(
             Title.title(
@@ -231,7 +230,6 @@ internal object QuestModule : ModuleInterface {
 
         assignedQuests[id] = picked
         allQuestsRewardClaimed.remove(id)
-        store.setClaimedAllReward(id, false)
     }
 
     /** Represents a key identifying a quest target, either an entity type or material. */

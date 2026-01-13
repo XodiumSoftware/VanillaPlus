@@ -31,10 +31,8 @@ internal class QuestDatabase {
         }
     }
 
-    private object AllRewardClaimedTable : Table("quest_all_reward_claimed") {
-        val playerUuid = text("player_uuid")
-
-        override val primaryKey = PrimaryKey(playerUuid, name = "pk_quest_all_reward_claimed")
+    private companion object {
+        const val ALL_QUESTS_REQUIRED: Int = 5
     }
 
     init {
@@ -42,20 +40,14 @@ internal class QuestDatabase {
 
         val jdbcUrl = "jdbc:sqlite:${dbFile.absolutePath}"
 
-        db =
-            Database.connect(
-                url = jdbcUrl,
-                driver = "org.sqlite.JDBC",
-            )
+        db = Database.connect(jdbcUrl, "org.sqlite.JDBC")
 
         DriverManager.getConnection(jdbcUrl).use { conn ->
             conn.autoCommit = true
             conn.createStatement().use { statement -> statement.execute("PRAGMA journal_mode=WAL;") }
         }
 
-        transaction(db) {
-            SchemaUtils.createMissingTablesAndColumns(QuestProgressTable, AllRewardClaimedTable)
-        }
+        transaction(db) { SchemaUtils.createMissingTablesAndColumns(QuestProgressTable) }
     }
 
     /**
@@ -116,35 +108,24 @@ internal class QuestDatabase {
      */
     fun hasClaimedAllReward(playerId: Uuid): Boolean {
         val playerUuid = playerId.toJavaUuid().toString()
+        val questById =
+            QuestModule.config.questModule.quests
+                .associateBy { it.id }
 
         return transaction(db) {
-            !AllRewardClaimedTable
-                .select(AllRewardClaimedTable.playerUuid)
-                .where { AllRewardClaimedTable.playerUuid eq playerUuid }
-                .limit(1)
-                .empty()
-        }
-    }
+            val completedCount =
+                QuestProgressTable
+                    .selectAll()
+                    .where { QuestProgressTable.playerUuid eq playerUuid }
+                    .count { row ->
+                        val id = row[QuestProgressTable.questId]
+                        val progress = row[QuestProgressTable.currentProgress].coerceAtLeast(0)
+                        val target = questById[id]?.requirement?.targetAmount ?: return@count false
 
-    /**
-     * Sets the claimed status of the "all quests completed" reward for the player.
-     * @param playerId The UUID of the player.
-     * @param claimed True to mark as claimed, false to unmark.
-     */
-    fun setClaimedAllReward(
-        playerId: Uuid,
-        claimed: Boolean,
-    ) {
-        val playerUuid = playerId.toJavaUuid().toString()
+                        progress >= target
+                    }
 
-        transaction(db) {
-            if (claimed) {
-                AllRewardClaimedTable.insertIgnore {
-                    it[AllRewardClaimedTable.playerUuid] = playerUuid
-                }
-            } else {
-                AllRewardClaimedTable.deleteWhere { AllRewardClaimedTable.playerUuid eq playerUuid }
-            }
+            completedCount >= ALL_QUESTS_REQUIRED
         }
     }
 }
