@@ -110,6 +110,10 @@ internal object QuestModule : ModuleInterface {
         allQuestsRewardClaimed.remove(id)
     }
 
+    /**
+     * Saves the assigned quests of a player to their persistent data container.
+     * @param player The player whose quests are to be saved.
+     */
     private fun saveQuestsToPdc(player: Player) {
         val id = player.uniqueId.toKotlinUuid()
         val quests = assignedQuests[id].orEmpty()
@@ -153,7 +157,7 @@ internal object QuestModule : ModuleInterface {
 
         val id = player.uniqueId.toKotlinUuid()
         val quests = assignedQuests[id] ?: return
-        val changed = false
+        val changed = false // TODO fix
 
         quests
             .asSequence()
