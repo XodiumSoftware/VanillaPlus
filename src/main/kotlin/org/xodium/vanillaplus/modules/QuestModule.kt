@@ -55,7 +55,7 @@ internal object QuestModule : ModuleInterface {
     fun on(event: InventoryClickEvent) = questInventory.inventoryClick(event)
 
     @EventHandler
-    fun on(event: PlayerJoinEvent) = initializeQuestsIfNeeded(event)
+    fun on(event: PlayerJoinEvent) = assignInitQuests(event)
 
     @EventHandler(ignoreCancelled = true)
     fun on(event: EntityDeathEvent) {
@@ -75,14 +75,6 @@ internal object QuestModule : ModuleInterface {
             predicate = { it.target.matches(itemStack.type) },
             incrementBy = itemStack.amount,
         )
-    }
-
-    /**
-     * Initializes quests for a player if they don't have any assigned.
-     * @param event The player join event containing player information.
-     */
-    private fun initializeQuestsIfNeeded(event: PlayerJoinEvent) {
-        if (event.player.quests.isNullOrEmpty()) assignInitQuests(event)
     }
 
     /**
@@ -209,6 +201,8 @@ internal object QuestModule : ModuleInterface {
      * @param event The player join event containing player information.
      */
     private fun assignInitQuests(event: PlayerJoinEvent) {
+        if (!event.player.quests.isNullOrEmpty()) return
+
         val player = event.player
         val pool = config.questModule.quests
         val easy = pool.filter { it.difficulty == Quest.Difficulty.EASY }.shuffled().take(2)
