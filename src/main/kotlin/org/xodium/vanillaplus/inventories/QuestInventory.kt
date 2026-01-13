@@ -61,7 +61,7 @@ internal class QuestInventory : InventoryHolder {
                             if (req.isComplete) {
                                 "<gray>Requirement:</gray> <yellow>${req.description}</yellow> <green><b>Completed</b></green>"
                             } else {
-                                "<gray>Requirement:</gray> <yellow>${req.description}</yellow> <gray>(</gray><yellow>${req.currentProgress}</yellow><gray>/</gray><yellow>${req.targetAmount}</yellow><gray>)</gray>"
+                                "<gray>Requirement:</gray> <yellow>${req.description}</yellow> <gray>(</gray><yellow>${req.currentProgress}</yellow><gray>/</gray><yellow>${req.amount}</yellow><gray>)</gray>"
                             }
 
                         val rewardLine =

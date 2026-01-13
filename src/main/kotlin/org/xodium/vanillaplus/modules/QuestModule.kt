@@ -20,6 +20,8 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.inventories.QuestInventory
+import org.xodium.vanillaplus.modules.QuestModule.TypeKey.Companion.entityType
+import org.xodium.vanillaplus.modules.QuestModule.TypeKey.Companion.material
 import org.xodium.vanillaplus.pdcs.PlayerPDC.allQuestsCompleted
 import org.xodium.vanillaplus.pdcs.PlayerPDC.quests
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
@@ -61,7 +63,7 @@ internal object QuestModule : ModuleInterface {
     fun on(event: EntityDeathEvent) {
         incrementMatchingQuests(
             player = event.entity.killer ?: return,
-            predicate = { it.target.matches(event.entityType) },
+            predicate = { it.type.matches(event.entityType) },
             incrementBy = 1,
         )
     }
@@ -72,7 +74,7 @@ internal object QuestModule : ModuleInterface {
 
         incrementMatchingQuests(
             player = event.entity as? Player ?: return,
-            predicate = { it.target.matches(itemStack.type) },
+            predicate = { it.type.matches(itemStack.type) },
             incrementBy = itemStack.amount,
         )
     }
@@ -120,7 +122,7 @@ internal object QuestModule : ModuleInterface {
             .forEach { quest ->
                 val req = quest.requirement
                 val before = req.currentProgress
-                val after = (before + incrementBy).coerceAtMost(req.targetAmount)
+                val after = (before + incrementBy).coerceAtMost(req.amount)
 
                 if (after != before) {
                     updatedProgress[quest.id] = after
@@ -128,7 +130,7 @@ internal object QuestModule : ModuleInterface {
                     changed = true
                 }
 
-                if (req.targetAmount in (before + 1)..after) {
+                if (req.amount in (before + 1)..after) {
                     giveReward(player, quest.reward)
                     player.showTitle(
                         Title.title(
@@ -215,7 +217,7 @@ internal object QuestModule : ModuleInterface {
 
     /** Represents a key identifying a quest target, either an entity type or material. */
     @Serializable
-    data class TargetKey(
+    data class TypeKey(
         val kind: Kind,
         val id: String,
     ) {
@@ -226,15 +228,15 @@ internal object QuestModule : ModuleInterface {
         companion object {
             /**
              * Creates a TargetKey for an entity type.
-             * @param type The entity type.
+             * @param entityType The entity type.
              */
-            fun entity(type: EntityType) = TargetKey(Kind.ENTITY_TYPE, type.name)
+            fun entityType(entityType: EntityType) = TypeKey(Kind.ENTITY_TYPE, entityType.name)
 
             /**
              * Creates a TargetKey for a material.
-             * @param mat The material.
+             * @param material The material.
              */
-            fun material(mat: Material) = TargetKey(Kind.MATERIAL, mat.name)
+            fun material(material: Material) = TypeKey(Kind.MATERIAL, material.name)
         }
 
         /**
@@ -272,14 +274,14 @@ internal object QuestModule : ModuleInterface {
         /** Represents a requirement for completing a quest. */
         @Serializable
         data class Requirement(
-            val target: TargetKey,
-            val targetAmount: Int,
+            val type: TypeKey,
+            val amount: Int,
         ) {
             constructor(entityType: EntityType, targetAmount: Int) :
-                this(TargetKey.entity(entityType), targetAmount)
+                this(entityType(entityType), targetAmount)
 
             constructor(material: Material, targetAmount: Int) :
-                this(TargetKey.material(material), targetAmount)
+                this(material(material), targetAmount)
 
             /** Tracks the current progress towards completing the requirement. */
             var currentProgress: Int = 0
@@ -288,7 +290,7 @@ internal object QuestModule : ModuleInterface {
              * Indicates whether the quest requirement has been completed.
              * @return true if the current progress meets or exceeds the target amount, false otherwise.
              */
-            val isComplete: Boolean get() = currentProgress >= targetAmount
+            val isComplete: Boolean get() = currentProgress >= amount
 
             /**
              * Generates a human-readable description of the requirement.
@@ -296,14 +298,14 @@ internal object QuestModule : ModuleInterface {
              */
             val description: String
                 get() =
-                    when (target.kind) {
-                        TargetKey.Kind.ENTITY_TYPE -> {
-                            val entityType = EntityType.valueOf(target.id)
+                    when (type.kind) {
+                        TypeKey.Kind.ENTITY_TYPE -> {
+                            val entityType = EntityType.valueOf(type.id)
                             val entityName =
                                 entityType.name
                                     .lowercase()
                                     .split("_")
-                                    .joinToString(" ") { w -> w.replaceFirstChar { it.uppercase() } }
+                                    .joinToString(" ") { word -> word.replaceFirstChar { it.uppercase() } }
 
                             val verb =
                                 when (entityType) {
@@ -314,23 +316,23 @@ internal object QuestModule : ModuleInterface {
                                     else -> "Kill"
                                 }
 
-                            if (targetAmount == 1) "$verb 1 $entityName" else "$verb $targetAmount ${entityName}s"
+                            if (amount == 1) "$verb 1 $entityName" else "$verb $amount ${entityName}s"
                         }
 
-                        TargetKey.Kind.MATERIAL -> {
-                            val material = Material.valueOf(target.id)
+                        TypeKey.Kind.MATERIAL -> {
+                            val material = Material.valueOf(type.id)
                             val materialName =
                                 material.name
                                     .lowercase()
                                     .split("_")
-                                    .joinToString(" ") { w -> w.replaceFirstChar { it.uppercase() } }
+                                    .joinToString(" ") { word -> word.replaceFirstChar { it.uppercase() } }
 
-                            if (targetAmount ==
+                            if (amount ==
                                 1
                             ) {
                                 "Collect 1 $materialName"
                             } else {
-                                "Collect $targetAmount ${materialName}s"
+                                "Collect $amount ${materialName}s"
                             }
                         }
                     }
