@@ -26,6 +26,10 @@ import org.xodium.vanillaplus.pdcs.PlayerPDC.allQuestsCompleted
 import org.xodium.vanillaplus.pdcs.PlayerPDC.quests
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import org.xodium.vanillaplus.utils.Utils.MM
+import java.time.DayOfWeek
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.temporal.TemporalAdjusters
 import kotlin.uuid.ExperimentalUuidApi
 
 /** Represents a module handling quest mechanics within the system. */
@@ -53,11 +57,49 @@ internal object QuestModule : ModuleInterface {
             ),
         )
 
+    init {
+        val now = LocalDateTime.now(ZoneId.systemDefault())
+        val nextMonday =
+            now
+                .with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY))
+                .withHour(0)
+                .withMinute(0)
+                .withSecond(0)
+                .withNano(0)
+
+        val delayMillis =
+            nextMonday.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() -
+                now.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        val delayTicks = (delayMillis / 50).coerceAtLeast(1)
+
+        instance.server.scheduler.runTaskLater(
+            instance,
+            Runnable {
+                resetAllQuests()
+                instance.server.scheduler.runTaskTimer(
+                    instance,
+                    Runnable { resetAllQuests() },
+                    12096000L,
+                    12096000L,
+                )
+            },
+            delayTicks,
+        )
+    }
+
+    /** Resets quests for all players on the server. */
+    private fun resetAllQuests() {
+        instance.server.onlinePlayers.forEach { player -> assignInitQuests(player) }
+        instance.logger.info("Weekly quests reset completed for all players")
+    }
+
     @EventHandler
     fun on(event: InventoryClickEvent) = questInventory.inventoryClick(event)
 
     @EventHandler
-    fun on(event: PlayerJoinEvent) = assignInitQuests(event)
+    fun on(event: PlayerJoinEvent) {
+        if (event.player.quests.isNullOrEmpty()) assignInitQuests(event.player)
+    }
 
     @EventHandler(ignoreCancelled = true)
     fun on(event: EntityDeathEvent) {
@@ -199,13 +241,10 @@ internal object QuestModule : ModuleInterface {
     }
 
     /**
-     * Assigns quests to a player upon joining the server.
-     * @param event The player join event containing player information.
+     * Assigns initial quests to a player.
+     * @param player The player to whom quests should be assigned.
      */
-    private fun assignInitQuests(event: PlayerJoinEvent) {
-        if (!event.player.quests.isNullOrEmpty()) return
-
-        val player = event.player
+    private fun assignInitQuests(player: Player) {
         val pool = config.questModule.quests
         val easy = pool.filter { it.difficulty == Quest.Difficulty.EASY }.shuffled().take(2)
         val medium = pool.filter { it.difficulty == Quest.Difficulty.MEDIUM }.shuffled().take(2)
@@ -213,6 +252,7 @@ internal object QuestModule : ModuleInterface {
         val picked = (easy + medium + hard).map { it.copy(requirement = it.requirement.copy()) }
 
         player.quests = picked.associate { it.id to 0 }
+        player.allQuestsCompleted = false
     }
 
     /** Represents a key identifying a quest target, either an entity type or material. */
