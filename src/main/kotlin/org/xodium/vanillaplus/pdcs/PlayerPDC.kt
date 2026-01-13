@@ -65,9 +65,10 @@ internal object PlayerPDC {
             val listType = PersistentDataType.LIST.listTypeFrom(PersistentDataType.TAG_CONTAINER)
             val containers = persistentDataContainer.get(QUESTS_KEY, listType) ?: return null
             val decoded =
-                containers.mapNotNull { c ->
-                    val questId = c.get(QUEST_ID_KEY, PersistentDataType.INTEGER) ?: return@mapNotNull null
-                    val progress = c.get(QUEST_PROGRESS_KEY, PersistentDataType.INTEGER) ?: return@mapNotNull null
+                containers.mapNotNull { container ->
+                    val questId = container.get(QUEST_ID_KEY, PersistentDataType.INTEGER) ?: return@mapNotNull null
+                    val progress =
+                        container.get(QUEST_PROGRESS_KEY, PersistentDataType.INTEGER) ?: return@mapNotNull null
 
                     QuestPDC(questId = questId, questProgress = progress)
                 }
@@ -85,10 +86,10 @@ internal object PlayerPDC {
             val ctx = pdc.adapterContext
             val containers =
                 value
-                    .map { q ->
+                    .map { quest ->
                         ctx.newPersistentDataContainer().apply {
-                            set(QUEST_ID_KEY, PersistentDataType.INTEGER, q.questId)
-                            set(QUEST_PROGRESS_KEY, PersistentDataType.INTEGER, q.questProgress)
+                            set(QUEST_ID_KEY, PersistentDataType.INTEGER, quest.questId)
+                            set(QUEST_PROGRESS_KEY, PersistentDataType.INTEGER, quest.questProgress)
                         }
                     }.toList()
             val listType = PersistentDataType.LIST.listTypeFrom(PersistentDataType.TAG_CONTAINER)
