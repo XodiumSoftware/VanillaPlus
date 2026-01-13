@@ -240,15 +240,15 @@ internal object QuestModule : ModuleInterface {
         val id: String,
     ) {
         @Serializable
-        enum class Kind { ENTITY, MATERIAL }
+        enum class Kind { ENTITY_TYPE, MATERIAL }
 
         companion object {
-            fun entity(type: EntityType) = TargetKey(Kind.ENTITY, type.name)
+            fun entity(type: EntityType) = TargetKey(Kind.ENTITY_TYPE, type.name)
 
             fun material(mat: Material) = TargetKey(Kind.MATERIAL, mat.name)
         }
 
-        fun matches(entityType: EntityType): Boolean = kind == Kind.ENTITY && id == entityType.name
+        fun matches(entityType: EntityType): Boolean = kind == Kind.ENTITY_TYPE && id == entityType.name
 
         fun matches(material: Material): Boolean = kind == Kind.MATERIAL && id == material.name
     }
@@ -297,7 +297,7 @@ internal object QuestModule : ModuleInterface {
             val description: String
                 get() =
                     when (target.kind) {
-                        TargetKey.Kind.ENTITY -> {
+                        TargetKey.Kind.ENTITY_TYPE -> {
                             val entityType = EntityType.valueOf(target.id)
                             val entityName =
                                 entityType.name
