@@ -33,16 +33,19 @@ internal object ReplantEnchantment : EnchantmentInterface {
         if (ageable.age < ageable.maximumAge) return
         if (!itemInHand.hasItemMeta() || !itemInHand.itemMeta.hasEnchant(get())) return
 
-        // TODO: take seed out of drop. since planting would require a seed being used.
+        val seed = block.drops.firstOrNull { it.type == block.type } ?: return
+
+        if (seed.amount > 1) {
+            seed.amount--
+        } else {
+            event.isDropItems = false
+            block.drops.remove(seed)
+            block.drops.forEach { block.world.dropItemNaturally(block.location, it) }
+        }
 
         instance.server.scheduler.runTaskLater(
             instance,
-            Runnable {
-                val blockType = block.type
-
-                block.type = blockType
-                block.blockData = ageable.apply { age = 0 }
-            },
+            Runnable { block.blockData = ageable.apply { age = 0 } },
             2,
         )
     }
