@@ -18,10 +18,12 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
+import org.xodium.vanillaplus.databases.QuestDatabase
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.inventories.QuestInventory
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import org.xodium.vanillaplus.utils.Utils.MM
+import java.io.File
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 import kotlin.uuid.toKotlinUuid
@@ -29,8 +31,10 @@ import kotlin.uuid.toKotlinUuid
 /** Represents a module handling quest mechanics within the system. */
 internal object QuestModule : ModuleInterface {
     private val questInventory = QuestInventory()
+    private val store by lazy {
+        QuestDatabase(File(instance.dataFolder, "quests.db"))
+    }
 
-    // TODO: make use of persistent storage.
     val assignedQuests: MutableMap<Uuid, List<Quest>> = mutableMapOf()
     private val allQuestsRewardClaimed: MutableSet<Uuid> = mutableSetOf()
 
@@ -59,7 +63,7 @@ internal object QuestModule : ModuleInterface {
     fun on(event: InventoryClickEvent) = questInventory.inventoryClick(event)
 
     @EventHandler
-    fun on(event: PlayerJoinEvent) = assignInitQuests(event)
+    fun on(event: PlayerJoinEvent) = loadOrAssign(event)
 
     @EventHandler(ignoreCancelled = true)
     fun on(event: EntityDeathEvent) {
@@ -85,6 +89,25 @@ internal object QuestModule : ModuleInterface {
             predicate = { req -> req.material != null && req.material == material },
             incrementBy = amount,
         )
+    }
+
+    /**
+     * Loads or assigns quests to a player upon joining the server.
+     * @param event The player join event containing player information.
+     */
+    private fun loadOrAssign(event: PlayerJoinEvent) {
+        val player = event.player
+        val id = player.uniqueId.toKotlinUuid()
+
+        val loaded = store.loadQuests(id)
+        if (loaded.isNotEmpty()) {
+            assignedQuests[id] = loaded
+        } else {
+            assignInitQuests(event)
+            store.saveQuests(id, assignedQuests[id].orEmpty())
+        }
+
+        if (store.hasClaimedAllReward(id)) allQuestsRewardClaimed.add(id) else allQuestsRewardClaimed.remove(id)
     }
 
     /**
@@ -115,7 +138,9 @@ internal object QuestModule : ModuleInterface {
     ) {
         if (incrementBy <= 0) return
 
-        val quests = assignedQuests[player.uniqueId.toKotlinUuid()] ?: return
+        val id = player.uniqueId.toKotlinUuid()
+        val quests = assignedQuests[id] ?: return
+        val changed = false
 
         quests
             .asSequence()
@@ -140,6 +165,7 @@ internal object QuestModule : ModuleInterface {
                     )
                 }
             }
+        if (changed) store.saveQuests(id, quests)
 
         maybeGiveAllQuestsReward(player)
     }
@@ -162,6 +188,7 @@ internal object QuestModule : ModuleInterface {
 
         giveReward(player, reward)
         allQuestsRewardClaimed.add(id)
+        store.setClaimedAllReward(id, true)
 
         player.showTitle(
             Title.title(
@@ -213,6 +240,7 @@ internal object QuestModule : ModuleInterface {
 
         assignedQuests[id] = picked
         allQuestsRewardClaimed.remove(id)
+        store.setClaimedAllReward(id, false)
     }
 
     /** Represents a quest with its difficulty, requirement, and reward. */
