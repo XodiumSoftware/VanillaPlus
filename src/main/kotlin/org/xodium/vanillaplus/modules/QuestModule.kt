@@ -234,28 +234,49 @@ internal object QuestModule : ModuleInterface {
         store.setClaimedAllReward(id, false)
     }
 
+    /** Represents a key identifying a quest target, either an entity type or material. */
     @Serializable
     data class TargetKey(
         val kind: Kind,
         val id: String,
     ) {
+        /** Represents the kinds of targets for quests. */
         @Serializable
         enum class Kind { ENTITY_TYPE, MATERIAL }
 
         companion object {
+            /**
+             * Creates a TargetKey for an entity type.
+             * @param type The entity type.
+             */
             fun entity(type: EntityType) = TargetKey(Kind.ENTITY_TYPE, type.name)
 
+            /**
+             * Creates a TargetKey for a material.
+             * @param mat The material.
+             */
             fun material(mat: Material) = TargetKey(Kind.MATERIAL, mat.name)
         }
 
+        /**
+         * Checks if the target key matches the given entity type.
+         * @param entityType The entity type to check against.
+         * @return true if the target key matches the entity type, false otherwise.
+         */
         fun matches(entityType: EntityType): Boolean = kind == Kind.ENTITY_TYPE && id == entityType.name
 
+        /**
+         * Checks if the target key matches the given material.
+         * @param material The material to check against.
+         * @return true if the target key matches the material, false otherwise.
+         */
         fun matches(material: Material): Boolean = kind == Kind.MATERIAL && id == material.name
     }
 
     /** Represents a quest with its difficulty, requirement, and reward. */
     @Serializable
     data class Quest(
+        var id: Int,
         var difficulty: Difficulty,
         var requirement: Requirement,
         var reward: Reward,
@@ -374,26 +395,31 @@ internal object QuestModule : ModuleInterface {
         var quests: List<Quest> =
             listOf(
                 Quest(
+                    0,
                     Quest.Difficulty.EASY,
                     Quest.Requirement(EntityType.ZOMBIE, 10),
                     Quest.Reward(Material.EXPERIENCE_BOTTLE, 100),
                 ),
                 Quest(
+                    1,
                     Quest.Difficulty.EASY,
                     Quest.Requirement(EntityType.SKELETON, 5),
                     Quest.Reward(Material.ARROW, 32),
                 ),
                 Quest(
+                    2,
                     Quest.Difficulty.MEDIUM,
                     Quest.Requirement(Material.DIAMOND, 5),
                     Quest.Reward(Material.DIAMOND, 1),
                 ),
                 Quest(
+                    3,
                     Quest.Difficulty.MEDIUM,
                     Quest.Requirement(Material.COBBLESTONE, 64),
                     Quest.Reward(Material.EMERALD, 3),
                 ),
                 Quest(
+                    4,
                     Quest.Difficulty.HARD,
                     Quest.Requirement(EntityType.ENDER_DRAGON, 1),
                     Quest.Reward(Material.EXPERIENCE_BOTTLE, 500),

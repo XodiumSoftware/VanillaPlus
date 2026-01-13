@@ -4,7 +4,6 @@
 
 package org.xodium.vanillaplus.databases
 
-import org.bukkit.Material
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -23,16 +22,12 @@ internal class QuestDatabase {
 
     private object QuestProgressTable : Table("quest_progress") {
         val playerUuid = text("player_uuid")
-        val difficulty = text("difficulty")
-        val reqTarget = text("req_target")
-        val reqTargetValue = text("req_target_value")
-        val targetAmount = integer("target_amount")
+        val questId = integer("quest_id")
         val currentProgress = integer("current_progress")
-        val rewardType = text("reward_type")
-        val rewardAmount = integer("reward_amount")
 
         init {
             index(false, playerUuid)
+            index(false, playerUuid, questId)
         }
     }
 
@@ -70,29 +65,22 @@ internal class QuestDatabase {
      */
     fun load(playerId: Uuid): List<QuestModule.Quest> {
         val playerUuid = playerId.toJavaUuid().toString()
+        val questById =
+            QuestModule.config.questModule.quests
+                .associateBy { it.id }
 
         return transaction(db) {
             QuestProgressTable
                 .selectAll()
                 .where { QuestProgressTable.playerUuid eq playerUuid }
-                .map { row ->
-                    val difficulty =
-                        QuestModule.Quest.Difficulty.valueOf(row[QuestProgressTable.difficulty])
-                    val kindRaw = row[QuestProgressTable.reqTarget]
-                    val id = row[QuestProgressTable.reqTargetValue]
-                    val kind = QuestModule.TargetKey.Kind.valueOf(kindRaw)
-                    val targetKey = QuestModule.TargetKey(kind, id)
-                    val targetAmount = row[QuestProgressTable.targetAmount]
-                    val currentProgress = row[QuestProgressTable.currentProgress]
-                    val requirement =
-                        QuestModule.Quest.Requirement(targetKey, targetAmount).apply {
-                            this.currentProgress = currentProgress
-                        }
-                    val rewardType = Material.valueOf(row[QuestProgressTable.rewardType])
-                    val rewardAmount = row[QuestProgressTable.rewardAmount]
-                    val reward = QuestModule.Quest.Reward(rewardType, rewardAmount)
+                .mapNotNull { row ->
+                    val id = row[QuestProgressTable.questId]
+                    val progress = row[QuestProgressTable.currentProgress].coerceAtLeast(0)
+                    val base = questById[id] ?: return@mapNotNull null
 
-                    QuestModule.Quest(difficulty, requirement, reward)
+                    base.copy(requirement = base.requirement.copy()).also { q ->
+                        q.requirement.currentProgress = progress
+                    }
                 }
         }
     }
@@ -114,13 +102,8 @@ internal class QuestDatabase {
             quests.forEach { quest ->
                 QuestProgressTable.insertIgnore { row ->
                     row[QuestProgressTable.playerUuid] = playerUuid
-                    row[QuestProgressTable.difficulty] = quest.difficulty.name
-                    row[QuestProgressTable.reqTarget] = quest.requirement.target.kind.name
-                    row[QuestProgressTable.reqTargetValue] = quest.requirement.target.id
-                    row[QuestProgressTable.targetAmount] = quest.requirement.targetAmount
+                    row[QuestProgressTable.questId] = quest.id
                     row[QuestProgressTable.currentProgress] = quest.requirement.currentProgress
-                    row[QuestProgressTable.rewardType] = quest.reward.type.name
-                    row[QuestProgressTable.rewardAmount] = quest.reward.amount
                 }
             }
         }
