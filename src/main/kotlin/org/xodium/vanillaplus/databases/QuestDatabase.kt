@@ -12,6 +12,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.modules.QuestModule
 import java.io.File
+import java.sql.DriverManager
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 import kotlin.uuid.toJavaUuid
@@ -45,14 +46,20 @@ internal class QuestDatabase {
     init {
         dbFile.parentFile?.mkdirs()
 
+        val jdbcUrl = "jdbc:sqlite:${dbFile.absolutePath}"
+
         db =
             Database.connect(
-                url = "jdbc:sqlite:${dbFile.absolutePath}",
+                url = jdbcUrl,
                 driver = "org.sqlite.JDBC",
             )
 
+        DriverManager.getConnection(jdbcUrl).use { conn ->
+            conn.autoCommit = true
+            conn.createStatement().use { statement -> statement.execute("PRAGMA journal_mode=WAL;") }
+        }
+
         transaction(db) {
-            exec("PRAGMA journal_mode=WAL;")
             SchemaUtils.createMissingTablesAndColumns(QuestProgressTable, AllRewardClaimedTable)
         }
     }

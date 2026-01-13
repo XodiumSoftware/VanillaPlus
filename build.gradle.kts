@@ -48,7 +48,12 @@ tasks {
         dependsOn(processResources)
         archiveClassifier.set("")
         destinationDirectory.set(layout.projectDirectory.dir("build/libs"))
-        minimize { exclude(dependency("org.jetbrains.kotlin:kotlin-reflect:.*")) }
+        mergeServiceFiles()
+        minimize {
+            exclude(dependency("org.jetbrains.exposed:exposed-.*:.*"))
+            exclude(dependency("org.xerial:sqlite-jdbc:.*"))
+            exclude(dependency("org.jetbrains.kotlin:kotlin-reflect:.*"))
+        }
     }
     jar { enabled = false }
     runServer { minecraftVersion(mcVersion) }
