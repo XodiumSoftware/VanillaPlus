@@ -5,9 +5,8 @@ package org.xodium.vanillaplus
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import org.bukkit.plugin.java.JavaPlugin
 import org.xodium.vanillaplus.data.ConfigData
+import org.xodium.vanillaplus.data.ConfigData.Companion.load
 import org.xodium.vanillaplus.hooks.WorldEditHook
-import org.xodium.vanillaplus.managers.ConfigManager
-import org.xodium.vanillaplus.managers.ConfigManager.load
 import org.xodium.vanillaplus.modules.*
 import org.xodium.vanillaplus.recipes.RottenFleshRecipe
 import org.xodium.vanillaplus.recipes.WoodLogRecipe
@@ -34,12 +33,12 @@ internal class VanillaPlus : JavaPlugin() {
 
         instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
             event.registrar().register(
-                ConfigManager.reloadCommand.builder.build(),
-                ConfigManager.reloadCommand.description,
-                ConfigManager.reloadCommand.aliases,
+                ConfigData.reloadCommand.builder.build(),
+                ConfigData.reloadCommand.description,
+                ConfigData.reloadCommand.aliases,
             )
         }
-        instance.server.pluginManager.addPermission(ConfigManager.reloadPermission)
+        instance.server.pluginManager.addPermission(ConfigData.reloadPermission)
 
         configData = ConfigData().load("config.json")
 
