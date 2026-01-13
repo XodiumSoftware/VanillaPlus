@@ -18,7 +18,6 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
-import org.xodium.vanillaplus.databases.QuestDatabase
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.inventories.QuestInventory
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
@@ -30,7 +29,6 @@ import kotlin.uuid.toKotlinUuid
 /** Represents a module handling quest mechanics within the system. */
 internal object QuestModule : ModuleInterface {
     private val questInventory = QuestInventory()
-    private val store by lazy { QuestDatabase() }
 
     val assignedQuests: MutableMap<Uuid, List<Quest>> = mutableMapOf()
     private val allQuestsRewardClaimed: MutableSet<Uuid> = mutableSetOf()
@@ -60,7 +58,7 @@ internal object QuestModule : ModuleInterface {
     fun on(event: InventoryClickEvent) = questInventory.inventoryClick(event)
 
     @EventHandler
-    fun on(event: PlayerJoinEvent) = loadOrAssign(event)
+    fun on(event: PlayerJoinEvent) = assignInitQuests(event)
 
     @EventHandler(ignoreCancelled = true)
     fun on(event: EntityDeathEvent) {
@@ -80,25 +78,6 @@ internal object QuestModule : ModuleInterface {
             predicate = { it.target.matches(itemStack.type) },
             incrementBy = itemStack.amount,
         )
-    }
-
-    /**
-     * Loads or assigns quests to a player upon joining the server.
-     * @param event The player join event containing player information.
-     */
-    private fun loadOrAssign(event: PlayerJoinEvent) {
-        val player = event.player
-        val id = player.uniqueId.toKotlinUuid()
-        val loaded = store.load(id)
-
-        if (loaded.isNotEmpty()) {
-            assignedQuests[id] = loaded
-        } else {
-            assignInitQuests(event)
-            store.save(id, assignedQuests[id].orEmpty())
-        }
-
-        if (store.hasClaimedAllReward(id)) allQuestsRewardClaimed.add(id) else allQuestsRewardClaimed.remove(id)
     }
 
     /**
@@ -131,7 +110,6 @@ internal object QuestModule : ModuleInterface {
 
         val id = player.uniqueId.toKotlinUuid()
         val quests = assignedQuests[id] ?: return
-        val changed = false
 
         quests
             .asSequence()
@@ -156,7 +134,6 @@ internal object QuestModule : ModuleInterface {
                     )
                 }
             }
-        if (changed) store.save(id, quests)
 
         maybeGiveAllQuestsReward(player)
     }

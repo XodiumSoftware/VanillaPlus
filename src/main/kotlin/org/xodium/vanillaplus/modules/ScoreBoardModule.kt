@@ -45,7 +45,7 @@ internal object ScoreBoardModule : ModuleInterface {
      */
     private fun playerJoin(event: PlayerJoinEvent) {
         event.player.scoreboard =
-            if (event.player.scoreboardVisibility == true) {
+            if (event.player.scoreboardVisibility) {
                 instance.server.scoreboardManager.newScoreboard
             } else {
                 instance.server.scoreboardManager.mainScoreboard
@@ -57,7 +57,7 @@ internal object ScoreBoardModule : ModuleInterface {
      * @param player The player whose scoreboard sidebar should be toggled.
      */
     private fun toggle(player: Player) {
-        if (player.scoreboardVisibility == true) {
+        if (player.scoreboardVisibility) {
             player.scoreboard = instance.server.scoreboardManager.mainScoreboard
             player.scoreboardVisibility = false
         } else {

@@ -27,10 +27,6 @@ dependencies {
     implementation(kotlin("stdlib"))
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
-    implementation("org.xerial:sqlite-jdbc:3.46.1.0")
-    implementation("org.jetbrains.exposed:exposed-core:0.56.0")
-    implementation("org.jetbrains.exposed:exposed-dao:0.56.0")
-    implementation("org.jetbrains.exposed:exposed-jdbc:0.56.0")
 }
 
 java {
@@ -48,12 +44,7 @@ tasks {
         dependsOn(processResources)
         archiveClassifier.set("")
         destinationDirectory.set(layout.projectDirectory.dir("build/libs"))
-        mergeServiceFiles()
-        minimize {
-            exclude(dependency("org.jetbrains.exposed:exposed-.*:.*"))
-            exclude(dependency("org.xerial:sqlite-jdbc:.*"))
-            exclude(dependency("org.jetbrains.kotlin:kotlin-reflect:.*"))
-        }
+        minimize { exclude(dependency("org.jetbrains.kotlin:kotlin-reflect:.*")) }
     }
     jar { enabled = false }
     runServer { minecraftVersion(mcVersion) }
