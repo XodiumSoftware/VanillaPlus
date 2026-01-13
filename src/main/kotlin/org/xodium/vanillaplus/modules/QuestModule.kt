@@ -4,6 +4,7 @@ package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.command.brigadier.Commands
 import kotlinx.serialization.Serializable
+import net.kyori.adventure.title.Title
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
@@ -12,6 +13,7 @@ import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.entity.EntityPickupItemEvent
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.inventory.ItemStack
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -19,6 +21,7 @@ import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.inventories.QuestInventory
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
+import org.xodium.vanillaplus.utils.Utils.MM
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 import kotlin.uuid.toKotlinUuid
@@ -107,15 +110,54 @@ internal object QuestModule : ModuleInterface {
 
         quests
             .asSequence()
-            .filter { q -> !q.requirement.isComplete }
-            .filter { q -> predicate(q.requirement) }
-            .forEach { q ->
-                val req = q.requirement
+            .filter { !it.requirement.isComplete }
+            .filter { predicate(it.requirement) }
+            .forEach { quest ->
+                val req = quest.requirement
                 val before = req.currentProgress
                 val after = (before + incrementBy).coerceAtMost(req.targetAmount)
 
                 if (after != before) req.currentProgress = after
+
+                if (req.targetAmount in (before + 1)..after) {
+                    giveReward(player, quest.reward)
+                    player.showTitle(
+                        Title.title(
+                            MM.deserialize("<green><b>Quest Completed!</b></green>"),
+                            MM.deserialize(
+                                "<yellow>Reward: ${quest.reward.description}</yellow>",
+                            ),
+                        ),
+                    )
+                }
             }
+    }
+
+    /**
+     * Gives a reward to a player based on the specified quest reward.
+     * @param player The player to receive the reward.
+     * @param reward The reward to be given.
+     */
+    private fun giveReward(
+        player: Player,
+        reward: Quest.Reward,
+    ) {
+        if (reward.amount <= 0) return
+
+        when (reward.type) {
+            Material.EXPERIENCE_BOTTLE -> {
+                player.giveExp(reward.amount, true)
+            }
+
+            else -> {
+                val stack = ItemStack.of(reward.type, reward.amount)
+                val leftover = player.inventory.addItem(stack)
+
+                if (leftover.isNotEmpty()) {
+                    leftover.values.forEach { player.world.dropItemNaturally(player.location, it) }
+                }
+            }
+        }
     }
 
     /**
