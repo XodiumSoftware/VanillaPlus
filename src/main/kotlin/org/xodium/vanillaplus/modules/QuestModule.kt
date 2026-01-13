@@ -66,9 +66,7 @@ internal object QuestModule : ModuleInterface {
     fun on(event: EntityDeathEvent) {
         incrementMatchingQuests(
             player = event.entity.killer ?: return,
-            predicate = { req ->
-                (req.target as? Quest.Requirement.Target.Entity)?.type == event.entityType
-            },
+            predicate = { it.target.matches(event.entityType) },
             incrementBy = 1,
         )
     }
@@ -79,9 +77,7 @@ internal object QuestModule : ModuleInterface {
 
         incrementMatchingQuests(
             player = event.entity as? Player ?: return,
-            predicate = { req ->
-                (req.target as? Quest.Requirement.Target.Material)?.type == itemStack.type
-            },
+            predicate = { it.target.matches(itemStack.type) },
             incrementBy = itemStack.amount,
         )
     }
@@ -238,6 +234,25 @@ internal object QuestModule : ModuleInterface {
         store.setClaimedAllReward(id, false)
     }
 
+    @Serializable
+    data class TargetKey(
+        val kind: Kind,
+        val id: String,
+    ) {
+        @Serializable
+        enum class Kind { ENTITY, MATERIAL }
+
+        companion object {
+            fun entity(type: EntityType) = TargetKey(Kind.ENTITY, type.name)
+
+            fun material(mat: Material) = TargetKey(Kind.MATERIAL, mat.name)
+        }
+
+        fun matches(entityType: EntityType): Boolean = kind == Kind.ENTITY && id == entityType.name
+
+        fun matches(material: Material): Boolean = kind == Kind.MATERIAL && id == material.name
+    }
+
     /** Represents a quest with its difficulty, requirement, and reward. */
     @Serializable
     data class Quest(
@@ -257,27 +272,14 @@ internal object QuestModule : ModuleInterface {
         /** Represents a requirement for completing a quest. */
         @Serializable
         data class Requirement(
-            val target: Target,
+            val target: TargetKey,
             val targetAmount: Int,
         ) {
             constructor(entityType: EntityType, targetAmount: Int) :
-                this(Target.Entity(entityType), targetAmount)
+                this(TargetKey.entity(entityType), targetAmount)
 
             constructor(material: Material, targetAmount: Int) :
-                this(Target.Material(material), targetAmount)
-
-            @Serializable
-            sealed class Target {
-                @Serializable
-                data class Entity(
-                    val type: EntityType,
-                ) : Target()
-
-                @Serializable
-                data class Material(
-                    val type: org.bukkit.Material,
-                ) : Target()
-            }
+                this(TargetKey.material(material), targetAmount)
 
             /** Tracks the current progress towards completing the requirement. */
             var currentProgress: Int = 0
@@ -294,9 +296,9 @@ internal object QuestModule : ModuleInterface {
              */
             val description: String
                 get() =
-                    when (target) {
-                        is Target.Entity -> {
-                            val entityType = target.type
+                    when (target.kind) {
+                        TargetKey.Kind.ENTITY -> {
+                            val entityType = EntityType.valueOf(target.id)
                             val entityName =
                                 entityType.name
                                     .lowercase()
@@ -315,8 +317,8 @@ internal object QuestModule : ModuleInterface {
                             if (targetAmount == 1) "$verb 1 $entityName" else "$verb $targetAmount ${entityName}s"
                         }
 
-                        is Target.Material -> {
-                            val material = target.type
+                        TargetKey.Kind.MATERIAL -> {
+                            val material = Material.valueOf(target.id)
                             val materialName =
                                 material.name
                                     .lowercase()
