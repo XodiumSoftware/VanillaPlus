@@ -1,5 +1,6 @@
 package org.xodium.vanillaplus.recipes
 
+import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
 import org.bukkit.Material
@@ -8,7 +9,6 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.StonecuttingRecipe
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.RecipeInterface
-import org.xodium.vanillaplus.utils.Utils.MM
 
 /** Represents an object handling painting recipe implementation within the system. */
 internal object PaintingRecipe : RecipeInterface {
@@ -19,17 +19,13 @@ internal object PaintingRecipe : RecipeInterface {
             paintingRegistry.forEach { variant ->
                 val variantKey = paintingRegistry.getKey(variant) ?: return@forEach
 
-                val paintingItem =
-                    ItemStack.of(Material.PAINTING).apply {
-                        editMeta { meta ->
-                            meta.displayName(MM.deserialize(variantKey.value().replaceFirstChar { it.uppercase() }))
-                        }
-                    }
-
                 add(
                     StonecuttingRecipe(
                         NamespacedKey(instance, "painting_${variantKey.value().replace(':', '_')}"),
-                        paintingItem,
+                        @Suppress("UnstableApiUsage")
+                        ItemStack.of(Material.PAINTING).apply {
+                            setData(DataComponentTypes.PAINTING_VARIANT, variant)
+                        },
                         Material.PAINTING,
                     ),
                 )
