@@ -1,6 +1,7 @@
 package org.xodium.vanillaplus.modules
 
 import kotlinx.serialization.Serializable
+import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
@@ -27,6 +28,7 @@ import kotlin.uuid.toKotlinUuid
 @OptIn(ExperimentalUuidApi::class)
 internal object SitModule : ModuleInterface {
     private val sittingPlayers = mutableMapOf<Uuid, ArmorStand>()
+    private val occupiedBlocks = mutableMapOf<Location, Uuid>()
     private val blockCenterOffset = Vector(0.5, 0.5, 0.5)
     private val playerStandUpOffset = Vector(0.0, 0.5, 0.0)
 
@@ -52,6 +54,7 @@ internal object SitModule : ModuleInterface {
     private fun playerInteract(event: PlayerInteractEvent) {
         val player = event.player
 
+        if (player.gameMode != GameMode.SURVIVAL) return
         if (event.action != Action.RIGHT_CLICK_BLOCK || player.isSneaking || player.isInsideVehicle) return
         if (player.inventory.itemInMainHand.type != Material.AIR) return
 
@@ -66,8 +69,8 @@ internal object SitModule : ModuleInterface {
             }
 
         if (!isSitTarget) return
-
         if (block.getRelative(BlockFace.UP).type.isCollidable) return
+        if (occupiedBlocks.containsKey(block.location)) return
 
         event.isCancelled = true
         sit(player, block.location.add(blockCenterOffset))
@@ -81,7 +84,16 @@ internal object SitModule : ModuleInterface {
         val player = event.entity as? Player ?: return
 
         sittingPlayers.remove(player.uniqueId.toKotlinUuid())?.let { armorStand ->
+            val blockLocation =
+                armorStand.location
+                    .clone()
+                    .subtract(blockCenterOffset)
+                    .block.location
+
+            occupiedBlocks.remove(blockLocation)
+
             val safe = armorStand.location.clone().add(playerStandUpOffset)
+
             safe.yaw = player.location.yaw
             safe.pitch = player.location.pitch
             player.teleport(safe)
@@ -94,7 +106,16 @@ internal object SitModule : ModuleInterface {
      * @param event The [PlayerQuitEvent] triggered when the player leaves the server.
      */
     private fun playerQuit(event: PlayerQuitEvent) {
-        sittingPlayers.remove(event.player.uniqueId.toKotlinUuid())?.remove()
+        sittingPlayers.remove(event.player.uniqueId.toKotlinUuid())?.let { armorStand ->
+            val blockLocation =
+                armorStand.location
+                    .clone()
+                    .subtract(blockCenterOffset)
+                    .block.location
+
+            occupiedBlocks.remove(blockLocation)
+            armorStand.remove()
+        }
     }
 
     /**
@@ -103,10 +124,18 @@ internal object SitModule : ModuleInterface {
      */
     private fun entityDamage(event: EntityDamageEvent) {
         val player = event.entity as? Player ?: return
+        val playerId = player.uniqueId.toKotlinUuid()
 
-        sittingPlayers[player.uniqueId.toKotlinUuid()]?.let { stand ->
+        sittingPlayers[playerId]?.let { stand ->
+            val blockLocation =
+                stand.location
+                    .clone()
+                    .subtract(blockCenterOffset)
+                    .block.location
+
+            occupiedBlocks.remove(blockLocation)
             stand.removePassenger(player)
-            sittingPlayers.remove(player.uniqueId.toKotlinUuid())
+            sittingPlayers.remove(playerId)
         }
     }
 
@@ -121,6 +150,7 @@ internal object SitModule : ModuleInterface {
             val armorStandBlock = armorStand.location.subtract(blockCenterOffset).block
 
             if (armorStandBlock.location == brokenBlockLocation) {
+                occupiedBlocks.remove(brokenBlockLocation)
                 armorStand.passengers
                     .filterIsInstance<Player>()
                     .forEach { player -> armorStand.removePassenger(player) }
@@ -142,6 +172,11 @@ internal object SitModule : ModuleInterface {
         location: Location,
     ) {
         val world = location.world ?: return
+        val blockLocation =
+            location
+                .clone()
+                .subtract(blockCenterOffset)
+                .block.location
         val armorStand =
             world.spawn(location, ArmorStand::class.java) {
                 it.isVisible = false
@@ -151,7 +186,11 @@ internal object SitModule : ModuleInterface {
             }
 
         armorStand.addPassenger(player)
-        sittingPlayers[player.uniqueId.toKotlinUuid()] = armorStand
+
+        val playerId = player.uniqueId.toKotlinUuid()
+
+        sittingPlayers[playerId] = armorStand
+        occupiedBlocks[blockLocation] = playerId
     }
 
     @Serializable

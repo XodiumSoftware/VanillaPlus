@@ -1,4 +1,3 @@
-import xyz.jpenilla.resourcefactory.paper.PaperPluginYaml
 import xyz.jpenilla.runtask.task.AbstractRun
 
 plugins {
@@ -20,12 +19,10 @@ description = "Minecraft plugin that enhances the base gameplay"
 repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
-    maven("https://maven.enginehub.org/repo/")
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:$version-R0.1-SNAPSHOT")
-    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.18") // TODO("Move away from WorldEdit")
 
     implementation(kotlin("stdlib"))
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -60,7 +57,4 @@ paperPluginYaml {
     authors.add("Xodium")
     apiVersion.set(version)
     bootstrapper.set("org.xodium.vanillaplus.VanillaPlusBootstrap")
-    dependencies {
-        server(name = "WorldEdit", load = PaperPluginYaml.Load.BEFORE, required = false, joinClasspath = true)
-    }
 }
