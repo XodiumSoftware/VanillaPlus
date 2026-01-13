@@ -141,7 +141,7 @@ internal object QuestModule : ModuleInterface {
 
         if (changed) {
             player.quests = updatedProgress
-            maybeGiveAllQuestsReward(player)
+            completedAllQuestsReward(player)
         }
     }
 
@@ -149,7 +149,7 @@ internal object QuestModule : ModuleInterface {
      * Set of player UUIDs who have claimed the all-quests reward.
      * @param player The player to potentially give the reward to.
      */
-    private fun maybeGiveAllQuestsReward(player: Player) {
+    private fun completedAllQuestsReward(player: Player) {
         if (player.allQuestsCompleted) return
 
         val quests = getAssignedQuests(player)
