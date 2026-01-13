@@ -6,7 +6,10 @@ import io.papermc.paper.command.brigadier.Commands
 import kotlinx.serialization.Serializable
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
+import org.bukkit.event.entity.EntityDeathEvent
+import org.bukkit.event.entity.EntityPickupItemEvent
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.permissions.Permission
@@ -50,13 +53,67 @@ internal object QuestModule : ModuleInterface {
     fun on(event: InventoryClickEvent) = questInventory.inventoryClick(event)
 
     @EventHandler
-    fun on(event: PlayerJoinEvent) = playerJoin(event)
+    fun on(event: PlayerJoinEvent) = assignInitQuests(event)
+
+    @EventHandler(ignoreCancelled = true)
+    fun on(event: EntityDeathEvent) {
+        val killer = event.entity.killer ?: return
+        val killedType = event.entityType
+
+        incrementMatchingQuests(
+            player = killer,
+            predicate = { req -> req.entityType != null && req.entityType == killedType },
+            incrementBy = 1,
+        )
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    fun on(event: EntityPickupItemEvent) {
+        val player = event.entity as? Player ?: return
+        val stack = event.item.itemStack
+        val material = stack.type
+        val amount = stack.amount
+
+        incrementMatchingQuests(
+            player = player,
+            predicate = { req -> req.material != null && req.material == material },
+            incrementBy = amount,
+        )
+    }
+
+    /**
+     * Increments the progress of quests matching a given predicate for a player.
+     * @param player The player whose quests are to be updated.
+     * @param predicate A function that determines which quest requirements to increment.
+     * @param incrementBy The amount by which to increment the progress.
+     */
+    private fun incrementMatchingQuests(
+        player: Player,
+        predicate: (Quest.Requirement) -> Boolean,
+        incrementBy: Int,
+    ) {
+        if (incrementBy <= 0) return
+
+        val quests = assignedQuests[player.uniqueId.toKotlinUuid()] ?: return
+
+        quests
+            .asSequence()
+            .filter { q -> !q.requirement.isComplete }
+            .filter { q -> predicate(q.requirement) }
+            .forEach { q ->
+                val req = q.requirement
+                val before = req.currentProgress
+                val after = (before + incrementBy).coerceAtMost(req.targetAmount)
+
+                if (after != before) req.currentProgress = after
+            }
+    }
 
     /**
      * Assigns quests to a player upon joining the server.
      * @param event The player join event containing player information.
      */
-    private fun playerJoin(event: PlayerJoinEvent) {
+    private fun assignInitQuests(event: PlayerJoinEvent) {
         val player = event.player
         val pool = config.questModule.quests
         val easy = pool.filter { it.difficulty == Quest.Difficulty.EASY }.shuffled().take(2)
@@ -86,8 +143,8 @@ internal object QuestModule : ModuleInterface {
         /** Represents a requirement for completing a quest. */
         @Serializable
         data class Requirement(
-            val type1: EntityType? = null,
-            val type2: Material? = null,
+            val entityType: EntityType? = null,
+            val material: Material? = null,
             val targetAmount: Int,
         ) {
             /**
@@ -111,15 +168,15 @@ internal object QuestModule : ModuleInterface {
              */
             private fun generateDescription(): String =
                 when {
-                    type1 != null -> {
+                    entityType != null -> {
                         val entityName =
-                            type1.name
+                            entityType.name
                                 .lowercase()
                                 .split("_")
                                 .joinToString(" ") { word -> word.replaceFirstChar { it.uppercase() } }
 
                         val verb =
-                            when (type1) {
+                            when (entityType) {
                                 EntityType.CHICKEN, EntityType.COW, EntityType.PIG,
                                 EntityType.SHEEP, EntityType.RABBIT,
                                 -> "Collect"
@@ -134,9 +191,9 @@ internal object QuestModule : ModuleInterface {
                         }
                     }
 
-                    type2 != null -> {
+                    material != null -> {
                         val materialName =
-                            type2.name
+                            material.name
                                 .lowercase()
                                 .split("_")
                                 .joinToString(" ") { word -> word.replaceFirstChar { it.uppercase() } }
