@@ -86,13 +86,26 @@ internal class QuestInventory : InventoryHolder {
         place(QuestModule.Quest.Difficulty.MEDIUM, mediumSlots)
         place(QuestModule.Quest.Difficulty.HARD, hardSlots)
 
+        val allComplete = quests.isNotEmpty() && quests.all { it.requirement.isComplete }
+        val claimed = QuestModule.hasClaimedAllQuestsReward(player)
+        val allReward = QuestModule.config.questModule.allQuestsReward
+        val requirementLine =
+            if (claimed) {
+                "<gray>Requirement:</gray> <yellow>Complete all quests</yellow> <green><b>Claimed</b></green>"
+            } else if (allComplete) {
+                "<gray>Requirement:</gray> <yellow>Complete all quests</yellow> <green><b>Completed</b></green>"
+            } else {
+                "<gray>Requirement:</gray> <yellow>Complete all quests</yellow>"
+            }
+
         inv.setItem(
             8,
             createQuestItem(
                 Material.ENDER_EYE,
                 "<blue><b>Completing all quests reward</b></blue>",
-                "<gray>Requirement:</gray> <yellow>Complete all quests</yellow>",
-                "<gray>Reward:</gray> <yellow>\u2014</yellow>",
+                requirementLine,
+                "<gray>Reward:</gray> <yellow>${allReward.description}</yellow>",
+                glint = claimed,
             ),
         )
 

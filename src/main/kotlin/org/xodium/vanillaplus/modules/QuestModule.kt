@@ -32,6 +32,7 @@ internal object QuestModule : ModuleInterface {
 
     // TODO: make use of persistent storage.
     val assignedQuests: MutableMap<Uuid, List<Quest>> = mutableMapOf()
+    private val allQuestsRewardClaimed: MutableSet<Uuid> = mutableSetOf()
 
     override val cmds =
         listOf(
@@ -94,6 +95,14 @@ internal object QuestModule : ModuleInterface {
     fun getAssignedQuests(player: Player): List<Quest> = assignedQuests[player.uniqueId.toKotlinUuid()].orEmpty()
 
     /**
+     * Checks if a player has claimed the reward for completing all quests.
+     * @param player The player to check.
+     * @return true if the player has claimed the all-quests reward, false otherwise.
+     */
+    fun hasClaimedAllQuestsReward(player: Player): Boolean =
+        allQuestsRewardClaimed.contains(player.uniqueId.toKotlinUuid())
+
+    /**
      * Increments the progress of quests matching a given predicate for a player.
      * @param player The player whose quests are to be updated.
      * @param predicate A function that determines which quest requirements to increment.
@@ -131,6 +140,35 @@ internal object QuestModule : ModuleInterface {
                     )
                 }
             }
+
+        maybeGiveAllQuestsReward(player)
+    }
+
+    /**
+     * Set of player UUIDs who have claimed the all-quests reward.
+     * @param player The player to potentially give the reward to.
+     */
+    private fun maybeGiveAllQuestsReward(player: Player) {
+        val id = player.uniqueId.toKotlinUuid()
+
+        if (allQuestsRewardClaimed.contains(id)) return
+
+        val quests = assignedQuests[id].orEmpty()
+
+        if (quests.isEmpty()) return
+        if (!quests.all { it.requirement.isComplete }) return
+
+        val reward = config.questModule.allQuestsReward
+
+        giveReward(player, reward)
+        allQuestsRewardClaimed.add(id)
+
+        player.showTitle(
+            Title.title(
+                MM.deserialize("<green><b>All Quests Completed!</b></green>"),
+                MM.deserialize("<yellow>Reward: ${reward.description}</yellow>"),
+            ),
+        )
     }
 
     /**
@@ -171,8 +209,10 @@ internal object QuestModule : ModuleInterface {
         val medium = pool.filter { it.difficulty == Quest.Difficulty.MEDIUM }.shuffled().take(2)
         val hard = pool.filter { it.difficulty == Quest.Difficulty.HARD }.shuffled().take(1)
         val picked = (easy + medium + hard).map { it.copy(requirement = it.requirement.copy()) }
+        val id = player.uniqueId.toKotlinUuid()
 
-        assignedQuests[player.uniqueId.toKotlinUuid()] = picked
+        assignedQuests[id] = picked
+        allQuestsRewardClaimed.remove(id)
     }
 
     /** Represents a quest with its difficulty, requirement, and reward. */
@@ -325,5 +365,6 @@ internal object QuestModule : ModuleInterface {
                     Quest.Reward(Material.EXPERIENCE_BOTTLE, 500),
                 ),
             ),
+        var allQuestsReward: Quest.Reward = Quest.Reward(Material.EXPERIENCE_BOTTLE, 250),
     )
 }
