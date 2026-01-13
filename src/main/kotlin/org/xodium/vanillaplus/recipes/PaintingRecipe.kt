@@ -20,10 +20,9 @@ internal object PaintingRecipe : RecipeInterface {
                 val variantKey = paintingRegistry.getKey(variant) ?: return@forEach
 
                 val paintingItem =
-                    ItemStack(Material.PAINTING).apply {
+                    ItemStack.of(Material.PAINTING).apply {
                         editMeta { meta ->
-                            meta.setEnchantmentGlintOverride(false)
-                            meta.displayName(MM.deserialize(variant.key().value().replaceFirstChar { it.uppercase() }))
+                            meta.displayName(MM.deserialize(variantKey.value().replaceFirstChar { it.uppercase() }))
                         }
                     }
 
