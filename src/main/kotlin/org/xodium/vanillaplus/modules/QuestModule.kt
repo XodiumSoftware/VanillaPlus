@@ -20,7 +20,6 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.inventories.QuestInventory
-import org.xodium.vanillaplus.pdcs.PlayerPDC
 import org.xodium.vanillaplus.pdcs.PlayerPDC.quests
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import org.xodium.vanillaplus.utils.Utils.MM
@@ -99,11 +98,11 @@ internal object QuestModule : ModuleInterface {
         val poolById = config.questModule.quests.associateBy { it.id }
 
         assignedQuests[id] =
-            stored.mapNotNull { quest ->
-                val base = poolById[quest.questId] ?: return@mapNotNull null
+            stored.mapNotNull { (questId, progress) ->
+                val base = poolById[questId] ?: return@mapNotNull null
                 val reqCopy = base.requirement.copy()
-                reqCopy.currentProgress = quest.questProgress
 
+                reqCopy.currentProgress = progress
                 base.copy(requirement = reqCopy)
             }
 
@@ -115,16 +114,10 @@ internal object QuestModule : ModuleInterface {
      * @param player The player whose quests are to be saved.
      */
     private fun saveQuestsToPdc(player: Player) {
-        val id = player.uniqueId.toKotlinUuid()
-        val quests = assignedQuests[id].orEmpty()
-
         player.quests =
-            quests.map { quest ->
-                PlayerPDC.QuestPDC(
-                    questId = quest.id,
-                    questProgress = quest.requirement.currentProgress,
-                )
-            }
+            assignedQuests[player.uniqueId.toKotlinUuid()]
+                .orEmpty()
+                .associate { it.id to it.requirement.currentProgress }
     }
 
     /**

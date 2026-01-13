@@ -6,6 +6,8 @@ import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.pdcs.PlayerPDC.NICKNAME_KEY
 import org.xodium.vanillaplus.pdcs.PlayerPDC.QUESTS_KEY
+import org.xodium.vanillaplus.pdcs.PlayerPDC.QUEST_ID_KEY
+import org.xodium.vanillaplus.pdcs.PlayerPDC.QUEST_PROGRESS_KEY
 import org.xodium.vanillaplus.pdcs.PlayerPDC.SCOREBOARD_VISIBILITY_KEY
 
 /**
@@ -13,6 +15,8 @@ import org.xodium.vanillaplus.pdcs.PlayerPDC.SCOREBOARD_VISIBILITY_KEY
  * @property NICKNAME_KEY The namespaced key used for storing nickname data.
  * @property SCOREBOARD_VISIBILITY_KEY The namespaced key used for storing scoreboard visibility preferences.
  * @property QUESTS_KEY The namespaced key used for storing quest data.
+ * @property QUEST_ID_KEY The namespaced key used for storing quest IDs.
+ * @property QUEST_PROGRESS_KEY The namespaced key used for storing quest progress.
  */
 internal object PlayerPDC {
     private val NICKNAME_KEY = NamespacedKey(instance, "nickname")
@@ -22,16 +26,6 @@ internal object PlayerPDC {
     private val QUEST_PROGRESS_KEY = NamespacedKey(instance, "quest_progress")
 
     // TODO add cache
-
-    /**
-     * Data class representing a player's quest data stored in their persistent data container.
-     * @property questId The ID of the quest.
-     * @property questProgress The progress made in the quest.
-     */
-    data class QuestPDC(
-        val questId: Int,
-        val questProgress: Int,
-    )
 
     /**
      * Gets or sets the player's nickname in their persistent data container.
@@ -60,22 +54,21 @@ internal object PlayerPDC {
     /**
      * Gets or sets the player's quests in their persistent data container.
      * @receiver The player whose quests to access.
-     * @return A string representing the player's quests, or null if not set.
+     * @return A map of quest IDs to their progress, or null if no quests are stored.
      */
-    var Player.quests: List<QuestPDC>?
+    var Player.quests: Map<Int, Int>?
         get() {
             val listType = PersistentDataType.LIST.listTypeFrom(PersistentDataType.TAG_CONTAINER)
             val containers = persistentDataContainer.get(QUESTS_KEY, listType) ?: return null
-            val decoded =
-                containers.mapNotNull { container ->
-                    val questId = container.get(QUEST_ID_KEY, PersistentDataType.INTEGER) ?: return@mapNotNull null
+
+            return containers
+                .mapNotNull { container ->
+                    val id = container.get(QUEST_ID_KEY, PersistentDataType.INTEGER) ?: return@mapNotNull null
                     val progress =
                         container.get(QUEST_PROGRESS_KEY, PersistentDataType.INTEGER) ?: return@mapNotNull null
-
-                    QuestPDC(questId = questId, questProgress = progress)
-                }
-
-            return decoded.ifEmpty { null }
+                    id to progress
+                }.toMap()
+                .ifEmpty { null }
         }
         set(value) {
             val pdc = persistentDataContainer
@@ -85,15 +78,13 @@ internal object PlayerPDC {
                 return
             }
 
-            val ctx = pdc.adapterContext
             val containers =
-                value
-                    .map { quest ->
-                        ctx.newPersistentDataContainer().apply {
-                            set(QUEST_ID_KEY, PersistentDataType.INTEGER, quest.questId)
-                            set(QUEST_PROGRESS_KEY, PersistentDataType.INTEGER, quest.questProgress)
-                        }
-                    }.toList()
+                value.map { (id, progress) ->
+                    pdc.adapterContext.newPersistentDataContainer().apply {
+                        set(QUEST_ID_KEY, PersistentDataType.INTEGER, id)
+                        set(QUEST_PROGRESS_KEY, PersistentDataType.INTEGER, progress)
+                    }
+                }
             val listType = PersistentDataType.LIST.listTypeFrom(PersistentDataType.TAG_CONTAINER)
 
             pdc.set(QUESTS_KEY, listType, containers)
