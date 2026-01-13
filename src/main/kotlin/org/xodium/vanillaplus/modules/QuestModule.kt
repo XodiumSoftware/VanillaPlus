@@ -20,6 +20,8 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.inventories.QuestInventory
+import org.xodium.vanillaplus.pdcs.PlayerPDC
+import org.xodium.vanillaplus.pdcs.PlayerPDC.quests
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import org.xodium.vanillaplus.utils.Utils.MM
 import kotlin.uuid.ExperimentalUuidApi
@@ -58,7 +60,7 @@ internal object QuestModule : ModuleInterface {
     fun on(event: InventoryClickEvent) = questInventory.inventoryClick(event)
 
     @EventHandler
-    fun on(event: PlayerJoinEvent) = assignInitQuests(event)
+    fun on(event: PlayerJoinEvent) = loadQuestsFromPdc(event)
 
     @EventHandler(ignoreCancelled = true)
     fun on(event: EntityDeathEvent) {
@@ -78,6 +80,47 @@ internal object QuestModule : ModuleInterface {
             predicate = { it.target.matches(itemStack.type) },
             incrementBy = itemStack.amount,
         )
+    }
+
+    /**
+     * Saves the assigned quests of a player to their persistent data container.
+     * @param event The player join event containing player information.
+     */
+    private fun loadQuestsFromPdc(event: PlayerJoinEvent) {
+        val id = event.player.uniqueId.toKotlinUuid()
+        val stored = event.player.quests
+
+        if (stored.isNullOrEmpty()) {
+            assignInitQuests(event)
+            saveQuestsToPdc(event.player)
+            return
+        }
+
+        val poolById = config.questModule.quests.associateBy { it.id }
+
+        assignedQuests[id] =
+            stored.mapNotNull { quest ->
+                val base = poolById[quest.questId] ?: return@mapNotNull null
+                val reqCopy = base.requirement.copy()
+                reqCopy.currentProgress = quest.questProgress
+
+                base.copy(requirement = reqCopy)
+            }
+
+        allQuestsRewardClaimed.remove(id)
+    }
+
+    private fun saveQuestsToPdc(player: Player) {
+        val id = player.uniqueId.toKotlinUuid()
+        val quests = assignedQuests[id].orEmpty()
+
+        player.quests =
+            quests.map { quest ->
+                PlayerPDC.QuestPDC(
+                    questId = quest.id,
+                    questProgress = quest.requirement.currentProgress,
+                )
+            }
     }
 
     /**
@@ -110,6 +153,7 @@ internal object QuestModule : ModuleInterface {
 
         val id = player.uniqueId.toKotlinUuid()
         val quests = assignedQuests[id] ?: return
+        val changed = false
 
         quests
             .asSequence()
@@ -134,6 +178,7 @@ internal object QuestModule : ModuleInterface {
                     )
                 }
             }
+        if (changed) saveQuestsToPdc(player)
 
         maybeGiveAllQuestsReward(player)
     }

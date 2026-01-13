@@ -18,18 +18,15 @@ internal object PlayerPDC {
     private val NICKNAME_KEY = NamespacedKey(instance, "nickname")
     private val SCOREBOARD_VISIBILITY_KEY = NamespacedKey(instance, "scoreboard_visibility")
     private val QUESTS_KEY = NamespacedKey(instance, "quests")
-
-    private const val QUEST_KEY_PREFIX = "quests_"
-    private const val QUEST_VALUE_SEPARATOR = "|"
+    private val QUEST_ID_KEY = NamespacedKey(instance, "quest_id")
+    private val QUEST_PROGRESS_KEY = NamespacedKey(instance, "quest_progress")
 
     /**
      * Data class representing a player's quest data stored in their persistent data container.
-     * @property playerUuid The UUID of the player.
      * @property questId The ID of the quest.
      * @property questProgress The progress made in the quest.
      */
     data class QuestPDC(
-        val playerUuid: String,
         val questId: Int,
         val questProgress: Int,
     )
@@ -65,50 +62,37 @@ internal object PlayerPDC {
      */
     var Player.quests: List<QuestPDC>?
         get() {
-            val uuid = uniqueId.toString()
-            val pdc = persistentDataContainer
-            val keys =
-                pdc.keys
-                    .asSequence()
-                    .filter { it.namespace == instance.name.lowercase() }
-                    .filter { it.key.startsWith(QUEST_KEY_PREFIX) }
-                    .toList()
+            val listType = PersistentDataType.LIST.listTypeFrom(PersistentDataType.TAG_CONTAINER)
+            val containers = persistentDataContainer.get(QUESTS_KEY, listType) ?: return null
+            val decoded =
+                containers.mapNotNull { c ->
+                    val questId = c.get(QUEST_ID_KEY, PersistentDataType.INTEGER) ?: return@mapNotNull null
+                    val progress = c.get(QUEST_PROGRESS_KEY, PersistentDataType.INTEGER) ?: return@mapNotNull null
 
-            return keys.mapNotNull { key ->
-                val raw = pdc.get(key, PersistentDataType.STRING) ?: return@mapNotNull null
-                val parts = raw.split(QUEST_VALUE_SEPARATOR)
-                if (parts.size != 3) return@mapNotNull null
+                    QuestPDC(questId = questId, questProgress = progress)
+                }
 
-                val playerUuid = parts[0]
-                val questId = parts[1].toIntOrNull() ?: return@mapNotNull null
-                val progress = parts[2].toIntOrNull() ?: return@mapNotNull null
-
-                if (playerUuid != uuid) return@mapNotNull null
-                QuestPDC(playerUuid = playerUuid, questId = questId, questProgress = progress)
-            }
+            return decoded.ifEmpty { null }
         }
         set(value) {
-            val uuid = uniqueId.toString()
             val pdc = persistentDataContainer
 
-            pdc.keys
-                .asSequence()
-                .filter { it.namespace == instance.name.lowercase() }
-                .filter { it.key.startsWith(QUEST_KEY_PREFIX) }
-                .toList()
-                .forEach { pdc.remove(it) }
+            if (value == null) {
+                pdc.remove(QUESTS_KEY)
+                return
+            }
 
-            if (value == null) return
+            val ctx = pdc.adapterContext
+            val containers =
+                value
+                    .map { q ->
+                        ctx.newPersistentDataContainer().apply {
+                            set(QUEST_ID_KEY, PersistentDataType.INTEGER, q.questId)
+                            set(QUEST_PROGRESS_KEY, PersistentDataType.INTEGER, q.questProgress)
+                        }
+                    }.toList()
+            val listType = PersistentDataType.LIST.listTypeFrom(PersistentDataType.TAG_CONTAINER)
 
-            value
-                .asSequence()
-                .filter { it.playerUuid == uuid }
-                .forEach { q ->
-                    val key = NamespacedKey(instance, "$QUEST_KEY_PREFIX${q.questId}")
-                    val encoded =
-                        listOf(q.playerUuid, q.questId.toString(), q.questProgress.toString())
-                            .joinToString(QUEST_VALUE_SEPARATOR)
-                    pdc.set(key, PersistentDataType.STRING, encoded)
-                }
+            pdc.set(QUESTS_KEY, listType, containers)
         }
 }
