@@ -4,6 +4,7 @@ import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
 import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.pdcs.PlayerPDC.ALL_QUESTS_COMPLETED_KEY
 import org.xodium.vanillaplus.pdcs.PlayerPDC.NICKNAME_KEY
 import org.xodium.vanillaplus.pdcs.PlayerPDC.QUESTS_KEY
 import org.xodium.vanillaplus.pdcs.PlayerPDC.QUEST_ID_KEY
@@ -17,6 +18,7 @@ import org.xodium.vanillaplus.pdcs.PlayerPDC.SCOREBOARD_VISIBILITY_KEY
  * @property QUESTS_KEY The namespaced key used for storing quest data.
  * @property QUEST_ID_KEY The namespaced key used for storing quest IDs.
  * @property QUEST_PROGRESS_KEY The namespaced key used for storing quest progress.
+ * @property ALL_QUESTS_COMPLETED_KEY The namespaced key used for storing whether all quests are completed.
  */
 internal object PlayerPDC {
     private val NICKNAME_KEY = NamespacedKey(instance, "nickname")
@@ -24,8 +26,7 @@ internal object PlayerPDC {
     private val QUESTS_KEY = NamespacedKey(instance, "quests")
     private val QUEST_ID_KEY = NamespacedKey(instance, "quest_id")
     private val QUEST_PROGRESS_KEY = NamespacedKey(instance, "quest_progress")
-
-    // TODO add cache
+    private val ALL_QUESTS_COMPLETED_KEY = NamespacedKey(instance, "all_quests_completed")
 
     /**
      * Gets or sets the player's nickname in their persistent data container.
@@ -89,4 +90,13 @@ internal object PlayerPDC {
 
             pdc.set(QUESTS_KEY, listType, containers)
         }
+
+    /**
+     * Gets or sets whether the player has completed all quests in their persistent data container.
+     * @receiver The player whose quest completion status to access.
+     * @return True if all quests are completed, false otherwise.
+     */
+    var Player.allQuestsCompleted: Boolean
+        get() = persistentDataContainer.get(ALL_QUESTS_COMPLETED_KEY, PersistentDataType.BOOLEAN) ?: false
+        set(value) = persistentDataContainer.set(ALL_QUESTS_COMPLETED_KEY, PersistentDataType.BOOLEAN, value)
 }

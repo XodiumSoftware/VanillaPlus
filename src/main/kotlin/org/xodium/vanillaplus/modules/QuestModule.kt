@@ -20,19 +20,15 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.inventories.QuestInventory
+import org.xodium.vanillaplus.pdcs.PlayerPDC.allQuestsCompleted
 import org.xodium.vanillaplus.pdcs.PlayerPDC.quests
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import org.xodium.vanillaplus.utils.Utils.MM
 import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
-import kotlin.uuid.toKotlinUuid
 
 /** Represents a module handling quest mechanics within the system. */
 internal object QuestModule : ModuleInterface {
     private val questInventory = QuestInventory()
-
-    val assignedQuests: MutableMap<Uuid, List<Quest>> = mutableMapOf()
-    private val allQuestsRewardClaimed: MutableSet<Uuid> = mutableSetOf()
 
     override val cmds =
         listOf(
@@ -59,7 +55,7 @@ internal object QuestModule : ModuleInterface {
     fun on(event: InventoryClickEvent) = questInventory.inventoryClick(event)
 
     @EventHandler
-    fun on(event: PlayerJoinEvent) = loadQuestsFromPdc(event)
+    fun on(event: PlayerJoinEvent) = initializeQuestsIfNeeded(event)
 
     @EventHandler(ignoreCancelled = true)
     fun on(event: EntityDeathEvent) {
@@ -82,42 +78,11 @@ internal object QuestModule : ModuleInterface {
     }
 
     /**
-     * Saves the assigned quests of a player to their persistent data container.
+     * Initializes quests for a player if they don't have any assigned.
      * @param event The player join event containing player information.
      */
-    private fun loadQuestsFromPdc(event: PlayerJoinEvent) {
-        val id = event.player.uniqueId.toKotlinUuid()
-        val stored = event.player.quests
-
-        if (stored.isNullOrEmpty()) {
-            assignInitQuests(event)
-            saveQuestsToPdc(event.player)
-            return
-        }
-
-        val poolById = config.questModule.quests.associateBy { it.id }
-
-        assignedQuests[id] =
-            stored.mapNotNull { (questId, progress) ->
-                val base = poolById[questId] ?: return@mapNotNull null
-                val reqCopy = base.requirement.copy()
-
-                reqCopy.currentProgress = progress
-                base.copy(requirement = reqCopy)
-            }
-
-        allQuestsRewardClaimed.remove(id)
-    }
-
-    /**
-     * Saves the assigned quests of a player to their persistent data container.
-     * @param player The player whose quests are to be saved.
-     */
-    private fun saveQuestsToPdc(player: Player) {
-        player.quests =
-            assignedQuests[player.uniqueId.toKotlinUuid()]
-                .orEmpty()
-                .associate { it.id to it.requirement.currentProgress }
+    private fun initializeQuestsIfNeeded(event: PlayerJoinEvent) {
+        if (event.player.quests.isNullOrEmpty()) assignInitQuests(event)
     }
 
     /**
@@ -125,15 +90,18 @@ internal object QuestModule : ModuleInterface {
      * @param player The player whose quests are to be retrieved.
      * @return List of quests assigned to the player.
      */
-    fun getAssignedQuests(player: Player): List<Quest> = assignedQuests[player.uniqueId.toKotlinUuid()].orEmpty()
+    fun getAssignedQuests(player: Player): List<Quest> {
+        val stored = player.quests ?: return emptyList()
+        val poolById = config.questModule.quests.associateBy { it.id }
 
-    /**
-     * Checks if a player has claimed the reward for completing all quests.
-     * @param player The player to check.
-     * @return true if the player has claimed the all-quests reward, false otherwise.
-     */
-    fun hasClaimedAllQuestsReward(player: Player): Boolean =
-        allQuestsRewardClaimed.contains(player.uniqueId.toKotlinUuid())
+        return stored.mapNotNull { (questId, progress) ->
+            val base = poolById[questId] ?: return@mapNotNull null
+            val reqCopy = base.requirement.copy()
+
+            reqCopy.currentProgress = progress
+            base.copy(requirement = reqCopy)
+        }
+    }
 
     /**
      * Increments the progress of quests matching a given predicate for a player.
@@ -148,9 +116,10 @@ internal object QuestModule : ModuleInterface {
     ) {
         if (incrementBy <= 0) return
 
-        val id = player.uniqueId.toKotlinUuid()
-        val quests = assignedQuests[id] ?: return
-        val changed = false // TODO fix
+        val quests = getAssignedQuests(player)
+        var changed = false
+
+        val updatedProgress = player.quests?.toMutableMap() ?: mutableMapOf()
 
         quests
             .asSequence()
@@ -161,23 +130,27 @@ internal object QuestModule : ModuleInterface {
                 val before = req.currentProgress
                 val after = (before + incrementBy).coerceAtMost(req.targetAmount)
 
-                if (after != before) req.currentProgress = after
+                if (after != before) {
+                    updatedProgress[quest.id] = after
+                    req.currentProgress = after
+                    changed = true
+                }
 
                 if (req.targetAmount in (before + 1)..after) {
                     giveReward(player, quest.reward)
                     player.showTitle(
                         Title.title(
                             MM.deserialize("<green><b>Quest Completed!</b></green>"),
-                            MM.deserialize(
-                                "<yellow>Reward: ${quest.reward.description}</yellow>",
-                            ),
+                            MM.deserialize("<yellow>Reward: ${quest.reward.description}</yellow>"),
                         ),
                     )
                 }
             }
-        if (changed) saveQuestsToPdc(player)
 
-        maybeGiveAllQuestsReward(player)
+        if (changed) {
+            player.quests = updatedProgress
+            maybeGiveAllQuestsReward(player)
+        }
     }
 
     /**
@@ -185,11 +158,9 @@ internal object QuestModule : ModuleInterface {
      * @param player The player to potentially give the reward to.
      */
     private fun maybeGiveAllQuestsReward(player: Player) {
-        val id = player.uniqueId.toKotlinUuid()
+        if (player.allQuestsCompleted) return
 
-        if (allQuestsRewardClaimed.contains(id)) return
-
-        val quests = assignedQuests[id].orEmpty()
+        val quests = getAssignedQuests(player)
 
         if (quests.isEmpty()) return
         if (!quests.all { it.requirement.isComplete }) return
@@ -197,7 +168,7 @@ internal object QuestModule : ModuleInterface {
         val reward = config.questModule.allQuestsReward
 
         giveReward(player, reward)
-        allQuestsRewardClaimed.add(id)
+        player.allQuestsCompleted = true
 
         player.showTitle(
             Title.title(
@@ -224,8 +195,7 @@ internal object QuestModule : ModuleInterface {
             }
 
             else -> {
-                val stack = ItemStack.of(reward.type, reward.amount)
-                val leftover = player.inventory.addItem(stack)
+                val leftover = player.inventory.addItem(ItemStack.of(reward.type, reward.amount))
 
                 if (leftover.isNotEmpty()) {
                     leftover.values.forEach { player.world.dropItemNaturally(player.location, it) }
@@ -245,10 +215,8 @@ internal object QuestModule : ModuleInterface {
         val medium = pool.filter { it.difficulty == Quest.Difficulty.MEDIUM }.shuffled().take(2)
         val hard = pool.filter { it.difficulty == Quest.Difficulty.HARD }.shuffled().take(1)
         val picked = (easy + medium + hard).map { it.copy(requirement = it.requirement.copy()) }
-        val id = player.uniqueId.toKotlinUuid()
 
-        assignedQuests[id] = picked
-        allQuestsRewardClaimed.remove(id)
+        player.quests = picked.associate { it.id to 0 }
     }
 
     /** Represents a key identifying a quest target, either an entity type or material. */

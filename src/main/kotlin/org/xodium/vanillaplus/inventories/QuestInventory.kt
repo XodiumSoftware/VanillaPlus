@@ -10,6 +10,7 @@ import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.modules.QuestModule
+import org.xodium.vanillaplus.pdcs.PlayerPDC.allQuestsCompleted
 import org.xodium.vanillaplus.utils.Utils.MM
 
 /** Represents the inventory interface for quests. */
@@ -87,7 +88,7 @@ internal class QuestInventory : InventoryHolder {
         place(QuestModule.Quest.Difficulty.HARD, hardSlots)
 
         val allComplete = quests.isNotEmpty() && quests.all { it.requirement.isComplete }
-        val claimed = QuestModule.hasClaimedAllQuestsReward(player)
+        val claimed = player.allQuestsCompleted
         val allReward = QuestModule.config.questModule.allQuestsReward
         val requirementLine =
             if (claimed) {
