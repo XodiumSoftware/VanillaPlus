@@ -64,27 +64,25 @@ internal object QuestModule : ModuleInterface {
 
     @EventHandler(ignoreCancelled = true)
     fun on(event: EntityDeathEvent) {
-        val killer = event.entity.killer ?: return
-        val killedType = event.entityType
-
         incrementMatchingQuests(
-            player = killer,
-            predicate = { req -> req.entityType != null && req.entityType == killedType },
+            player = event.entity.killer ?: return,
+            predicate = { req ->
+                (req.target as? Quest.Requirement.Target.Entity)?.type == event.entityType
+            },
             incrementBy = 1,
         )
     }
 
     @EventHandler(ignoreCancelled = true)
     fun on(event: EntityPickupItemEvent) {
-        val player = event.entity as? Player ?: return
-        val stack = event.item.itemStack
-        val material = stack.type
-        val amount = stack.amount
+        val itemStack = event.item.itemStack
 
         incrementMatchingQuests(
-            player = player,
-            predicate = { req -> req.material != null && req.material == material },
-            incrementBy = amount,
+            player = event.entity as? Player ?: return,
+            predicate = { req ->
+                (req.target as? Quest.Requirement.Target.Material)?.type == itemStack.type
+            },
+            incrementBy = itemStack.amount,
         )
     }
 
@@ -95,8 +93,8 @@ internal object QuestModule : ModuleInterface {
     private fun loadOrAssign(event: PlayerJoinEvent) {
         val player = event.player
         val id = player.uniqueId.toKotlinUuid()
-
         val loaded = store.load(id)
+
         if (loaded.isNotEmpty()) {
             assignedQuests[id] = loaded
         } else {
@@ -259,15 +257,27 @@ internal object QuestModule : ModuleInterface {
         /** Represents a requirement for completing a quest. */
         @Serializable
         data class Requirement(
-            val entityType: EntityType? = null,
-            val material: Material? = null,
+            val target: Target,
             val targetAmount: Int,
         ) {
-            /**
-             * Automatically generates a description for the requirement based on type and amount.
-             * @return Formatted string description of the requirement.
-             */
-            val description: String get() = generateDescription()
+            constructor(entityType: EntityType, targetAmount: Int) :
+                this(Target.Entity(entityType), targetAmount)
+
+            constructor(material: Material, targetAmount: Int) :
+                this(Target.Material(material), targetAmount)
+
+            @Serializable
+            sealed class Target {
+                @Serializable
+                data class Entity(
+                    val type: EntityType,
+                ) : Target()
+
+                @Serializable
+                data class Material(
+                    val type: org.bukkit.Material,
+                ) : Target()
+            }
 
             /** Tracks the current progress towards completing the requirement. */
             var currentProgress: Int = 0
@@ -282,49 +292,46 @@ internal object QuestModule : ModuleInterface {
              * Generates a human-readable description of the requirement.
              * @return String describing the requirement.
              */
-            private fun generateDescription(): String =
-                when {
-                    entityType != null -> {
-                        val entityName =
-                            entityType.name
-                                .lowercase()
-                                .split("_")
-                                .joinToString(" ") { word -> word.replaceFirstChar { it.uppercase() } }
+            val description: String
+                get() =
+                    when (target) {
+                        is Target.Entity -> {
+                            val entityType = target.type
+                            val entityName =
+                                entityType.name
+                                    .lowercase()
+                                    .split("_")
+                                    .joinToString(" ") { w -> w.replaceFirstChar { it.uppercase() } }
 
-                        val verb =
-                            when (entityType) {
-                                EntityType.CHICKEN, EntityType.COW, EntityType.PIG,
-                                EntityType.SHEEP, EntityType.RABBIT,
-                                -> "Collect"
+                            val verb =
+                                when (entityType) {
+                                    EntityType.CHICKEN, EntityType.COW, EntityType.PIG,
+                                    EntityType.SHEEP, EntityType.RABBIT,
+                                    -> "Collect"
 
-                                else -> "Kill"
+                                    else -> "Kill"
+                                }
+
+                            if (targetAmount == 1) "$verb 1 $entityName" else "$verb $targetAmount ${entityName}s"
+                        }
+
+                        is Target.Material -> {
+                            val material = target.type
+                            val materialName =
+                                material.name
+                                    .lowercase()
+                                    .split("_")
+                                    .joinToString(" ") { w -> w.replaceFirstChar { it.uppercase() } }
+
+                            if (targetAmount ==
+                                1
+                            ) {
+                                "Collect 1 $materialName"
+                            } else {
+                                "Collect $targetAmount ${materialName}s"
                             }
-
-                        if (targetAmount == 1) {
-                            "$verb 1 $entityName"
-                        } else {
-                            "$verb $targetAmount ${entityName}s"
                         }
                     }
-
-                    material != null -> {
-                        val materialName =
-                            material.name
-                                .lowercase()
-                                .split("_")
-                                .joinToString(" ") { word -> word.replaceFirstChar { it.uppercase() } }
-
-                        if (targetAmount == 1) {
-                            "Collect 1 $materialName"
-                        } else {
-                            "Collect $targetAmount ${materialName}s"
-                        }
-                    }
-
-                    else -> {
-                        "Complete task ($targetAmount times)"
-                    }
-                }
         }
 
         /** Represents a reward given upon completing a quest. */
@@ -366,27 +373,27 @@ internal object QuestModule : ModuleInterface {
             listOf(
                 Quest(
                     Quest.Difficulty.EASY,
-                    Quest.Requirement(EntityType.ZOMBIE, null, 10),
+                    Quest.Requirement(EntityType.ZOMBIE, 10),
                     Quest.Reward(Material.EXPERIENCE_BOTTLE, 100),
                 ),
                 Quest(
                     Quest.Difficulty.EASY,
-                    Quest.Requirement(EntityType.SKELETON, null, 5),
+                    Quest.Requirement(EntityType.SKELETON, 5),
                     Quest.Reward(Material.ARROW, 32),
                 ),
                 Quest(
                     Quest.Difficulty.MEDIUM,
-                    Quest.Requirement(null, Material.DIAMOND, 5),
+                    Quest.Requirement(Material.DIAMOND, 5),
                     Quest.Reward(Material.DIAMOND, 1),
                 ),
                 Quest(
                     Quest.Difficulty.MEDIUM,
-                    Quest.Requirement(null, Material.COBBLESTONE, 64),
+                    Quest.Requirement(Material.COBBLESTONE, 64),
                     Quest.Reward(Material.EMERALD, 3),
                 ),
                 Quest(
                     Quest.Difficulty.HARD,
-                    Quest.Requirement(EntityType.ENDER_DRAGON, null, 1),
+                    Quest.Requirement(EntityType.ENDER_DRAGON, 1),
                     Quest.Reward(Material.EXPERIENCE_BOTTLE, 500),
                 ),
             ),

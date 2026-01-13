@@ -25,8 +25,8 @@ internal class QuestDatabase {
     private object QuestProgressTable : Table("quest_progress") {
         val playerUuid = text("player_uuid")
         val difficulty = text("difficulty")
-        val reqEntityType = text("req_entity_type").nullable()
-        val reqMaterial = text("req_material").nullable()
+        val reqTarget = text("req_target")
+        val reqTargetValue = text("req_target_value")
         val targetAmount = integer("target_amount")
         val currentProgress = integer("current_progress")
         val rewardType = text("reward_type")
@@ -79,23 +79,35 @@ internal class QuestDatabase {
                 .map { row ->
                     val difficulty =
                         QuestModule.Quest.Difficulty.valueOf(row[QuestProgressTable.difficulty])
-                    val reqEntity =
-                        row[QuestProgressTable.reqEntityType]
-                            ?.let { EntityType.valueOf(it) }
-                    val reqMaterial =
-                        row[QuestProgressTable.reqMaterial]
-                            ?.let { Material.valueOf(it) }
+                    val targetKind = row[QuestProgressTable.reqTarget]
+                    val targetValue = row[QuestProgressTable.reqTargetValue]
+                    val target: QuestModule.Quest.Requirement.Target =
+                        when (targetKind) {
+                            "ENTITY" -> {
+                                QuestModule.Quest.Requirement.Target
+                                    .Entity(EntityType.valueOf(targetValue))
+                            }
+
+                            "MATERIAL" -> {
+                                QuestModule.Quest.Requirement.Target
+                                    .Material(Material.valueOf(targetValue))
+                            }
+
+                            else -> {
+                                error("Unknown req_target=$targetKind for player=$playerUuid")
+                            }
+                        }
                     val targetAmount = row[QuestProgressTable.targetAmount]
                     val currentProgress = row[QuestProgressTable.currentProgress]
+                    val requirement =
+                        QuestModule.Quest.Requirement(target, targetAmount).apply {
+                            this.currentProgress = currentProgress
+                        }
                     val rewardType = Material.valueOf(row[QuestProgressTable.rewardType])
                     val rewardAmount = row[QuestProgressTable.rewardAmount]
-                    val req =
-                        QuestModule.Quest.Requirement(reqEntity, reqMaterial, targetAmount).also {
-                            it.currentProgress = currentProgress
-                        }
                     val reward = QuestModule.Quest.Reward(rewardType, rewardAmount)
 
-                    QuestModule.Quest(difficulty, req, reward)
+                    QuestModule.Quest(difficulty, requirement, reward)
                 }
         }
     }
@@ -115,15 +127,24 @@ internal class QuestDatabase {
             QuestProgressTable.deleteWhere { QuestProgressTable.playerUuid eq playerUuid }
 
             quests.forEach { quest ->
-                QuestProgressTable.insertIgnore {
-                    it[QuestProgressTable.playerUuid] = playerUuid
-                    it[QuestProgressTable.difficulty] = quest.difficulty.name
-                    it[QuestProgressTable.reqEntityType] = quest.requirement.entityType?.name
-                    it[QuestProgressTable.reqMaterial] = quest.requirement.material?.name
-                    it[QuestProgressTable.targetAmount] = quest.requirement.targetAmount
-                    it[QuestProgressTable.currentProgress] = quest.requirement.currentProgress
-                    it[QuestProgressTable.rewardType] = quest.reward.type.name
-                    it[QuestProgressTable.rewardAmount] = quest.reward.amount
+                QuestProgressTable.insertIgnore { row ->
+                    row[QuestProgressTable.playerUuid] = playerUuid
+                    row[QuestProgressTable.difficulty] = quest.difficulty.name
+                    when (val target = quest.requirement.target) {
+                        is QuestModule.Quest.Requirement.Target.Entity -> {
+                            row[QuestProgressTable.reqTarget] = "ENTITY"
+                            row[QuestProgressTable.reqTargetValue] = target.type.name
+                        }
+
+                        is QuestModule.Quest.Requirement.Target.Material -> {
+                            row[QuestProgressTable.reqTarget] = "MATERIAL"
+                            row[QuestProgressTable.reqTargetValue] = target.type.name
+                        }
+                    }
+                    row[QuestProgressTable.targetAmount] = quest.requirement.targetAmount
+                    row[QuestProgressTable.currentProgress] = quest.requirement.currentProgress
+                    row[QuestProgressTable.rewardType] = quest.reward.type.name
+                    row[QuestProgressTable.rewardAmount] = quest.reward.amount
                 }
             }
         }
