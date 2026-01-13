@@ -37,7 +37,6 @@ internal data class ConfigData(
     var sitModule: SitModule.Config = SitModule.Config(),
     var tabListModule: TabListModule.Config = TabListModule.Config(),
     var tameableModule: TameableModule.Config = TameableModule.Config(),
-    var treesModule: TreesModule.Config = TreesModule.Config(),
 ) {
     companion object {
         private val json =
