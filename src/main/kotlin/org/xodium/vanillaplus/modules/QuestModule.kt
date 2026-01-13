@@ -89,7 +89,10 @@ internal object QuestModule : ModuleInterface {
 
     /** Resets quests for all players on the server. */
     private fun resetAllQuests() {
-        instance.server.onlinePlayers.forEach { player -> assignInitQuests(player) }
+        instance.server.onlinePlayers.forEach { player ->
+            assignInitQuests(player)
+            player.sendMessage(MM.deserialize("<green><b>Your weekly quests have been reset!</b></green>"))
+        }
         instance.logger.info("Weekly quests reset completed for all players")
     }
 
