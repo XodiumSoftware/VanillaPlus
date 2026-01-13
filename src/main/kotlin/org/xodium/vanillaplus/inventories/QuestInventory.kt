@@ -55,20 +55,27 @@ internal class QuestInventory : InventoryHolder {
                         )
                     } else {
                         val req = q.requirement
-                        val progress =
-                            "<gray>Progress:</gray> <yellow>${req.currentProgress}</yellow><gray>/</gray><yellow>${req.targetAmount}</yellow>"
-                        val status =
+
+                        val requirementLine =
                             if (req.isComplete) {
-                                "<green><b>Complete</b></green>"
+                                "<gray>Requirement:</gray> <yellow>${req.description}</yellow> <green><b>Completed</b></green>"
                             } else {
-                                "<red><b>In progress</b></red>"
+                                "<gray>Requirement:</gray> <yellow>${req.description}</yellow> <gray>(</gray><yellow>${req.currentProgress}</yellow><gray>/</gray><yellow>${req.targetAmount}</yellow><gray>)</gray>"
+                            }
+
+                        val rewardLine =
+                            if (req.isComplete) {
+                                "<gray>Reward:</gray> <yellow>${q.reward.description}</yellow>"
+                            } else {
+                                "<gray>Reward:</gray> <yellow>${q.reward.description}</yellow>"
                             }
 
                         createQuestItem(
                             Material.PAPER,
                             difficulty.description,
-                            "<gray>Requirement:</gray> <yellow>${req.description}</yellow> <gray>($status)</gray>",
-                            "<gray>Reward:</gray> <yellow>${q.reward.description}</yellow> \u2022 $progress",
+                            requirementLine,
+                            rewardLine,
+                            glint = req.isComplete,
                         )
                     },
                 )
@@ -124,6 +131,7 @@ internal class QuestInventory : InventoryHolder {
      * @param name The display name for the item.
      * @param line1 The first line of the lore.
      * @param line2 The second line of the lore.
+     * @param glint Whether the item should have a glint effect.
      * @return The created ItemStack.
      */
     @Suppress("UnstableApiUsage")
@@ -132,6 +140,7 @@ internal class QuestInventory : InventoryHolder {
         name: String,
         line1: String,
         line2: String,
+        glint: Boolean = false,
     ): ItemStack =
         ItemStack.of(material).apply {
             setData(DataComponentTypes.CUSTOM_NAME, MM.deserialize(name))
@@ -144,5 +153,6 @@ internal class QuestInventory : InventoryHolder {
                     ),
                 ),
             )
+            setData(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, glint)
         }
 }

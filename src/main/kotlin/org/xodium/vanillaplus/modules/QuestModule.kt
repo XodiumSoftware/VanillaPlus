@@ -26,6 +26,8 @@ import kotlin.uuid.toKotlinUuid
 /** Represents a module handling quest mechanics within the system. */
 internal object QuestModule : ModuleInterface {
     private val questInventory = QuestInventory()
+
+    // TODO: make use of persistent storage.
     val assignedQuests: MutableMap<Uuid, List<Quest>> = mutableMapOf()
 
     override val cmds =
