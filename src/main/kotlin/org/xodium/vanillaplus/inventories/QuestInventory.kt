@@ -3,6 +3,7 @@ package org.xodium.vanillaplus.inventories
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
 import org.bukkit.Material
+import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
@@ -13,69 +14,83 @@ import org.xodium.vanillaplus.utils.Utils.MM
 
 /** Represents the inventory interface for quests. */
 internal class QuestInventory : InventoryHolder {
-    private val _inventory: Inventory by lazy {
-        instance.server
-            .createInventory(this, 9, MM.deserialize("<b><gradient:#FFA751:#FFE259>Quests</gradient></b>"))
-            .apply {
-                filler()
-                setItem(
-                    0,
-                    createQuestItem(
-                        Material.PAPER,
-                        QuestModule.Quest.Difficulty.EASY.description,
-                        "<gray>Requirement: ?</gray>",
-                        "<gray>Reward: ?</gray>",
-                    ),
-                )
-                setItem(
-                    1,
-                    createQuestItem(
-                        Material.PAPER,
-                        QuestModule.Quest.Difficulty.EASY.description,
-                        "<gray>Requirement: ?</gray>",
-                        "<gray>Reward: ?</gray>",
-                    ),
-                )
-                setItem(
-                    3,
-                    createQuestItem(
-                        Material.PAPER,
-                        QuestModule.Quest.Difficulty.MEDIUM.description,
-                        "<gray>Requirement: ?</gray>",
-                        "<gray>Reward: ?</gray>",
-                    ),
-                )
-                setItem(
-                    4,
-                    createQuestItem(
-                        Material.PAPER,
-                        QuestModule.Quest.Difficulty.MEDIUM.description,
-                        "<gray>Requirement: ?</gray>",
-                        "<gray>Reward: ?</gray>",
-                    ),
-                )
-                setItem(
-                    6,
-                    createQuestItem(
-                        Material.PAPER,
-                        QuestModule.Quest.Difficulty.HARD.description,
-                        "<gray>Requirement: ?</gray>",
-                        "<gray>Reward: ?</gray>",
-                    ),
-                )
-                setItem(
-                    8,
-                    createQuestItem(
-                        Material.ENDER_EYE,
-                        "<blue><b>Completing all quests reward</b></blue>",
-                        "<gray>Requirement:</gray> <yellow>Complete all quests</yellow>",
-                        "<gray>Reward: ?</gray>",
-                    ),
+    private val title = MM.deserialize("<b><gradient:#FFA751:#FFE259>Quests</gradient></b>")
+    private val size = 9
+    private val template: Inventory by lazy { instance.server.createInventory(this, size, title).apply { filler() } }
+
+    override fun getInventory(): Inventory = template
+
+    /**
+     * Opens the quest inventory for the specified player.
+     * @param player The player for whom to open the inventory.
+     */
+    fun openFor(player: Player) {
+        val inv = instance.server.createInventory(this, size, title)
+
+        inv.contents = template.contents
+
+        val quests = QuestModule.getAssignedQuests(player)
+
+        val easySlots = intArrayOf(0, 1)
+        val mediumSlots = intArrayOf(3, 4)
+        val hardSlots = intArrayOf(6)
+
+        fun place(
+            difficulty: QuestModule.Quest.Difficulty,
+            slots: IntArray,
+        ) {
+            val picked = quests.filter { it.difficulty == difficulty }.take(slots.size)
+
+            for (i in slots.indices) {
+                val q = picked.getOrNull(i)
+
+                inv.setItem(
+                    slots[i],
+                    if (q == null) {
+                        createQuestItem(
+                            Material.PAPER,
+                            difficulty.description,
+                            "<gray>Requirement: \u2014</gray>",
+                            "<gray>Reward: \u2014</gray>",
+                        )
+                    } else {
+                        val req = q.requirement
+                        val progress =
+                            "<gray>Progress:</gray> <yellow>${req.currentProgress}</yellow><gray>/</gray><yellow>${req.targetAmount}</yellow>"
+                        val status =
+                            if (req.isComplete) {
+                                "<green><b>Complete</b></green>"
+                            } else {
+                                "<red><b>In progress</b></red>"
+                            }
+
+                        createQuestItem(
+                            Material.PAPER,
+                            difficulty.description,
+                            "<gray>Requirement:</gray> <yellow>${req.description}</yellow> <gray>($status)</gray>",
+                            "<gray>Reward:</gray> <yellow>${q.reward.description}</yellow> \u2022 $progress",
+                        )
+                    },
                 )
             }
-    }
+        }
 
-    override fun getInventory(): Inventory = _inventory
+        place(QuestModule.Quest.Difficulty.EASY, easySlots)
+        place(QuestModule.Quest.Difficulty.MEDIUM, mediumSlots)
+        place(QuestModule.Quest.Difficulty.HARD, hardSlots)
+
+        inv.setItem(
+            8,
+            createQuestItem(
+                Material.ENDER_EYE,
+                "<blue><b>Completing all quests reward</b></blue>",
+                "<gray>Requirement:</gray> <yellow>Complete all quests</yellow>",
+                "<gray>Reward:</gray> <yellow>\u2014</yellow>",
+            ),
+        )
+
+        player.openInventory(inv)
+    }
 
     /**
      * Handles inventory click events to prevent interaction with the quest inventory.

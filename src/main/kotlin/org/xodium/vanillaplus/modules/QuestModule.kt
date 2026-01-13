@@ -26,7 +26,7 @@ import kotlin.uuid.toKotlinUuid
 /** Represents a module handling quest mechanics within the system. */
 internal object QuestModule : ModuleInterface {
     private val questInventory = QuestInventory()
-    private val assignedQuests: MutableMap<Uuid, List<Quest>> = mutableMapOf()
+    val assignedQuests: MutableMap<Uuid, List<Quest>> = mutableMapOf()
 
     override val cmds =
         listOf(
@@ -34,7 +34,7 @@ internal object QuestModule : ModuleInterface {
                 Commands
                     .literal("quests")
                     .requires { it.sender.hasPermission(perms[0]) }
-                    .playerExecuted { player, _ -> player.openInventory(questInventory.inventory) },
+                    .playerExecuted { player, _ -> questInventory.openFor(player) },
                 "This command allows you to open the quests interface",
                 listOf("q"),
             ),
@@ -80,6 +80,13 @@ internal object QuestModule : ModuleInterface {
             incrementBy = amount,
         )
     }
+
+    /**
+     * Retrieves the list of quests assigned to a player.
+     * @param player The player whose quests are to be retrieved.
+     * @return List of quests assigned to the player.
+     */
+    fun getAssignedQuests(player: Player): List<Quest> = assignedQuests[player.uniqueId.toKotlinUuid()].orEmpty()
 
     /**
      * Increments the progress of quests matching a given predicate for a player.
@@ -153,7 +160,7 @@ internal object QuestModule : ModuleInterface {
              */
             val description: String get() = generateDescription()
 
-            // TODO: Persist progress across server restarts (use PlayerPDC)
+            /** Tracks the current progress towards completing the requirement. */
             var currentProgress: Int = 0
 
             /**
