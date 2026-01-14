@@ -90,13 +90,4 @@ internal object PlayerPDC {
 
             pdc.set(QUESTS_KEY, listType, containers)
         }
-
-    /**
-     * Gets or sets whether the player has completed all quests in their persistent data container.
-     * @receiver The player whose quest completion status to access.
-     * @return True if all quests are completed, false otherwise.
-     */
-    var Player.allQuestsCompleted: Boolean
-        get() = persistentDataContainer.get(ALL_QUESTS_COMPLETED_KEY, PersistentDataType.BOOLEAN) ?: false
-        set(value) = persistentDataContainer.set(ALL_QUESTS_COMPLETED_KEY, PersistentDataType.BOOLEAN, value)
 }

@@ -24,7 +24,6 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.inventories.QuestInventory
 import org.xodium.vanillaplus.modules.QuestModule.TypeKey.Companion.entityType
 import org.xodium.vanillaplus.modules.QuestModule.TypeKey.Companion.material
-import org.xodium.vanillaplus.pdcs.PlayerPDC.allQuestsCompleted
 import org.xodium.vanillaplus.pdcs.PlayerPDC.quests
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import org.xodium.vanillaplus.utils.Utils.MM
@@ -227,8 +226,6 @@ internal object QuestModule : ModuleInterface {
      * @param player The player to potentially give the reward to.
      */
     private fun completedAllQuestsReward(player: Player) {
-        if (player.allQuestsCompleted) return
-
         val quests = getAssignedQuests(player)
 
         if (quests.isEmpty()) return
@@ -237,7 +234,6 @@ internal object QuestModule : ModuleInterface {
         val reward = config.questModule.allQuestsReward
 
         giveReward(player, reward)
-        player.allQuestsCompleted = true
 
         player.showTitle(
             Title.title(
@@ -285,7 +281,6 @@ internal object QuestModule : ModuleInterface {
         val picked = (easy + medium + hard).map { it.copy(requirement = it.requirement.copy()) }
 
         player.quests = picked.associate { it.id to 0 }
-        player.allQuestsCompleted = false
     }
 
     /** Represents a key identifying a quest target, either an entity type or material. */

@@ -11,7 +11,6 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.MenuType
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.modules.QuestModule
-import org.xodium.vanillaplus.pdcs.PlayerPDC.allQuestsCompleted
 import org.xodium.vanillaplus.utils.Utils.MM
 
 /** Represents the inventory interface for quests. */
@@ -50,12 +49,9 @@ internal class QuestInventory : InventoryHolder {
         placeQuests(inv, quests, QuestModule.Quest.Difficulty.HARD, intArrayOf(6))
 
         val allComplete = quests.isNotEmpty() && quests.all { it.requirement.isComplete }
-        val claimed = player.allQuestsCompleted
         val allReward = QuestModule.config.questModule.allQuestsReward
         val requirementLine =
-            if (claimed) {
-                "<gray>Requirement:</gray> <yellow>Complete all quests</yellow> <green><b>Claimed</b></green>"
-            } else if (allComplete) {
+            if (allComplete) {
                 "<gray>Requirement:</gray> <yellow>Complete all quests</yellow> <green><b>Completed</b></green>"
             } else {
                 "<gray>Requirement:</gray> <yellow>Complete all quests</yellow>"
@@ -68,7 +64,7 @@ internal class QuestInventory : InventoryHolder {
                 "<blue><b>Completing all quests reward</b></blue>",
                 requirementLine,
                 "<gray>Reward:</gray> <yellow>${allReward.description}</yellow>",
-                glint = claimed,
+                glint = allComplete,
             ),
         )
 
@@ -97,20 +93,13 @@ internal class QuestInventory : InventoryHolder {
                     )
                 } else {
                     val req = q.requirement
-
                     val requirementLine =
                         if (req.isComplete) {
                             "<gray>Requirement:</gray> <yellow>${req.description}</yellow> <green><b>Completed</b></green>"
                         } else {
                             "<gray>Requirement:</gray> <yellow>${req.description}</yellow> <gray>(</gray><yellow>${req.currentProgress}</yellow><gray>/</gray><yellow>${req.amount}</yellow><gray>)</gray>"
                         }
-
-                    val rewardLine =
-                        if (req.isComplete) {
-                            "<gray>Reward:</gray> <yellow>${q.reward.description}</yellow>"
-                        } else {
-                            "<gray>Reward:</gray> <yellow>${q.reward.description}</yellow>"
-                        }
+                    val rewardLine = "<gray>Reward:</gray> <yellow>${q.reward.description}</yellow>"
 
                     createQuestItem(
                         Material.PAPER,
