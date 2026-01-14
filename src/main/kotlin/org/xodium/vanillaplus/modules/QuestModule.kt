@@ -4,6 +4,7 @@ package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes
+import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver
 import kotlinx.serialization.Serializable
 import net.kyori.adventure.title.Title
 import org.bukkit.Material
@@ -50,9 +51,16 @@ internal object QuestModule : ModuleInterface {
                             .requires { it.sender.hasPermission(perms[1]) }
                             .then(
                                 Commands
-                                    .argument("player", ArgumentTypes.player())
+                                    .argument("target", ArgumentTypes.player())
                                     .playerExecuted { player, ctx ->
-                                        val target = ctx.getArgument("player", Player::class.java)
+                                        // TODO: improve.
+                                        val targetResolver =
+                                            ctx.getArgument("target", PlayerSelectorArgumentResolver::class.java)
+                                        val target =
+                                            targetResolver.resolve(ctx.source).singleOrNull()
+                                                ?: return@playerExecuted (ctx.source.sender as Player).sendMessage(
+                                                    MM.deserialize(config.chatModule.i18n.playerIsNotOnline),
+                                                )
                                         assignInitQuests(target)
                                         target.sendMessage(
                                             MM.deserialize("<green><b>Your weekly quests have been reset!</b></green>"),
@@ -459,7 +467,7 @@ internal object QuestModule : ModuleInterface {
                 Quest(
                     2,
                     Quest.Difficulty.MEDIUM,
-                    Quest.Requirement(Material.DIAMOND, 5),
+                    Quest.Requirement(Material.DIAMOND_ORE, 5),
                     Quest.Reward(Material.DIAMOND, 1),
                 ),
                 Quest(
