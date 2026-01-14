@@ -5,17 +5,14 @@ package org.xodium.vanillaplus.modules
 import io.papermc.paper.event.entity.EntityEquipmentChangedEvent
 import kotlinx.serialization.Serializable
 import org.bukkit.Material
-import org.bukkit.attribute.Attribute
 import org.bukkit.entity.*
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.EntityChangeBlockEvent
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.entity.EntityExplodeEvent
-import org.bukkit.event.entity.EntitySpawnEvent
 import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.enchantments.NimbusEnchantment
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.utils.Utils
 import kotlin.random.Random
 
 /** Represents a module handling entity mechanics within the system. */
@@ -40,9 +37,6 @@ internal object EntityModule : ModuleInterface {
     @EventHandler
     fun on(event: EntityEquipmentChangedEvent) = NimbusEnchantment.nimbus(event)
 
-    @EventHandler
-    fun on(event: EntitySpawnEvent) = randomizeEntityScale(event.entity)
-
     /**
      * Determines whether an entity's griefing behaviour should be cancelled based on configuration settings.
      * @param entity The entity whose griefing behaviour is being evaluated.
@@ -60,29 +54,7 @@ internal object EntityModule : ModuleInterface {
             else -> false
         }
 
-    /**
-     * Randomizes the scale of certain entities based on configuration settings.
-     * @param entity The entity whose scale should be randomized.
-     */
-    private fun randomizeEntityScale(entity: Entity) {
-        when (entity) {
-            is Animals -> {
-                val range = config.entityModule.animalScaleRange ?: return
-                entity.getAttribute(Attribute.SCALE)?.baseValue = Random.nextDouble(range.min, range.max)
-            }
-
-            is Monster -> {
-                val range = config.entityModule.monsterScaleRange ?: return
-                entity.getAttribute(Attribute.SCALE)?.baseValue = Random.nextDouble(range.min, range.max)
-            }
-
-            is Villager -> {
-                val range = config.entityModule.villagerScaleRange ?: return
-                entity.getAttribute(Attribute.SCALE)?.baseValue = Random.nextDouble(range.min, range.max)
-            }
-        }
-    }
-
+    /** Represents the config of the module. */
     @Serializable
     data class Config(
         var enabled: Boolean = true,
@@ -93,8 +65,5 @@ internal object EntityModule : ModuleInterface {
         var disableGhastGrief: Boolean = true,
         var disableWitherGrief: Boolean = true,
         var entityEggDropChance: Double = 0.001,
-        var animalScaleRange: Utils.Range? = Utils.Range(0.8, 1.2),
-        var monsterScaleRange: Utils.Range? = Utils.Range(0.9, 1.9),
-        var villagerScaleRange: Utils.Range? = Utils.Range(0.9, 1.1),
     )
 }

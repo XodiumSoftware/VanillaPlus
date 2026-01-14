@@ -18,6 +18,7 @@ internal object MotdModule : ModuleInterface {
      */
     private fun motd(event: ServerListPingEvent) = event.motd(MM.deserialize(config.motdModule.motd.joinToString("\n")))
 
+    /** Represents the config of the module. */
     @Serializable
     data class Config(
         var enabled: Boolean = true,

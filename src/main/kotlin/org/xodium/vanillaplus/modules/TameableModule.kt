@@ -34,6 +34,7 @@ internal object TameableModule : ModuleInterface {
         event.isCancelled = true
     }
 
+    /** Represents the config of the module. */
     @Serializable
     data class Config(
         var enabled: Boolean = true,

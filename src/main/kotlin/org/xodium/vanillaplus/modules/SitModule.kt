@@ -193,6 +193,7 @@ internal object SitModule : ModuleInterface {
         occupiedBlocks[blockLocation] = playerId
     }
 
+    /** Represents the config of the module. */
     @Serializable
     data class Config(
         var enabled: Boolean = true,
