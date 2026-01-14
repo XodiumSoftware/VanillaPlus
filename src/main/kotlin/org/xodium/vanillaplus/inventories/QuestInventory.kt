@@ -45,60 +45,9 @@ internal class QuestInventory : InventoryHolder {
 
         val quests = QuestModule.getAssignedQuests(player)
 
-        val easySlots = intArrayOf(0, 1)
-        val mediumSlots = intArrayOf(3, 4)
-        val hardSlots = intArrayOf(6)
-
-        fun place(
-            difficulty: QuestModule.Quest.Difficulty,
-            slots: IntArray,
-        ) {
-            val picked = quests.filter { it.difficulty == difficulty }.take(slots.size)
-
-            for (i in slots.indices) {
-                val q = picked.getOrNull(i)
-
-                inv.setItem(
-                    slots[i],
-                    if (q == null) {
-                        createQuestItem(
-                            Material.PAPER,
-                            difficulty.description,
-                            "<gray>Requirement: \u2014</gray>",
-                            "<gray>Reward: \u2014</gray>",
-                        )
-                    } else {
-                        val req = q.requirement
-
-                        val requirementLine =
-                            if (req.isComplete) {
-                                "<gray>Requirement:</gray> <yellow>${req.description}</yellow> <green><b>Completed</b></green>"
-                            } else {
-                                "<gray>Requirement:</gray> <yellow>${req.description}</yellow> <gray>(</gray><yellow>${req.currentProgress}</yellow><gray>/</gray><yellow>${req.amount}</yellow><gray>)</gray>"
-                            }
-
-                        val rewardLine =
-                            if (req.isComplete) {
-                                "<gray>Reward:</gray> <yellow>${q.reward.description}</yellow>"
-                            } else {
-                                "<gray>Reward:</gray> <yellow>${q.reward.description}</yellow>"
-                            }
-
-                        createQuestItem(
-                            Material.PAPER,
-                            difficulty.description,
-                            requirementLine,
-                            rewardLine,
-                            glint = req.isComplete,
-                        )
-                    },
-                )
-            }
-        }
-
-        place(QuestModule.Quest.Difficulty.EASY, easySlots)
-        place(QuestModule.Quest.Difficulty.MEDIUM, mediumSlots)
-        place(QuestModule.Quest.Difficulty.HARD, hardSlots)
+        placeQuests(inv, quests, QuestModule.Quest.Difficulty.EASY, intArrayOf(0, 1))
+        placeQuests(inv, quests, QuestModule.Quest.Difficulty.MEDIUM, intArrayOf(3, 4))
+        placeQuests(inv, quests, QuestModule.Quest.Difficulty.HARD, intArrayOf(6))
 
         val allComplete = quests.isNotEmpty() && quests.all { it.requirement.isComplete }
         val claimed = player.allQuestsCompleted
@@ -124,6 +73,55 @@ internal class QuestInventory : InventoryHolder {
         )
 
         player.openInventory(inv)
+    }
+
+    private fun placeQuests(
+        inv: Inventory,
+        quests: List<QuestModule.Quest>,
+        difficulty: QuestModule.Quest.Difficulty,
+        slots: IntArray,
+    ) {
+        val picked = quests.filter { it.difficulty == difficulty }.take(slots.size)
+
+        for (i in slots.indices) {
+            val q = picked.getOrNull(i)
+
+            inv.setItem(
+                slots[i],
+                if (q == null) {
+                    createQuestItem(
+                        Material.PAPER,
+                        difficulty.description,
+                        "<gray>Requirement: \u2014</gray>",
+                        "<gray>Reward: \u2014</gray>",
+                    )
+                } else {
+                    val req = q.requirement
+
+                    val requirementLine =
+                        if (req.isComplete) {
+                            "<gray>Requirement:</gray> <yellow>${req.description}</yellow> <green><b>Completed</b></green>"
+                        } else {
+                            "<gray>Requirement:</gray> <yellow>${req.description}</yellow> <gray>(</gray><yellow>${req.currentProgress}</yellow><gray>/</gray><yellow>${req.amount}</yellow><gray>)</gray>"
+                        }
+
+                    val rewardLine =
+                        if (req.isComplete) {
+                            "<gray>Reward:</gray> <yellow>${q.reward.description}</yellow>"
+                        } else {
+                            "<gray>Reward:</gray> <yellow>${q.reward.description}</yellow>"
+                        }
+
+                    createQuestItem(
+                        Material.PAPER,
+                        difficulty.description,
+                        requirementLine,
+                        rewardLine,
+                        glint = req.isComplete,
+                    )
+                },
+            )
+        }
     }
 
     /**
