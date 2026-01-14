@@ -40,7 +40,7 @@ internal object InventoryModule : ModuleInterface {
                             .playerExecuted { _, ctx -> handleSearch(ctx) },
                     ).executesCatching { handleSearch(it) },
                 "Search nearby chests for specific items",
-                listOf("search", "searchinv", "invs"),
+                listOf("search", "searchinv", "invs", "sinv"),
             ),
         )
 
@@ -56,21 +56,19 @@ internal object InventoryModule : ModuleInterface {
     /**
      * Handles the search command execution.
      * @param ctx The command context containing the command source and arguments.
-     * @return An integer indicating the result of the command execution.
      */
-    private fun handleSearch(ctx: CommandContext<CommandSourceStack>): Int {
-        val player = ctx.source.sender as? Player ?: return 0
+    private fun handleSearch(ctx: CommandContext<CommandSourceStack>) {
+        val player = ctx.source.sender as? Player ?: return
         val material =
             runCatching { ctx.getArgument("material", ItemStack::class.java).type }.getOrNull()
                 ?: player.inventory.itemInMainHand.type
 
         if (material == Material.AIR) {
             player.sendActionBar(MM.deserialize(config.inventoryModule.i18n.noMaterialSpecified))
-            return 0
+            return
         }
 
-        search(player, material)
-        return 1
+        searchContainer(player, material)
     }
 
     /**
@@ -78,7 +76,7 @@ internal object InventoryModule : ModuleInterface {
      * @param player The player who initiated the search.
      * @param material The material to search for in the chests.
      */
-    private fun search(
+    private fun searchContainer(
         player: Player,
         material: Material,
     ) {
