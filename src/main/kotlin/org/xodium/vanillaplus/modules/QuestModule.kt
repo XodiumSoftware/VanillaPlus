@@ -21,8 +21,8 @@ import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.inventories.QuestInventory
-import org.xodium.vanillaplus.inventories.QuestInventory.questsMenu
+import org.xodium.vanillaplus.menus.QuestMenu
+import org.xodium.vanillaplus.menus.QuestMenu.questsMenu
 import org.xodium.vanillaplus.modules.QuestModule.TypeKey.Companion.entityType
 import org.xodium.vanillaplus.modules.QuestModule.TypeKey.Companion.material
 import org.xodium.vanillaplus.pdcs.PlayerPDC.quests
@@ -127,7 +127,7 @@ internal object QuestModule : ModuleInterface {
     }
 
     @EventHandler
-    fun on(event: InventoryClickEvent) = QuestInventory.inventoryClick(event)
+    fun on(event: InventoryClickEvent) = QuestMenu.inventoryClick(event)
 
     @EventHandler
     fun on(event: PlayerJoinEvent) {

@@ -1,6 +1,6 @@
 @file:Suppress("ktlint:standard:no-wildcard-imports")
 
-package org.xodium.vanillaplus.inventories
+package org.xodium.vanillaplus.menus
 
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
@@ -14,8 +14,8 @@ import org.bukkit.inventory.MenuType
 import org.xodium.vanillaplus.modules.QuestModule
 import org.xodium.vanillaplus.utils.Utils.MM
 
-/** Represents the inventory interface for quests. */
-internal object QuestInventory {
+/** Represents the quest menu in the game. */
+internal object QuestMenu {
     private val title = MM.deserialize("<b><gradient:#FFA751:#FFE259>Quests</gradient></b>")
 
     /**
@@ -74,7 +74,12 @@ internal object QuestInventory {
         difficulty: QuestModule.Quest.Difficulty,
         slots: IntArray,
     ) {
-        val picked = quests.filter { it.difficulty == difficulty }.take(slots.size)
+        val picked =
+            quests
+                .asSequence()
+                .filter { it.difficulty == difficulty }
+                .take(slots.size)
+                .toList()
 
         for (i in slots.indices) {
             val q = picked.getOrNull(i)
