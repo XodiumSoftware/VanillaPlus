@@ -3,6 +3,7 @@
 package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.command.brigadier.Commands
+import io.papermc.paper.command.brigadier.argument.ArgumentTypes
 import kotlinx.serialization.Serializable
 import net.kyori.adventure.title.Title
 import org.bukkit.Material
@@ -42,7 +43,29 @@ internal object QuestModule : ModuleInterface {
                 Commands
                     .literal("quests")
                     .requires { it.sender.hasPermission(perms[0]) }
-                    .playerExecuted { player, _ -> questInventory.openFor(player) },
+                    .playerExecuted { player, _ -> questInventory.openFor(player) }
+                    .then(
+                        Commands
+                            .literal("reset")
+                            .requires { it.sender.hasPermission(perms[1]) }
+                            .then(
+                                Commands
+                                    .argument("player", ArgumentTypes.player())
+                                    .playerExecuted { player, ctx ->
+                                        val target = ctx.getArgument("player", Player::class.java)
+                                        assignInitQuests(target)
+                                        target.sendMessage(
+                                            MM.deserialize("<green><b>Your weekly quests have been reset!</b></green>"),
+                                        )
+                                        player.sendMessage(
+                                            MM.deserialize(
+                                                "<green><b>Reset weekly quests for ${target.name}</b></green>",
+                                            ),
+                                        )
+                                        1
+                                    },
+                            ),
+                    ),
                 "This command allows you to open the quests interface",
                 listOf("q"),
             ),
@@ -54,6 +77,11 @@ internal object QuestModule : ModuleInterface {
                 "${instance.javaClass.simpleName}.quests".lowercase(),
                 "Allows use of the quests command",
                 PermissionDefault.TRUE,
+            ),
+            Permission(
+                "${instance.javaClass.simpleName}.quests.admin".lowercase(),
+                "Allows administration of quests (e.g., reset)",
+                PermissionDefault.OP,
             ),
         )
 
