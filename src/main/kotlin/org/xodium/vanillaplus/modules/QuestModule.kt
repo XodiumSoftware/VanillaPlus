@@ -62,7 +62,6 @@ internal object QuestModule : ModuleInterface {
                                                 "<green><b>Reset weekly quests for ${target.name}</b></green>",
                                             ),
                                         )
-                                        1
                                     },
                             ),
                     ),
