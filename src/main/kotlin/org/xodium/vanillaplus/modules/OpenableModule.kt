@@ -229,6 +229,7 @@ internal object OpenableModule : ModuleInterface {
             ?.getRelativeBlock(block)
     }
 
+    /** Represents the config of the module. */
     @Serializable
     data class Config(
         var enabled: Boolean = true,

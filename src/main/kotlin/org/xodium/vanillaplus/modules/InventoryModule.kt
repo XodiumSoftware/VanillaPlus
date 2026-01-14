@@ -108,11 +108,13 @@ internal object InventoryModule : ModuleInterface {
         }
     }
 
+    /** Represents the config of the module. */
     @Serializable
     data class Config(
         var enabled: Boolean = true,
         var i18n: I18n = I18n(),
     ) {
+        /** Represents the internationalization strings for the module. */
         @Serializable
         data class I18n(
             var noMaterialSpecified: String =

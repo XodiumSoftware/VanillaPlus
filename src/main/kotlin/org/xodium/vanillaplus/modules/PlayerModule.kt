@@ -251,6 +251,7 @@ internal object PlayerModule : ModuleInterface {
         )
     }
 
+    /** Represents the config of the module. */
     @Serializable
     data class Config(
         var enabled: Boolean = true,
@@ -260,12 +261,14 @@ internal object PlayerModule : ModuleInterface {
         var silkTouch: SilkTouchEnchantment = SilkTouchEnchantment(),
         var i18n: I18n = I18n(),
     ) {
+        /** Represents the settings for the Silk Touch enchantment. */
         @Serializable
         data class SilkTouchEnchantment(
             var allowSpawnerSilk: Boolean = true,
             var allowBuddingAmethystSilk: Boolean = true,
         )
 
+        /** Represents the internationalization strings for the module. */
         @Serializable
         data class I18n(
 //          var playerDeathMsg: String = "<killer> <gradient:#FFE259:#FFA751>⚔</gradient> <player>",

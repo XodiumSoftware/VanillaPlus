@@ -69,6 +69,7 @@ internal object SignModule : ModuleInterface {
         sign.update()
     }
 
+    /** Represents the config of the module. */
     @Serializable
     data class Config(
         var enabled: Boolean = true,

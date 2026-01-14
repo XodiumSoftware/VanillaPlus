@@ -54,6 +54,7 @@ internal object EntityModule : ModuleInterface {
             else -> false
         }
 
+    /** Represents the config of the module. */
     @Serializable
     data class Config(
         var enabled: Boolean = true,

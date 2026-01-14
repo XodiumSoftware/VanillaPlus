@@ -197,6 +197,7 @@ internal object ChatModule : ModuleInterface {
             .hoverEvent(MM.deserialize(config.chatModule.i18n.deleteMessage))
             .clickEvent(ClickEvent.callback { instance.server.deleteMessage(signedMessage) })
 
+    /** Represents the config of the module. */
     @Serializable
     data class Config(
         var enabled: Boolean = true,
@@ -221,6 +222,7 @@ internal object ChatModule : ModuleInterface {
         var deleteCross: String = "<dark_gray>[<dark_red><b>X</b></dark_red><dark_gray>]",
         var i18n: I18n = I18n(),
     ) {
+        /** Represents the internationalization strings for the module. */
         @Serializable
         data class I18n(
             var clickMe: String = "<gradient:#FFE259:#FFA751>Click me!</gradient>",
