@@ -8,6 +8,7 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.MenuType
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.modules.QuestModule
 import org.xodium.vanillaplus.pdcs.PlayerPDC.allQuestsCompleted
@@ -20,6 +21,18 @@ internal class QuestInventory : InventoryHolder {
     private val template: Inventory by lazy { instance.server.createInventory(this, size, title).apply { filler() } }
 
     override fun getInventory(): Inventory = template
+
+    // TODO
+    fun test(player: Player) {
+        @Suppress("UnstableApiUsage")
+        MenuType.GENERIC_9X1
+            .builder()
+            .title(title)
+            .build(player)
+            .apply {
+                topInventory.setItem(3, ItemStack.of(Material.DIAMOND))
+            }.open()
+    }
 
     /**
      * Opens the quest inventory for the specified player.
