@@ -57,10 +57,7 @@ internal object QuestModule : ModuleInterface {
                                         val targetResolver =
                                             ctx.getArgument("target", PlayerSelectorArgumentResolver::class.java)
                                         val target =
-                                            targetResolver.resolve(ctx.source).singleOrNull()
-                                                ?: return@playerExecuted (ctx.source.sender as Player).sendMessage(
-                                                    MM.deserialize(config.chatModule.i18n.playerIsNotOnline),
-                                                )
+                                            targetResolver.resolve(ctx.source).singleOrNull() ?: return@playerExecuted
                                         assignInitQuests(target)
                                         target.sendMessage(
                                             MM.deserialize("<green><b>Your weekly quests have been reset!</b></green>"),
