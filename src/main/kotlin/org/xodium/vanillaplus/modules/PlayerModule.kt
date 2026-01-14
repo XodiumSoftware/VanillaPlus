@@ -106,7 +106,7 @@ internal object PlayerModule : ModuleInterface {
     private fun playerJoin(event: PlayerJoinEvent) {
         val player = event.player
 
-        player.displayName(MM.deserialize(player.nickname ?: player.name))
+        player.displayName(MM.deserialize(player.nickname))
 
         if (config.playerModule.i18n.playerJoinMsg
                 .isEmpty()
@@ -242,7 +242,7 @@ internal object PlayerModule : ModuleInterface {
         name: String,
     ) {
         player.nickname = name
-        player.displayName(MM.deserialize(player.nickname ?: player.name))
+        player.displayName(MM.deserialize(player.nickname))
         player.sendActionBar(
             MM.deserialize(
                 config.playerModule.i18n.nicknameUpdated,
