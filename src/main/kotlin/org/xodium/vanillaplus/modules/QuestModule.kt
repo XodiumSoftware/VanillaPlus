@@ -22,6 +22,7 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.inventories.QuestInventory
+import org.xodium.vanillaplus.inventories.QuestInventory.questsMenu
 import org.xodium.vanillaplus.modules.QuestModule.TypeKey.Companion.entityType
 import org.xodium.vanillaplus.modules.QuestModule.TypeKey.Companion.material
 import org.xodium.vanillaplus.pdcs.PlayerPDC.quests
@@ -35,15 +36,13 @@ import kotlin.uuid.ExperimentalUuidApi
 
 /** Represents a module handling quest mechanics within the system. */
 internal object QuestModule : ModuleInterface {
-    private val questInventory = QuestInventory()
-
     override val cmds =
         listOf(
             CommandData(
                 Commands
                     .literal("quests")
                     .requires { it.sender.hasPermission(perms[0]) }
-                    .playerExecuted { player, _ -> questInventory.openFor(player) }
+                    .playerExecuted { player, _ -> player.questsMenu().open() }
                     .then(
                         Commands
                             .literal("reset")
@@ -128,7 +127,7 @@ internal object QuestModule : ModuleInterface {
     }
 
     @EventHandler
-    fun on(event: InventoryClickEvent) = questInventory.inventoryClick(event)
+    fun on(event: InventoryClickEvent) = QuestInventory.inventoryClick(event)
 
     @EventHandler
     fun on(event: PlayerJoinEvent) {

@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package org.xodium.vanillaplus.inventories
 
 import io.papermc.paper.datacomponent.DataComponentTypes
@@ -6,73 +8,68 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.Inventory
-import org.bukkit.inventory.InventoryHolder
+import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.MenuType
-import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.modules.QuestModule
 import org.xodium.vanillaplus.utils.Utils.MM
 
 /** Represents the inventory interface for quests. */
-internal class QuestInventory : InventoryHolder {
+internal object QuestInventory {
     private val title = MM.deserialize("<b><gradient:#FFA751:#FFE259>Quests</gradient></b>")
-    private val size = 9
-    private val template: Inventory by lazy { instance.server.createInventory(this, size, title).apply { filler() } }
 
-    override fun getInventory(): Inventory = template
-
-    // TODO
-    fun test(player: Player) {
-        @Suppress("UnstableApiUsage")
+    /**
+     * Opens the quests menu for the player.
+     * @receiver The player for whom to open the quests' menu.
+     * @return The InventoryView of the opened quests' menu.
+     */
+    @Suppress("UnstableApiUsage")
+    fun Player.questsMenu(): InventoryView =
         MenuType.GENERIC_9X1
             .builder()
             .title(title)
-            .build(player)
+            .build(this)
             .apply {
-                topInventory.setItem(3, ItemStack.of(Material.DIAMOND))
-            }.open()
-    }
+                topInventory.apply {
+                    val quests = QuestModule.getAssignedQuests(this@questsMenu)
 
-    /**
-     * Opens the quest inventory for the specified player.
-     * @param player The player for whom to open the inventory.
-     */
-    fun openFor(player: Player) {
-        val inv = instance.server.createInventory(this, size, title)
+                    filler()
 
-        inv.contents = template.contents
+                    placeQuests(this, quests, QuestModule.Quest.Difficulty.EASY, intArrayOf(0, 1))
+                    placeQuests(this, quests, QuestModule.Quest.Difficulty.MEDIUM, intArrayOf(3, 4))
+                    placeQuests(this, quests, QuestModule.Quest.Difficulty.HARD, intArrayOf(6))
 
-        val quests = QuestModule.getAssignedQuests(player)
+                    val allComplete = quests.isNotEmpty() && quests.all { it.requirement.isComplete }
+                    val allReward = QuestModule.config.questModule.allQuestsReward
+                    val requirementLine =
+                        if (allComplete) {
+                            "<gray>Requirement:</gray> <yellow>Complete all quests</yellow> <green><b>Completed</b></green>"
+                        } else {
+                            "<gray>Requirement:</gray> <yellow>Complete all quests</yellow>"
+                        }
 
-        placeQuests(inv, quests, QuestModule.Quest.Difficulty.EASY, intArrayOf(0, 1))
-        placeQuests(inv, quests, QuestModule.Quest.Difficulty.MEDIUM, intArrayOf(3, 4))
-        placeQuests(inv, quests, QuestModule.Quest.Difficulty.HARD, intArrayOf(6))
-
-        val allComplete = quests.isNotEmpty() && quests.all { it.requirement.isComplete }
-        val allReward = QuestModule.config.questModule.allQuestsReward
-        val requirementLine =
-            if (allComplete) {
-                "<gray>Requirement:</gray> <yellow>Complete all quests</yellow> <green><b>Completed</b></green>"
-            } else {
-                "<gray>Requirement:</gray> <yellow>Complete all quests</yellow>"
+                    setItem(
+                        8,
+                        createQuestItem(
+                            Material.ENDER_EYE,
+                            "<blue><b>Completing all quests reward</b></blue>",
+                            requirementLine,
+                            "<gray>Reward:</gray> <yellow>${allReward.description}</yellow>",
+                            glint = allComplete,
+                        ),
+                    )
+                }
             }
 
-        inv.setItem(
-            8,
-            createQuestItem(
-                Material.ENDER_EYE,
-                "<blue><b>Completing all quests reward</b></blue>",
-                requirementLine,
-                "<gray>Reward:</gray> <yellow>${allReward.description}</yellow>",
-                glint = allComplete,
-            ),
-        )
-
-        player.openInventory(inv)
-    }
-
+    /**
+     * Places quest items in the inventory based on their difficulty.
+     * @param inventory The inventory to place the quest items in.
+     * @param quests The list of quests to choose from.
+     * @param difficulty The difficulty level of the quests to place.
+     * @param slots The slots in the inventory where the quest items should be placed.
+     */
     private fun placeQuests(
-        inv: Inventory,
+        inventory: Inventory,
         quests: List<QuestModule.Quest>,
         difficulty: QuestModule.Quest.Difficulty,
         slots: IntArray,
@@ -82,7 +79,7 @@ internal class QuestInventory : InventoryHolder {
         for (i in slots.indices) {
             val q = picked.getOrNull(i)
 
-            inv.setItem(
+            inventory.setItem(
                 slots[i],
                 if (q == null) {
                     createQuestItem(
@@ -118,7 +115,10 @@ internal class QuestInventory : InventoryHolder {
      * @param event The inventory click event to handle.
      */
     fun inventoryClick(event: InventoryClickEvent) {
-        if (event.clickedInventory?.holder is QuestInventory) event.isCancelled = true
+        val view = event.view
+
+        if (event.clickedInventory != view.topInventory) return
+        if (view.title() == title) event.isCancelled = true
     }
 
     /**
@@ -160,12 +160,7 @@ internal class QuestInventory : InventoryHolder {
             setData(DataComponentTypes.CUSTOM_NAME, MM.deserialize(name))
             setData(
                 DataComponentTypes.LORE,
-                ItemLore.lore(
-                    listOf(
-                        MM.deserialize(line1),
-                        MM.deserialize(line2),
-                    ),
-                ),
+                ItemLore.lore(listOf(MM.deserialize(line1), MM.deserialize(line2))),
             )
             setData(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, glint)
         }
