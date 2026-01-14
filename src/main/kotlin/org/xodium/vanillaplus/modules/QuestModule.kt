@@ -413,6 +413,7 @@ internal object QuestModule : ModuleInterface {
         }
     }
 
+    /** Represents the config of the module. */
     @Serializable
     data class Config(
         var enabled: Boolean = true,
