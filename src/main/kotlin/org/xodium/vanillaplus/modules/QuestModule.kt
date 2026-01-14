@@ -9,8 +9,8 @@ import org.bukkit.Material
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
+import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.entity.EntityDeathEvent
-import org.bukkit.event.entity.EntityPickupItemEvent
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.inventory.ItemStack
@@ -114,13 +114,11 @@ internal object QuestModule : ModuleInterface {
     }
 
     @EventHandler(ignoreCancelled = true)
-    fun on(event: EntityPickupItemEvent) {
-        val itemStack = event.item.itemStack
-
+    fun on(event: BlockBreakEvent) {
         incrementMatchingQuests(
-            player = event.entity as? Player ?: return,
-            predicate = { it.type.matches(itemStack.type) },
-            incrementBy = itemStack.amount,
+            player = event.player,
+            predicate = { it.type.matches(event.block.type) },
+            incrementBy = 1,
         )
     }
 
