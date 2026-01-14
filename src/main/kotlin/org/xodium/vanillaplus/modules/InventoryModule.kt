@@ -2,8 +2,6 @@
 
 package org.xodium.vanillaplus.modules
 
-import com.mojang.brigadier.context.CommandContext
-import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes
 import kotlinx.serialization.Serializable
@@ -20,7 +18,6 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.BlockUtils.center
-import org.xodium.vanillaplus.utils.CommandUtils.executesCatching
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import org.xodium.vanillaplus.utils.PlayerUtils.getContainersAround
 import org.xodium.vanillaplus.utils.ScheduleUtils
@@ -37,8 +34,10 @@ internal object InventoryModule : ModuleInterface {
                     .then(
                         Commands
                             .argument("material", ArgumentTypes.itemStack())
-                            .playerExecuted { _, ctx -> handleSearch(ctx) },
-                    ).executesCatching { handleSearch(it) },
+                            .playerExecuted { player, ctx ->
+                                searchContainer(player, ctx.getArgument("material", ItemStack::class.java).type)
+                            },
+                    ).playerExecuted { player, _ -> searchContainer(player, player.inventory.itemInMainHand.type) },
                 "Search nearby chests for specific items",
                 listOf("search", "searchinv", "invs", "sinv"),
             ),
@@ -54,24 +53,6 @@ internal object InventoryModule : ModuleInterface {
         )
 
     /**
-     * Handles the search command execution.
-     * @param ctx The command context containing the command source and arguments.
-     */
-    private fun handleSearch(ctx: CommandContext<CommandSourceStack>) {
-        val player = ctx.source.sender as? Player ?: return
-        val material =
-            runCatching { ctx.getArgument("material", ItemStack::class.java).type }.getOrNull()
-                ?: player.inventory.itemInMainHand.type
-
-        if (material == Material.AIR) {
-            player.sendActionBar(MM.deserialize(config.inventoryModule.i18n.noMaterialSpecified))
-            return
-        }
-
-        searchContainer(player, material)
-    }
-
-    /**
      * Searches for chests within the specified radius of the player that contain the specified material.
      * @param player The player who initiated the search.
      * @param material The material to search for in the chests.
@@ -80,6 +61,11 @@ internal object InventoryModule : ModuleInterface {
         player: Player,
         material: Material,
     ) {
+        if (material == Material.AIR) {
+            player.sendActionBar(MM.deserialize(config.inventoryModule.i18n.noMaterialSpecified))
+            return
+        }
+
         val foundContainers = mutableListOf<Block>()
 
         for (container in player.getContainersAround()) {
