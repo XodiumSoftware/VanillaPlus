@@ -12,13 +12,12 @@ internal object AdminModule : ModuleInterface {
         serverLinks()
     }
 
-    private fun serverLinks() {
-        @Suppress("UnstableApiUsage")
-        for ((type, url) in config.adminModule.serverLinks) {
-            val uri = runCatching { URI.create(url) }.getOrNull() ?: continue
-            instance.server.serverLinks.setLink(type, uri)
+    /** Configures server links based on the module's configuration. */
+    @Suppress("UnstableApiUsage")
+    private fun serverLinks() =
+        config.adminModule.serverLinks.forEach { (type, url) ->
+            runCatching { URI.create(url) }.getOrNull()?.let { instance.server.serverLinks.setLink(type, it) }
         }
-    }
 
     /** Represents the config of the module. */
     @Serializable
