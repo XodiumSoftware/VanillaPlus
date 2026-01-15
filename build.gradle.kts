@@ -54,6 +54,7 @@ tasks {
 
 paperPluginYaml {
     main.set(group.toString())
+    website.set("https://github.com/XodiumSoftware/VanillaPlus")
     authors.add("Xodium")
     apiVersion.set(version)
     bootstrapper.set("org.xodium.vanillaplus.VanillaPlusBootstrap")
