@@ -8,11 +8,13 @@ import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import io.papermc.paper.registry.RegistryKey
 import io.papermc.paper.registry.event.RegistryEvents
 import io.papermc.paper.registry.keys.ItemTypeKeys
+import io.papermc.paper.registry.keys.tags.DialogTagKeys
 import io.papermc.paper.registry.keys.tags.EnchantmentTagKeys
 import io.papermc.paper.registry.keys.tags.ItemTypeTagKeys
 import io.papermc.paper.registry.tag.TagKey
 import io.papermc.paper.tag.TagEntry
 import net.kyori.adventure.key.Key
+import org.xodium.vanillaplus.dialogs.FaqDialog
 import org.xodium.vanillaplus.enchantments.*
 
 /** Main bootstrap class of the plugin. */
@@ -92,6 +94,13 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                     }
                 },
             )
+            registerEventHandler(
+                RegistryEvents.DIALOG.compose().newHandler { event ->
+                    event.registry().apply {
+                        register(FaqDialog.key) { builder -> FaqDialog.invoke(builder) }
+                    }
+                },
+            )
             registerEventHandler(LifecycleEvents.TAGS.postFlatten(RegistryKey.ENCHANTMENT)) { event ->
                 event.registrar().apply {
                     val enchants =
@@ -106,6 +115,11 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                     addToTag(EnchantmentTagKeys.TRADEABLE, enchants)
                     addToTag(EnchantmentTagKeys.NON_TREASURE, enchants)
                     addToTag(EnchantmentTagKeys.IN_ENCHANTING_TABLE, enchants)
+                }
+            }
+            registerEventHandler(LifecycleEvents.TAGS.postFlatten(RegistryKey.DIALOG)) { event ->
+                event.registrar().apply {
+                    addToTag(DialogTagKeys.QUICK_ACTIONS, setOf(FaqDialog.key))
                 }
             }
         }
