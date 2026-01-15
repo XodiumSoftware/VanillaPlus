@@ -6,7 +6,6 @@ import io.papermc.paper.registry.data.dialog.DialogBase
 import io.papermc.paper.registry.data.dialog.DialogRegistryEntry
 import io.papermc.paper.registry.data.dialog.type.DialogType
 import kotlinx.serialization.Serializable
-import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.interfaces.DialogInterface
@@ -27,7 +26,7 @@ internal object FaqDialog : DialogInterface {
         builder
             .base(
                 DialogBase
-                    .builder(Component.text(faqConfig.faqTitle))
+                    .builder(MM.deserialize(faqConfig.faqTitle))
                     .canCloseWithEscape(true)
                     .build(),
             ).type(DialogType.notice())
