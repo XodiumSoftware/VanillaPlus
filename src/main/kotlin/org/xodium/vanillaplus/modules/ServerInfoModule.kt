@@ -24,125 +24,6 @@ import java.net.URI
 /** Represents a module handling server info mechanics within the system. */
 internal object ServerInfoModule : ModuleInterface {
     @Suppress("UnstableApiUsage")
-    private val faqItems: List<ItemStack> =
-        listOf(
-            ItemStack.of(Material.WRITABLE_BOOK).apply {
-                setData(
-                    DataComponentTypes.CUSTOM_NAME,
-                    MM.deserialize("<b><gradient:#FFA751:#FFE259>Rules</gradient></b>"),
-                )
-                setData(DataComponentTypes.LORE, ItemLore.lore(listOf(MM.deserialize("cmd: /Rules"))))
-            },
-            ItemStack.of(Material.PAPER).apply {
-                setData(
-                    DataComponentTypes.CUSTOM_NAME,
-                    MM.deserialize("<b><gradient:#FFA751:#FFE259>Gamerules</gradient></b>"),
-                )
-                setData(
-                    DataComponentTypes.LORE,
-                    ItemLore.lore(
-                        listOf(
-                            MM.deserialize("> players_sleeping_percentage [49]"),
-                            MM.deserialize(
-                                "  > Requires 1 less player than half of the max players online to skip night.",
-                            ),
-                            MM.deserialize("> mob_griefing [false]"),
-                            MM.deserialize("  > Hostile mobs cannot damage/destroy blocks."),
-                        ),
-                    ),
-                )
-            },
-            ItemStack.of(Material.NAME_TAG).apply {
-                setData(
-                    DataComponentTypes.CUSTOM_NAME,
-                    MM.deserialize("<b><gradient:#FFA751:#FFE259>Nickname</gradient></b>"),
-                )
-                setData(
-                    DataComponentTypes.LORE,
-                    ItemLore.lore(
-                        listOf(
-                            MM.deserialize("cmd: /nickname <name>"),
-                            MM.deserialize("alias: /nick"),
-                            MM.deserialize(
-                                "info: Sets a custom colored nickname, use: birdflop to easily generate the code needed to execute. NOTE: don't forget to set the 'Color Format' to 'MiniMessage'. ",
-                            ),
-                        ),
-                    ),
-                )
-            },
-            ItemStack.of(Material.GOLDEN_HELMET).apply {
-                setData(
-                    DataComponentTypes.CUSTOM_NAME,
-                    MM.deserialize("<b><gradient:#FFA751:#FFE259>Leaderboard</gradient></b>"),
-                )
-                setData(
-                    DataComponentTypes.LORE,
-                    ItemLore.lore(
-                        listOf(
-                            MM.deserialize("cmd: /leaderboard"),
-                            MM.deserialize("alias: /board, /lb"),
-                            MM.deserialize(
-                                "info: Displays the amount of achievements completed.",
-                            ),
-                        ),
-                    ),
-                )
-            },
-            ItemStack.of(Material.COMPASS).apply {
-                setData(
-                    DataComponentTypes.CUSTOM_NAME,
-                    MM.deserialize("<b><gradient:#FFA751:#FFE259>Locator</gradient></b>"),
-                )
-                setData(
-                    DataComponentTypes.LORE,
-                    ItemLore.lore(
-                        listOf(
-                            MM.deserialize("cmd: /locator <color|hex|reset>"),
-                            MM.deserialize("alias: /lc"),
-                            MM.deserialize(
-                                "info: Sets the color of your locator bar icon.",
-                            ),
-                        ),
-                    ),
-                )
-            },
-            ItemStack.of(Material.CRIMSON_SIGN).apply {
-                setData(
-                    DataComponentTypes.CUSTOM_NAME,
-                    MM.deserialize("<b><gradient:#FFA751:#FFE259>Sign</gradient></b>"),
-                )
-                setData(
-                    DataComponentTypes.LORE,
-                    ItemLore.lore(
-                        listOf(
-                            MM.deserialize("cmd: /sign <line> <text>"),
-                            MM.deserialize("alias: /s"),
-                            MM.deserialize(
-                                "info: Sets the text of a specific line on the sign you are looking at. Supports MiniMessage formatting.",
-                            ),
-                        ),
-                    ),
-                )
-            },
-            ItemStack.of(Material.CHEST).apply {
-                setData(
-                    DataComponentTypes.CUSTOM_NAME,
-                    MM.deserialize("<b><gradient:#FFA751:#FFE259>Inventory Search</gradient></b>"),
-                )
-                setData(
-                    DataComponentTypes.LORE,
-                    ItemLore.lore(
-                        listOf(
-                            MM.deserialize("cmd: /invsearch <material?>"),
-                            MM.deserialize("alias: /search, /searchinv, /invs, /sinv"),
-                            MM.deserialize("info: Searches for items in chests in a chunk."),
-                        ),
-                    ),
-                )
-            },
-        )
-
-    @Suppress("UnstableApiUsage")
     private val faqDialog: DialogLike by lazy {
         Dialog.create { builder ->
             builder
@@ -150,7 +31,7 @@ internal object ServerInfoModule : ModuleInterface {
                 .base(
                     DialogBase
                         .builder(MM.deserialize(config.serverInfoModule.faqTitle))
-                        .body(faqItems.map { item -> DialogBody.item(item).build() })
+                        .body(buildFaqItems().map { item -> DialogBody.item(item).build() })
                         .build(),
                 ).type(DialogType.notice())
         }
@@ -187,6 +68,30 @@ internal object ServerInfoModule : ModuleInterface {
             runCatching { URI.create(url) }.getOrNull()?.let { instance.server.serverLinks.setLink(type, it) }
         }
 
+    @Suppress("UnstableApiUsage")
+    private fun buildFaqItems(): List<ItemStack> =
+        config.serverInfoModule.faqItems.map { entry ->
+            ItemStack.of(entry.material).apply {
+                if (entry.customName.isNotBlank()) {
+                    setData(DataComponentTypes.CUSTOM_NAME, MM.deserialize(entry.customName))
+                }
+
+                val loreLines = entry.lore.filter { it.isNotBlank() }
+
+                if (loreLines.isNotEmpty()) {
+                    setData(DataComponentTypes.LORE, ItemLore.lore(loreLines.map(MM::deserialize)))
+                }
+            }
+        }
+
+    /** Represents a FAQ item in the configuration. */
+    @Serializable
+    data class FaqItem(
+        var material: Material = Material.PAPER,
+        var customName: String = "",
+        var lore: List<String> = emptyList(),
+    )
+
     /** Represents the config of the module. */
     @Serializable
     data class Config(
@@ -199,5 +104,77 @@ internal object ServerInfoModule : ModuleInterface {
                 ServerLinks.Type.COMMUNITY to "https://discord.gg/jusYH9aYUh",
             ),
         var faqTitle: String = "<b><gradient:#CB2D3E:#EF473A>FAQ</gradient></b>",
+        var faqItems: List<FaqItem> =
+            listOf(
+                FaqItem(
+                    material = Material.WRITABLE_BOOK,
+                    customName = "<b><gradient:#FFA751:#FFE259>Rules</gradient></b>",
+                    lore = listOf("cmd: /Rules"),
+                ),
+                FaqItem(
+                    material = Material.PAPER,
+                    customName = "<b><gradient:#FFA751:#FFE259>Gamerules</gradient></b>",
+                    lore =
+                        listOf(
+                            "> players_sleeping_percentage [49]",
+                            "  > Requires 1 less player than half of the max players online to skip night.",
+                            "> mob_griefing [false]",
+                            "  > Hostile mobs cannot damage/destroy blocks.",
+                        ),
+                ),
+                FaqItem(
+                    material = Material.NAME_TAG,
+                    customName = "<b><gradient:#FFA751:#FFE259>Nickname</gradient></b>",
+                    lore =
+                        listOf(
+                            "cmd: /nickname <name>",
+                            "alias: /nick",
+                            "info: Sets a custom colored nickname,",
+                            "  use: birdflop to easily generate the code needed to execute.",
+                            "  NOTE: don't forget to set the 'Color Format' to 'MiniMessage'.",
+                        ),
+                ),
+                FaqItem(
+                    material = Material.GOLDEN_HELMET,
+                    customName = "<b><gradient:#FFA751:#FFE259>Leaderboard</gradient></b>",
+                    lore =
+                        listOf(
+                            "cmd: /leaderboard",
+                            "alias: /board, /lb",
+                            "info: Displays the amount of achievements completed.",
+                        ),
+                ),
+                FaqItem(
+                    material = Material.COMPASS,
+                    customName = "<b><gradient:#FFA751:#FFE259>Locator</gradient></b>",
+                    lore =
+                        listOf(
+                            "cmd: /locator <color|hex|reset>",
+                            "alias: /lc",
+                            "info: Sets the color of your locator bar icon.",
+                        ),
+                ),
+                FaqItem(
+                    material = Material.CRIMSON_SIGN,
+                    customName = "<b><gradient:#FFA751:#FFE259>Sign</gradient></b>",
+                    lore =
+                        listOf(
+                            "cmd: /sign <line> <text>",
+                            "alias: /s",
+                            "info: Sets the text of a specific line on the sign you are looking at.",
+                            "  Supports MiniMessage formatting.",
+                        ),
+                ),
+                FaqItem(
+                    material = Material.CHEST,
+                    customName = "<b><gradient:#FFA751:#FFE259>Inventory Search</gradient></b>",
+                    lore =
+                        listOf(
+                            "cmd: /invsearch <material?>",
+                            "alias: /search, /searchinv, /invs, /sinv",
+                            "info: Searches for items in chests in a chunk.",
+                        ),
+                ),
+            ),
     )
 }
