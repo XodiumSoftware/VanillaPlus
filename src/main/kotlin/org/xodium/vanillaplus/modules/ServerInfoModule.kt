@@ -27,6 +27,7 @@ internal object ServerInfoModule : ModuleInterface {
                     .literal("faq")
                     .requires { it.sender.hasPermission(perms[0]) }
                     .playerExecuted { player, _ ->
+                        // TODO: Cleanup
                         @Suppress("UnstableApiUsage")
                         val dialogBuilder =
                             Dialog.create { builder ->
