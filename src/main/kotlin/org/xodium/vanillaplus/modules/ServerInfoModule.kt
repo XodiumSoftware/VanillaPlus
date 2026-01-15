@@ -1,13 +1,19 @@
 package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.command.brigadier.Commands
+import io.papermc.paper.dialog.Dialog
+import io.papermc.paper.registry.data.dialog.DialogBase
+import io.papermc.paper.registry.data.dialog.body.DialogBody
+import io.papermc.paper.registry.data.dialog.type.DialogType
 import kotlinx.serialization.Serializable
+import net.kyori.adventure.text.Component
 import org.bukkit.ServerLinks
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.dialogs.FaqDialog
+import org.xodium.vanillaplus.dialogs.FaqDialog.buildFaqItems
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import java.net.URI
@@ -20,7 +26,22 @@ internal object ServerInfoModule : ModuleInterface {
                 Commands
                     .literal("faq")
                     .requires { it.sender.hasPermission(perms[0]) }
-                    .playerExecuted { player, _ -> player.showDialog(FaqDialog.get()) },
+                    .playerExecuted { player, _ ->
+                        @Suppress("UnstableApiUsage")
+                        val dialogBuilder =
+                            Dialog.create { builder ->
+                                builder
+                                    .empty()
+                                    .base(
+                                        DialogBase
+                                            .builder(Component.text(config.serverInfoModule.faqDialogConfig.faqTitle))
+                                            .body(buildFaqItems().map { item -> DialogBody.item(item).build() })
+                                            .canCloseWithEscape(true)
+                                            .build(),
+                                    ).type(DialogType.notice())
+                            }
+                        player.showDialog(dialogBuilder)
+                    },
                 "Opens the FAQ interface",
             ),
         )

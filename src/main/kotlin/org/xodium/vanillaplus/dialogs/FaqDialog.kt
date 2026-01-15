@@ -4,7 +4,6 @@ import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
 import io.papermc.paper.registry.data.dialog.DialogBase
 import io.papermc.paper.registry.data.dialog.DialogRegistryEntry
-import io.papermc.paper.registry.data.dialog.body.DialogBody
 import io.papermc.paper.registry.data.dialog.type.DialogType
 import kotlinx.serialization.Serializable
 import net.kyori.adventure.text.Component
@@ -28,7 +27,6 @@ internal object FaqDialog : DialogInterface {
             .base(
                 DialogBase
                     .builder(Component.text(faqConfig.faqTitle))
-                    .body(buildFaqItems().map { item -> DialogBody.item(item).build() })
                     .canCloseWithEscape(true)
                     .build(),
             ).type(DialogType.notice())
@@ -37,7 +35,7 @@ internal object FaqDialog : DialogInterface {
      * Builds a list of FAQ items from the configuration.
      * @return A list of ItemStack representing the FAQ items.
      */
-    private fun buildFaqItems(): List<ItemStack> =
+    fun buildFaqItems(): List<ItemStack> =
         faqConfig.faqItems.map { entry ->
             ItemStack.of(entry.material).apply {
                 if (entry.customName.isNotBlank()) {
