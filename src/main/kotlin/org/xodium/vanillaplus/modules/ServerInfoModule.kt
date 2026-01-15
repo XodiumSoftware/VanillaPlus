@@ -32,6 +32,7 @@ internal object ServerInfoModule : ModuleInterface {
                     DialogBase
                         .builder(MM.deserialize(config.serverInfoModule.faqTitle))
                         .body(buildFaqItems().map { item -> DialogBody.item(item).build() })
+                        .canCloseWithEscape(true)
                         .build(),
                 ).type(DialogType.notice())
         }
