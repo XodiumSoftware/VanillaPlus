@@ -54,7 +54,6 @@ internal object ServerInfoModule : ModuleInterface {
 
     init {
         serverLinks()
-        quickActions()
     }
 
     /** Configures server links based on the module's configuration. */
@@ -63,9 +62,6 @@ internal object ServerInfoModule : ModuleInterface {
         config.serverInfoModule.serverLinks.forEach { (type, url) ->
             runCatching { URI.create(url) }.getOrNull()?.let { instance.server.serverLinks.setLink(type, it) }
         }
-
-    // TODO
-    private fun quickActions() {}
 
     /** Represents the config of the module. */
     @Serializable
