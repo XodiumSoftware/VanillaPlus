@@ -10,6 +10,7 @@ import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.interfaces.DialogInterface
+import org.xodium.vanillaplus.utils.Utils.MM
 
 /** Represents an object handling faq dialog implementation within the system. */
 @Suppress("UnstableApiUsage")
@@ -39,13 +40,13 @@ internal object FaqDialog : DialogInterface {
         faqConfig.faqItems.map { entry ->
             ItemStack.of(entry.material).apply {
                 if (entry.customName.isNotBlank()) {
-                    setData(DataComponentTypes.CUSTOM_NAME, Component.text(entry.customName))
+                    setData(DataComponentTypes.CUSTOM_NAME, MM.deserialize(entry.customName))
                 }
 
                 val loreLines = entry.lore.filter { it.isNotBlank() }
 
                 if (loreLines.isNotEmpty()) {
-                    setData(DataComponentTypes.LORE, ItemLore.lore(loreLines.map { Component.text(it) }))
+                    setData(DataComponentTypes.LORE, ItemLore.lore(loreLines.map { MM.deserialize(it) }))
                 }
             }
         }

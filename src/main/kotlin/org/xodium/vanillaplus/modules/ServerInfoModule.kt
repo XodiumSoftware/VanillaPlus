@@ -6,7 +6,6 @@ import io.papermc.paper.registry.data.dialog.DialogBase
 import io.papermc.paper.registry.data.dialog.body.DialogBody
 import io.papermc.paper.registry.data.dialog.type.DialogType
 import kotlinx.serialization.Serializable
-import net.kyori.adventure.text.Component
 import org.bukkit.ServerLinks
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
@@ -16,6 +15,7 @@ import org.xodium.vanillaplus.dialogs.FaqDialog
 import org.xodium.vanillaplus.dialogs.FaqDialog.buildFaqItems
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
+import org.xodium.vanillaplus.utils.Utils.MM
 import java.net.URI
 
 /** Represents a module handling server info mechanics within the system. */
@@ -34,7 +34,7 @@ internal object ServerInfoModule : ModuleInterface {
                                     .empty()
                                     .base(
                                         DialogBase
-                                            .builder(Component.text(config.serverInfoModule.faqDialogConfig.faqTitle))
+                                            .builder(MM.deserialize(config.serverInfoModule.faqDialogConfig.faqTitle))
                                             .body(buildFaqItems().map { item -> DialogBody.item(item).build() })
                                             .canCloseWithEscape(true)
                                             .build(),
