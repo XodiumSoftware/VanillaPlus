@@ -6,8 +6,8 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import java.net.URI
 
-/** Represents a module handling admin mechanics within the system. */
-internal object AdminModule : ModuleInterface {
+/** Represents a module handling server info mechanics within the system. */
+internal object ServerInfoModule : ModuleInterface {
     init {
         serverLinks()
     }
@@ -15,7 +15,7 @@ internal object AdminModule : ModuleInterface {
     /** Configures server links based on the module's configuration. */
     @Suppress("UnstableApiUsage")
     private fun serverLinks() =
-        config.adminModule.serverLinks.forEach { (type, url) ->
+        config.serverInfoModule.serverLinks.forEach { (type, url) ->
             runCatching { URI.create(url) }.getOrNull()?.let { instance.server.serverLinks.setLink(type, it) }
         }
 

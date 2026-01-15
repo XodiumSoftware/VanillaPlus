@@ -49,7 +49,6 @@ internal class VanillaPlus : JavaPlugin() {
         ).forEach { module -> module.register() }
 
         listOf(
-            AdminModule,
             BooksModule,
             ChatModule,
             DimensionsModule,
@@ -60,6 +59,7 @@ internal class VanillaPlus : JavaPlugin() {
             OpenableModule,
             PlayerModule,
             ScoreBoardModule,
+            ServerInfoModule,
             SignModule,
             SitModule,
             TabListModule,

@@ -23,7 +23,6 @@ import kotlin.time.measureTime
 /** Configuration data for the plugin. */
 @Serializable
 internal data class ConfigData(
-    var adminModule: AdminModule.Config = AdminModule.Config(),
     var booksModule: BooksModule.Config = BooksModule.Config(),
     var chatModule: ChatModule.Config = ChatModule.Config(),
     var dimensionsModule: DimensionsModule.Config = DimensionsModule.Config(),
@@ -34,6 +33,7 @@ internal data class ConfigData(
     var openableModule: OpenableModule.Config = OpenableModule.Config(),
     var playerModule: PlayerModule.Config = PlayerModule.Config(),
     var scoreboardModule: ScoreBoardModule.Config = ScoreBoardModule.Config(),
+    var serverInfoModule: ServerInfoModule.Config = ServerInfoModule.Config(),
     var signModule: SignModule.Config = SignModule.Config(),
     var sitModule: SitModule.Config = SitModule.Config(),
     var tabListModule: TabListModule.Config = TabListModule.Config(),
