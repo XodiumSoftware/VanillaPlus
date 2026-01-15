@@ -7,19 +7,27 @@ import io.papermc.paper.registry.data.dialog.DialogRegistryEntry
 import io.papermc.paper.registry.data.dialog.body.DialogBody
 import io.papermc.paper.registry.data.dialog.type.DialogType
 import kotlinx.serialization.Serializable
+import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.interfaces.DialogInterface
-import org.xodium.vanillaplus.utils.Utils.MM
 
 /** Represents an object handling faq dialog implementation within the system. */
 @Suppress("UnstableApiUsage")
 internal object FaqDialog : DialogInterface {
+    private val faqConfig: Config
+        get() =
+            try {
+                config.serverInfoModule.faqDialogConfig
+            } catch (_: UninitializedPropertyAccessException) {
+                Config()
+            }
+
     override fun invoke(builder: DialogRegistryEntry.Builder): DialogRegistryEntry.Builder =
         builder
             .base(
                 DialogBase
-                    .builder(MM.deserialize(config.serverInfoModule.faqDialogConfig.faqTitle))
+                    .builder(Component.text(faqConfig.faqTitle))
                     .body(buildFaqItems().map { item -> DialogBody.item(item).build() })
                     .canCloseWithEscape(true)
                     .build(),
@@ -30,16 +38,16 @@ internal object FaqDialog : DialogInterface {
      * @return A list of ItemStack representing the FAQ items.
      */
     private fun buildFaqItems(): List<ItemStack> =
-        config.serverInfoModule.faqDialogConfig.faqItems.map { entry ->
+        faqConfig.faqItems.map { entry ->
             ItemStack.of(entry.material).apply {
                 if (entry.customName.isNotBlank()) {
-                    setData(DataComponentTypes.CUSTOM_NAME, MM.deserialize(entry.customName))
+                    setData(DataComponentTypes.CUSTOM_NAME, Component.text(entry.customName))
                 }
 
                 val loreLines = entry.lore.filter { it.isNotBlank() }
 
                 if (loreLines.isNotEmpty()) {
-                    setData(DataComponentTypes.LORE, ItemLore.lore(loreLines.map(MM::deserialize)))
+                    setData(DataComponentTypes.LORE, ItemLore.lore(loreLines.map { Component.text(it) }))
                 }
             }
         }
