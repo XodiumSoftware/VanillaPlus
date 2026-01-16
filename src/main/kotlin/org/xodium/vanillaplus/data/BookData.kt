@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 import net.kyori.adventure.inventory.Book
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.Utils.MM
 
 /**
  * Represents the data structure for a book in the game.
@@ -26,5 +26,6 @@ internal data class BookData(
      * Converts this [BookData] instance to a [Book] instance.
      * @return A [Book] instance with the properties of this [BookData].
      */
-    fun toBook(): Book = Book.book(title.mm(), author.mm(), pages.map { it.joinToString("\n").mm() })
+    fun toBook(): Book =
+        Book.book(MM.deserialize(title), MM.deserialize(author), pages.map { MM.deserialize(it.joinToString("\n")) })
 }

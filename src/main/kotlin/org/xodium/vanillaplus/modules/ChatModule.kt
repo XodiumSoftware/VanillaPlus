@@ -4,6 +4,8 @@ import com.destroystokyo.paper.event.player.PlayerSetSpawnEvent
 import com.mojang.brigadier.arguments.StringArgumentType
 import io.papermc.paper.chat.ChatRenderer
 import io.papermc.paper.command.brigadier.Commands
+import io.papermc.paper.command.brigadier.argument.ArgumentTypes
+import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver
 import io.papermc.paper.event.player.AsyncChatEvent
 import kotlinx.serialization.Serializable
 import net.kyori.adventure.chat.SignedMessage
@@ -21,13 +23,9 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.CommandUtils.executesCatching
-import org.xodium.vanillaplus.utils.ExtUtils.clickOpenUrl
-import org.xodium.vanillaplus.utils.ExtUtils.clickRunCmd
-import org.xodium.vanillaplus.utils.ExtUtils.clickSuggestCmd
-import org.xodium.vanillaplus.utils.ExtUtils.face
-import org.xodium.vanillaplus.utils.ExtUtils.mm
-import org.xodium.vanillaplus.utils.ExtUtils.prefix
-import java.util.concurrent.CompletableFuture
+import org.xodium.vanillaplus.utils.PlayerUtils.face
+import org.xodium.vanillaplus.utils.Utils.MM
+import org.xodium.vanillaplus.utils.Utils.prefix
 
 /** Represents a module handling chat mechanics within the system. */
 internal object ChatModule : ModuleInterface {
@@ -39,14 +37,8 @@ internal object ChatModule : ModuleInterface {
                     .requires { it.sender.hasPermission(perms[0]) }
                     .then(
                         Commands
-                            .argument("target", StringArgumentType.string())
-                            .suggests { _, builder ->
-                                instance.server.onlinePlayers
-                                    .map { it.name }
-                                    .filter { it.lowercase().startsWith(builder.remaining.lowercase()) }
-                                    .forEach(builder::suggest)
-                                CompletableFuture.completedFuture(builder.build())
-                            }.then(
+                            .argument("target", ArgumentTypes.player())
+                            .then(
                                 Commands
                                     .argument("message", StringArgumentType.greedyString())
                                     .executesCatching {
@@ -57,13 +49,12 @@ internal object ChatModule : ModuleInterface {
                                         }
 
                                         val sender = it.source.sender as Player
-                                        val targetName = it.getArgument("target", String().javaClass)
+                                        val targetResolver =
+                                            it.getArgument("target", PlayerSelectorArgumentResolver::class.java)
                                         val target =
-                                            instance.server
-                                                .getPlayer(targetName)
+                                            targetResolver.resolve(it.source).singleOrNull()
                                                 ?: return@executesCatching sender.sendMessage(
-                                                    config.chatModule.i18n.playerIsNotOnline
-                                                        .mm(),
+                                                    MM.deserialize(config.chatModule.i18n.playerIsNotOnline),
                                                 )
                                         val message = it.getArgument("message", String().javaClass)
 
@@ -86,58 +77,72 @@ internal object ChatModule : ModuleInterface {
         )
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    fun on(event: AsyncChatEvent) {
+    fun on(event: AsyncChatEvent) = asyncChat(event)
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    fun on(event: PlayerJoinEvent) = playerJoin(event)
+
+    @EventHandler
+    fun on(event: PlayerSetSpawnEvent) = playerSetSpawn(event)
+
+    /**
+     * Handles asynchronous chat events.
+     * @param event The [AsyncChatEvent] to be processed.
+     */
+    private fun asyncChat(event: AsyncChatEvent) {
         event.renderer(ChatRenderer.defaultRenderer())
         event.renderer { player, displayName, message, audience ->
             var base =
-                config.chatModule.chatFormat.mm(
-                    Placeholder.component("player_head", "<head:${player.uniqueId}>".mm()),
+                MM.deserialize(
+                    config.chatModule.chatFormat,
+                    Placeholder.component("player_head", MM.deserialize("<head:${player.uniqueId}>")),
                     Placeholder.component(
                         "player",
                         displayName
                             .clickEvent(ClickEvent.suggestCommand("/w ${player.name} "))
                             .hoverEvent(
-                                HoverEvent.showText(
-                                    config.chatModule.i18n.clickToWhisper
-                                        .mm(),
-                                ),
+                                HoverEvent.showText(MM.deserialize(config.chatModule.i18n.clickToWhisper)),
                             ),
                     ),
                     Placeholder.component("message", message),
                 )
+
             if (audience == player) base = base.appendSpace().append(createDeleteCross(event.signedMessage()))
             base
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    fun on(event: PlayerJoinEvent) {
+    /**
+     * Handles player join events.
+     * @param event The [PlayerJoinEvent] to be processed.
+     */
+    private fun playerJoin(event: PlayerJoinEvent) {
         val player = event.player
 
         var imageIndex = 0
 
         player.sendMessage(
-            Regex("<image>")
-                .replace(config.chatModule.welcomeText.joinToString("\n")) { "<image${++imageIndex}>" }
-                .mm(
-                    Placeholder.component("player", player.displayName()),
-                    *player
-                        .face()
-                        .lines()
-                        .mapIndexed { i, line -> Placeholder.component("image${i + 1}", line.mm()) }
-                        .toTypedArray(),
-                ),
+            MM.deserialize(
+                Regex("<image>").replace(config.chatModule.welcomeText.joinToString("\n")) { "<image${++imageIndex}>" },
+                Placeholder.component("player", player.displayName()),
+                *player
+                    .face()
+                    .lines()
+                    .mapIndexed { i, line -> Placeholder.component("image${i + 1}", MM.deserialize(line)) }
+                    .toTypedArray(),
+            ),
         )
     }
 
-    @EventHandler
-    fun on(event: PlayerSetSpawnEvent) {
+    /**
+     * Handles player set spawn events.
+     * @param event The [PlayerSetSpawnEvent] to be processed.
+     */
+    private fun playerSetSpawn(event: PlayerSetSpawnEvent) {
         event.notification =
-            config.chatModule.i18n.playerSetSpawn.mm(
-                Placeholder.component(
-                    "notification",
-                    event.notification ?: return,
-                ),
+            MM.deserialize(
+                config.chatModule.i18n.playerSetSpawn,
+                Placeholder.component("notification", event.notification ?: return),
             )
     }
 
@@ -153,38 +158,30 @@ internal object ChatModule : ModuleInterface {
         message: String,
     ) {
         sender.sendMessage(
-            config.chatModule.whisperToFormat.mm(
+            MM.deserialize(
+                config.chatModule.whisperToFormat,
                 Placeholder.component(
                     "player",
                     target
                         .displayName()
                         .clickEvent(ClickEvent.suggestCommand("/w ${target.name} "))
-                        .hoverEvent(
-                            HoverEvent.showText(
-                                config.chatModule.i18n.clickToWhisper
-                                    .mm(),
-                            ),
-                        ),
+                        .hoverEvent(HoverEvent.showText(MM.deserialize(config.chatModule.i18n.clickToWhisper))),
                 ),
-                Placeholder.component("message", message.mm()),
+                Placeholder.component("message", MM.deserialize(message)),
             ),
         )
 
         target.sendMessage(
-            config.chatModule.whisperFromFormat.mm(
+            MM.deserialize(
+                config.chatModule.whisperFromFormat,
                 Placeholder.component(
                     "player",
                     sender
                         .displayName()
                         .clickEvent(ClickEvent.suggestCommand("/w ${sender.name} "))
-                        .hoverEvent(
-                            HoverEvent.showText(
-                                config.chatModule.i18n.clickToWhisper
-                                    .mm(),
-                            ),
-                        ),
+                        .hoverEvent(HoverEvent.showText(MM.deserialize(config.chatModule.i18n.clickToWhisper))),
                 ),
-                Placeholder.component("message", message.mm()),
+                Placeholder.component("message", MM.deserialize(message)),
             ),
         )
     }
@@ -195,18 +192,12 @@ internal object ChatModule : ModuleInterface {
      * @return A [net.kyori.adventure.text.Component] representing the delete cross with hover text and click action.
      */
     private fun createDeleteCross(signedMessage: SignedMessage): Component =
-        config.chatModule.deleteCross
-            .mm()
-            .hoverEvent(
-                config.chatModule.i18n.deleteMessage
-                    .mm(),
-            ).clickEvent(
-                ClickEvent.callback {
-                    instance.server
-                        .deleteMessage(signedMessage)
-                },
-            )
+        MM
+            .deserialize(config.chatModule.deleteCross)
+            .hoverEvent(MM.deserialize(config.chatModule.i18n.deleteMessage))
+            .clickEvent(ClickEvent.callback { instance.server.deleteMessage(signedMessage) })
 
+    /** Represents the config of the module. */
     @Serializable
     data class Config(
         var enabled: Boolean = true,
@@ -216,21 +207,11 @@ internal object ChatModule : ModuleInterface {
                 "<gradient:#FFA751:#FFE259>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
                 "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
                 "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
-                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gradient:#CB2D3E:#EF473A>Welcome</gradient> <player> <white><sprite:item/name_tag></white>"
-                    .clickSuggestCmd(
-                        "/nickname",
-                        "<gradient:#FFE259:#FFA751>Set your nickname!</gradient>",
-                    ),
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gradient:#CB2D3E:#EF473A>Welcome</gradient> <player> <click:suggest_command:'/nickname '><hover:show_text:'<gradient:#FFE259:#FFA751>Set your nickname!</gradient>'><white><sprite:items:item/name_tag></white></hover></click> <click:suggest_command:'/locator '><hover:show_text:'<gradient:#FFE259:#FFA751>Change your locator color!</gradient>'><white><sprite:items:item/compass_00></white></hover></click>",
                 "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
-                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gradient:#CB2D3E:#EF473A>Check out</gradient><gray>:",
-                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <white><sprite:item/writable_book></white>".clickRunCmd(
-                    "/rules",
-                    "<gradient:#FFE259:#FFA751>View the server /rules</gradient>",
-                ),
-                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <white><sprite:item/light></white>".clickOpenUrl(
-                    "https://illyria.fandom.com",
-                    "<gradient:#FFE259:#FFA751>Visit the wiki!</gradient>",
-                ),
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gradient:#CB2D3E:#EF473A>Check out</gradient><gray>:</gray>",
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gray>✦</gray> <click:run_command:'/rules'><gradient:#13547a:#80d0c7>/rules</gradient></click:run_command>",
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gray>✦</gray> <click:open_url:'https://illyria.fandom.com'><gradient:#13547a:#80d0c7>wiki</gradient></click:open_url>",
                 "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
                 "<gradient:#FFA751:#FFE259>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
             ),
@@ -241,14 +222,17 @@ internal object ChatModule : ModuleInterface {
         var deleteCross: String = "<dark_gray>[<dark_red><b>X</b></dark_red><dark_gray>]",
         var i18n: I18n = I18n(),
     ) {
+        /** Represents the internationalization strings for the module. */
         @Serializable
         data class I18n(
             var clickMe: String = "<gradient:#FFE259:#FFA751>Click me!</gradient>",
             var clickToWhisper: String = "<gradient:#FFE259:#FFA751>Click to Whisper</gradient>",
-            var playerIsNotOnline: String = "${instance.prefix} <gradient:#CB2D3E:#EF473A>Player is not Online!</gradient>",
+            var playerIsNotOnline: String =
+                "${instance.prefix} <gradient:#CB2D3E:#EF473A>Player is not Online!</gradient>",
             var deleteMessage: String = "<gradient:#FFE259:#FFA751>Click to delete your message</gradient>",
             var clickToClipboard: String = "<gradient:#FFE259:#FFA751>Click to copy position to clipboard</gradient>",
-            var playerSetSpawn: String = "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> <notification>",
+            var playerSetSpawn: String =
+                "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> <notification>",
         )
     }
 }

@@ -17,8 +17,7 @@ internal interface EnchantmentInterface {
      * Retrieves the configuration data associated with the module.
      * @return A [ConfigData] object representing the configuration for the module.
      */
-    val config: ConfigData
-        get() = configData
+    val config: ConfigData get() = configData
 
     /**
      * The unique typed key identifies this enchantment in the registry.

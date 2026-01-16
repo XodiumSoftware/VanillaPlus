@@ -54,6 +54,7 @@ internal object EntityModule : ModuleInterface {
             else -> false
         }
 
+    /** Represents the config of the module. */
     @Serializable
     data class Config(
         var enabled: Boolean = true,
@@ -63,6 +64,6 @@ internal object EntityModule : ModuleInterface {
         var disableEndermanGrief: Boolean = true,
         var disableGhastGrief: Boolean = true,
         var disableWitherGrief: Boolean = true,
-        var entityEggDropChance: Double = 0.1,
+        var entityEggDropChance: Double = 0.001,
     )
 }

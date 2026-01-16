@@ -37,15 +37,15 @@ internal object ScoreBoardModule : ModuleInterface {
         )
 
     @EventHandler
-    fun on(event: PlayerJoinEvent) = handleJoin(event)
+    fun on(event: PlayerJoinEvent) = playerJoin(event)
 
     /**
      * Applies the correct scoreboard to players when they join.
      * @param event The [PlayerJoinEvent] triggered when the player joins.
      */
-    private fun handleJoin(event: PlayerJoinEvent) {
+    private fun playerJoin(event: PlayerJoinEvent) {
         event.player.scoreboard =
-            if (event.player.scoreboardVisibility == true) {
+            if (event.player.scoreboardVisibility) {
                 instance.server.scoreboardManager.newScoreboard
             } else {
                 instance.server.scoreboardManager.mainScoreboard
@@ -57,7 +57,7 @@ internal object ScoreBoardModule : ModuleInterface {
      * @param player The player whose scoreboard sidebar should be toggled.
      */
     private fun toggle(player: Player) {
-        if (player.scoreboardVisibility == true) {
+        if (player.scoreboardVisibility) {
             player.scoreboard = instance.server.scoreboardManager.mainScoreboard
             player.scoreboardVisibility = false
         } else {
@@ -66,6 +66,7 @@ internal object ScoreBoardModule : ModuleInterface {
         }
     }
 
+    /** Represents the config of the module. */
     @Serializable
     data class Config(
         var enabled: Boolean = true,

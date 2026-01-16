@@ -4,19 +4,14 @@ package org.xodium.vanillaplus.modules
 
 import kotlinx.serialization.Serializable
 import net.kyori.adventure.audience.Audience
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.JoinConfiguration
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
-import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
-import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.weather.ThunderChangeEvent
 import org.bukkit.event.weather.WeatherChangeEvent
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.utils.ExtUtils.mm
-import java.util.*
+import org.xodium.vanillaplus.utils.Utils.MM
 import kotlin.math.roundToInt
 
 /** Represents a module handling tab-list mechanics within the system. */
@@ -28,52 +23,36 @@ internal object TabListModule : ModuleInterface {
     private const val COLOR_FORMAT = "#%02X%02X%02X"
 
     init {
-        instance.server.onlinePlayers.forEach {
-            updateTabList(it)
-            updatePlayerDisplayName(it)
-        }
-        // TPS Check.
         instance.server.scheduler.runTaskTimer(
             instance,
-            Runnable { instance.server.onlinePlayers.forEach { updateTabList(it) } },
+            Runnable {
+                instance.server.onlinePlayers.forEach { player ->
+                    tablist(player)
+                    player.playerListName(player.displayName())
+                }
+            },
             config.tabListModule.initDelayInTicks,
             config.tabListModule.intervalInTicks,
         )
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    fun on(event: PlayerJoinEvent) {
-        updateTabList(event.player)
-        updatePlayerDisplayName(event.player)
-    }
+    fun on(event: WeatherChangeEvent) = event.world.players.forEach { player -> tablist(player) }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    fun on(event: WeatherChangeEvent) = event.world.players.forEach { updateTabList(it) }
-
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    fun on(event: ThunderChangeEvent) = event.world.players.forEach { updateTabList(it) }
-
-    /**
-     * Update the player's display name in the tab list.
-     * @param player the player to update.
-     */
-    fun updatePlayerDisplayName(player: Player): Unit = player.playerListName(player.displayName())
+    fun on(event: ThunderChangeEvent) = event.world.players.forEach { player -> tablist(player) }
 
     /**
      * Update the tab list for the given audience.
      * @param audience the audience to update the tab list for.
      */
-    private fun updateTabList(audience: Audience) {
-        val joinConfig = JoinConfiguration.separator(Component.newline())
-
+    private fun tablist(audience: Audience) {
         audience.sendPlayerListHeaderAndFooter(
-            Component.join(joinConfig, config.tabListModule.header.mm()),
-            Component.join(
-                joinConfig,
-                config.tabListModule.footer.mm(
-                    Placeholder.component("weather", getWeather().mm()),
-                    Placeholder.component("tps", getTps().mm()),
-                ),
+            MM.deserialize(config.tabListModule.header.joinToString("\n")),
+            MM.deserialize(
+                config.tabListModule.footer.joinToString("\n"),
+                Placeholder.component("weather", MM.deserialize(getWeather())),
+                Placeholder.component("tps", MM.deserialize(getTps())),
             ),
         )
     }
@@ -87,7 +66,7 @@ internal object TabListModule : ModuleInterface {
         val clampedTps = tps.coerceIn(MIN_TPS, MAX_TPS)
         val ratio = clampedTps / MAX_TPS
         val color = getColorForTps(ratio)
-        val formattedTps = String.format(Locale.ENGLISH, TPS_DECIMAL_FORMAT, tps)
+        val formattedTps = TPS_DECIMAL_FORMAT.format(tps)
 
         return "<color:$color>$formattedTps</color>"
     }
@@ -102,7 +81,7 @@ internal object TabListModule : ModuleInterface {
         val r = (MAX_COLOR_VALUE * (1 - clamped)).roundToInt()
         val g = (MAX_COLOR_VALUE * clamped).roundToInt()
 
-        return String.format(Locale.ENGLISH, COLOR_FORMAT, r, g, 0)
+        return COLOR_FORMAT.format(r, g, 0)
     }
 
     /**
@@ -119,6 +98,7 @@ internal object TabListModule : ModuleInterface {
         }
     }
 
+    /** Represents the config of the module. */
     @Serializable
     data class Config(
         var enabled: Boolean = true,
@@ -136,6 +116,7 @@ internal object TabListModule : ModuleInterface {
             ),
         var i18n: I18n = I18n(),
     ) {
+        /** Represents the internationalization strings for the module. */
         @Serializable
         data class I18n(
             var weatherThundering: String = "<red>\uD83C\uDF29<reset>",

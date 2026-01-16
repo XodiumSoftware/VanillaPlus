@@ -23,11 +23,10 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.AdjacentBlockData
 import org.xodium.vanillaplus.data.SoundData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import java.util.*
 
 /** Represents a module handling openable blocks mechanics within the system. */
 internal object OpenableModule : ModuleInterface {
-    private val disallowedKnockGameModes = EnumSet.of(GameMode.CREATIVE, GameMode.SPECTATOR)
+    private val disallowedKnockGameModes = setOf(GameMode.CREATIVE, GameMode.SPECTATOR)
     private val possibleNeighbours: Set<AdjacentBlockData> =
         setOf(
             AdjacentBlockData(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
@@ -41,13 +40,13 @@ internal object OpenableModule : ModuleInterface {
         )
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    fun on(event: PlayerInteractEvent) = handleInteract(event)
+    fun on(event: PlayerInteractEvent) = playerInteract(event)
 
     /**
      * Handles block interactions and delegates to the correct click handler.
      * @param event The [PlayerInteractEvent] triggered by the player.
      */
-    private fun handleInteract(event: PlayerInteractEvent) {
+    private fun playerInteract(event: PlayerInteractEvent) {
         val clickedBlock = event.clickedBlock ?: return
         if (!isValidInteraction(event)) return
 
@@ -230,6 +229,7 @@ internal object OpenableModule : ModuleInterface {
             ?.getRelativeBlock(block)
     }
 
+    /** Represents the config of the module. */
     @Serializable
     data class Config(
         var enabled: Boolean = true,
