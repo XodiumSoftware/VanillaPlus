@@ -48,7 +48,7 @@ internal class VanillaPlus : JavaPlugin() {
             WoodLogRecipe,
         ).forEach { module -> module.register() }
 
-        listOfNotNull(
+        listOf(
             BooksModule,
             ChatModule,
             DimensionsModule,
@@ -59,6 +59,7 @@ internal class VanillaPlus : JavaPlugin() {
             OpenableModule,
             PlayerModule,
             ScoreBoardModule,
+            ServerInfoModule,
             SignModule,
             SitModule,
             TabListModule,
