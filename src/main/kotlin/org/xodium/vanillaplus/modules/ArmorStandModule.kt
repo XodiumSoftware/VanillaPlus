@@ -2,10 +2,13 @@ package org.xodium.vanillaplus.modules
 
 import kotlinx.serialization.Serializable
 import org.bukkit.entity.ArmorStand
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractAtEntityEvent
+import org.bukkit.inventory.InventoryView
+import org.bukkit.inventory.MenuType
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.menus.ArmorStandMenu.menu
+import org.xodium.vanillaplus.utils.Utils.MM
 
 /** Represents a module handling armor stand mechanics within the system. */
 internal object ArmorStandModule : ModuleInterface {
@@ -25,6 +28,25 @@ internal object ArmorStandModule : ModuleInterface {
         event.isCancelled = true
         armorStand.menu(player).open()
     }
+
+    /**
+     * Creates a menu for the given ArmorStand and Player.
+     * @receiver ArmorStand The ArmorStand for which the menu is created.
+     * @param player Player The player for whom the menu is created.
+     * @return InventoryView The created menu view.
+     */
+    @Suppress("UnstableApiUsage")
+    private fun ArmorStand.menu(player: Player): InventoryView =
+        MenuType
+            .GENERIC_9X6
+            .builder()
+            .title(customName() ?: MM.deserialize(name))
+            .build(player)
+            .apply {
+                topInventory
+                    .apply {
+                    }
+            }
 
     /** Represents the config of the module. */
     @Serializable
