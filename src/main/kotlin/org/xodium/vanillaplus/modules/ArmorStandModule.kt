@@ -104,13 +104,14 @@ internal object ArmorStandModule : ModuleInterface {
     }
 
     /**
-     * Toggles a boolean property of the ArmorStand and updates the corresponding inventory item.
-     * @param armorStand ArmorStand The ArmorStand whose property is to be toggled.
-     * @param inventory Inventory The inventory where the toggle item is located.
+     * Toggles a boolean property of the [ArmorStand] and updates the corresponding inventory item.
+     * @param armorStand [ArmorStand] The ArmorStand whose property is to be toggled.
+     * @param inventory [Inventory] The inventory where the toggle item is located.
      * @param slot Int The slot index of the toggle item in the inventory.
      * @param getCurrentState Function to get the current state of the property.
      * @param setState Function to set the new state of the property.
      */
+    @Suppress("UnstableApiUsage")
     private fun toggleArmorStandProperty(
         armorStand: ArmorStand,
         inventory: Inventory,
@@ -119,10 +120,29 @@ internal object ArmorStandModule : ModuleInterface {
         setState: (ArmorStand, Boolean) -> Unit,
     ) {
         val newState = !getCurrentState(armorStand)
+        val currentItem = inventory.getItem(slot) ?: return
+        val displayName = currentItem.getData(DataComponentTypes.ITEM_NAME)
 
         setState(armorStand, newState)
-        inventory.setItem(slot, ItemStack.of(if (newState) Material.GREEN_WOOL else Material.RED_WOOL))
+        inventory.setItem(
+            slot,
+            ItemStack.of(if (newState) Material.GREEN_WOOL else Material.RED_WOOL).apply {
+                displayName?.let { setData(DataComponentTypes.ITEM_NAME, it) }
+            },
+        )
     }
+
+    /**
+     * Creates a toggle item with the specified material and display name.
+     * @param material [Material] The material of the item.
+     * @param displayName String The display name of the item.
+     * @return [ItemStack] The created toggle item.
+     */
+    @Suppress("UnstableApiUsage")
+    private fun createToggleItem(
+        material: Material,
+        displayName: String,
+    ): ItemStack = ItemStack.of(material).apply { setData(DataComponentTypes.ITEM_NAME, MM.deserialize(displayName)) }
 
     /**
      * Creates a menu for the given ArmorStand and Player.
@@ -144,19 +164,31 @@ internal object ArmorStandModule : ModuleInterface {
                         // Miscellaneous Settings
                         setItem(
                             ARMOR_STAND_NAME_TAG_ITEM_SLOT,
-                            ItemStack.of(if (isCustomNameVisible) Material.GREEN_WOOL else Material.RED_WOOL),
+                            createToggleItem(
+                                if (isCustomNameVisible) Material.GREEN_WOOL else Material.RED_WOOL,
+                                config.armorStandModule.i18n.toggleNameTagVisibility,
+                            ),
                         )
                         setItem(
                             ARMOR_STAND_ARMS_ITEM_SLOT,
-                            ItemStack.of(if (hasArms()) Material.GREEN_WOOL else Material.RED_WOOL),
+                            createToggleItem(
+                                if (hasArms()) Material.GREEN_WOOL else Material.RED_WOOL,
+                                config.armorStandModule.i18n.toggleArmsVisibility,
+                            ),
                         )
                         setItem(
                             ARMOR_STAND_SMALL_ITEM_SLOT,
-                            ItemStack.of(if (isSmall) Material.GREEN_WOOL else Material.RED_WOOL),
+                            createToggleItem(
+                                if (isSmall) Material.GREEN_WOOL else Material.RED_WOOL,
+                                config.armorStandModule.i18n.toggleSmallArmorStand,
+                            ),
                         )
                         setItem(
                             ARMOR_STAND_BASEPLATE_ITEM_SLOT,
-                            ItemStack.of(if (hasBasePlate()) Material.GREEN_WOOL else Material.RED_WOOL),
+                            createToggleItem(
+                                if (hasBasePlate()) Material.GREEN_WOOL else Material.RED_WOOL,
+                                config.armorStandModule.i18n.toggleBasePlateVisibility,
+                            ),
                         )
                     }
             }
@@ -186,5 +218,19 @@ internal object ArmorStandModule : ModuleInterface {
         var enabled: Boolean = true,
         var menuFillItemMaterial: Material = Material.BLACK_STAINED_GLASS_PANE,
         var menuFIllItemTooltip: Boolean = true,
-    )
+        var i18n: I18n = I18n(),
+    ) {
+        /** Represents the internationalization settings of the module. */
+        @Serializable
+        data class I18n(
+            var toggleNameTagVisibility: String =
+                "<b><gradient:#FFA751:#FFE259>Toggle Name Tag Visibility</gradient></b>",
+            var toggleArmsVisibility: String =
+                "<b><gradient:#FFA751:#FFE259>Toggle Arms Visibility</gradient></b>",
+            var toggleSmallArmorStand: String =
+                "<b><gradient:#FFA751:#FFE259>Toggle Small ArmorStand</gradient></b>",
+            var toggleBasePlateVisibility: String =
+                "<b><gradient:#FFA751:#FFE259>Toggle Base Plate Visibility</gradient></b>",
+        )
+    }
 }
