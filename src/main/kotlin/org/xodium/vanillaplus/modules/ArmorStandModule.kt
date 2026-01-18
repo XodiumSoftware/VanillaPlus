@@ -23,14 +23,61 @@ import java.util.*
 /** Represents a module handling armor stand mechanics within the system. */
 internal object ArmorStandModule : ModuleInterface {
     private val armorStandViews = WeakHashMap<InventoryView, ArmorStand>()
+    private const val ARMOR_STAND_NAME_TAG_ITEM_SLOT = 1
+    private const val ARMOR_STAND_ARMS_ITEM_SLOT = 2
+    private const val ARMOR_STAND_SMALL_ITEM_SLOT = 3
+    private const val ARMOR_STAND_BASEPLATE_ITEM_SLOT = 4
 
     @EventHandler
     fun on(event: PlayerInteractAtEntityEvent) = handleArmorStandInventory(event)
 
     @EventHandler
     fun on(event: InventoryClickEvent) {
-        armorStandViews[event.view] ?: return
+        val armorStand = armorStandViews[event.view] ?: return
+
         event.isCancelled = true
+
+        when (event.rawSlot) {
+            ARMOR_STAND_NAME_TAG_ITEM_SLOT -> {
+                toggleArmorStandProperty(
+                    armorStand,
+                    event.inventory,
+                    ARMOR_STAND_NAME_TAG_ITEM_SLOT,
+                    { it.isCustomNameVisible },
+                    { stand, value -> stand.isCustomNameVisible = value },
+                )
+            }
+
+            ARMOR_STAND_ARMS_ITEM_SLOT -> {
+                toggleArmorStandProperty(
+                    armorStand,
+                    event.inventory,
+                    ARMOR_STAND_ARMS_ITEM_SLOT,
+                    { it.hasArms() },
+                    { stand, value -> stand.setArms(value) },
+                )
+            }
+
+            ARMOR_STAND_SMALL_ITEM_SLOT -> {
+                toggleArmorStandProperty(
+                    armorStand,
+                    event.inventory,
+                    ARMOR_STAND_SMALL_ITEM_SLOT,
+                    { it.isSmall },
+                    { stand, value -> stand.isSmall = value },
+                )
+            }
+
+            ARMOR_STAND_BASEPLATE_ITEM_SLOT -> {
+                toggleArmorStandProperty(
+                    armorStand,
+                    event.inventory,
+                    ARMOR_STAND_BASEPLATE_ITEM_SLOT,
+                    { it.hasBasePlate() },
+                    { stand, value -> stand.setBasePlate(value) },
+                )
+            }
+        }
     }
 
     @EventHandler
@@ -57,6 +104,27 @@ internal object ArmorStandModule : ModuleInterface {
     }
 
     /**
+     * Toggles a boolean property of the ArmorStand and updates the corresponding inventory item.
+     * @param armorStand ArmorStand The ArmorStand whose property is to be toggled.
+     * @param inventory Inventory The inventory where the toggle item is located.
+     * @param slot Int The slot index of the toggle item in the inventory.
+     * @param getCurrentState Function to get the current state of the property.
+     * @param setState Function to set the new state of the property.
+     */
+    private fun toggleArmorStandProperty(
+        armorStand: ArmorStand,
+        inventory: Inventory,
+        slot: Int,
+        getCurrentState: (ArmorStand) -> Boolean,
+        setState: (ArmorStand, Boolean) -> Unit,
+    ) {
+        val newState = !getCurrentState(armorStand)
+
+        setState(armorStand, newState)
+        inventory.setItem(slot, ItemStack.of(if (newState) Material.GREEN_WOOL else Material.RED_WOOL))
+    }
+
+    /**
      * Creates a menu for the given ArmorStand and Player.
      * @receiver ArmorStand The ArmorStand for which the menu is created.
      * @param player Player The player for whom the menu is created.
@@ -73,6 +141,23 @@ internal object ArmorStandModule : ModuleInterface {
                 topInventory
                     .apply {
                         fill()
+                        // Miscellaneous Settings
+                        setItem(
+                            ARMOR_STAND_NAME_TAG_ITEM_SLOT,
+                            ItemStack.of(if (isCustomNameVisible) Material.GREEN_WOOL else Material.RED_WOOL),
+                        )
+                        setItem(
+                            ARMOR_STAND_ARMS_ITEM_SLOT,
+                            ItemStack.of(if (hasArms()) Material.GREEN_WOOL else Material.RED_WOOL),
+                        )
+                        setItem(
+                            ARMOR_STAND_SMALL_ITEM_SLOT,
+                            ItemStack.of(if (isSmall) Material.GREEN_WOOL else Material.RED_WOOL),
+                        )
+                        setItem(
+                            ARMOR_STAND_BASEPLATE_ITEM_SLOT,
+                            ItemStack.of(if (hasBasePlate()) Material.GREEN_WOOL else Material.RED_WOOL),
+                        )
                     }
             }
 
