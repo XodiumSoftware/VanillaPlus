@@ -100,6 +100,6 @@ internal object ArmorStandModule : ModuleInterface {
     data class Config(
         var enabled: Boolean = true,
         var menuFillItemMaterial: Material = Material.BLACK_STAINED_GLASS_PANE,
-        var menuFIllItemTooltip: Boolean = false,
+        var menuFIllItemTooltip: Boolean = true,
     )
 }
