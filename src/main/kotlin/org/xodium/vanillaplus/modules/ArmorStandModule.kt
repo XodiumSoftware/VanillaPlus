@@ -3,7 +3,6 @@
 package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.datacomponent.DataComponentTypes
-import io.papermc.paper.datacomponent.item.TooltipDisplay
 import kotlinx.serialization.Serializable
 import org.bukkit.Material
 import org.bukkit.entity.ArmorStand
@@ -11,11 +10,9 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
+import org.bukkit.event.player.PlayerArmorStandManipulateEvent
 import org.bukkit.event.player.PlayerInteractAtEntityEvent
-import org.bukkit.inventory.Inventory
-import org.bukkit.inventory.InventoryView
-import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.MenuType
+import org.bukkit.inventory.*
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.Utils.MM
 import java.util.*
@@ -23,38 +20,74 @@ import java.util.*
 /** Represents a module handling armor stand mechanics within the system. */
 internal object ArmorStandModule : ModuleInterface {
     private val armorStandViews = WeakHashMap<InventoryView, ArmorStand>()
-    private const val ARMOR_STAND_NAME_TAG_ITEM_SLOT = 40
-    private const val ARMOR_STAND_ARMS_ITEM_SLOT = 41
-    private const val ARMOR_STAND_SMALL_ITEM_SLOT = 42
-    private const val ARMOR_STAND_BASEPLATE_ITEM_SLOT = 43
+
+    // Inventory slot constants for armorstand properties
+    private const val ARMOR_STAND_NAME_TAG_ITEM_SLOT = 0
+    private const val ARMOR_STAND_ARMS_ITEM_SLOT = 1
+    private const val ARMOR_STAND_SMALL_ITEM_SLOT = 2
+    private const val ARMOR_STAND_BASEPLATE_ITEM_SLOT = 3
+    private const val ARMOR_STAND_MORE_OPTIONS_SLOT = 4
 
     @EventHandler
-    fun on(event: PlayerInteractAtEntityEvent) = handleArmorStandInventory(event)
+    private fun on(event: PlayerInteractAtEntityEvent) = handleArmorStandInventory(event)
 
     @EventHandler
-    fun on(event: InventoryClickEvent) = handleArmorStandProperties(event)
+    fun on(event: InventoryClickEvent) = handleArmorStandSlots(event)
 
     @EventHandler
     fun on(event: InventoryCloseEvent) {
         armorStandViews.remove(event.view)
     }
 
+    @EventHandler
+    fun on(event: PlayerArmorStandManipulateEvent) {
+        val armorStand = event.rightClicked
+        val player = event.player
+
+        if (event.slot != EquipmentSlot.HAND && event.slot != EquipmentSlot.OFF_HAND) return
+
+        event.isCancelled = true
+
+        val playerItem = player.inventory.itemInMainHand
+        val armorStandItem =
+            when (event.slot) {
+                EquipmentSlot.HAND -> armorStand.equipment.itemInMainHand
+                EquipmentSlot.OFF_HAND -> armorStand.equipment.itemInOffHand
+                else -> null
+            }
+
+        when (event.slot) {
+            EquipmentSlot.HAND -> {
+                armorStand.equipment.setItemInMainHand(playerItem)
+                player.inventory.setItemInMainHand(armorStandItem)
+            }
+
+            EquipmentSlot.OFF_HAND -> {
+                armorStand.equipment.setItemInOffHand(playerItem)
+                player.inventory.setItemInMainHand(armorStandItem)
+            }
+
+            else -> {}
+        }
+    }
+
     /**
-     * Handles the interaction with ArmorStand properties in the inventory.
+     * Handles the interaction with ArmorStand slots in the inventory.
      * @param event InventoryClickEvent The event triggered by the inventory click.
      */
-    private fun handleArmorStandProperties(event: InventoryClickEvent) {
+    private fun handleArmorStandSlots(event: InventoryClickEvent) {
         val armorStand = armorStandViews[event.view] ?: return
 
         event.isCancelled = true
 
         when (event.rawSlot) {
+            // Properties Slots
             ARMOR_STAND_NAME_TAG_ITEM_SLOT -> {
                 toggleArmorStandProperty(
                     armorStand,
                     event.inventory,
                     ARMOR_STAND_NAME_TAG_ITEM_SLOT,
-                    { it.isCustomNameVisible },
+                    { stand -> stand.isCustomNameVisible },
                     { stand, value -> stand.isCustomNameVisible = value },
                 )
             }
@@ -64,7 +97,7 @@ internal object ArmorStandModule : ModuleInterface {
                     armorStand,
                     event.inventory,
                     ARMOR_STAND_ARMS_ITEM_SLOT,
-                    { it.hasArms() },
+                    { stand -> stand.hasArms() },
                     { stand, value -> stand.setArms(value) },
                 )
             }
@@ -74,7 +107,7 @@ internal object ArmorStandModule : ModuleInterface {
                     armorStand,
                     event.inventory,
                     ARMOR_STAND_SMALL_ITEM_SLOT,
-                    { it.isSmall },
+                    { stand -> stand.isSmall },
                     { stand, value -> stand.isSmall = value },
                 )
             }
@@ -84,7 +117,7 @@ internal object ArmorStandModule : ModuleInterface {
                     armorStand,
                     event.inventory,
                     ARMOR_STAND_BASEPLATE_ITEM_SLOT,
-                    { it.hasBasePlate() },
+                    { stand -> stand.hasBasePlate() },
                     { stand, value -> stand.setBasePlate(value) },
                 )
             }
@@ -159,15 +192,14 @@ internal object ArmorStandModule : ModuleInterface {
     @Suppress("UnstableApiUsage")
     private fun ArmorStand.menu(player: Player): InventoryView =
         MenuType
-            .GENERIC_9X6
+            .HOPPER
             .builder()
             .title(customName() ?: MM.deserialize(name))
             .build(player)
             .apply {
                 topInventory
                     .apply {
-                        fill()
-                        // Miscellaneous Settings
+                        // Property Slots
                         setItem(
                             ARMOR_STAND_NAME_TAG_ITEM_SLOT,
                             createToggleItem(
@@ -196,34 +228,22 @@ internal object ArmorStandModule : ModuleInterface {
                                 config.armorStandModule.i18n.toggleBasePlateVisibility,
                             ),
                         )
+                        setItem(
+                            ARMOR_STAND_MORE_OPTIONS_SLOT,
+                            ItemStack.of(Material.ARMOR_STAND).apply {
+                                setData(
+                                    DataComponentTypes.CUSTOM_NAME,
+                                    MM.deserialize(config.armorStandModule.i18n.moreOptionsComingSoon),
+                                )
+                            },
+                        )
                     }
             }
-
-    /**
-     * Fills the inventory with the configured fill item.
-     * @receiver Inventory The inventory to be filled.
-     */
-    private fun Inventory.fill() {
-        for (i in 0 until size) {
-            setItem(
-                i,
-                @Suppress("UnstableApiUsage")
-                ItemStack.of(config.armorStandModule.menuFillItemMaterial).apply {
-                    setData(
-                        DataComponentTypes.TOOLTIP_DISPLAY,
-                        TooltipDisplay.tooltipDisplay().hideTooltip(config.armorStandModule.menuFIllItemTooltip),
-                    )
-                },
-            )
-        }
-    }
 
     /** Represents the config of the module. */
     @Serializable
     data class Config(
         var enabled: Boolean = true,
-        var menuFillItemMaterial: Material = Material.BLACK_STAINED_GLASS_PANE,
-        var menuFIllItemTooltip: Boolean = true,
         var i18n: I18n = I18n(),
     ) {
         /** Represents the internationalization settings of the module. */
@@ -237,6 +257,8 @@ internal object ArmorStandModule : ModuleInterface {
                 "<b><gradient:#FFA751:#FFE259>Toggle Small ArmorStand</gradient></b>",
             var toggleBasePlateVisibility: String =
                 "<b><gradient:#FFA751:#FFE259>Toggle Base Plate Visibility</gradient></b>",
+            var moreOptionsComingSoon: String =
+                "<b><gradient:#FFA751:#FFE259>More Options Coming Soon!</gradient></b>",
         )
     }
 }
