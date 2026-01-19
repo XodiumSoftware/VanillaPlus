@@ -46,13 +46,12 @@ internal object ArmorStandModule : ModuleInterface {
      */
     private fun handleArmorStandMenu(event: PlayerInteractAtEntityEvent) {
         val armorStand = event.rightClicked as? ArmorStand ?: return
-        val player = event.player
 
-        if (!player.isSneaking) return
+        if (!event.player.isSneaking) return
 
         event.isCancelled = true
 
-        val view = armorStand.menu(player)
+        val view = armorStand.menu(event.player)
 
         armorStandViews[view] = armorStand
         view.open()
@@ -126,7 +125,6 @@ internal object ArmorStandModule : ModuleInterface {
     private fun handleArmorStandManipulation(event: PlayerArmorStandManipulateEvent) {
         if (event.slot != EquipmentSlot.HAND && event.slot != EquipmentSlot.OFF_HAND) return
 
-        event.isCancelled = true
         event.player.inventory.setItemInMainHand(event.armorStandItem)
 
         when (event.slot) {
