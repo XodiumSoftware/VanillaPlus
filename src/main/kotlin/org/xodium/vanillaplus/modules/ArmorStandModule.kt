@@ -127,6 +127,7 @@ internal object ArmorStandModule : ModuleInterface {
         if (event.slot != EquipmentSlot.HAND && event.slot != EquipmentSlot.OFF_HAND) return
 
         event.isCancelled = true
+        event.player.inventory.setItemInMainHand(event.armorStandItem)
 
         when (event.slot) {
             EquipmentSlot.HAND -> {
@@ -135,18 +136,6 @@ internal object ArmorStandModule : ModuleInterface {
 
             EquipmentSlot.OFF_HAND -> {
                 event.rightClicked.equipment.setItemInOffHand(event.playerItem)
-            }
-
-            else -> {}
-        }
-
-        when (event.hand) {
-            EquipmentSlot.HAND -> {
-                event.player.inventory.setItemInMainHand(event.armorStandItem)
-            }
-
-            EquipmentSlot.OFF_HAND -> {
-                event.player.inventory.setItemInOffHand(event.armorStandItem)
             }
 
             else -> {}
