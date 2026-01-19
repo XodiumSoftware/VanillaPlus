@@ -132,6 +132,7 @@ internal object ArmorStandModule : ModuleInterface {
                 event.rightClicked.equipment.setItemInMainHand(event.playerItem)
             }
 
+            // FIX: Off-hand manipulation not working properly, needs custom implementation.
             EquipmentSlot.OFF_HAND -> {
                 event.rightClicked.equipment.setItemInOffHand(event.playerItem)
             }
