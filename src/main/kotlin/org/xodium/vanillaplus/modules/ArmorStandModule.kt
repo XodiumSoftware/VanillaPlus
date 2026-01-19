@@ -32,7 +32,7 @@ internal object ArmorStandModule : ModuleInterface {
     private fun on(event: PlayerInteractAtEntityEvent) = handleArmorStandInventory(event)
 
     @EventHandler
-    fun on(event: InventoryClickEvent) = handleArmorStandSlots(event)
+    fun on(event: InventoryClickEvent) = handleArmorStandMenu(event)
 
     @EventHandler
     fun on(event: InventoryCloseEvent) {
@@ -41,30 +41,29 @@ internal object ArmorStandModule : ModuleInterface {
 
     @EventHandler
     fun on(event: PlayerArmorStandManipulateEvent) {
-        val armorStand = event.rightClicked
-        val player = event.player
-
         if (event.slot != EquipmentSlot.HAND && event.slot != EquipmentSlot.OFF_HAND) return
 
         event.isCancelled = true
 
-        val playerItem = player.inventory.itemInMainHand
-        val armorStandItem =
-            when (event.slot) {
-                EquipmentSlot.HAND -> armorStand.equipment.itemInMainHand
-                EquipmentSlot.OFF_HAND -> armorStand.equipment.itemInOffHand
-                else -> null
-            }
-
         when (event.slot) {
             EquipmentSlot.HAND -> {
-                armorStand.equipment.setItemInMainHand(playerItem)
-                player.inventory.setItemInMainHand(armorStandItem)
+                event.rightClicked.equipment.setItemInMainHand(event.playerItem)
             }
 
             EquipmentSlot.OFF_HAND -> {
-                armorStand.equipment.setItemInOffHand(playerItem)
-                player.inventory.setItemInMainHand(armorStandItem)
+                event.rightClicked.equipment.setItemInOffHand(event.playerItem)
+            }
+
+            else -> {}
+        }
+
+        when (event.hand) {
+            EquipmentSlot.HAND -> {
+                event.player.inventory.setItemInMainHand(event.armorStandItem)
+            }
+
+            EquipmentSlot.OFF_HAND -> {
+                event.player.inventory.setItemInOffHand(event.armorStandItem)
             }
 
             else -> {}
@@ -75,7 +74,7 @@ internal object ArmorStandModule : ModuleInterface {
      * Handles the interaction with ArmorStand slots in the inventory.
      * @param event InventoryClickEvent The event triggered by the inventory click.
      */
-    private fun handleArmorStandSlots(event: InventoryClickEvent) {
+    private fun handleArmorStandMenu(event: InventoryClickEvent) {
         val armorStand = armorStandViews[event.view] ?: return
 
         event.isCancelled = true
