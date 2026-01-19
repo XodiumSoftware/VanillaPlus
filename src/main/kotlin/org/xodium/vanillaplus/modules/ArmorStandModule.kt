@@ -23,16 +23,27 @@ import java.util.*
 /** Represents a module handling armor stand mechanics within the system. */
 internal object ArmorStandModule : ModuleInterface {
     private val armorStandViews = WeakHashMap<InventoryView, ArmorStand>()
-    private const val ARMOR_STAND_NAME_TAG_ITEM_SLOT = 1
-    private const val ARMOR_STAND_ARMS_ITEM_SLOT = 2
-    private const val ARMOR_STAND_SMALL_ITEM_SLOT = 3
-    private const val ARMOR_STAND_BASEPLATE_ITEM_SLOT = 4
+    private const val ARMOR_STAND_NAME_TAG_ITEM_SLOT = 40
+    private const val ARMOR_STAND_ARMS_ITEM_SLOT = 41
+    private const val ARMOR_STAND_SMALL_ITEM_SLOT = 42
+    private const val ARMOR_STAND_BASEPLATE_ITEM_SLOT = 43
 
     @EventHandler
     fun on(event: PlayerInteractAtEntityEvent) = handleArmorStandInventory(event)
 
     @EventHandler
-    fun on(event: InventoryClickEvent) {
+    fun on(event: InventoryClickEvent) = handleArmorStandProperties(event)
+
+    @EventHandler
+    fun on(event: InventoryCloseEvent) {
+        armorStandViews.remove(event.view)
+    }
+
+    /**
+     * Handles the interaction with ArmorStand properties in the inventory.
+     * @param event InventoryClickEvent The event triggered by the inventory click.
+     */
+    private fun handleArmorStandProperties(event: InventoryClickEvent) {
         val armorStand = armorStandViews[event.view] ?: return
 
         event.isCancelled = true
@@ -78,11 +89,6 @@ internal object ArmorStandModule : ModuleInterface {
                 )
             }
         }
-    }
-
-    @EventHandler
-    fun on(event: InventoryCloseEvent) {
-        armorStandViews.remove(event.view)
     }
 
     /**
