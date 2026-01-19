@@ -29,52 +29,40 @@ internal object ArmorStandModule : ModuleInterface {
     private const val ARMOR_STAND_MORE_OPTIONS_SLOT = 4
 
     @EventHandler
-    private fun on(event: PlayerInteractAtEntityEvent) = handleArmorStandInventory(event)
+    private fun on(event: PlayerInteractAtEntityEvent) = handleArmorStandMenu(event)
 
     @EventHandler
-    fun on(event: InventoryClickEvent) = handleArmorStandMenu(event)
+    fun on(event: InventoryClickEvent) = handleArmorStandMenuClicking(event)
 
     @EventHandler
-    fun on(event: InventoryCloseEvent) {
-        armorStandViews.remove(event.view)
-    }
+    fun on(event: InventoryCloseEvent) = handleArmorStandCleanup(event)
 
     @EventHandler
-    fun on(event: PlayerArmorStandManipulateEvent) {
-        if (event.slot != EquipmentSlot.HAND && event.slot != EquipmentSlot.OFF_HAND) return
+    fun on(event: PlayerArmorStandManipulateEvent) = handleArmorStandManipulation(event)
+
+    /**
+     * Handles the interaction with an ArmorStand's inventory.
+     * @param event EntityInteractEvent The event triggered by the interaction.
+     */
+    private fun handleArmorStandMenu(event: PlayerInteractAtEntityEvent) {
+        val armorStand = event.rightClicked as? ArmorStand ?: return
+        val player = event.player
+
+        if (!player.isSneaking) return
 
         event.isCancelled = true
 
-        when (event.slot) {
-            EquipmentSlot.HAND -> {
-                event.rightClicked.equipment.setItemInMainHand(event.playerItem)
-            }
+        val view = armorStand.menu(player)
 
-            EquipmentSlot.OFF_HAND -> {
-                event.rightClicked.equipment.setItemInOffHand(event.playerItem)
-            }
-
-            else -> {}
-        }
-
-        when (event.hand) {
-            EquipmentSlot.HAND -> {
-                event.player.inventory.setItemInMainHand(event.armorStandItem)
-            }
-
-            EquipmentSlot.OFF_HAND -> {
-                event.player.inventory.setItemInOffHand(event.armorStandItem)
-            }
-
-            else -> {}
-        }
+        armorStandViews[view] = armorStand
+        view.open()
     }
 
     /**
      * Handles the interaction with ArmorStand slots in the inventory.
      * @param event InventoryClickEvent The event triggered by the inventory click.
      */
-    private fun handleArmorStandMenu(event: InventoryClickEvent) {
+    private fun handleArmorStandMenuClicking(event: InventoryClickEvent) {
         val armorStand = armorStandViews[event.view] ?: return
 
         event.isCancelled = true
@@ -124,21 +112,45 @@ internal object ArmorStandModule : ModuleInterface {
     }
 
     /**
-     * Handles the interaction with an ArmorStand's inventory.
-     * @param event EntityInteractEvent The event triggered by the interaction.
+     * Cleans up the armor stand view mapping when the inventory is closed.
+     * @param event InventoryCloseEvent The event triggered by the inventory close.
      */
-    private fun handleArmorStandInventory(event: PlayerInteractAtEntityEvent) {
-        val armorStand = event.rightClicked as? ArmorStand ?: return
-        val player = event.player
+    private fun handleArmorStandCleanup(event: InventoryCloseEvent) {
+        armorStandViews.remove(event.view)
+    }
 
-        if (!player.isSneaking) return
+    /**
+     * Handles the manipulation of ArmorStands by players.
+     * @param event PlayerArmorStandManipulateEvent The event triggered by the manipulation.
+     */
+    private fun handleArmorStandManipulation(event: PlayerArmorStandManipulateEvent) {
+        if (event.slot != EquipmentSlot.HAND && event.slot != EquipmentSlot.OFF_HAND) return
 
         event.isCancelled = true
 
-        val view = armorStand.menu(player)
+        when (event.slot) {
+            EquipmentSlot.HAND -> {
+                event.rightClicked.equipment.setItemInMainHand(event.playerItem)
+            }
 
-        armorStandViews[view] = armorStand
-        view.open()
+            EquipmentSlot.OFF_HAND -> {
+                event.rightClicked.equipment.setItemInOffHand(event.playerItem)
+            }
+
+            else -> {}
+        }
+
+        when (event.hand) {
+            EquipmentSlot.HAND -> {
+                event.player.inventory.setItemInMainHand(event.armorStandItem)
+            }
+
+            EquipmentSlot.OFF_HAND -> {
+                event.player.inventory.setItemInOffHand(event.armorStandItem)
+            }
+
+            else -> {}
+        }
     }
 
     /**
