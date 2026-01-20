@@ -11,6 +11,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
+import org.bukkit.event.inventory.InventoryDragEvent
 import org.bukkit.event.player.PlayerInteractAtEntityEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryView
@@ -44,6 +45,9 @@ internal object ArmorStandModule : ModuleInterface {
     @EventHandler
     fun on(event: InventoryCloseEvent) = handleArmorStandCleanup(event)
 
+    @EventHandler
+    fun on(event: InventoryDragEvent) = handleArmorStandMenuDragging(event)
+
     /**
      * Handles the interaction with an ArmorStand's inventory.
      * @param event EntityInteractEvent The event triggered by the interaction.
@@ -70,7 +74,6 @@ internal object ArmorStandModule : ModuleInterface {
 
         if (event.clickedInventory != event.view.topInventory) return
 
-        // FIX: shift clicking items into the armor stand menu, doesnt work (dissapears)
         when (event.slot) {
             // Equipment Slots
             ARMOR_STAND_MAIN_HAND_SLOT -> {
@@ -138,6 +141,14 @@ internal object ArmorStandModule : ModuleInterface {
      */
     private fun handleArmorStandCleanup(event: InventoryCloseEvent) {
         armorStandViews.remove(event.view)
+    }
+
+    /**
+     * Handles dragging events within the ArmorStand menu.
+     * @param event InventoryDragEvent The event triggered by the inventory drag.
+     */
+    private fun handleArmorStandMenuDragging(event: InventoryDragEvent) {
+        TODO("shift clicking items into the armor stand menu, doesnt work (dissapears)")
     }
 
     /**
