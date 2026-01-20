@@ -3,6 +3,7 @@
 package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.TooltipDisplay
 import kotlinx.serialization.Serializable
 import org.bukkit.Material
 import org.bukkit.entity.ArmorStand
@@ -10,9 +11,11 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
-import org.bukkit.event.player.PlayerArmorStandManipulateEvent
 import org.bukkit.event.player.PlayerInteractAtEntityEvent
-import org.bukkit.inventory.*
+import org.bukkit.inventory.Inventory
+import org.bukkit.inventory.InventoryView
+import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.MenuType
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.Utils.MM
 import java.util.*
@@ -21,12 +24,16 @@ import java.util.*
 internal object ArmorStandModule : ModuleInterface {
     private val armorStandViews = WeakHashMap<InventoryView, ArmorStand>()
 
+    // Inventory slot constants for armorstand equipment
+    private const val ARMOR_STAND_MAIN_HAND_SLOT = 0
+    private const val ARMOR_STAND_OFF_HAND_SLOT = 1
+
     // Inventory slot constants for armorstand properties
-    private const val ARMOR_STAND_NAME_TAG_ITEM_SLOT = 0
-    private const val ARMOR_STAND_ARMS_ITEM_SLOT = 1
-    private const val ARMOR_STAND_SMALL_ITEM_SLOT = 2
-    private const val ARMOR_STAND_BASEPLATE_ITEM_SLOT = 3
-    private const val ARMOR_STAND_MORE_OPTIONS_SLOT = 4
+    private const val ARMOR_STAND_NAME_TAG_ITEM_SLOT = 3
+    private const val ARMOR_STAND_ARMS_ITEM_SLOT = 4
+    private const val ARMOR_STAND_SMALL_ITEM_SLOT = 5
+    private const val ARMOR_STAND_BASEPLATE_ITEM_SLOT = 6
+    private const val ARMOR_STAND_MORE_OPTIONS_SLOT = 8
 
     @EventHandler
     private fun on(event: PlayerInteractAtEntityEvent) = handleArmorStandMenu(event)
@@ -36,9 +43,6 @@ internal object ArmorStandModule : ModuleInterface {
 
     @EventHandler
     fun on(event: InventoryCloseEvent) = handleArmorStandCleanup(event)
-
-    @EventHandler
-    fun on(event: PlayerArmorStandManipulateEvent) = handleArmorStandManipulation(event)
 
     /**
      * Handles the interaction with an ArmorStand's inventory.
@@ -63,10 +67,22 @@ internal object ArmorStandModule : ModuleInterface {
      */
     private fun handleArmorStandMenuClicking(event: InventoryClickEvent) {
         val armorStand = armorStandViews[event.view] ?: return
+        val player = event.whoClicked as? Player ?: return
 
         event.isCancelled = true
 
         when (event.rawSlot) {
+            // Equipment Slots
+            ARMOR_STAND_MAIN_HAND_SLOT -> {
+                player.inventory.setItemInMainHand(event.currentItem)
+                armorStand.equipment.setItemInMainHand(event.cursor)
+            }
+
+            ARMOR_STAND_OFF_HAND_SLOT -> {
+                player.inventory.setItemInMainHand(event.currentItem)
+                armorStand.equipment.setItemInOffHand(event.cursor)
+            }
+
             // Properties Slots
             ARMOR_STAND_NAME_TAG_ITEM_SLOT -> {
                 toggleArmorStandProperty(
@@ -119,29 +135,6 @@ internal object ArmorStandModule : ModuleInterface {
     }
 
     /**
-     * Handles the manipulation of ArmorStands by players.
-     * @param event PlayerArmorStandManipulateEvent The event triggered by the manipulation.
-     */
-    private fun handleArmorStandManipulation(event: PlayerArmorStandManipulateEvent) {
-        if (event.slot != EquipmentSlot.HAND && event.slot != EquipmentSlot.OFF_HAND) return
-
-        event.player.inventory.setItemInMainHand(event.armorStandItem)
-
-        when (event.slot) {
-            EquipmentSlot.HAND -> {
-                event.rightClicked.equipment.setItemInMainHand(event.playerItem)
-            }
-
-            // FIX: Off-hand manipulation not working properly, needs custom implementation.
-            EquipmentSlot.OFF_HAND -> {
-                event.rightClicked.equipment.setItemInOffHand(event.playerItem)
-            }
-
-            else -> {}
-        }
-    }
-
-    /**
      * Toggles a boolean property of the [ArmorStand] and updates the corresponding inventory item.
      * @param armorStand [ArmorStand] The ArmorStand whose property is to be toggled.
      * @param inventory [Inventory] The inventory where the toggle item is located.
@@ -191,13 +184,19 @@ internal object ArmorStandModule : ModuleInterface {
     @Suppress("UnstableApiUsage")
     private fun ArmorStand.menu(player: Player): InventoryView =
         MenuType
-            .HOPPER
+            .GENERIC_9X1
             .builder()
             .title(customName() ?: MM.deserialize(name))
             .build(player)
             .apply {
                 topInventory
                     .apply {
+                        fill()
+
+                        // Equipment Slots
+                        setItem(ARMOR_STAND_MAIN_HAND_SLOT, equipment.itemInMainHand)
+                        setItem(ARMOR_STAND_OFF_HAND_SLOT, equipment.itemInOffHand)
+
                         // Property Slots
                         setItem(
                             ARMOR_STAND_NAME_TAG_ITEM_SLOT,
@@ -239,10 +238,31 @@ internal object ArmorStandModule : ModuleInterface {
                     }
             }
 
+    /**
+     * Fills the inventory with the configured fill item.
+     * @receiver Inventory The inventory to be filled.
+     */
+    private fun Inventory.fill() {
+        for (i in 0 until size) {
+            setItem(
+                i,
+                @Suppress("UnstableApiUsage")
+                ItemStack.of(config.armorStandModule.menuFillItemMaterial).apply {
+                    setData(
+                        DataComponentTypes.TOOLTIP_DISPLAY,
+                        TooltipDisplay.tooltipDisplay().hideTooltip(config.armorStandModule.menuFIllItemTooltip),
+                    )
+                },
+            )
+        }
+    }
+
     /** Represents the config of the module. */
     @Serializable
     data class Config(
         var enabled: Boolean = true,
+        var menuFillItemMaterial: Material = Material.BLACK_STAINED_GLASS_PANE,
+        var menuFIllItemTooltip: Boolean = true,
         var i18n: I18n = I18n(),
     ) {
         /** Represents the internationalization settings of the module. */
