@@ -15,11 +15,12 @@ internal object FeatherFallingEnchantment : EnchantmentInterface {
      * @param event The PlayerInteractEvent to handle.
      */
     fun featherFalling(event: PlayerInteractEvent) {
-        if (event.action != Action.PHYSICAL) return
-        if (event.clickedBlock?.type != Material.FARMLAND) return
-        if (!isValidTool(event.player.inventory.boots)) return
-
-        event.isCancelled = true
+        when {
+            event.action != Action.PHYSICAL -> return
+            event.clickedBlock?.type != Material.FARMLAND -> return
+            !isValidTool(event.player.inventory.boots) -> return
+            else -> event.isCancelled = true
+        }
     }
 
     /**
