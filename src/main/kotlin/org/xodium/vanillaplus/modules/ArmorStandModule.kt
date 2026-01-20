@@ -67,24 +67,22 @@ internal object ArmorStandModule : ModuleInterface {
      */
     private fun handleArmorStandMenuClicking(event: InventoryClickEvent) {
         val armorStand = armorStandViews[event.view] ?: return
-        val player = event.whoClicked as? Player ?: return
 
-        event.isCancelled = true
+        if (event.clickedInventory != event.view.topInventory) return
 
-        when (event.rawSlot) {
+        when (event.slot) {
             // Equipment Slots
             ARMOR_STAND_MAIN_HAND_SLOT -> {
-                player.inventory.setItemInMainHand(event.currentItem)
                 armorStand.equipment.setItemInMainHand(event.cursor)
             }
 
             ARMOR_STAND_OFF_HAND_SLOT -> {
-                player.inventory.setItemInMainHand(event.currentItem)
                 armorStand.equipment.setItemInOffHand(event.cursor)
             }
 
             // Properties Slots
             ARMOR_STAND_NAME_TAG_ITEM_SLOT -> {
+                event.isCancelled = true
                 toggleArmorStandProperty(
                     armorStand,
                     event.inventory,
@@ -95,6 +93,7 @@ internal object ArmorStandModule : ModuleInterface {
             }
 
             ARMOR_STAND_ARMS_ITEM_SLOT -> {
+                event.isCancelled = true
                 toggleArmorStandProperty(
                     armorStand,
                     event.inventory,
@@ -105,6 +104,7 @@ internal object ArmorStandModule : ModuleInterface {
             }
 
             ARMOR_STAND_SMALL_ITEM_SLOT -> {
+                event.isCancelled = true
                 toggleArmorStandProperty(
                     armorStand,
                     event.inventory,
@@ -115,6 +115,7 @@ internal object ArmorStandModule : ModuleInterface {
             }
 
             ARMOR_STAND_BASEPLATE_ITEM_SLOT -> {
+                event.isCancelled = true
                 toggleArmorStandProperty(
                     armorStand,
                     event.inventory,
@@ -122,6 +123,10 @@ internal object ArmorStandModule : ModuleInterface {
                     { stand -> stand.hasBasePlate() },
                     { stand, value -> stand.setBasePlate(value) },
                 )
+            }
+
+            else -> {
+                event.isCancelled = true
             }
         }
     }
