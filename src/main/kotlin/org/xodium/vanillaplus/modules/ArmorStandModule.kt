@@ -70,6 +70,7 @@ internal object ArmorStandModule : ModuleInterface {
 
         if (event.clickedInventory != event.view.topInventory) return
 
+        // FIX: shift clicking items into the armor stand menu, doesnt work (dissapears)
         when (event.slot) {
             // Equipment Slots
             ARMOR_STAND_MAIN_HAND_SLOT -> {
