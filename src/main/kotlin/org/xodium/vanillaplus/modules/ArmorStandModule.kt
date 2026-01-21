@@ -73,19 +73,17 @@ internal object ArmorStandModule : ModuleInterface {
         when (event.slot) {
             // Equipment Slots
             ARMOR_STAND_MAIN_HAND_SLOT -> {
-                armorStand.equipment.setItemInMainHand(event.cursor)
-                // TODO: test this manually.
-                if (event.click.isShiftClick) {
-                    event.view.bottomInventory.addItem(event.currentItem ?: ItemStack.of(Material.AIR))
-                }
+                handleArmorStandEquipmentSwap(
+                    event,
+                    armorStand,
+                ) { armorStand, item -> armorStand.equipment.setItemInMainHand(item) }
             }
 
             ARMOR_STAND_OFF_HAND_SLOT -> {
-                armorStand.equipment.setItemInOffHand(event.cursor)
-                // TODO: test this manually.
-                if (event.click.isShiftClick) {
-                    event.view.bottomInventory.addItem(event.currentItem ?: ItemStack.of(Material.AIR))
-                }
+                handleArmorStandEquipmentSwap(
+                    event,
+                    armorStand,
+                ) { armorStand, item -> armorStand.equipment.setItemInOffHand(item) }
             }
 
             // Properties Slots
@@ -145,6 +143,40 @@ internal object ArmorStandModule : ModuleInterface {
      */
     private fun handleArmorStandCleanup(event: InventoryCloseEvent) {
         armorStandViews.remove(event.view)
+    }
+
+    /**
+     * Handles armor stand equipment slot clicks.
+     * @param event InventoryClickEvent The click event.
+     * @param armorStand ArmorStand The armor stand being modified.
+     * @param setEquipment Function that sets the equipment on the armor stand.
+     */
+    private fun handleArmorStandEquipmentSwap(
+        event: InventoryClickEvent,
+        armorStand: ArmorStand,
+        setEquipment: (ArmorStand, ItemStack?) -> Unit,
+    ) {
+        event.isCancelled = true
+
+        val currentItem = event.currentItem
+        val player = event.whoClicked as? Player ?: return
+
+        when {
+            event.click.isShiftClick -> {
+                if (currentItem != null && currentItem.type != Material.AIR) {
+                    setEquipment(armorStand, null)
+                    event.currentItem = null
+
+                    player.inventory.addItem(currentItem.clone()).values.forEach { leftover ->
+                        player.world.dropItemNaturally(player.location, leftover)
+                    }
+                }
+            }
+
+            else -> {
+                setEquipment(armorStand, event.cursor)
+            }
+        }
     }
 
     /**
