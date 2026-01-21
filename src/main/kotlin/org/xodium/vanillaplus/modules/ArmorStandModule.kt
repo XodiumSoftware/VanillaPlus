@@ -68,7 +68,9 @@ internal object ArmorStandModule : ModuleInterface {
     private fun handleArmorStandMenuClicking(event: InventoryClickEvent) {
         val armorStand = armorStandViews[event.view] ?: return
 
-        if (event.click.isShiftClick) return // TODO: Handle shift-clicking better in V2.
+        // TODO: block stacking items in main/off hand slots.
+
+        if (event.click.isShiftClick) return // TODO: Handle shift-clicking better.
         if (event.clickedInventory != event.view.topInventory) return
 
         when (event.slot) {
