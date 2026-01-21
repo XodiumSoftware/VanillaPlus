@@ -156,8 +156,6 @@ internal object ArmorStandModule : ModuleInterface {
         armorStand: ArmorStand,
         setEquipment: (ArmorStand, ItemStack?) -> Unit,
     ) {
-        event.isCancelled = true
-
         val currentItem = event.currentItem
         val player = event.whoClicked as? Player ?: return
 
