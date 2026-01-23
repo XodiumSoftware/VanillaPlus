@@ -7,7 +7,9 @@ import org.bukkit.plugin.java.JavaPlugin
 import org.xodium.vanillaplus.data.ConfigData
 import org.xodium.vanillaplus.data.ConfigData.Companion.load
 import org.xodium.vanillaplus.modules.*
+import org.xodium.vanillaplus.modules.ArmorStandModule.info
 import org.xodium.vanillaplus.recipes.PaintingRecipe
+import org.xodium.vanillaplus.recipes.PaintingRecipe.info
 import org.xodium.vanillaplus.recipes.RottenFleshRecipe
 import org.xodium.vanillaplus.recipes.WoodLogRecipe
 
@@ -38,34 +40,39 @@ internal class VanillaPlus : JavaPlugin() {
                 ConfigData.reloadCommand.aliases,
             )
         }
+
         instance.server.pluginManager.addPermission(ConfigData.reloadPermission)
 
         configData = ConfigData().load("config.json")
 
-        listOf(
-            PaintingRecipe,
-            RottenFleshRecipe,
-            WoodLogRecipe,
-        ).forEach { it.register() }
+        logger.info(
+            listOf(
+                PaintingRecipe,
+                RottenFleshRecipe,
+                WoodLogRecipe,
+            ),
+        )
 
-        listOf(
-            ArmorStandModule,
-            BooksModule,
-            ChatModule,
-            DimensionsModule,
-            EntityModule,
-            InventoryModule,
-            LocatorModule,
-            MotdModule,
-            OpenableModule,
-            PlayerModule,
-            ScoreBoardModule,
-            ServerInfoModule,
-            SignModule,
-            SitModule,
-            TabListModule,
-            TameableModule,
-        ).forEach { it.register() }
+        logger.info(
+            listOf(
+                ArmorStandModule,
+                BooksModule,
+                ChatModule,
+                DimensionsModule,
+                EntityModule,
+                InventoryModule,
+                LocatorModule,
+                MotdModule,
+                OpenableModule,
+                PlayerModule,
+                ServerInfoModule,
+                ScoreBoardModule,
+                SignModule,
+                SitModule,
+                TabListModule,
+                TameableModule,
+            ),
+        )
     }
 
     /**

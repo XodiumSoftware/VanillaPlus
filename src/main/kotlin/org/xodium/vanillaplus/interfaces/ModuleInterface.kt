@@ -7,6 +7,7 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.configData
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.ConfigData
+import java.util.logging.Logger
 import kotlin.reflect.full.memberProperties
 import kotlin.time.measureTime
 
@@ -49,27 +50,35 @@ internal interface ModuleInterface : Listener {
      */
     val perms: List<Permission> get() = emptyList()
 
-    /** Registers this feature as an event listener with the server. */
+    /**
+     * Registers this feature as an event listener with the server.
+     * @return The time taken to register the feature in milliseconds, or null if the feature is disabled.
+     */
     @Suppress("UnstableApiUsage")
-    fun register() {
-        if (!isEnabled) return
+    fun register(): Long? {
+        if (!isEnabled) return null
 
-        instance.logger.info(
-            "Registering: ${this::class.simpleName} | Took ${
-                measureTime {
-                    instance.server.pluginManager.registerEvents(this, instance)
-                    instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
-                        cmds.forEach { cmd ->
-                            event.registrar().register(
-                                cmd.builder.build(),
-                                cmd.description,
-                                cmd.aliases,
-                            )
-                        }
-                    }
-                    instance.server.pluginManager.addPermissions(perms)
-                }.inWholeMilliseconds
-            }ms",
-        )
+        return measureTime {
+            instance.server.pluginManager.registerEvents(this, instance)
+            instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
+                cmds.forEach { cmd ->
+                    event.registrar().register(
+                        cmd.builder.build(),
+                        cmd.description,
+                        cmd.aliases,
+                    )
+                }
+            }
+            instance.server.pluginManager.addPermissions(perms)
+        }.inWholeMilliseconds
+    }
+
+    /**
+     * Logs the registration details of a list of modules.
+     * @receiver Logger The logger to use for logging.
+     * @param modules List of [ModuleInterface] instances to log.
+     */
+    fun Logger.info(modules: List<ModuleInterface>) {
+        info("Registered: ${modules.size} module(s) | Took ${modules.sumOf { it.register() ?: return }}ms")
     }
 }
