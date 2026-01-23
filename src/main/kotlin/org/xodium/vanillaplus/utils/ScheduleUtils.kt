@@ -19,7 +19,6 @@ internal object ScheduleUtils {
         duration: Long? = null,
         content: () -> Unit,
     ): BukkitTask =
-        // TODO: check if we can use same delay in both tasks.
         instance.server.scheduler.runTaskTimer(instance, content, delay, period).also { task ->
             duration?.let { instance.server.scheduler.runTaskLater(instance, task::cancel, it) }
         }
