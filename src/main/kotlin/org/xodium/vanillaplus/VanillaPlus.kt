@@ -40,6 +40,7 @@ internal class VanillaPlus : JavaPlugin() {
                 ConfigData.reloadCommand.aliases,
             )
         }
+
         instance.server.pluginManager.addPermission(ConfigData.reloadPermission)
 
         configData = ConfigData().load("config.json")
