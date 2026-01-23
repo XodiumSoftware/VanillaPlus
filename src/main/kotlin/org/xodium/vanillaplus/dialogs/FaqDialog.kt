@@ -15,12 +15,7 @@ import org.xodium.vanillaplus.utils.Utils.MM
 @Suppress("UnstableApiUsage")
 internal object FaqDialog : DialogInterface {
     private val faqConfig: Config
-        get() =
-            try {
-                config.serverInfoModule.faqDialogConfig
-            } catch (_: UninitializedPropertyAccessException) {
-                Config()
-            }
+        get() = runCatching { config.serverInfoModule.faqDialogConfig }.getOrElse { Config() }
 
     override fun invoke(builder: DialogRegistryEntry.Builder): DialogRegistryEntry.Builder =
         builder
