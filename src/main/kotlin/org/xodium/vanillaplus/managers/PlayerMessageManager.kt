@@ -43,17 +43,13 @@ internal object PlayerMessageManager {
         player: Player,
         killer: Player?,
     ): Component? {
-        if (config.playerDeathMsg.isEmpty() || config.playerDeathByPlayerMsg.isEmpty()) return null
+        if (config.playerDeathByPlayerMsg.isEmpty() || killer == null) return null
 
-        if (killer != null) {
-            return MM.deserialize(
-                config.playerDeathByPlayerMsg,
-                Placeholder.component("player", player.displayName()),
-                Placeholder.component("killer", killer.displayName()),
-            )
-        }
-
-        return MM.deserialize(config.playerDeathMsg, Placeholder.component("player", player.displayName()))
+        return MM.deserialize(
+            config.playerDeathByPlayerMsg,
+            Placeholder.component("player", player.displayName()),
+            Placeholder.component("killer", killer.displayName()),
+        )
     }
 
     /**

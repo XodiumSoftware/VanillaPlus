@@ -217,7 +217,6 @@ internal object PlayerModule : ModuleInterface {
         data class I18n(
             var playerJoinMsg: String = "<green>➕<reset> <gradient:#FFE259:#FFA751>›</gradient> <player>",
             var playerQuitMsg: String = "<red>➖<reset> <gradient:#FFE259:#FFA751>›</gradient> <player>",
-            var playerDeathMsg: String = "☠ <gradient:#FFE259:#FFA751>›</gradient>",
             var playerDeathByPlayerMsg: String = "<killer> <gradient:#FFE259:#FFA751>⚔</gradient> <player>",
             var playerDeathScreenMsg: String = "☠",
             var playerAdvancementDoneMsg: String =
