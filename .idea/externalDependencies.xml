@@ -3,5 +3,6 @@
   <component name="ExternalDependencies">
     <plugin id="com.demonwav.minecraft-dev" />
     <plugin id="com.nbadal.ktlint" />
+    <plugin id="org.jetbrains.kotlin" />
   </component>
 </project>
