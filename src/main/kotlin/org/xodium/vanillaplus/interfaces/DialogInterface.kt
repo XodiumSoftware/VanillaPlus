@@ -9,6 +9,7 @@ import net.kyori.adventure.key.Key
 import org.xodium.vanillaplus.VanillaPlus.Companion.configData
 import org.xodium.vanillaplus.VanillaPlusBootstrap.Companion.INSTANCE
 import org.xodium.vanillaplus.data.ConfigData
+import org.xodium.vanillaplus.utils.Utils.toRegistryKeyFragment
 
 /** Represents a contract for dialogs within the system. */
 @Suppress("UnstableApiUsage")
@@ -25,19 +26,7 @@ internal interface DialogInterface {
      * @see RegistryKey.DIALOG
      */
     val key: TypedKey<Dialog>
-        get() =
-            TypedKey.create(
-                RegistryKey.DIALOG,
-                Key.key(
-                    INSTANCE,
-                    javaClass
-                        .simpleName
-                        .removeSuffix("Dialog")
-                        .split(Regex("(?=[A-Z])"))
-                        .filter { it.isNotEmpty() }
-                        .joinToString("_") { it.lowercase() },
-                ),
-            )
+        get() = TypedKey.create(RegistryKey.DIALOG, Key.key(INSTANCE, javaClass.toRegistryKeyFragment<Dialog>()))
 
     /**
      * Configures the properties of the dialog using the provided builder.

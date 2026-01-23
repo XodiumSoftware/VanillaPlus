@@ -26,4 +26,12 @@ internal object Utils {
 
     /** Extension function specifically for enchantment keys */
     fun TypedKey<Enchantment>.displayName(): Component = MM.deserialize(value().snakeToProperCase())
+
+    /** Extension function to convert CamelCase to snake_case, removing a specified suffix. */
+    inline fun <reified T> Class<*>.toRegistryKeyFragment(): String =
+        simpleName
+            .removeSuffix(T::class.simpleName ?: "")
+            .split(Regex("(?=[A-Z])"))
+            .filter { it.isNotEmpty() }
+            .joinToString("_") { it.lowercase() }
 }

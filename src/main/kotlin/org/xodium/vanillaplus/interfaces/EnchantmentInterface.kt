@@ -9,6 +9,7 @@ import org.bukkit.enchantments.Enchantment
 import org.xodium.vanillaplus.VanillaPlus.Companion.configData
 import org.xodium.vanillaplus.VanillaPlusBootstrap.Companion.INSTANCE
 import org.xodium.vanillaplus.data.ConfigData
+import org.xodium.vanillaplus.utils.Utils.toRegistryKeyFragment
 
 /** Represents a contract for enchantments within the system. */
 @Suppress("UnstableApiUsage")
@@ -26,18 +27,7 @@ internal interface EnchantmentInterface {
      */
     val key: TypedKey<Enchantment>
         get() =
-            TypedKey.create(
-                RegistryKey.ENCHANTMENT,
-                Key.key(
-                    INSTANCE,
-                    javaClass
-                        .simpleName
-                        .removeSuffix("Enchantment")
-                        .split(Regex("(?=[A-Z])"))
-                        .filter { it.isNotEmpty() }
-                        .joinToString("_") { it.lowercase() },
-                ),
-            )
+            TypedKey.create(RegistryKey.ENCHANTMENT, Key.key(INSTANCE, javaClass.toRegistryKeyFragment<Enchantment>()))
 
     /**
      * Configures the properties of the enchantment using the provided builder.

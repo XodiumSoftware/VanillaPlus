@@ -18,10 +18,11 @@ import org.xodium.vanillaplus.dialogs.FaqDialog
 import org.xodium.vanillaplus.enchantments.*
 
 /** Main bootstrap class of the plugin. */
-@Suppress("UnstableApiUsage", "Unused")
+@Suppress("UnstableApiUsage")
 internal class VanillaPlusBootstrap : PluginBootstrap {
     companion object {
         const val INSTANCE = "vanillaplus"
+
         val TOOLS = TagKey.create(RegistryKey.ITEM, Key.key(INSTANCE, "tools"))
         val WEAPONS = TagKey.create(RegistryKey.ITEM, Key.key(INSTANCE, "weapons"))
         val TOOLS_WEAPONS = TagKey.create(RegistryKey.ITEM, Key.key(INSTANCE, "tools_weapons"))
