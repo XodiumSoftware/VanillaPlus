@@ -81,4 +81,15 @@ internal object PlayerMessageManager {
             Placeholder.component("advancement", advancement.displayName()),
         )
     }
+
+    /**
+     * Handles the player kick message.
+     * @param reason The reason for the kick.
+     * @return The formatted kick message component, or null if no message is set.
+     */
+    fun handleKick(reason: Component): Component? {
+        if (config.playerKickMsg.isEmpty()) return null
+
+        return MM.deserialize(config.playerKickMsg, Placeholder.component("reason", reason))
+    }
 }

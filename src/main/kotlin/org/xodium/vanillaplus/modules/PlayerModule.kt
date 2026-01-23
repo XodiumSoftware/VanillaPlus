@@ -19,10 +19,7 @@ import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryType
-import org.bukkit.event.player.PlayerAdvancementDoneEvent
-import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.event.player.PlayerJoinEvent
-import org.bukkit.event.player.PlayerQuitEvent
+import org.bukkit.event.player.*
 import org.bukkit.inventory.ItemStack
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
@@ -77,9 +74,14 @@ internal object PlayerModule : ModuleInterface {
         event.quitMessage(PlayerMessageManager.handleQuit(event.player))
     }
 
+    @EventHandler
+    fun on(event: PlayerKickEvent) {
+        event.leaveMessage(PlayerMessageManager.handleKick(event.reason()) ?: return)
+    }
+
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerDeathEvent) {
-        dropPlayerHead(event)
+        dropPlayerHead(event.player)
         event.deathMessage(PlayerMessageManager.handleDeath(event.player))
         event.deathScreenMessageOverride(PlayerMessageManager.handleDeathScreen())
     }
@@ -111,47 +113,14 @@ internal object PlayerModule : ModuleInterface {
     @EventHandler
     fun on(event: EntityEquipmentChangedEvent) = NightVisionEnchantment.nightVision(event)
 
-//    /**
-//     * Handles the event when a player joins the game.
-//     * @param event The PlayerJoinEvent triggered when a player joins.
-//     */
-//    private fun playerJoin(event: PlayerJoinEvent) {
-//        event.player.setNickname()
-//
-//        if (config.playerModule.i18n.playerJoinMsg
-//                .isEmpty()
-//        ) {
-//            return
-//        }
-//
-//        event.joinMessage(null)
-//
-//        instance.server.onlinePlayers
-//            .filter { it.uniqueId != event.player.uniqueId }
-//            .forEach {
-//                it.sendMessage(
-//                    MM.deserialize(
-//                        config.playerModule.i18n.playerJoinMsg,
-//                        Placeholder.component("player", event.player.displayName()),
-//                    ),
-//                )
-//            }
-//    }
-
     /**
      * Handles the event when a player dies.
      * @param event The PlayerDeathEvent triggered when a player dies.
      */
-    private fun dropPlayerHead(event: PlayerDeathEvent) {
+    private fun dropPlayerHead(player: Player) {
         if (Random.nextDouble() > config.playerModule.skullDropChance) return
 
-        event.player.world.dropItemNaturally(
-            event.player.location,
-            @Suppress("UnstableApiUsage")
-            ItemStack.of(Material.PLAYER_HEAD).apply {
-                setData(DataComponentTypes.PROFILE, ResolvableProfile.resolvableProfile(event.player.playerProfile))
-            },
-        )
+        player.world.dropItemNaturally(player.location, player.head())
     }
 
     /**
@@ -219,6 +188,13 @@ internal object PlayerModule : ModuleInterface {
     /** Sets the display name of the player based on their nickname. */
     private fun Player.setNickname() = displayName(MM.deserialize(nickname))
 
+    /** Drops the player's head at their location based on the configured chance. */
+    @Suppress("UnstableApiUsage")
+    private fun Player.head(): ItemStack =
+        ItemStack.of(Material.PLAYER_HEAD).apply {
+            setData(DataComponentTypes.PROFILE, ResolvableProfile.resolvableProfile(playerProfile))
+        }
+
     /** Represents the config of the module. */
     @Serializable
     data class Config(
@@ -239,14 +215,17 @@ internal object PlayerModule : ModuleInterface {
         /** Represents the internationalization strings for the module. */
         @Serializable
         data class I18n(
-//          var playerDeathMsg: String = "<killer> <gradient:#FFE259:#FFA751>⚔</gradient> <player>",
             var playerJoinMsg: String = "<green>➕<reset> <gradient:#FFE259:#FFA751>›</gradient> <player>",
             var playerQuitMsg: String = "<red>➖<reset> <gradient:#FFE259:#FFA751>›</gradient> <player>",
             var playerDeathMsg: String = "☠ <gradient:#FFE259:#FFA751>›</gradient>",
+            var playerDeathByPlayerMsg: String = "<killer> <gradient:#FFE259:#FFA751>⚔</gradient> <player>",
             var playerDeathScreenMsg: String = "☠",
             var playerAdvancementDoneMsg: String =
                 "\uD83C\uDF89 <gradient:#FFE259:#FFA751>›</gradient> <player> " +
                     "<gradient:#FFE259:#FFA751>has made the advancement:</gradient> <advancement>",
+            var playerKickMsg: String =
+                "<red>❌<reset> <gradient:#FFE259:#FFA751>›</gradient> <player> " +
+                    "<gradient:#FFE259:#FFA751>reason:</gradient> <reason>",
             var nicknameUpdated: String =
                 "<gradient:#CB2D3E:#EF473A>Nickname has been updated to: <nickname></gradient>",
         )
