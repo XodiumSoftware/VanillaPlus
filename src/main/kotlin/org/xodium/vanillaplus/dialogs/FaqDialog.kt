@@ -4,7 +4,6 @@ import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
 import io.papermc.paper.registry.data.dialog.DialogBase
 import io.papermc.paper.registry.data.dialog.DialogRegistryEntry
-import io.papermc.paper.registry.data.dialog.body.DialogBody
 import io.papermc.paper.registry.data.dialog.type.DialogType
 import kotlinx.serialization.Serializable
 import org.bukkit.Material
@@ -28,7 +27,8 @@ internal object FaqDialog : DialogInterface {
             .base(
                 DialogBase
                     .builder(MM.deserialize(faqConfig.faqTitle))
-                    .body(buildFaqItems().map { DialogBody.item(it).build() })
+                    // FIX: Blocked due to Paper API issue (https://github.com/PaperMC/Paper/issues/13555)
+                    // .body(buildFaqItems().map { DialogBody.item(it).build() })
                     .canCloseWithEscape(true)
                     .build(),
             ).type(DialogType.notice())
