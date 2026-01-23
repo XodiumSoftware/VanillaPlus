@@ -18,7 +18,7 @@ import org.xodium.vanillaplus.dialogs.FaqDialog
 import org.xodium.vanillaplus.enchantments.*
 
 /** Main bootstrap class of the plugin. */
-@Suppress("UnstableApiUsage")
+@Suppress("UnstableApiUsage", "Unused")
 internal class VanillaPlusBootstrap : PluginBootstrap {
     companion object {
         const val INSTANCE = "vanillaplus"
