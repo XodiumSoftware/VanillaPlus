@@ -44,11 +44,10 @@ internal object FaqDialog : DialogInterface {
                     setData(DataComponentTypes.CUSTOM_NAME, MM.deserialize(faqItem.customName))
                 }
 
-                val loreLines = faqItem.lore.filter { it.isNotBlank() }
-
-                if (loreLines.isNotEmpty()) {
-                    setData(DataComponentTypes.LORE, ItemLore.lore(loreLines.map { MM.deserialize(it) }))
-                }
+                faqItem.lore
+                    .filter { it.isNotBlank() }
+                    .takeIf { it.isNotEmpty() }
+                    ?.let { setData(DataComponentTypes.LORE, ItemLore.lore(it.map(MM::deserialize))) }
             }
         }
 
