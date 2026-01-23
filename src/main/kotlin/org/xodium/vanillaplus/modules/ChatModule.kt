@@ -34,7 +34,7 @@ internal object ChatModule : ModuleInterface {
             CommandData(
                 Commands
                     .literal("whisper")
-                    .requires { ctx -> ctx.sender.hasPermission(perms[0]) }
+                    .requires { it.sender.hasPermission(perms[0]) }
                     .then(
                         Commands
                             .argument("target", ArgumentTypes.player())

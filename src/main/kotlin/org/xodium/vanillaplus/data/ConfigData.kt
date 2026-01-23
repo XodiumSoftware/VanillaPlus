@@ -53,15 +53,15 @@ internal data class ConfigData(
             CommandData(
                 Commands
                     .literal("vanillaplus")
-                    .requires { ctx -> ctx.sender.hasPermission(reloadPermission) }
+                    .requires { it.sender.hasPermission(reloadPermission) }
                     .then(
                         Commands
                             .literal("reload")
-                            .executesCatching { ctx ->
+                            .executesCatching {
                                 configData = ConfigData().load("config.json")
 
-                                if (ctx.source.sender is Player) {
-                                    ctx.source.sender.sendMessage(
+                                if (it.source.sender is Player) {
+                                    it.source.sender.sendMessage(
                                         MM.deserialize("${instance.prefix} <green>configuration reloaded!"),
                                     )
                                 } else {

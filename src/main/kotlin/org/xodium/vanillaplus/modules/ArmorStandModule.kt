@@ -88,7 +88,7 @@ internal object ArmorStandModule : ModuleInterface {
                     armorStand,
                     event.inventory,
                     ARMOR_STAND_NAME_TAG_ITEM_SLOT,
-                    { stand -> stand.isCustomNameVisible },
+                    { it.isCustomNameVisible },
                     { stand, value -> stand.isCustomNameVisible = value },
                 )
             }
@@ -99,7 +99,7 @@ internal object ArmorStandModule : ModuleInterface {
                     armorStand,
                     event.inventory,
                     ARMOR_STAND_ARMS_ITEM_SLOT,
-                    { stand -> stand.hasArms() },
+                    { it.hasArms() },
                     { stand, value -> stand.setArms(value) },
                 )
             }
@@ -110,7 +110,7 @@ internal object ArmorStandModule : ModuleInterface {
                     armorStand,
                     event.inventory,
                     ARMOR_STAND_SMALL_ITEM_SLOT,
-                    { stand -> stand.isSmall },
+                    { it.isSmall },
                     { stand, value -> stand.isSmall = value },
                 )
             }
@@ -121,7 +121,7 @@ internal object ArmorStandModule : ModuleInterface {
                     armorStand,
                     event.inventory,
                     ARMOR_STAND_BASEPLATE_ITEM_SLOT,
-                    { stand -> stand.hasBasePlate() },
+                    { it.hasBasePlate() },
                     { stand, value -> stand.setBasePlate(value) },
                 )
             }

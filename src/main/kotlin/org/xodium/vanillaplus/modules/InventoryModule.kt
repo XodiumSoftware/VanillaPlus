@@ -30,7 +30,7 @@ internal object InventoryModule : ModuleInterface {
             CommandData(
                 Commands
                     .literal("invsearch")
-                    .requires { ctx -> ctx.sender.hasPermission(perms[0]) }
+                    .requires { it.sender.hasPermission(perms[0]) }
                     .then(
                         Commands
                             .argument("material", ArgumentTypes.itemStack())
@@ -90,16 +90,16 @@ internal object InventoryModule : ModuleInterface {
         )
 
         ScheduleUtils.schedule(duration = 200L) {
-            foundContainers.forEach { container ->
+            foundContainers.forEach {
                 Particle.TRAIL
                     .builder()
                     .location(player.location)
-                    .data(Particle.Trail(container.center(), Color.MAROON, 40))
+                    .data(Particle.Trail(it.center(), Color.MAROON, 40))
                     .receivers(player)
                     .spawn()
                 Particle.DUST
                     .builder()
-                    .location(container.center())
+                    .location(it.center())
                     .count(10)
                     .data(Particle.DustOptions(Color.MAROON, 5.0f))
                     .receivers(player)

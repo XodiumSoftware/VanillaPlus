@@ -22,7 +22,7 @@ internal object Utils {
 
     /** Extension function to convert snake_case to Proper Case with spaces. */
     fun String.snakeToProperCase(): String =
-        split('_').joinToString(" ") { word -> word.replaceFirstChar { character -> character.uppercase() } }
+        split('_').joinToString(" ") { word -> word.replaceFirstChar { it.uppercase() } }
 
     /** Extension function specifically for enchantment keys */
     fun TypedKey<Enchantment>.displayName(): Component = MM.deserialize(value().snakeToProperCase())

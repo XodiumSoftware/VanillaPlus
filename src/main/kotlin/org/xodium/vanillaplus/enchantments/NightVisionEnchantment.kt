@@ -34,11 +34,9 @@ internal object NightVisionEnchantment : EnchantmentInterface {
             player.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, -1, 0, true, false, true))
         } else {
             player.activePotionEffects
-                .filter { potionEffect -> potionEffect.type == PotionEffectType.NIGHT_VISION }
-                .forEach { potionEffect ->
-                    if (potionEffect.duration == -1) {
-                        player.removePotionEffect(PotionEffectType.NIGHT_VISION)
-                    }
+                .filter { it.type == PotionEffectType.NIGHT_VISION }
+                .forEach {
+                    if (it.duration == -1) player.removePotionEffect(PotionEffectType.NIGHT_VISION)
                 }
         }
     }

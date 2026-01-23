@@ -82,21 +82,21 @@ internal object SitModule : ModuleInterface {
     private fun entityDismount(event: EntityDismountEvent) {
         val player = event.entity as? Player ?: return
 
-        sittingPlayers.remove(player.uniqueId.toKotlinUuid())?.let { armorStand ->
+        sittingPlayers.remove(player.uniqueId.toKotlinUuid())?.let {
             val blockLocation =
-                armorStand.location
+                it.location
                     .clone()
                     .subtract(blockCenterOffset)
                     .block.location
 
             occupiedBlocks.remove(blockLocation)
 
-            val safe = armorStand.location.clone().add(playerStandUpOffset)
+            val safe = it.location.clone().add(playerStandUpOffset)
 
             safe.yaw = player.location.yaw
             safe.pitch = player.location.pitch
             player.teleport(safe)
-            armorStand.remove()
+            it.remove()
         }
     }
 
@@ -105,15 +105,15 @@ internal object SitModule : ModuleInterface {
      * @param event The [PlayerQuitEvent] triggered when the player leaves the server.
      */
     private fun playerQuit(event: PlayerQuitEvent) {
-        sittingPlayers.remove(event.player.uniqueId.toKotlinUuid())?.let { armorStand ->
+        sittingPlayers.remove(event.player.uniqueId.toKotlinUuid())?.let {
             val blockLocation =
-                armorStand.location
+                it.location
                     .clone()
                     .subtract(blockCenterOffset)
                     .block.location
 
             occupiedBlocks.remove(blockLocation)
-            armorStand.remove()
+            it.remove()
         }
     }
 
@@ -125,15 +125,15 @@ internal object SitModule : ModuleInterface {
         val player = event.entity as? Player ?: return
         val playerId = player.uniqueId.toKotlinUuid()
 
-        sittingPlayers[playerId]?.let { stand ->
+        sittingPlayers[playerId]?.let {
             val blockLocation =
-                stand.location
+                it.location
                     .clone()
                     .subtract(blockCenterOffset)
                     .block.location
 
             occupiedBlocks.remove(blockLocation)
-            stand.removePassenger(player)
+            it.removePassenger(player)
             sittingPlayers.remove(playerId)
         }
     }
@@ -152,7 +152,7 @@ internal object SitModule : ModuleInterface {
                 occupiedBlocks.remove(brokenBlockLocation)
                 armorStand.passengers
                     .filterIsInstance<Player>()
-                    .forEach { player -> armorStand.removePassenger(player) }
+                    .forEach { armorStand.removePassenger(it) }
                 armorStand.remove()
                 true
             } else {
@@ -177,11 +177,11 @@ internal object SitModule : ModuleInterface {
                 .subtract(blockCenterOffset)
                 .block.location
         val armorStand =
-            world.spawn(location, ArmorStand::class.java) { armorStand ->
-                armorStand.isVisible = false
-                armorStand.setGravity(false)
-                armorStand.isSmall = true
-                armorStand.isMarker = true
+            world.spawn(location, ArmorStand::class.java) {
+                it.isVisible = false
+                it.setGravity(false)
+                it.isSmall = true
+                it.isMarker = true
             }
 
         armorStand.addPassenger(player)

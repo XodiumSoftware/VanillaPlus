@@ -16,7 +16,7 @@ internal interface RecipeInterface {
     fun register() {
         instance.logger.info(
             "Registering: ${this::class.simpleName} | Took ${
-                measureTime { recipes.forEach { recipe -> instance.server.addRecipe(recipe) } }.inWholeMilliseconds
+                measureTime { recipes.forEach { instance.server.addRecipe(it) } }.inWholeMilliseconds
             }ms",
         )
     }

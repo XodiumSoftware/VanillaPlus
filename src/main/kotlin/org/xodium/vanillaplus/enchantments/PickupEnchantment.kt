@@ -47,7 +47,7 @@ internal object PickupEnchantment : EnchantmentInterface {
             val remaining = player.inventory.addItem(item.itemStack)
             val remainingItem = remaining[0] ?: return@removeIf true
 
-            remainingItem.takeIf { itemStack -> itemStack.amount > 0 }?.let { item.itemStack = it } == null
+            remainingItem.takeIf { it.amount > 0 }?.let { item.itemStack = it } == null
         }
     }
 }

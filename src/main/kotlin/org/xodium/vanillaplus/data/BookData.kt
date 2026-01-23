@@ -27,9 +27,5 @@ internal data class BookData(
      * @return A [Book] instance with the properties of this [BookData].
      */
     fun toBook(): Book =
-        Book.book(
-            MM.deserialize(title),
-            MM.deserialize(author),
-            pages.map { strings -> MM.deserialize(strings.joinToString("\n")) },
-        )
+        Book.book(MM.deserialize(title), MM.deserialize(author), pages.map { MM.deserialize(it.joinToString("\n")) })
 }

@@ -29,8 +29,7 @@ internal object FeatherFallingEnchantment : EnchantmentInterface {
      * @return `true` if the item is a pickaxe with Silk Touch, otherwise `false`.
      */
     private fun isValidTool(item: ItemStack?): Boolean =
-        item?.let { itemStack ->
-            Tag.ITEMS_FOOT_ARMOR.isTagged(itemStack.type) &&
-                itemStack.containsEnchantment(Enchantment.FEATHER_FALLING)
-        } == true
+        item?.let {
+            Tag.ITEMS_FOOT_ARMOR.isTagged(it.type) && it.containsEnchantment(Enchantment.FEATHER_FALLING)
+        } ?: false
 }

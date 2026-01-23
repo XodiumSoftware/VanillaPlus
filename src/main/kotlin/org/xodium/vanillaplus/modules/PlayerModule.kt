@@ -42,7 +42,7 @@ internal object PlayerModule : ModuleInterface {
             CommandData(
                 Commands
                     .literal("nickname")
-                    .requires { ctx -> ctx.sender.hasPermission(perms[0]) }
+                    .requires { it.sender.hasPermission(perms[0]) }
                     .playerExecuted { player, _ -> nickname(player, "") }
                     .then(
                         Commands
@@ -117,9 +117,9 @@ internal object PlayerModule : ModuleInterface {
         event.joinMessage(null)
 
         instance.server.onlinePlayers
-            .filter { onlinePlayer -> onlinePlayer.uniqueId != player.uniqueId }
-            .forEach { onlinePlayer ->
-                onlinePlayer.sendMessage(
+            .filter { it.uniqueId != player.uniqueId }
+            .forEach {
+                it.sendMessage(
                     MM.deserialize(
                         config.playerModule.i18n.playerJoinMsg,
                         Placeholder.component("player", player.displayName()),
@@ -229,7 +229,7 @@ internal object PlayerModule : ModuleInterface {
         player.inventory
             .addItem(ItemStack.of(Material.EXPERIENCE_BOTTLE, 1))
             .values
-            .forEach { itemStack -> player.world.dropItemNaturally(player.location, itemStack) }
+            .forEach { player.world.dropItemNaturally(player.location, it) }
     }
 
     /**

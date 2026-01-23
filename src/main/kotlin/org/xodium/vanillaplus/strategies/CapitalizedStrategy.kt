@@ -12,5 +12,5 @@ internal object CapitalizedStrategy : JsonNamingStrategy {
         descriptor: SerialDescriptor,
         elementIndex: Int,
         serialName: String,
-    ): String = serialName.replaceFirstChar { character -> character.uppercase() }
+    ): String = serialName.replaceFirstChar { it.uppercase() }
 }

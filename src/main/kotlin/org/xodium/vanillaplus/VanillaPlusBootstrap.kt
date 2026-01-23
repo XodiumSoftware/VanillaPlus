@@ -29,8 +29,8 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
 
     override fun bootstrap(ctx: BootstrapContext) {
         ctx.lifecycleManager.apply {
-            registerEventHandler(LifecycleEvents.TAGS.preFlatten(RegistryKey.ITEM)) { event ->
-                event.registrar().apply {
+            registerEventHandler(LifecycleEvents.TAGS.preFlatten(RegistryKey.ITEM)) {
+                it.registrar().apply {
                     setTag(
                         TOOLS,
                         setOf(
@@ -66,29 +66,29 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
             registerEventHandler(
                 RegistryEvents.ENCHANTMENT.compose().newHandler { event ->
                     event.registry().apply {
-                        register(ReplantEnchantment.key) { builder ->
+                        register(ReplantEnchantment.key) {
                             ReplantEnchantment
-                                .invoke(builder)
+                                .invoke(it)
                                 .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.HOES))
                         }
-                        register(PickupEnchantment.key) { builder ->
+                        register(PickupEnchantment.key) {
                             PickupEnchantment
-                                .invoke(builder)
+                                .invoke(it)
                                 .supportedItems(event.getOrCreateTag(TOOLS_WEAPONS))
                         }
-                        register(NightVisionEnchantment.key) { builder ->
+                        register(NightVisionEnchantment.key) {
                             NightVisionEnchantment
-                                .invoke(builder)
+                                .invoke(it)
                                 .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.HEAD_ARMOR))
                         }
-                        register(NimbusEnchantment.key) { builder ->
+                        register(NimbusEnchantment.key) {
                             NimbusEnchantment
-                                .invoke(builder)
+                                .invoke(it)
                                 .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.HARNESSES))
                         }
-                        register(VeinMineEnchantment.key) { builder ->
+                        register(VeinMineEnchantment.key) {
                             VeinMineEnchantment
-                                .invoke(builder)
+                                .invoke(it)
                                 .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.PICKAXES))
                         }
                     }
@@ -97,12 +97,12 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
             registerEventHandler(
                 RegistryEvents.DIALOG.compose().newHandler { event ->
                     event.registry().apply {
-                        register(FaqDialog.key) { builder -> FaqDialog.invoke(builder) }
+                        register(FaqDialog.key) { FaqDialog.invoke(it) }
                     }
                 },
             )
-            registerEventHandler(LifecycleEvents.TAGS.postFlatten(RegistryKey.ENCHANTMENT)) { event ->
-                event.registrar().apply {
+            registerEventHandler(LifecycleEvents.TAGS.postFlatten(RegistryKey.ENCHANTMENT)) {
+                it.registrar().apply {
                     val enchants =
                         setOf(
                             ReplantEnchantment.key,
@@ -117,8 +117,8 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                     addToTag(EnchantmentTagKeys.IN_ENCHANTING_TABLE, enchants)
                 }
             }
-            registerEventHandler(LifecycleEvents.TAGS.postFlatten(RegistryKey.DIALOG)) { event ->
-                event.registrar().apply {
+            registerEventHandler(LifecycleEvents.TAGS.postFlatten(RegistryKey.DIALOG)) {
+                it.registrar().apply {
                     addToTag(DialogTagKeys.QUICK_ACTIONS, setOf(FaqDialog.key))
                 }
             }

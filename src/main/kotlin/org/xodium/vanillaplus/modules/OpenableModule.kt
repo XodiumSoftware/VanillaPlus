@@ -110,7 +110,7 @@ internal object OpenableModule : ModuleInterface {
     private fun playKnockSound(block: Block) {
         block.world
             .getNearbyPlayers(block.location, config.openableModule.soundProximityRadius)
-            .forEach { player -> player.playSound(config.openableModule.soundKnock.toSound()) }
+            .forEach { it.playSound(config.openableModule.soundKnock.toSound()) }
     }
 
     /**
@@ -223,11 +223,9 @@ internal object OpenableModule : ModuleInterface {
         if (door == null) return null
 
         return possibleNeighbours
-            .map { adjacentBlockData ->
-                adjacentBlockData to
-                    block.getRelative(adjacentBlockData.offsetX, 0, adjacentBlockData.offsetZ).blockData as? Door
-            }.firstOrNull { (neighbour, otherDoor) ->
-                otherDoor?.let { otherDoor -> neighbour.matchesDoorPair(otherDoor, door, block.type) } == true
+            .map { it to block.getRelative(it.offsetX, 0, it.offsetZ).blockData as? Door }
+            .firstOrNull { (neighbour, otherDoor) ->
+                otherDoor?.let { neighbour.matchesDoorPair(it, door, block.type) } == true
             }?.first
             ?.getRelativeBlock(block)
     }

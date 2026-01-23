@@ -18,18 +18,18 @@ internal object BooksModule : ModuleInterface {
             CommandData(
                 Commands
                     .literal(book.cmd.lowercase())
-                    .requires { ctx -> ctx.sender.hasPermission("$permPrefix.${book.cmd.lowercase()}") }
+                    .requires { it.sender.hasPermission("$permPrefix.${book.cmd.lowercase()}") }
                     .playerExecuted { player, _ -> player.openBook(book.toBook()) },
                 "Opens the predefined book '${book.cmd.lowercase()}'",
             )
         }
 
     override val perms =
-        config.booksModule.books.map { bookData ->
+        config.booksModule.books.map {
             Permission(
-                "$permPrefix.${bookData.cmd.lowercase()}",
-                "Allows use of the book command: ${bookData.cmd}",
-                bookData.permission,
+                "$permPrefix.${it.cmd.lowercase()}",
+                "Allows use of the book command: ${it.cmd}",
+                it.permission,
             )
         }
 

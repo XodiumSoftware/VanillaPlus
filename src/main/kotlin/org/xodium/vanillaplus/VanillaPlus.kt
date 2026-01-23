@@ -46,7 +46,7 @@ internal class VanillaPlus : JavaPlugin() {
             PaintingRecipe,
             RottenFleshRecipe,
             WoodLogRecipe,
-        ).forEach { module -> module.register() }
+        ).forEach { it.register() }
 
         listOf(
             ArmorStandModule,
@@ -65,7 +65,7 @@ internal class VanillaPlus : JavaPlugin() {
             SitModule,
             TabListModule,
             TameableModule,
-        ).forEach { module -> module.register() }
+        ).forEach { it.register() }
     }
 
     /**

@@ -62,7 +62,7 @@ internal object SilkTouchEnchantment : EnchantmentInterface {
      * @return `true` if the item is a pickaxe with Silk Touch, otherwise `false`.
      */
     private fun isValidTool(item: ItemStack?): Boolean =
-        item?.let { itemStack ->
-            Tag.ITEMS_PICKAXES.isTagged(itemStack.type) && itemStack.containsEnchantment(Enchantment.SILK_TOUCH)
-        } == true
+        item?.let {
+            Tag.ITEMS_PICKAXES.isTagged(it.type) && it.containsEnchantment(Enchantment.SILK_TOUCH)
+        } ?: false
 }

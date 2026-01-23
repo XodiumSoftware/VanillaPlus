@@ -28,7 +28,7 @@ internal object FaqDialog : DialogInterface {
             .base(
                 DialogBase
                     .builder(MM.deserialize(faqConfig.faqTitle))
-                    .body(buildFaqItems().map { item -> DialogBody.item(item).build() })
+                    .body(buildFaqItems().map { DialogBody.item(it).build() })
                     .canCloseWithEscape(true)
                     .build(),
             ).type(DialogType.notice())
@@ -38,16 +38,16 @@ internal object FaqDialog : DialogInterface {
      * @return A list of ItemStack representing the FAQ items.
      */
     fun buildFaqItems(): List<ItemStack> =
-        faqConfig.faqItems.map { entry ->
-            ItemStack.of(entry.material).apply {
-                if (entry.customName.isNotBlank()) {
-                    setData(DataComponentTypes.CUSTOM_NAME, MM.deserialize(entry.customName))
+        faqConfig.faqItems.map { faqItem ->
+            ItemStack.of(faqItem.material).apply {
+                if (faqItem.customName.isNotBlank()) {
+                    setData(DataComponentTypes.CUSTOM_NAME, MM.deserialize(faqItem.customName))
                 }
 
-                val loreLines = entry.lore.filter { text -> text.isNotBlank() }
+                val loreLines = faqItem.lore.filter { it.isNotBlank() }
 
                 if (loreLines.isNotEmpty()) {
-                    setData(DataComponentTypes.LORE, ItemLore.lore(loreLines.map { text -> MM.deserialize(text) }))
+                    setData(DataComponentTypes.LORE, ItemLore.lore(loreLines.map { MM.deserialize(it) }))
                 }
             }
         }

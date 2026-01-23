@@ -58,11 +58,10 @@ internal object DimensionsModule : ModuleInterface {
         ) {
             if (findCorrespondingPortal(calcPortalCentre(event.blocks), getOverworld()) == null) {
                 event.isCancelled = true
+
                 val player = event.entity as? Player ?: return
                 val overworld = getOverworld()
-                val destination =
-                    player.respawnLocation?.takeIf { location -> location.world == overworld }
-                        ?: overworld.spawnLocation
+                val destination = player.respawnLocation?.takeIf { it.world == overworld } ?: overworld.spawnLocation
 
                 player.sendActionBar(MM.deserialize(config.dimensionsModule.i18n.portalCreationDenied))
                 player.teleport(destination, PlayerTeleportEvent.TeleportCause.PLUGIN)
@@ -119,7 +118,7 @@ internal object DimensionsModule : ModuleInterface {
      */
     private fun calcPortalCentre(blockStates: List<BlockState>): Location =
         blockStates
-            .map { blockState -> blockState.location }
+            .map { it.location }
             .reduce { location1, location2 -> location1.add(location2) }
             .multiply(1.0 / blockStates.size)
 
