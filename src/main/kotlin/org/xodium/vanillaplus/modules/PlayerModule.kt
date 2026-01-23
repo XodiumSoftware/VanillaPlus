@@ -66,12 +66,12 @@ internal object PlayerModule : ModuleInterface {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
         event.player.setNickname()
-        event.joinMessage(PlayerMessageManager.handleJoin(event.player))
+        event.joinMessage(PlayerMessageManager.handleJoin(event.player) ?: return)
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerQuitEvent) {
-        event.quitMessage(PlayerMessageManager.handleQuit(event.player))
+        event.quitMessage(PlayerMessageManager.handleQuit(event.player) ?: return)
     }
 
     @EventHandler
@@ -82,17 +82,17 @@ internal object PlayerModule : ModuleInterface {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerDeathEvent) {
         dropPlayerHead(event.player)
-        event.deathMessage(PlayerMessageManager.handleDeath(event.player))
+        event.deathMessage(PlayerMessageManager.handleDeath(event.player, event.entity.killer) ?: return)
         event.deathScreenMessageOverride(PlayerMessageManager.handleDeathScreen())
     }
 
     @EventHandler
     fun on(event: PlayerAdvancementDoneEvent) {
-        event.message(PlayerMessageManager.handleAdvancement(event.player, event.advancement))
+        event.message(PlayerMessageManager.handleAdvancement(event.player, event.advancement) ?: return)
     }
 
     @EventHandler
-    fun on(event: InventoryClickEvent) = enderchest(event)
+    fun on(event: InventoryClickEvent) = handleEnderchest(event)
 
     @EventHandler(ignoreCancelled = true)
     fun on(event: PlayerInteractEvent) {
@@ -128,7 +128,7 @@ internal object PlayerModule : ModuleInterface {
      * in their inventory.
      * @param event The InventoryClickEvent triggered when a player clicks in an inventory.
      */
-    private fun enderchest(event: InventoryClickEvent) {
+    private fun handleEnderchest(event: InventoryClickEvent) {
         if (event.click != config.playerModule.enderChestClickType) return
         if (event.currentItem?.type != Material.ENDER_CHEST) return
         if (event.clickedInventory?.type != InventoryType.PLAYER) return

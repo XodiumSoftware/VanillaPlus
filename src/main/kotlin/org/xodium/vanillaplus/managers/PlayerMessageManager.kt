@@ -36,21 +36,24 @@ internal object PlayerMessageManager {
     /**
      * Handles the player death message.
      * @param player The player who died.
-     * @param killer The player who killed them, if applicable.
-     * @return A pair containing the formatted death message component and death screen message component,
-     * or nulls if no messages are set.
+     * @param killer The player who killed them.
+     * @return The formatted death message component, or null if no message is set.
      */
     fun handleDeath(
         player: Player,
-        killer: Player? = null,
+        killer: Player?,
     ): Component? {
-        if (config.playerDeathMsg.isEmpty()) return null
+        if (config.playerDeathMsg.isEmpty() || config.playerDeathByPlayerMsg.isEmpty()) return null
 
-        return MM.deserialize(
-            config.playerDeathMsg,
-            Placeholder.component("player", player.displayName()),
-            Placeholder.component("killer", killer?.displayName() ?: MM.deserialize("Unknown")),
-        )
+        if (killer != null) {
+            return MM.deserialize(
+                config.playerDeathByPlayerMsg,
+                Placeholder.component("player", player.displayName()),
+                Placeholder.component("killer", killer.displayName()),
+            )
+        }
+
+        return MM.deserialize(config.playerDeathMsg, Placeholder.component("player", player.displayName()))
     }
 
     /**
