@@ -30,6 +30,7 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.enchantments.*
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.managers.PlayerMessageManager
 import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import org.xodium.vanillaplus.utils.Utils.MM
@@ -66,16 +67,27 @@ internal object PlayerModule : ModuleInterface {
         )
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    fun on(event: PlayerJoinEvent) = playerJoin(event)
+    fun on(event: PlayerJoinEvent) {
+        event.player.setNickname()
+        event.joinMessage(PlayerMessageManager.handleJoin(event.player))
+    }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    fun on(event: PlayerQuitEvent) = playerQuit(event)
+    fun on(event: PlayerQuitEvent) {
+        event.quitMessage(PlayerMessageManager.handleQuit(event.player))
+    }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    fun on(event: PlayerDeathEvent) = playerDeath(event)
+    fun on(event: PlayerDeathEvent) {
+        dropPlayerHead(event)
+        event.deathMessage(PlayerMessageManager.handleDeath(event.player))
+        event.deathScreenMessageOverride(PlayerMessageManager.handleDeathScreen())
+    }
 
     @EventHandler
-    fun on(event: PlayerAdvancementDoneEvent) = playerAdvancementDone(event)
+    fun on(event: PlayerAdvancementDoneEvent) {
+        event.message(PlayerMessageManager.handleAdvancement(event.player, event.advancement))
+    }
 
     @EventHandler
     fun on(event: InventoryClickEvent) = enderchest(event)
@@ -99,90 +111,46 @@ internal object PlayerModule : ModuleInterface {
     @EventHandler
     fun on(event: EntityEquipmentChangedEvent) = NightVisionEnchantment.nightVision(event)
 
-    /**
-     * Handles the event when a player joins the game.
-     * @param event The PlayerJoinEvent triggered when a player joins.
-     */
-    private fun playerJoin(event: PlayerJoinEvent) {
-        val player = event.player
-
-        player.displayName(MM.deserialize(player.nickname))
-
-        if (config.playerModule.i18n.playerJoinMsg
-                .isEmpty()
-        ) {
-            return
-        }
-
-        event.joinMessage(null)
-
-        instance.server.onlinePlayers
-            .filter { it.uniqueId != player.uniqueId }
-            .forEach {
-                it.sendMessage(
-                    MM.deserialize(
-                        config.playerModule.i18n.playerJoinMsg,
-                        Placeholder.component("player", player.displayName()),
-                    ),
-                )
-            }
-    }
+//    /**
+//     * Handles the event when a player joins the game.
+//     * @param event The PlayerJoinEvent triggered when a player joins.
+//     */
+//    private fun playerJoin(event: PlayerJoinEvent) {
+//        event.player.setNickname()
+//
+//        if (config.playerModule.i18n.playerJoinMsg
+//                .isEmpty()
+//        ) {
+//            return
+//        }
+//
+//        event.joinMessage(null)
+//
+//        instance.server.onlinePlayers
+//            .filter { it.uniqueId != event.player.uniqueId }
+//            .forEach {
+//                it.sendMessage(
+//                    MM.deserialize(
+//                        config.playerModule.i18n.playerJoinMsg,
+//                        Placeholder.component("player", event.player.displayName()),
+//                    ),
+//                )
+//            }
+//    }
 
     /**
      * Handles the event when a player dies.
      * @param event The PlayerDeathEvent triggered when a player dies.
      */
-    private fun playerDeath(event: PlayerDeathEvent) {
-        if (Random.nextDouble() <= config.playerModule.skullDropChance) {
-            event.entity.world.dropItemNaturally(
-                event.entity.location,
-                @Suppress("UnstableApiUsage")
-                ItemStack.of(Material.PLAYER_HEAD).apply {
-                    setData(DataComponentTypes.PROFILE, ResolvableProfile.resolvableProfile(event.entity.playerProfile))
-                },
-            )
-        }
-        // TODO
-//        if (config.playerFeature.i18n.playerDeathMsg.isNotEmpty()) event.deathMessage()
-//        if (config.playerFeature.i18n.playerDeathScreenMsg.isNotEmpty()) event.deathScreenMessageOverride()
-    }
+    private fun dropPlayerHead(event: PlayerDeathEvent) {
+        if (Random.nextDouble() > config.playerModule.skullDropChance) return
 
-    /**
-     * Handles the event when a player quits the game.
-     * @param event The PlayerQuitEvent triggered when a player quits the game.
-     */
-    private fun playerQuit(event: PlayerQuitEvent) {
-        if (config.playerModule.i18n.playerQuitMsg
-                .isEmpty()
-        ) {
-            return
-        }
-
-        event.quitMessage(
-            MM.deserialize(
-                config.playerModule.i18n.playerQuitMsg,
-                Placeholder.component("player", event.player.displayName()),
-            ),
-        )
-    }
-
-    /**
-     * Handles the event when a player completes an advancement.
-     * @param event The PlayerAdvancementDoneEvent triggered when a player completes an advancement.
-     */
-    private fun playerAdvancementDone(event: PlayerAdvancementDoneEvent) {
-        if (config.playerModule.i18n.playerAdvancementDoneMsg
-                .isEmpty()
-        ) {
-            return
-        }
-
-        event.message(
-            MM.deserialize(
-                config.playerModule.i18n.playerAdvancementDoneMsg,
-                Placeholder.component("player", event.player.displayName()),
-                Placeholder.component("advancement", event.advancement.displayName()),
-            ),
+        event.player.world.dropItemNaturally(
+            event.player.location,
+            @Suppress("UnstableApiUsage")
+            ItemStack.of(Material.PLAYER_HEAD).apply {
+                setData(DataComponentTypes.PROFILE, ResolvableProfile.resolvableProfile(event.player.playerProfile))
+            },
         )
     }
 
@@ -192,12 +160,9 @@ internal object PlayerModule : ModuleInterface {
      * @param event The InventoryClickEvent triggered when a player clicks in an inventory.
      */
     private fun enderchest(event: InventoryClickEvent) {
-        if (event.click != config.playerModule.enderChestClickType ||
-            event.currentItem?.type != Material.ENDER_CHEST ||
-            event.clickedInventory?.type != InventoryType.PLAYER
-        ) {
-            return
-        }
+        if (event.click != config.playerModule.enderChestClickType) return
+        if (event.currentItem?.type != Material.ENDER_CHEST) return
+        if (event.clickedInventory?.type != InventoryType.PLAYER) return
 
         event.isCancelled = true
 
@@ -250,6 +215,9 @@ internal object PlayerModule : ModuleInterface {
             ),
         )
     }
+
+    /** Sets the display name of the player based on their nickname. */
+    private fun Player.setNickname() = displayName(MM.deserialize(nickname))
 
     /** Represents the config of the module. */
     @Serializable
