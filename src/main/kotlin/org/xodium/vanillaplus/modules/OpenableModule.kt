@@ -110,7 +110,7 @@ internal object OpenableModule : ModuleInterface {
     private fun playKnockSound(block: Block) {
         block.world
             .getNearbyPlayers(block.location, config.openableModule.soundProximityRadius)
-            .forEach { it.playSound(config.openableModule.soundKnock.toSound()) }
+            .forEach { player -> player.playSound(config.openableModule.soundKnock.toSound()) }
     }
 
     /**
@@ -192,6 +192,7 @@ internal object OpenableModule : ModuleInterface {
             Runnable {
                 val door = block.blockData as Door
                 val door2 = block2.blockData as Door
+
                 if (door.isOpen != door2.isOpen) toggleDoor(block2, door2, open)
             },
             delay,
@@ -222,9 +223,11 @@ internal object OpenableModule : ModuleInterface {
         if (door == null) return null
 
         return possibleNeighbours
-            .map { it to block.getRelative(it.offsetX, 0, it.offsetZ).blockData as? Door }
-            .firstOrNull { (neighbour, otherDoor) ->
-                otherDoor?.let { neighbour.matchesDoorPair(it, door, block.type) } == true
+            .map { adjacentBlockData ->
+                adjacentBlockData to
+                    block.getRelative(adjacentBlockData.offsetX, 0, adjacentBlockData.offsetZ).blockData as? Door
+            }.firstOrNull { (neighbour, otherDoor) ->
+                otherDoor?.let { otherDoor -> neighbour.matchesDoorPair(otherDoor, door, block.type) } == true
             }?.first
             ?.getRelativeBlock(block)
     }

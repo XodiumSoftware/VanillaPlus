@@ -20,7 +20,7 @@ internal object ScoreBoardModule : ModuleInterface {
             CommandData(
                 Commands
                     .literal("leaderboard")
-                    .requires { it.sender.hasPermission(perms[0]) }
+                    .requires { ctx -> ctx.sender.hasPermission(perms[0]) }
                     .playerExecuted { player, _ -> toggle(player) },
                 "This command allows you to open the leaderboard",
                 listOf("lb", "board"),

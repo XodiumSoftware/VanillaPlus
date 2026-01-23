@@ -22,7 +22,7 @@ internal object LocatorModule : ModuleInterface {
             CommandData(
                 Commands
                     .literal("locator")
-                    .requires { it.sender.hasPermission(perms[0]) }
+                    .requires { ctx -> ctx.sender.hasPermission(perms[0]) }
                     .then(
                         Commands
                             .argument("color", ArgumentTypes.namedColor())

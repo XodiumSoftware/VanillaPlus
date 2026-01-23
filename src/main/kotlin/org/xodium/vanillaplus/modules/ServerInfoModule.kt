@@ -19,7 +19,7 @@ internal object ServerInfoModule : ModuleInterface {
             CommandData(
                 Commands
                     .literal("faq")
-                    .requires { it.sender.hasPermission(perms[0]) }
+                    .requires { ctx -> ctx.sender.hasPermission(perms[0]) }
                     .playerExecuted { player, _ -> player.showDialog(FaqDialog.get()) },
                 "Opens the FAQ interface",
             ),
@@ -42,7 +42,7 @@ internal object ServerInfoModule : ModuleInterface {
     @Suppress("UnstableApiUsage")
     private fun serverLinks() =
         config.serverInfoModule.serverLinks.forEach { (type, url) ->
-            runCatching { URI.create(url) }.getOrNull()?.let { instance.server.serverLinks.setLink(type, it) }
+            runCatching { URI.create(url) }.getOrNull()?.let { url -> instance.server.serverLinks.setLink(type, url) }
         }
 
     /** Represents the config of the module. */

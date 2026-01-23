@@ -30,7 +30,7 @@ internal object InventoryModule : ModuleInterface {
             CommandData(
                 Commands
                     .literal("invsearch")
-                    .requires { it.sender.hasPermission(perms[0]) }
+                    .requires { ctx -> ctx.sender.hasPermission(perms[0]) }
                     .then(
                         Commands
                             .argument("material", ArgumentTypes.itemStack())

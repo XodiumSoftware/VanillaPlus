@@ -60,7 +60,6 @@ internal object SitModule : ModuleInterface {
 
         val block = event.clickedBlock ?: return
         val blockData = block.blockData
-
         val isSitTarget =
             when {
                 config.sitModule.useStairs && blockData is Stairs && blockData.half == Bisected.Half.BOTTOM -> true
@@ -178,11 +177,11 @@ internal object SitModule : ModuleInterface {
                 .subtract(blockCenterOffset)
                 .block.location
         val armorStand =
-            world.spawn(location, ArmorStand::class.java) {
-                it.isVisible = false
-                it.setGravity(false)
-                it.isSmall = true
-                it.isMarker = true
+            world.spawn(location, ArmorStand::class.java) { armorStand ->
+                armorStand.isVisible = false
+                armorStand.setGravity(false)
+                armorStand.isSmall = true
+                armorStand.isMarker = true
             }
 
         armorStand.addPassenger(player)

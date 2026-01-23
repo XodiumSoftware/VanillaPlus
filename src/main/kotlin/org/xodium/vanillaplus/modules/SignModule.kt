@@ -21,7 +21,7 @@ internal object SignModule : ModuleInterface {
             CommandData(
                 Commands
                     .literal("sign")
-                    .requires { it.sender.hasPermission(perms[0]) }
+                    .requires { ctx -> ctx.sender.hasPermission(perms[0]) }
                     .then(
                         Commands
                             .argument("line", IntegerArgumentType.integer(1, 4))
