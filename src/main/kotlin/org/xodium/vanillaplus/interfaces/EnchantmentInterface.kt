@@ -34,8 +34,8 @@ internal interface EnchantmentInterface {
                         .simpleName
                         .removeSuffix("Enchantment")
                         .split(Regex("(?=[A-Z])"))
-                        .filter { it.isNotEmpty() }
-                        .joinToString("_") { it.lowercase() },
+                        .filter { text -> text.isNotEmpty() }
+                        .joinToString("_") { text -> text.lowercase() },
                 ),
             )
 

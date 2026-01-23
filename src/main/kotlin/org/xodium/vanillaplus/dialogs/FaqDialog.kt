@@ -44,10 +44,10 @@ internal object FaqDialog : DialogInterface {
                     setData(DataComponentTypes.CUSTOM_NAME, MM.deserialize(entry.customName))
                 }
 
-                val loreLines = entry.lore.filter { it.isNotBlank() }
+                val loreLines = entry.lore.filter { text -> text.isNotBlank() }
 
                 if (loreLines.isNotEmpty()) {
-                    setData(DataComponentTypes.LORE, ItemLore.lore(loreLines.map { MM.deserialize(it) }))
+                    setData(DataComponentTypes.LORE, ItemLore.lore(loreLines.map { text -> MM.deserialize(text) }))
                 }
             }
         }

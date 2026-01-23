@@ -27,7 +27,9 @@ internal interface ModuleInterface : Listener {
             configData::class
                 .memberProperties
                 .firstOrNull { property ->
-                    property.name == (this::class.simpleName?.replaceFirstChar { it.lowercase() } ?: return true)
+                    property.name == (
+                        this::class.simpleName?.replaceFirstChar { character -> character.lowercase() } ?: return true
+                    )
                 }?.call(configData)
                 ?.let { moduleConfig ->
                     moduleConfig::class

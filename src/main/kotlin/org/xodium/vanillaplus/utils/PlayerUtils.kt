@@ -37,7 +37,7 @@ internal object PlayerUtils {
         // 1. fetch skin URL from the playerProfile
         val texturesProp =
             playerProfile.properties
-                .firstOrNull { it.name == "textures" }
+                .firstOrNull { profileProperty -> profileProperty.name == "textures" }
                 ?: error("Player has no skin texture")
         val json = JsonParser.parseString(Base64.decode(texturesProp.value).decodeToString()).asJsonObject
         val skinUrl =
@@ -116,7 +116,7 @@ internal object PlayerUtils {
     fun Player.getLeashedEntity(radius: Double = 10.0): Tameable? =
         getNearbyEntities(radius, radius, radius)
             .filterIsInstance<Tameable>()
-            .firstOrNull { it.isLeashed && it.leashHolder == player }
+            .firstOrNull { tameable -> tameable.isLeashed && tameable.leashHolder == player }
 
     /**
      * Modifies the colour of a player's waypoint based on the specified parameters.
@@ -124,7 +124,7 @@ internal object PlayerUtils {
      * @param color The optional named colour to apply to the waypoint.
      */
     fun Player.locator(color: TextColor? = null) {
-        waypointColor = color?.let { Color.fromRGB(it.value()) }
+        waypointColor = color?.let { textColor -> Color.fromRGB(textColor.value()) }
         sendActionBar(Component.text("Locator color changed!", color))
     }
 }

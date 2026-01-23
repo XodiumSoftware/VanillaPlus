@@ -34,8 +34,8 @@ internal interface DialogInterface {
                         .simpleName
                         .removeSuffix("Dialog")
                         .split(Regex("(?=[A-Z])"))
-                        .filter { it.isNotEmpty() }
-                        .joinToString("_") { it.lowercase() },
+                        .filter { text -> text.isNotEmpty() }
+                        .joinToString("_") { text -> text.lowercase() },
                 ),
             )
 

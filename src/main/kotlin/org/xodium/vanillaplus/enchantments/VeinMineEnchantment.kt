@@ -153,6 +153,6 @@ internal object VeinMineEnchantment : EnchantmentInterface {
                 Material.NETHER_GOLD_ORE,
             )
 
-        return oreTags.any { it.isTagged(material) } || material in specialOres
+        return oreTags.any { oreTag -> oreTag.isTagged(material) } || material in specialOres
     }
 }
