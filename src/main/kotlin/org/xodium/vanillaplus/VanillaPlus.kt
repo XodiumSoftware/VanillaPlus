@@ -49,6 +49,7 @@ internal class VanillaPlus : JavaPlugin() {
         ).forEach { module -> module.register() }
 
         listOf(
+            ArmorStandModule,
             BooksModule,
             ChatModule,
             DimensionsModule,
