@@ -12,6 +12,7 @@ import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.util.*
 
+/** Handles REI network communication between the server and clients. */
 internal object REINetworkHandler : PluginMessageListener {
     private const val HANDSHAKE_PACKET_ID = 0
     private const val RECIPE_TRANSFER_PACKET_ID = 1
@@ -40,6 +41,11 @@ internal object REINetworkHandler : PluginMessageListener {
         }
     }
 
+    /**
+     * Handles the client handshake packet, storing the client's protocol version and responding with the server's version.
+     * @param player The player who sent the handshake.
+     * @param data The data input stream containing the handshake data.
+     */
     private fun handleClientHandshake(
         player: Player,
         data: DataInputStream,
@@ -54,6 +60,10 @@ internal object REINetworkHandler : PluginMessageListener {
         sendHandshake(player)
     }
 
+    /**
+     * Sends a handshake packet to the specified player, indicating the server's protocol version.
+     * @param player The player to send the handshake to.
+     */
     fun sendHandshake(player: Player) {
         val baos = ByteArrayOutputStream()
         val dos = DataOutputStream(baos)
@@ -64,10 +74,19 @@ internal object REINetworkHandler : PluginMessageListener {
         if (player.isOnline) player.sendPluginMessage(instance, reiNetworkKey.toString(), baos.toByteArray())
     }
 
+    /**
+     * Cleans up the stored protocol version for a player when they quit.
+     * @param player The player who is quitting.
+     */
     fun onPlayerQuit(player: Player) {
         playerProtocolVersions.remove(player.uniqueId)
     }
 
+    /**
+     * Handles the recipe transfer request from the client.
+     * @param player The player who sent the recipe transfer request.
+     * @param data The data input stream containing the recipe transfer data.
+     */
     private fun handleRecipeTransfer(
         player: Player,
         data: DataInputStream,
@@ -79,6 +98,11 @@ internal object REINetworkHandler : PluginMessageListener {
         instance.logger.fine("REI recipe transfer requested by ${player.name}")
     }
 
+    /**
+     * Reads a UTF-8 encoded string from the data input stream.
+     * @param data The data input stream to read from.
+     * @return The string read from the stream.
+     */
     private fun readString(data: DataInputStream): String {
         val length = data.readInt()
 
@@ -91,6 +115,11 @@ internal object REINetworkHandler : PluginMessageListener {
         return String(bytes, Charsets.UTF_8)
     }
 
+    /**
+     * Reads a slot map from the data input stream.
+     * @param data The data input stream to read from.
+     * @return A map representing the slot mappings.
+     */
     private fun readSlotMap(data: DataInputStream): Map<Int, Int> {
         val size = data.readByte().toInt()
         val map = mutableMapOf<Int, Int>()

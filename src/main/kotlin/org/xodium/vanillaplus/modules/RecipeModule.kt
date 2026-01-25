@@ -11,32 +11,40 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 
 /** Represents a module handling recipe mechanics within the system. */
 internal object RecipeModule : ModuleInterface {
-    lateinit var recipeKeys: List<NamespacedKey>
-        private set
     lateinit var reiNetworkKey: NamespacedKey
         private set
-    lateinit var reiDeletePacketKey: NamespacedKey
-        private set
-    lateinit var reiCreateItemPacketKey: NamespacedKey
-        private set
 
+    private val recipeKeys = mutableSetOf<NamespacedKey>()
     private val networkHandler = REINetworkHandler
 
     init {
-        val reiNetworkChannelName = reiNetworkKey.toString()
-        val reiDeleteChannelName = reiDeletePacketKey.toString()
-        val reiCreateItemChannelName = reiCreateItemPacketKey.toString()
+        loadRecipeKeys()
+        registerChannels()
+    }
 
-        instance.server.messenger.registerIncomingPluginChannel(instance, reiNetworkChannelName, networkHandler)
-        instance.server.messenger.registerOutgoingPluginChannel(instance, reiNetworkChannelName)
-        instance.logger.info("Registered REI channel: $reiNetworkChannelName")
+    private fun loadRecipeKeys() {
+        val iterator = instance.server.recipeIterator()
+        while (iterator.hasNext()) {
+            val recipe = iterator.next()
+            val key = recipe.key
 
-        instance.server.messenger.registerIncomingPluginChannel(instance, reiDeleteChannelName, networkHandler)
-        instance.server.messenger.registerOutgoingPluginChannel(instance, reiDeleteChannelName)
-        instance.logger.info("Registered REI delete item channel: $reiDeleteChannelName")
+            if (key != null) recipeKeys.add(key)
+        }
+        instance.logger.info("Loaded ${recipeKeys.size} recipe keys")
+    }
 
-        instance.server.messenger.registerIncomingPluginChannel(instance, reiCreateItemChannelName, networkHandler)
-        instance.logger.info("Registered REI create item channel: $reiCreateItemChannelName")
+    /** Initializes the module, setting up necessary keys. */
+    fun registerChannels() {
+        instance.server.messenger.registerIncomingPluginChannel(instance, reiNetworkKey.toString(), networkHandler)
+        instance.server.messenger.registerOutgoingPluginChannel(instance, reiNetworkKey.toString())
+        instance.logger.info("Registered REI channel: $reiNetworkKey")
+    }
+
+    /** Unregisters the module's channels from the server. */
+    fun unregisterChannels() {
+        instance.server.messenger.unregisterIncomingPluginChannel(instance, reiNetworkKey.toString(), networkHandler)
+        instance.server.messenger.unregisterOutgoingPluginChannel(instance, reiNetworkKey.toString())
+        instance.logger.info("Unregistered REI channel: $reiNetworkKey")
     }
 
     @EventHandler

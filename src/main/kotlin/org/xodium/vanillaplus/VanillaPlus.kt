@@ -77,6 +77,10 @@ internal class VanillaPlus : JavaPlugin() {
         )
     }
 
+    override fun onDisable() {
+        RecipeModule.unregisterChannels()
+    }
+
     /**
      * Disable the plugin and log the message.
      * @param msg The message to log.
