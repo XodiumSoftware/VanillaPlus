@@ -12,8 +12,7 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 
 /** Represents a module handling recipe mechanics within the system. */
 internal object RecipeModule : ModuleInterface {
-    lateinit var reiNetworkKey: NamespacedKey
-        private set
+    val reiNetworkKey: NamespacedKey = NamespacedKey(instance, "rei_network")
 
     private val recipeKeys = mutableSetOf<NamespacedKey>()
     private val networkHandler = REINetworkHandler
