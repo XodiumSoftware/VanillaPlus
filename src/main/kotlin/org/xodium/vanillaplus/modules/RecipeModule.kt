@@ -1,6 +1,7 @@
 package org.xodium.vanillaplus.modules
 
 import kotlinx.serialization.Serializable
+import org.bukkit.Keyed
 import org.bukkit.NamespacedKey
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerJoinEvent
@@ -23,13 +24,14 @@ internal object RecipeModule : ModuleInterface {
     }
 
     private fun loadRecipeKeys() {
-        val iterator = instance.server.recipeIterator()
-        while (iterator.hasNext()) {
-            val recipe = iterator.next()
-            val key = recipe.key
+        instance.server
+            .recipeIterator()
+            .asSequence()
+            .filterIsInstance<Keyed>()
+            .map { it.key }
+            .toList()
+            .forEach { recipeKeys.add(NamespacedKey(instance, it.key)) }
 
-            if (key != null) recipeKeys.add(key)
-        }
         instance.logger.info("Loaded ${recipeKeys.size} recipe keys")
     }
 
