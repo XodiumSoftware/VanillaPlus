@@ -10,10 +10,8 @@ plugins {
     id("xyz.jpenilla.resource-factory-paper-convention") version "1.3.1"
 }
 
-val mcVersion = "1.21.11"
-
 group = "org.xodium.vanillaplus.VanillaPlus"
-version = mcVersion
+version = "1.21.11"
 description = "Minecraft plugin that enhances the base gameplay"
 
 repositories {
@@ -47,7 +45,7 @@ tasks {
         minimize { exclude(dependency("org.jetbrains.kotlin:kotlin-reflect:.*")) }
     }
     jar { enabled = false }
-    runServer { minecraftVersion(mcVersion) }
+    runServer { minecraftVersion(project.version.toString()) }
     withType<JavaCompile> { options.encoding = "UTF-8" }
     withType(AbstractRun::class) { jvmArgs("-XX:+AllowEnhancedClassRedefinition") }
 }

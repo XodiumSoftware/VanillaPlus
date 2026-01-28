@@ -8,6 +8,7 @@ import org.xodium.vanillaplus.data.ConfigData
 import org.xodium.vanillaplus.data.ConfigData.Companion.load
 import org.xodium.vanillaplus.modules.*
 import org.xodium.vanillaplus.modules.ArmorStandModule.info
+import org.xodium.vanillaplus.recipes.ChainmailRecipe
 import org.xodium.vanillaplus.recipes.PaintingRecipe
 import org.xodium.vanillaplus.recipes.PaintingRecipe.info
 import org.xodium.vanillaplus.recipes.RottenFleshRecipe
@@ -47,6 +48,7 @@ internal class VanillaPlus : JavaPlugin() {
 
         logger.info(
             listOf(
+                ChainmailRecipe,
                 PaintingRecipe,
                 RottenFleshRecipe,
                 WoodLogRecipe,
