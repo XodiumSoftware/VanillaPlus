@@ -78,7 +78,11 @@ internal class VanillaPlus : JavaPlugin() {
     }
 
     override fun onDisable() {
-        RecipeModule.unregisterChannels()
+        try {
+            RecipeModule.unregisterChannels()
+        } catch (e: Exception) {
+            logger.warning("Failed to unregister RecipeModule channels: ${e.message}")
+        }
     }
 
     /**
