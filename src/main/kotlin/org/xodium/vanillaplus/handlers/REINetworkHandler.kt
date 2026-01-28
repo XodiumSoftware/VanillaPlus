@@ -42,23 +42,6 @@ internal object REINetworkHandler : PluginMessageListener {
     }
 
     /**
-     * Handles the client handshake packet, storing the client's protocol version and responding with the server's version.
-     * @param player The player who sent the handshake.
-     * @param data The data input stream containing the handshake data.
-     */
-    private fun handleClientHandshake(
-        player: Player,
-        data: DataInputStream,
-    ) {
-        val clientProtocolVersion = data.readInt()
-
-        instance.logger.info("Received REI handshake from ${player.name} (v$clientProtocolVersion).")
-        playerProtocolVersions[player.uniqueId] = clientProtocolVersion
-
-        sendHandshake(player)
-    }
-
-    /**
      * Sends a handshake packet to the specified player, indicating the server's protocol version.
      * @param player The player to send the handshake to.
      */
@@ -78,6 +61,23 @@ internal object REINetworkHandler : PluginMessageListener {
      */
     fun onPlayerQuit(player: Player) {
         playerProtocolVersions.remove(player.uniqueId)
+    }
+
+    /**
+     * Handles the client handshake packet, storing the client's protocol version and responding with the server's version.
+     * @param player The player who sent the handshake.
+     * @param data The data input stream containing the handshake data.
+     */
+    private fun handleClientHandshake(
+        player: Player,
+        data: DataInputStream,
+    ) {
+        val clientProtocolVersion = data.readInt()
+
+        instance.logger.info("Received REI handshake from ${player.name} (v$clientProtocolVersion).")
+        playerProtocolVersions[player.uniqueId] = clientProtocolVersion
+
+        sendHandshake(player)
     }
 
     /**

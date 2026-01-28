@@ -22,16 +22,15 @@ internal object RecipeModule : ModuleInterface {
         registerChannels()
     }
 
-    private fun loadRecipeKeys() {
-        instance.server
-            .recipeIterator()
-            .asSequence()
-            .filterIsInstance<Keyed>()
-            .map { it.key }
-            .toList()
-            .forEach { recipeKeys.add(it) }
+    @EventHandler
+    fun on(event: PlayerJoinEvent) {
+        event.player.discoverRecipes(recipeKeys)
+        networkHandler.sendHandshake(event.player)
+    }
 
-        instance.logger.info("Loaded ${recipeKeys.size} recipe keys")
+    @EventHandler
+    fun on(event: PlayerQuitEvent) {
+        networkHandler.onPlayerQuit(event.player)
     }
 
     /** Initializes the module, setting up necessary keys. */
@@ -48,15 +47,15 @@ internal object RecipeModule : ModuleInterface {
         instance.logger.info("Unregistered REI channel: $reiNetworkKey")
     }
 
-    @EventHandler
-    fun on(event: PlayerJoinEvent) {
-        event.player.discoverRecipes(recipeKeys)
-        networkHandler.sendHandshake(event.player)
-    }
-
-    @EventHandler
-    fun on(event: PlayerQuitEvent) {
-        networkHandler.onPlayerQuit(event.player)
+    /** Loads all recipe keys from the server's recipe iterator. */
+    private fun loadRecipeKeys() {
+        instance.server
+            .recipeIterator()
+            .asSequence()
+            .filterIsInstance<Keyed>()
+            .map { it.key }
+            .toList()
+            .forEach { recipeKeys.add(it) }
     }
 
     /** Represents the config of the module. */
