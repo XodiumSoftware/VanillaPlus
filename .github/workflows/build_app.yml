@@ -30,7 +30,7 @@ jobs:
 
       - id: setup-gradle
         name: Setup Gradle
-        uses: gradle/actions/setup-gradle@5.0.0
+        uses: gradle/actions/setup-gradle@5
 
       - id: build-gradle
         name: Build with Gradle
@@ -38,7 +38,7 @@ jobs:
 
       - id: dependency-submission
         name: Generate and submit dependency graph
-        uses: gradle/actions/dependency-submission@v5.0.0
+        uses: gradle/actions/dependency-submission@v5
 
       - id: upload-artifact
         name: Upload Build Artifact
