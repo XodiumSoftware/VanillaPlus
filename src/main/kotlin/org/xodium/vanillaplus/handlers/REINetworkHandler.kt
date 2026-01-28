@@ -29,12 +29,13 @@ internal object REINetworkHandler : PluginMessageListener {
         if (channel != reiNetworkKey.toString()) return
 
         try {
-            val data = DataInputStream(ByteArrayInputStream(message))
-            val packetId = data.readByte().toInt()
+            DataInputStream(ByteArrayInputStream(message)).use { data ->
+                val packetId = data.readByte().toInt()
 
-            when (packetId) {
-                HANDSHAKE_PACKET_ID -> handleClientHandshake(player, data)
-                RECIPE_TRANSFER_PACKET_ID -> handleRecipeTransfer(player, data)
+                when (packetId) {
+                    HANDSHAKE_PACKET_ID -> handleClientHandshake(player, data)
+                    RECIPE_TRANSFER_PACKET_ID -> handleRecipeTransfer(player, data)
+                }
             }
         } catch (e: Exception) {
             instance.logger.warning("Failed to handle REI packet for player ${player.name}: ${e.message}")
