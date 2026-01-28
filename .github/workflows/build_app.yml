@@ -23,14 +23,14 @@ jobs:
 
       - id: setup-java
         name: Setup Java
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v5.2.0
         with:
           java-version: 21
           distribution: temurin
 
       - id: setup-gradle
         name: Setup Gradle
-        uses: gradle/actions/setup-gradle@8c7f3ffba4042e38a9b017ec1433452e674e4403
+        uses: gradle/actions/setup-gradle@v5.0.0
 
       - id: build-gradle
         name: Build with Gradle
@@ -39,6 +39,6 @@ jobs:
       - id: upload-artifact
         name: Upload Build Artifact
         if: ${{ success() }}
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v6.0.0
         with:
           path: build/libs/*.jar
