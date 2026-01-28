@@ -11,6 +11,7 @@ import java.io.ByteArrayOutputStream
 import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
 /** Handles REI network communication between the server and clients. */
 internal object REINetworkHandler : PluginMessageListener {
@@ -18,7 +19,7 @@ internal object REINetworkHandler : PluginMessageListener {
     private const val RECIPE_TRANSFER_PACKET_ID = 1
     private const val LATEST_PROTOCOL_VERSION = 19
 
-    private val playerProtocolVersions = mutableMapOf<UUID, Int>()
+    private val playerProtocolVersions = ConcurrentHashMap<UUID, Int>()
 
     override fun onPluginMessageReceived(
         channel: String,
