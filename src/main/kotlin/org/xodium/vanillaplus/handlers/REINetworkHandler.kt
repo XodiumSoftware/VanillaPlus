@@ -52,9 +52,7 @@ internal object REINetworkHandler : PluginMessageListener {
     ) {
         val clientProtocolVersion = data.readInt()
 
-        instance.logger.info(
-            "Received REI handshake from ${player.name} (v$clientProtocolVersion).",
-        )
+        instance.logger.info("Received REI handshake from ${player.name} (v$clientProtocolVersion).")
         playerProtocolVersions[player.uniqueId] = clientProtocolVersion
 
         sendHandshake(player)
