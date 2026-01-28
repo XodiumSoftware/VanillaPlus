@@ -3,7 +3,6 @@
 package org.xodium.vanillaplus.utils
 
 import io.papermc.paper.registry.TypedKey
-import kotlinx.serialization.Serializable
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.enchantments.Enchantment
@@ -28,19 +27,11 @@ internal object Utils {
     /** Extension function specifically for enchantment keys */
     fun TypedKey<Enchantment>.displayName(): Component = MM.deserialize(value().snakeToProperCase())
 
-    /**
-     * Data class representing a numerical range with minimum and maximum values.
-     * @property min The minimum value of the range.
-     * @property max The maximum value of the range.
-     * @throws IllegalArgumentException if [min] is greater than [max].
-     */
-    @Serializable
-    data class Range(
-        val min: Double,
-        val max: Double,
-    ) {
-        init {
-            require(min <= max) { "min must be less than or equal to max" }
-        }
-    }
+    /** Extension function to convert CamelCase to snake_case, removing a specified suffix. */
+    inline fun <reified T> Class<*>.toRegistryKeyFragment(): String =
+        simpleName
+            .removeSuffix(T::class.simpleName ?: "")
+            .split(Regex("(?=[A-Z])"))
+            .filter { it.isNotEmpty() }
+            .joinToString("_") { it.lowercase() }
 }

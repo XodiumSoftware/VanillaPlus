@@ -30,7 +30,6 @@ internal object FeatherFallingEnchantment : EnchantmentInterface {
      */
     private fun isValidTool(item: ItemStack?): Boolean =
         item?.let {
-            Tag.ITEMS_FOOT_ARMOR.isTagged(it.type) &&
-                it.containsEnchantment(Enchantment.FEATHER_FALLING)
-        } == true
+            Tag.ITEMS_FOOT_ARMOR.isTagged(it.type) && it.containsEnchantment(Enchantment.FEATHER_FALLING)
+        } ?: false
 }

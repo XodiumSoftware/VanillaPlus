@@ -22,11 +22,11 @@ internal object CommandUtils {
     ): T {
         executes { ctx ->
             runCatching { action(ctx) }
-                .onFailure { e ->
+                .onFailure {
                     instance.logger.severe(
                         """
-                        Command error: ${e.message}
-                        ${e.stackTraceToString()}
+                        Command error: ${it.message}
+                        ${it.stackTraceToString()}
                         """.trimIndent(),
                     )
                     (ctx.source.sender as? Player)?.sendMessage(
@@ -48,13 +48,13 @@ internal object CommandUtils {
     fun <T : ArgumentBuilder<CommandSourceStack, T>> T.playerExecuted(
         action: (Player, CommandContext<CommandSourceStack>) -> Unit,
     ): T {
-        executesCatching { ctx ->
+        executesCatching {
             action(
-                ctx.source.sender as? Player ?: run {
+                it.source.sender as? Player ?: run {
                     instance.logger.warning("Command can only be executed by a Player!")
                     return@executesCatching
                 },
-                ctx,
+                it,
             )
         }
         return this

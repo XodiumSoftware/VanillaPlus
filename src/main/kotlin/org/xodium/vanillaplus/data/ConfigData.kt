@@ -34,6 +34,7 @@ internal data class ConfigData(
     var openableModule: OpenableModule.Config = OpenableModule.Config(),
     var playerModule: PlayerModule.Config = PlayerModule.Config(),
     var scoreboardModule: ScoreBoardModule.Config = ScoreBoardModule.Config(),
+    var serverInfoModule: ServerInfoModule.Config = ServerInfoModule.Config(),
     var signModule: SignModule.Config = SignModule.Config(),
     var sitModule: SitModule.Config = SitModule.Config(),
     var tabListModule: TabListModule.Config = TabListModule.Config(),

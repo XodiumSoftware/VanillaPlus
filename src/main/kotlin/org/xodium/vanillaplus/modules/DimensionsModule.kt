@@ -58,6 +58,7 @@ internal object DimensionsModule : ModuleInterface {
         ) {
             if (findCorrespondingPortal(calcPortalCentre(event.blocks), getOverworld()) == null) {
                 event.isCancelled = true
+
                 val player = event.entity as? Player ?: return
                 val overworld = getOverworld()
                 val destination = player.respawnLocation?.takeIf { it.world == overworld } ?: overworld.spawnLocation
@@ -95,8 +96,10 @@ internal object DimensionsModule : ModuleInterface {
             for (z in startZ..endZ) {
                 for (y in 0..overworld.maxHeight) {
                     val block = overworld.getBlockAt(x, y, z)
+
                     if (block.type == Material.NETHER_PORTAL) {
                         val dist = hypot(targetX - x.toDouble(), targetZ - z.toDouble())
+
                         if (dist < closestDistance) {
                             closestDistance = dist
                             closestPortal = block.location
@@ -116,7 +119,7 @@ internal object DimensionsModule : ModuleInterface {
     private fun calcPortalCentre(blockStates: List<BlockState>): Location =
         blockStates
             .map { it.location }
-            .reduce { acc, loc -> acc.add(loc) }
+            .reduce { location1, location2 -> location1.add(location2) }
             .multiply(1.0 / blockStates.size)
 
     /**

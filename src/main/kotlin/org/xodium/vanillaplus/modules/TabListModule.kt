@@ -26,9 +26,9 @@ internal object TabListModule : ModuleInterface {
         instance.server.scheduler.runTaskTimer(
             instance,
             Runnable {
-                instance.server.onlinePlayers.forEach { player ->
-                    tablist(player)
-                    player.playerListName(player.displayName())
+                instance.server.onlinePlayers.forEach {
+                    tablist(it)
+                    it.playerListName(it.displayName())
                 }
             },
             config.tabListModule.initDelayInTicks,
@@ -37,10 +37,10 @@ internal object TabListModule : ModuleInterface {
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    fun on(event: WeatherChangeEvent) = event.world.players.forEach { player -> tablist(player) }
+    fun on(event: WeatherChangeEvent) = event.world.players.forEach { tablist(it) }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    fun on(event: ThunderChangeEvent) = event.world.players.forEach { player -> tablist(player) }
+    fun on(event: ThunderChangeEvent) = event.world.players.forEach { tablist(it) }
 
     /**
      * Update the tab list for the given audience.

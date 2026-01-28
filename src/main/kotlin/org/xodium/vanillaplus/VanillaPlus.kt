@@ -67,6 +67,7 @@ internal class VanillaPlus : JavaPlugin() {
                 MotdModule,
                 OpenableModule,
                 PlayerModule,
+                ServerInfoModule,
                 ScoreBoardModule,
                 SignModule,
                 SitModule,
