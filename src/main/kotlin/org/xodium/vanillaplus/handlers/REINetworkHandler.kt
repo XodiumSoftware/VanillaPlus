@@ -121,7 +121,7 @@ internal object REINetworkHandler : PluginMessageListener {
      * @return A map representing the slot mappings.
      */
     private fun readSlotMap(data: DataInputStream): Map<Int, Int> {
-        val size = data.readByte().toInt()
+        val size = data.readByte().toInt() and 0xFF
         val map = mutableMapOf<Int, Int>()
 
         repeat(size) { map[data.readByte().toInt()] = data.readByte().toInt() }

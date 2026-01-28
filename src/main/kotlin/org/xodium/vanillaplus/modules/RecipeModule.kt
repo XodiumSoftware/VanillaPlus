@@ -29,7 +29,7 @@ internal object RecipeModule : ModuleInterface {
             .filterIsInstance<Keyed>()
             .map { it.key }
             .toList()
-            .forEach { recipeKeys.add(NamespacedKey(instance, it.key)) }
+            .forEach { recipeKeys.add(it) }
 
         instance.logger.info("Loaded ${recipeKeys.size} recipe keys")
     }
