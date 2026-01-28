@@ -30,7 +30,7 @@ jobs:
 
       - id: setup-gradle
         name: Setup Gradle
-        uses: gradle/actions/setup-gradle@576fcbecfed70890e466eeffd7c78d93b30b0472
+        uses: gradle/actions/setup-gradle@8c7f3ffba4042e38a9b017ec1433452e674e4403
 
       - id: build-gradle
         name: Build with Gradle
