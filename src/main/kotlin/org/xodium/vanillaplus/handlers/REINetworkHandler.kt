@@ -29,12 +29,10 @@ internal object REINetworkHandler : PluginMessageListener {
         if (channel != reiNetworkKey.toString()) return
 
         try {
-            DataInputStream(ByteArrayInputStream(message)).use { data ->
-                val packetId = data.readByte().toInt()
-
-                when (packetId) {
-                    HANDSHAKE_PACKET_ID -> handleClientHandshake(player, data)
-                    RECIPE_TRANSFER_PACKET_ID -> handleRecipeTransfer(player, data)
+            DataInputStream(ByteArrayInputStream(message)).use {
+                when (it.readByte().toInt()) {
+                    HANDSHAKE_PACKET_ID -> handleClientHandshake(player, it)
+                    RECIPE_TRANSFER_PACKET_ID -> handleRecipeTransfer(player, it)
                 }
             }
         } catch (e: Exception) {
