@@ -30,15 +30,11 @@ jobs:
 
       - id: setup-gradle
         name: Setup Gradle
-        uses: gradle/actions/setup-gradle@5
+        uses: gradle/actions@v5.0.0
 
       - id: build-gradle
         name: Build with Gradle
         run: ./gradlew shadowJar
-
-      - id: dependency-submission
-        name: Generate and submit dependency graph
-        uses: gradle/actions/dependency-submission@v5
 
       - id: upload-artifact
         name: Upload Build Artifact
