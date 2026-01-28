@@ -5,11 +5,13 @@ package org.xodium.vanillaplus
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import org.bukkit.plugin.java.JavaPlugin
 import org.xodium.vanillaplus.data.ConfigData
-import org.xodium.vanillaplus.hooks.WorldEditHook
-import org.xodium.vanillaplus.managers.ConfigManager
+import org.xodium.vanillaplus.data.ConfigData.Companion.load
 import org.xodium.vanillaplus.modules.*
+import org.xodium.vanillaplus.modules.ArmorStandModule.info
+import org.xodium.vanillaplus.recipes.ChainmailRecipe
+import org.xodium.vanillaplus.recipes.PaintingRecipe
+import org.xodium.vanillaplus.recipes.PaintingRecipe.info
 import org.xodium.vanillaplus.recipes.RottenFleshRecipe
-import org.xodium.vanillaplus.recipes.TorchArrowRecipe
 import org.xodium.vanillaplus.recipes.WoodLogRecipe
 
 /** Main class of the plugin. */
@@ -34,35 +36,44 @@ internal class VanillaPlus : JavaPlugin() {
 
         instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
             event.registrar().register(
-                ConfigManager.reloadCommand.builder.build(),
-                ConfigManager.reloadCommand.description,
-                ConfigManager.reloadCommand.aliases,
+                ConfigData.reloadCommand.builder.build(),
+                ConfigData.reloadCommand.description,
+                ConfigData.reloadCommand.aliases,
             )
         }
-        instance.server.pluginManager.addPermission(ConfigManager.reloadPermission)
 
-        configData = ConfigManager.load()
+        instance.server.pluginManager.addPermission(ConfigData.reloadPermission)
 
-        RottenFleshRecipe.register()
-        TorchArrowRecipe.register()
-        WoodLogRecipe.register()
+        configData = ConfigData().load("config.json")
 
-        BooksModule.register()
-        ChatModule.register()
-        DimensionsModule.register()
-        EntityModule.register()
-        InvModule.register()
-        LocatorModule.register()
-        MotdModule.register()
-        OpenableModule.register()
-        PetModule.register()
-        PlayerModule.register()
-        ScoreBoardModule.register()
-        SignModule.register()
-        SitModule.register()
-        TabListModule.register()
-        ArrowModule.register()
-        if (WorldEditHook.get()) TreesModule.register()
+        logger.info(
+            listOf(
+                ChainmailRecipe,
+                PaintingRecipe,
+                RottenFleshRecipe,
+                WoodLogRecipe,
+            ),
+        )
+
+        logger.info(
+            listOf(
+                ArmorStandModule,
+                BooksModule,
+                ChatModule,
+                DimensionsModule,
+                EntityModule,
+                InventoryModule,
+                LocatorModule,
+                MotdModule,
+                OpenableModule,
+                PlayerModule,
+                ScoreBoardModule,
+                SignModule,
+                SitModule,
+                TabListModule,
+                TameableModule,
+            ),
+        )
     }
 
     /**

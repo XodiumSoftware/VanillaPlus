@@ -1,35 +1,30 @@
-import xyz.jpenilla.resourcefactory.paper.PaperPluginYaml
 import xyz.jpenilla.runtask.task.AbstractRun
 
 plugins {
     id("java")
     id("idea")
-    kotlin("jvm") version "2.2.21"
-    kotlin("plugin.serialization") version "2.2.21"
-    id("com.gradleup.shadow") version "9.3.0"
+    kotlin("jvm") version "2.3.0"
+    kotlin("plugin.serialization") version "2.3.0"
+    id("com.gradleup.shadow") version "9.3.1"
     id("xyz.jpenilla.run-paper") version "3.0.2"
     id("xyz.jpenilla.resource-factory-paper-convention") version "1.3.1"
 }
 
-val mcVersion = "1.21.11"
-
 group = "org.xodium.vanillaplus.VanillaPlus"
-version = mcVersion
+version = "1.21.11"
 description = "Minecraft plugin that enhances the base gameplay"
 
 repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
-    maven("https://maven.enginehub.org/repo/")
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:$version-R0.1-SNAPSHOT")
-    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.17") // TODO("Move away from WorldEdit")
 
     implementation(kotlin("stdlib"))
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
 }
 
 java {
@@ -50,17 +45,15 @@ tasks {
         minimize { exclude(dependency("org.jetbrains.kotlin:kotlin-reflect:.*")) }
     }
     jar { enabled = false }
-    runServer { minecraftVersion(mcVersion) }
+    runServer { minecraftVersion(project.version.toString()) }
     withType<JavaCompile> { options.encoding = "UTF-8" }
     withType(AbstractRun::class) { jvmArgs("-XX:+AllowEnhancedClassRedefinition") }
 }
 
 paperPluginYaml {
     main.set(group.toString())
+    website.set("https://github.com/XodiumSoftware/VanillaPlus")
     authors.add("Xodium")
     apiVersion.set(version)
     bootstrapper.set("org.xodium.vanillaplus.VanillaPlusBootstrap")
-    dependencies {
-        server(name = "WorldEdit", load = PaperPluginYaml.Load.BEFORE, required = false, joinClasspath = true)
-    }
 }

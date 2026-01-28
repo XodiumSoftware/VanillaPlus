@@ -5,7 +5,6 @@ package org.xodium.vanillaplus.modules
 import com.mojang.brigadier.arguments.StringArgumentType
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.datacomponent.DataComponentTypes
-import io.papermc.paper.datacomponent.item.ItemLore
 import io.papermc.paper.datacomponent.item.ResolvableProfile
 import io.papermc.paper.event.entity.EntityEquipmentChangedEvent
 import kotlinx.serialization.Serializable
@@ -20,10 +19,7 @@ import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryType
-import org.bukkit.event.player.PlayerAdvancementDoneEvent
-import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.event.player.PlayerJoinEvent
-import org.bukkit.event.player.PlayerQuitEvent
+import org.bukkit.event.player.*
 import org.bukkit.inventory.ItemStack
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
@@ -31,14 +27,14 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.enchantments.*
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.managers.PlayerMessageManager
 import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
-import org.xodium.vanillaplus.utils.ExtUtils.mm
+import org.xodium.vanillaplus.utils.Utils.MM
+import kotlin.random.Random
 
 /** Represents a module handling player mechanics within the system. */
 internal object PlayerModule : ModuleInterface {
-    private val tabListModule by lazy { TabListModule }
-
     override val cmds =
         listOf(
             CommandData(
@@ -69,82 +65,34 @@ internal object PlayerModule : ModuleInterface {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
-        val player = event.player
-
-        player.displayName(player.nickname?.mm())
-
-        if (config.playerModule.i18n.playerJoinMsg
-                .isEmpty()
-        ) {
-            return
-        }
-
-        event.joinMessage(null)
-
-        instance.server.onlinePlayers
-            .filter { it.uniqueId != player.uniqueId }
-            .forEach {
-                it.sendMessage(
-                    config.playerModule.i18n.playerJoinMsg.mm(
-                        Placeholder.component("player", player.displayName()),
-                    ),
-                )
-            }
+        event.player.setNickname()
+        event.joinMessage(PlayerMessageManager.handleJoin(event.player) ?: return)
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerQuitEvent) {
-        if (config.playerModule.i18n.playerQuitMsg
-                .isEmpty()
-        ) {
-            return
-        }
+        event.quitMessage(PlayerMessageManager.handleQuit(event.player) ?: return)
+    }
 
-        event.quitMessage(
-            config.playerModule.i18n.playerQuitMsg.mm(
-                Placeholder.component(
-                    "player",
-                    event.player.displayName(),
-                ),
-            ),
-        )
+    @EventHandler
+    fun on(event: PlayerKickEvent) {
+        event.leaveMessage(PlayerMessageManager.handleKick(event.reason()) ?: return)
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerDeathEvent) {
-        val killer = event.entity.killer ?: return
-
-        if (Math.random() < config.playerModule.skullDropChance) {
-            event.entity.world.dropItemNaturally(
-                event.entity.location,
-                playerSkull(event.entity, killer),
-            )
-        }
-        // TODO
-//        if (config.playerFeature.i18n.playerDeathMsg.isNotEmpty()) event.deathMessage()
-//        if (config.playerFeature.i18n.playerDeathScreenMsg.isNotEmpty()) event.deathScreenMessageOverride()
+        dropPlayerHead(event.player)
+        event.deathMessage(PlayerMessageManager.handleDeath(event.player, event.entity.killer) ?: return)
+        event.deathScreenMessageOverride(PlayerMessageManager.handleDeathScreen())
     }
 
     @EventHandler
     fun on(event: PlayerAdvancementDoneEvent) {
-        if (config.playerModule.i18n.playerAdvancementDoneMsg
-                .isEmpty()
-        ) {
-            return
-        }
-
-        event.message(
-            config.playerModule.i18n.playerAdvancementDoneMsg.mm(
-                Placeholder.component("player", event.player.displayName()),
-                Placeholder.component("advancement", event.advancement.displayName()),
-            ),
-        )
+        event.message(PlayerMessageManager.handleAdvancement(event.player, event.advancement) ?: return)
     }
 
     @EventHandler
-    fun on(event: InventoryClickEvent) {
-        enderchest(event)
-    }
+    fun on(event: InventoryClickEvent) = handleEnderchest(event)
 
     @EventHandler(ignoreCancelled = true)
     fun on(event: PlayerInteractEvent) {
@@ -160,13 +108,19 @@ internal object PlayerModule : ModuleInterface {
     }
 
     @EventHandler
-    fun on(event: BlockDropItemEvent) {
-        PickupEnchantment.pickup(event)
-    }
+    fun on(event: BlockDropItemEvent) = PickupEnchantment.pickup(event)
 
     @EventHandler
-    fun on(event: EntityEquipmentChangedEvent) {
-        NightVisionEnchantment.nightVision(event)
+    fun on(event: EntityEquipmentChangedEvent) = NightVisionEnchantment.nightVision(event)
+
+    /**
+     * Handles the event when a player dies.
+     * @param event The PlayerDeathEvent triggered when a player dies.
+     */
+    private fun dropPlayerHead(player: Player) {
+        if (Random.nextDouble() > config.playerModule.skullDropChance) return
+
+        player.world.dropItemNaturally(player.location, player.head())
     }
 
     /**
@@ -174,13 +128,10 @@ internal object PlayerModule : ModuleInterface {
      * in their inventory.
      * @param event The InventoryClickEvent triggered when a player clicks in an inventory.
      */
-    private fun enderchest(event: InventoryClickEvent) {
-        if (event.click != config.playerModule.enderChestClickType ||
-            event.currentItem?.type != Material.ENDER_CHEST ||
-            event.clickedInventory?.type != InventoryType.PLAYER
-        ) {
-            return
-        }
+    private fun handleEnderchest(event: InventoryClickEvent) {
+        if (event.click != config.playerModule.enderChestClickType) return
+        if (event.currentItem?.type != Material.ENDER_CHEST) return
+        if (event.clickedInventory?.type != InventoryType.PLAYER) return
 
         event.isCancelled = true
 
@@ -225,78 +176,57 @@ internal object PlayerModule : ModuleInterface {
         name: String,
     ) {
         player.nickname = name
-        player.displayName(player.nickname?.mm())
-        // TODO: add enabled check.
-        tabListModule.updatePlayerDisplayName(player)
+        player.displayName(MM.deserialize(player.nickname))
         player.sendActionBar(
-            config.playerModule.i18n.nicknameUpdated.mm(
-                Placeholder.component(
-                    "nickname",
-                    player.displayName(),
-                ),
+            MM.deserialize(
+                config.playerModule.i18n.nicknameUpdated,
+                Placeholder.component("nickname", player.displayName()),
             ),
         )
     }
 
-    /**
-     * Creates a custom player skull item when a player is killed.
-     * @param entity The player whose head is being created.
-     * @param killer The player who killed the entity.
-     * @return An [ItemStack] representing the customized player head.
-     */
+    /** Sets the display name of the player based on their nickname. */
+    private fun Player.setNickname() = displayName(MM.deserialize(nickname))
+
+    /** Drops the player's head at their location based on the configured chance. */
     @Suppress("UnstableApiUsage")
-    private fun playerSkull(
-        entity: Player,
-        killer: Player,
-    ): ItemStack =
+    private fun Player.head(): ItemStack =
         ItemStack.of(Material.PLAYER_HEAD).apply {
-            setData(DataComponentTypes.PROFILE, ResolvableProfile.resolvableProfile(entity.playerProfile))
-            setData(
-                DataComponentTypes.CUSTOM_NAME,
-                config.playerModule.i18n.playerHeadName
-                    .mm(Placeholder.component("player", entity.name.mm())),
-            )
-            setData(
-                DataComponentTypes.LORE,
-                ItemLore
-                    .lore(
-                        config.playerModule.i18n.playerHeadLore
-                            .mm(
-                                Placeholder.component("player", entity.name.mm()),
-                                Placeholder.component("killer", killer.name.mm()),
-                            ),
-                    ),
-            )
+            setData(DataComponentTypes.PROFILE, ResolvableProfile.resolvableProfile(playerProfile))
         }
 
+    /** Represents the config of the module. */
     @Serializable
     data class Config(
         var enabled: Boolean = true,
         var enderChestClickType: ClickType = ClickType.SHIFT_RIGHT,
-        var skullDropChance: Double = 0.1,
+        var skullDropChance: Double = 0.01,
         var xpCostToBottle: Int = 11,
         var silkTouch: SilkTouchEnchantment = SilkTouchEnchantment(),
         var i18n: I18n = I18n(),
     ) {
+        /** Represents the settings for the Silk Touch enchantment. */
         @Serializable
         data class SilkTouchEnchantment(
             var allowSpawnerSilk: Boolean = true,
             var allowBuddingAmethystSilk: Boolean = true,
         )
 
+        /** Represents the internationalization strings for the module. */
         @Serializable
         data class I18n(
-            var playerHeadName: String = "<player>’s Skull",
-            var playerHeadLore: List<String> = listOf("<player> killed by <killer>"),
-//          var playerDeathMsg: String = "<killer> <gradient:#FFE259:#FFA751>⚔</gradient> <player>",
             var playerJoinMsg: String = "<green>➕<reset> <gradient:#FFE259:#FFA751>›</gradient> <player>",
             var playerQuitMsg: String = "<red>➖<reset> <gradient:#FFE259:#FFA751>›</gradient> <player>",
-            var playerDeathMsg: String = "☠ <gradient:#FFE259:#FFA751>›</gradient>",
+            var playerDeathByPlayerMsg: String = "<killer> <gradient:#FFE259:#FFA751>⚔</gradient> <player>",
             var playerDeathScreenMsg: String = "☠",
             var playerAdvancementDoneMsg: String =
                 "\uD83C\uDF89 <gradient:#FFE259:#FFA751>›</gradient> <player> " +
                     "<gradient:#FFE259:#FFA751>has made the advancement:</gradient> <advancement>",
-            var nicknameUpdated: String = "<gradient:#CB2D3E:#EF473A>Nickname has been updated to: <nickname></gradient>",
+            var playerKickMsg: String =
+                "<red>❌<reset> <gradient:#FFE259:#FFA751>›</gradient> <player> " +
+                    "<gradient:#FFE259:#FFA751>reason:</gradient> <reason>",
+            var nicknameUpdated: String =
+                "<gradient:#CB2D3E:#EF473A>Nickname has been updated to: <nickname></gradient>",
         )
     }
 }

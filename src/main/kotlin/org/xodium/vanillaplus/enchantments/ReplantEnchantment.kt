@@ -6,7 +6,7 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
-import org.xodium.vanillaplus.utils.ExtUtils.displayName
+import org.xodium.vanillaplus.utils.Utils.displayName
 
 /** Represents an object handling replant enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
@@ -33,16 +33,9 @@ internal object ReplantEnchantment : EnchantmentInterface {
         if (ageable.age < ageable.maximumAge) return
         if (!itemInHand.hasItemMeta() || !itemInHand.itemMeta.hasEnchant(get())) return
 
-        // TODO: take seed out of drop. since planting would require a seed being used.
-
         instance.server.scheduler.runTaskLater(
             instance,
-            Runnable {
-                val blockType = block.type
-
-                block.type = blockType
-                block.blockData = ageable.apply { age = 0 }
-            },
+            Runnable { block.blockData = ageable.apply { age = 0 } },
             2,
         )
     }

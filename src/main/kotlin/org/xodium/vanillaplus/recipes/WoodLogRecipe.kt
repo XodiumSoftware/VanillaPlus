@@ -42,7 +42,7 @@ internal object WoodLogRecipe : RecipeInterface {
             .map { (wood, log) ->
                 ShapelessRecipe(
                     NamespacedKey(instance, "${wood.key.key}_to_${log.key.key}"),
-                    ItemStack.of(log),
+                    ItemStack.of(log, 4),
                 ).apply { addIngredient(wood) }
             }.toSet()
 }
