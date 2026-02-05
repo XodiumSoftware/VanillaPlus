@@ -41,6 +41,13 @@ internal object InventoryModule : ModuleInterface {
                 "Search nearby chests for specific items",
                 listOf("search", "searchinv", "invs", "sinv"),
             ),
+            CommandData(
+                Commands
+                    .literal("invunload")
+                    .requires { it.sender.hasPermission(perms[1]) }
+                    .playerExecuted { player, _ -> unloadInventory(player) },
+                "Unload inventory into nearby chests",
+            ),
         )
 
     override val perms =
@@ -48,6 +55,11 @@ internal object InventoryModule : ModuleInterface {
             Permission(
                 "${instance.javaClass.simpleName}.invsearch".lowercase(),
                 "Allows use of the invsearch command",
+                PermissionDefault.TRUE,
+            ),
+            Permission(
+                "${instance.javaClass.simpleName}.invunload".lowercase(),
+                "Allows use of the invunload command",
                 PermissionDefault.TRUE,
             ),
         )
@@ -106,6 +118,9 @@ internal object InventoryModule : ModuleInterface {
                     .spawn()
             }
         }
+    }
+
+    private fun unloadInventory(player: Player) {
     }
 
     /** Represents the config of the module. */
