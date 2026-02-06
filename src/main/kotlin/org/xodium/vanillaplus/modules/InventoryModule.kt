@@ -28,7 +28,7 @@ internal object InventoryModule : ModuleInterface {
         listOf(
             CommandData(
                 Commands
-                    .literal("invsearch")
+                    .literal("search")
                     .requires { it.sender.hasPermission(perms[0]) }
                     .then(
                         Commands
@@ -38,14 +38,15 @@ internal object InventoryModule : ModuleInterface {
                             },
                     ).playerExecuted { player, _ -> searchContainer(player, player.inventory.itemInMainHand.type) },
                 "Search nearby chests for specific items",
-                listOf("search", "searchinv", "invs", "sinv"),
+                listOf("invsearch", "searchinv", "invs", "sinv", "s"),
             ),
             CommandData(
                 Commands
-                    .literal("invunload")
+                    .literal("unload")
                     .requires { it.sender.hasPermission(perms[1]) }
                     .playerExecuted { player, _ -> unloadInventory(player) },
                 "Unload inventory into nearby chests",
+                listOf("invunload", "unloadinv", "invu", "uinv", "u"),
             ),
         )
 
