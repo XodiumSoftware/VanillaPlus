@@ -9,6 +9,7 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Color
 import org.bukkit.Material
 import org.bukkit.Particle
+import org.bukkit.block.Lidded
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.permissions.Permission
@@ -122,9 +123,12 @@ internal object InventoryModule : ModuleInterface {
      */
     private fun unloadInventory(player: Player) {
         val containers =
-            player.getContainersAround().filter { container ->
-                container.inventory.storageContents.any { it == null || it.amount < it.maxStackSize }
-            }
+            player
+                .getContainersAround()
+                .filter { it.block.state is Lidded }
+                .filter { container ->
+                    container.inventory.storageContents.any { it == null || it.amount < it.maxStackSize }
+                }
 
         if (containers.isEmpty()) {
             player.sendActionBar(MM.deserialize(config.inventoryModule.i18n.noContainersFound))
@@ -155,7 +159,7 @@ internal object InventoryModule : ModuleInterface {
             }
         }
 
-        ScheduleUtils.schedule(duration = 200L) {
+        ScheduleUtils.schedule(duration = 20L) {
             containers.forEach { container ->
                 Particle.CRIT
                     .builder()
