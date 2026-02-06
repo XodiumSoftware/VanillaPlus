@@ -78,13 +78,13 @@ internal object InventoryModule : ModuleInterface {
             return
         }
 
-        val foundContainers = mutableListOf<Block>()
+        val containers = mutableListOf<Block>()
 
         for (container in player.getContainersAround()) {
-            if (container.inventory.contains(material)) foundContainers.add(container.block)
+            if (container.inventory.contains(material)) containers.add(container.block)
         }
 
-        if (foundContainers.isEmpty()) {
+        if (containers.isEmpty()) {
             player.sendActionBar(
                 MM.deserialize(
                     config.inventoryModule.i18n.noMatchingItems,
@@ -102,7 +102,7 @@ internal object InventoryModule : ModuleInterface {
         )
 
         ScheduleUtils.schedule(duration = 200L) {
-            foundContainers.forEach { container ->
+            containers.forEach { container ->
                 Particle.TRAIL
                     .builder()
                     .location(player.location)
@@ -121,6 +121,20 @@ internal object InventoryModule : ModuleInterface {
     }
 
     private fun unloadInventory(player: Player) {
+        val containers = mutableListOf<Block>()
+
+        // TODO
+
+        ScheduleUtils.schedule(duration = 200L) {
+            containers.forEach { container ->
+                Particle.CRIT
+                    .builder()
+                    .location(container.center())
+                    .count(10)
+                    .receivers(player)
+                    .spawn()
+            }
+        }
     }
 
     /** Represents the config of the module. */
