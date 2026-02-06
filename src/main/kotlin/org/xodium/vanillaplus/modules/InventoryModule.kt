@@ -135,10 +135,8 @@ internal object InventoryModule : ModuleInterface {
             return
         }
 
-        val inventoryContents = player.inventory.contents
-
-        for (slot in inventoryContents.indices) {
-            val itemStack = inventoryContents[slot] ?: continue
+        for (slot in 9..35) {
+            val itemStack = player.inventory.getItem(slot) ?: continue
 
             if (itemStack.type.isAir) continue
 
