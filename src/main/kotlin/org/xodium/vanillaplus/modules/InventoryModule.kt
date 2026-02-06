@@ -9,7 +9,6 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Color
 import org.bukkit.Material
 import org.bukkit.Particle
-import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.permissions.Permission
@@ -78,11 +77,7 @@ internal object InventoryModule : ModuleInterface {
             return
         }
 
-        val containers = mutableListOf<Block>()
-
-        for (container in player.getContainersAround()) {
-            if (container.inventory.contains(material)) containers.add(container.block)
-        }
+        val containers = player.getContainersAround().filter { it.inventory.contains(material) }
 
         if (containers.isEmpty()) {
             player.sendActionBar(
@@ -106,12 +101,12 @@ internal object InventoryModule : ModuleInterface {
                 Particle.TRAIL
                     .builder()
                     .location(player.location)
-                    .data(Particle.Trail(container.center(), Color.MAROON, 40))
+                    .data(Particle.Trail(container.block.center(), Color.MAROON, 40))
                     .receivers(player)
                     .spawn()
                 Particle.DUST
                     .builder()
-                    .location(container.center())
+                    .location(container.block.center())
                     .count(10)
                     .data(Particle.DustOptions(Color.MAROON, 5.0f))
                     .receivers(player)
@@ -120,16 +115,50 @@ internal object InventoryModule : ModuleInterface {
         }
     }
 
+    /**
+     * Moves items from the player's inventory into nearby containers.
+     * @param player The player whose inventory items are to be unloaded into nearby containers.
+     */
     private fun unloadInventory(player: Player) {
-        val containers = mutableListOf<Block>()
+        val containers =
+            player.getContainersAround().filter { container ->
+                container.inventory.storageContents.any { it == null || it.amount < it.maxStackSize }
+            }
 
-        // TODO
+        if (containers.isEmpty()) {
+            player.sendActionBar(MM.deserialize(config.inventoryModule.i18n.noContainersFound))
+            return
+        }
+
+        val inventoryContents = player.inventory.contents
+
+        for (slot in inventoryContents.indices) {
+            val itemStack = inventoryContents[slot] ?: continue
+
+            if (itemStack.type.isAir) continue
+
+            var remaining = itemStack
+
+            for (container in containers) {
+                if (remaining.amount <= 0) break
+
+                val leftovers = container.inventory.addItem(remaining.clone())
+
+                remaining = leftovers.values.firstOrNull() ?: ItemStack.of(Material.AIR)
+            }
+
+            if (remaining.type.isAir) {
+                player.inventory.setItem(slot, null)
+            } else if (remaining != itemStack) {
+                player.inventory.setItem(slot, remaining)
+            }
+        }
 
         ScheduleUtils.schedule(duration = 200L) {
             containers.forEach { container ->
                 Particle.CRIT
                     .builder()
-                    .location(container.center())
+                    .location(container.block.center())
                     .count(10)
                     .receivers(player)
                     .spawn()
@@ -153,7 +182,9 @@ internal object InventoryModule : ModuleInterface {
                 "<gradient:#CB2D3E:#EF473A>No containers contain " +
                     "<gradient:#F4C4F3:#FC67FA><b><material></b></gradient></gradient>",
             var foundItemsInChests: String =
-                "<gradient:#FFE259:#FFA751>Found <gradient:#F4C4F3:#FC67FA><b><material></b></gradient> in container(s), follow trail(s)</gradient>",
+                "<gradient:#FFE259:#FFA751>Found <gradient:#F4C4F3:#FC67FA><b><material></b></gradient> " +
+                    "in container(s), follow trail(s)</gradient>",
+            var noContainersFound: String = "<gradient:#CB2D3E:#EF473A>No containers found nearby</gradient>",
         )
     }
 }
