@@ -9,7 +9,8 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Color
 import org.bukkit.Material
 import org.bukkit.Particle
-import org.bukkit.block.Block
+import org.bukkit.block.Container
+import org.bukkit.block.Lidded
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.permissions.Permission
@@ -29,7 +30,7 @@ internal object InventoryModule : ModuleInterface {
         listOf(
             CommandData(
                 Commands
-                    .literal("invsearch")
+                    .literal("search")
                     .requires { it.sender.hasPermission(perms[0]) }
                     .then(
                         Commands
@@ -39,7 +40,15 @@ internal object InventoryModule : ModuleInterface {
                             },
                     ).playerExecuted { player, _ -> searchContainer(player, player.inventory.itemInMainHand.type) },
                 "Search nearby chests for specific items",
-                listOf("search", "searchinv", "invs", "sinv"),
+                listOf("invsearch", "searchinv", "invs", "sinv", "s"),
+            ),
+            CommandData(
+                Commands
+                    .literal("unload")
+                    .requires { it.sender.hasPermission(perms[1]) }
+                    .playerExecuted { player, _ -> unloadInventory(player) },
+                "Unload inventory into nearby chests",
+                listOf("invunload", "unloadinv", "invu", "uinv", "u"),
             ),
         )
 
@@ -48,6 +57,11 @@ internal object InventoryModule : ModuleInterface {
             Permission(
                 "${instance.javaClass.simpleName}.invsearch".lowercase(),
                 "Allows use of the invsearch command",
+                PermissionDefault.TRUE,
+            ),
+            Permission(
+                "${instance.javaClass.simpleName}.invunload".lowercase(),
+                "Allows use of the invunload command",
                 PermissionDefault.TRUE,
             ),
         )
@@ -66,13 +80,9 @@ internal object InventoryModule : ModuleInterface {
             return
         }
 
-        val foundContainers = mutableListOf<Block>()
+        val containers = player.getContainersAround().filter { it.inventory.contains(material) }
 
-        for (container in player.getContainersAround()) {
-            if (container.inventory.contains(material)) foundContainers.add(container.block)
-        }
-
-        if (foundContainers.isEmpty()) {
+        if (containers.isEmpty()) {
             player.sendActionBar(
                 MM.deserialize(
                     config.inventoryModule.i18n.noMatchingItems,
@@ -90,18 +100,83 @@ internal object InventoryModule : ModuleInterface {
         )
 
         ScheduleUtils.schedule(duration = 200L) {
-            foundContainers.forEach { container ->
+            containers.forEach { container ->
                 Particle.TRAIL
                     .builder()
                     .location(player.location)
-                    .data(Particle.Trail(container.center(), Color.MAROON, 40))
+                    .data(Particle.Trail(container.block.center(), Color.MAROON, 40))
                     .receivers(player)
                     .spawn()
                 Particle.DUST
                     .builder()
-                    .location(container.center())
+                    .location(container.block.center())
                     .count(10)
                     .data(Particle.DustOptions(Color.MAROON, 5.0f))
+                    .receivers(player)
+                    .spawn()
+            }
+        }
+    }
+
+    /**
+     * Moves items from the player's inventory into nearby containers.
+     * @param player The player whose inventory items are to be unloaded into nearby containers.
+     */
+    private fun unloadInventory(player: Player) {
+        val containers =
+            player
+                .getContainersAround()
+                .filter { it.block.state is Lidded }
+                .filter { container ->
+                    container.inventory.storageContents.any { it == null || it.amount < it.maxStackSize }
+                }
+
+        if (containers.isEmpty()) {
+            player.sendActionBar(MM.deserialize(config.inventoryModule.i18n.noContainersFound))
+            return
+        }
+
+        val usedContainers = mutableSetOf<Container>()
+
+        for (slot in 9..35) {
+            val itemStack = player.inventory.getItem(slot) ?: continue
+
+            if (itemStack.type.isAir) continue
+
+            var remaining = itemStack
+
+            val sortedContainers =
+                containers.sortedByDescending { container ->
+                    container.inventory.storageContents
+                        .filterNotNull()
+                        .filter { it.type == remaining.type }
+                        .sumOf { it.amount }
+                }
+
+            for (container in sortedContainers) {
+                if (remaining.amount <= 0) break
+
+                val before = remaining.amount
+                val leftovers = container.inventory.addItem(remaining.clone())
+
+                remaining = leftovers.values.firstOrNull() ?: ItemStack.of(Material.AIR)
+
+                if (remaining.amount < before) usedContainers.add(container)
+            }
+
+            if (remaining.type.isAir) {
+                player.inventory.setItem(slot, null)
+            } else if (remaining != itemStack) {
+                player.inventory.setItem(slot, remaining)
+            }
+        }
+
+        ScheduleUtils.schedule(duration = 40L) {
+            usedContainers.forEach { container ->
+                Particle.CRIT
+                    .builder()
+                    .location(container.block.center())
+                    .count(10)
                     .receivers(player)
                     .spawn()
             }
@@ -124,7 +199,9 @@ internal object InventoryModule : ModuleInterface {
                 "<gradient:#CB2D3E:#EF473A>No containers contain " +
                     "<gradient:#F4C4F3:#FC67FA><b><material></b></gradient></gradient>",
             var foundItemsInChests: String =
-                "<gradient:#FFE259:#FFA751>Found <gradient:#F4C4F3:#FC67FA><b><material></b></gradient> in container(s), follow trail(s)</gradient>",
+                "<gradient:#FFE259:#FFA751>Found <gradient:#F4C4F3:#FC67FA><b><material></b></gradient> " +
+                    "in container(s), follow trail(s)</gradient>",
+            var noContainersFound: String = "<gradient:#CB2D3E:#EF473A>No containers found nearby</gradient>",
         )
     }
 }
