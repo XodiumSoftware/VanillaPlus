@@ -9,6 +9,7 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Color
 import org.bukkit.Material
 import org.bukkit.Particle
+import org.bukkit.block.Container
 import org.bukkit.block.Lidded
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -135,6 +136,8 @@ internal object InventoryModule : ModuleInterface {
             return
         }
 
+        val usedContainers = mutableSetOf<Container>()
+
         for (slot in 9..35) {
             val itemStack = player.inventory.getItem(slot) ?: continue
 
@@ -153,9 +156,12 @@ internal object InventoryModule : ModuleInterface {
             for (container in sortedContainers) {
                 if (remaining.amount <= 0) break
 
+                val before = remaining.amount
                 val leftovers = container.inventory.addItem(remaining.clone())
 
                 remaining = leftovers.values.firstOrNull() ?: ItemStack.of(Material.AIR)
+
+                if (remaining.amount < before) usedContainers.add(container)
             }
 
             if (remaining.type.isAir) {
@@ -166,7 +172,7 @@ internal object InventoryModule : ModuleInterface {
         }
 
         ScheduleUtils.schedule(duration = 20L) {
-            containers.forEach { container ->
+            usedContainers.forEach { container ->
                 Particle.CRIT
                     .builder()
                     .location(container.block.center())
