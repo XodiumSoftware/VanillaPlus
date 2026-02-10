@@ -122,8 +122,6 @@ internal object InventoryModule : ModuleInterface {
      * @param player The player whose inventory items are to be unloaded into nearby containers.
      */
     private fun unloadInventory(player: Player) {
-        // TODO: make the container unloading be based on which one is closest by.
-        // TODO: or we can make it based on which one has the most of the same item inside.
         val containers =
             player
                 .getContainersAround()
@@ -144,7 +142,15 @@ internal object InventoryModule : ModuleInterface {
 
             var remaining = itemStack
 
-            for (container in containers) {
+            val sortedContainers =
+                containers.sortedByDescending { container ->
+                    container.inventory.storageContents
+                        .filterNotNull()
+                        .filter { it.type == remaining.type }
+                        .sumOf { it.amount }
+                }
+
+            for (container in sortedContainers) {
                 if (remaining.amount <= 0) break
 
                 val leftovers = container.inventory.addItem(remaining.clone())
