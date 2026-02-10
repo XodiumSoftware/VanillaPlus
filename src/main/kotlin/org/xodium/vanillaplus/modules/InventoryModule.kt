@@ -171,7 +171,7 @@ internal object InventoryModule : ModuleInterface {
             }
         }
 
-        ScheduleUtils.schedule(duration = 20L) {
+        ScheduleUtils.schedule(duration = 40L) {
             usedContainers.forEach { container ->
                 Particle.CRIT
                     .builder()
