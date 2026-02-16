@@ -16,7 +16,7 @@ import org.xodium.vanillaplus.utils.Utils.MM
 /** Represents a module handling bookshelf mechanics within the system. */
 internal object BookshelfModule : ModuleInterface {
     init {
-        instance.server.scheduler.runTaskTimer(instance, Runnable { bookshelf() }, 0, 2)
+        if (isEnabled) instance.server.scheduler.runTaskTimer(instance, Runnable { bookshelf() }, 0, 2)
     }
 
     /** Runs the bookshelf action bar logic for all online players. */
