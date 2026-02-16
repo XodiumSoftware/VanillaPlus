@@ -5,10 +5,10 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
 import org.bukkit.Material
 import org.bukkit.block.ChiseledBookshelf
+import org.bukkit.block.data.Directional
 import org.bukkit.entity.Player
 import org.bukkit.inventory.meta.BookMeta
 import org.bukkit.inventory.meta.EnchantmentStorageMeta
-import org.bukkit.material.Directional
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.Utils.MM
@@ -31,13 +31,13 @@ internal object BookshelfModule : ModuleInterface {
 
             val shelf = block.state as? ChiseledBookshelf ?: continue
             val hitFace = rayTrace.hitBlockFace ?: continue
-            val directional = shelf.blockData as Directional
+            val blockData = shelf.blockData
 
-            if (directional.facing != hitFace) continue
+            if (blockData !is Directional) continue
+            if (blockData.facing != hitFace) continue
 
             val slotVector = rayTrace.hitPosition.subtract(shelf.location.toVector())
             val slot = shelf.getSlot(slotVector)
-
             val item = shelf.inventory.getItem(slot) ?: continue
             val meta = item.itemMeta ?: continue
 
