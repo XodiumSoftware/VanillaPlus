@@ -25,11 +25,11 @@ internal interface ModuleInterface : Listener {
      */
     val isEnabled: Boolean
         get() =
-            configData::class
+            config::class
                 .memberProperties
                 .firstOrNull { property ->
                     property.name == (this::class.simpleName?.replaceFirstChar { it.lowercase() } ?: return true)
-                }?.call(configData)
+                }?.call(config)
                 ?.let { moduleConfig ->
                     moduleConfig::class
                         .memberProperties
