@@ -76,12 +76,16 @@ internal class VanillaPlus : JavaPlugin() {
         )
     }
 
+    override fun onDisable() {
+        server.messenger.unregisterOutgoingPluginChannel(instance)
+    }
+
     /**
      * Disable the plugin and log the message.
      * @param msg The message to log.
      */
     private fun disablePlugin(msg: String) {
         logger.severe(msg)
-        server.pluginManager.disablePlugin(this)
+        server.pluginManager.disablePlugin(instance)
     }
 }
