@@ -43,10 +43,8 @@ internal object MapModule : ModuleInterface {
 
     @EventHandler
     fun on(event: PlayerChangedWorldEvent) {
-        val player = event.player
-
-        sendPlayerWorldId(player, WORLD_MAP_CHANNEL)
-        sendPlayerWorldId(player, MINI_MAP_CHANNEL)
+        sendPlayerWorldId(event.player, WORLD_MAP_CHANNEL)
+        sendPlayerWorldId(event.player, MINI_MAP_CHANNEL)
     }
 
     /**
