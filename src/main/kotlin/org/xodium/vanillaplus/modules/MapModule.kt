@@ -71,12 +71,12 @@ internal object MapModule : ModuleInterface {
      * @return The initialized or loaded server-level ID, or `0` if initialization fails.
      */
     private fun initServerLevelId(): Int =
-        try {
+        runCatching {
             val file = getXaeroMapFile()
 
             if (file.exists()) readServerLevelId(file) else createServerLevelId(file)
-        } catch (ex: Exception) {
-            instance.logger.warning("Failed to initialize xaeromap.txt: $ex")
+        }.getOrElse {
+            instance.logger.warning("Failed to initialize xaeromap.txt: $it")
             0
         }
 
