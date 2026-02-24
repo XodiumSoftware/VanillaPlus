@@ -21,7 +21,7 @@ internal object MapModule : ModuleInterface {
     private const val WORLD_MAP_CHANNEL: String = "xaeroworldmap:main"
     private const val MINI_MAP_CHANNEL: String = "xaerominimap:main"
 
-    private val serverLevelId: Int = initializeServerLevelId()
+    private val serverLevelId: Int = initServerLevelId()
 
     init {
         if (isEnabled) {
@@ -70,46 +70,50 @@ internal object MapModule : ModuleInterface {
      * Initializes and returns the persistent server-level ID used by Xaero's map mods.
      * @return The initialized or loaded server-level ID, or `0` if initialization fails.
      */
-    private fun initializeServerLevelId(): Int {
+    private fun initServerLevelId(): Int =
         try {
-            val worldFolder = instance.server.worldContainer.canonicalPath
-            val xaeromapFile = File("$worldFolder${File.separator}xaeromap.txt")
+            val file = getXaeroMapFile()
 
-            if (!xaeromapFile.exists()) {
-                try {
-                    FileOutputStream(xaeromapFile, false).use { xaeromapFileStream ->
-                        val id = Random().nextInt()
-                        val idString = "id:$id"
-
-                        xaeromapFileStream.write(idString.toByteArray())
-
-                        return id
-                    }
-                } catch (ex: Exception) {
-                    instance.logger.warning("Failed to create xaeromap.txt: $ex")
-                }
-            } else {
-                try {
-                    FileReader(xaeromapFile).use { fileReader ->
-                        BufferedReader(fileReader).use { bufferedReader ->
-                            val line = bufferedReader.readLine()
-                            val args = line.split(":")
-
-                            if (args[0] != "id") throw Exception("Failed to read id from xaeromap.txt")
-
-                            return args[1].toInt()
-                        }
-                    }
-                } catch (ex: Exception) {
-                    instance.logger.warning("Failed to read xaeromap.txt: $ex")
-                }
-            }
+            if (file.exists()) readServerLevelId(file) else createServerLevelId(file)
         } catch (ex: Exception) {
-            instance.logger.warning("Failed to get world ID: $ex")
+            instance.logger.warning("Failed to initialize xaeromap.txt: $ex")
+            0
         }
 
-        return 0
-    }
+    /**
+     * Resolves the Xaero map data file inside the server world container.
+     * @return The xaeromap.txt file location.
+     */
+    private fun getXaeroMapFile(): File =
+        File(instance.server.worldContainer.canonicalPath + File.separator + "xaeromap.txt")
+
+    /**
+     * Creates a new server-level ID, writes it to the file, and returns it.
+     * @param file The target file.
+     * @return The generated server-level ID.
+     */
+    private fun createServerLevelId(file: File): Int =
+        FileOutputStream(file, false).use { Random().nextInt().also { id -> it.write("id:$id".toByteArray()) } }
+
+    /**
+     * Reads and parses the server-level ID from the given file.
+     * @param file The xaeromap.txt file.
+     * @return The stored server-level ID.
+     * @throws Exception If the file content is invalid.
+     */
+    private fun readServerLevelId(file: File): Int =
+        FileReader(file).use { reader ->
+            BufferedReader(reader).use {
+                it
+                    .readLine()
+                    .split(":")
+                    .also { args ->
+                        if (args.getOrNull(0) != "id") throw Exception("Failed to read id from xaeromap.txt")
+                    }.getOrNull(1)
+                    ?.toInt()
+                    ?: throw Exception("Failed to read id from xaeromap.txt")
+            }
+        }
 
     /** Represents the config of the module. */
     @Serializable
