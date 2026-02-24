@@ -14,31 +14,29 @@ import kotlin.random.Random
 
 /** Represents a module handling map mechanics within the system. */
 internal object MapModule : ModuleInterface {
-    private const val WORLD_MAP_CHANNEL: String = "xaeroworldmap:main"
-    private const val MINI_MAP_CHANNEL: String = "xaerominimap:main"
+    private object Channel {
+        const val WORLD_MAP: String = "xaeroworldmap:main"
+        const val MINI_MAP: String = "xaerominimap:main"
+    }
 
     init {
         if (isEnabled) {
             instance.server.messenger.apply {
-                registerOutgoingPluginChannel(instance, WORLD_MAP_CHANNEL)
-                registerOutgoingPluginChannel(instance, MINI_MAP_CHANNEL)
+                registerOutgoingPluginChannel(instance, Channel.WORLD_MAP)
+                registerOutgoingPluginChannel(instance, Channel.MINI_MAP)
             }
         }
     }
 
     @EventHandler
     fun on(event: PlayerRegisterChannelEvent) {
-        val channel = event.channel
-
-        if (channel != WORLD_MAP_CHANNEL && channel != MINI_MAP_CHANNEL) return
-
-        sendPlayerWorldId(event.player, channel)
+        if (event.channel in setOf(Channel.WORLD_MAP, Channel.MINI_MAP)) sendPlayerWorldId(event.player, event.channel)
     }
 
     @EventHandler
     fun on(event: PlayerChangedWorldEvent) {
-        sendPlayerWorldId(event.player, WORLD_MAP_CHANNEL)
-        sendPlayerWorldId(event.player, MINI_MAP_CHANNEL)
+        sendPlayerWorldId(event.player, Channel.WORLD_MAP)
+        sendPlayerWorldId(event.player, Channel.MINI_MAP)
     }
 
     /**
@@ -50,12 +48,16 @@ internal object MapModule : ModuleInterface {
         player: Player,
         channel: String,
     ) {
-        val bytes = ByteStreams.newDataOutput()
-
-        bytes.writeByte(0)
-        bytes.writeInt(config.mapModule.serverId)
-
-        player.sendPluginMessage(instance, channel, bytes.toByteArray())
+        player.sendPluginMessage(
+            instance,
+            channel,
+            ByteStreams
+                .newDataOutput()
+                .apply {
+                    writeByte(0)
+                    writeInt(config.mapModule.serverId)
+                }.toByteArray(),
+        )
     }
 
     /** Represents the config of the module. */
