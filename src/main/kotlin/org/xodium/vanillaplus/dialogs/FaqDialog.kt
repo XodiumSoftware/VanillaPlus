@@ -33,13 +33,13 @@ internal object FaqDialog : DialogInterface {
      * @return A list of ItemStack representing the FAQ items.
      */
     fun buildFaqItems(): List<ItemStack> =
-        faqConfig.faqItems.map { faqItem ->
-            ItemStack.of(faqItem.material).apply {
-                if (faqItem.customName.isNotBlank()) {
-                    setData(DataComponentTypes.CUSTOM_NAME, MM.deserialize(faqItem.customName))
+        faqConfig.faqItems.map { item ->
+            ItemStack.of(item.material).apply {
+                if (item.customName.isNotBlank()) {
+                    setData(DataComponentTypes.CUSTOM_NAME, MM.deserialize(item.customName))
                 }
 
-                faqItem.lore
+                item.lore
                     .filter { it.isNotBlank() }
                     .takeIf { it.isNotEmpty() }
                     ?.let { setData(DataComponentTypes.LORE, ItemLore.lore(it.map(MM::deserialize))) }
