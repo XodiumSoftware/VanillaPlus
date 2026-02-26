@@ -33,8 +33,8 @@ internal class VanillaPlus : JavaPlugin() {
 
         if (!server.version.contains(pluginMeta.version)) disablePlugin(unsupportedVersionMsg)
 
-        instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
-            event.registrar().register(
+        instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) {
+            it.registrar().register(
                 ConfigData.reloadCommand.builder.build(),
                 ConfigData.reloadCommand.description,
                 ConfigData.reloadCommand.aliases,

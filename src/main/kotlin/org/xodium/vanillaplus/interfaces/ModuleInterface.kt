@@ -58,9 +58,9 @@ internal interface ModuleInterface : Listener {
     fun register(): Long =
         measureTime {
             instance.server.pluginManager.registerEvents(this, instance)
-            instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
+            instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) {
                 cmds.forEach { cmd ->
-                    event.registrar().register(
+                    it.registrar().register(
                         cmd.builder.build(),
                         cmd.description,
                         cmd.aliases,

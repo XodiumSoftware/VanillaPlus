@@ -41,22 +41,22 @@ internal object ChatModule : ModuleInterface {
                             .then(
                                 Commands
                                     .argument("message", StringArgumentType.greedyString())
-                                    .executesCatching { ctx ->
-                                        if (ctx.source.sender !is Player) {
+                                    .executesCatching {
+                                        if (it.source.sender !is Player) {
                                             instance.logger.warning(
                                                 "Command can only be executed by a Player!",
                                             )
                                         }
 
-                                        val sender = ctx.source.sender as Player
+                                        val sender = it.source.sender as Player
                                         val targetResolver =
-                                            ctx.getArgument("target", PlayerSelectorArgumentResolver::class.java)
+                                            it.getArgument("target", PlayerSelectorArgumentResolver::class.java)
                                         val target =
-                                            targetResolver.resolve(ctx.source).singleOrNull()
+                                            targetResolver.resolve(it.source).singleOrNull()
                                                 ?: return@executesCatching sender.sendMessage(
                                                     MM.deserialize(config.chatModule.i18n.playerIsNotOnline),
                                                 )
-                                        val message = ctx.getArgument("message", String().javaClass)
+                                        val message = it.getArgument("message", String().javaClass)
 
                                         whisper(sender, target, message)
                                     },
