@@ -39,6 +39,6 @@ jobs:
       - id: upload-artifact
         name: Upload Build Artifact
         if: ${{ success() }}
-        uses: actions/upload-artifact@v6.0.0
+        uses: actions/upload-artifact@v7.0.0
         with:
           path: build/libs/*.jar
