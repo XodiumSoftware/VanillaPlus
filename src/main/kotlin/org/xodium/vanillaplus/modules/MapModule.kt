@@ -2,14 +2,13 @@
 
 package org.xodium.vanillaplus.modules
 
-import com.google.common.io.ByteStreams
 import kotlinx.serialization.Serializable
-import org.bukkit.World
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.*
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.MessageUtils
 import kotlin.random.Random
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -41,7 +40,7 @@ internal object MapModule : ModuleInterface {
         if (event.channel !in setOf(Channel.WORLD_MAP, Channel.MINI_MAP)) return
 
         sendHandshake(event.player, event.channel)
-        sendPlayerWorldId(event.player, event.channel)
+        sendLevelId(event.player, event.channel)
         trackOthers(event.player)
     }
 
@@ -54,8 +53,8 @@ internal object MapModule : ModuleInterface {
         lastTrackTime.remove(uuid)
 
         untrackPlayer(player)
-        sendPlayerWorldId(player, Channel.WORLD_MAP)
-        sendPlayerWorldId(player, Channel.MINI_MAP)
+        sendLevelId(player, Channel.WORLD_MAP)
+        sendLevelId(player, Channel.MINI_MAP)
         trackOthers(player)
     }
 
@@ -105,16 +104,7 @@ internal object MapModule : ModuleInterface {
         player: Player,
         channel: String,
     ) {
-        player.sendPluginMessage(
-            instance,
-            channel,
-            ByteStreams
-                .newDataOutput()
-                .apply {
-                    writeByte(1)
-                    writeInt(1)
-                }.toByteArray(),
-        )
+        player.sendPluginMessage(instance, channel, MessageUtils.getHandshakeMessage())
     }
 
     /**
@@ -122,20 +112,11 @@ internal object MapModule : ModuleInterface {
      * @param player The target player who will receive the plugin message.
      * @param channel The plugin channel to send the message through.
      */
-    private fun sendPlayerWorldId(
+    private fun sendLevelId(
         player: Player,
         channel: String,
     ) {
-        player.sendPluginMessage(
-            instance,
-            channel,
-            ByteStreams
-                .newDataOutput()
-                .apply {
-                    writeByte(0)
-                    writeInt(config.mapModule.serverId)
-                }.toByteArray(),
-        )
+        player.sendPluginMessage(instance, channel, MessageUtils.getLevelIdMessage(config.mapModule.serverId))
     }
 
     /**
@@ -156,25 +137,12 @@ internal object MapModule : ModuleInterface {
             return
         }
 
-        val location = player.location
-        val bytes =
-            ByteStreams
-                .newDataOutput()
-                .apply {
-                    writeByte(2)
-                    writeLong(player.uniqueId.mostSignificantBits)
-                    writeLong(player.uniqueId.leastSignificantBits)
-                    writeDouble(location.x)
-                    writeDouble(location.y)
-                    writeDouble(location.z)
-                    writeFloat(location.yaw)
-                    writeInt(dimensionId(player.world))
-                }.toByteArray()
+        val message = MessageUtils.getTrackPlayerMessage(player)
 
         for (other in player.world.players) {
             if (other != player) {
-                other.sendPluginMessage(instance, Channel.MINI_MAP, bytes)
-                other.sendPluginMessage(instance, Channel.WORLD_MAP, bytes)
+                other.sendPluginMessage(instance, Channel.MINI_MAP, message)
+                other.sendPluginMessage(instance, Channel.WORLD_MAP, message)
             }
         }
     }
@@ -184,39 +152,15 @@ internal object MapModule : ModuleInterface {
      * @param player The player that should be removed from tracking.
      */
     private fun untrackPlayer(player: Player) {
-        val bytes =
-            ByteStreams
-                .newDataOutput()
-                .apply {
-                    writeByte(3)
-                    writeLong(player.uniqueId.mostSignificantBits)
-                    writeLong(player.uniqueId.leastSignificantBits)
-                }.toByteArray()
+        val message = MessageUtils.getUntrackPlayerMessage(player)
 
         for (other in player.world.players) {
             if (other != player) {
-                other.sendPluginMessage(instance, Channel.MINI_MAP, bytes)
-                other.sendPluginMessage(instance, Channel.WORLD_MAP, bytes)
+                other.sendPluginMessage(instance, Channel.MINI_MAP, message)
+                other.sendPluginMessage(instance, Channel.WORLD_MAP, message)
             }
         }
     }
-
-    /**
-     * Resolves dimension id for the given world.
-     *
-     * Overworld is mapped to 0, Nether to -1, and The End to 1.
-     * Any unknown environment defaults to 0.
-     *
-     * @param world The world whose dimension id should be resolved.
-     * @return The corresponding Xaero dimension id.
-     */
-    private fun dimensionId(world: World): Int =
-        when (world.environment) {
-            World.Environment.NORMAL -> 0
-            World.Environment.NETHER -> -1
-            World.Environment.THE_END -> 1
-            else -> 0
-        }
 
     /**
      * Determines whether the specified player should be visible on the map.
