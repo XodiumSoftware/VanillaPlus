@@ -48,6 +48,10 @@ internal object MapModule : ModuleInterface {
     @EventHandler
     fun on(event: PlayerChangedWorldEvent) {
         val player = event.player
+        val uuid = player.uniqueId.toKotlinUuid()
+
+        lastBlockPos.remove(uuid)
+        lastTrackTime.remove(uuid)
 
         untrackPlayer(player)
         sendPlayerWorldId(player, Channel.WORLD_MAP)
@@ -79,6 +83,11 @@ internal object MapModule : ModuleInterface {
 
     @EventHandler
     fun on(event: PlayerQuitEvent) {
+        val uuid = event.player.uniqueId.toKotlinUuid()
+
+        lastBlockPos.remove(uuid)
+        lastTrackTime.remove(uuid)
+
         untrackPlayer(event.player)
     }
 
