@@ -1,13 +1,11 @@
 package org.xodium.vanillaplus.dialogs
 
-import io.papermc.paper.datacomponent.DataComponentTypes
-import io.papermc.paper.datacomponent.item.ItemLore
 import io.papermc.paper.registry.data.dialog.DialogBase
 import io.papermc.paper.registry.data.dialog.DialogRegistryEntry
 import io.papermc.paper.registry.data.dialog.type.DialogType
 import kotlinx.serialization.Serializable
+import net.kyori.adventure.text.Component
 import org.bukkit.Material
-import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.interfaces.DialogInterface
 import org.xodium.vanillaplus.utils.Utils.MM
 
@@ -22,29 +20,32 @@ internal object FaqDialog : DialogInterface {
             .base(
                 DialogBase
                     .builder(MM.deserialize(faqConfig.faqTitle))
-                    // FIX: Blocked due to Paper API issue (https://github.com/PaperMC/Paper/issues/13555)
+                    // NOTE: Blocked due to Paper API issue (https://github.com/PaperMC/Paper/issues/13555)
                     // .body(buildFaqItems().map { DialogBody.item(it).build() })
+                    // .body(buildFaqItems().map { DialogBody.plainMessage(it).build() })
                     .canCloseWithEscape(true)
                     .build(),
             ).type(DialogType.notice())
 
-    /**
-     * Builds a list of FAQ items from the configuration.
-     * @return A list of ItemStack representing the FAQ items.
-     */
-    fun buildFaqItems(): List<ItemStack> =
-        faqConfig.faqItems.map { item ->
-            ItemStack.of(item.material).apply {
-                if (item.customName.isNotBlank()) {
-                    setData(DataComponentTypes.CUSTOM_NAME, MM.deserialize(item.customName))
-                }
+//    /**
+//     * Builds a list of FAQ items from the configuration.
+//     * @return A list of ItemStack representing the FAQ items.
+//     */
+//    fun buildFaqItems(): List<ItemStack> =
+//        faqConfig.faqItems.map { item ->
+//            ItemStack.of(item.material).apply {
+//                if (item.customName.isNotBlank()) {
+//                    setData(DataComponentTypes.CUSTOM_NAME, MM.deserialize(item.customName))
+//                }
+//
+//                item.lore
+//                    .filter { it.isNotBlank() }
+//                    .takeIf { it.isNotEmpty() }
+//                    ?.let { setData(DataComponentTypes.LORE, ItemLore.lore(it.map(MM::deserialize))) }
+//            }
+//        }
 
-                item.lore
-                    .filter { it.isNotBlank() }
-                    .takeIf { it.isNotEmpty() }
-                    ?.let { setData(DataComponentTypes.LORE, ItemLore.lore(it.map(MM::deserialize))) }
-            }
-        }
+    fun buildFaqItems(): List<Component> = TODO()
 
     /** Represents a FAQ item in the configuration. */
     @Serializable

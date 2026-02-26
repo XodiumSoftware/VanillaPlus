@@ -12,6 +12,7 @@ import org.xodium.vanillaplus.data.ConfigData
 import org.xodium.vanillaplus.utils.Utils.toRegistryKeyFragment
 
 /** Represents a contract for dialogs within the system. */
+@Suppress("UnstableApiUsage")
 internal interface DialogInterface {
     /**
      * Retrieves the configuration data associated with the module.
