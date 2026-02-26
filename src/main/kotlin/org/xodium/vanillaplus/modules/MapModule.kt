@@ -11,9 +11,17 @@ import org.bukkit.event.player.*
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import kotlin.random.Random
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
+import kotlin.uuid.toKotlinUuid
 
 /** Represents a module handling map mechanics within the system. */
+@OptIn(ExperimentalUuidApi::class)
 internal object MapModule : ModuleInterface {
+    private val lastTrackTime = mutableMapOf<Uuid, Long>()
+    private val lastBlockPos = mutableMapOf<Uuid, Triple<Int, Int, Int>>()
+    private const val TRACK_THROTTLE_MS = 150L
+
     private object Channel {
         const val WORLD_MAP: String = "xaeroworldmap:main"
         const val MINI_MAP: String = "xaerominimap:main"
@@ -39,15 +47,34 @@ internal object MapModule : ModuleInterface {
 
     @EventHandler
     fun on(event: PlayerChangedWorldEvent) {
-        sendPlayerWorldId(event.player, Channel.WORLD_MAP)
-        sendPlayerWorldId(event.player, Channel.MINI_MAP)
+        val player = event.player
+
+        untrackPlayer(player)
+        sendPlayerWorldId(player, Channel.WORLD_MAP)
+        sendPlayerWorldId(player, Channel.MINI_MAP)
+        trackOthers(player)
     }
 
     @EventHandler
     fun on(event: PlayerMoveEvent) {
         if (!event.hasExplicitlyChangedPosition()) return
 
-        trackPlayer(event.player)
+        val player = event.player
+        val uuid = player.uniqueId.toKotlinUuid()
+        val now = System.currentTimeMillis()
+        val last = lastTrackTime[uuid] ?: 0L
+        val blockPos = Triple(player.location.blockX, player.location.blockY, player.location.blockZ)
+        val lastPos = lastBlockPos[uuid]
+
+        if (now - last >= TRACK_THROTTLE_MS && blockPos != lastPos) {
+            lastTrackTime[uuid] = now
+            lastBlockPos[uuid] = blockPos
+            if (isVisible(player)) {
+                trackPlayer(player)
+            } else if (lastPos != null) {
+                untrackPlayer(player)
+            }
+        }
     }
 
     @EventHandler
@@ -120,6 +147,7 @@ internal object MapModule : ModuleInterface {
             return
         }
 
+        val location = player.location
         val bytes =
             ByteStreams
                 .newDataOutput()
@@ -127,10 +155,10 @@ internal object MapModule : ModuleInterface {
                     writeByte(2)
                     writeLong(player.uniqueId.mostSignificantBits)
                     writeLong(player.uniqueId.leastSignificantBits)
-                    writeDouble(player.location.x)
-                    writeDouble(player.location.y)
-                    writeDouble(player.location.z)
-                    writeFloat(player.location.yaw)
+                    writeDouble(location.x)
+                    writeDouble(location.y)
+                    writeDouble(location.z)
+                    writeFloat(location.yaw)
                     writeInt(dimensionId(player.world))
                 }.toByteArray()
 
