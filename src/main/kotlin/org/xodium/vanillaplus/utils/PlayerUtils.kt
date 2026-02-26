@@ -93,14 +93,15 @@ internal object PlayerUtils {
     /**
      * Get chunks around this player (3x3 chunk area).
      * @receiver The player.
+     * @param range The chunk radius around the player (1 = 3x3 area).
      * @return Collection of chunks around the player.
      */
-    fun Player.getChunksAround(): Set<Chunk> {
+    fun Player.getChunksAround(range: Int = 1): Set<Chunk> {
         val (baseX, baseZ) = location.chunk.run { x to z }
 
         return buildSet {
-            for (x in -1..1) {
-                for (z in -1..1) {
+            for (x in -range..range) {
+                for (z in -range..range) {
                     add(world.getChunkAt(baseX + x, baseZ + z))
                 }
             }
