@@ -192,6 +192,7 @@ internal object OpenableModule : ModuleInterface {
             Runnable {
                 val door = block.blockData as Door
                 val door2 = block2.blockData as Door
+
                 if (door.isOpen != door2.isOpen) toggleDoor(block2, door2, open)
             },
             delay,

@@ -106,16 +106,16 @@ internal object InventoryModule : ModuleInterface {
         player.playSound(config.inventoryModule.searchSuccessfulSound.toSound())
 
         ScheduleUtils.schedule(duration = 200L) {
-            containers.forEach { container ->
+            containers.forEach {
                 Particle.TRAIL
                     .builder()
                     .location(player.location)
-                    .data(Particle.Trail(container.block.center(), Color.MAROON, 40))
+                    .data(Particle.Trail(it.block.center(), Color.MAROON, 40))
                     .receivers(player)
                     .spawn()
                 Particle.DUST
                     .builder()
-                    .location(container.block.center())
+                    .location(it.block.center())
                     .count(10)
                     .data(Particle.DustOptions(Color.MAROON, 5.0f))
                     .receivers(player)
@@ -186,10 +186,10 @@ internal object InventoryModule : ModuleInterface {
         }
 
         ScheduleUtils.schedule(duration = 40L) {
-            usedContainers.forEach { container ->
+            usedContainers.forEach {
                 Particle.CRIT
                     .builder()
-                    .location(container.block.center())
+                    .location(it.block.center())
                     .count(10)
                     .receivers(player)
                     .spawn()
