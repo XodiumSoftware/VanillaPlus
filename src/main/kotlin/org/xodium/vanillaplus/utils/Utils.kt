@@ -7,6 +7,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.enchantments.Enchantment
 import org.xodium.vanillaplus.VanillaPlus
+import java.util.*
 
 /** General utilities. */
 internal object Utils {
@@ -34,4 +35,11 @@ internal object Utils {
             .split(Regex("(?=[A-Z])"))
             .filter { it.isNotEmpty() }
             .joinToString("_") { it.lowercase() }
+
+    /** Extension function to convert a UUID to a 4-element integer array representation. */
+    fun UUID.toIntArray(): IntArray {
+        val most = mostSignificantBits
+        val least = leastSignificantBits
+        return intArrayOf((most shr 32).toInt(), most.toInt(), (least shr 32).toInt(), least.toInt())
+    }
 }
