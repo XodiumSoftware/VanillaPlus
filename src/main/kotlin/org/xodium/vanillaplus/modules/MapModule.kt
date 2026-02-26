@@ -124,7 +124,10 @@ internal object MapModule : ModuleInterface {
      * @param player The player that should receive tracking data.
      */
     private fun trackOthers(player: Player) {
-        for (other in player.world.players) if (other != player) trackPlayer(other)
+        player.world.players
+            .filter { it != player }
+            .takeIf { it.isNotEmpty() }
+            ?.forEach { trackPlayer(it) }
     }
 
     /**
@@ -137,14 +140,7 @@ internal object MapModule : ModuleInterface {
             return
         }
 
-        val message = MessageUtils.getTrackPlayerMessage(player)
-
-        for (other in player.world.players) {
-            if (other != player) {
-                other.sendPluginMessage(instance, Channel.MINI_MAP, message)
-                other.sendPluginMessage(instance, Channel.WORLD_MAP, message)
-            }
-        }
+        broadcastToOthers(player, MessageUtils.getTrackPlayerMessage(player))
     }
 
     /**
@@ -152,14 +148,7 @@ internal object MapModule : ModuleInterface {
      * @param player The player that should be removed from tracking.
      */
     private fun untrackPlayer(player: Player) {
-        val message = MessageUtils.getUntrackPlayerMessage(player)
-
-        for (other in player.world.players) {
-            if (other != player) {
-                other.sendPluginMessage(instance, Channel.MINI_MAP, message)
-                other.sendPluginMessage(instance, Channel.WORLD_MAP, message)
-            }
-        }
+        broadcastToOthers(player, MessageUtils.getUntrackPlayerMessage(player))
     }
 
     /**
@@ -168,6 +157,25 @@ internal object MapModule : ModuleInterface {
      * @return True if the player should be tracked, false otherwise.
      */
     private fun isVisible(player: Player): Boolean = !player.isSneaking && !player.hasMetadata("vanished")
+
+    /**
+     * Sends a given plugin message to all other players in the same world as the specified player.
+     * Excludes the provided player from receiving the message.
+     * @param player The player to exclude from the broadcast.
+     * @param message The plugin message to send to all other players.
+     */
+    private fun broadcastToOthers(
+        player: Player,
+        message: ByteArray,
+    ) {
+        player.world.players
+            .filter { it != player }
+            .takeIf { it.isNotEmpty() }
+            ?.forEach {
+                it.sendPluginMessage(instance, Channel.MINI_MAP, message)
+                it.sendPluginMessage(instance, Channel.WORLD_MAP, message)
+            }
+    }
 
     /** Represents the config of the module. */
     @Serializable
