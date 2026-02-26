@@ -8,11 +8,13 @@ import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import io.papermc.paper.registry.RegistryKey
 import io.papermc.paper.registry.event.RegistryEvents
 import io.papermc.paper.registry.keys.ItemTypeKeys
+import io.papermc.paper.registry.keys.tags.DialogTagKeys
 import io.papermc.paper.registry.keys.tags.EnchantmentTagKeys
 import io.papermc.paper.registry.keys.tags.ItemTypeTagKeys
 import io.papermc.paper.registry.tag.TagKey
 import io.papermc.paper.tag.TagEntry
 import net.kyori.adventure.key.Key
+import org.xodium.vanillaplus.dialogs.FaqDialog
 import org.xodium.vanillaplus.enchantments.*
 
 /** Main bootstrap class of the plugin. */
@@ -20,6 +22,7 @@ import org.xodium.vanillaplus.enchantments.*
 internal class VanillaPlusBootstrap : PluginBootstrap {
     companion object {
         const val INSTANCE = "vanillaplus"
+
         val TOOLS = TagKey.create(RegistryKey.ITEM, Key.key(INSTANCE, "tools"))
         val WEAPONS = TagKey.create(RegistryKey.ITEM, Key.key(INSTANCE, "weapons"))
         val TOOLS_WEAPONS = TagKey.create(RegistryKey.ITEM, Key.key(INSTANCE, "tools_weapons"))
@@ -27,8 +30,8 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
 
     override fun bootstrap(ctx: BootstrapContext) {
         ctx.lifecycleManager.apply {
-            registerEventHandler(LifecycleEvents.TAGS.preFlatten(RegistryKey.ITEM)) { event ->
-                event.registrar().apply {
+            registerEventHandler(LifecycleEvents.TAGS.preFlatten(RegistryKey.ITEM)) {
+                it.registrar().apply {
                     setTag(
                         TOOLS,
                         setOf(
@@ -64,36 +67,43 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
             registerEventHandler(
                 RegistryEvents.ENCHANTMENT.compose().newHandler { event ->
                     event.registry().apply {
-                        register(ReplantEnchantment.key) { builder ->
+                        register(ReplantEnchantment.key) {
                             ReplantEnchantment
-                                .invoke(builder)
+                                .invoke(it)
                                 .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.HOES))
                         }
-                        register(PickupEnchantment.key) { builder ->
+                        register(PickupEnchantment.key) {
                             PickupEnchantment
-                                .invoke(builder)
+                                .invoke(it)
                                 .supportedItems(event.getOrCreateTag(TOOLS_WEAPONS))
                         }
-                        register(NightVisionEnchantment.key) { builder ->
+                        register(NightVisionEnchantment.key) {
                             NightVisionEnchantment
-                                .invoke(builder)
+                                .invoke(it)
                                 .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.HEAD_ARMOR))
                         }
-                        register(NimbusEnchantment.key) { builder ->
+                        register(NimbusEnchantment.key) {
                             NimbusEnchantment
-                                .invoke(builder)
+                                .invoke(it)
                                 .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.HARNESSES))
                         }
-                        register(VeinMineEnchantment.key) { builder ->
+                        register(VeinMineEnchantment.key) {
                             VeinMineEnchantment
-                                .invoke(builder)
+                                .invoke(it)
                                 .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.PICKAXES))
                         }
                     }
                 },
             )
-            registerEventHandler(LifecycleEvents.TAGS.postFlatten(RegistryKey.ENCHANTMENT)) { event ->
-                event.registrar().apply {
+            registerEventHandler(
+                RegistryEvents.DIALOG.compose().newHandler { event ->
+                    event.registry().apply {
+                        register(FaqDialog.key) { FaqDialog.invoke(it) }
+                    }
+                },
+            )
+            registerEventHandler(LifecycleEvents.TAGS.postFlatten(RegistryKey.ENCHANTMENT)) {
+                it.registrar().apply {
                     val enchants =
                         setOf(
                             ReplantEnchantment.key,
@@ -106,6 +116,11 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                     addToTag(EnchantmentTagKeys.TRADEABLE, enchants)
                     addToTag(EnchantmentTagKeys.NON_TREASURE, enchants)
                     addToTag(EnchantmentTagKeys.IN_ENCHANTING_TABLE, enchants)
+                }
+            }
+            registerEventHandler(LifecycleEvents.TAGS.postFlatten(RegistryKey.DIALOG)) {
+                it.registrar().apply {
+                    addToTag(DialogTagKeys.QUICK_ACTIONS, setOf(FaqDialog.key))
                 }
             }
         }

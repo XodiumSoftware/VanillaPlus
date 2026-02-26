@@ -25,11 +25,11 @@ internal interface ModuleInterface : Listener {
      */
     val isEnabled: Boolean
         get() =
-            configData::class
+            config::class
                 .memberProperties
                 .firstOrNull { property ->
                     property.name == (this::class.simpleName?.replaceFirstChar { it.lowercase() } ?: return true)
-                }?.call(configData)
+                }?.call(config)
                 ?.let { moduleConfig ->
                     moduleConfig::class
                         .memberProperties
@@ -55,14 +55,12 @@ internal interface ModuleInterface : Listener {
      * @return The time taken to register the feature in milliseconds, or null if the feature is disabled.
      */
     @Suppress("UnstableApiUsage")
-    fun register(): Long? {
-        if (!isEnabled) return null
-
-        return measureTime {
+    fun register(): Long =
+        measureTime {
             instance.server.pluginManager.registerEvents(this, instance)
-            instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
+            instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) {
                 cmds.forEach { cmd ->
-                    event.registrar().register(
+                    it.registrar().register(
                         cmd.builder.build(),
                         cmd.description,
                         cmd.aliases,
@@ -71,7 +69,6 @@ internal interface ModuleInterface : Listener {
             }
             instance.server.pluginManager.addPermissions(perms)
         }.inWholeMilliseconds
-    }
 
     /**
      * Logs the registration details of a list of modules.
@@ -79,6 +76,10 @@ internal interface ModuleInterface : Listener {
      * @param modules List of [ModuleInterface] instances to log.
      */
     fun Logger.info(modules: List<ModuleInterface>) {
-        info("Registered: ${modules.size} module(s) | Took ${modules.sumOf { it.register() ?: return }}ms")
+        info(
+            "Registered: ${modules.size} module(s) | Took ${
+                modules.filter { it.isEnabled }.sumOf { it.register() }
+            }ms",
+        )
     }
 }

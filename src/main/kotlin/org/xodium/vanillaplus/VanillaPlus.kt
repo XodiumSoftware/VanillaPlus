@@ -7,7 +7,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import org.xodium.vanillaplus.data.ConfigData
 import org.xodium.vanillaplus.data.ConfigData.Companion.load
 import org.xodium.vanillaplus.modules.*
-import org.xodium.vanillaplus.modules.ArmorStandModule.info
+import org.xodium.vanillaplus.modules.BooksModule.info
 import org.xodium.vanillaplus.recipes.ChainmailRecipe
 import org.xodium.vanillaplus.recipes.PaintingRecipe
 import org.xodium.vanillaplus.recipes.PaintingRecipe.info
@@ -33,8 +33,8 @@ internal class VanillaPlus : JavaPlugin() {
 
         if (!server.version.contains(pluginMeta.version)) disablePlugin(unsupportedVersionMsg)
 
-        instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
-            event.registrar().register(
+        instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) {
+            it.registrar().register(
                 ConfigData.reloadCommand.builder.build(),
                 ConfigData.reloadCommand.description,
                 ConfigData.reloadCommand.aliases,
@@ -56,7 +56,6 @@ internal class VanillaPlus : JavaPlugin() {
 
         logger.info(
             listOf(
-                ArmorStandModule,
                 BooksModule,
                 ChatModule,
                 DimensionsModule,
@@ -67,6 +66,7 @@ internal class VanillaPlus : JavaPlugin() {
                 MotdModule,
                 OpenableModule,
                 PlayerModule,
+                ServerInfoModule,
                 ScoreBoardModule,
                 SignModule,
                 SitModule,

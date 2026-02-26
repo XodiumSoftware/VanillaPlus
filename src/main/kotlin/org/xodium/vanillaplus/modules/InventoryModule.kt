@@ -5,6 +5,7 @@ package org.xodium.vanillaplus.modules
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes
 import kotlinx.serialization.Serializable
+import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Color
 import org.bukkit.Material
@@ -17,6 +18,7 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
+import org.xodium.vanillaplus.data.SoundData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.BlockUtils.center
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
@@ -77,6 +79,7 @@ internal object InventoryModule : ModuleInterface {
     ) {
         if (material == Material.AIR) {
             player.sendActionBar(MM.deserialize(config.inventoryModule.i18n.noMaterialSpecified))
+            player.playSound(config.inventoryModule.searchFailedSound.toSound())
             return
         }
 
@@ -89,6 +92,7 @@ internal object InventoryModule : ModuleInterface {
                     Placeholder.component("material", MM.deserialize(material.name)),
                 ),
             )
+            player.playSound(config.inventoryModule.searchFailedSound.toSound())
             return
         }
 
@@ -99,17 +103,19 @@ internal object InventoryModule : ModuleInterface {
             ),
         )
 
+        player.playSound(config.inventoryModule.searchSuccessfulSound.toSound())
+
         ScheduleUtils.schedule(duration = 200L) {
-            containers.forEach { container ->
+            containers.forEach {
                 Particle.TRAIL
                     .builder()
                     .location(player.location)
-                    .data(Particle.Trail(container.block.center(), Color.MAROON, 40))
+                    .data(Particle.Trail(it.block.center(), Color.MAROON, 40))
                     .receivers(player)
                     .spawn()
                 Particle.DUST
                     .builder()
-                    .location(container.block.center())
+                    .location(it.block.center())
                     .count(10)
                     .data(Particle.DustOptions(Color.MAROON, 5.0f))
                     .receivers(player)
@@ -133,6 +139,7 @@ internal object InventoryModule : ModuleInterface {
 
         if (containers.isEmpty()) {
             player.sendActionBar(MM.deserialize(config.inventoryModule.i18n.noContainersFound))
+            player.playSound(config.inventoryModule.unloadFailedSound.toSound())
             return
         }
 
@@ -171,11 +178,18 @@ internal object InventoryModule : ModuleInterface {
             }
         }
 
+        if (usedContainers.isEmpty()) {
+            player.playSound(config.inventoryModule.unloadFailedSound.toSound())
+            return
+        } else {
+            player.playSound(config.inventoryModule.unloadSuccessfulSound.toSound())
+        }
+
         ScheduleUtils.schedule(duration = 40L) {
-            usedContainers.forEach { container ->
+            usedContainers.forEach {
                 Particle.CRIT
                     .builder()
-                    .location(container.block.center())
+                    .location(it.block.center())
                     .count(10)
                     .receivers(player)
                     .spawn()
@@ -187,6 +201,10 @@ internal object InventoryModule : ModuleInterface {
     @Serializable
     data class Config(
         var enabled: Boolean = true,
+        var searchSuccessfulSound: SoundData = SoundData("entity.player.levelup", Sound.Source.PLAYER),
+        var searchFailedSound: SoundData = SoundData("block.anvil.land", Sound.Source.PLAYER),
+        var unloadSuccessfulSound: SoundData = SoundData("entity.player.levelup", Sound.Source.PLAYER),
+        var unloadFailedSound: SoundData = SoundData("block.anvil.land", Sound.Source.PLAYER),
         var i18n: I18n = I18n(),
     ) {
         /** Represents the internationalization strings for the module. */
