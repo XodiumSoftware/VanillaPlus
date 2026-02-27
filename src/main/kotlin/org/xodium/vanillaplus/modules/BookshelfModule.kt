@@ -48,27 +48,21 @@ internal object BookshelfModule : ModuleInterface {
 
             when (val itemMeta = item.itemMeta) {
                 is BookMeta -> {
-                    val title =
-                        itemMeta.title ?: item.type.name
-                            .lowercase()
-                            .replace('_', ' ')
+                    val title = itemMeta.title
                     val author = itemMeta.author
 
-                    if (author != null) {
-                        player.sendMessage(
-                            slotPrefix.append(
-                                MM.deserialize(
-                                    " <white><sprite:items:item/written_book></white> <white>$title</white><gray> by $author</gray>",
-                                ),
+                    var message =
+                        slotPrefix.append(
+                            MM.deserialize(
+                                " <white><sprite:items:item/${if (title != null) "written_book" else "book"}></white>",
                             ),
                         )
-                    } else {
-                        player.sendMessage(
-                            slotPrefix.append(
-                                MM.deserialize(" <white><sprite:items:item/book></white>"),
-                            ),
-                        )
-                    }
+
+                    if (title != null) message = message.append(MM.deserialize(" <white>$title</white>"))
+
+                    if (author != null) message = message.append(MM.deserialize("<gray> by $author</gray>"))
+
+                    player.sendMessage(message)
                 }
 
                 is EnchantmentStorageMeta -> {
