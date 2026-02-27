@@ -56,6 +56,7 @@ internal class VanillaPlus : JavaPlugin() {
 
         logger.info(
             listOf(
+                BookshelfModule,
                 BooksModule,
                 ChatModule,
                 DimensionsModule,
