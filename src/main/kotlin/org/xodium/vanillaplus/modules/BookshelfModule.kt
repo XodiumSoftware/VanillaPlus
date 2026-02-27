@@ -5,8 +5,11 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.block.ChiseledBookshelf
 import org.bukkit.entity.Player
+import org.bukkit.event.Event
 import org.bukkit.event.EventHandler
+import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.meta.BookMeta
 import org.bukkit.inventory.meta.EnchantmentStorageMeta
 import org.xodium.vanillaplus.interfaces.ModuleInterface
@@ -18,11 +21,11 @@ internal object BookshelfModule : ModuleInterface {
     fun on(event: PlayerInteractEvent) {
         val player = event.player
 
-        if (!player.isSneaking) return
+        if (event.hand != EquipmentSlot.HAND) return
+        if (event.action != Action.LEFT_CLICK_BLOCK) return
+        if (event.useInteractedBlock() == Event.Result.DENY) return
 
         val bookshelf = event.clickedBlock?.state as? ChiseledBookshelf ?: return
-
-        event.isCancelled = true
 
         handleBookshelfInteraction(player, bookshelf)
     }
@@ -37,12 +40,11 @@ internal object BookshelfModule : ModuleInterface {
         bookshelf: ChiseledBookshelf,
     ) {
         val inventory = bookshelf.inventory
-
-        player.sendMessage(MM.deserialize(config.bookshelfModule.header))
-
         val slots = 0 until inventory.size
 
         if (!slots.any { inventory.getItem(it) != null }) return
+
+        player.sendMessage(MM.deserialize(config.bookshelfModule.header))
 
         for (i in slots) {
             val item = inventory.getItem(i) ?: continue
