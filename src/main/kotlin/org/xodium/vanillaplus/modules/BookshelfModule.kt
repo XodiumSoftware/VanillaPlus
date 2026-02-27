@@ -99,7 +99,7 @@ internal object BookshelfModule : ModuleInterface {
 
         return slotPrefix.append(
             MM.deserialize(
-                " <white><sprite:items:item/enchanted_book></white><gray> > $enchantmentList</gray>",
+                " <white><sprite:items:item/enchanted_book></white><gray> $enchantmentList</gray>",
             ),
         )
     }
