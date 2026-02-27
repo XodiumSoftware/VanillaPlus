@@ -114,8 +114,8 @@ internal object PlayerModule : ModuleInterface {
     fun on(event: EntityEquipmentChangedEvent) = NightVisionEnchantment.nightVision(event)
 
     /**
-     * Handles the event when a player dies.
-     * @param event The PlayerDeathEvent triggered when a player dies.
+     * Attempts to drop the specified player's head at their current location.
+     * @param player The player whose head may be dropped.
      */
     private fun dropPlayerHead(player: Player) {
         if (Random.nextDouble() > config.playerModule.skullDropChance) return
@@ -129,7 +129,7 @@ internal object PlayerModule : ModuleInterface {
      * @param event The InventoryClickEvent triggered when a player clicks in an inventory.
      */
     private fun handleEnderchest(event: InventoryClickEvent) {
-        if (event.click != config.playerModule.enderChestClickType) return
+        if (event.click != ClickType.MIDDLE) return // FIX: MIDDLE doesnt work?
         if (event.currentItem?.type != Material.ENDER_CHEST) return
         if (event.clickedInventory?.type != InventoryType.PLAYER) return
 
@@ -199,7 +199,6 @@ internal object PlayerModule : ModuleInterface {
     @Serializable
     data class Config(
         var enabled: Boolean = true,
-        var enderChestClickType: ClickType = ClickType.SHIFT_RIGHT,
         var skullDropChance: Double = 0.01,
         var xpCostToBottle: Int = 11,
         var silkTouch: SilkTouchEnchantment = SilkTouchEnchantment(),
