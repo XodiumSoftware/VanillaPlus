@@ -55,6 +55,8 @@ internal object BookshelfModule : ModuleInterface {
                 else -> player.sendMessage(renderGenericItem(slotPrefix, item.type.key.key))
             }
         }
+
+        player.sendMessage(MM.deserialize(config.bookshelfModule.footer))
     }
 
     /**
@@ -123,7 +125,10 @@ internal object BookshelfModule : ModuleInterface {
     @Serializable
     data class Config(
         var enabled: Boolean = true,
-        var header: String = "<gradient:#FFA751:#FFE259><b>Chiseled Bookshelf Content:</b></gradient>",
+        var header: String =
+            "\n<gradient:#FFA751:#FFE259><st>───────────────────────────────────</st></gradient>",
+        var footer: String =
+            "<gradient:#FFA751:#FFE259><st>───────────────────────────────────</st></gradient>\n",
         var slotPrefix: String = "<gradient:#CB2D3E:#EF473A><slot>.</gradient>",
     )
 }
