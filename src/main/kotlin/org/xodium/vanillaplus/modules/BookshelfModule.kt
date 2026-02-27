@@ -26,18 +26,11 @@ internal object BookshelfModule : ModuleInterface {
 
         player.sendMessage(MM.deserialize(config.bookshelfModule.header))
 
-        var hasItems = false
+        val slots = 0 until inventory.size
 
-        for (i in 0 until inventory.size) {
-            inventory.getItem(i) ?: continue
+        if (!(slots).any { inventory.getItem(it) != null }) return
 
-            hasItems = true
-            break
-        }
-
-        if (!hasItems) return
-
-        for (i in 0 until inventory.size) {
+        for (i in slots) {
             val item = inventory.getItem(i) ?: continue
             val slotNumber = i + 1
             val slotPrefix =
