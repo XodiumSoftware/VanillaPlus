@@ -1,8 +1,10 @@
 package org.xodium.vanillaplus.modules
 
 import kotlinx.serialization.Serializable
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.block.ChiseledBookshelf
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.meta.BookMeta
@@ -22,65 +24,100 @@ internal object BookshelfModule : ModuleInterface {
 
         event.isCancelled = true
 
+        handleBookshelfInteraction(player, bookshelf)
+    }
+
+    /**
+     * Handles the interaction logic for a chiseled bookshelf.
+     * @param player The player interacting with the bookshelf.
+     * @param bookshelf The clicked chiseled bookshelf.
+     */
+    private fun handleBookshelfInteraction(
+        player: Player,
+        bookshelf: ChiseledBookshelf,
+    ) {
         val inventory = bookshelf.inventory
 
         player.sendMessage(MM.deserialize(config.bookshelfModule.header))
 
         val slots = 0 until inventory.size
 
-        if (!(slots).any { inventory.getItem(it) != null }) return
+        if (!slots.any { inventory.getItem(it) != null }) return
 
         for (i in slots) {
             val item = inventory.getItem(i) ?: continue
             val slotNumber = i + 1
-            val slotPrefix =
-                MM.deserialize(
-                    config.bookshelfModule.slotPrefix,
-                    Placeholder.component("slot", MM.deserialize(slotNumber.toString())),
-                )
+            val slotPrefix = createSlotPrefix(slotNumber)
 
             when (val itemMeta = item.itemMeta) {
-                is BookMeta -> {
-                    val title = itemMeta.title
-                    val author = itemMeta.author
-
-                    var message =
-                        slotPrefix.append(
-                            MM.deserialize(
-                                " <white><sprite:items:item/${if (title != null) "written_book" else "book"}></white>",
-                            ),
-                        )
-
-                    if (title != null) message = message.append(MM.deserialize(" <white>$title</white>"))
-
-                    if (author != null) message = message.append(MM.deserialize("<gray> by $author</gray>"))
-
-                    player.sendMessage(message)
-                }
-
-                is EnchantmentStorageMeta -> {
-                    val enchantments = itemMeta.storedEnchants
-                    val enchantmentList = enchantments.entries.joinToString(", ") { "${it.key.key.key} ${it.value}" }
-
-                    player.sendMessage(
-                        slotPrefix.append(
-                            MM.deserialize(
-                                " <white><sprite:items:item/enchanted_book></white><gray> > $enchantmentList</gray>",
-                            ),
-                        ),
-                    )
-                }
-
-                else -> {
-                    val itemName = item.type.key.key
-
-                    player.sendMessage(
-                        slotPrefix.append(MM.deserialize(" <white><sprite:items:item/$itemName></white>")),
-                    )
-                }
+                is BookMeta -> player.sendMessage(renderBook(slotPrefix, itemMeta))
+                is EnchantmentStorageMeta -> player.sendMessage(renderEnchantedBook(slotPrefix, itemMeta))
+                else -> player.sendMessage(renderGenericItem(slotPrefix, item.type.key.key))
             }
         }
     }
+
+    /**
+     * Renders a written or writable book message.
+     * @param slotPrefix The formatted slot prefix component.
+     * @param meta The book meta.
+     * @return The rendered message component.
+     */
+    private fun renderBook(
+        slotPrefix: Component,
+        meta: BookMeta,
+    ): Component {
+        val title = meta.title
+        val author = meta.author
+
+        var message =
+            slotPrefix.append(
+                MM.deserialize(
+                    " <white><sprite:items:item/${if (title != null) "written_book" else "book"}></white>",
+                ),
+            )
+
+        if (title != null) message = message.append(MM.deserialize(" <white>$title</white>"))
+        if (author != null) message = message.append(MM.deserialize("<gray> by $author</gray>"))
+
+        return message
+    }
+
+    /**
+     * Renders an enchanted book message.
+     * @param slotPrefix The formatted slot prefix component.
+     * @param meta The enchantment storage meta.
+     * @return The rendered message component.
+     */
+    private fun renderEnchantedBook(
+        slotPrefix: Component,
+        meta: EnchantmentStorageMeta,
+    ): Component {
+        val enchantmentList = meta.storedEnchants.entries.joinToString(", ") { "${it.key.key.key} ${it.value}" }
+
+        return slotPrefix.append(
+            MM.deserialize(
+                " <white><sprite:items:item/enchanted_book></white><gray> > $enchantmentList</gray>",
+            ),
+        )
+    }
+
+    /**
+     * Renders a generic item message.
+     * @param slotPrefix The formatted slot prefix component.
+     * @param itemKey The namespaced item key.
+     * @return The rendered message component.
+     */
+    private fun renderGenericItem(
+        slotPrefix: Component,
+        itemKey: String,
+    ): Component = slotPrefix.append(MM.deserialize(" <white><sprite:items:item/$itemKey></white>"))
+
+    private fun createSlotPrefix(slotNumber: Int): Component =
+        MM.deserialize(
+            config.bookshelfModule.slotPrefix,
+            Placeholder.component("slot", MM.deserialize(slotNumber.toString())),
+        )
 
     /** Represents the config of the module. */
     @Serializable
