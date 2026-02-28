@@ -9,16 +9,15 @@ import io.papermc.paper.datacomponent.item.ResolvableProfile
 import io.papermc.paper.event.entity.EntityEquipmentChangedEvent
 import kotlinx.serialization.Serializable
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
+import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
+import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockDropItemEvent
 import org.bukkit.event.entity.PlayerDeathEvent
-import org.bukkit.event.inventory.ClickType
-import org.bukkit.event.inventory.InventoryClickEvent
-import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.player.*
 import org.bukkit.inventory.ItemStack
 import org.bukkit.permissions.Permission
@@ -92,12 +91,10 @@ internal object PlayerModule : ModuleInterface {
     }
 
     @EventHandler
-    fun on(event: InventoryClickEvent) = handleEnderchest(event)
-
-    @EventHandler(ignoreCancelled = true)
     fun on(event: PlayerInteractEvent) {
         xpToBottle(event)
         FeatherFallingEnchantment.featherFalling(event)
+        handleEnderchest(event)
     }
 
     @EventHandler
@@ -124,20 +121,18 @@ internal object PlayerModule : ModuleInterface {
     }
 
     /**
-     * Handles the inventory click event where a player can open their ender chest by clicking on an ender chest item
-     * in their inventory.
-     * @param event The InventoryClickEvent triggered when a player clicks in an inventory.
+     * Opens the player's ender chest when an ender chest is in the offhand and the player right-clicks in the air.
+     * @param event The PlayerInteractEvent triggered by the interaction.
      */
-    private fun handleEnderchest(event: InventoryClickEvent) {
-        if (event.click != ClickType.MIDDLE) return // FIX: MIDDLE doesnt work?
-        if (event.currentItem?.type != Material.ENDER_CHEST) return
-        if (event.clickedInventory?.type != InventoryType.PLAYER) return
+    private fun handleEnderchest(event: PlayerInteractEvent) {
+        if (event.action != Action.RIGHT_CLICK_AIR) return
+        if (event.item?.type != Material.ENDER_CHEST) return
+        if (event.player.gameMode != GameMode.SURVIVAL) return
 
         event.isCancelled = true
-
         instance.server.scheduler.runTask(
             instance,
-            Runnable { event.whoClicked.openInventory(event.whoClicked.enderChest) },
+            Runnable { event.player.openInventory(event.player.enderChest) },
         )
     }
 
