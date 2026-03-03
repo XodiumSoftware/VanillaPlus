@@ -9,6 +9,7 @@ import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Bisected
+import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.Openable
 import org.bukkit.block.data.type.Door
 import org.bukkit.entity.Player
@@ -90,7 +91,7 @@ internal object OpenableModule : ModuleInterface {
         event: PlayerInteractEvent,
         block: Block,
     ) {
-        if (canKnock(event, event.player) && block.isKnockable) playKnockSound(block)
+        if (canKnock(event, event.player) && isKnockableBlock(block.blockData)) playKnockSound(block)
     }
 
     /**
@@ -99,7 +100,7 @@ internal object OpenableModule : ModuleInterface {
      */
     private fun handleRightClick(block: Block) {
         if (block.blockData is Openable &&
-            block.isOpenableByHand &&
+            canOpenBlock(block) &&
             config.openableModule.allowDoubleDoors
         ) {
             processDoorOrGateInteraction(block)
@@ -169,6 +170,13 @@ internal object OpenableModule : ModuleInterface {
             player.inventory.itemInMainHand.type != Material.AIR
 
     /**
+     * Checks if the block data is of a type that can be knocked on.
+     * @param data The block data to check.
+     * @return True if the block can be knocked on, false otherwise.
+     */
+    private fun isKnockableBlock(data: BlockData): Boolean = config.openableModule.allowKnocking && data is Openable
+
+    /**
      * Toggles the state of the other door when one door is opened or closed.
      * @param block The block representing the first door.
      * @param block2 The block representing the second door.
@@ -229,19 +237,11 @@ internal object OpenableModule : ModuleInterface {
 
     /**
      * Checks if the block can be opened by hand.
-     * @receiver The block to check.
+     * @param block The block to check.
      * @return True if the block can be opened by hand, false otherwise.
      */
-    private val Block.isOpenableByHand: Boolean
-        get() = type != Material.IRON_DOOR || config.openableModule.allowIronDoorByHand
-
-    /**
-     * Checks if the block can be knocked on.
-     * @receiver The block to check.
-     * @return True if the block is openable and knocking is allowed in the config, false otherwise.
-     */
-    private val Block.isKnockable: Boolean
-        get() = blockData is Openable && config.openableModule.allowKnocking
+    private fun canOpenBlock(block: Block): Boolean =
+        block.type != Material.IRON_DOOR || config.openableModule.allowIronDoorByHand
 
     /** Represents the config of the module. */
     @Serializable
