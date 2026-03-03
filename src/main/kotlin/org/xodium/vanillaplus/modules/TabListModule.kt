@@ -106,21 +106,21 @@ internal object TabListModule : ModuleInterface {
         var intervalInTicks: Long = 10,
         var header: List<String> =
             listOf(
-                "<gradient:#FFA751:#FFE259><st>──────────────</st></gradient> " +
+                "<gradient:#FFA751:#FFE259><st>───────────────</st></gradient> " +
                     "<gradient:#CB2D3E:#EF473A>" +
-                    "\uD835\uDCD8\uD835\uDCF5\uD835\uDCF5\uD835\uDD02\uD835\uDCFB\uD835\uDCF2\uD835\uDCEA" +
+                    "\uD835\uDD74\uD835\uDD91\uD835\uDD91\uD835\uDD9E\uD835\uDD97\uD835\uDD8E\uD835\uDD86" +
                     "</gradient> " +
-                    "<gradient:#FFE259:#FFA751><st>──────────────</st></gradient>",
+                    "<gradient:#FFE259:#FFA751><st>───────────────</st></gradient>",
                 "",
             ),
         var footer: List<String> =
             listOf(
                 "",
-                "<gradient:#FFA751:#FFE259><st>──────────</st></gradient> " +
+                "<gradient:#FFA751:#FFE259><st>──────────</st></gradient>  " +
                     "<gradient:#CB2D3E:#EF473A>TPS:</gradient> <tps> " +
                     "<gradient:#FFE259:#FFA751>|</gradient> " +
                     "<gradient:#CB2D3E:#EF473A>Weather:</gradient> <weather> " +
-                    "<gradient:#FFE259:#FFA751><st>──────────</st></gradient>",
+                    " <gradient:#FFE259:#FFA751><st>──────────</st></gradient>",
             ),
         var i18n: I18n = I18n(),
     ) {
