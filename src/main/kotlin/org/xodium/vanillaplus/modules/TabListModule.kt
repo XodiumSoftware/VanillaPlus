@@ -107,7 +107,9 @@ internal object TabListModule : ModuleInterface {
         var header: List<String> =
             listOf(
                 "<gradient:#FFA751:#FFE259><st>──────────────</st></gradient> " +
-                    "<gradient:#CB2D3E:#EF473A>Illyria</gradient> " +
+                    "<gradient:#CB2D3E:#EF473A>" +
+                    "\uD835\uDCD8\uD835\uDCF5\uD835\uDCF5\uD835\uDD02\uD835\uDCFB\uD835\uDCF2\uD835\uDCEA" +
+                    "</gradient> " +
                     "<gradient:#FFE259:#FFA751><st>──────────────</st></gradient>",
                 "",
             ),

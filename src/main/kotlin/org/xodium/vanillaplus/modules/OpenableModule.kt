@@ -99,12 +99,7 @@ internal object OpenableModule : ModuleInterface {
      * @param block The block representing the door or gate being interacted with.
      */
     private fun handleRightClick(block: Block) {
-        if (block.blockData is Openable &&
-            canOpenBlock(block) &&
-            config.openableModule.allowDoubleDoors
-        ) {
-            processDoorOrGateInteraction(block)
-        }
+        if (block.blockData is Openable && config.openableModule.allowDoubleDoors) processDoorOrGateInteraction(block)
     }
 
     /**
@@ -234,14 +229,6 @@ internal object OpenableModule : ModuleInterface {
             }?.first
             ?.getRelativeBlock(block)
     }
-
-    /**
-     * Checks if the block can be opened by hand.
-     * @param block The block to check.
-     * @return True if the block can be opened by hand, false otherwise.
-     */
-    private fun canOpenBlock(block: Block): Boolean =
-        block.type != Material.IRON_DOOR || config.openableModule.allowIronDoorByHand
 
     /** Represents the config of the module. */
     @Serializable
