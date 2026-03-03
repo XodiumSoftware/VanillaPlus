@@ -106,13 +106,19 @@ internal object TabListModule : ModuleInterface {
         var intervalInTicks: Long = 10,
         var header: List<String> =
             listOf(
-                "<gradient:#FFE259:#FFA751>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>   <gradient:#CB2D3E:#EF473A>⚡ IllyriaRPG ⚡</gradient>   <gradient:#FFA751:#FFE259>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
+                "<gradient:#FFA751:#FFE259><st>──────────────</st></gradient> " +
+                    "<gradient:#CB2D3E:#EF473A>Illyria</gradient> " +
+                    "<gradient:#FFE259:#FFA751><st>──────────────</st></gradient>",
                 "",
             ),
         var footer: List<String> =
             listOf(
                 "",
-                "<gradient:#FFE259:#FFA751>]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>  <gradient:#CB2D3E:#EF473A>TPS:</gradient> <tps> <gradient:#FFE259:#FFA751>|</gradient> <gradient:#CB2D3E:#EF473A>Weather:</gradient> <weather>  <gradient:#FFA751:#FFE259>]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
+                "<gradient:#FFA751:#FFE259><st>──────────</st></gradient> " +
+                    "<gradient:#CB2D3E:#EF473A>TPS:</gradient> <tps> " +
+                    "<gradient:#FFE259:#FFA751>|</gradient> " +
+                    "<gradient:#CB2D3E:#EF473A>Weather:</gradient> <weather> " +
+                    "<gradient:#FFE259:#FFA751><st>──────────</st></gradient>",
             ),
         var i18n: I18n = I18n(),
     ) {
