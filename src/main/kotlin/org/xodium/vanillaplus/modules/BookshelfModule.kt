@@ -117,6 +117,11 @@ internal object BookshelfModule : ModuleInterface {
         itemKey: String,
     ): Component = slotPrefix.append(MM.deserialize(" <white><sprite:items:item/$itemKey></white>"))
 
+    /**
+     * Creates the formatted slot prefix component.
+     * @param slotNumber The 1-based slot index displayed to the player.
+     * @return The rendered slot prefix component.
+     */
     private fun createSlotPrefix(slotNumber: Int): Component =
         MM.deserialize(
             config.bookshelfModule.slotPrefix,
