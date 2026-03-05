@@ -63,6 +63,7 @@ internal class VanillaPlus : JavaPlugin() {
                 EntityModule,
                 InventoryModule,
                 LocatorModule,
+                MannequinModule,
                 MapModule,
                 MotdModule,
                 OpenableModule,

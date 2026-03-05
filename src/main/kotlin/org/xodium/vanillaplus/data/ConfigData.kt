@@ -30,6 +30,7 @@ internal data class ConfigData(
     var entityModule: EntityModule.Config = EntityModule.Config(),
     var inventoryModule: InventoryModule.Config = InventoryModule.Config(),
     var locatorModule: LocatorModule.Config = LocatorModule.Config(),
+    var mannequinModule: MannequinModule.Config = MannequinModule.Config(),
     var mapModule: MapModule.Config = MapModule.Config(),
     var motdModule: MotdModule.Config = MotdModule.Config(),
     var openableModule: OpenableModule.Config = OpenableModule.Config(),
