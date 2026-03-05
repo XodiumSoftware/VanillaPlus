@@ -4,12 +4,10 @@ import kotlinx.serialization.Serializable
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.server.ServerListPingEvent
-import org.xodium.vanillaplus.Module
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.Utils.MM
 
 /** Represents a module handling MOTD mechanics within the system. */
-@Module
 internal object MotdModule : ModuleInterface {
     @EventHandler(priority = EventPriority.HIGH)
     fun on(event: ServerListPingEvent) = motd(event)

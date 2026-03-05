@@ -6,7 +6,6 @@ import kotlinx.serialization.Serializable
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.*
-import org.xodium.vanillaplus.Module
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.MessageUtils
@@ -16,7 +15,6 @@ import kotlin.uuid.Uuid
 import kotlin.uuid.toKotlinUuid
 
 /** Represents a module handling map mechanics within the system. */
-@Module
 @OptIn(ExperimentalUuidApi::class)
 internal object MapModule : ModuleInterface {
     private val lastTrackTime = mutableMapOf<Uuid, Long>()

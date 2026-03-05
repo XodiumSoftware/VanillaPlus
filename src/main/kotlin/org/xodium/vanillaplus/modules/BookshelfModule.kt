@@ -12,12 +12,10 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.meta.BookMeta
 import org.bukkit.inventory.meta.EnchantmentStorageMeta
-import org.xodium.vanillaplus.Module
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.Utils.MM
 
 /** Represents a module handling bookshelf mechanics within the system. */
-@Module
 internal object BookshelfModule : ModuleInterface {
     @EventHandler
     fun on(event: PlayerInteractEvent) {
