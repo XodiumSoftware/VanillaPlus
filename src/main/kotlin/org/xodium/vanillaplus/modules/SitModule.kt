@@ -19,12 +19,14 @@ import org.bukkit.event.entity.EntityDismountEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.util.Vector
+import org.xodium.vanillaplus.Module
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 import kotlin.uuid.toKotlinUuid
 
 /** Represents a module handling sit mechanics within the system. */
+@Module
 @OptIn(ExperimentalUuidApi::class)
 internal object SitModule : ModuleInterface {
     private val sittingPlayers = mutableMapOf<Uuid, ArmorStand>()

@@ -9,12 +9,14 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.weather.ThunderChangeEvent
 import org.bukkit.event.weather.WeatherChangeEvent
+import org.xodium.vanillaplus.Module
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.Utils.MM
 import kotlin.math.roundToInt
 
 /** Represents a module handling tab-list mechanics within the system. */
+@Module
 internal object TabListModule : ModuleInterface {
     private const val MIN_TPS = 0.0
     private const val MAX_TPS = 20.0

@@ -12,12 +12,14 @@ import org.bukkit.event.entity.EntityPortalEvent
 import org.bukkit.event.player.PlayerPortalEvent
 import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.event.world.PortalCreateEvent
+import org.xodium.vanillaplus.Module
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.Utils.MM
 import kotlin.math.hypot
 
 /** Represents a module handling dimension mechanics within the system. */
+@Module
 internal object DimensionsModule : ModuleInterface {
     private const val NETHER_TO_OVERWORLD_RATIO = 8
 

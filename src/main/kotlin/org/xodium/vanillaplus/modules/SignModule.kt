@@ -8,6 +8,7 @@ import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
+import org.xodium.vanillaplus.Module
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
@@ -15,6 +16,7 @@ import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import org.xodium.vanillaplus.utils.Utils.MM
 
 /** Represents a module handling sign mechanics within the system. */
+@Module
 internal object SignModule : ModuleInterface {
     override val cmds =
         listOf(

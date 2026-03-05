@@ -5,10 +5,12 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractEntityEvent
+import org.xodium.vanillaplus.Module
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.PlayerUtils.getLeashedEntity
 
 /** Represents a module handling tameable mechanics within the system. */
+@Module
 internal object TameableModule : ModuleInterface {
     @EventHandler
     fun on(event: PlayerInteractEntityEvent) = playerInteractEntity(event)

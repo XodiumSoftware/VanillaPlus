@@ -6,8 +6,7 @@ import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import org.bukkit.plugin.java.JavaPlugin
 import org.xodium.vanillaplus.data.ConfigData
 import org.xodium.vanillaplus.data.ConfigData.Companion.load
-import org.xodium.vanillaplus.modules.*
-import org.xodium.vanillaplus.modules.BooksModule.info
+import org.xodium.vanillaplus.managers.ModuleManager
 import org.xodium.vanillaplus.recipes.ChainmailRecipe
 import org.xodium.vanillaplus.recipes.PaintingRecipe
 import org.xodium.vanillaplus.recipes.PaintingRecipe.info
@@ -54,27 +53,7 @@ internal class VanillaPlus : JavaPlugin() {
             ),
         )
 
-        logger.info(
-            listOf(
-                BookshelfModule,
-                BooksModule,
-                ChatModule,
-                DimensionsModule,
-                EntityModule,
-                InventoryModule,
-                LocatorModule,
-                MapModule,
-                MotdModule,
-                OpenableModule,
-                PlayerModule,
-                ServerInfoModule,
-                ScoreBoardModule,
-                SignModule,
-                SitModule,
-                TabListModule,
-                TameableModule,
-            ),
-        )
+        ModuleManager.load()
     }
 
     override fun onDisable() {
