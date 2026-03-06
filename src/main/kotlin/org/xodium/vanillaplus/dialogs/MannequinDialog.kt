@@ -64,20 +64,20 @@ internal object MannequinDialog {
                         DialogType.confirmation(
                             ActionButton.create(
                                 MM.deserialize("Save"),
-                                MM.deserialize("Click to confirm your input."),
+                                MM.deserialize("Click to confirm your input"),
                                 100,
                                 DialogAction.customClick(
                                     { view, audience ->
                                         if (audience !is Player) return@customClick
                                         if (isDead) {
-                                            audience.sendActionBar(MM.deserialize("<red>Mannequin is dead.</red>"))
+                                            audience.sendActionBar(MM.deserialize("<red>Mannequin is dead</red>"))
                                         }
 
                                         val distance = audience.location.distanceSquared(location)
 
                                         if (audience.world != world || distance > 36.0) {
                                             audience.sendActionBar(
-                                                MM.deserialize("<red>You are too far away from the mannequin.</red>"),
+                                                MM.deserialize("<red>You are too far away from the mannequin</red>"),
                                             )
                                             return@customClick
                                         }
@@ -90,7 +90,7 @@ internal object MannequinDialog {
                                             ResolvableProfile.resolvableProfile().name(view.getText("profile")).build()
 
                                         audience.sendActionBar(
-                                            MM.deserialize("<green>Changes successfully applied.</green>"),
+                                            MM.deserialize("<green>Changes successfully applied</green>"),
                                         )
                                     },
                                     ClickCallback.Options
@@ -102,7 +102,7 @@ internal object MannequinDialog {
                             ),
                             ActionButton.create(
                                 MM.deserialize("Discard"),
-                                MM.deserialize("Click to discard your input."),
+                                MM.deserialize("Click to discard your input"),
                                 100,
                                 null,
                             ),
