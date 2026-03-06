@@ -26,7 +26,15 @@ import org.xodium.vanillaplus.utils.Utils.MM
 
 /** Represents a module handling mannequin mechanics within the system. */
 internal object MannequinModule : ModuleInterface {
+    private val lastOwnerLocations = mutableMapOf<java.util.UUID, org.bukkit.Location>()
+
     init {
+        instance.server.scheduler.runTaskTimer(
+            instance,
+            Runnable { syncMannequinPositions() },
+            0L,
+            1L,
+        )
         instance.server.scheduler.runTaskTimer(
             instance,
             Runnable {
@@ -132,8 +140,25 @@ internal object MannequinModule : ModuleInterface {
         )
     }
 
-    /** Moves all following mannequins toward their owner via an invisible proxy mob. */
+    /** Teleports all following mannequins to their proxy's current position every tick for smooth movement. */
+    private fun syncMannequinPositions() {
+        instance.server.worlds
+            .flatMap { it.entities }
+            .filterIsInstance<Mannequin>()
+            .filter { it.following }
+            .forEach { mannequin ->
+                mannequin.proxyId
+                    ?.let { instance.server.getEntity(it) as? Pig }
+                    ?.takeIf { !it.isDead }
+                    ?.let { mannequin.teleport(it.location) }
+            }
+    }
+
+    /** Updates pathfinding for all following mannequins, only re-pathing when the owner moves or proxy has no path. */
     private fun updateFollowMovement() {
+        val stopDistSq =
+            config.mannequinModule.followStopDistance * config.mannequinModule.followStopDistance
+
         instance.server.worlds
             .flatMap { it.entities }
             .filterIsInstance<Mannequin>()
@@ -149,13 +174,16 @@ internal object MannequinModule : ModuleInterface {
                         ?.takeIf { !it.isDead }
                         ?: spawnProxy(mannequin).also { mannequin.proxyId = it.uniqueId }
 
-                if (proxy.location.distanceSquared(owner.location) >
-                    config.mannequinModule.followStopDistance * config.mannequinModule.followStopDistance
-                ) {
-                    proxy.pathfinder.moveTo(owner.location, config.mannequinModule.followSpeed)
+                val ownerLoc = owner.location
+                if (proxy.location.distanceSquared(ownerLoc) > stopDistSq) {
+                    val lastLoc = lastOwnerLocations[mannequin.uniqueId]
+                    if (!proxy.pathfinder.hasPath() || lastLoc == null || lastLoc.distanceSquared(ownerLoc) > 1.0) {
+                        proxy.pathfinder.moveTo(ownerLoc, config.mannequinModule.followSpeed)
+                        lastOwnerLocations[mannequin.uniqueId] = ownerLoc.clone()
+                    }
+                } else {
+                    proxy.pathfinder.stopPathfinding()
                 }
-
-                mannequin.teleport(proxy.location)
             }
     }
 
