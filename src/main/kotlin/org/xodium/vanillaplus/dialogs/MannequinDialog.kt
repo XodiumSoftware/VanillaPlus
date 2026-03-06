@@ -5,11 +5,14 @@ import io.papermc.paper.dialog.Dialog
 import io.papermc.paper.registry.data.dialog.ActionButton
 import io.papermc.paper.registry.data.dialog.DialogBase
 import io.papermc.paper.registry.data.dialog.action.DialogAction
+import io.papermc.paper.registry.data.dialog.body.DialogBody
 import io.papermc.paper.registry.data.dialog.input.DialogInput
 import io.papermc.paper.registry.data.dialog.type.DialogType
 import net.kyori.adventure.text.event.ClickCallback
 import org.bukkit.entity.Mannequin
 import org.bukkit.entity.Player
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.pdcs.MannequinPDC.owner
 import org.xodium.vanillaplus.utils.Utils.MM
 
 /** Represents an object handling mannequin dialog implementation within the system. */
@@ -28,7 +31,15 @@ internal object MannequinDialog {
                     .base(
                         DialogBase
                             .builder(MM.deserialize("<b><gradient:#CB2D3E:#EF473A>Mannequin Editor</gradient></b>"))
-                            .inputs(
+                            .body(
+                                listOf(
+                                    DialogBody.plainMessage(
+                                        MM.deserialize(
+                                            "Owner: ${instance.server.getOfflinePlayer(owner).name ?: "Unknown"}",
+                                        ),
+                                    ),
+                                ),
+                            ).inputs(
                                 listOf(
                                     DialogInput
                                         .text("customName", MM.deserialize("Custom Name"))
@@ -70,7 +81,9 @@ internal object MannequinDialog {
                                             return@customClick
                                         }
 
-                                        customName(MM.deserialize(view.getText("customName") ?: ""))
+                                        val newName = view.getText("customName") ?: ""
+
+                                        customName(if (newName.isEmpty()) null else MM.deserialize(newName))
                                         description = MM.deserialize(view.getText("description") ?: "")
                                         profile =
                                             ResolvableProfile.resolvableProfile().name(view.getText("profile")).build()

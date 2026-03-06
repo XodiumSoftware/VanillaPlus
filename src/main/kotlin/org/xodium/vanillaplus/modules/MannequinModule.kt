@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Mannequin
+import org.bukkit.entity.Player
 import org.bukkit.entity.Villager
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -13,6 +14,7 @@ import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.PlayerInventory
 import org.xodium.vanillaplus.dialogs.MannequinDialog.dialog
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.pdcs.MannequinPDC.owner
 
 /** Represents a module handling mannequin mechanics within the system. */
 internal object MannequinModule : ModuleInterface {
@@ -25,6 +27,7 @@ internal object MannequinModule : ModuleInterface {
         when (val entity = event.rightClicked) {
             is Mannequin -> {
                 if (!player.isSneaking) return
+                if (entity.owner != player.uniqueId) return
 
                 player.showDialog(entity.dialog())
                 event.isCancelled = true
@@ -34,13 +37,13 @@ internal object MannequinModule : ModuleInterface {
                 if (player.inventory.itemInMainHand.type != config.mannequinModule.triggerItem) return
 
                 consumeItem(player.inventory)
-                villagerToMannequin(entity)
+                villagerToMannequin(player, entity)
             }
         }
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    fun onMannequinDeath(event: EntityDeathEvent) {
+    fun on(event: EntityDeathEvent) {
         val mannequin = event.entity as? Mannequin? ?: return
 
         event.drops.apply {
@@ -55,11 +58,14 @@ internal object MannequinModule : ModuleInterface {
      * Converts the interacted villager into a mannequin entity.
      * @param villager The villager to convert.
      */
-    private fun villagerToMannequin(villager: Villager) {
+    private fun villagerToMannequin(
+        player: Player,
+        villager: Villager,
+    ) {
         val mannequin = villager.world.spawnEntity(villager.location, EntityType.MANNEQUIN) as Mannequin
 
         mannequin.customName(villager.customName())
-        mannequin.isCustomNameVisible = villager.isCustomNameVisible
+        mannequin.owner = player.uniqueId
 
         villager.remove()
     }
