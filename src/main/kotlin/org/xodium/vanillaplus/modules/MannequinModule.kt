@@ -22,6 +22,8 @@ import java.util.*
 
 /** Represents a module handling mannequin mechanics within the system. */
 internal object MannequinModule : ModuleInterface {
+    // TODO: change the system to dynamically detect the mannequins in the world, because this is not persistent.
+    // TODO: maybe reverse the way the tracking works? instead of mannequin scanning for player, we make player scan for mannequin?
     private val trackingMannequins = mutableMapOf<UUID, Long>()
     private val mannequins = mutableListOf<Mannequin>()
 
