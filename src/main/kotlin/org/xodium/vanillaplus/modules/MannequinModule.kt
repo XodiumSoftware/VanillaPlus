@@ -1,7 +1,9 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package org.xodium.vanillaplus.modules
 
+import io.papermc.paper.entity.LookAnchor
 import kotlinx.serialization.Serializable
-import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Mannequin
@@ -12,14 +14,11 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.inventory.PlayerInventory
-import org.bukkit.util.Vector
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.dialogs.MannequinDialog.dialog
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.pdcs.MannequinPDC.owner
 import java.util.*
-import kotlin.math.atan2
-import kotlin.math.sqrt
 
 /** Represents a module handling mannequin mechanics within the system. */
 internal object MannequinModule : ModuleInterface {
@@ -114,7 +113,8 @@ internal object MannequinModule : ModuleInterface {
 
             val nearestPlayer = findNearestPlayerNearby(it)
 
-            if (nearestPlayer != null) lookAt(it, nearestPlayer.location) else resetHeadRotation(it)
+            @Suppress("UnstableApiUsage")
+            if (nearestPlayer != null) it.lookAt(nearestPlayer.location, LookAnchor.EYES)
         }
     }
 
@@ -127,47 +127,6 @@ internal object MannequinModule : ModuleInterface {
         mannequin.world.players
             .filter { it.location.distance(mannequin.location) <= config.mannequinModule.lookRange }
             .minByOrNull { it.location.distanceSquared(mannequin.location) }
-
-    private fun lookAt(
-        mannequin: Mannequin,
-        target: Location,
-    ) {
-        val direction = target.toVector().subtract(mannequin.location.toVector())
-
-        val yaw = getYaw(direction)
-        val pitch = getPitch(direction)
-
-        mannequin.setHeadPose(mannequin.headPose.setYaw(yaw.toDouble()))
-        mannequin.setHeadPose(mannequin.headPose.setPitch(pitch.toDouble()))
-    }
-
-    private fun getYaw(direction: Vector): Float {
-        val x = direction.x
-        val z = direction.z
-
-        if (x == 0.0 && z == 0.0) return 0f
-
-        val theta = atan2(-x, z).toFloat()
-
-        return Math.toDegrees(theta.toDouble()).toFloat()
-    }
-
-    private fun getPitch(direction: Vector): Float {
-        val x = direction.x
-        val y = direction.y
-        val z = direction.z
-
-        if (x == 0.0 && y == 0.0 && z == 0.0) return 0f
-
-        val horizontalDistance = sqrt((x * x + z * z))
-        val theta = atan2(y, horizontalDistance).toFloat()
-
-        return -Math.toDegrees(theta.toDouble()).toFloat()
-    }
-
-    private fun resetHeadRotation(mannequin: Mannequin) {
-        mannequin.setHeadPose(mannequin.headPose.setYaw(0.0))
-    }
 
     /** Represents the config of the module. */
     @Serializable
