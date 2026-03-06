@@ -16,13 +16,14 @@ import org.xodium.vanillaplus.pdcs.MannequinPDC.owner
 import org.xodium.vanillaplus.utils.Utils.MM
 
 /** Represents an object handling mannequin dialog implementation within the system. */
-@Suppress("UnstableApiUsage", "Unused")
+@Suppress("Unused")
 internal object MannequinDialog {
     /**
      * Creates and returns a configured dialog for editing the state of this [Mannequin].
      * @receiver The [Mannequin] instance for which the dialog is created.
      * @return A fully configured [Dialog] instance bound to this mannequin.
      */
+    @Suppress("UnstableApiUsage")
     fun Mannequin.dialog(): Dialog =
         Dialog
             .create {

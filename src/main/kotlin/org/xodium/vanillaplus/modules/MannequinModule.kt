@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package org.xodium.vanillaplus.modules
 
 import kotlinx.serialization.Serializable
@@ -10,7 +12,6 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
-import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.PlayerInventory
 import org.xodium.vanillaplus.dialogs.MannequinDialog.dialog
 import org.xodium.vanillaplus.interfaces.ModuleInterface
@@ -20,8 +21,6 @@ import org.xodium.vanillaplus.pdcs.MannequinPDC.owner
 internal object MannequinModule : ModuleInterface {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun on(event: PlayerInteractEntityEvent) {
-        if (event.hand != EquipmentSlot.HAND) return
-
         val player = event.player
 
         when (val entity = event.rightClicked) {
