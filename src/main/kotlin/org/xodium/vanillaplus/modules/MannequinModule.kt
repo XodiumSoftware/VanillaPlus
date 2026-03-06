@@ -33,6 +33,9 @@ import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sin
 
+// TODO: fix armor swapping appearing in player equipment slots.
+// TODO: fix proxy mob, use different mob? iron golem? the head position is now wrong because a wolf looks up to a player? idk if this is the bug.
+
 /** Represents a module handling mannequin mechanics within the system. */
 internal object MannequinModule : ModuleInterface {
     private val lastOwnerLocations = mutableMapOf<UUID, Location>()
@@ -289,6 +292,9 @@ internal object MannequinModule : ModuleInterface {
                         ?.let { instance.server.getEntity(it) as? Wolf }
                         ?.takeIf { !it.isDead }
                         ?: spawnProxy(mannequin).also { mannequin.proxyId = it.uniqueId }
+
+                if (proxy.isAngry) return@forEach
+
                 val ownerLoc = owner.location
 
                 if (proxy.location.distanceSquared(ownerLoc) > stopDistSq) {
