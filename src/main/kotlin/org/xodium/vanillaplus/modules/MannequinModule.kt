@@ -18,15 +18,9 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.dialogs.MannequinDialog.dialog
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.pdcs.MannequinPDC.owner
-import java.util.*
 
 /** Represents a module handling mannequin mechanics within the system. */
 internal object MannequinModule : ModuleInterface {
-    // TODO: change the system to dynamically detect the mannequins in the world, because this is not persistent.
-    // TODO: maybe reverse the way the tracking works? instead of mannequin scanning for player, we make player scan for mannequin?
-    private val trackingMannequins = mutableMapOf<UUID, Long>()
-    private val mannequins = mutableListOf<Mannequin>()
-
     init {
         instance.server.scheduler.runTaskTimer(
             instance,
@@ -62,8 +56,6 @@ internal object MannequinModule : ModuleInterface {
     fun on(event: EntityDeathEvent) {
         val mannequin = event.entity as? Mannequin? ?: return
 
-        trackingMannequins.remove(mannequin.uniqueId)
-        mannequins.removeIf { it.uniqueId == mannequin.uniqueId }
         event.drops.apply {
             clear()
             addAll(listOf(*mannequin.equipment.armorContents))
@@ -85,9 +77,6 @@ internal object MannequinModule : ModuleInterface {
         mannequin.customName(villager.customName())
         mannequin.owner = player.uniqueId
 
-        trackingMannequins[mannequin.uniqueId] = System.currentTimeMillis()
-        mannequins.add(mannequin)
-
         villager.remove()
     }
 
@@ -107,35 +96,19 @@ internal object MannequinModule : ModuleInterface {
         inventory.setItemInMainHand(item)
     }
 
-    /** Updates the head rotation of all tracked mannequins. */
+    /** Updates the head rotation of all mannequins in the world. */
+    @Suppress("UnstableApiUsage")
     private fun updateHeadMovement() {
-        val iter = mannequins.iterator()
-
-        while (iter.hasNext()) {
-            val mannequin = iter.next()
-
-            if (!mannequin.isValid || mannequin.isDead) {
-                trackingMannequins.remove(mannequin.uniqueId)
-                iter.remove()
-                continue
+        instance.server.worlds
+            .flatMap { it.entities }
+            .filterIsInstance<Mannequin>()
+            .forEach { mannequin ->
+                mannequin.world.players
+                    .filter { it.location.distance(mannequin.location) <= config.mannequinModule.lookRange }
+                    .minByOrNull { it.location.distanceSquared(mannequin.location) }
+                    ?.let { mannequin.lookAt(it.eyeLocation, LookAnchor.EYES) }
             }
-
-            val nearestPlayer = findNearestPlayerNearby(mannequin)
-
-            @Suppress("UnstableApiUsage")
-            if (nearestPlayer != null) mannequin.lookAt(nearestPlayer.eyeLocation, LookAnchor.EYES)
-        }
     }
-
-    /**
-     * Finds the nearest player within the module's look range of the given mannequin.
-     * @param mannequin The mannequin to check around.
-     * @return The nearest player within range, or null if none are found.
-     */
-    private fun findNearestPlayerNearby(mannequin: Mannequin): Player? =
-        mannequin.world.players
-            .filter { it.location.distance(mannequin.location) <= config.mannequinModule.lookRange }
-            .minByOrNull { it.location.distanceSquared(mannequin.location) }
 
     /** Represents the config of the module. */
     @Serializable
