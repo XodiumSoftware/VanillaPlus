@@ -7,6 +7,7 @@ import kotlinx.serialization.Serializable
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Mannequin
+import org.bukkit.entity.Pig
 import org.bukkit.entity.Player
 import org.bukkit.entity.Villager
 import org.bukkit.event.EventHandler
@@ -17,14 +18,19 @@ import org.bukkit.inventory.PlayerInventory
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.dialogs.MannequinDialog.dialog
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.pdcs.MannequinPDC.following
 import org.xodium.vanillaplus.pdcs.MannequinPDC.owner
+import org.xodium.vanillaplus.pdcs.MannequinPDC.proxyId
 
 /** Represents a module handling mannequin mechanics within the system. */
 internal object MannequinModule : ModuleInterface {
     init {
         instance.server.scheduler.runTaskTimer(
             instance,
-            Runnable { updateHeadMovement() },
+            Runnable {
+                updateFollowMovement()
+                updateHeadMovement()
+            },
             0L,
             5L,
         )
@@ -36,11 +42,14 @@ internal object MannequinModule : ModuleInterface {
 
         when (val entity = event.rightClicked) {
             is Mannequin -> {
-                if (!player.isSneaking) return
                 if (entity.owner != player.uniqueId) return
 
-                player.showDialog(entity.dialog())
                 event.isCancelled = true
+                if (player.isSneaking) {
+                    player.showDialog(entity.dialog())
+                } else {
+                    toggleFollow(entity)
+                }
             }
 
             is Villager -> {
@@ -56,6 +65,7 @@ internal object MannequinModule : ModuleInterface {
     fun on(event: EntityDeathEvent) {
         val mannequin = event.entity as? Mannequin? ?: return
 
+        mannequin.proxyId?.let { instance.server.getEntity(it)?.remove() }
         event.drops.apply {
             clear()
             addAll(listOf(*mannequin.equipment.armorContents))
@@ -96,6 +106,58 @@ internal object MannequinModule : ModuleInterface {
         inventory.setItemInMainHand(item)
     }
 
+    /** Toggles follow mode on [mannequin], spawning or removing the proxy mob as needed. */
+    private fun toggleFollow(mannequin: Mannequin) {
+        if (mannequin.following) {
+            mannequin.proxyId?.let { instance.server.getEntity(it)?.remove() }
+            mannequin.proxyId = null
+            mannequin.following = false
+        } else {
+            mannequin.following = true
+        }
+    }
+
+    /** Moves all following mannequins toward their owner via an invisible proxy mob. */
+    private fun updateFollowMovement() {
+        instance.server.worlds
+            .flatMap { it.entities }
+            .filterIsInstance<Mannequin>()
+            .filter { it.following }
+            .forEach { mannequin ->
+                val owner = instance.server.getPlayer(mannequin.owner) ?: return@forEach
+                if (owner.world != mannequin.world) return@forEach
+
+                val proxy =
+                    mannequin.proxyId
+                        ?.let { instance.server.getEntity(it) as? Pig }
+                        ?.takeIf { !it.isDead }
+                        ?: spawnProxy(mannequin).also { mannequin.proxyId = it.uniqueId }
+
+                if (proxy.location.distanceSquared(owner.location) >
+                    config.mannequinModule.followStopDistance * config.mannequinModule.followStopDistance
+                ) {
+                    proxy.pathfinder.moveTo(owner.location, config.mannequinModule.followSpeed)
+                }
+
+                mannequin.teleport(proxy.location)
+            }
+    }
+
+    /**
+     * Spawns an invisible, silent, invulnerable [Pig] at [mannequin]'s location to act as a pathfinding proxy.
+     * @param mannequin The mannequin that will follow this proxy.
+     * @return The spawned proxy [Pig].
+     */
+    private fun spawnProxy(mannequin: Mannequin): Pig =
+        (mannequin.world.spawnEntity(mannequin.location, EntityType.PIG) as Pig).apply {
+            isInvisible = true
+            isSilent = true
+            isInvulnerable = true
+            isPersistent = true
+            isCollidable = false
+            addScoreboardTag("vanillaplus:mannequin_proxy")
+        }
+
     /** Updates the head rotation of all mannequins in the world. */
     @Suppress("UnstableApiUsage")
     private fun updateHeadMovement() {
@@ -116,5 +178,7 @@ internal object MannequinModule : ModuleInterface {
         var enabled: Boolean = true,
         var triggerItem: Material = Material.TOTEM_OF_UNDYING,
         var lookRange: Double = 10.0,
+        var followSpeed: Double = 1.0,
+        var followStopDistance: Double = 2.5,
     )
 }
