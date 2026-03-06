@@ -7,7 +7,6 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.configData
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.ConfigData
-import java.util.logging.Logger
 import kotlin.reflect.full.memberProperties
 import kotlin.time.measureTime
 
@@ -69,17 +68,4 @@ internal interface ModuleInterface : Listener {
             }
             instance.server.pluginManager.addPermissions(perms)
         }.inWholeMilliseconds
-
-    /**
-     * Logs the registration details of a list of modules.
-     * @receiver Logger is the logger to use for logging.
-     * @param modules List of [ModuleInterface] instances to log.
-     */
-    fun Logger.info(modules: List<ModuleInterface>) {
-        info(
-            "Registered: ${modules.size} module(s) | Took ${
-                modules.filter { it.isEnabled }.sumOf { it.register() }
-            }ms",
-        )
-    }
 }

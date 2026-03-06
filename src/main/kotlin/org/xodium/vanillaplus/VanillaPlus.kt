@@ -7,10 +7,8 @@ import org.bukkit.plugin.java.JavaPlugin
 import org.xodium.vanillaplus.data.ConfigData
 import org.xodium.vanillaplus.data.ConfigData.Companion.load
 import org.xodium.vanillaplus.modules.*
-import org.xodium.vanillaplus.modules.BooksModule.info
 import org.xodium.vanillaplus.recipes.ChainmailRecipe
 import org.xodium.vanillaplus.recipes.PaintingRecipe
-import org.xodium.vanillaplus.recipes.PaintingRecipe.info
 import org.xodium.vanillaplus.recipes.RottenFleshRecipe
 import org.xodium.vanillaplus.recipes.WoodLogRecipe
 
@@ -21,6 +19,36 @@ internal class VanillaPlus : JavaPlugin() {
             private set
 
         lateinit var configData: ConfigData
+
+        private val recipes =
+            listOf(
+                ChainmailRecipe,
+                PaintingRecipe,
+                RottenFleshRecipe,
+                WoodLogRecipe,
+            )
+
+        private val modules =
+            listOf(
+                BookshelfModule,
+                BooksModule,
+                ChatModule,
+                DimensionsModule,
+                EntityModule,
+                InventoryModule,
+                LocatorModule,
+                MannequinModule,
+                MapModule,
+                MotdModule,
+                OpenableModule,
+                PlayerModule,
+                ServerInfoModule,
+                ScoreBoardModule,
+                SignModule,
+                SitModule,
+                TabListModule,
+                TameableModule,
+            )
     }
 
     init {
@@ -46,35 +74,11 @@ internal class VanillaPlus : JavaPlugin() {
         configData = ConfigData().load("config.json")
 
         logger.info(
-            listOf(
-                ChainmailRecipe,
-                PaintingRecipe,
-                RottenFleshRecipe,
-                WoodLogRecipe,
-            ),
+            "Registered: ${recipes.sumOf { it.recipes.size }} recipes(s) | Took ${recipes.sumOf { it.register() }}ms",
         )
 
         logger.info(
-            listOf(
-                BookshelfModule,
-                BooksModule,
-                ChatModule,
-                DimensionsModule,
-                EntityModule,
-                InventoryModule,
-                LocatorModule,
-                MannequinModule,
-                MapModule,
-                MotdModule,
-                OpenableModule,
-                PlayerModule,
-                ServerInfoModule,
-                ScoreBoardModule,
-                SignModule,
-                SitModule,
-                TabListModule,
-                TameableModule,
-            ),
+            "Registered: ${modules.size} module(s) | Took ${modules.filter { it.isEnabled }.sumOf { it.register() }}ms",
         )
     }
 
