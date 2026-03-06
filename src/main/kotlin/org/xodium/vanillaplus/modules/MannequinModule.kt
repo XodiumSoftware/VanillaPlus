@@ -7,6 +7,7 @@ import org.bukkit.entity.Mannequin
 import org.bukkit.entity.Villager
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
+import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.PlayerInventory
@@ -35,6 +36,18 @@ internal object MannequinModule : ModuleInterface {
                 consumeItem(player.inventory)
                 villagerToMannequin(entity)
             }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    fun onMannequinDeath(event: EntityDeathEvent) {
+        val mannequin = event.entity as? Mannequin? ?: return
+
+        event.drops.apply {
+            clear()
+            addAll(listOf(*mannequin.equipment.armorContents))
+            add(mannequin.equipment.itemInMainHand)
+            add(mannequin.equipment.itemInOffHand)
         }
     }
 
