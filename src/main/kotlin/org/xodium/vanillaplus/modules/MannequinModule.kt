@@ -8,7 +8,6 @@ import org.bukkit.entity.Mannequin
 import org.bukkit.entity.Villager
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
-import org.bukkit.event.player.PlayerInteractAtEntityEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.PlayerInventory
@@ -17,14 +16,27 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 
 /** Represents a module handling mannequin mechanics within the system. */
 internal object MannequinModule : ModuleInterface {
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun on(event: PlayerInteractEntityEvent) {
         if (event.hand != EquipmentSlot.HAND) return
-        if (event.rightClicked.type != EntityType.VILLAGER) return
-        if (event.player.inventory.itemInMainHand.type != config.mannequinModule.triggerItem) return
 
-        consumeItem(event.player.inventory)
-        villagerToMannequin(event.rightClicked as Villager)
+        val player = event.player
+
+        when (val entity = event.rightClicked) {
+            is Mannequin -> {
+                if (!player.isSneaking) return
+
+                player.showDialog(entity.dialog())
+                event.isCancelled = true
+            }
+
+            is Villager -> {
+                if (player.inventory.itemInMainHand.type != config.mannequinModule.triggerItem) return
+
+                consumeItem(player.inventory)
+                villagerToMannequin(entity)
+            }
+        }
     }
 
     // NOTE: [This currently does not work for mannequins since pick entity does not fire for them](https://github.com/PaperMC/Paper/issues/13340).
@@ -34,18 +46,6 @@ internal object MannequinModule : ModuleInterface {
             if (!isSneaking) return
 
             val mannequin = event.entity as? Mannequin ?: return
-
-            showDialog(mannequin.dialog())
-            event.isCancelled = true
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    fun on(event: PlayerInteractAtEntityEvent) {
-        event.player.apply {
-            if (!isSneaking) return
-
-            val mannequin = event.rightClicked as? Mannequin ?: return
 
             showDialog(mannequin.dialog())
             event.isCancelled = true
