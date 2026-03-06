@@ -9,11 +9,12 @@ import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Mannequin
-import org.bukkit.entity.Pig
 import org.bukkit.entity.Player
 import org.bukkit.entity.Villager
+import org.bukkit.entity.Wolf
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
+import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.player.PlayerInteractAtEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
@@ -108,6 +109,20 @@ internal object MannequinModule : ModuleInterface {
             add(mannequin.equipment.itemInMainHand)
             add(mannequin.equipment.itemInOffHand)
         }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun on(event: EntityDamageByEntityEvent) {
+        val mannequin = event.entity as? Mannequin ?: return
+        val attacker = event.damager as? Player ?: return
+
+        mannequin.proxyId
+            ?.let { instance.server.getEntity(it) as? Wolf }
+            ?.takeIf { !it.isDead }
+            ?.apply {
+                isAngry = true
+                target = attacker
+            }
     }
 
     /**
@@ -250,7 +265,7 @@ internal object MannequinModule : ModuleInterface {
             .filter { it.following }
             .forEach { mannequin ->
                 mannequin.proxyId
-                    ?.let { instance.server.getEntity(it) as? Pig }
+                    ?.let { instance.server.getEntity(it) as? Wolf }
                     ?.takeIf { !it.isDead }
                     ?.let { mannequin.teleport(it.location) }
             }
@@ -271,7 +286,7 @@ internal object MannequinModule : ModuleInterface {
 
                 val proxy =
                     mannequin.proxyId
-                        ?.let { instance.server.getEntity(it) as? Pig }
+                        ?.let { instance.server.getEntity(it) as? Wolf }
                         ?.takeIf { !it.isDead }
                         ?: spawnProxy(mannequin).also { mannequin.proxyId = it.uniqueId }
                 val ownerLoc = owner.location
@@ -290,12 +305,13 @@ internal object MannequinModule : ModuleInterface {
     }
 
     /**
-     * Spawns an invisible, silent, invulnerable [Pig] at [mannequin]'s location to act as a pathfinding proxy.
+     * Spawns an invisible, silent, invulnerable [Wolf] at [mannequin]'s location to act as a pathfinding proxy.
+     * Being a neutral mob, the wolf will attack players who damage the mannequin.
      * @param mannequin The mannequin that will follow this proxy.
-     * @return The spawned proxy [Pig].
+     * @return The spawned proxy [Wolf].
      */
-    private fun spawnProxy(mannequin: Mannequin): Pig =
-        (mannequin.world.spawnEntity(mannequin.location, EntityType.PIG) as Pig).apply {
+    private fun spawnProxy(mannequin: Mannequin): Wolf =
+        (mannequin.world.spawnEntity(mannequin.location, EntityType.WOLF) as Wolf).apply {
             isInvisible = true
             isSilent = true
             isInvulnerable = true
