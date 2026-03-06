@@ -15,9 +15,11 @@ import org.bukkit.entity.Villager
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.EntityDeathEvent
-import org.bukkit.event.player.PlayerInteractEntityEvent
+import org.bukkit.event.player.PlayerInteractAtEntityEvent
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.PlayerInventory
+import org.bukkit.util.Vector
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.dialogs.MannequinDialog.dialog
 import org.xodium.vanillaplus.interfaces.ModuleInterface
@@ -30,6 +32,7 @@ import java.util.*
 /** Represents a module handling mannequin mechanics within the system. */
 internal object MannequinModule : ModuleInterface {
     private val lastOwnerLocations = mutableMapOf<UUID, Location>()
+    private val pendingArmorCancel = mutableSetOf<UUID>()
 
     init {
         instance.server.scheduler.runTaskTimer(
@@ -50,7 +53,7 @@ internal object MannequinModule : ModuleInterface {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    fun on(event: PlayerInteractEntityEvent) {
+    fun on(event: PlayerInteractAtEntityEvent) {
         val player = event.player
 
         when (val entity = event.rightClicked) {
@@ -61,6 +64,9 @@ internal object MannequinModule : ModuleInterface {
                 event.isCancelled = true
                 if (player.isSneaking) {
                     player.showDialog(entity.dialog())
+                } else if (player.inventory.itemInMainHand.type == Material.AIR) {
+                    val slot = event.clickedPosition.toArmorSlot() ?: return
+                    removeArmor(entity, player, slot)
                 } else if (player.inventory.itemInMainHand.type == config.mannequinModule.followTriggerItem) {
                     toggleFollow(entity, player)
                 } else {
@@ -78,6 +84,11 @@ internal object MannequinModule : ModuleInterface {
                 villagerToMannequin(player, entity)
             }
         }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    fun on(event: PlayerInteractEvent) {
+        if (pendingArmorCancel.remove(event.player.uniqueId)) event.isCancelled = true
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
@@ -136,6 +147,19 @@ internal object MannequinModule : ModuleInterface {
         }
 
     /**
+     * Maps a click position (relative to entity feet) to the [EquipmentSlot] at that height on a ~1.8-tall mannequin.
+     * Returns null if the Y is out of range.
+     */
+    private fun Vector.toArmorSlot(): EquipmentSlot? =
+        when {
+            y >= 1.2 -> EquipmentSlot.HEAD
+            y >= 0.75 -> EquipmentSlot.CHEST
+            y >= 0.35 -> EquipmentSlot.LEGS
+            y >= 0.0 -> EquipmentSlot.FEET
+            else -> null
+        }
+
+    /**
      * Swaps the item [player] is holding into [slot] on [mannequin], returning whatever was there to the player's hand.
      * @param mannequin The mannequin to equip.
      * @param player The player performing the action.
@@ -151,6 +175,30 @@ internal object MannequinModule : ModuleInterface {
 
         mannequin.equipment.setItem(slot, newItem)
         player.inventory.setItemInMainHand(oldItem)
+        pendingArmorCancel += player.uniqueId
+    }
+
+    /**
+     * Removes the item in [slot] from [mannequin] and gives it to [player].
+     * Does nothing if the slot is empty.
+     * @param mannequin The mannequin to unequip.
+     * @param player The player receiving the item.
+     * @param slot The armor slot to clear.
+     */
+    private fun removeArmor(
+        mannequin: Mannequin,
+        player: Player,
+        slot: EquipmentSlot,
+    ) {
+        val item = mannequin.equipment.getItem(slot)
+
+        if (item.type == Material.AIR) return
+
+        mannequin.equipment.setItem(slot, null)
+        player.inventory.addItem(item).forEach { (_, leftover) ->
+            player.world.dropItemNaturally(player.location, leftover)
+        }
+        pendingArmorCancel += player.uniqueId
     }
 
     /** Toggles follow mode on [mannequin], spawning or removing the proxy mob as needed, and notifies [player]. */
