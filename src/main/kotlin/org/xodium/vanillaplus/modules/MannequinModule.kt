@@ -1,6 +1,5 @@
 package org.xodium.vanillaplus.modules
 
-import io.papermc.paper.dialog.Dialog
 import io.papermc.paper.event.player.PlayerPickEntityEvent
 import kotlinx.serialization.Serializable
 import org.bukkit.Material
@@ -9,6 +8,7 @@ import org.bukkit.entity.Mannequin
 import org.bukkit.entity.Villager
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
+import org.bukkit.event.player.PlayerInteractAtEntityEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.PlayerInventory
@@ -17,9 +17,6 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 
 /** Represents a module handling mannequin mechanics within the system. */
 internal object MannequinModule : ModuleInterface {
-    @Suppress("UnstableApiUsage")
-    private val dialog = Dialog.create(TODO())
-
     @EventHandler
     fun on(event: PlayerInteractEntityEvent) {
         if (event.hand != EquipmentSlot.HAND) return
@@ -36,7 +33,18 @@ internal object MannequinModule : ModuleInterface {
         event.player.apply {
             if (!isSneaking) return
 
-            showDialog(dialog)
+            showDialog(MannequinDialog.get())
+            event.isCancelled = true
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    fun on(event: PlayerInteractAtEntityEvent) {
+        event.player.apply {
+            if (!isSneaking) return
+            if (event.rightClicked !is Mannequin) return
+
+            showDialog(MannequinDialog.get())
             event.isCancelled = true
         }
     }
