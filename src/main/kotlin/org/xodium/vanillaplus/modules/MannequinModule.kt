@@ -83,6 +83,5 @@ internal object MannequinModule : ModuleInterface {
     data class Config(
         var enabled: Boolean = true,
         var triggerItem: Material = Material.TOTEM_OF_UNDYING,
-        var mannequinDialog: MannequinDialog.Config = MannequinDialog.Config(),
     )
 }

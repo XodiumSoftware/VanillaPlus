@@ -1,53 +1,103 @@
 package org.xodium.vanillaplus.dialogs
 
+import io.papermc.paper.dialog.Dialog
 import io.papermc.paper.registry.data.dialog.ActionButton
 import io.papermc.paper.registry.data.dialog.DialogBase
-import io.papermc.paper.registry.data.dialog.DialogRegistryEntry
 import io.papermc.paper.registry.data.dialog.action.DialogAction
 import io.papermc.paper.registry.data.dialog.input.DialogInput
 import io.papermc.paper.registry.data.dialog.type.DialogType
-import kotlinx.serialization.Serializable
-import net.kyori.adventure.key.Key
-import org.xodium.vanillaplus.VanillaPlusBootstrap.Companion.INSTANCE
-import org.xodium.vanillaplus.interfaces.DialogInterface
+import net.kyori.adventure.text.event.ClickCallback
+import org.bukkit.entity.Mannequin
+import org.bukkit.entity.Player
 import org.xodium.vanillaplus.utils.Utils.MM
 
 /** Represents an object handling mannequin dialog implementation within the system. */
 @Suppress("UnstableApiUsage")
-internal object MannequinDialog : DialogInterface {
-    override fun invoke(builder: DialogRegistryEntry.Builder): DialogRegistryEntry.Builder =
-        builder
-            .base(
-                DialogBase
-                    .builder(MM.deserialize(config.mannequinModule.mannequinDialog.title))
-                    .inputs(
-                        listOf(
-                            DialogInput.text("input", MM.deserialize("Name")).build(),
-                            DialogInput.text("profile", MM.deserialize("Skin Profile (Mojang Username)")).build(),
-                            DialogInput.bool("immovable", MM.deserialize("Immovable")).build(),
-                            DialogInput.bool("gravity", MM.deserialize("Gravity")).build(),
-                        ),
-                    ).canCloseWithEscape(true)
-                    .build(),
-            ).type(
-                DialogType.confirmation(
-                    ActionButton.create(
-                        MM.deserialize("Save"),
-                        MM.deserialize("Click to confirm your input."),
-                        100,
-                        DialogAction.customClick(Key.key(INSTANCE, "mannequin/confirm"), null),
-                    ),
-                    ActionButton.create(
-                        MM.deserialize("Discard"),
-                        MM.deserialize("Click to discard your input."),
-                        100,
-                        null,
-                    ),
-                ),
-            )
+internal object MannequinDialog {
+    /**
+     * Creates and returns a configured dialog for editing the state of this [Mannequin].
+     * @receiver The [Mannequin] instance for which the dialog is created.
+     * @return A fully configured [Dialog] instance bound to this mannequin.
+     */
+    fun Mannequin.dialog(): Dialog =
+        Dialog
+            .create {
+                it
+                    .empty()
+                    .base(
+                        DialogBase
+                            .builder(MM.deserialize("<b><gradient:#CB2D3E:#EF473A>Mannequin Editor</gradient></b>"))
+                            .inputs(
+                                listOf(
+                                    // TODO: add .initial()
+                                    DialogInput
+                                        .text("input", MM.deserialize("Name"))
+                                        .maxLength(1024)
+                                        .build(),
+                                    // TODO: add .initial()
+                                    DialogInput
+                                        .text("profile", MM.deserialize("Skin Profile (Mojang Username)"))
+                                        .maxLength(1024)
+                                        .build(),
+                                    DialogInput
+                                        .bool("immovable", MM.deserialize("Immovable"))
+                                        .initial(isImmovable)
+                                        .build(),
+                                    DialogInput
+                                        .bool("invulnerable", MM.deserialize("Invulnerable"))
+                                        .initial(isInvulnerable)
+                                        .build(),
+                                    DialogInput
+                                        .bool("gravity", MM.deserialize("Gravity"))
+                                        .initial(hasGravity())
+                                        .build(),
+                                    DialogInput
+                                        .bool("customNameVisible", MM.deserialize("Custom Name Visible"))
+                                        .initial(isCustomNameVisible)
+                                        .build(),
+                                ),
+                            ).canCloseWithEscape(true)
+                            .build(),
+                    ).type(
+                        DialogType.confirmation(
+                            ActionButton.create(
+                                MM.deserialize("Save"),
+                                MM.deserialize("Click to confirm your input."),
+                                100,
+                                DialogAction.customClick(
+                                    { view, audience ->
+                                        if (audience !is Player) return@customClick
 
-    @Serializable
-    data class Config(
-        var title: String = "<b><gradient:#CB2D3E:#EF473A>Mannequin Editor</gradient></b>",
-    )
+                                        view.getFloat("level")?.toInt() ?: return@customClick
+                                        view.getFloat("experience") ?: return@customClick
+
+                                        if (isDead) {
+                                            audience.sendActionBar(MM.deserialize("<red>Mannequin is dead.</red>"))
+                                        }
+
+                                        val distance = audience.location.distanceSquared(location)
+
+                                        if (audience.world != world || distance > 36.0) {
+                                            audience.sendActionBar(
+                                                MM.deserialize("<red>You are too far away from the mannequin.</red>"),
+                                            )
+                                            return@customClick
+                                        }
+                                    },
+                                    ClickCallback.Options
+                                        .builder()
+                                        .uses(1)
+                                        .lifetime(ClickCallback.DEFAULT_LIFETIME)
+                                        .build(),
+                                ),
+                            ),
+                            ActionButton.create(
+                                MM.deserialize("Discard"),
+                                MM.deserialize("Click to discard your input."),
+                                100,
+                                null,
+                            ),
+                        ),
+                    )
+            }
 }
