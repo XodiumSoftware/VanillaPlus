@@ -15,6 +15,7 @@ import io.papermc.paper.registry.tag.TagKey
 import io.papermc.paper.tag.TagEntry
 import net.kyori.adventure.key.Key
 import org.xodium.vanillaplus.dialogs.FaqDialog
+import org.xodium.vanillaplus.dialogs.MannequinDialog
 import org.xodium.vanillaplus.enchantments.*
 
 /** Main bootstrap class of the plugin. */
@@ -99,6 +100,7 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                 RegistryEvents.DIALOG.compose().newHandler { event ->
                     event.registry().apply {
                         register(FaqDialog.key) { FaqDialog.invoke(it) }
+                        register(MannequinDialog.key) { MannequinDialog.invoke(it) }
                     }
                 },
             )
