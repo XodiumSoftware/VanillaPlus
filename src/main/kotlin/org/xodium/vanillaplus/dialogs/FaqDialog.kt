@@ -12,14 +12,11 @@ import org.xodium.vanillaplus.utils.Utils.MM
 /** Represents an object handling faq dialog implementation within the system. */
 @Suppress("UnstableApiUsage")
 internal object FaqDialog : DialogInterface {
-    private val faqConfig: Config
-        get() = runCatching { config.serverInfoModule.faqDialogConfig }.getOrElse { Config() }
-
     override fun invoke(builder: DialogRegistryEntry.Builder): DialogRegistryEntry.Builder =
         builder
             .base(
                 DialogBase
-                    .builder(MM.deserialize(faqConfig.faqTitle))
+                    .builder(MM.deserialize(config.serverInfoModule.faqDialogConfig.faqTitle))
                     // NOTE: Blocked due to Paper API issue (https://github.com/PaperMC/Paper/issues/13555)
                     // .body(buildFaqItems().map { DialogBody.item(it).build() })
                     // .body(buildFaqItems().map { DialogBody.plainMessage(it).build() })
