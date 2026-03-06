@@ -71,7 +71,6 @@ internal class VanillaPlus : JavaPlugin() {
                 PlayerModule,
                 ServerInfoModule,
                 ScoreBoardModule,
-                SignModule,
                 SitModule,
                 TabListModule,
                 TameableModule,
