@@ -13,7 +13,7 @@ import org.bukkit.entity.Player
 import org.xodium.vanillaplus.utils.Utils.MM
 
 /** Represents an object handling mannequin dialog implementation within the system. */
-@Suppress("UnstableApiUsage")
+@Suppress("UnstableApiUsage", "Unused")
 internal object MannequinDialog {
     /**
      * Creates and returns a configured dialog for editing the state of this [Mannequin].
