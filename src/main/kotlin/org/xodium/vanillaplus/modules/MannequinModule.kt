@@ -6,6 +6,7 @@ import io.papermc.paper.entity.LookAnchor
 import kotlinx.serialization.Serializable
 import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.Tag
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Mannequin
 import org.bukkit.entity.Pig
@@ -62,6 +63,11 @@ internal object MannequinModule : ModuleInterface {
                     player.showDialog(entity.dialog())
                 } else if (player.inventory.itemInMainHand.type == config.mannequinModule.followTriggerItem) {
                     toggleFollow(entity, player)
+                } else {
+                    val slot =
+                        player.inventory.itemInMainHand.type
+                            .toArmorSlot() ?: return
+                    equipArmor(entity, player, slot)
                 }
             }
 
@@ -117,6 +123,34 @@ internal object MannequinModule : ModuleInterface {
 
         item.amount -= 1
         inventory.setItemInMainHand(item)
+    }
+
+    /** Maps this [Material] to the [EquipmentSlot] it occupies when worn, or null if it is not wearable armor. */
+    private fun Material.toArmorSlot(): EquipmentSlot? =
+        when {
+            Tag.ITEMS_HEAD_ARMOR.isTagged(this) -> EquipmentSlot.HEAD
+            Tag.ITEMS_CHEST_ARMOR.isTagged(this) -> EquipmentSlot.CHEST
+            Tag.ITEMS_LEG_ARMOR.isTagged(this) -> EquipmentSlot.LEGS
+            Tag.ITEMS_FOOT_ARMOR.isTagged(this) -> EquipmentSlot.FEET
+            else -> null
+        }
+
+    /**
+     * Swaps the item [player] is holding into [slot] on [mannequin], returning whatever was there to the player's hand.
+     * @param mannequin The mannequin to equip.
+     * @param player The player performing the action.
+     * @param slot The armor slot to modify.
+     */
+    private fun equipArmor(
+        mannequin: Mannequin,
+        player: Player,
+        slot: EquipmentSlot,
+    ) {
+        val newItem = player.inventory.itemInMainHand.clone()
+        val oldItem = mannequin.equipment.getItem(slot)
+
+        mannequin.equipment.setItem(slot, newItem)
+        player.inventory.setItemInMainHand(oldItem)
     }
 
     /** Toggles follow mode on [mannequin], spawning or removing the proxy mob as needed, and notifies [player]. */
