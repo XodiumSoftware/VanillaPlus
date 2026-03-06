@@ -4,6 +4,7 @@ package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.entity.LookAnchor
 import kotlinx.serialization.Serializable
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Mannequin
@@ -23,10 +24,11 @@ import org.xodium.vanillaplus.pdcs.MannequinPDC.following
 import org.xodium.vanillaplus.pdcs.MannequinPDC.owner
 import org.xodium.vanillaplus.pdcs.MannequinPDC.proxyId
 import org.xodium.vanillaplus.utils.Utils.MM
+import java.util.*
 
 /** Represents a module handling mannequin mechanics within the system. */
 internal object MannequinModule : ModuleInterface {
-    private val lastOwnerLocations = mutableMapOf<java.util.UUID, org.bukkit.Location>()
+    private val lastOwnerLocations = mutableMapOf<UUID, Location>()
 
     init {
         instance.server.scheduler.runTaskTimer(
