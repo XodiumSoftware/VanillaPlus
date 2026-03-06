@@ -72,7 +72,7 @@ internal interface ModuleInterface : Listener {
 
     /**
      * Logs the registration details of a list of modules.
-     * @receiver Logger The logger to use for logging.
+     * @receiver Logger is the logger to use for logging.
      * @param modules List of [ModuleInterface] instances to log.
      */
     fun Logger.info(modules: List<ModuleInterface>) {

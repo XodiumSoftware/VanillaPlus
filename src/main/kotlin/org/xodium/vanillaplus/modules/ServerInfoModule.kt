@@ -53,7 +53,7 @@ internal object ServerInfoModule : ModuleInterface {
             mapOf(
                 ServerLinks.Type.WEBSITE to "https://xodium.org/",
                 ServerLinks.Type.REPORT_BUG to "https://github.com/XodiumSoftware/VanillaPlus/issues",
-                ServerLinks.Type.STATUS to "https://mcsrvstat.us/server/illyria.xodium.org",
+                ServerLinks.Type.STATUS to "https://modrinth.com/server/illyria",
                 ServerLinks.Type.COMMUNITY to "https://discord.gg/jusYH9aYUh",
             ),
         var faqDialogConfig: FaqDialog.Config = FaqDialog.Config(),
