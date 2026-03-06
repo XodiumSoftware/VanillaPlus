@@ -22,6 +22,6 @@ internal object MannequinPDC {
      * @return The owner's [UUID].
      */
     var Mannequin.owner: UUID
-        get() = UUID.fromString(persistentDataContainer.get(OWNER_KEY, PersistentDataType.STRING) ?: "")
+        get() = UUID.fromString(persistentDataContainer.getOrDefault(OWNER_KEY, PersistentDataType.STRING, ""))
         set(value) = persistentDataContainer.set(OWNER_KEY, PersistentDataType.STRING, value.toString())
 }
