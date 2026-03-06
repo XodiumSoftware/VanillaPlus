@@ -1,6 +1,5 @@
 package org.xodium.vanillaplus.modules
 
-import io.papermc.paper.event.player.PlayerPickEntityEvent
 import kotlinx.serialization.Serializable
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
@@ -36,19 +35,6 @@ internal object MannequinModule : ModuleInterface {
                 consumeItem(player.inventory)
                 villagerToMannequin(entity)
             }
-        }
-    }
-
-    // NOTE: [This currently does not work for mannequins since pick entity does not fire for them](https://github.com/PaperMC/Paper/issues/13340).
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    fun on(event: PlayerPickEntityEvent) {
-        event.player.apply {
-            if (!isSneaking) return
-
-            val mannequin = event.entity as? Mannequin ?: return
-
-            showDialog(mannequin.dialog())
-            event.isCancelled = true
         }
     }
 
