@@ -61,6 +61,7 @@ internal object MannequinModule : ModuleInterface {
         val mannequin = event.entity as? Mannequin? ?: return
 
         trackingMannequins.remove(mannequin.uniqueId)
+        mannequins.removeIf { it.uniqueId == mannequin.uniqueId }
         event.drops.apply {
             clear()
             addAll(listOf(*mannequin.equipment.armorContents))
@@ -83,6 +84,7 @@ internal object MannequinModule : ModuleInterface {
         mannequin.owner = player.uniqueId
 
         trackingMannequins[mannequin.uniqueId] = System.currentTimeMillis()
+        mannequins.add(mannequin)
 
         villager.remove()
     }
@@ -105,16 +107,21 @@ internal object MannequinModule : ModuleInterface {
 
     /** Updates the head rotation of all tracked mannequins. */
     private fun updateHeadMovement() {
-        mannequins.forEach {
-            if (!it.isValid || it.isDead) {
-                trackingMannequins.remove(it.uniqueId)
-                return@forEach
+        val iter = mannequins.iterator()
+
+        while (iter.hasNext()) {
+            val mannequin = iter.next()
+
+            if (!mannequin.isValid || mannequin.isDead) {
+                trackingMannequins.remove(mannequin.uniqueId)
+                iter.remove()
+                continue
             }
 
-            val nearestPlayer = findNearestPlayerNearby(it)
+            val nearestPlayer = findNearestPlayerNearby(mannequin)
 
             @Suppress("UnstableApiUsage")
-            if (nearestPlayer != null) it.lookAt(nearestPlayer.location, LookAnchor.EYES)
+            if (nearestPlayer != null) mannequin.lookAt(nearestPlayer.eyeLocation, LookAnchor.EYES)
         }
     }
 
