@@ -30,9 +30,9 @@ internal object MannequinDialog {
                             .builder(MM.deserialize("<b><gradient:#CB2D3E:#EF473A>Mannequin Editor</gradient></b>"))
                             .inputs(
                                 listOf(
-                                    // TODO: add .initial()
                                     DialogInput
                                         .text("input", MM.deserialize("Name"))
+                                        .initial("TODO") // TODO: .initial()
                                         .maxLength(1024)
                                         .build(),
                                     DialogInput

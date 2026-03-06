@@ -19,36 +19,6 @@ internal class VanillaPlus : JavaPlugin() {
             private set
 
         lateinit var configData: ConfigData
-
-        private val recipes =
-            listOf(
-                ChainmailRecipe,
-                PaintingRecipe,
-                RottenFleshRecipe,
-                WoodLogRecipe,
-            )
-
-        private val modules =
-            listOf(
-                BookshelfModule,
-                BooksModule,
-                ChatModule,
-                DimensionsModule,
-                EntityModule,
-                InventoryModule,
-                LocatorModule,
-                MannequinModule,
-                MapModule,
-                MotdModule,
-                OpenableModule,
-                PlayerModule,
-                ServerInfoModule,
-                ScoreBoardModule,
-                SignModule,
-                SitModule,
-                TabListModule,
-                TameableModule,
-            )
     }
 
     init {
@@ -73,12 +43,42 @@ internal class VanillaPlus : JavaPlugin() {
 
         configData = ConfigData().load("config.json")
 
+        val recipes =
+            listOf(
+                ChainmailRecipe,
+                PaintingRecipe,
+                RottenFleshRecipe,
+                WoodLogRecipe,
+            )
+
         logger.info(
             "Registered: ${recipes.sumOf { it.recipes.size }} recipes(s) | Took ${recipes.sumOf { it.register() }}ms",
         )
 
+        val modules =
+            listOf(
+                BookshelfModule,
+                BooksModule,
+                ChatModule,
+                DimensionsModule,
+                EntityModule,
+                InventoryModule,
+                LocatorModule,
+                MannequinModule,
+                MapModule,
+                MotdModule,
+                OpenableModule,
+                PlayerModule,
+                ServerInfoModule,
+                ScoreBoardModule,
+                SignModule,
+                SitModule,
+                TabListModule,
+                TameableModule,
+            ).filter { it.isEnabled }
+
         logger.info(
-            "Registered: ${modules.size} module(s) | Took ${modules.filter { it.isEnabled }.sumOf { it.register() }}ms",
+            "Registered: ${modules.size} module(s) | Took ${modules.sumOf { it.register() }}ms",
         )
     }
 
