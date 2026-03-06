@@ -158,9 +158,7 @@ internal object MannequinModule : ModuleInterface {
 
     /** Updates pathfinding for all following mannequins, only re-pathing when the owner moves or proxy has no path. */
     private fun updateFollowMovement() {
-        // TODO: use raytracing so the mannequin cant see through walls.
-        val stopDistSq =
-            config.mannequinModule.followStopDistance * config.mannequinModule.followStopDistance
+        val stopDistSq = config.mannequinModule.followStopDistance * config.mannequinModule.followStopDistance
 
         instance.server.worlds
             .flatMap { it.entities }
@@ -176,10 +174,11 @@ internal object MannequinModule : ModuleInterface {
                         ?.let { instance.server.getEntity(it) as? Pig }
                         ?.takeIf { !it.isDead }
                         ?: spawnProxy(mannequin).also { mannequin.proxyId = it.uniqueId }
-
                 val ownerLoc = owner.location
+
                 if (proxy.location.distanceSquared(ownerLoc) > stopDistSq) {
                     val lastLoc = lastOwnerLocations[mannequin.uniqueId]
+
                     if (!proxy.pathfinder.hasPath() || lastLoc == null || lastLoc.distanceSquared(ownerLoc) > 1.0) {
                         proxy.pathfinder.moveTo(ownerLoc, config.mannequinModule.followSpeed)
                         lastOwnerLocations[mannequin.uniqueId] = ownerLoc.clone()
@@ -213,14 +212,16 @@ internal object MannequinModule : ModuleInterface {
             .filterIsInstance<Mannequin>()
             .forEach { mannequin ->
                 val eyeLoc = mannequin.eyeLocation
+
                 mannequin.world.players
                     .filter {
                         it.location.distanceSquared(mannequin.location) <=
                             config.mannequinModule.lookRange * config.mannequinModule.lookRange
                     }.sortedBy { it.location.distanceSquared(mannequin.location) }
-                    .firstOrNull { player ->
-                        val toPlayer = player.eyeLocation.toVector().subtract(eyeLoc.toVector())
+                    .firstOrNull {
+                        val toPlayer = it.eyeLocation.toVector().subtract(eyeLoc.toVector())
                         val dist = toPlayer.length()
+
                         mannequin.world.rayTraceBlocks(eyeLoc, toPlayer.normalize(), dist) == null
                     }?.let { mannequin.lookAt(it.eyeLocation, LookAnchor.EYES) }
             }
