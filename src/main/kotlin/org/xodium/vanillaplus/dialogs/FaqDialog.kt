@@ -16,7 +16,7 @@ internal object FaqDialog : DialogInterface {
         builder
             .base(
                 DialogBase
-                    .builder(MM.deserialize(config.serverInfoModule.faqDialogConfig.faqTitle))
+                    .builder(MM.deserialize(config.serverInfoModule.faqDialog.title))
                     // NOTE: Blocked due to Paper API issue (https://github.com/PaperMC/Paper/issues/13555)
                     // .body(buildFaqItems().map { DialogBody.item(it).build() })
                     // .body(buildFaqItems().map { DialogBody.plainMessage(it).build() })
@@ -54,8 +54,8 @@ internal object FaqDialog : DialogInterface {
 
     @Serializable
     data class Config(
-        var faqTitle: String = "<b><gradient:#CB2D3E:#EF473A>FAQ</gradient></b>",
-        var faqItems: List<FaqItem> =
+        var title: String = "<b><gradient:#CB2D3E:#EF473A>FAQ</gradient></b>",
+        var items: List<FaqItem> =
             listOf(
                 FaqItem(
                     material = Material.WRITABLE_BOOK,

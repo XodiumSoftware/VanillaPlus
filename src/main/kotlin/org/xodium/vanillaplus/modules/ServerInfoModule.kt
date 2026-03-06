@@ -56,6 +56,6 @@ internal object ServerInfoModule : ModuleInterface {
                 ServerLinks.Type.STATUS to "https://modrinth.com/server/illyria",
                 ServerLinks.Type.COMMUNITY to "https://discord.gg/jusYH9aYUh",
             ),
-        var faqDialogConfig: FaqDialog.Config = FaqDialog.Config(),
+        var faqDialog: FaqDialog.Config = FaqDialog.Config(),
     )
 }

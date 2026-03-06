@@ -12,6 +12,7 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.PlayerInventory
+import org.xodium.vanillaplus.dialogs.MannequinDialog
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 
 /** Represents a module handling mannequin mechanics within the system. */
@@ -74,5 +75,6 @@ internal object MannequinModule : ModuleInterface {
     data class Config(
         var enabled: Boolean = true,
         var triggerItem: Material = Material.TOTEM_OF_UNDYING,
+        var mannequinDialog: MannequinDialog.Config = MannequinDialog.Config(),
     )
 }
