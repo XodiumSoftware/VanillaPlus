@@ -12,7 +12,7 @@ import org.bukkit.event.player.PlayerInteractAtEntityEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.PlayerInventory
-import org.xodium.vanillaplus.dialogs.MannequinDialog
+import org.xodium.vanillaplus.dialogs.MannequinDialog.dialog
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 
 /** Represents a module handling mannequin mechanics within the system. */
@@ -33,7 +33,9 @@ internal object MannequinModule : ModuleInterface {
         event.player.apply {
             if (!isSneaking) return
 
-            showDialog(MannequinDialog.get())
+            val mannequin = event.entity as? Mannequin ?: return
+
+            showDialog(mannequin.dialog())
             event.isCancelled = true
         }
     }
@@ -42,9 +44,10 @@ internal object MannequinModule : ModuleInterface {
     fun on(event: PlayerInteractAtEntityEvent) {
         event.player.apply {
             if (!isSneaking) return
-            if (event.rightClicked !is Mannequin) return
 
-            showDialog(MannequinDialog.get())
+            val mannequin = event.rightClicked as? Mannequin ?: return
+
+            showDialog(mannequin.dialog())
             event.isCancelled = true
         }
     }
