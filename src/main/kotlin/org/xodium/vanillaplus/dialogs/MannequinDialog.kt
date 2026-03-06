@@ -1,5 +1,6 @@
 package org.xodium.vanillaplus.dialogs
 
+import io.papermc.paper.datacomponent.item.ResolvableProfile
 import io.papermc.paper.dialog.Dialog
 import io.papermc.paper.registry.data.dialog.ActionButton
 import io.papermc.paper.registry.data.dialog.DialogBase
@@ -34,9 +35,9 @@ internal object MannequinDialog {
                                         .text("input", MM.deserialize("Name"))
                                         .maxLength(1024)
                                         .build(),
-                                    // TODO: add .initial()
                                     DialogInput
                                         .text("profile", MM.deserialize("Skin Profile (Mojang Username)"))
+                                        .initial(profile.name() ?: "")
                                         .maxLength(1024)
                                         .build(),
                                     DialogInput
@@ -83,6 +84,17 @@ internal object MannequinDialog {
                                             )
                                             return@customClick
                                         }
+
+                                        profile =
+                                            ResolvableProfile.resolvableProfile().name(view.getText("profile")).build()
+                                        isImmovable = view.getBoolean("immovable") ?: false
+                                        isInvulnerable = view.getBoolean("invulnerable") ?: false
+                                        setGravity(view.getBoolean("gravity") ?: false)
+                                        isCustomNameVisible = view.getBoolean("customNameVisible") ?: false
+
+                                        audience.sendActionBar(
+                                            MM.deserialize("<green>Changes successfully applied.</green>"),
+                                        )
                                     },
                                     ClickCallback.Options
                                         .builder()
