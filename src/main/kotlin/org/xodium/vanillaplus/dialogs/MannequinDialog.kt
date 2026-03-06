@@ -31,8 +31,13 @@ internal object MannequinDialog {
                             .inputs(
                                 listOf(
                                     DialogInput
-                                        .text("input", MM.deserialize("Name"))
-                                        .initial("TODO") // TODO: .initial()
+                                        .text("customName", MM.deserialize("Custom Name"))
+                                        .initial(MM.serializeOrNull(customName()) ?: "")
+                                        .maxLength(1024)
+                                        .build(),
+                                    DialogInput
+                                        .text("description", MM.deserialize("Description"))
+                                        .initial(MM.serializeOrNull(description) ?: "")
                                         .maxLength(1024)
                                         .build(),
                                     DialogInput
@@ -68,10 +73,6 @@ internal object MannequinDialog {
                                 DialogAction.customClick(
                                     { view, audience ->
                                         if (audience !is Player) return@customClick
-
-                                        view.getFloat("level")?.toInt() ?: return@customClick
-                                        view.getFloat("experience") ?: return@customClick
-
                                         if (isDead) {
                                             audience.sendActionBar(MM.deserialize("<red>Mannequin is dead.</red>"))
                                         }
@@ -85,6 +86,8 @@ internal object MannequinDialog {
                                             return@customClick
                                         }
 
+                                        customName(MM.deserialize(view.getText("customName") ?: ""))
+                                        description = MM.deserialize(view.getText("description") ?: "")
                                         profile =
                                             ResolvableProfile.resolvableProfile().name(view.getText("profile")).build()
                                         isImmovable = view.getBoolean("immovable") ?: false

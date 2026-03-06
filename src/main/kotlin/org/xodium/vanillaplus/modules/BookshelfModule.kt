@@ -3,6 +3,7 @@ package org.xodium.vanillaplus.modules
 import kotlinx.serialization.Serializable
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
+import org.bukkit.GameMode
 import org.bukkit.block.ChiseledBookshelf
 import org.bukkit.entity.Player
 import org.bukkit.event.Event
@@ -21,6 +22,7 @@ internal object BookshelfModule : ModuleInterface {
     fun on(event: PlayerInteractEvent) {
         val player = event.player
 
+        if (player.gameMode !in listOf(GameMode.SURVIVAL, GameMode.ADVENTURE)) return
         if (event.hand != EquipmentSlot.HAND) return
         if (event.action != Action.LEFT_CLICK_BLOCK) return
         if (event.useInteractedBlock() == Event.Result.DENY) return
