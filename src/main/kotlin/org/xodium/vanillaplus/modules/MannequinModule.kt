@@ -158,6 +158,7 @@ internal object MannequinModule : ModuleInterface {
 
     /** Updates pathfinding for all following mannequins, only re-pathing when the owner moves or proxy has no path. */
     private fun updateFollowMovement() {
+        // TODO: use raytracing so the mannequin cant see through walls.
         val stopDistSq =
             config.mannequinModule.followStopDistance * config.mannequinModule.followStopDistance
 
@@ -207,6 +208,7 @@ internal object MannequinModule : ModuleInterface {
     /** Updates the head rotation of all mannequins in the world. */
     @Suppress("UnstableApiUsage")
     private fun updateHeadMovement() {
+        // TODO: use raytracing so the mannequin cant see through walls.
         instance.server.worlds
             .flatMap { it.entities }
             .filterIsInstance<Mannequin>()
