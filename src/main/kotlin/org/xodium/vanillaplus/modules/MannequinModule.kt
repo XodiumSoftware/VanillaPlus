@@ -60,13 +60,13 @@ internal object MannequinModule : ModuleInterface {
                 event.isCancelled = true
                 if (player.isSneaking) {
                     player.showDialog(entity.dialog())
-                } else {
+                } else if (player.inventory.itemInMainHand.type == config.mannequinModule.followTriggerItem) {
                     toggleFollow(entity, player)
                 }
             }
 
             is Villager -> {
-                if (player.inventory.itemInMainHand.type != config.mannequinModule.triggerItem) return
+                if (player.inventory.itemInMainHand.type != config.mannequinModule.conversionTriggerItem) return
 
                 consumeItem(player.inventory)
                 villagerToMannequin(player, entity)
@@ -231,8 +231,9 @@ internal object MannequinModule : ModuleInterface {
     @Serializable
     data class Config(
         var enabled: Boolean = true,
-        var triggerItem: Material = Material.TOTEM_OF_UNDYING,
+        var conversionTriggerItem: Material = Material.TOTEM_OF_UNDYING,
         var lookRange: Double = 10.0,
+        var followTriggerItem: Material = Material.FEATHER,
         var followSpeed: Double = 1.0,
         var followStopDistance: Double = 2.5,
     )
