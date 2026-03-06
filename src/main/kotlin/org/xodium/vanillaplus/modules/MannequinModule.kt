@@ -28,6 +28,9 @@ import org.xodium.vanillaplus.pdcs.MannequinPDC.owner
 import org.xodium.vanillaplus.pdcs.MannequinPDC.proxyId
 import org.xodium.vanillaplus.utils.Utils.MM
 import java.util.*
+import kotlin.math.abs
+import kotlin.math.cos
+import kotlin.math.sin
 
 /** Represents a module handling mannequin mechanics within the system. */
 internal object MannequinModule : ModuleInterface {
@@ -65,14 +68,17 @@ internal object MannequinModule : ModuleInterface {
                 if (player.isSneaking) {
                     player.showDialog(entity.dialog())
                 } else if (player.inventory.itemInMainHand.type == Material.AIR) {
-                    val slot = event.clickedPosition.toArmorSlot() ?: return
+                    val slot = event.clickedPosition.toArmorSlot(entity) ?: return
                     removeArmor(entity, player, slot)
                 } else if (player.inventory.itemInMainHand.type == config.mannequinModule.followTriggerItem) {
                     toggleFollow(entity, player)
                 } else {
                     val slot =
                         player.inventory.itemInMainHand.type
-                            .toArmorSlot() ?: return
+                            .toArmorSlot()
+                            ?: event.clickedPosition.toArmorSlot(entity)?.takeIf {
+                                it == EquipmentSlot.HAND || it == EquipmentSlot.OFF_HAND
+                            } ?: return
                     equipArmor(entity, player, slot)
                 }
             }
@@ -147,17 +153,29 @@ internal object MannequinModule : ModuleInterface {
         }
 
     /**
-     * Maps a click position (relative to entity feet) to the [EquipmentSlot] at that height on a ~1.8-tall mannequin.
-     * Returns null if the Y is out of range.
+     * Maps a click position (relative to entity feet) to the [EquipmentSlot] at that location on a ~1.8-tall mannequin.
+     * Clicks outside the body width (~0.3) at arm height are resolved to [EquipmentSlot.HAND] or
+     * [EquipmentSlot.OFF_HAND] by projecting the click onto the entity's local right axis.
+     * Returns null if the position is out of range.
      */
-    private fun Vector.toArmorSlot(): EquipmentSlot? =
-        when {
+    private fun Vector.toArmorSlot(entity: Mannequin): EquipmentSlot? {
+        val yawRad = Math.toRadians(entity.location.yaw.toDouble())
+        // Project the horizontal click offset onto the entity's local right axis.
+        // Right direction = (-cos(yaw), -sin(yaw)) in world (x, z).
+        val localX = -(x * cos(yawRad) + z * sin(yawRad))
+
+        if (y in 0.75..1.5 && abs(localX) > 0.1) {
+            return if (localX > 0) EquipmentSlot.HAND else EquipmentSlot.OFF_HAND
+        }
+
+        return when {
             y >= 1.2 -> EquipmentSlot.HEAD
             y >= 0.75 -> EquipmentSlot.CHEST
             y >= 0.35 -> EquipmentSlot.LEGS
             y >= 0.0 -> EquipmentSlot.FEET
             else -> null
         }
+    }
 
     /**
      * Swaps the item [player] is holding into [slot] on [mannequin], returning whatever was there to the player's hand.
