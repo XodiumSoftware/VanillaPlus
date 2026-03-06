@@ -14,6 +14,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
+import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.PlayerInventory
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.dialogs.MannequinDialog.dialog
@@ -21,6 +22,7 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.pdcs.MannequinPDC.following
 import org.xodium.vanillaplus.pdcs.MannequinPDC.owner
 import org.xodium.vanillaplus.pdcs.MannequinPDC.proxyId
+import org.xodium.vanillaplus.utils.Utils.MM
 
 /** Represents a module handling mannequin mechanics within the system. */
 internal object MannequinModule : ModuleInterface {
@@ -42,13 +44,14 @@ internal object MannequinModule : ModuleInterface {
 
         when (val entity = event.rightClicked) {
             is Mannequin -> {
+                if (event.hand != EquipmentSlot.HAND) return
                 if (entity.owner != player.uniqueId) return
 
                 event.isCancelled = true
                 if (player.isSneaking) {
                     player.showDialog(entity.dialog())
                 } else {
-                    toggleFollow(entity)
+                    toggleFollow(entity, player)
                 }
             }
 
@@ -106,8 +109,11 @@ internal object MannequinModule : ModuleInterface {
         inventory.setItemInMainHand(item)
     }
 
-    /** Toggles follow mode on [mannequin], spawning or removing the proxy mob as needed. */
-    private fun toggleFollow(mannequin: Mannequin) {
+    /** Toggles follow mode on [mannequin], spawning or removing the proxy mob as needed, and notifies [player]. */
+    private fun toggleFollow(
+        mannequin: Mannequin,
+        player: Player,
+    ) {
         if (mannequin.following) {
             mannequin.proxyId?.let { instance.server.getEntity(it)?.remove() }
             mannequin.proxyId = null
@@ -115,6 +121,15 @@ internal object MannequinModule : ModuleInterface {
         } else {
             mannequin.following = true
         }
+        player.sendActionBar(
+            MM.deserialize(
+                if (mannequin.following) {
+                    "<gray>Following: <green>ON"
+                } else {
+                    "<gray>Following: <red>OFF"
+                },
+            ),
+        )
     }
 
     /** Moves all following mannequins toward their owner via an invisible proxy mob. */
@@ -125,6 +140,7 @@ internal object MannequinModule : ModuleInterface {
             .filter { it.following }
             .forEach { mannequin ->
                 val owner = instance.server.getPlayer(mannequin.owner) ?: return@forEach
+
                 if (owner.world != mannequin.world) return@forEach
 
                 val proxy =
