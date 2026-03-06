@@ -45,22 +45,6 @@ internal object MannequinDialog {
                                         .initial(profile.name() ?: "")
                                         .maxLength(1024)
                                         .build(),
-                                    DialogInput
-                                        .bool("immovable", MM.deserialize("Immovable"))
-                                        .initial(isImmovable)
-                                        .build(),
-                                    DialogInput
-                                        .bool("invulnerable", MM.deserialize("Invulnerable"))
-                                        .initial(isInvulnerable)
-                                        .build(),
-                                    DialogInput
-                                        .bool("gravity", MM.deserialize("Gravity"))
-                                        .initial(hasGravity())
-                                        .build(),
-                                    DialogInput
-                                        .bool("customNameVisible", MM.deserialize("Custom Name Visible"))
-                                        .initial(isCustomNameVisible)
-                                        .build(),
                                 ),
                             ).canCloseWithEscape(true)
                             .build(),
@@ -90,10 +74,6 @@ internal object MannequinDialog {
                                         description = MM.deserialize(view.getText("description") ?: "")
                                         profile =
                                             ResolvableProfile.resolvableProfile().name(view.getText("profile")).build()
-                                        isImmovable = view.getBoolean("immovable") ?: false
-                                        isInvulnerable = view.getBoolean("invulnerable") ?: false
-                                        setGravity(view.getBoolean("gravity") ?: false)
-                                        isCustomNameVisible = view.getBoolean("customNameVisible") ?: false
 
                                         audience.sendActionBar(
                                             MM.deserialize("<green>Changes successfully applied.</green>"),
