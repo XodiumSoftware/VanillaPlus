@@ -208,15 +208,21 @@ internal object MannequinModule : ModuleInterface {
     /** Updates the head rotation of all mannequins in the world. */
     @Suppress("UnstableApiUsage")
     private fun updateHeadMovement() {
-        // TODO: use raytracing so the mannequin cant see through walls.
         instance.server.worlds
             .flatMap { it.entities }
             .filterIsInstance<Mannequin>()
             .forEach { mannequin ->
+                val eyeLoc = mannequin.eyeLocation
                 mannequin.world.players
-                    .filter { it.location.distance(mannequin.location) <= config.mannequinModule.lookRange }
-                    .minByOrNull { it.location.distanceSquared(mannequin.location) }
-                    ?.let { mannequin.lookAt(it.eyeLocation, LookAnchor.EYES) }
+                    .filter {
+                        it.location.distanceSquared(mannequin.location) <=
+                            config.mannequinModule.lookRange * config.mannequinModule.lookRange
+                    }.sortedBy { it.location.distanceSquared(mannequin.location) }
+                    .firstOrNull { player ->
+                        val toPlayer = player.eyeLocation.toVector().subtract(eyeLoc.toVector())
+                        val dist = toPlayer.length()
+                        mannequin.world.rayTraceBlocks(eyeLoc, toPlayer.normalize(), dist) == null
+                    }?.let { mannequin.lookAt(it.eyeLocation, LookAnchor.EYES) }
             }
     }
 
