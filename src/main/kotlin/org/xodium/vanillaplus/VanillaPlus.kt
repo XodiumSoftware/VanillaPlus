@@ -7,10 +7,8 @@ import org.bukkit.plugin.java.JavaPlugin
 import org.xodium.vanillaplus.data.ConfigData
 import org.xodium.vanillaplus.data.ConfigData.Companion.load
 import org.xodium.vanillaplus.modules.*
-import org.xodium.vanillaplus.modules.BooksModule.info
 import org.xodium.vanillaplus.recipes.ChainmailRecipe
 import org.xodium.vanillaplus.recipes.PaintingRecipe
-import org.xodium.vanillaplus.recipes.PaintingRecipe.info
 import org.xodium.vanillaplus.recipes.RottenFleshRecipe
 import org.xodium.vanillaplus.recipes.WoodLogRecipe
 
@@ -45,16 +43,19 @@ internal class VanillaPlus : JavaPlugin() {
 
         configData = ConfigData().load("config.json")
 
-        logger.info(
+        val recipes =
             listOf(
                 ChainmailRecipe,
                 PaintingRecipe,
                 RottenFleshRecipe,
                 WoodLogRecipe,
-            ),
-        )
+            )
 
         logger.info(
+            "Registered: ${recipes.sumOf { it.recipes.size }} recipes(s) | Took ${recipes.sumOf { it.register() }}ms",
+        )
+
+        val modules =
             listOf(
                 BookshelfModule,
                 BooksModule,
@@ -63,17 +64,20 @@ internal class VanillaPlus : JavaPlugin() {
                 EntityModule,
                 InventoryModule,
                 LocatorModule,
+                MannequinModule,
                 MapModule,
                 MotdModule,
                 OpenableModule,
                 PlayerModule,
                 ServerInfoModule,
                 ScoreBoardModule,
-                SignModule,
                 SitModule,
                 TabListModule,
                 TameableModule,
-            ),
+            ).filter { it.isEnabled }
+
+        logger.info(
+            "Registered: ${modules.size} module(s) | Took ${modules.sumOf { it.register() }}ms",
         )
     }
 

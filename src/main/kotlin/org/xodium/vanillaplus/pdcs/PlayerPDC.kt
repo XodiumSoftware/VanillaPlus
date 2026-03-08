@@ -22,7 +22,7 @@ internal object PlayerPDC {
      * @return The player's nickname, or their actual name if no nickname is set.
      */
     var Player.nickname: String
-        get() = persistentDataContainer.get(NICKNAME_KEY, PersistentDataType.STRING) ?: name
+        get() = persistentDataContainer.getOrDefault(NICKNAME_KEY, PersistentDataType.STRING, name)
         set(value) {
             if (value.isBlank()) {
                 persistentDataContainer.remove(NICKNAME_KEY)
@@ -37,6 +37,6 @@ internal object PlayerPDC {
      * @return True if the scoreboard is visible, false otherwise.
      */
     var Player.scoreboardVisibility: Boolean
-        get() = persistentDataContainer.get(SCOREBOARD_VISIBILITY_KEY, PersistentDataType.BOOLEAN) ?: false
+        get() = persistentDataContainer.getOrDefault(SCOREBOARD_VISIBILITY_KEY, PersistentDataType.BOOLEAN, false)
         set(value) = persistentDataContainer.set(SCOREBOARD_VISIBILITY_KEY, PersistentDataType.BOOLEAN, value)
 }

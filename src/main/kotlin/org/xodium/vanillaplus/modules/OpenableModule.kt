@@ -233,7 +233,7 @@ internal object OpenableModule : ModuleInterface {
     /** Represents the config of the module. */
     @Serializable
     data class Config(
-        var enabled: Boolean = true,
+        var enabled: Boolean = false,
         var initDelayInTicks: Long = 1,
         var allowDoubleDoors: Boolean = true,
         var allowKnocking: Boolean = true,

@@ -200,7 +200,7 @@ internal object InventoryModule : ModuleInterface {
     /** Represents the config of the module. */
     @Serializable
     data class Config(
-        var enabled: Boolean = true,
+        var enabled: Boolean = false,
         var searchSuccessfulSound: SoundData = SoundData("entity.player.levelup", Sound.Source.PLAYER),
         var searchFailedSound: SoundData = SoundData("block.anvil.land", Sound.Source.PLAYER),
         var unloadSuccessfulSound: SoundData = SoundData("entity.player.levelup", Sound.Source.PLAYER),

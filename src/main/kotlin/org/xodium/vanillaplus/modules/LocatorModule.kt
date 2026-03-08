@@ -57,6 +57,6 @@ internal object LocatorModule : ModuleInterface {
     /** Represents the config of the module. */
     @Serializable
     data class Config(
-        var enabled: Boolean = true,
+        var enabled: Boolean = false,
     )
 }

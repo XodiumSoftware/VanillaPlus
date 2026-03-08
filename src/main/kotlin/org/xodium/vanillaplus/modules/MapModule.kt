@@ -5,7 +5,11 @@ package org.xodium.vanillaplus.modules
 import kotlinx.serialization.Serializable
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
-import org.bukkit.event.player.*
+import org.bukkit.event.player.PlayerChangedWorldEvent
+import org.bukkit.event.player.PlayerMoveEvent
+import org.bukkit.event.player.PlayerQuitEvent
+import org.bukkit.event.player.PlayerRegisterChannelEvent
+import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.MessageUtils
@@ -180,7 +184,7 @@ internal object MapModule : ModuleInterface {
     /** Represents the config of the module. */
     @Serializable
     data class Config(
-        var enabled: Boolean = true,
+        var enabled: Boolean = false,
         var serverId: Int = Random.nextInt(),
     )
 }

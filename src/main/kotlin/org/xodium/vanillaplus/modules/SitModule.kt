@@ -195,7 +195,7 @@ internal object SitModule : ModuleInterface {
     /** Represents the config of the module. */
     @Serializable
     data class Config(
-        var enabled: Boolean = true,
+        var enabled: Boolean = false,
         var useStairs: Boolean = true,
         var useSlabs: Boolean = true,
     )

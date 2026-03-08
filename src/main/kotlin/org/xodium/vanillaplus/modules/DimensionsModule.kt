@@ -132,7 +132,7 @@ internal object DimensionsModule : ModuleInterface {
     /** Represents the config of the module. */
     @Serializable
     data class Config(
-        var enabled: Boolean = true,
+        var enabled: Boolean = false,
         var portalSearchRadius: Int = 128,
         var i18n: I18n = I18n(),
     ) {

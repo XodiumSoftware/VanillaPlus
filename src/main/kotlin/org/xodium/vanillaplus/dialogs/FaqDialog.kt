@@ -13,13 +13,13 @@ import org.xodium.vanillaplus.utils.Utils.MM
 @Suppress("UnstableApiUsage")
 internal object FaqDialog : DialogInterface {
     private val faqConfig: Config
-        get() = runCatching { config.serverInfoModule.faqDialogConfig }.getOrElse { Config() }
+        get() = runCatching { config.serverInfoModule.faqDialog }.getOrElse { Config() }
 
     override fun invoke(builder: DialogRegistryEntry.Builder): DialogRegistryEntry.Builder =
         builder
             .base(
                 DialogBase
-                    .builder(MM.deserialize(faqConfig.faqTitle))
+                    .builder(MM.deserialize(faqConfig.title))
                     // NOTE: Blocked due to Paper API issue (https://github.com/PaperMC/Paper/issues/13555)
                     // .body(buildFaqItems().map { DialogBody.item(it).build() })
                     // .body(buildFaqItems().map { DialogBody.plainMessage(it).build() })
@@ -57,8 +57,8 @@ internal object FaqDialog : DialogInterface {
 
     @Serializable
     data class Config(
-        var faqTitle: String = "<b><gradient:#CB2D3E:#EF473A>FAQ</gradient></b>",
-        var faqItems: List<FaqItem> =
+        var title: String = "<b><gradient:#CB2D3E:#EF473A>FAQ</gradient></b>",
+        var items: List<FaqItem> =
             listOf(
                 FaqItem(
                     material = Material.WRITABLE_BOOK,

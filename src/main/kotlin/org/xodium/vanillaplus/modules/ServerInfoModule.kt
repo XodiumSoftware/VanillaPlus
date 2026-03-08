@@ -48,7 +48,7 @@ internal object ServerInfoModule : ModuleInterface {
     /** Represents the config of the module. */
     @Serializable
     data class Config(
-        var enabled: Boolean = true,
+        var enabled: Boolean = false,
         @Suppress("UnstableApiUsage") var serverLinks: Map<ServerLinks.Type, String> =
             mapOf(
                 ServerLinks.Type.WEBSITE to "https://xodium.org/",
@@ -56,6 +56,6 @@ internal object ServerInfoModule : ModuleInterface {
                 ServerLinks.Type.STATUS to "https://modrinth.com/server/illyria",
                 ServerLinks.Type.COMMUNITY to "https://discord.gg/jusYH9aYUh",
             ),
-        var faqDialogConfig: FaqDialog.Config = FaqDialog.Config(),
+        var faqDialog: FaqDialog.Config = FaqDialog.Config(),
     )
 }

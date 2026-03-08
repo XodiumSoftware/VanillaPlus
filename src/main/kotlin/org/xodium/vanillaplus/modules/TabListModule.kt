@@ -101,7 +101,7 @@ internal object TabListModule : ModuleInterface {
     /** Represents the config of the module. */
     @Serializable
     data class Config(
-        var enabled: Boolean = true,
+        var enabled: Boolean = false,
         var initDelayInTicks: Long = 0,
         var intervalInTicks: Long = 10,
         var header: List<String> =
