@@ -2,6 +2,7 @@ package org.xodium.vanillaplus.modules
 
 import kotlinx.serialization.Serializable
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.JoinConfiguration
 import org.bukkit.GameMode
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
@@ -106,9 +107,11 @@ internal object BookshelfModule : ModuleInterface {
      * @return The rendered component.
      */
     private fun renderEnchantedBook(meta: EnchantmentStorageMeta): Component {
-        val enchantmentList = meta.storedEnchants.entries.joinToString(", ") { "${it.key.key.key} ${it.value}" }
+        val enchantments = meta.storedEnchants.entries.map { (enchantment, level) -> enchantment.displayName(level) }
 
-        return MM.deserialize("<white><sprite:items:item/enchanted_book></white><gray> $enchantmentList</gray>")
+        return MM
+            .deserialize("<white><sprite:items:item/enchanted_book></white><gray> </gray>")
+            .append(Component.join(JoinConfiguration.separator(MM.deserialize("<gray>, </gray>")), enchantments))
     }
 
     /** Represents the config of the module. */
