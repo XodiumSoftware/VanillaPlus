@@ -21,7 +21,7 @@ internal object PaintingRecipe : RecipeInterface {
 
                 add(
                     StonecuttingRecipe(
-                        NamespacedKey(instance, "painting_${variantKey.value().replace(':', '_')}"),
+                        NamespacedKey(instance, "painting_${variantKey.value().replace(':', '_')}_stonecutting_recipe"),
                         @Suppress("UnstableApiUsage")
                         ItemStack.of(Material.PAINTING).apply {
                             setData(DataComponentTypes.PAINTING_VARIANT, variant)

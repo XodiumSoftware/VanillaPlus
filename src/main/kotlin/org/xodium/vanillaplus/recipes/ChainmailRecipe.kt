@@ -12,28 +12,28 @@ internal object ChainmailRecipe : RecipeInterface {
     override val recipes =
         setOf(
             ShapedRecipe(
-                NamespacedKey(instance, "chainmail_helmet"),
+                NamespacedKey(instance, "chainmail_helmet_shaped_recipe"),
                 ItemStack.of(Material.CHAINMAIL_HELMET),
             ).apply {
                 shape("AAA", "A A")
                 setIngredient('A', Material.IRON_BARS)
             },
             ShapedRecipe(
-                NamespacedKey(instance, "chainmail_chestplate"),
+                NamespacedKey(instance, "chainmail_chestplate_shaped_recipe"),
                 ItemStack.of(Material.CHAINMAIL_CHESTPLATE),
             ).apply {
                 shape("A A", "AAA", "AAA")
                 setIngredient('A', Material.IRON_BARS)
             },
             ShapedRecipe(
-                NamespacedKey(instance, "chainmail_leggings"),
+                NamespacedKey(instance, "chainmail_leggings_shaped_recipe"),
                 ItemStack.of(Material.CHAINMAIL_LEGGINGS),
             ).apply {
                 shape("AAA", "A A", "A A")
                 setIngredient('A', Material.IRON_BARS)
             },
             ShapedRecipe(
-                NamespacedKey(instance, "chainmail_boots"),
+                NamespacedKey(instance, "chainmail_boots_shaped_recipe"),
                 ItemStack.of(Material.CHAINMAIL_BOOTS),
             ).apply {
                 shape("A A", "A A")

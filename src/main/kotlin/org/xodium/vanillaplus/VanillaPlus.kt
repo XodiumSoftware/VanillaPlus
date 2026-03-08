@@ -8,6 +8,7 @@ import org.xodium.vanillaplus.data.ConfigData
 import org.xodium.vanillaplus.data.ConfigData.Companion.load
 import org.xodium.vanillaplus.modules.*
 import org.xodium.vanillaplus.recipes.ChainmailRecipe
+import org.xodium.vanillaplus.recipes.DiamondRecycleRecipe
 import org.xodium.vanillaplus.recipes.PaintingRecipe
 import org.xodium.vanillaplus.recipes.RottenFleshRecipe
 import org.xodium.vanillaplus.recipes.WoodLogRecipe
@@ -46,6 +47,7 @@ internal class VanillaPlus : JavaPlugin() {
         val recipes =
             listOf(
                 ChainmailRecipe,
+                DiamondRecycleRecipe,
                 PaintingRecipe,
                 RottenFleshRecipe,
                 WoodLogRecipe,

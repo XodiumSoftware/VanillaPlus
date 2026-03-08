@@ -14,21 +14,21 @@ internal object RottenFleshRecipe : RecipeInterface {
     override val recipes =
         setOf(
             FurnaceRecipe(
-                NamespacedKey(instance, "rotten_flesh_to_leather_furnace"),
+                NamespacedKey(instance, "rotten_flesh_furnace_recipe"),
                 ItemStack.of(Material.LEATHER),
                 Material.ROTTEN_FLESH,
                 0.1f,
                 200,
             ),
             SmokingRecipe(
-                NamespacedKey(instance, "rotten_flesh_to_leather_smoking"),
+                NamespacedKey(instance, "rotten_flesh_smoking_recipe"),
                 ItemStack.of(Material.LEATHER),
                 Material.ROTTEN_FLESH,
                 0.1f,
                 100,
             ),
             CampfireRecipe(
-                NamespacedKey(instance, "rotten_flesh_to_leather_campfire"),
+                NamespacedKey(instance, "rotten_flesh_campfire_recipe"),
                 ItemStack.of(Material.LEATHER),
                 Material.ROTTEN_FLESH,
                 0.05f,
