@@ -1,4 +1,3 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import xyz.jpenilla.runtask.task.AbstractRun
 
 plugins {
@@ -23,9 +22,10 @@ version = "$mcVersion+build.${buildNumber.get()}"
 description = "Minecraft plugin that enhances the base gameplay"
 
 val deployJarPath =
-    tasks.named<ShadowJar>("shadowJar")
-        .flatMap { it.archiveFile }
-        .map { it.asFile.absolutePath }
+    layout.projectDirectory
+        .dir("build/libs")
+        .file("${rootProject.name}-${project.version}.jar")
+        .asFile.absolutePath
 
 repositories {
     mavenCentral()
@@ -60,15 +60,13 @@ tasks {
     jar { enabled = false }
     register<Exec>("deploy") {
         dependsOn(named("shadowJar"))
-        doFirst {
-            commandLine(
-                "scp",
-                "-P",
-                "2222",
-                deployJarPath.get(),
-                "root@sftp.xodium.org:/var/lib/lxc/100/rootfs/opt/docker/data/plugins/update/",
-            )
-        }
+        commandLine(
+            "scp",
+            "-P",
+            "2222",
+            deployJarPath,
+            "root@sftp.xodium.org:/var/lib/lxc/100/rootfs/opt/docker/data/plugins/update/",
+        )
     }
     runServer { minecraftVersion(mcVersion) }
     withType<JavaCompile> { options.encoding = "UTF-8" }
