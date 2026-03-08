@@ -14,12 +14,14 @@ import org.bukkit.entity.Villager
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.EntityDeathEvent
+import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerInteractAtEntityEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.PlayerInventory
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.dialogs.MannequinDialog.dialog
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.menus.MannequinEquipmentMenu.handleMannequinMenuClicking
 import org.xodium.vanillaplus.pdcs.MannequinPDC.following
 import org.xodium.vanillaplus.pdcs.MannequinPDC.owner
 import org.xodium.vanillaplus.pdcs.MannequinPDC.proxyId
@@ -48,6 +50,9 @@ internal object MannequinModule : ModuleInterface {
         )
     }
 
+    @EventHandler
+    fun on(event: InventoryClickEvent) = handleMannequinMenuClicking(event)
+
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun on(event: PlayerInteractAtEntityEvent) {
         val player = event.player
@@ -58,6 +63,7 @@ internal object MannequinModule : ModuleInterface {
                 if (entity.owner != player.uniqueId) return
 
                 event.isCancelled = true
+
                 if (player.isSneaking) {
                     player.showDialog(entity.dialog())
                 } else if (player.inventory.itemInMainHand.type == config.mannequinModule.followTriggerItem) {
