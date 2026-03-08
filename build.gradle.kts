@@ -10,8 +10,16 @@ plugins {
     id("xyz.jpenilla.resource-factory-paper-convention") version "1.3.1"
 }
 
+val mcVersion = "1.21.11"
+val buildNumber = runCatching {
+    ProcessBuilder("git", "rev-list", "--count", "HEAD")
+        .redirectErrorStream(true)
+        .start()
+        .inputStream.bufferedReader().readText().trim()
+}.getOrDefault("0")
+
 group = "org.xodium.vanillaplus.VanillaPlus"
-version = "1.21.11"
+version = "$mcVersion+build.$buildNumber"
 description = "Minecraft plugin that enhances the base gameplay"
 
 repositories {
@@ -20,7 +28,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:$version-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:$mcVersion-R0.1-SNAPSHOT")
 
     implementation(kotlin("stdlib"))
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -45,7 +53,7 @@ tasks {
         minimize { exclude(dependency("org.jetbrains.kotlin:kotlin-reflect:.*")) }
     }
     jar { enabled = false }
-    runServer { minecraftVersion(project.version.toString()) }
+    runServer { minecraftVersion(mcVersion) }
     withType<JavaCompile> { options.encoding = "UTF-8" }
     withType(AbstractRun::class) { jvmArgs("-XX:+AllowEnhancedClassRedefinition") }
 }
@@ -54,6 +62,6 @@ paperPluginYaml {
     main.set(group.toString())
     website.set("https://github.com/XodiumSoftware/VanillaPlus")
     authors.add("Xodium")
-    apiVersion.set(version)
+    apiVersion.set(mcVersion)
     bootstrapper.set("org.xodium.vanillaplus.VanillaPlusBootstrap")
 }
