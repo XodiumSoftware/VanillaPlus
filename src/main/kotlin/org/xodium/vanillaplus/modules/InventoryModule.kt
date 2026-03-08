@@ -153,12 +153,14 @@ internal object InventoryModule : ModuleInterface {
             var remaining = itemStack
 
             val sortedContainers =
-                containers.sortedByDescending { container ->
-                    container.inventory.storageContents
-                        .filterNotNull()
-                        .filter { it.type == remaining.type }
-                        .sumOf { it.amount }
-                }
+                containers
+                    .filter { it.inventory.contains(remaining.type) }
+                    .sortedByDescending { container ->
+                        container.inventory.storageContents
+                            .filterNotNull()
+                            .filter { it.type == remaining.type }
+                            .sumOf { it.amount }
+                    }
 
             for (container in sortedContainers) {
                 if (remaining.amount <= 0) break
