@@ -1,3 +1,4 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import xyz.jpenilla.runtask.task.AbstractRun
 
 plugins {
@@ -20,6 +21,11 @@ val buildNumber =
 group = "org.xodium.vanillaplus.VanillaPlus"
 version = "$mcVersion+build.${buildNumber.get()}"
 description = "Minecraft plugin that enhances the base gameplay"
+
+val deployJarPath =
+    tasks.named<ShadowJar>("shadowJar")
+        .flatMap { it.archiveFile }
+        .map { it.asFile.absolutePath }
 
 repositories {
     mavenCentral()
@@ -53,18 +59,13 @@ tasks {
     }
     jar { enabled = false }
     register<Exec>("deploy") {
-        dependsOn(shadowJar)
-        notCompatibleWithConfigurationCache("Uses scp for deployment")
+        dependsOn(named("shadowJar"))
         doFirst {
             commandLine(
                 "scp",
                 "-P",
                 "2222",
-                shadowJar
-                    .get()
-                    .archiveFile
-                    .get()
-                    .asFile.absolutePath,
+                deployJarPath.get(),
                 "root@sftp.xodium.org:/var/lib/lxc/100/rootfs/opt/docker/data/plugins/update/",
             )
         }
