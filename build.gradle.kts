@@ -54,6 +54,7 @@ tasks {
     jar { enabled = false }
     register<Exec>("deploy") {
         dependsOn(shadowJar)
+        notCompatibleWithConfigurationCache("Uses scp for deployment")
         doFirst {
             commandLine(
                 "scp",
