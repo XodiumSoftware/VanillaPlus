@@ -21,7 +21,7 @@ group = "org.xodium.vanillaplus.VanillaPlus"
 version = "$mcVersion+build.${buildNumber.get()}"
 description = "Minecraft plugin that enhances the base gameplay"
 
-val deployJarPath =
+val deployJarPath: String =
     layout.projectDirectory
         .dir("build/libs")
         .file("${rootProject.name}-${project.version}.jar")
@@ -61,11 +61,11 @@ tasks {
     register<Exec>("deploy") {
         dependsOn(named("shadowJar"))
         commandLine(
-            "scp",
-            "-P",
-            "2222",
+            "gio",
+            "copy",
+            "-p",
             deployJarPath,
-            "root@sftp.xodium.org:/var/lib/lxc/100/rootfs/opt/docker/data/plugins/update/",
+            "sftp://root@sftp.xodium.org:2222/var/lib/lxc/100/rootfs/opt/docker/data/plugins/update/",
         )
     }
     runServer { minecraftVersion(mcVersion) }
