@@ -11,15 +11,12 @@ plugins {
 }
 
 val mcVersion = "1.21.11"
-val buildNumber = runCatching {
-    ProcessBuilder("git", "rev-list", "--count", "HEAD")
-        .redirectErrorStream(true)
-        .start()
-        .inputStream.bufferedReader().readText().trim()
-}.getOrDefault("0")
+val buildNumber = providers.exec {
+    commandLine("git", "rev-list", "--count", "HEAD")
+}.standardOutput.asText.map { it.trim() }
 
 group = "org.xodium.vanillaplus.VanillaPlus"
-version = "$mcVersion+build.$buildNumber"
+version = "$mcVersion+build.${buildNumber.get()}"
 description = "Minecraft plugin that enhances the base gameplay"
 
 repositories {
@@ -53,6 +50,16 @@ tasks {
         minimize { exclude(dependency("org.jetbrains.kotlin:kotlin-reflect:.*")) }
     }
     jar { enabled = false }
+    register<Exec>("deploy") {
+        dependsOn(shadowJar)
+        doFirst {
+            commandLine(
+                "scp", "-P", "2222",
+                shadowJar.get().archiveFile.get().asFile.absolutePath,
+                "root@sftp.xodium.org:/var/lib/lxc/100/rootfs/opt/docker/data/plugins/update/"
+            )
+        }
+    }
     runServer { minecraftVersion(mcVersion) }
     withType<JavaCompile> { options.encoding = "UTF-8" }
     withType(AbstractRun::class) { jvmArgs("-XX:+AllowEnhancedClassRedefinition") }
