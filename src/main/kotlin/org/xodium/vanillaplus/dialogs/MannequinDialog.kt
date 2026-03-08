@@ -15,6 +15,7 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.pdcs.MannequinPDC.following
 import org.xodium.vanillaplus.pdcs.MannequinPDC.owner
 import org.xodium.vanillaplus.pdcs.MannequinPDC.proxyId
+import org.xodium.vanillaplus.menus.MannequinEquipmentMenu.equipmentMenu
 import org.xodium.vanillaplus.utils.Utils.MM
 
 /** Represents an object handling mannequin dialog implementation within the system. */
@@ -71,63 +72,88 @@ internal object MannequinDialog {
                             ).canCloseWithEscape(true)
                             .build(),
                     ).type(
-                        DialogType.confirmation(
-                            ActionButton.create(
-                                MM.deserialize("<red>Discard</red>"),
-                                MM.deserialize("Click to <red>discard</red> your input"),
-                                100,
-                                null,
-                            ),
-                            ActionButton.create(
-                                MM.deserialize("<green>Save</green>"),
-                                MM.deserialize("Click to <green>confirm</green> your input"),
-                                100,
-                                DialogAction.customClick(
-                                    { view, audience ->
-                                        if (audience !is Player) return@customClick
-                                        if (isDead) {
-                                            audience.sendActionBar(MM.deserialize("<red>Mannequin is dead</red>"))
-                                        }
-
-                                        val distance = audience.location.distanceSquared(location)
-
-                                        if (audience.world != world || distance > 36.0) {
-                                            audience.sendActionBar(
-                                                MM.deserialize("<red>You are too far away from the mannequin</red>"),
-                                            )
-                                            return@customClick
-                                        }
-
-                                        val newName = view.getText("customName") ?: ""
-
-                                        customName(if (newName.isEmpty()) null else MM.deserialize(newName))
-                                        description = MM.deserialize(view.getText("description") ?: "")
-                                        profile =
-                                            ResolvableProfile.resolvableProfile().name(view.getText("profile")).build()
-
-                                        val shouldFollow = view.getBoolean("following") ?: following
-
-                                        if (shouldFollow != following) {
-                                            if (shouldFollow) {
-                                                following = true
-                                            } else {
-                                                proxyId?.let { id -> instance.server.getEntity(id)?.remove() }
-                                                proxyId = null
-                                                following = false
+                        DialogType.multiAction(
+                            listOf(
+                                ActionButton.create(
+                                    MM.deserialize("<red>Discard</red>"),
+                                    MM.deserialize("Click to <red>discard</red> your input"),
+                                    100,
+                                    null,
+                                ),
+                                ActionButton.create(
+                                    MM.deserialize("Equipment"),
+                                    MM.deserialize("Click to manage equipment"),
+                                    100,
+                                    DialogAction.customClick(
+                                        { _, audience ->
+                                            if (audience !is Player) return@customClick
+                                            audience.openInventory(equipmentMenu(audience))
+                                        },
+                                        ClickCallback.Options
+                                            .builder()
+                                            .uses(1)
+                                            .lifetime(ClickCallback.DEFAULT_LIFETIME)
+                                            .build(),
+                                    ),
+                                ),
+                                ActionButton.create(
+                                    MM.deserialize("<green>Save</green>"),
+                                    MM.deserialize("Click to <green>confirm</green> your input"),
+                                    100,
+                                    DialogAction.customClick(
+                                        { view, audience ->
+                                            if (audience !is Player) return@customClick
+                                            if (isDead) {
+                                                audience.sendActionBar(MM.deserialize("<red>Mannequin is dead</red>"))
                                             }
-                                        }
 
-                                        audience.sendActionBar(
-                                            MM.deserialize("<green>Changes successfully applied</green>"),
-                                        )
-                                    },
-                                    ClickCallback.Options
-                                        .builder()
-                                        .uses(1)
-                                        .lifetime(ClickCallback.DEFAULT_LIFETIME)
-                                        .build(),
+                                            val distance = audience.location.distanceSquared(location)
+
+                                            if (audience.world != world || distance > 36.0) {
+                                                audience.sendActionBar(
+                                                    MM.deserialize(
+                                                        "<red>You are too far away from the mannequin</red>",
+                                                    ),
+                                                )
+                                                return@customClick
+                                            }
+
+                                            val newName = view.getText("customName") ?: ""
+
+                                            customName(if (newName.isEmpty()) null else MM.deserialize(newName))
+                                            description = MM.deserialize(view.getText("description") ?: "")
+                                            profile =
+                                                ResolvableProfile
+                                                    .resolvableProfile()
+                                                    .name(view.getText("profile"))
+                                                    .build()
+
+                                            val shouldFollow = view.getBoolean("following") ?: following
+
+                                            if (shouldFollow != following) {
+                                                if (shouldFollow) {
+                                                    following = true
+                                                } else {
+                                                    proxyId?.let { id -> instance.server.getEntity(id)?.remove() }
+                                                    proxyId = null
+                                                    following = false
+                                                }
+                                            }
+
+                                            audience.sendActionBar(
+                                                MM.deserialize("<green>Changes successfully applied</green>"),
+                                            )
+                                        },
+                                        ClickCallback.Options
+                                            .builder()
+                                            .uses(1)
+                                            .lifetime(ClickCallback.DEFAULT_LIFETIME)
+                                            .build(),
+                                    ),
                                 ),
                             ),
+                            null,
+                            3,
                         ),
                     )
             }
