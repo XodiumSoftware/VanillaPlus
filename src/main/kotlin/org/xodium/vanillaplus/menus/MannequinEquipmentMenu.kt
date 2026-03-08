@@ -17,6 +17,7 @@ import org.xodium.vanillaplus.utils.Utils.MM
 import java.util.*
 
 /** Represents an object handling mannequin equipment menu implementation within the system. */
+@Suppress("UnstableApiUsage")
 internal object MannequinEquipmentMenu {
     /**
      * Maps each mannequin equipment piece to its inventory slot index in the [MenuType.GENERIC_9X1] menu.
