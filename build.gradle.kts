@@ -11,9 +11,11 @@ plugins {
 }
 
 val mcVersion = "1.21.11"
-val buildNumber = providers.exec {
-    commandLine("git", "rev-list", "--count", "HEAD")
-}.standardOutput.asText.map { it.trim() }
+val buildNumber =
+    providers
+        .exec { commandLine("git", "rev-list", "--count", "HEAD") }
+        .standardOutput.asText
+        .map { it.trim() }
 
 group = "org.xodium.vanillaplus.VanillaPlus"
 version = "$mcVersion+build.${buildNumber.get()}"
@@ -54,9 +56,15 @@ tasks {
         dependsOn(shadowJar)
         doFirst {
             commandLine(
-                "scp", "-P", "2222",
-                shadowJar.get().archiveFile.get().asFile.absolutePath,
-                "root@sftp.xodium.org:/var/lib/lxc/100/rootfs/opt/docker/data/plugins/update/"
+                "scp",
+                "-P",
+                "2222",
+                shadowJar
+                    .get()
+                    .archiveFile
+                    .get()
+                    .asFile.absolutePath,
+                "root@sftp.xodium.org:/var/lib/lxc/100/rootfs/opt/docker/data/plugins/update/",
             )
         }
     }
