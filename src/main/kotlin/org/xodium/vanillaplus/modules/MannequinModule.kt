@@ -279,7 +279,23 @@ internal object MannequinModule : ModuleInterface {
 
                 val ownerLoc = owner.location
 
-                if (proxy.location.distanceSquared(ownerLoc) > stopDistSq) {
+                val distSq = proxy.location.distanceSquared(ownerLoc)
+
+                if (distSq > stopDistSq) {
+                    val toOwner = ownerLoc.toVector().subtract(proxy.eyeLocation.toVector())
+                    val hasLos =
+                        proxy.world.rayTraceBlocks(proxy.eyeLocation, toOwner.normalize(), toOwner.length()) == null
+                    val maxDist = config.mannequinModule.followMaxDistance
+
+                    if (distSq > maxDist * maxDist || !hasLos) {
+                        if (!proxy.pathfinder.hasPath()) {
+                            proxy.remove()
+                            mannequin.proxyId = null
+                            lastOwnerLocations.remove(mannequin.uniqueId)
+                        }
+                        return@forEach
+                    }
+
                     val lastLoc = lastOwnerLocations[mannequin.uniqueId]
 
                     if (!proxy.pathfinder.hasPath() || lastLoc == null || lastLoc.distanceSquared(ownerLoc) > 1.0) {
@@ -287,7 +303,9 @@ internal object MannequinModule : ModuleInterface {
                         lastOwnerLocations[mannequin.uniqueId] = ownerLoc.clone()
                     }
                 } else {
-                    proxy.pathfinder.stopPathfinding()
+                    proxy.remove()
+                    mannequin.proxyId = null
+                    lastOwnerLocations.remove(mannequin.uniqueId)
                 }
             }
     }
@@ -339,5 +357,6 @@ internal object MannequinModule : ModuleInterface {
         var followTriggerItem: Material = Material.FEATHER,
         var followSpeed: Double = 1.0,
         var followStopDistance: Double = 2.5,
+        var followMaxDistance: Double = 32.0,
     )
 }
