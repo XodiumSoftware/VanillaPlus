@@ -21,7 +21,7 @@ internal object MotdModule : ModuleInterface {
     /** Represents the config of the module. */
     @Serializable
     data class Config(
-        var enabled: Boolean = true,
+        var enabled: Boolean = false,
         val motd: List<String> =
             listOf(
                 "<gradient:#CB2D3E:#EF473A><b>Ultimate Private SMP</b></gradient>",

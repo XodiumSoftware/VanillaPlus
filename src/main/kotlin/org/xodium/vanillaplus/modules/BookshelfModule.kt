@@ -133,7 +133,7 @@ internal object BookshelfModule : ModuleInterface {
     /** Represents the config of the module. */
     @Serializable
     data class Config(
-        var enabled: Boolean = true,
+        var enabled: Boolean = false,
         var header: String =
             "\n<gradient:#FFA751:#FFE259><st>───────────────────────────────────</st></gradient>",
         var footer: String =

@@ -5,7 +5,14 @@ package org.xodium.vanillaplus.modules
 import io.papermc.paper.event.entity.EntityEquipmentChangedEvent
 import kotlinx.serialization.Serializable
 import org.bukkit.Material
-import org.bukkit.entity.*
+import org.bukkit.entity.Blaze
+import org.bukkit.entity.Creeper
+import org.bukkit.entity.EnderDragon
+import org.bukkit.entity.Enderman
+import org.bukkit.entity.Entity
+import org.bukkit.entity.Fireball
+import org.bukkit.entity.Wither
+import org.bukkit.entity.WitherSkull
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.EntityChangeBlockEvent
 import org.bukkit.event.entity.EntityDeathEvent
@@ -57,7 +64,7 @@ internal object EntityModule : ModuleInterface {
     /** Represents the config of the module. */
     @Serializable
     data class Config(
-        var enabled: Boolean = true,
+        var enabled: Boolean = false,
         var disableBlazeGrief: Boolean = true,
         var disableCreeperGrief: Boolean = true,
         var disableEnderDragonGrief: Boolean = true,
