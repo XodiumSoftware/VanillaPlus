@@ -12,7 +12,9 @@ import net.kyori.adventure.text.event.ClickCallback
 import org.bukkit.entity.Mannequin
 import org.bukkit.entity.Player
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.pdcs.MannequinPDC.following
 import org.xodium.vanillaplus.pdcs.MannequinPDC.owner
+import org.xodium.vanillaplus.pdcs.MannequinPDC.proxyId
 import org.xodium.vanillaplus.utils.Utils.MM
 
 /** Represents an object handling mannequin dialog implementation within the system. */
@@ -57,14 +59,28 @@ internal object MannequinDialog {
                                         .initial(profile.name() ?: "")
                                         .maxLength(1024)
                                         .build(),
+                                    DialogInput
+                                        .bool(
+                                            "following",
+                                            MM.deserialize(
+                                                "Following (Quick Action: R-click /w <white><sprite:items:item/feather></white>)",
+                                            ),
+                                        ).initial(following)
+                                        .build(),
                                 ),
                             ).canCloseWithEscape(true)
                             .build(),
                     ).type(
                         DialogType.confirmation(
                             ActionButton.create(
-                                MM.deserialize("Save"),
-                                MM.deserialize("Click to confirm your input"),
+                                MM.deserialize("<red>Discard</red>"),
+                                MM.deserialize("Click to <red>discard</red> your input"),
+                                100,
+                                null,
+                            ),
+                            ActionButton.create(
+                                MM.deserialize("<green>Save</green>"),
+                                MM.deserialize("Click to <green>confirm</green> your input"),
                                 100,
                                 DialogAction.customClick(
                                     { view, audience ->
@@ -89,6 +105,18 @@ internal object MannequinDialog {
                                         profile =
                                             ResolvableProfile.resolvableProfile().name(view.getText("profile")).build()
 
+                                        val shouldFollow = view.getBoolean("following") ?: following
+
+                                        if (shouldFollow != following) {
+                                            if (shouldFollow) {
+                                                following = true
+                                            } else {
+                                                proxyId?.let { id -> instance.server.getEntity(id)?.remove() }
+                                                proxyId = null
+                                                following = false
+                                            }
+                                        }
+
                                         audience.sendActionBar(
                                             MM.deserialize("<green>Changes successfully applied</green>"),
                                         )
@@ -99,12 +127,6 @@ internal object MannequinDialog {
                                         .lifetime(ClickCallback.DEFAULT_LIFETIME)
                                         .build(),
                                 ),
-                            ),
-                            ActionButton.create(
-                                MM.deserialize("Discard"),
-                                MM.deserialize("Click to discard your input"),
-                                100,
-                                null,
                             ),
                         ),
                     )
