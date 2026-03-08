@@ -8,6 +8,7 @@ import org.bukkit.Material
 import org.bukkit.entity.Mannequin
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
@@ -17,12 +18,46 @@ import java.util.*
 
 /** Represents an object handling mannequin equipment menu implementation within the system. */
 internal object MannequinEquipmentMenu {
-    private const val MANNEQUIN_MAIN_HAND_SLOT = 5
-    private const val MANNEQUIN_OFF_HAND_SLOT = 6
-    private const val MANNEQUIN_HELMET_SLOT = 0
-    private const val MANNEQUIN_CHEST_PLATE_SLOT = 1
-    private const val MANNEQUIN_LEGGINGS_SLOT = 2
-    private const val MANNEQUIN_BOOTS_SLOT = 3
+    /**
+     * Maps each mannequin equipment piece to its inventory slot index in the [MenuType.GENERIC_9X1] menu.
+     * Slots 4, 7, and 8 are not represented here and are always filled with background panes.
+     * @property index The zero-based slot index within the top inventory.
+     */
+    private enum class Slot(
+        val index: Int,
+    ) {
+        HELMET(0),
+        CHEST_PLATE(1),
+        LEGGINGS(2),
+        BOOTS(3),
+        MAIN_HAND(5),
+        OFF_HAND(6),
+        ;
+
+        companion object {
+            /**
+             * Returns the [Slot] whose [index] matches the given inventory slot number,
+             * or `null` if the slot is a background pane or otherwise not an equipment slot.
+             * @param index The zero-based inventory slot index to look up.
+             */
+            fun from(index: Int): Slot? = entries.find { it.index == index }
+
+            /**
+             * Maps a Bukkit [EquipmentSlot] to the corresponding [Slot].
+             * Armor pieces route to their dedicated slot; everything else defaults to [MAIN_HAND].
+             * @param equipmentSlot The equipment slot reported by the item's material.
+             */
+            fun from(equipmentSlot: EquipmentSlot): Slot =
+                when (equipmentSlot) {
+                    EquipmentSlot.HEAD -> HELMET
+                    EquipmentSlot.CHEST -> CHEST_PLATE
+                    EquipmentSlot.LEGS -> LEGGINGS
+                    EquipmentSlot.FEET -> BOOTS
+                    EquipmentSlot.OFF_HAND -> OFF_HAND
+                    else -> MAIN_HAND
+                }
+        }
+    }
 
     private val mannequinViews = WeakHashMap<InventoryView, Mannequin>()
 
@@ -42,32 +77,50 @@ internal object MannequinEquipmentMenu {
                 topInventory
                     .apply {
                         fill()
-                        setItem(MANNEQUIN_MAIN_HAND_SLOT, equipment.itemInMainHand)
-                        setItem(MANNEQUIN_OFF_HAND_SLOT, equipment.itemInOffHand)
-                        setItem(MANNEQUIN_HELMET_SLOT, equipment.helmet)
-                        setItem(MANNEQUIN_CHEST_PLATE_SLOT, equipment.chestplate)
-                        setItem(MANNEQUIN_LEGGINGS_SLOT, equipment.leggings)
-                        setItem(MANNEQUIN_BOOTS_SLOT, equipment.boots)
+                        setItem(Slot.MAIN_HAND.index, equipment.itemInMainHand)
+                        setItem(Slot.OFF_HAND.index, equipment.itemInOffHand)
+                        setItem(Slot.HELMET.index, equipment.helmet)
+                        setItem(Slot.CHEST_PLATE.index, equipment.chestplate)
+                        setItem(Slot.LEGGINGS.index, equipment.leggings)
+                        setItem(Slot.BOOTS.index, equipment.boots)
                     }
                 mannequinViews[this] = this@equipmentMenu
             }
+
+    /**
+     * Creates a single invisible black stained-glass pane used as a background filler.
+     * @return A configured filler [ItemStack].
+     */
+    @Suppress("UnstableApiUsage")
+    private fun filler(): ItemStack =
+        ItemStack.of(Material.BLACK_STAINED_GLASS_PANE).apply {
+            setData(
+                DataComponentTypes.TOOLTIP_DISPLAY,
+                TooltipDisplay.tooltipDisplay().hideTooltip(true),
+            )
+        }
 
     /**
      * Fills all slots of this [Inventory] with invisible black stained-glass panes as a background.
      * @receiver The [Inventory] to fill.
      */
     private fun Inventory.fill() {
-        for (i in 0 until size) {
-            setItem(
-                i,
-                @Suppress("UnstableApiUsage")
-                ItemStack.of(Material.BLACK_STAINED_GLASS_PANE).apply {
-                    setData(
-                        DataComponentTypes.TOOLTIP_DISPLAY,
-                        TooltipDisplay.tooltipDisplay().hideTooltip(true),
-                    )
-                },
-            )
+        for (i in 0 until size) setItem(i, filler())
+    }
+
+    /** Applies [item] to the matching [Mannequin] equipment field for the given [slot]. */
+    private fun setMannequinEquipment(
+        mannequin: Mannequin,
+        slot: Slot,
+        item: ItemStack?,
+    ) {
+        when (slot) {
+            Slot.MAIN_HAND -> mannequin.equipment.setItemInMainHand(item)
+            Slot.OFF_HAND -> mannequin.equipment.setItemInOffHand(item)
+            Slot.HELMET -> mannequin.equipment.setHelmet(item)
+            Slot.CHEST_PLATE -> mannequin.equipment.setChestplate(item)
+            Slot.LEGGINGS -> mannequin.equipment.setLeggings(item)
+            Slot.BOOTS -> mannequin.equipment.setBoots(item)
         }
     }
 
@@ -77,18 +130,43 @@ internal object MannequinEquipmentMenu {
      */
     fun handleMannequinMenuClicking(event: InventoryClickEvent) {
         val mannequin = mannequinViews[event.view] ?: return
+        val player = event.whoClicked as? Player ?: return
+        val topInv = event.view.topInventory
 
-        if (event.click.isShiftClick) event.isCancelled = true // TODO: Handle shift-clicking better in v2.
-        if (event.clickedInventory != event.view.topInventory) return
+        if (event.click.isShiftClick) {
+            event.isCancelled = true
+            if (event.clickedInventory == topInv) {
+                val slot = Slot.from(event.slot) ?: return
+                val item =
+                    event.currentItem
+                        ?.takeIf { !it.isEmpty && it.type != Material.BLACK_STAINED_GLASS_PANE }
+                        ?: return
 
-        when (event.slot) {
-            MANNEQUIN_MAIN_HAND_SLOT -> mannequin.equipment.setItemInMainHand(event.cursor)
-            MANNEQUIN_OFF_HAND_SLOT -> mannequin.equipment.setItemInOffHand(event.cursor)
-            MANNEQUIN_HELMET_SLOT -> mannequin.equipment.setHelmet(event.cursor)
-            MANNEQUIN_CHEST_PLATE_SLOT -> mannequin.equipment.setChestplate(event.cursor)
-            MANNEQUIN_LEGGINGS_SLOT -> mannequin.equipment.setLeggings(event.cursor)
-            MANNEQUIN_BOOTS_SLOT -> mannequin.equipment.setBoots(event.cursor)
-            else -> event.isCancelled = true
+                if (player.inventory.addItem(item).isNotEmpty()) return
+
+                topInv.setItem(slot.index, filler())
+                setMannequinEquipment(mannequin, slot, null)
+            } else {
+                val item = event.currentItem?.takeIf { !it.isEmpty } ?: return
+                val slot = Slot.from(item.type.equipmentSlot)
+                val displaced = topInv.getItem(slot.index)
+
+                topInv.setItem(slot.index, item)
+                setMannequinEquipment(mannequin, slot, item)
+                event.currentItem =
+                    (if (displaced != null && displaced.type != Material.BLACK_STAINED_GLASS_PANE) displaced else null)
+            }
+            return
         }
+
+        if (event.clickedInventory != topInv) return
+
+        val slot =
+            Slot.from(event.slot) ?: run {
+                event.isCancelled = true
+                return
+            }
+
+        setMannequinEquipment(mannequin, slot, event.cursor)
     }
 }
