@@ -6,7 +6,6 @@ import io.papermc.paper.entity.LookAnchor
 import kotlinx.serialization.Serializable
 import org.bukkit.Location
 import org.bukkit.Material
-import org.bukkit.Tag
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Mannequin
 import org.bukkit.entity.Pig
@@ -16,10 +15,8 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.player.PlayerInteractAtEntityEvent
-import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.PlayerInventory
-import org.bukkit.util.Vector
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.dialogs.MannequinDialog.dialog
 import org.xodium.vanillaplus.interfaces.ModuleInterface
@@ -28,16 +25,10 @@ import org.xodium.vanillaplus.pdcs.MannequinPDC.owner
 import org.xodium.vanillaplus.pdcs.MannequinPDC.proxyId
 import org.xodium.vanillaplus.utils.Utils.MM
 import java.util.*
-import kotlin.math.abs
-import kotlin.math.cos
-import kotlin.math.sin
-
-// TODO: fix armor swapping appearing in player equipment slots.
 
 /** Represents a module handling mannequin mechanics within the system. */
 internal object MannequinModule : ModuleInterface {
     private val lastOwnerLocations = mutableMapOf<UUID, Location>()
-    private val pendingArmorCancel = mutableSetOf<UUID>()
 
     init {
         instance.server.scheduler.runTaskTimer(
@@ -69,19 +60,8 @@ internal object MannequinModule : ModuleInterface {
                 event.isCancelled = true
                 if (player.isSneaking) {
                     player.showDialog(entity.dialog())
-                } else if (player.inventory.itemInMainHand.type == Material.AIR) {
-                    val slot = event.clickedPosition.toArmorSlot(entity) ?: return
-                    removeArmor(entity, player, slot)
                 } else if (player.inventory.itemInMainHand.type == config.mannequinModule.followTriggerItem) {
                     toggleFollow(entity, player)
-                } else {
-                    val slot =
-                        player.inventory.itemInMainHand.type
-                            .toArmorSlot()
-                            ?: event.clickedPosition.toArmorSlot(entity)?.takeIf {
-                                it == EquipmentSlot.HAND || it == EquipmentSlot.OFF_HAND
-                            } ?: return
-                    equipArmor(entity, player, slot)
                 }
             }
 
@@ -92,11 +72,6 @@ internal object MannequinModule : ModuleInterface {
                 villagerToMannequin(player, entity)
             }
         }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    fun on(event: PlayerInteractEvent) {
-        if (pendingArmorCancel.remove(event.player.uniqueId)) event.isCancelled = true
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
@@ -142,83 +117,6 @@ internal object MannequinModule : ModuleInterface {
 
         item.amount -= 1
         inventory.setItemInMainHand(item)
-    }
-
-    /** Maps this [Material] to the [EquipmentSlot] it occupies when worn, or null if it is not wearable armor. */
-    private fun Material.toArmorSlot(): EquipmentSlot? =
-        when {
-            Tag.ITEMS_HEAD_ARMOR.isTagged(this) -> EquipmentSlot.HEAD
-            Tag.ITEMS_CHEST_ARMOR.isTagged(this) -> EquipmentSlot.CHEST
-            Tag.ITEMS_LEG_ARMOR.isTagged(this) -> EquipmentSlot.LEGS
-            Tag.ITEMS_FOOT_ARMOR.isTagged(this) -> EquipmentSlot.FEET
-            else -> null
-        }
-
-    /**
-     * Maps a click position (relative to entity feet) to the [EquipmentSlot] at that location on a ~1.8-tall mannequin.
-     * Clicks outside the body width (~0.3) at arm height are resolved to [EquipmentSlot.HAND] or
-     * [EquipmentSlot.OFF_HAND] by projecting the click onto the entity's local right axis.
-     * Returns null if the position is out of range.
-     */
-    private fun Vector.toArmorSlot(entity: Mannequin): EquipmentSlot? {
-        val yawRad = Math.toRadians(entity.location.yaw.toDouble())
-        // Project the horizontal click offset onto the entity's local right axis.
-        // Right direction = (-cos(yaw), -sin(yaw)) in world (x, z).
-        val localX = -(x * cos(yawRad) + z * sin(yawRad))
-
-        if (y in 0.75..1.5 && abs(localX) > 0.1) {
-            return if (localX > 0) EquipmentSlot.HAND else EquipmentSlot.OFF_HAND
-        }
-
-        return when {
-            y >= 1.2 -> EquipmentSlot.HEAD
-            y >= 0.75 -> EquipmentSlot.CHEST
-            y >= 0.35 -> EquipmentSlot.LEGS
-            y >= 0.0 -> EquipmentSlot.FEET
-            else -> null
-        }
-    }
-
-    /**
-     * Swaps the item [player] is holding into [slot] on [mannequin], returning whatever was there to the player's hand.
-     * @param mannequin The mannequin to equip.
-     * @param player The player performing the action.
-     * @param slot The armor slot to modify.
-     */
-    private fun equipArmor(
-        mannequin: Mannequin,
-        player: Player,
-        slot: EquipmentSlot,
-    ) {
-        val newItem = player.inventory.itemInMainHand.clone()
-        val oldItem = mannequin.equipment.getItem(slot)
-
-        mannequin.equipment.setItem(slot, newItem)
-        player.inventory.setItemInMainHand(oldItem)
-        pendingArmorCancel += player.uniqueId
-    }
-
-    /**
-     * Removes the item in [slot] from [mannequin] and gives it to [player].
-     * Does nothing if the slot is empty.
-     * @param mannequin The mannequin to unequip.
-     * @param player The player receiving the item.
-     * @param slot The armor slot to clear.
-     */
-    private fun removeArmor(
-        mannequin: Mannequin,
-        player: Player,
-        slot: EquipmentSlot,
-    ) {
-        val item = mannequin.equipment.getItem(slot)
-
-        if (item.type == Material.AIR) return
-
-        mannequin.equipment.setItem(slot, null)
-        player.inventory.addItem(item).forEach { (_, leftover) ->
-            player.world.dropItemNaturally(player.location, leftover)
-        }
-        pendingArmorCancel += player.uniqueId
     }
 
     /** Toggles follow mode on [mannequin], spawning or removing the proxy mob as needed, and notifies [player]. */
