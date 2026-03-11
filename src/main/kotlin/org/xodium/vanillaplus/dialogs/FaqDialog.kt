@@ -13,7 +13,7 @@ import org.xodium.vanillaplus.utils.Utils.MM
 /** Represents an object handling faq dialog implementation within the system. */
 @Suppress("UnstableApiUsage")
 internal object FaqDialog : DialogInterface {
-    private val config = ServerInfoModule.config.faqDialog
+    private val config = runCatching { ServerInfoModule.config.faqDialog }.getOrElse { Config() }
 
     override fun invoke(builder: DialogRegistryEntry.Builder): DialogRegistryEntry.Builder =
         builder
