@@ -123,15 +123,16 @@ internal object ConfigManager {
     }
 
     /** The permission required to execute the reload command. */
-    val reloadPermission: Permission =
+    val reloadPermission: Permission by lazy {
         Permission(
             "${instance.javaClass.simpleName}.reload".lowercase(),
             "Allows use of the reload command",
             PermissionDefault.OP,
         )
+    }
 
     /** The command data for the `/vanillaplus reload` command. */
-    val reloadCommand: CommandData =
+    val reloadCommand: CommandData by lazy {
         CommandData(
             Commands
                 .literal("vanillaplus")
@@ -160,4 +161,5 @@ internal object ConfigManager {
             "Allows plugin specific admin commands",
             listOf("vp"),
         )
+    }
 }
