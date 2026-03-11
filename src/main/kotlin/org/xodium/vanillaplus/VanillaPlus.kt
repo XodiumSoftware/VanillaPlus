@@ -30,7 +30,7 @@ internal class VanillaPlus : JavaPlugin() {
         val unsupportedVersionMsg =
             "This plugin requires a supported server version. Supported versions: ${pluginMeta.version}."
 
-        if (!server.version.contains(pluginMeta.version)) disablePlugin(unsupportedVersionMsg)
+        if (!server.version.contains(pluginMeta.version.substringBefore("+"))) disablePlugin(unsupportedVersionMsg)
 
         instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) {
             it.registrar().register(
@@ -91,8 +91,9 @@ internal class VanillaPlus : JavaPlugin() {
      * Disable the plugin and log the message.
      * @param msg The message to log.
      */
-    private fun disablePlugin(msg: String) {
+    private fun disablePlugin(msg: String): Nothing {
         logger.severe(msg)
         server.pluginManager.disablePlugin(instance)
+        throw IllegalStateException(msg)
     }
 }

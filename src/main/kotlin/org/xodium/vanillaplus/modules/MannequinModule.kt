@@ -65,7 +65,9 @@ internal object MannequinModule : ModuleInterface {
     }
 
     @EventHandler
-    fun on(event: EntitiesLoadEvent) = event.entities.filterIsInstanceTo(trackedMannequins)
+    fun on(event: EntitiesLoadEvent) {
+        event.entities.filterIsInstanceTo(trackedMannequins)
+    }
 
     @EventHandler
     fun on(event: EntitiesUnloadEvent) {
