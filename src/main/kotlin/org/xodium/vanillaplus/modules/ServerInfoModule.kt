@@ -1,16 +1,10 @@
 package org.xodium.vanillaplus.modules
 
-import io.papermc.paper.command.brigadier.Commands
 import kotlinx.serialization.Serializable
 import org.bukkit.ServerLinks
-import org.bukkit.permissions.Permission
-import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.data.CommandData
-import org.xodium.vanillaplus.dialogs.FaqDialog
 import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import org.xodium.vanillaplus.utils.Utils.configDelegate
 import java.net.URI
 
@@ -18,30 +12,8 @@ import java.net.URI
 internal object ServerInfoModule : ModuleInterface {
     override val config by configDelegate { Config() }
 
-    override val cmds =
-        listOf(
-            CommandData(
-                Commands
-                    .literal("faq")
-                    .requires { it.sender.hasPermission(perms[0]) }
-                    .playerExecuted { player, _ -> player.showDialog(FaqDialog.get()) },
-                "Opens the FAQ interface",
-            ),
-        )
-
-    override val perms: List<Permission> by lazy {
-        listOf(
-            Permission(
-                "${instance.javaClass.simpleName}.faq".lowercase(),
-                "Allows use of the faq command",
-                PermissionDefault.TRUE,
-            ),
-        )
-    }
-
-    override fun register(): Long {
+    init {
         serverLinks()
-        return super.register()
     }
 
     /** Configures server links based on the module's configuration. */
@@ -62,6 +34,5 @@ internal object ServerInfoModule : ModuleInterface {
                 ServerLinks.Type.STATUS to "https://modrinth.com/server/illyria",
                 ServerLinks.Type.COMMUNITY to "https://discord.gg/jusYH9aYUh",
             ),
-        var faqDialog: FaqDialog.Config = FaqDialog.Config(),
     ) : ModuleConfigInterface
 }
