@@ -25,7 +25,7 @@ internal object VeinMineEnchantment : EnchantmentInterface {
             BlockFace.NORTH,
         )
     private val LEVEL_TO_MAX_BLOCKS = mapOf(1 to 16, 2 to 32, 3 to 48)
-    private val ORE_TAGS =
+    private val ORE_TAGS by lazy {
         setOf(
             Tag.COAL_ORES,
             Tag.COPPER_ORES,
@@ -36,6 +36,7 @@ internal object VeinMineEnchantment : EnchantmentInterface {
             Tag.REDSTONE_ORES,
             Tag.LAPIS_ORES,
         )
+    }
     private val SPECIAL_ORES =
         setOf(
             Material.ANCIENT_DEBRIS,
