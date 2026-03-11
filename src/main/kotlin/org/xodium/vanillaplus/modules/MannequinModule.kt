@@ -39,7 +39,6 @@ internal object MannequinModule : ModuleInterface {
 
     private val trackedMannequins = mutableSetOf<Mannequin>()
     private val lastOwnerLocations = mutableMapOf<UUID, Location>()
-    private val lastLookUpdateTick = mutableMapOf<UUID, Int>()
 
     init {
         instance.server.scheduler.runTaskTimer(
@@ -78,7 +77,6 @@ internal object MannequinModule : ModuleInterface {
         event.entities.filterIsInstance<Mannequin>().forEach { mannequin ->
             trackedMannequins.remove(mannequin)
             lastOwnerLocations.remove(mannequin.uniqueId)
-            lastLookUpdateTick.remove(mannequin.uniqueId)
         }
     }
 
@@ -116,7 +114,6 @@ internal object MannequinModule : ModuleInterface {
         mannequin.proxyId?.let { instance.server.getEntity(it)?.remove() }
         trackedMannequins.remove(mannequin)
         lastOwnerLocations.remove(mannequin.uniqueId)
-        lastLookUpdateTick.remove(mannequin.uniqueId)
         event.drops.apply {
             clear()
             addAll(listOf(*mannequin.equipment.armorContents))
@@ -260,21 +257,13 @@ internal object MannequinModule : ModuleInterface {
     /** Updates the head rotation of all mannequins in the world. */
     @Suppress("UnstableApiUsage")
     private fun updateHeadMovement() {
-        val tick = instance.server.currentTick
-        val interval = config.lookUpdateInterval
-
         trackedMannequins
             .forEach { mannequin ->
-                if (tick - (lastLookUpdateTick[mannequin.uniqueId] ?: 0) < interval) return@forEach
-
-                lastLookUpdateTick[mannequin.uniqueId] = tick
-
                 val eyeLoc = mannequin.eyeLocation
 
                 mannequin.world.players
                     .filter {
-                        it.location.distanceSquared(mannequin.location) <=
-                            config.lookRange * config.lookRange
+                        it.location.distanceSquared(mannequin.location) <= config.lookRange * config.lookRange
                     }.sortedBy { it.location.distanceSquared(mannequin.location) }
                     .firstOrNull {
                         val toPlayer = it.eyeLocation.toVector().subtract(eyeLoc.toVector())
@@ -291,7 +280,6 @@ internal object MannequinModule : ModuleInterface {
         override var enabled: Boolean = false,
         var conversionTriggerItem: Material = Material.TOTEM_OF_UNDYING,
         var lookRange: Double = 10.0,
-        var lookUpdateInterval: Int = 1,
         var followTriggerItem: Material = Material.FEATHER,
         var followSpeed: Double = 1.0,
         var followStopDistance: Double = 2.5,
