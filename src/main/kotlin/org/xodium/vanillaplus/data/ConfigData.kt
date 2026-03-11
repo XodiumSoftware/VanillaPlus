@@ -15,6 +15,8 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.modules.*
 import org.xodium.vanillaplus.strategies.CapitalizedStrategy
 import org.xodium.vanillaplus.utils.CommandUtils.executesCatching
+import org.xodium.vanillaplus.utils.ScheduleUtils.runAsync
+import org.xodium.vanillaplus.utils.ScheduleUtils.runSync
 import org.xodium.vanillaplus.utils.Utils.MM
 import org.xodium.vanillaplus.utils.Utils.prefix
 import kotlin.io.path.*
@@ -59,14 +61,19 @@ internal data class ConfigData(
                         Commands
                             .literal("reload")
                             .executesCatching {
-                                configData = ConfigData().load("config.json")
-
-                                if (it.source.sender is Player) {
-                                    it.source.sender.sendMessage(
-                                        MM.deserialize("${instance.prefix} <green>configuration reloaded!"),
-                                    )
-                                } else {
-                                    instance.logger.info("Configuration reloaded!")
+                                val sender = it.source.sender
+                                runAsync {
+                                    val loaded = ConfigData().load("config.json")
+                                    runSync {
+                                        configData = loaded
+                                        if (sender is Player) {
+                                            sender.sendMessage(
+                                                MM.deserialize("${instance.prefix} <green>configuration reloaded!"),
+                                            )
+                                        } else {
+                                            instance.logger.info("Configuration reloaded!")
+                                        }
+                                    }
                                 }
                             },
                     ),
