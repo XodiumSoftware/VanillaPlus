@@ -43,6 +43,34 @@ internal data class ConfigData(
     var tabListModule: TabListModule.Config = TabListModule.Config(),
     var tameableModule: TameableModule.Config = TameableModule.Config(),
 ) {
+    /**
+     * Returns whether the module identified by [name] is enabled.
+     * [name] is the module's class simple name with the first character lowercased.
+     * @param name The module name key.
+     * @return True if enabled, true if unknown.
+     */
+    fun isModuleEnabled(name: String): Boolean =
+        when (name) {
+            "bookshelfModule" -> bookshelfModule.enabled
+            "booksModule" -> booksModule.enabled
+            "chatModule" -> chatModule.enabled
+            "dimensionsModule" -> dimensionsModule.enabled
+            "entityModule" -> entityModule.enabled
+            "inventoryModule" -> inventoryModule.enabled
+            "locatorModule" -> locatorModule.enabled
+            "mannequinModule" -> mannequinModule.enabled
+            "mapModule" -> mapModule.enabled
+            "motdModule" -> motdModule.enabled
+            "openableModule" -> openableModule.enabled
+            "playerModule" -> playerModule.enabled
+            "scoreBoardModule" -> scoreboardModule.enabled
+            "serverInfoModule" -> serverInfoModule.enabled
+            "sitModule" -> sitModule.enabled
+            "tabListModule" -> tabListModule.enabled
+            "tameableModule" -> tameableModule.enabled
+            else -> true
+        }
+
     companion object {
         private val json =
             Json {

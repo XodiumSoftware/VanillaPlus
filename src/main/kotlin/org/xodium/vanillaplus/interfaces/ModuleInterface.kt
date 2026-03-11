@@ -7,7 +7,6 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.configData
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.ConfigData
-import kotlin.reflect.full.memberProperties
 import kotlin.time.measureTime
 
 /** Represents a contract for a module within the system. */
@@ -23,19 +22,7 @@ internal interface ModuleInterface : Listener {
      * @return True if the module is enabled, false otherwise.
      */
     val isEnabled: Boolean
-        get() =
-            config::class
-                .memberProperties
-                .firstOrNull { property ->
-                    property.name == (this::class.simpleName?.replaceFirstChar { it.lowercase() } ?: return true)
-                }?.call(config)
-                ?.let { moduleConfig ->
-                    moduleConfig::class
-                        .memberProperties
-                        .firstOrNull { it.name == "enabled" }
-                        ?.call(moduleConfig) as? Boolean
-                }
-                ?: true
+        get() = config.isModuleEnabled(this::class.simpleName?.replaceFirstChar { it.lowercase() } ?: return true)
 
     /**
      * Retrieves a list of command data associated with the module.

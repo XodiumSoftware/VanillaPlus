@@ -36,7 +36,6 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:$mcVersion-R0.1-SNAPSHOT")
 
     implementation(kotlin("stdlib"))
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
 }
 
@@ -55,7 +54,7 @@ tasks {
         dependsOn(processResources)
         archiveClassifier.set("")
         destinationDirectory.set(layout.projectDirectory.dir("build/libs"))
-        minimize { exclude(dependency("org.jetbrains.kotlin:kotlin-reflect:.*")) }
+        minimize()
     }
     jar { enabled = false }
     register<Exec>("deploy") {
