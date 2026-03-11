@@ -31,6 +31,7 @@ import java.util.*
 /** Represents a module handling mannequin mechanics within the system. */
 internal object MannequinModule : ModuleInterface {
     private val lastOwnerLocations = mutableMapOf<UUID, Location>()
+    private val lastLookUpdateTick = mutableMapOf<UUID, Int>()
 
     init {
         instance.server.scheduler.runTaskTimer(
@@ -85,6 +86,7 @@ internal object MannequinModule : ModuleInterface {
         val mannequin = event.entity as? Mannequin? ?: return
 
         mannequin.proxyId?.let { instance.server.getEntity(it)?.remove() }
+        lastLookUpdateTick.remove(mannequin.uniqueId)
         event.drops.apply {
             clear()
             addAll(listOf(*mannequin.equipment.armorContents))
@@ -232,10 +234,17 @@ internal object MannequinModule : ModuleInterface {
     /** Updates the head rotation of all mannequins in the world. */
     @Suppress("UnstableApiUsage")
     private fun updateHeadMovement() {
+        val tick = instance.server.currentTick
+        val interval = config.mannequinModule.lookUpdateInterval
+
         instance.server.worlds
             .flatMap { it.entities }
             .filterIsInstance<Mannequin>()
             .forEach { mannequin ->
+                if (tick - (lastLookUpdateTick[mannequin.uniqueId] ?: 0) < interval) return@forEach
+
+                lastLookUpdateTick[mannequin.uniqueId] = tick
+
                 val eyeLoc = mannequin.eyeLocation
 
                 mannequin.world.players
@@ -258,6 +267,7 @@ internal object MannequinModule : ModuleInterface {
         var enabled: Boolean = false,
         var conversionTriggerItem: Material = Material.TOTEM_OF_UNDYING,
         var lookRange: Double = 10.0,
+        var lookUpdateInterval: Int = 10,
         var followTriggerItem: Material = Material.FEATHER,
         var followSpeed: Double = 1.0,
         var followStopDistance: Double = 2.5,
