@@ -24,3 +24,6 @@ run/
 copilot.*.xml
 workspace.xml
 modules.xml
+
+#AI
+.claude/
