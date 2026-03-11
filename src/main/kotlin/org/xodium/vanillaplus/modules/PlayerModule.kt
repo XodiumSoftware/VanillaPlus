@@ -34,6 +34,7 @@ import org.xodium.vanillaplus.enchantments.PickupEnchantment
 import org.xodium.vanillaplus.enchantments.ReplantEnchantment
 import org.xodium.vanillaplus.enchantments.SilkTouchEnchantment
 import org.xodium.vanillaplus.enchantments.VeinMineEnchantment
+import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.PlayerMessageManager
 import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
@@ -43,6 +44,8 @@ import kotlin.random.Random
 
 /** Represents a module handling player mechanics within the system. */
 internal object PlayerModule : ModuleInterface {
+    override val moduleConfig get() = config.playerModule
+
     override val cmds =
         listOf(
             CommandData(
@@ -202,12 +205,12 @@ internal object PlayerModule : ModuleInterface {
     /** Represents the config of the module. */
     @Serializable
     data class Config(
-        var enabled: Boolean = false,
+        override var enabled: Boolean = false,
         var skullDropChance: Double = 0.01,
         var xpCostToBottle: Int = 11,
         var silkTouch: SilkTouchEnchantment = SilkTouchEnchantment(),
         var i18n: I18n = I18n(),
-    ) {
+    ) : ModuleConfigInterface {
         /** Represents the settings for the Silk Touch enchantment. */
         @Serializable
         data class SilkTouchEnchantment(

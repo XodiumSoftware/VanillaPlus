@@ -15,12 +15,15 @@ import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.meta.BookMeta
 import org.bukkit.inventory.meta.EnchantmentStorageMeta
 import org.bukkit.util.Vector
+import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.Utils.MM
 import org.bukkit.block.data.type.ChiseledBookshelf as ChiseledBookshelfData
 
 /** Represents a module handling bookshelf mechanics within the system. */
 internal object BookshelfModule : ModuleInterface {
+    override val moduleConfig get() = config.bookshelfModule
+
     @EventHandler
     fun on(event: PlayerInteractEvent) {
         val player = event.player
@@ -117,6 +120,6 @@ internal object BookshelfModule : ModuleInterface {
     /** Represents the config of the module. */
     @Serializable
     data class Config(
-        var enabled: Boolean = false,
-    )
+        override var enabled: Boolean = false,
+    ) : ModuleConfigInterface
 }

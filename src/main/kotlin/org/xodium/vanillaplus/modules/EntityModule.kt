@@ -19,11 +19,14 @@ import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.entity.EntityExplodeEvent
 import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.enchantments.NimbusEnchantment
+import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import kotlin.random.Random
 
 /** Represents a module handling entity mechanics within the system. */
 internal object EntityModule : ModuleInterface {
+    override val moduleConfig get() = config.entityModule
+
     @EventHandler
     fun on(event: EntityChangeBlockEvent) {
         if (shouldCancelGrief(event.entity)) event.isCancelled = true
@@ -64,7 +67,7 @@ internal object EntityModule : ModuleInterface {
     /** Represents the config of the module. */
     @Serializable
     data class Config(
-        var enabled: Boolean = false,
+        override var enabled: Boolean = false,
         var disableBlazeGrief: Boolean = true,
         var disableCreeperGrief: Boolean = true,
         var disableEnderDragonGrief: Boolean = true,
@@ -72,5 +75,5 @@ internal object EntityModule : ModuleInterface {
         var disableGhastGrief: Boolean = true,
         var disableWitherGrief: Boolean = true,
         var entityEggDropChance: Double = 0.001,
-    )
+    ) : ModuleConfigInterface
 }

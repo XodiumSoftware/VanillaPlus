@@ -5,11 +5,14 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractEntityEvent
+import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.PlayerUtils.getLeashedEntity
 
 /** Represents a module handling tameable mechanics within the system. */
 internal object TameableModule : ModuleInterface {
+    override val moduleConfig get() = config.tameableModule
+
     @EventHandler
     fun on(event: PlayerInteractEntityEvent) = playerInteractEntity(event)
 
@@ -37,6 +40,6 @@ internal object TameableModule : ModuleInterface {
     /** Represents the config of the module. */
     @Serializable
     data class Config(
-        var enabled: Boolean = false,
-    )
+        override var enabled: Boolean = false,
+    ) : ModuleConfigInterface
 }

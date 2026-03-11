@@ -23,6 +23,7 @@ import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.PlayerInventory
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.dialogs.MannequinDialog.dialog
+import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.menus.MannequinEquipmentMenu.handleMannequinMenuClicking
 import org.xodium.vanillaplus.pdcs.MannequinPDC.following
@@ -33,6 +34,8 @@ import java.util.*
 
 /** Represents a module handling mannequin mechanics within the system. */
 internal object MannequinModule : ModuleInterface {
+    override val moduleConfig get() = config.mannequinModule
+
     private val trackedMannequins = mutableSetOf<Mannequin>()
     private val lastOwnerLocations = mutableMapOf<UUID, Location>()
     private val lastLookUpdateTick = mutableMapOf<UUID, Int>()
@@ -284,7 +287,7 @@ internal object MannequinModule : ModuleInterface {
     /** Represents the config of the module. */
     @Serializable
     data class Config(
-        var enabled: Boolean = false,
+        override var enabled: Boolean = false,
         var conversionTriggerItem: Material = Material.TOTEM_OF_UNDYING,
         var lookRange: Double = 10.0,
         var lookUpdateInterval: Int = 10,
@@ -292,5 +295,5 @@ internal object MannequinModule : ModuleInterface {
         var followSpeed: Double = 1.0,
         var followStopDistance: Double = 2.5,
         var followMaxDistance: Double = 32.0,
-    )
+    ) : ModuleConfigInterface
 }

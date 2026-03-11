@@ -10,12 +10,15 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.weather.ThunderChangeEvent
 import org.bukkit.event.weather.WeatherChangeEvent
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.Utils.MM
 import kotlin.math.roundToInt
 
 /** Represents a module handling tab-list mechanics within the system. */
 internal object TabListModule : ModuleInterface {
+    override val moduleConfig get() = config.tabListModule
+
     private const val MIN_TPS = 0.0
     private const val MAX_TPS = 20.0
     private const val TPS_DECIMAL_FORMAT = "%.1f"
@@ -101,7 +104,7 @@ internal object TabListModule : ModuleInterface {
     /** Represents the config of the module. */
     @Serializable
     data class Config(
-        var enabled: Boolean = false,
+        override var enabled: Boolean = false,
         var initDelayInTicks: Long = 0,
         var intervalInTicks: Long = 10,
         var header: List<String> =
@@ -123,7 +126,7 @@ internal object TabListModule : ModuleInterface {
                     " <gradient:#FFE259:#FFA751><st>──────────</st></gradient>",
             ),
         var i18n: I18n = I18n(),
-    ) {
+    ) : ModuleConfigInterface {
         /** Represents the internationalization strings for the module. */
         @Serializable
         data class I18n(

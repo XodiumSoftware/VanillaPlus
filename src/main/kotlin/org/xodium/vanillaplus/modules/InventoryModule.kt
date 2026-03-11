@@ -19,6 +19,7 @@ import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.SoundData
+import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.BlockUtils.center
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
@@ -28,6 +29,8 @@ import org.xodium.vanillaplus.utils.Utils.MM
 
 /** Represents a module handling inventory mechanics within the system. */
 internal object InventoryModule : ModuleInterface {
+    override val moduleConfig get() = config.inventoryModule
+
     override val cmds =
         listOf(
             CommandData(
@@ -202,13 +205,13 @@ internal object InventoryModule : ModuleInterface {
     /** Represents the config of the module. */
     @Serializable
     data class Config(
-        var enabled: Boolean = false,
+        override var enabled: Boolean = false,
         var searchSuccessfulSound: SoundData = SoundData("entity.player.levelup", Sound.Source.PLAYER),
         var searchFailedSound: SoundData = SoundData("block.anvil.land", Sound.Source.PLAYER),
         var unloadSuccessfulSound: SoundData = SoundData("entity.player.levelup", Sound.Source.PLAYER),
         var unloadFailedSound: SoundData = SoundData("block.anvil.land", Sound.Source.PLAYER),
         var i18n: I18n = I18n(),
-    ) {
+    ) : ModuleConfigInterface {
         /** Represents the internationalization strings for the module. */
         @Serializable
         data class I18n(

@@ -12,14 +12,34 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.configData
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.modules.*
+import org.xodium.vanillaplus.modules.BooksModule
+import org.xodium.vanillaplus.modules.BookshelfModule
+import org.xodium.vanillaplus.modules.ChatModule
+import org.xodium.vanillaplus.modules.DimensionsModule
+import org.xodium.vanillaplus.modules.EntityModule
+import org.xodium.vanillaplus.modules.InventoryModule
+import org.xodium.vanillaplus.modules.LocatorModule
+import org.xodium.vanillaplus.modules.MannequinModule
+import org.xodium.vanillaplus.modules.MapModule
+import org.xodium.vanillaplus.modules.MotdModule
+import org.xodium.vanillaplus.modules.OpenableModule
+import org.xodium.vanillaplus.modules.PlayerModule
+import org.xodium.vanillaplus.modules.ScoreBoardModule
+import org.xodium.vanillaplus.modules.ServerInfoModule
+import org.xodium.vanillaplus.modules.SitModule
+import org.xodium.vanillaplus.modules.TabListModule
+import org.xodium.vanillaplus.modules.TameableModule
 import org.xodium.vanillaplus.strategies.CapitalizedStrategy
 import org.xodium.vanillaplus.utils.CommandUtils.executesCatching
 import org.xodium.vanillaplus.utils.ScheduleUtils.runAsync
 import org.xodium.vanillaplus.utils.ScheduleUtils.runSync
 import org.xodium.vanillaplus.utils.Utils.MM
 import org.xodium.vanillaplus.utils.Utils.prefix
-import kotlin.io.path.*
+import kotlin.io.path.createDirectories
+import kotlin.io.path.div
+import kotlin.io.path.exists
+import kotlin.io.path.readText
+import kotlin.io.path.writeText
 import kotlin.time.measureTime
 
 /** Configuration data for the plugin. */
@@ -43,34 +63,6 @@ internal data class ConfigData(
     var tabListModule: TabListModule.Config = TabListModule.Config(),
     var tameableModule: TameableModule.Config = TameableModule.Config(),
 ) {
-    /**
-     * Returns whether the module identified by [name] is enabled.
-     * [name] is the module's class simple name with the first character lowercased.
-     * @param name The module name key.
-     * @return True if enabled, true if unknown.
-     */
-    fun isModuleEnabled(name: String): Boolean =
-        when (name) {
-            "bookshelfModule" -> bookshelfModule.enabled
-            "booksModule" -> booksModule.enabled
-            "chatModule" -> chatModule.enabled
-            "dimensionsModule" -> dimensionsModule.enabled
-            "entityModule" -> entityModule.enabled
-            "inventoryModule" -> inventoryModule.enabled
-            "locatorModule" -> locatorModule.enabled
-            "mannequinModule" -> mannequinModule.enabled
-            "mapModule" -> mapModule.enabled
-            "motdModule" -> motdModule.enabled
-            "openableModule" -> openableModule.enabled
-            "playerModule" -> playerModule.enabled
-            "scoreBoardModule" -> scoreboardModule.enabled
-            "serverInfoModule" -> serverInfoModule.enabled
-            "sitModule" -> sitModule.enabled
-            "tabListModule" -> tabListModule.enabled
-            "tameableModule" -> tameableModule.enabled
-            else -> true
-        }
-
     companion object {
         private val json =
             Json {

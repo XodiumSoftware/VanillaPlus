@@ -8,12 +8,15 @@ import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.dialogs.FaqDialog
+import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import java.net.URI
 
 /** Represents a module handling server info mechanics within the system. */
 internal object ServerInfoModule : ModuleInterface {
+    override val moduleConfig get() = config.serverInfoModule
+
     override val cmds =
         listOf(
             CommandData(
@@ -48,7 +51,7 @@ internal object ServerInfoModule : ModuleInterface {
     /** Represents the config of the module. */
     @Serializable
     data class Config(
-        var enabled: Boolean = false,
+        override var enabled: Boolean = false,
         @Suppress("UnstableApiUsage") var serverLinks: Map<ServerLinks.Type, String> =
             mapOf(
                 ServerLinks.Type.WEBSITE to "https://xodium.org/",
@@ -57,5 +60,5 @@ internal object ServerInfoModule : ModuleInterface {
                 ServerLinks.Type.COMMUNITY to "https://discord.gg/jusYH9aYUh",
             ),
         var faqDialog: FaqDialog.Config = FaqDialog.Config(),
-    )
+    ) : ModuleConfigInterface
 }

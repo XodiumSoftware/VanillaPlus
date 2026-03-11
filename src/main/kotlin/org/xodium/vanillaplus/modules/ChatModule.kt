@@ -21,6 +21,7 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
+import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.CommandUtils.executesCatching
 import org.xodium.vanillaplus.utils.PlayerUtils.face
@@ -29,6 +30,8 @@ import org.xodium.vanillaplus.utils.Utils.prefix
 
 /** Represents a module handling chat mechanics within the system. */
 internal object ChatModule : ModuleInterface {
+    override val moduleConfig get() = config.chatModule
+
     override val cmds =
         listOf(
             CommandData(
@@ -200,7 +203,7 @@ internal object ChatModule : ModuleInterface {
     /** Represents the config of the module. */
     @Serializable
     data class Config(
-        var enabled: Boolean = false,
+        override var enabled: Boolean = false,
         var chatFormat: String = "<player_head> <player> <reset><gradient:#FFE259:#FFA751>›</gradient> <message>",
         var welcomeText: List<String> =
             listOf(
@@ -221,7 +224,7 @@ internal object ChatModule : ModuleInterface {
             "<player> <reset><gradient:#FFE259:#FFA751>➛</gradient> <gradient:#1488CC:#2B32B2>You</gradient> <gradient:#FFE259:#FFA751>›</gradient> <message>",
         var deleteCross: String = "<dark_gray>[<dark_red><b>X</b></dark_red><dark_gray>]",
         var i18n: I18n = I18n(),
-    ) {
+    ) : ModuleConfigInterface {
         /** Represents the internationalization strings for the module. */
         @Serializable
         data class I18n(

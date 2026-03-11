@@ -11,6 +11,7 @@ import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerRegisterChannelEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.MessageUtils
 import kotlin.random.Random
@@ -21,6 +22,8 @@ import kotlin.uuid.toKotlinUuid
 /** Represents a module handling map mechanics within the system. */
 @OptIn(ExperimentalUuidApi::class)
 internal object MapModule : ModuleInterface {
+    override val moduleConfig get() = config.mapModule
+
     private val lastTrackTime = mutableMapOf<Uuid, Long>()
     private val lastBlockPos = mutableMapOf<Uuid, Triple<Int, Int, Int>>()
     private const val TRACK_THROTTLE_MS = 150L
@@ -184,7 +187,7 @@ internal object MapModule : ModuleInterface {
     /** Represents the config of the module. */
     @Serializable
     data class Config(
-        var enabled: Boolean = false,
+        override var enabled: Boolean = false,
         var serverId: Int = Random.nextInt(),
-    )
+    ) : ModuleConfigInterface
 }

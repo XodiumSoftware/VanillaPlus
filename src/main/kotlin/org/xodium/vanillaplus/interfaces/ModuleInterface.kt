@@ -18,11 +18,16 @@ internal interface ModuleInterface : Listener {
     val config: ConfigData get() = configData
 
     /**
+     * Retrieves the module-specific configuration.
+     * @return A [ModuleConfigInterface] representing the configuration for this module.
+     */
+    val moduleConfig: ModuleConfigInterface
+
+    /**
      * Determines if this module is enabled.
      * @return True if the module is enabled, false otherwise.
      */
-    val isEnabled: Boolean
-        get() = config.isModuleEnabled(this::class.simpleName?.replaceFirstChar { it.lowercase() } ?: return true)
+    val isEnabled: Boolean get() = moduleConfig.enabled
 
     /**
      * Retrieves a list of command data associated with the module.
