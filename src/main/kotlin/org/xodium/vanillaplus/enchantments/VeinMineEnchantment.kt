@@ -25,6 +25,23 @@ internal object VeinMineEnchantment : EnchantmentInterface {
             BlockFace.NORTH,
         )
     private val LEVEL_TO_MAX_BLOCKS = mapOf(1 to 16, 2 to 32, 3 to 48)
+    private val ORE_TAGS =
+        setOf(
+            Tag.COAL_ORES,
+            Tag.COPPER_ORES,
+            Tag.IRON_ORES,
+            Tag.GOLD_ORES,
+            Tag.DIAMOND_ORES,
+            Tag.EMERALD_ORES,
+            Tag.REDSTONE_ORES,
+            Tag.LAPIS_ORES,
+        )
+    private val SPECIAL_ORES =
+        setOf(
+            Material.ANCIENT_DEBRIS,
+            Material.NETHER_QUARTZ_ORE,
+            Material.NETHER_GOLD_ORE,
+        )
 
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
@@ -133,26 +150,5 @@ internal object VeinMineEnchantment : EnchantmentInterface {
      * @param material The material to check.
      * @return True if the material is a valid ore, false otherwise.
      */
-    private fun isOre(material: Material): Boolean {
-        val oreTags =
-            setOf(
-                Tag.COAL_ORES,
-                Tag.COPPER_ORES,
-                Tag.IRON_ORES,
-                Tag.GOLD_ORES,
-                Tag.DIAMOND_ORES,
-                Tag.EMERALD_ORES,
-                Tag.REDSTONE_ORES,
-                Tag.LAPIS_ORES,
-            )
-
-        val specialOres =
-            setOf(
-                Material.ANCIENT_DEBRIS,
-                Material.NETHER_QUARTZ_ORE,
-                Material.NETHER_GOLD_ORE,
-            )
-
-        return oreTags.any { it.isTagged(material) } || material in specialOres
-    }
+    private fun isOre(material: Material): Boolean = ORE_TAGS.any { it.isTagged(material) } || material in SPECIAL_ORES
 }
