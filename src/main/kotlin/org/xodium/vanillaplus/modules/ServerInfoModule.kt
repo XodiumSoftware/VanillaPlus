@@ -29,7 +29,7 @@ internal object ServerInfoModule : ModuleInterface {
             ),
         )
 
-    override val perms =
+    override val perms: List<Permission> by lazy {
         listOf(
             Permission(
                 "${instance.javaClass.simpleName}.faq".lowercase(),
@@ -37,9 +37,11 @@ internal object ServerInfoModule : ModuleInterface {
                 PermissionDefault.TRUE,
             ),
         )
+    }
 
-    init {
+    override fun register(): Long {
         serverLinks()
+        return super.register()
     }
 
     /** Configures server links based on the module's configuration. */
