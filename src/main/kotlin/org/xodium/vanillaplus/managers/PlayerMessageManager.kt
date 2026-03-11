@@ -9,7 +9,7 @@ import org.xodium.vanillaplus.utils.Utils.MM
 
 /** Manages player messages and internationalization. */
 internal object PlayerMessageManager {
-    private val config = PlayerModule.config.playerModule.i18n
+    private val config = PlayerModule.config.i18n
 
     /**
      * Handles the player join message.

@@ -16,11 +16,12 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.Utils.MM
+import org.xodium.vanillaplus.utils.Utils.configDelegate
 import kotlin.math.hypot
 
 /** Represents a module handling dimension mechanics within the system. */
 internal object DimensionsModule : ModuleInterface {
-    override val moduleConfig get() = config.dimensionsModule
+    override val config by configDelegate { Config() }
 
     private const val NETHER_TO_OVERWORLD_RATIO = 8
 
@@ -66,7 +67,7 @@ internal object DimensionsModule : ModuleInterface {
                 val overworld = getOverworld()
                 val destination = player.respawnLocation?.takeIf { it.world == overworld } ?: overworld.spawnLocation
 
-                player.sendActionBar(MM.deserialize(config.dimensionsModule.i18n.portalCreationDenied))
+                player.sendActionBar(MM.deserialize(config.i18n.portalCreationDenied))
                 player.teleport(destination, PlayerTeleportEvent.TeleportCause.PLUGIN)
             }
         }
@@ -82,7 +83,7 @@ internal object DimensionsModule : ModuleInterface {
     private fun findCorrespondingPortal(
         netherPortal: Location,
         overworld: World,
-        searchRadius: Int = config.dimensionsModule.portalSearchRadius,
+        searchRadius: Int = config.portalSearchRadius,
     ): Location? {
         val targetX = netherPortal.x * NETHER_TO_OVERWORLD_RATIO
         val targetZ = netherPortal.z * NETHER_TO_OVERWORLD_RATIO

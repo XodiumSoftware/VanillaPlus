@@ -13,10 +13,11 @@ import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.pdcs.PlayerPDC.scoreboardVisibility
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
+import org.xodium.vanillaplus.utils.Utils.configDelegate
 
 /** Represents a module handling scoreboard mechanics within the system. */
 internal object ScoreBoardModule : ModuleInterface {
-    override val moduleConfig get() = config.scoreboardModule
+    override val config by configDelegate { Config() }
 
     override val cmds =
         listOf(

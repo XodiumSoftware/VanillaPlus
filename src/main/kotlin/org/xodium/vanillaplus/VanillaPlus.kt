@@ -4,9 +4,24 @@ package org.xodium.vanillaplus
 
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import org.bukkit.plugin.java.JavaPlugin
-import org.xodium.vanillaplus.data.ConfigData
-import org.xodium.vanillaplus.data.ConfigData.Companion.load
-import org.xodium.vanillaplus.modules.*
+import org.xodium.vanillaplus.managers.ConfigManager
+import org.xodium.vanillaplus.modules.BooksModule
+import org.xodium.vanillaplus.modules.BookshelfModule
+import org.xodium.vanillaplus.modules.ChatModule
+import org.xodium.vanillaplus.modules.DimensionsModule
+import org.xodium.vanillaplus.modules.EntityModule
+import org.xodium.vanillaplus.modules.InventoryModule
+import org.xodium.vanillaplus.modules.LocatorModule
+import org.xodium.vanillaplus.modules.MannequinModule
+import org.xodium.vanillaplus.modules.MapModule
+import org.xodium.vanillaplus.modules.MotdModule
+import org.xodium.vanillaplus.modules.OpenableModule
+import org.xodium.vanillaplus.modules.PlayerModule
+import org.xodium.vanillaplus.modules.ScoreBoardModule
+import org.xodium.vanillaplus.modules.ServerInfoModule
+import org.xodium.vanillaplus.modules.SitModule
+import org.xodium.vanillaplus.modules.TabListModule
+import org.xodium.vanillaplus.modules.TameableModule
 import org.xodium.vanillaplus.recipes.ChainmailRecipe
 import org.xodium.vanillaplus.recipes.DiamondRecycleRecipe
 import org.xodium.vanillaplus.recipes.PaintingRecipe
@@ -18,8 +33,6 @@ internal class VanillaPlus : JavaPlugin() {
     companion object {
         lateinit var instance: VanillaPlus
             private set
-
-        lateinit var configData: ConfigData
     }
 
     init {
@@ -34,15 +47,15 @@ internal class VanillaPlus : JavaPlugin() {
 
         instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) {
             it.registrar().register(
-                ConfigData.reloadCommand.builder.build(),
-                ConfigData.reloadCommand.description,
-                ConfigData.reloadCommand.aliases,
+                ConfigManager.reloadCommand.builder.build(),
+                ConfigManager.reloadCommand.description,
+                ConfigManager.reloadCommand.aliases,
             )
         }
 
-        instance.server.pluginManager.addPermission(ConfigData.reloadPermission)
+        instance.server.pluginManager.addPermission(ConfigManager.reloadPermission)
 
-        configData = ConfigData().load("config.json")
+        ConfigManager.load("config.json")
 
         val recipes =
             listOf(
@@ -57,7 +70,7 @@ internal class VanillaPlus : JavaPlugin() {
             "Registered: ${recipes.sumOf { it.recipes.size }} recipes(s) | Took ${recipes.sumOf { it.register() }}ms",
         )
 
-        val modules =
+        val allModules =
             listOf(
                 BookshelfModule,
                 BooksModule,
@@ -76,7 +89,11 @@ internal class VanillaPlus : JavaPlugin() {
                 SitModule,
                 TabListModule,
                 TameableModule,
-            ).filter { it.isEnabled }
+            )
+
+        ConfigManager.save("config.json")
+
+        val modules = allModules.filter { it.config.enabled }
 
         logger.info(
             "Registered: ${modules.size} module(s) | Took ${modules.sumOf { it.register() }}ms",

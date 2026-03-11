@@ -7,10 +7,11 @@ import org.bukkit.event.server.ServerListPingEvent
 import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.Utils.MM
+import org.xodium.vanillaplus.utils.Utils.configDelegate
 
 /** Represents a module handling MOTD mechanics within the system. */
 internal object MotdModule : ModuleInterface {
-    override val moduleConfig get() = config.motdModule
+    override val config by configDelegate { Config() }
 
     @EventHandler(priority = EventPriority.HIGH)
     fun on(event: ServerListPingEvent) = motd(event)
@@ -19,7 +20,7 @@ internal object MotdModule : ModuleInterface {
      * Sets the MOTD for the server list ping event.
      * @param event The server list ping event.
      */
-    private fun motd(event: ServerListPingEvent) = event.motd(MM.deserialize(config.motdModule.motd.joinToString("\n")))
+    private fun motd(event: ServerListPingEvent) = event.motd(MM.deserialize(config.motd.joinToString("\n")))
 
     /** Represents the config of the module. */
     @Serializable

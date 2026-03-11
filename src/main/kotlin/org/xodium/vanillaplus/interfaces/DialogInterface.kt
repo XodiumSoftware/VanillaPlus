@@ -6,20 +6,12 @@ import io.papermc.paper.registry.RegistryKey
 import io.papermc.paper.registry.TypedKey
 import io.papermc.paper.registry.data.dialog.DialogRegistryEntry
 import net.kyori.adventure.key.Key
-import org.xodium.vanillaplus.VanillaPlus.Companion.configData
 import org.xodium.vanillaplus.VanillaPlusBootstrap.Companion.INSTANCE
-import org.xodium.vanillaplus.data.ConfigData
 import org.xodium.vanillaplus.utils.Utils.toRegistryKeyFragment
 
 /** Represents a contract for dialogs within the system. */
 @Suppress("UnstableApiUsage")
 internal interface DialogInterface {
-    /**
-     * Retrieves the configuration data associated with the module.
-     * @return A [ConfigData] object representing the configuration for the module.
-     */
-    val config: ConfigData get() = configData
-
     /**
      * The unique typed key identifies this dialog in the registry.
      * @see TypedKey

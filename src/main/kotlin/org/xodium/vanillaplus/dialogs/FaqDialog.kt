@@ -7,19 +7,19 @@ import kotlinx.serialization.Serializable
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.xodium.vanillaplus.interfaces.DialogInterface
+import org.xodium.vanillaplus.modules.ServerInfoModule
 import org.xodium.vanillaplus.utils.Utils.MM
 
 /** Represents an object handling faq dialog implementation within the system. */
 @Suppress("UnstableApiUsage")
 internal object FaqDialog : DialogInterface {
-    private val faqConfig: Config
-        get() = runCatching { config.serverInfoModule.faqDialog }.getOrElse { Config() }
+    private val config = ServerInfoModule.config.faqDialog
 
     override fun invoke(builder: DialogRegistryEntry.Builder): DialogRegistryEntry.Builder =
         builder
             .base(
                 DialogBase
-                    .builder(MM.deserialize(faqConfig.title))
+                    .builder(MM.deserialize(config.title))
                     // NOTE: Blocked due to Paper API issue (https://github.com/PaperMC/Paper/issues/13555)
                     // .body(buildFaqItems().map { DialogBody.item(it).build() })
                     // .body(buildFaqItems().map { DialogBody.plainMessage(it).build() })

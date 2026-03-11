@@ -30,11 +30,12 @@ import org.xodium.vanillaplus.pdcs.MannequinPDC.following
 import org.xodium.vanillaplus.pdcs.MannequinPDC.owner
 import org.xodium.vanillaplus.pdcs.MannequinPDC.proxyId
 import org.xodium.vanillaplus.utils.Utils.MM
+import org.xodium.vanillaplus.utils.Utils.configDelegate
 import java.util.*
 
 /** Represents a module handling mannequin mechanics within the system. */
 internal object MannequinModule : ModuleInterface {
-    override val moduleConfig get() = config.mannequinModule
+    override val config by configDelegate { Config() }
 
     private val trackedMannequins = mutableSetOf<Mannequin>()
     private val lastOwnerLocations = mutableMapOf<UUID, Location>()
@@ -94,13 +95,13 @@ internal object MannequinModule : ModuleInterface {
 
                 if (player.isSneaking) {
                     player.showDialog(entity.dialog())
-                } else if (player.inventory.itemInMainHand.type == config.mannequinModule.followTriggerItem) {
+                } else if (player.inventory.itemInMainHand.type == config.followTriggerItem) {
                     toggleFollow(entity, player)
                 }
             }
 
             is Villager -> {
-                if (player.inventory.itemInMainHand.type != config.mannequinModule.conversionTriggerItem) return
+                if (player.inventory.itemInMainHand.type != config.conversionTriggerItem) return
 
                 consumeItem(player.inventory)
                 villagerToMannequin(player, entity)
@@ -193,7 +194,7 @@ internal object MannequinModule : ModuleInterface {
 
     /** Updates pathfinding for all following mannequins, only re-pathing when the owner moves or proxy has no path. */
     private fun updateFollowMovement() {
-        val stopDistSq = config.mannequinModule.followStopDistance * config.mannequinModule.followStopDistance
+        val stopDistSq = config.followStopDistance * config.followStopDistance
 
         trackedMannequins
             .filter { it.following }
@@ -216,7 +217,7 @@ internal object MannequinModule : ModuleInterface {
                     val toOwner = ownerLoc.toVector().subtract(proxy.eyeLocation.toVector())
                     val hasLos =
                         proxy.world.rayTraceBlocks(proxy.eyeLocation, toOwner.normalize(), toOwner.length()) == null
-                    val maxDist = config.mannequinModule.followMaxDistance
+                    val maxDist = config.followMaxDistance
 
                     if (distSq > maxDist * maxDist || !hasLos) {
                         if (!proxy.pathfinder.hasPath()) {
@@ -230,7 +231,7 @@ internal object MannequinModule : ModuleInterface {
                     val lastLoc = lastOwnerLocations[mannequin.uniqueId]
 
                     if (!proxy.pathfinder.hasPath() || lastLoc == null || lastLoc.distanceSquared(ownerLoc) > 1.0) {
-                        proxy.pathfinder.moveTo(ownerLoc, config.mannequinModule.followSpeed)
+                        proxy.pathfinder.moveTo(ownerLoc, config.followSpeed)
                         lastOwnerLocations[mannequin.uniqueId] = ownerLoc.clone()
                     }
                 } else {
@@ -260,7 +261,7 @@ internal object MannequinModule : ModuleInterface {
     @Suppress("UnstableApiUsage")
     private fun updateHeadMovement() {
         val tick = instance.server.currentTick
-        val interval = config.mannequinModule.lookUpdateInterval
+        val interval = config.lookUpdateInterval
 
         trackedMannequins
             .forEach { mannequin ->
@@ -273,7 +274,7 @@ internal object MannequinModule : ModuleInterface {
                 mannequin.world.players
                     .filter {
                         it.location.distanceSquared(mannequin.location) <=
-                            config.mannequinModule.lookRange * config.mannequinModule.lookRange
+                            config.lookRange * config.lookRange
                     }.sortedBy { it.location.distanceSquared(mannequin.location) }
                     .firstOrNull {
                         val toPlayer = it.eyeLocation.toVector().subtract(eyeLoc.toVector())

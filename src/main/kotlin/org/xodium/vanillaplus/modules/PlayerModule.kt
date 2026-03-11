@@ -40,11 +40,12 @@ import org.xodium.vanillaplus.managers.PlayerMessageManager
 import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import org.xodium.vanillaplus.utils.Utils.MM
+import org.xodium.vanillaplus.utils.Utils.configDelegate
 import kotlin.random.Random
 
 /** Represents a module handling player mechanics within the system. */
 internal object PlayerModule : ModuleInterface {
-    override val moduleConfig get() = config.playerModule
+    override val config by configDelegate { Config() }
 
     override val cmds =
         listOf(
@@ -127,7 +128,7 @@ internal object PlayerModule : ModuleInterface {
      * @param player The player whose head may be dropped.
      */
     private fun dropPlayerHead(player: Player) {
-        if (Random.nextDouble() > config.playerModule.skullDropChance) return
+        if (Random.nextDouble() > config.skullDropChance) return
 
         player.world.dropItemNaturally(player.location, player.head())
     }
@@ -163,9 +164,9 @@ internal object PlayerModule : ModuleInterface {
 
         val player = event.player
 
-        if (player.calculateTotalExperiencePoints() < config.playerModule.xpCostToBottle) return
+        if (player.calculateTotalExperiencePoints() < config.xpCostToBottle) return
 
-        player.giveExp(-config.playerModule.xpCostToBottle)
+        player.giveExp(-config.xpCostToBottle)
         event.item?.subtract(1)
         player.inventory
             .addItem(ItemStack.of(Material.EXPERIENCE_BOTTLE, 1))
@@ -186,7 +187,7 @@ internal object PlayerModule : ModuleInterface {
         player.displayName(MM.deserialize(player.nickname))
         player.sendActionBar(
             MM.deserialize(
-                config.playerModule.i18n.nicknameUpdated,
+                config.i18n.nicknameUpdated,
                 Placeholder.component("nickname", player.displayName()),
             ),
         )

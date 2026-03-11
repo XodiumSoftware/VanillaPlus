@@ -24,10 +24,11 @@ import org.xodium.vanillaplus.data.AdjacentBlockData
 import org.xodium.vanillaplus.data.SoundData
 import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.Utils.configDelegate
 
 /** Represents a module handling openable blocks mechanics within the system. */
 internal object OpenableModule : ModuleInterface {
-    override val moduleConfig get() = config.openableModule
+    override val config by configDelegate { Config() }
 
     private val disallowedKnockGameModes = setOf(GameMode.CREATIVE, GameMode.SPECTATOR)
     private val possibleNeighbours: Set<AdjacentBlockData> =
@@ -102,7 +103,7 @@ internal object OpenableModule : ModuleInterface {
      * @param block The block representing the door or gate being interacted with.
      */
     private fun handleRightClick(block: Block) {
-        if (block.blockData is Openable && config.openableModule.allowDoubleDoors) processDoorOrGateInteraction(block)
+        if (block.blockData is Openable && config.allowDoubleDoors) processDoorOrGateInteraction(block)
     }
 
     /**
@@ -112,8 +113,8 @@ internal object OpenableModule : ModuleInterface {
      */
     private fun playKnockSound(block: Block) {
         block.world
-            .getNearbyPlayers(block.location, config.openableModule.soundProximityRadius)
-            .forEach { it.playSound(config.openableModule.soundKnock.toSound()) }
+            .getNearbyPlayers(block.location, config.soundProximityRadius)
+            .forEach { it.playSound(config.soundKnock.toSound()) }
     }
 
     /**
@@ -156,7 +157,7 @@ internal object OpenableModule : ModuleInterface {
      * @return True if sneaking is required, but the player isn't sneaking, false otherwise.
      */
     private fun isViolatingSneakingRequirement(player: Player): Boolean =
-        config.openableModule.knockingRequiresShifting && !player.isSneaking
+        config.knockingRequiresShifting && !player.isSneaking
 
     /**
      * Checks if the player is violating the empty hand requirement for knocking.
@@ -164,7 +165,7 @@ internal object OpenableModule : ModuleInterface {
      * @return True if an empty hand is required, but the player is holding something, false otherwise.
      */
     private fun isViolatingEmptyHandRequirement(player: Player): Boolean =
-        config.openableModule.knockingRequiresEmptyHand &&
+        config.knockingRequiresEmptyHand &&
             player.inventory.itemInMainHand.type != Material.AIR
 
     /**
@@ -172,7 +173,7 @@ internal object OpenableModule : ModuleInterface {
      * @param data The block data to check.
      * @return True if the block can be knocked on, false otherwise.
      */
-    private fun isKnockableBlock(data: BlockData): Boolean = config.openableModule.allowKnocking && data is Openable
+    private fun isKnockableBlock(data: BlockData): Boolean = config.allowKnocking && data is Openable
 
     /**
      * Toggles the state of the other door when one door is opened or closed.
@@ -186,7 +187,7 @@ internal object OpenableModule : ModuleInterface {
         block: Block,
         block2: Block,
         open: Boolean,
-        delay: Long = config.openableModule.initDelayInTicks,
+        delay: Long = config.initDelayInTicks,
     ) {
         if (block.blockData !is Door || block2.blockData !is Door) return
 

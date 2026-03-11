@@ -9,15 +9,16 @@ import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
+import org.xodium.vanillaplus.utils.Utils.configDelegate
 
 /** Represents a module handling book mechanics within the system. */
 internal object BooksModule : ModuleInterface {
-    override val moduleConfig get() = config.booksModule
+    override val config by configDelegate { Config() }
 
     private val permPrefix: String = "${instance.javaClass.simpleName}.book".lowercase()
 
     override val cmds =
-        config.booksModule.books.map { book ->
+        config.books.map { book ->
             CommandData(
                 Commands
                     .literal(book.cmd.lowercase())
@@ -28,7 +29,7 @@ internal object BooksModule : ModuleInterface {
         }
 
     override val perms =
-        config.booksModule.books.map {
+        config.books.map {
             Permission(
                 "$permPrefix.${it.cmd.lowercase()}",
                 "Allows use of the book command: ${it.cmd}",

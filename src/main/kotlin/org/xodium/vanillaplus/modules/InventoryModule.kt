@@ -26,10 +26,11 @@ import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import org.xodium.vanillaplus.utils.PlayerUtils.getContainersAround
 import org.xodium.vanillaplus.utils.ScheduleUtils
 import org.xodium.vanillaplus.utils.Utils.MM
+import org.xodium.vanillaplus.utils.Utils.configDelegate
 
 /** Represents a module handling inventory mechanics within the system. */
 internal object InventoryModule : ModuleInterface {
-    override val moduleConfig get() = config.inventoryModule
+    override val config by configDelegate { Config() }
 
     override val cmds =
         listOf(
@@ -81,8 +82,8 @@ internal object InventoryModule : ModuleInterface {
         material: Material,
     ) {
         if (material == Material.AIR) {
-            player.sendActionBar(MM.deserialize(config.inventoryModule.i18n.noMaterialSpecified))
-            player.playSound(config.inventoryModule.searchFailedSound.toSound())
+            player.sendActionBar(MM.deserialize(config.i18n.noMaterialSpecified))
+            player.playSound(config.searchFailedSound.toSound())
             return
         }
 
@@ -91,22 +92,22 @@ internal object InventoryModule : ModuleInterface {
         if (containers.isEmpty()) {
             player.sendActionBar(
                 MM.deserialize(
-                    config.inventoryModule.i18n.noMatchingItems,
+                    config.i18n.noMatchingItems,
                     Placeholder.component("material", MM.deserialize(material.name)),
                 ),
             )
-            player.playSound(config.inventoryModule.searchFailedSound.toSound())
+            player.playSound(config.searchFailedSound.toSound())
             return
         }
 
         player.sendActionBar(
             MM.deserialize(
-                config.inventoryModule.i18n.foundItemsInChests,
+                config.i18n.foundItemsInChests,
                 Placeholder.component("material", MM.deserialize(material.name)),
             ),
         )
 
-        player.playSound(config.inventoryModule.searchSuccessfulSound.toSound())
+        player.playSound(config.searchSuccessfulSound.toSound())
 
         ScheduleUtils.schedule(duration = 200L) {
             containers.forEach {
@@ -141,8 +142,8 @@ internal object InventoryModule : ModuleInterface {
                 }
 
         if (containers.isEmpty()) {
-            player.sendActionBar(MM.deserialize(config.inventoryModule.i18n.noContainersFound))
-            player.playSound(config.inventoryModule.unloadFailedSound.toSound())
+            player.sendActionBar(MM.deserialize(config.i18n.noContainersFound))
+            player.playSound(config.unloadFailedSound.toSound())
             return
         }
 
@@ -184,10 +185,10 @@ internal object InventoryModule : ModuleInterface {
         }
 
         if (usedContainers.isEmpty()) {
-            player.playSound(config.inventoryModule.unloadFailedSound.toSound())
+            player.playSound(config.unloadFailedSound.toSound())
             return
         } else {
-            player.playSound(config.inventoryModule.unloadSuccessfulSound.toSound())
+            player.playSound(config.unloadSuccessfulSound.toSound())
         }
 
         ScheduleUtils.schedule(duration = 40L) {

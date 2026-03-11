@@ -15,10 +15,11 @@ import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import org.xodium.vanillaplus.utils.PlayerUtils.locator
+import org.xodium.vanillaplus.utils.Utils.configDelegate
 
 /** Represents a module handling locator mechanics within the system. */
 internal object LocatorModule : ModuleInterface {
-    override val moduleConfig get() = config.locatorModule
+    override val config by configDelegate { Config() }
 
     override val cmds =
         listOf(

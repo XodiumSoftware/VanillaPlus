@@ -21,11 +21,12 @@ import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.enchantments.NimbusEnchantment
 import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.Utils.configDelegate
 import kotlin.random.Random
 
 /** Represents a module handling entity mechanics within the system. */
 internal object EntityModule : ModuleInterface {
-    override val moduleConfig get() = config.entityModule
+    override val config by configDelegate { Config() }
 
     @EventHandler
     fun on(event: EntityChangeBlockEvent) {
@@ -39,7 +40,7 @@ internal object EntityModule : ModuleInterface {
 
     @EventHandler
     fun on(event: EntityDeathEvent) {
-        if (Random.nextDouble() <= config.entityModule.entityEggDropChance) {
+        if (Random.nextDouble() <= config.entityEggDropChance) {
             event.drops.add(ItemStack.of(Material.matchMaterial("${event.entity.type.name}_SPAWN_EGG") ?: return))
         }
     }
@@ -54,13 +55,13 @@ internal object EntityModule : ModuleInterface {
      */
     private fun shouldCancelGrief(entity: Entity): Boolean =
         when (entity) {
-            is WitherSkull -> config.entityModule.disableWitherGrief
-            is Fireball -> config.entityModule.disableGhastGrief
-            is Blaze -> config.entityModule.disableBlazeGrief
-            is Creeper -> config.entityModule.disableCreeperGrief
-            is EnderDragon -> config.entityModule.disableEnderDragonGrief
-            is Enderman -> config.entityModule.disableEndermanGrief
-            is Wither -> config.entityModule.disableWitherGrief
+            is WitherSkull -> config.disableWitherGrief
+            is Fireball -> config.disableGhastGrief
+            is Blaze -> config.disableBlazeGrief
+            is Creeper -> config.disableCreeperGrief
+            is EnderDragon -> config.disableEnderDragonGrief
+            is Enderman -> config.disableEndermanGrief
+            is Wither -> config.disableWitherGrief
             else -> false
         }
 

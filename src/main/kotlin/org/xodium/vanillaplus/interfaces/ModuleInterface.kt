@@ -3,31 +3,17 @@ package org.xodium.vanillaplus.interfaces
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import org.bukkit.event.Listener
 import org.bukkit.permissions.Permission
-import org.xodium.vanillaplus.VanillaPlus.Companion.configData
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
-import org.xodium.vanillaplus.data.ConfigData
 import kotlin.time.measureTime
 
 /** Represents a contract for a module within the system. */
 internal interface ModuleInterface : Listener {
     /**
-     * Retrieves the configuration data associated with the module.
-     * @return A [ConfigData] object representing the configuration for the module.
-     */
-    val config: ConfigData get() = configData
-
-    /**
      * Retrieves the module-specific configuration.
      * @return A [ModuleConfigInterface] representing the configuration for this module.
      */
-    val moduleConfig: ModuleConfigInterface
-
-    /**
-     * Determines if this module is enabled.
-     * @return True if the module is enabled, false otherwise.
-     */
-    val isEnabled: Boolean get() = moduleConfig.enabled
+    val config: ModuleConfigInterface
 
     /**
      * Retrieves a list of command data associated with the module.

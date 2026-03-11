@@ -11,11 +11,12 @@ import org.xodium.vanillaplus.dialogs.FaqDialog
 import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
+import org.xodium.vanillaplus.utils.Utils.configDelegate
 import java.net.URI
 
 /** Represents a module handling server info mechanics within the system. */
 internal object ServerInfoModule : ModuleInterface {
-    override val moduleConfig get() = config.serverInfoModule
+    override val config by configDelegate { Config() }
 
     override val cmds =
         listOf(
@@ -44,7 +45,7 @@ internal object ServerInfoModule : ModuleInterface {
     /** Configures server links based on the module's configuration. */
     @Suppress("UnstableApiUsage")
     private fun serverLinks() =
-        config.serverInfoModule.serverLinks.forEach { (type, url) ->
+        config.serverLinks.forEach { (type, url) ->
             runCatching { URI.create(url) }.getOrNull()?.let { instance.server.serverLinks.setLink(type, it) }
         }
 

@@ -21,6 +21,7 @@ import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.util.Vector
 import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.Utils.configDelegate
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 import kotlin.uuid.toKotlinUuid
@@ -28,7 +29,7 @@ import kotlin.uuid.toKotlinUuid
 /** Represents a module handling sit mechanics within the system. */
 @OptIn(ExperimentalUuidApi::class)
 internal object SitModule : ModuleInterface {
-    override val moduleConfig get() = config.sitModule
+    override val config by configDelegate { Config() }
 
     private val sittingPlayers = mutableMapOf<Uuid, ArmorStand>()
     private val occupiedBlocks = mutableMapOf<Location, Uuid>()
@@ -65,8 +66,8 @@ internal object SitModule : ModuleInterface {
         val blockData = block.blockData
         val isSitTarget =
             when {
-                config.sitModule.useStairs && blockData is Stairs && blockData.half == Bisected.Half.BOTTOM -> true
-                config.sitModule.useSlabs && blockData is Slab && blockData.type == Slab.Type.BOTTOM -> true
+                config.useStairs && blockData is Stairs && blockData.half == Bisected.Half.BOTTOM -> true
+                config.useSlabs && blockData is Slab && blockData.type == Slab.Type.BOTTOM -> true
                 else -> false
             }
 

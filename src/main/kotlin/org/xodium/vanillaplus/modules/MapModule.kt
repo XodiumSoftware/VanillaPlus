@@ -14,6 +14,7 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.MessageUtils
+import org.xodium.vanillaplus.utils.Utils.configDelegate
 import kotlin.random.Random
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -22,7 +23,7 @@ import kotlin.uuid.toKotlinUuid
 /** Represents a module handling map mechanics within the system. */
 @OptIn(ExperimentalUuidApi::class)
 internal object MapModule : ModuleInterface {
-    override val moduleConfig get() = config.mapModule
+    override val config by configDelegate { Config() }
 
     private val lastTrackTime = mutableMapOf<Uuid, Long>()
     private val lastBlockPos = mutableMapOf<Uuid, Triple<Int, Int, Int>>()
@@ -34,7 +35,7 @@ internal object MapModule : ModuleInterface {
     }
 
     init {
-        if (isEnabled) {
+        if (config.enabled) {
             instance.server.messenger.apply {
                 registerOutgoingPluginChannel(instance, Channel.WORLD_MAP)
                 registerOutgoingPluginChannel(instance, Channel.MINI_MAP)
@@ -123,7 +124,7 @@ internal object MapModule : ModuleInterface {
         player: Player,
         channel: String,
     ) {
-        player.sendPluginMessage(instance, channel, MessageUtils.getLevelIdMessage(config.mapModule.serverId))
+        player.sendPluginMessage(instance, channel, MessageUtils.getLevelIdMessage(config.serverId))
     }
 
     /**

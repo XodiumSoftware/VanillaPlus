@@ -18,11 +18,12 @@ import org.bukkit.util.Vector
 import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.Utils.MM
+import org.xodium.vanillaplus.utils.Utils.configDelegate
 import org.bukkit.block.data.type.ChiseledBookshelf as ChiseledBookshelfData
 
 /** Represents a module handling bookshelf mechanics within the system. */
 internal object BookshelfModule : ModuleInterface {
-    override val moduleConfig get() = config.bookshelfModule
+    override val config by configDelegate { Config() }
 
     @EventHandler
     fun on(event: PlayerInteractEvent) {

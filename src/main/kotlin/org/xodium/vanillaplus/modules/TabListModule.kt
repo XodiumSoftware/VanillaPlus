@@ -13,11 +13,12 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.Utils.MM
+import org.xodium.vanillaplus.utils.Utils.configDelegate
 import kotlin.math.roundToInt
 
 /** Represents a module handling tab-list mechanics within the system. */
 internal object TabListModule : ModuleInterface {
-    override val moduleConfig get() = config.tabListModule
+    override val config by configDelegate { Config() }
 
     private const val MIN_TPS = 0.0
     private const val MAX_TPS = 20.0
@@ -34,8 +35,8 @@ internal object TabListModule : ModuleInterface {
                     it.playerListName(it.displayName())
                 }
             },
-            config.tabListModule.initDelayInTicks,
-            config.tabListModule.intervalInTicks,
+            config.initDelayInTicks,
+            config.intervalInTicks,
         )
     }
 
@@ -51,9 +52,9 @@ internal object TabListModule : ModuleInterface {
      */
     private fun tablist(audience: Audience) {
         audience.sendPlayerListHeaderAndFooter(
-            MM.deserialize(config.tabListModule.header.joinToString("\n")),
+            MM.deserialize(config.header.joinToString("\n")),
             MM.deserialize(
-                config.tabListModule.footer.joinToString("\n"),
+                config.footer.joinToString("\n"),
                 Placeholder.component("weather", MM.deserialize(getWeather())),
                 Placeholder.component("tps", MM.deserialize(getTps())),
             ),
@@ -95,9 +96,9 @@ internal object TabListModule : ModuleInterface {
         val world = instance.server.worlds[0]
 
         return when {
-            world.isThundering -> config.tabListModule.i18n.weatherThundering
-            world.hasStorm() -> config.tabListModule.i18n.weatherStorm
-            else -> config.tabListModule.i18n.weatherClear
+            world.isThundering -> config.i18n.weatherThundering
+            world.hasStorm() -> config.i18n.weatherStorm
+            else -> config.i18n.weatherClear
         }
     }
 
