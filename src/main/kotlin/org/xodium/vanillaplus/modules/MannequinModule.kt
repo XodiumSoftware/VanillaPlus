@@ -14,8 +14,11 @@ import org.bukkit.entity.Villager
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.EntityDeathEvent
+import org.bukkit.event.entity.EntitySpawnEvent
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerInteractAtEntityEvent
+import org.bukkit.event.world.EntitiesLoadEvent
+import org.bukkit.event.world.EntitiesUnloadEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.PlayerInventory
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -30,6 +33,7 @@ import java.util.*
 
 /** Represents a module handling mannequin mechanics within the system. */
 internal object MannequinModule : ModuleInterface {
+    private val trackedMannequins = mutableSetOf<Mannequin>()
     private val lastOwnerLocations = mutableMapOf<UUID, Location>()
     private val lastLookUpdateTick = mutableMapOf<UUID, Int>()
 
@@ -53,6 +57,24 @@ internal object MannequinModule : ModuleInterface {
 
     @EventHandler
     fun on(event: InventoryClickEvent) = handleMannequinMenuClicking(event)
+
+    @EventHandler
+    fun on(event: EntitySpawnEvent) {
+        val mannequin = event.entity as? Mannequin ?: return
+        trackedMannequins.add(mannequin)
+    }
+
+    @EventHandler
+    fun on(event: EntitiesLoadEvent) = event.entities.filterIsInstanceTo(trackedMannequins)
+
+    @EventHandler
+    fun on(event: EntitiesUnloadEvent) {
+        event.entities.filterIsInstance<Mannequin>().forEach { mannequin ->
+            trackedMannequins.remove(mannequin)
+            lastOwnerLocations.remove(mannequin.uniqueId)
+            lastLookUpdateTick.remove(mannequin.uniqueId)
+        }
+    }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun on(event: PlayerInteractAtEntityEvent) {
@@ -86,6 +108,8 @@ internal object MannequinModule : ModuleInterface {
         val mannequin = event.entity as? Mannequin? ?: return
 
         mannequin.proxyId?.let { instance.server.getEntity(it)?.remove() }
+        trackedMannequins.remove(mannequin)
+        lastOwnerLocations.remove(mannequin.uniqueId)
         lastLookUpdateTick.remove(mannequin.uniqueId)
         event.drops.apply {
             clear()
@@ -152,9 +176,7 @@ internal object MannequinModule : ModuleInterface {
 
     /** Teleports all following mannequins to their proxy's current position every tick for smooth movement. */
     private fun syncMannequinPositions() {
-        instance.server.worlds
-            .flatMap { it.entities }
-            .filterIsInstance<Mannequin>()
+        trackedMannequins
             .filter { it.following }
             .forEach { mannequin ->
                 mannequin.proxyId
@@ -168,9 +190,7 @@ internal object MannequinModule : ModuleInterface {
     private fun updateFollowMovement() {
         val stopDistSq = config.mannequinModule.followStopDistance * config.mannequinModule.followStopDistance
 
-        instance.server.worlds
-            .flatMap { it.entities }
-            .filterIsInstance<Mannequin>()
+        trackedMannequins
             .filter { it.following }
             .forEach { mannequin ->
                 val owner = instance.server.getPlayer(mannequin.owner) ?: return@forEach
@@ -237,9 +257,7 @@ internal object MannequinModule : ModuleInterface {
         val tick = instance.server.currentTick
         val interval = config.mannequinModule.lookUpdateInterval
 
-        instance.server.worlds
-            .flatMap { it.entities }
-            .filterIsInstance<Mannequin>()
+        trackedMannequins
             .forEach { mannequin ->
                 if (tick - (lastLookUpdateTick[mannequin.uniqueId] ?: 0) < interval) return@forEach
 
