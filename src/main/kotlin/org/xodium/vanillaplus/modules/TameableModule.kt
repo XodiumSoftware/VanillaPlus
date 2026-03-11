@@ -15,17 +15,21 @@ internal object TameableModule : ModuleInterface {
     override val config by configDelegate { Config() }
 
     @EventHandler
-    fun on(event: PlayerInteractEntityEvent) = playerInteractEntity(event)
+    fun on(event: PlayerInteractEntityEvent) {
+        transferPetOwnership(event.player, event.rightClicked as? Player ?: return)
+        event.isCancelled = true
+    }
 
     /**
-     * Handles the interaction event when a player interacts with another entity.
-     * @param event The [PlayerInteractEntityEvent] triggered on entity interaction.
+     * Transfers ownership of a tamed, leashed entity from [source] to [target].
+     * Requires [source] to hold a lead in their main hand and be the current owner of the pet.
+     * @param source The player initiating the transfer.
+     * @param target The player receiving ownership.
      */
-    private fun playerInteractEntity(event: PlayerInteractEntityEvent) {
-        val source = event.player
-        val target = event.rightClicked as? Player ?: return
-
-        if (source == target) return
+    private fun transferPetOwnership(
+        source: Player,
+        target: Player,
+    ) {
         if (source.inventory.itemInMainHand.type != Material.LEAD) return
 
         val pet = source.getLeashedEntity() ?: return
@@ -34,8 +38,6 @@ internal object TameableModule : ModuleInterface {
 
         pet.owner = target
         pet.setLeashHolder(target)
-
-        event.isCancelled = true
     }
 
     /** Represents the config of the module. */
