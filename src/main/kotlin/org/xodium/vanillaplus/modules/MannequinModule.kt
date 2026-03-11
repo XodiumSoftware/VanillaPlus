@@ -27,6 +27,7 @@ import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.menus.MannequinEquipmentMenu.handleMannequinMenuClicking
 import org.xodium.vanillaplus.pdcs.MannequinPDC.following
+import org.xodium.vanillaplus.pdcs.MannequinPDC.isProxy
 import org.xodium.vanillaplus.pdcs.MannequinPDC.owner
 import org.xodium.vanillaplus.pdcs.MannequinPDC.proxyId
 import org.xodium.vanillaplus.utils.Utils.MM
@@ -251,7 +252,7 @@ internal object MannequinModule : ModuleInterface {
             isInvulnerable = true
             isPersistent = true
             isCollidable = false
-            addScoreboardTag("vanillaplus:mannequin_proxy")
+            isProxy = true
         }
 
     /** Updates the head rotation of all mannequins in the world. */

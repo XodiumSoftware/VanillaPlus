@@ -3,6 +3,7 @@
 package org.xodium.vanillaplus.pdcs
 
 import org.bukkit.NamespacedKey
+import org.bukkit.entity.Entity
 import org.bukkit.entity.Mannequin
 import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -17,6 +18,7 @@ internal object MannequinPDC {
     private val OWNER_KEY = NamespacedKey(instance, "owner")
     private val FOLLOWING_KEY = NamespacedKey(instance, "following")
     private val PROXY_ID_KEY = NamespacedKey(instance, "proxy_id")
+    private val IS_PROXY_KEY = NamespacedKey(instance, "mannequin_proxy")
 
     /**
      * Gets or sets the [Mannequin]'s owner in its persistent data container.
@@ -37,7 +39,16 @@ internal object MannequinPDC {
         set(value) = persistentDataContainer.set(FOLLOWING_KEY, PersistentDataType.BOOLEAN, value)
 
     /**
-     * Gets or sets the [UUID] of the [Mannequin]'s invisible proxy navigation mob, or null if none exists.
+     * Gets or sets whether this [Entity] is a mannequin pathfinding proxy.
+     * @receiver The [Entity] to check or mark as a proxy.
+     * @return Whether this [Entity] is a mannequin proxy.
+     */
+    var Entity.isProxy: Boolean
+        get() = persistentDataContainer.getOrDefault(IS_PROXY_KEY, PersistentDataType.BOOLEAN, false)
+        set(value) = persistentDataContainer.set(IS_PROXY_KEY, PersistentDataType.BOOLEAN, value)
+
+    /**
+     * Gets or sets the [UUID] of the [Mannequin]'s pathfinding proxy mob, or null if none exists.
      * @receiver The [Mannequin] whose proxy [UUID] to access.
      * @return The proxy mob's [UUID], or null if no proxy is active.
      */
