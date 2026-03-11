@@ -291,7 +291,7 @@ internal object MannequinModule : ModuleInterface {
         override var enabled: Boolean = false,
         var conversionTriggerItem: Material = Material.TOTEM_OF_UNDYING,
         var lookRange: Double = 10.0,
-        var lookUpdateInterval: Int = 10,
+        var lookUpdateInterval: Int = 1,
         var followTriggerItem: Material = Material.FEATHER,
         var followSpeed: Double = 1.0,
         var followStopDistance: Double = 2.5,
