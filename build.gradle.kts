@@ -47,6 +47,8 @@ java {
     }
 }
 
+sourceSets { main { kotlin { srcDirs("src") } } }
+
 idea { module { excludeDirs.addAll(files("run", ".kotlin")) } }
 
 tasks {
