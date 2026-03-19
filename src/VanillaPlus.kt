@@ -92,6 +92,18 @@ internal class VanillaPlus : JavaPlugin() {
         ConfigManager.prune()
         ConfigManager.save("config.json")
 
+        val startupEnabled = allModules.associate { it::class.simpleName!! to it.config.enabled }
+
+        ConfigManager.onReload {
+            allModules
+                .filter { it.config.enabled != startupEnabled[it::class.simpleName] }
+                .forEach {
+                    ConfigManager.addReloadWarning(
+                        "${it::class.simpleName} 'Enabled' changed — restart required for this to take effect.",
+                    )
+                }
+        }
+
         val modules = allModules.filter { it.config.enabled }
 
         logger.info(

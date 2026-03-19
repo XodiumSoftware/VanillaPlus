@@ -44,6 +44,7 @@ internal object ConfigManager {
 
     private val reloadListeners = mutableListOf<() -> Unit>()
     private val registeredKeys = mutableSetOf<String>()
+    private val reloadWarnings = mutableListOf<String>()
 
     /**
      * Registers a [listener] to be called whenever the configuration is reloaded.
@@ -53,8 +54,17 @@ internal object ConfigManager {
         reloadListeners.add(listener)
     }
 
+    /**
+     * Adds a [warning] message to be displayed to the sender after the next reload completes.
+     * @param warning The warning message string.
+     */
+    fun addReloadWarning(warning: String) {
+        reloadWarnings.add(warning)
+    }
+
     /** Notifies all registered reload listeners that the configuration has changed. */
     fun notifyReload() {
+        reloadWarnings.clear()
         reloadListeners.forEach { it() }
     }
 
@@ -158,13 +168,18 @@ internal object ConfigManager {
                                 notifyReload()
                                 prune()
                                 save("config.json")
+                                val warnings = reloadWarnings.toList()
                                 runSync {
                                     if (sender is Player) {
                                         sender.sendMessage(
                                             MM.deserialize("${instance.prefix} <green>Configuration reloaded!"),
                                         )
+                                        warnings.forEach {
+                                            sender.sendMessage(MM.deserialize("${instance.prefix} <yellow>$it"))
+                                        }
                                     } else {
                                         instance.logger.info("Configuration reloaded!")
+                                        warnings.forEach { instance.logger.warning(it) }
                                     }
                                 }
                             }
