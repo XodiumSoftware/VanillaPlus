@@ -37,7 +37,9 @@ internal object BookshelfModule : ModuleInterface {
         val block = event.clickedBlock ?: return
         val bookshelf = block.state as? ChiseledBookshelf ?: return
         val facing = (block.blockData as? ChiseledBookshelfData)?.facing ?: return
+
         if (event.blockFace != facing) return
+
         val slot =
             player
                 .rayTraceBlocks(6.0)

@@ -64,8 +64,7 @@ internal object MannequinModule : ModuleInterface {
 
     @EventHandler
     fun on(event: EntitySpawnEvent) {
-        val mannequin = event.entity as? Mannequin ?: return
-        trackedMannequins.add(mannequin)
+        trackedMannequins.add(event.entity as? Mannequin ?: return)
     }
 
     @EventHandler
