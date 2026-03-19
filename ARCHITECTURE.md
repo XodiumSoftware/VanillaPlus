@@ -39,6 +39,7 @@ All modules are instantiated as `object` singletons and listed explicitly in `Va
 ### Configuration System
 
 `ConfigManager` is the central config authority. It holds the raw `JsonObject` (`data`) and exposes:
+
 - `load(fileName)` — reads `config.json` from the plugin data folder into `data`
 - `save(fileName)` — writes `data` back to disk
 - `decodeWith(key, serializer, default)` — decodes a module's section from `data`, merging defaults back in
@@ -60,17 +61,12 @@ Custom enchantments implement **`EnchantmentInterface`** and are registered in `
 Custom dialogs implement **`DialogInterface`** and are registered in `VanillaPlusBootstrap` via `RegistryEvents.DIALOG`. Key derivation follows the same CamelCase → snake_case convention as enchantments.
 
 - **Registered dialogs** (e.g. `FaqDialog`): implement `DialogInterface`, registered in `VanillaPlusBootstrap`, shown via `player.showDialog(...)`.
-- **On-the-fly dialogs** (e.g. `MannequinDialog`): created per-entity as extension functions, not registered in the bootstrap.
 
 All dialog API requires `@Suppress("UnstableApiUsage")`.
 
-### Menus
-
-Custom inventory UIs live in `menus/`. `MannequinEquipmentMenu` is an `object` that builds a `MenuType.GENERIC_9X1` inventory view for editing mannequin equipment. It tracks open views in a `WeakHashMap<InventoryView, Mannequin>` and handles slot clicks (shift-click and cursor placement). Menu interaction events are routed through `MannequinModule`.
-
 ### PDCs (Persistent Data Containers)
 
-PDC helpers in `pdcs/` expose Kotlin property delegates on entity types. For example, `MannequinPDC` adds a `Mannequin.owner: UUID` property backed by NBT.
+PDC helpers in `pdcs/` expose Kotlin property delegates on entity types.
 
 ### Recipes
 
@@ -78,20 +74,18 @@ Recipe objects implement **`RecipeInterface`** and are listed in `VanillaPlus.on
 
 ### Package Structure (`org.xodium.vanillaplus`)
 
-| Package | Contents |
-|---|---|
-| `modules/` | 17 feature module singletons |
-| `data/` | `CommandData`, `SoundData`, `BookData`, `AdjacentBlockData` |
-| `dialogs/` | `MannequinDialog` (on-the-fly) |
-| `delegates/` | `ModuleConfigDelegate` |
-| `enchantments/` | Replant, Pickup, NightVision, Nimbus, VeinMine, SilkTouch, FeatherFalling |
-| `interfaces/` | `ModuleInterface`, `ModuleConfigInterface`, `EnchantmentInterface`, `DialogInterface`, `RecipeInterface` |
-| `managers/` | `ConfigManager`, `PlayerMessageManager` |
-| `menus/` | `MannequinEquipmentMenu` |
-| `pdcs/` | `MannequinPDC`, `PlayerPDC` |
-| `recipes/` | Chainmail, DiamondRecycle, Painting, RottenFlesh, WoodLog |
-| `strategies/` | `CapitalizedStrategy` |
-| `utils/` | `Utils`, `CommandUtils`, `BlockUtils`, `MessageUtils`, `PlayerUtils`, `ScheduleUtils` |
+| Package         | Contents                                                                                                 |
+|-----------------|----------------------------------------------------------------------------------------------------------|
+| `modules/`      | 16 feature module singletons                                                                             |
+| `data/`         | `CommandData`, `SoundData`, `BookData`, `AdjacentBlockData`                                              |
+| `delegates/`    | `ModuleConfigDelegate`                                                                                   |
+| `enchantments/` | Replant, Pickup, NightVision, Nimbus, VeinMine, SilkTouch, FeatherFalling                                |
+| `interfaces/`   | `ModuleInterface`, `ModuleConfigInterface`, `EnchantmentInterface`, `DialogInterface`, `RecipeInterface` |
+| `managers/`     | `ConfigManager`, `PlayerMessageManager`                                                                  |
+| `pdcs/`         | `PlayerPDC`                                                                                              |
+| `recipes/`      | Chainmail, DiamondRecycle, Painting, RottenFlesh, WoodLog                                                |
+| `strategies/`   | `CapitalizedStrategy`                                                                                    |
+| `utils/`        | `Utils`, `CommandUtils`, `BlockUtils`, `MessageUtils`, `PlayerUtils`, `ScheduleUtils`                    |
 
 ### Key Conventions
 

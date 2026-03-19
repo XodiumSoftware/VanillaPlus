@@ -12,7 +12,6 @@ import org.xodium.vanillaplus.modules.DimensionsModule
 import org.xodium.vanillaplus.modules.EntityModule
 import org.xodium.vanillaplus.modules.InventoryModule
 import org.xodium.vanillaplus.modules.LocatorModule
-import org.xodium.vanillaplus.modules.MannequinModule
 import org.xodium.vanillaplus.modules.MapModule
 import org.xodium.vanillaplus.modules.MotdModule
 import org.xodium.vanillaplus.modules.OpenableModule
@@ -79,7 +78,6 @@ internal class VanillaPlus : JavaPlugin() {
                 EntityModule,
                 InventoryModule,
                 LocatorModule,
-                MannequinModule,
                 MapModule,
                 MotdModule,
                 OpenableModule,
