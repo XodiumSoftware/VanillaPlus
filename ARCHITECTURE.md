@@ -25,7 +25,7 @@ There are no automated tests in this project.
 
 ### Entry Points
 
-- **`VanillaPlusBootstrap`** — `PluginBootstrap` implementation. Runs before plugin enable. Registers custom enchantments, dialogs, and item tags into Paper's registries using lifecycle events.
+- **`VanillaPlusBootstrap`** — `PluginBootstrap` implementation. Runs before plugin enable. Registers custom enchantments and item tags into Paper's registries using lifecycle events.
 - **`VanillaPlus`** — `JavaPlugin` main class. On enable: validates server version, registers the `/vanillaplus reload` command via `ConfigManager`, loads `config.json`, then registers all recipes and modules.
 
 ### Module System
@@ -54,15 +54,7 @@ Each module config class implements **`ModuleConfigInterface`** (`interfaces/`),
 
 ### Enchantments
 
-Custom enchantments implement **`EnchantmentInterface`** and are registered in `VanillaPlusBootstrap` via `RegistryEvents.ENCHANTMENT`. Their registry key is derived automatically from the class name (e.g. `ReplantEnchantment` → `vanillaplus:replant`). All custom enchantments are tagged as tradeable, non-treasure, and in-enchanting-table.
-
-### Dialogs
-
-Custom dialogs implement **`DialogInterface`** and are registered in `VanillaPlusBootstrap` via `RegistryEvents.DIALOG`. Key derivation follows the same CamelCase → snake_case convention as enchantments.
-
-- **Registered dialogs** (e.g. `FaqDialog`): implement `DialogInterface`, registered in `VanillaPlusBootstrap`, shown via `player.showDialog(...)`.
-
-All dialog API requires `@Suppress("UnstableApiUsage")`.
+Custom enchantments implement **`EnchantmentInterface`** and are registered in `VanillaPlusBootstrap` via `RegistryEvents.ENCHANTMENT`. Their registry key is derived automatically from the class name (e.g. `ReplantEnchantment` → `vanillaplus:replant`). Five enchantments (Replant, Pickup, NightVision, Nimbus, VeinMine) are actively registered and tagged as tradeable, non-treasure, and in-enchanting-table. SilkTouch and FeatherFalling exist as implementations but are not currently registered in the bootstrap.
 
 ### PDCs (Persistent Data Containers)
 
@@ -74,18 +66,18 @@ Recipe objects implement **`RecipeInterface`** and are listed in `VanillaPlus.on
 
 ### Package Structure (`org.xodium.vanillaplus`)
 
-| Package         | Contents                                                                                                 |
-|-----------------|----------------------------------------------------------------------------------------------------------|
-| `modules/`      | 16 feature module singletons                                                                             |
-| `data/`         | `CommandData`, `SoundData`, `BookData`, `AdjacentBlockData`                                              |
-| `delegates/`    | `ModuleConfigDelegate`                                                                                   |
-| `enchantments/` | Replant, Pickup, NightVision, Nimbus, VeinMine, SilkTouch, FeatherFalling                                |
-| `interfaces/`   | `ModuleInterface`, `ModuleConfigInterface`, `EnchantmentInterface`, `DialogInterface`, `RecipeInterface` |
-| `managers/`     | `ConfigManager`, `PlayerMessageManager`                                                                  |
-| `pdcs/`         | `PlayerPDC`                                                                                              |
-| `recipes/`      | Chainmail, DiamondRecycle, Painting, RottenFlesh, WoodLog                                                |
-| `strategies/`   | `CapitalizedStrategy`                                                                                    |
-| `utils/`        | `Utils`, `CommandUtils`, `BlockUtils`, `MessageUtils`, `PlayerUtils`, `ScheduleUtils`                    |
+| Package         | Contents                                                                              |
+|-----------------|---------------------------------------------------------------------------------------|
+| `modules/`      | 16 feature module singletons                                                          |
+| `data/`         | `CommandData`, `SoundData`, `BookData`, `AdjacentBlockData`                           |
+| `delegates/`    | `ModuleConfigDelegate`                                                                |
+| `enchantments/` | Replant, Pickup, NightVision, Nimbus, VeinMine, SilkTouch, FeatherFalling             |
+| `interfaces/`   | `ModuleInterface`, `ModuleConfigInterface`, `EnchantmentInterface`, `RecipeInterface` |
+| `managers/`     | `ConfigManager`, `PlayerMessageManager`                                               |
+| `pdcs/`         | `PlayerPDC`                                                                           |
+| `recipes/`      | Chainmail, DiamondRecycle, Painting, RottenFlesh, WoodLog                             |
+| `strategies/`   | `CapitalizedStrategy`                                                                 |
+| `utils/`        | `Utils`, `CommandUtils`, `BlockUtils`, `MessageUtils`, `PlayerUtils`, `ScheduleUtils` |
 
 ### Key Conventions
 
