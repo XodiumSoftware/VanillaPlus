@@ -20,7 +20,7 @@ import org.xodium.vanillaplus.utils.Utils.configDelegate
 import kotlin.math.hypot
 
 /** Represents a module handling dimension mechanics within the system. */
-internal object DimensionsModule : ModuleInterface {
+internal object DimensionModule : ModuleInterface {
     override val config by configDelegate { Config() }
 
     private const val NETHER_TO_OVERWORLD_RATIO = 8

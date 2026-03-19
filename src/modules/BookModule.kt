@@ -12,7 +12,7 @@ import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import org.xodium.vanillaplus.utils.Utils.configDelegate
 
 /** Represents a module handling book mechanics within the system. */
-internal object BooksModule : ModuleInterface {
+internal object BookModule : ModuleInterface {
     override val config by configDelegate { Config() }
 
     private val permPrefix: String = "${instance.javaClass.simpleName}.book".lowercase()

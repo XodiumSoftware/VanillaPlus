@@ -5,10 +5,10 @@ package org.xodium.vanillaplus
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import org.bukkit.plugin.java.JavaPlugin
 import org.xodium.vanillaplus.managers.ConfigManager
-import org.xodium.vanillaplus.modules.BooksModule
+import org.xodium.vanillaplus.modules.BookModule
 import org.xodium.vanillaplus.modules.BookshelfModule
 import org.xodium.vanillaplus.modules.ChatModule
-import org.xodium.vanillaplus.modules.DimensionsModule
+import org.xodium.vanillaplus.modules.DimensionModule
 import org.xodium.vanillaplus.modules.EntityModule
 import org.xodium.vanillaplus.modules.InventoryModule
 import org.xodium.vanillaplus.modules.LocatorModule
@@ -72,9 +72,9 @@ internal class VanillaPlus : JavaPlugin() {
         val allModules =
             listOf(
                 BookshelfModule,
-                BooksModule,
+                BookModule,
                 ChatModule,
-                DimensionsModule,
+                DimensionModule,
                 EntityModule,
                 InventoryModule,
                 LocatorModule,
