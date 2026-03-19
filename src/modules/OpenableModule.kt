@@ -62,9 +62,9 @@ internal object OpenableModule : ModuleInterface {
     }
 
     /**
-     * Toggles the state of the door or gate based on the provided block and openable data.
-     * @param block The block representing the door or gate to be toggled.
-     * @param openable The Openable data representing the door or gate.
+     * Toggles the state of the door or gate based on the provided [Block] and [Openable] data.
+     * @param block The [Block] representing the door or gate to be toggled.
+     * @param openable The [Openable] data representing the door or gate.
      * @param open The desired state (open or closed) for the door or gate.
      */
     private fun toggleDoor(
@@ -78,8 +78,8 @@ internal object OpenableModule : ModuleInterface {
 
     /**
      * Checks if the interaction event is valid for processing.
-     * @param event The `player interact event`.
-     * @return True if the interaction is valid, false otherwise.
+     * @param event The [PlayerInteractEvent] to validate.
+     * @return `true` if the interaction is valid, `false` otherwise.
      */
     private fun isValidInteraction(event: PlayerInteractEvent): Boolean =
         event.hand == EquipmentSlot.HAND &&
@@ -88,8 +88,8 @@ internal object OpenableModule : ModuleInterface {
 
     /**
      * Handles the left-click interaction with doors and gates, playing a knock sound if applicable.
-     * @param event The `player interact event`.
-     * @param block The block representing the door or gate being interacted with.
+     * @param event The [PlayerInteractEvent] triggering the interaction.
+     * @param block The [Block] representing the door or gate being interacted with.
      */
     private fun handleLeftClick(
         event: PlayerInteractEvent,
@@ -100,15 +100,15 @@ internal object OpenableModule : ModuleInterface {
 
     /**
      * Handles the right-click interaction with doors and gates, toggling their state.
-     * @param block The block representing the door or gate being interacted with.
+     * @param block The [Block] representing the door or gate being interacted with.
      */
     private fun handleRightClick(block: Block) {
         if (block.blockData is Openable && config.allowDoubleDoors) processDoorOrGateInteraction(block)
     }
 
     /**
-     * Plays the knocking sound to all nearby players around the specified block.
-     * @param block The block where the knock sound originates. The sound will be played
+     * Plays the knocking sound to all nearby players around the specified [Block].
+     * @param block The [Block] where the knock sound originates. The sound will be played
      *              at this block's location and propagated to nearby players.
      */
     private fun playKnockSound(block: Block) {
@@ -119,7 +119,7 @@ internal object OpenableModule : ModuleInterface {
 
     /**
      * Processes the interaction with doors or gates, toggling their state.
-     * @param block The block representing the door or gate being interacted with.
+     * @param block The [Block] representing the door or gate being interacted with.
      */
     private fun processDoorOrGateInteraction(block: Block) {
         val door2Block = getOtherPart(getDoorBottom(block), block) ?: return
@@ -129,10 +129,10 @@ internal object OpenableModule : ModuleInterface {
     }
 
     /**
-     * Checks if the player can knock on the block based on their game mode and interaction conditions.
-     * @param event The `player interact event`.
-     * @param player The player attempting to knock.
-     * @return True if the player can knock, false otherwise.
+     * Checks if the [Player] can knock on the block based on their game mode and interaction conditions.
+     * @param event The [PlayerInteractEvent] to check.
+     * @param player The [Player] attempting to knock.
+     * @return `true` if the player can knock, `false` otherwise.
      */
     private fun canKnock(
         event: PlayerInteractEvent,
@@ -144,43 +144,43 @@ internal object OpenableModule : ModuleInterface {
             !isKnockingConditionViolated(player)
 
     /**
-     * Checks if the knocking conditions are violated based on the player's state and config.
-     * @param player The player attempting to knock.
-     * @return True if any knocking condition is violated, false otherwise.
+     * Checks if the knocking conditions are violated based on the [Player]'s state and config.
+     * @param player The [Player] attempting to knock.
+     * @return `true` if any knocking condition is violated, `false` otherwise.
      */
     private fun isKnockingConditionViolated(player: Player): Boolean =
         isViolatingSneakingRequirement(player) || isViolatingEmptyHandRequirement(player)
 
     /**
-     * Checks if the player is violating the sneaking requirement for knocking.
-     * @param player The player attempting to knock.
-     * @return True if sneaking is required, but the player isn't sneaking, false otherwise.
+     * Checks if the [Player] is violating the sneaking requirement for knocking.
+     * @param player The [Player] attempting to knock.
+     * @return `true` if sneaking is required, but the player isn't sneaking, `false` otherwise.
      */
     private fun isViolatingSneakingRequirement(player: Player): Boolean =
         config.knockingRequiresShifting && !player.isSneaking
 
     /**
-     * Checks if the player is violating the empty hand requirement for knocking.
-     * @param player The player attempting to knock.
-     * @return True if an empty hand is required, but the player is holding something, false otherwise.
+     * Checks if the [Player] is violating the empty hand requirement for knocking.
+     * @param player The [Player] attempting to knock.
+     * @return `true` if an empty hand is required, but the player is holding something, `false` otherwise.
      */
     private fun isViolatingEmptyHandRequirement(player: Player): Boolean =
         config.knockingRequiresEmptyHand &&
             player.inventory.itemInMainHand.type != Material.AIR
 
     /**
-     * Checks if the block data is of a type that can be knocked on.
-     * @param data The block data to check.
-     * @return True if the block can be knocked on, false otherwise.
+     * Checks if the [BlockData] is of a type that can be knocked on.
+     * @param data The [BlockData] to check.
+     * @return `true` if the block can be knocked on, `false` otherwise.
      */
     private fun isKnockableBlock(data: BlockData): Boolean = config.allowKnocking && data is Openable
 
     /**
-     * Toggles the state of the other door when one door is opened or closed.
-     * @param block The block representing the first door.
-     * @param block2 The block representing the second door.
+     * Toggles the state of the other [Door] when one door is opened or closed.
+     * @param block The [Block] representing the first door.
+     * @param block2 The [Block] representing the second door.
      * @param open The desired state (open or closed) for the second door.
-     * @param delay The delay in ticks before toggling the secondary door (defaults to config.openableFeature.initDelayInTicks).
+     * @param delay The delay in ticks before toggling the secondary door (defaults to config.initDelayInTicks).
      *              This delay helps prevent race conditions with block updates.
      */
     private fun toggleOtherDoor(
@@ -204,9 +204,9 @@ internal object OpenableModule : ModuleInterface {
     }
 
     /**
-     * Retrieves the bottom half of a door if the provided block is the top half.
-     * @param block The block to check.
-     * @return The bottom half of the door if it exists, null otherwise.
+     * Retrieves the bottom half of a [Door] if the provided [Block] is the top half.
+     * @param block The [Block] to check.
+     * @return The bottom half of the [Door] if it exists, `null` otherwise.
      */
     private fun getDoorBottom(block: Block): Door? {
         val door = block.blockData as? Door ?: return null
@@ -215,10 +215,10 @@ internal object OpenableModule : ModuleInterface {
     }
 
     /**
-     * Retrieves the other part of a door if it exists.
-     * @param door The door block data.
-     * @param block The block to check.
-     * @return The other part of the door if it exists, null otherwise.
+     * Retrieves the other part of a [Door] if it exists.
+     * @param door The [Door] block data.
+     * @param block The [Block] to check.
+     * @return The other part of the [Door] as a [Block] if it exists, `null` otherwise.
      */
     private fun getOtherPart(
         door: Door?,

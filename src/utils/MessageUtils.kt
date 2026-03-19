@@ -9,12 +9,24 @@ import java.io.DataOutputStream
 
 /** Message utilities. */
 internal object MessageUtils {
+    /**
+     * Builds a plugin message [ByteArray] using a [DataOutputStream] builder block.
+     * @param block The builder block used to write data to the [DataOutputStream].
+     * @return [ByteArray] containing the written message data.
+     */
     private fun buildMessage(block: DataOutputStream.() -> Unit): ByteArray {
         val baos = ByteArrayOutputStream()
+
         DataOutputStream(baos).use { it.block() }
+
         return baos.toByteArray()
     }
 
+    /**
+     * Writes a [Player] NBT compound tag to this [DataOutputStream].
+     * @param player The [Player] whose data should be written.
+     * @param remove Whether to set the remove flag in the compound tag.
+     */
     private fun DataOutputStream.writePlayerCompound(
         player: Player,
         remove: Boolean,
@@ -24,10 +36,13 @@ internal object MessageUtils {
         writeByte(1)
         writeUTF("r")
         writeByte(if (remove) 1 else 0)
+
         val uuidArray = player.uniqueId.toIntArray()
+
         writeByte(11)
         writeUTF("i")
         writeInt(uuidArray.size)
+
         for (i in uuidArray) writeInt(i)
     }
 
@@ -39,7 +54,7 @@ internal object MessageUtils {
      * - Int: The level/server ID value
      *
      * @param id The unique identifier for the current server/level.
-     * @return Byte array ready to be sent as a plugin message.
+     * @return [ByteArray] ready to be sent as a plugin message.
      */
     fun getLevelIdMessage(id: Int): ByteArray =
         buildMessage {
@@ -54,7 +69,7 @@ internal object MessageUtils {
      * - Byte 1: Message type identifier (1 = handshake)
      * - Int: Protocol version (3 = current Xaero map protocol version)
      *
-     * @return Byte array containing the handshake message.
+     * @return [ByteArray] containing the handshake message.
      */
     fun getHandshakeMessage(): ByteArray =
         buildMessage {
@@ -63,19 +78,19 @@ internal object MessageUtils {
         }
 
     /**
-     * Creates a plugin message for tracking a player's position on the map.
+     * Creates a plugin message for tracking a [Player]'s position on the map.
      *
      * NBT Compound Tag contents:
      * - "r" (Byte): Remove flag (0 = add/update)
-     * - "i" (Int Array): Player's UUID split into 4 integers
-     * - "x" (Double): Player's X coordinate
-     * - "y" (Double): Player's Y coordinate
-     * - "z" (Double): Player's Z coordinate
-     * - "d" (String): Player's dimension/world identifier
+     * - "i" (Int Array): [Player]'s UUID split into 4 integers
+     * - "x" (Double): [Player]'s X coordinate
+     * - "y" (Double): [Player]'s Y coordinate
+     * - "z" (Double): [Player]'s Z coordinate
+     * - "d" ([String]): [Player]'s dimension/world identifier
      *
-     * @param player The player whose tracking data should be generated.
-     * @return Byte array containing the complete track message with NBT data.
-     * @see getUntrackPlayerMessage For removing a player from tracking.
+     * @param player The [Player] whose tracking data should be generated.
+     * @return [ByteArray] containing the complete track message with NBT data.
+     * @see getUntrackPlayerMessage For removing a [Player] from tracking.
      */
     fun getTrackPlayerMessage(player: Player): ByteArray =
         buildMessage {
@@ -96,15 +111,15 @@ internal object MessageUtils {
         }
 
     /**
-     * Creates a plugin message for removing a player from map tracking.
+     * Creates a plugin message for removing a [Player] from map tracking.
      *
      * NBT Compound Tag contents:
      * - "r" (Byte): Remove flag (1 = remove)
-     * - "i" (Int Array): Player's UUID split into 4 integers
+     * - "i" (Int Array): [Player]'s UUID split into 4 integers
      *
-     * @param player The player that should be removed from tracking.
-     * @return Byte array containing the untrack message.
-     * @see getTrackPlayerMessage For adding/updating player tracking.
+     * @param player The [Player] that should be removed from tracking.
+     * @return [ByteArray] containing the untrack message.
+     * @see getTrackPlayerMessage For adding/updating [Player] tracking.
      */
     fun getUntrackPlayerMessage(player: Player): ByteArray =
         buildMessage {

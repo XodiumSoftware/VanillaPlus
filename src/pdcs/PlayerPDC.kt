@@ -8,18 +8,17 @@ import org.xodium.vanillaplus.pdcs.PlayerPDC.NICKNAME_KEY
 import org.xodium.vanillaplus.pdcs.PlayerPDC.SCOREBOARD_VISIBILITY_KEY
 
 /**
- * Provides access to player-specific persistent data including nicknames and scoreboard preferences.
- * @property NICKNAME_KEY The namespaced key used for storing nickname data.
- * @property SCOREBOARD_VISIBILITY_KEY The namespaced key used for storing scoreboard visibility preferences.
+ * Provides access to [Player]-specific persistent data including nicknames and scoreboard preferences.
+ * @property NICKNAME_KEY The [NamespacedKey] used for storing nickname data.
+ * @property SCOREBOARD_VISIBILITY_KEY The [NamespacedKey] used for storing scoreboard visibility preferences.
  */
 internal object PlayerPDC {
     private val NICKNAME_KEY = NamespacedKey(instance, "nickname")
     private val SCOREBOARD_VISIBILITY_KEY = NamespacedKey(instance, "scoreboard_visibility")
 
     /**
-     * Gets or sets the player's nickname in their persistent data container.
-     * @receiver The player whose nickname to access.
-     * @return The player's nickname, or their actual name if no nickname is set.
+     * Gets or sets a [Player]'s nickname in their persistent data container.
+     * @return The [Player]'s nickname, or their actual name if no nickname is set.
      */
     var Player.nickname: String
         get() = persistentDataContainer.getOrDefault(NICKNAME_KEY, PersistentDataType.STRING, name)
@@ -32,9 +31,8 @@ internal object PlayerPDC {
         }
 
     /**
-     * Gets or sets the player's scoreboard visibility preference in their persistent data container.
-     * @receiver The player whose scoreboard visibility to access.
-     * @return True if the scoreboard is visible, false otherwise.
+     * Gets or sets a [Player]'s scoreboard visibility preference in their persistent data container.
+     * @return `true` if the scoreboard is visible, `false` otherwise.
      */
     var Player.scoreboardVisibility: Boolean
         get() = persistentDataContainer.getOrDefault(SCOREBOARD_VISIBILITY_KEY, PersistentDataType.BOOLEAN, false)

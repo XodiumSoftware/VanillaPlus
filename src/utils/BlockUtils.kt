@@ -8,8 +8,8 @@ import org.bukkit.block.DoubleChest
 /** Block utilities. */
 internal object BlockUtils {
     /**
-     * Get the centre of a block, handling double chests properly.
-     * @return The centre location of the block.
+     * Get the centre of a [Block], handling [DoubleChest]s properly.
+     * @return The centre [Location] of the block.
      */
     fun Block.center(): Location {
         val baseAddition = Location(location.world, location.x + 0.5, location.y + 0.5, location.z + 0.5)

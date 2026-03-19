@@ -10,6 +10,8 @@ import org.bukkit.Color
 import org.bukkit.block.Container
 import org.bukkit.entity.Player
 import org.bukkit.entity.Tameable
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.pdcs.PlayerPDC.scoreboardVisibility
 import java.net.URI
 import javax.imageio.ImageIO
 import kotlin.io.encoding.Base64
@@ -29,9 +31,9 @@ internal object PlayerUtils {
     private const val GREEN_SHIFT = 8
 
     /**
-     * Retrieves the player's face as a string.
+     * Retrieves a [Player]'s face as a [String].
      * @param size The size of the face in pixels (default is 8).
-     * @return A string representing the player's face.
+     * @return A [String] representing the player's face.
      */
     fun Player.face(size: Int = 8): String {
         // 1. fetch skin URL from the playerProfile
@@ -77,9 +79,8 @@ internal object PlayerUtils {
     }
 
     /**
-     * Get containers around this player (3x3 chunk area).
-     * @receiver The player.
-     * @return Collection of containers around the player.
+     * Get [Container]s around a [Player] (3x3 [Chunk] area).
+     * @return [Set] of [Container]s around the player.
      */
     fun Player.getContainersAround(): Set<Container> =
         buildSet {
@@ -91,10 +92,9 @@ internal object PlayerUtils {
         }
 
     /**
-     * Get chunks around this player (3x3 chunk area).
-     * @receiver The player.
-     * @param range The chunk radius around the player (1 = 3x3 area).
-     * @return Collection of chunks around the player.
+     * Get [Chunk]s around a [Player] (3x3 [Chunk] area).
+     * @param range The [Chunk] radius around the player (1 = 3x3 area).
+     * @return [Set] of [Chunk]s around the player.
      */
     fun Player.getChunksAround(range: Int = 1): Set<Chunk> {
         val (baseX, baseZ) = location.chunk.run { x to z }
@@ -109,10 +109,9 @@ internal object PlayerUtils {
     }
 
     /**
-     * Gets the first leashed entity owned by the player within the config radius.
-     * @receiver The player whose leashed entity is to be found.
+     * Gets the first leashed [Tameable] entity owned by a [Player] within the config radius.
      * @param radius The radius within which to search for leashed entities.
-     * @return The found tameable entity or `null` if none exists.
+     * @return The found [Tameable] entity or `null` if none exists.
      */
     fun Player.getLeashedEntity(radius: Double = 10.0): Tameable? =
         getNearbyEntities(radius, radius, radius)
@@ -120,9 +119,20 @@ internal object PlayerUtils {
             .firstOrNull { it.isLeashed && it.leashHolder == player }
 
     /**
-     * Modifies the colour of a player's waypoint based on the specified parameters.
-     * @receiver Player The player whose waypoint colour is to be modified.
-     * @param color The optional named colour to apply to the waypoint.
+     * Applies the correct scoreboard to a [Player] based on their visibility preference.
+     */
+    fun Player.applyScoreboard() {
+        scoreboard =
+            if (scoreboardVisibility) {
+                instance.server.scoreboardManager.newScoreboard
+            } else {
+                instance.server.scoreboardManager.mainScoreboard
+            }
+    }
+
+    /**
+     * Modifies the colour of a [Player]'s waypoint based on the specified parameters.
+     * @param color The optional [TextColor] to apply to the waypoint.
      */
     fun Player.locator(color: TextColor? = null) {
         waypointColor = color?.let { Color.fromRGB(it.value()) }

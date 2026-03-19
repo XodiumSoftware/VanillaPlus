@@ -55,8 +55,8 @@ internal object VeinMineEnchantment : EnchantmentInterface {
             .activeSlots(EquipmentSlotGroup.MAINHAND)
 
     /**
-     * Handles the vein mining logic when a block is broken.
-     * @param event The block break event.
+     * Handles the vein mining logic when a [Block] is broken.
+     * @param event The [BlockBreakEvent].
      */
     fun veinMine(event: BlockBreakEvent) {
         val player = event.player
@@ -115,11 +115,11 @@ internal object VeinMineEnchantment : EnchantmentInterface {
     }
 
     /**
-     * Finds all connected blocks of the same type starting from the given block.
-     * @param startBlock The starting block.
-     * @param targetType The type of block to search for.
+     * Finds all connected [Block]s of the same type starting from the given [Block].
+     * @param startBlock The starting [Block].
+     * @param targetType The [Material] type of block to search for.
      * @param maxBlocks The maximum number of blocks to find.
-     * @return A list of connected blocks of the same type.
+     * @return A [List] of connected [Block]s of the same type.
      */
     private fun findConnectedBlocks(
         startBlock: Block,
@@ -147,9 +147,9 @@ internal object VeinMineEnchantment : EnchantmentInterface {
     }
 
     /**
-     * Checks if a material is considered an ore for vein mining purposes.
-     * @param material The material to check.
-     * @return True if the material is a valid ore, false otherwise.
+     * Checks if a [Material] is considered an ore for vein mining purposes.
+     * @param material The [Material] to check.
+     * @return `true` if the material is a valid ore, `false` otherwise.
      */
     private fun isOre(material: Material): Boolean = ORE_TAGS.any { it.isTagged(material) } || material in SPECIAL_ORES
 }

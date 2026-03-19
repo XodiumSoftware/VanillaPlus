@@ -12,10 +12,9 @@ import org.xodium.vanillaplus.utils.Utils.prefix
 /** Utility functions for command handling. */
 internal object CommandUtils {
     /**
-     * Registers a command execution handler with an automatic try/catch handling.
-     * @receiver The command builder this handler is attached to.
+     * Registers a command execution handler on an [ArgumentBuilder] with automatic try/catch handling.
      * @param action The action executed when the command runs.
-     * @return The same command builder for further configuration.
+     * @return The same [ArgumentBuilder] for further configuration.
      */
     fun <T : ArgumentBuilder<CommandSourceStack, T>> T.executesCatching(
         action: (CommandContext<CommandSourceStack>) -> Unit,
@@ -39,11 +38,10 @@ internal object CommandUtils {
     }
 
     /**
-     * Registers a command execution handler specifically for Player senders with an automatic try/catch handling.
-     * @receiver The command builder this handler is attached to.
-     * @param action The action executed when the command runs, receiving the Player and command context.
-     * @return The same command builder for further configuration.
-     * @throws IllegalStateException if the command is executed by a non-Player sender.
+     * Registers a command execution handler on an [ArgumentBuilder] specifically for [Player] senders with automatic try/catch handling.
+     * @param action The action executed when the command runs, receiving the [Player] and [CommandContext].
+     * @return The same [ArgumentBuilder] for further configuration.
+     * @throws IllegalStateException if the command is executed by a non-[Player] sender.
      */
     fun <T : ArgumentBuilder<CommandSourceStack, T>> T.playerExecuted(
         action: (Player, CommandContext<CommandSourceStack>) -> Unit,

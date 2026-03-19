@@ -105,7 +105,7 @@ internal object MapModule : ModuleInterface {
 
     /**
      * Sends the initial handshake packet to the client over the specified channel.
-     * @param player The target player receiving the handshake.
+     * @param player The target [Player] receiving the handshake.
      * @param channel The plugin channel used for communication.
      */
     private fun sendHandshake(
@@ -116,8 +116,8 @@ internal object MapModule : ModuleInterface {
     }
 
     /**
-     * Sends the configured server-level ID to the given player over the specified plugin channel.
-     * @param player The target player who will receive the plugin message.
+     * Sends the configured server-level ID to the given [Player] over the specified plugin channel.
+     * @param player The target [Player] who will receive the plugin message.
      * @param channel The plugin channel to send the message through.
      */
     private fun sendLevelId(
@@ -128,8 +128,8 @@ internal object MapModule : ModuleInterface {
     }
 
     /**
-     * Synchronizes all currently online players to the specified player.
-     * @param player The player that should receive tracking data.
+     * Synchronizes all currently online players to the specified [Player].
+     * @param player The [Player] that should receive tracking data.
      */
     private fun trackOthers(player: Player) {
         player.world.players
@@ -139,8 +139,8 @@ internal object MapModule : ModuleInterface {
     }
 
     /**
-     * Broadcasts the current position of the specified player to all other online players.
-     * @param player The player whose location should be synced.
+     * Broadcasts the current position of the specified [Player] to all other online players.
+     * @param player The [Player] whose location should be synced.
      */
     private fun trackPlayer(player: Player) {
         if (!isVisible(player)) {
@@ -152,25 +152,25 @@ internal object MapModule : ModuleInterface {
     }
 
     /**
-     * Broadcasts an untrack packet for the specified player to all remaining online players.
-     * @param player The player that should be removed from tracking.
+     * Broadcasts an untrack packet for the specified [Player] to all remaining online players.
+     * @param player The [Player] that should be removed from tracking.
      */
     private fun untrackPlayer(player: Player) {
         broadcastToOthers(player, MessageUtils.getUntrackPlayerMessage(player))
     }
 
     /**
-     * Determines whether the specified player should be visible on the map.
-     * @param player The player whose visibility should be checked.
-     * @return True if the player should be tracked, false otherwise.
+     * Determines whether the specified [Player] should be visible on the map.
+     * @param player The [Player] whose visibility should be checked.
+     * @return `true` if the player should be tracked, `false` otherwise.
      */
     private fun isVisible(player: Player): Boolean = !player.isSneaking && !player.hasMetadata("vanished")
 
     /**
-     * Sends a given plugin message to all other players in the same world as the specified player.
-     * Excludes the provided player from receiving the message.
-     * @param player The player to exclude from the broadcast.
-     * @param message The plugin message to send to all other players.
+     * Sends a given plugin message to all other players in the same world as the specified [Player].
+     * Excludes the provided [Player] from receiving the message.
+     * @param player The [Player] to exclude from the broadcast.
+     * @param message The plugin message [ByteArray] to send to all other players.
      */
     private fun broadcastToOthers(
         player: Player,

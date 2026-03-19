@@ -31,7 +31,7 @@ internal data class AdjacentBlockData(
      * @param door The door to check against
      * @param originalDoor The original door to compare with
      * @param blockType The material type to match
-     * @return true if this adjacent data matches a valid door pair
+     * @return `true` if this adjacent data matches a valid door pair
      */
     fun matchesDoorPair(
         door: Door,
@@ -44,9 +44,9 @@ internal data class AdjacentBlockData(
             blockType == door.material
 
     /**
-     * Gets the relative block using the stored offsets
-     * @param block The original block to get relative from
-     * @return The relative block
+     * Gets the relative [Block] using the stored offsets.
+     * @param block The original [Block] to get relative from.
+     * @return The relative [Block].
      */
     fun getRelativeBlock(block: Block): Block = block.getRelative(offsetX, 0, offsetZ)
 }
