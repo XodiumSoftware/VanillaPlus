@@ -5,7 +5,7 @@
   ],
   "automerge": true,
   "baseBranchPatterns": [
-    "main", "dev"
+    "main"
   ],
   "extends": [
     "config:recommended"
