@@ -34,6 +34,7 @@ internal interface ModuleInterface : Listener {
     @Suppress("UnstableApiUsage")
     fun register(): Long =
         measureTime {
+            instance.server.pluginManager.addPermissions(perms)
             instance.server.pluginManager.registerEvents(this, instance)
             instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) {
                 cmds.forEach { cmd ->
@@ -44,6 +45,5 @@ internal interface ModuleInterface : Listener {
                     )
                 }
             }
-            instance.server.pluginManager.addPermissions(perms)
         }.inWholeMilliseconds
 }
