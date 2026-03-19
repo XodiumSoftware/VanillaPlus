@@ -15,6 +15,7 @@ permissions:
 jobs:
   enforce-branch:
     runs-on: ubuntu-latest
+    if: github.actor != 'renovate[bot]'
     steps:
       - id: enforce_branch
         name: Enforce and Auto-fix Target Branch
