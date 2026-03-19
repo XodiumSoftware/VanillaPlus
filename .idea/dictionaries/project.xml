@@ -1,10 +1,13 @@
 <component name="ProjectDictionaryState">
   <dictionary name="project">
     <words>
+      <w>Gamerules</w>
+      <w>Xaero</w>
       <w>ageable</w>
       <w>appleboy</w>
       <w>armorposer</w>
       <w>armorstand</w>
+      <w>baos</w>
       <w>birdflop</w>
       <w>cmds</w>
       <w>codeql</w>
@@ -16,6 +19,7 @@
       <w>fastasyncworldedit</w>
       <w>fawe</w>
       <w>foojay</w>
+      <w>gamerule</w>
       <w>ghast</w>
       <w>ghasts</w>
       <w>glorp</w>
@@ -38,6 +42,7 @@
       <w>redstone</w>
       <w>rrggbb</w>
       <w>searchinv</w>
+      <w>serverlink</w>
       <w>shulker</w>
       <w>signedit</w>
       <w>sinv</w>
@@ -47,11 +52,16 @@
       <w>tellraw</w>
       <w>temurin</w>
       <w>triumphteam</w>
+      <w>uinv</w>
       <w>unloadinv</w>
       <w>userdev</w>
       <w>vanillaplus</w>
       <w>veinmine</w>
       <w>worldedit</w>
+      <w>xaero's</w>
+      <w>xaeromap</w>
+      <w>xaerominimap</w>
+      <w>xaeroworldmap</w>
       <w>xodium</w>
       <w>xparser</w>
     </words>

@@ -1,0 +1,139 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
+package org.xodium.vanillaplus.modules
+
+import kotlinx.serialization.Serializable
+import net.kyori.adventure.audience.Audience
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
+import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
+import org.bukkit.event.weather.ThunderChangeEvent
+import org.bukkit.event.weather.WeatherChangeEvent
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
+import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.Utils.MM
+import org.xodium.vanillaplus.utils.Utils.configDelegate
+import kotlin.math.roundToInt
+
+/** Represents a module handling tab-list mechanics within the system. */
+internal object TabListModule : ModuleInterface {
+    override val config by configDelegate { Config() }
+
+    private const val MIN_TPS = 0.0
+    private const val MAX_TPS = 20.0
+    private const val TPS_DECIMAL_FORMAT = "%.1f"
+    private const val MAX_COLOR_VALUE = 255
+    private const val COLOR_FORMAT = "#%02X%02X%02X"
+
+    init {
+        instance.server.scheduler.runTaskTimer(
+            instance,
+            Runnable {
+                instance.server.onlinePlayers.forEach {
+                    tablist(it)
+                    it.playerListName(it.displayName())
+                }
+            },
+            config.initDelayInTicks,
+            config.intervalInTicks,
+        )
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun on(event: WeatherChangeEvent) = event.world.players.forEach { tablist(it) }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun on(event: ThunderChangeEvent) = event.world.players.forEach { tablist(it) }
+
+    /**
+     * Update the tab list for the given audience.
+     * @param audience the audience to update the tab list for.
+     */
+    private fun tablist(audience: Audience) {
+        audience.sendPlayerListHeaderAndFooter(
+            MM.deserialize(config.header.joinToString("\n")),
+            MM.deserialize(
+                config.footer.joinToString("\n"),
+                Placeholder.component("weather", MM.deserialize(getWeather())),
+                Placeholder.component("tps", MM.deserialize(getTps())),
+            ),
+        )
+    }
+
+    /**
+     * A function to get the tps of the server.
+     * @return The tps of the server.
+     */
+    private fun getTps(): String {
+        val tps = instance.server.tps[0]
+        val clampedTps = tps.coerceIn(MIN_TPS, MAX_TPS)
+        val ratio = clampedTps / MAX_TPS
+        val color = getColorForTps(ratio)
+        val formattedTps = TPS_DECIMAL_FORMAT.format(tps)
+
+        return "<color:$color>$formattedTps</color>"
+    }
+
+    /**
+     * Calculate a hex colour between red and green based on the provided ratio (0.0 to 1.0).
+     * @param ratio The ratio to calculate the colour for.
+     * @return The hex colour for the ratio.
+     */
+    private fun getColorForTps(ratio: Double): String {
+        val clamped = ratio.coerceIn(0.0, 1.0)
+        val r = (MAX_COLOR_VALUE * (1 - clamped)).roundToInt()
+        val g = (MAX_COLOR_VALUE * clamped).roundToInt()
+
+        return COLOR_FORMAT.format(r, g, 0)
+    }
+
+    /**
+     * Gets a formatted string representing the current weather in the main world.
+     * @return A formatted string representing the weather.
+     */
+    private fun getWeather(): String {
+        val world = instance.server.worlds[0]
+
+        return when {
+            world.isThundering -> config.i18n.weatherThundering
+            world.hasStorm() -> config.i18n.weatherStorm
+            else -> config.i18n.weatherClear
+        }
+    }
+
+    /** Represents the config of the module. */
+    @Serializable
+    data class Config(
+        override var enabled: Boolean = false,
+        var initDelayInTicks: Long = 0,
+        var intervalInTicks: Long = 10,
+        var header: List<String> =
+            listOf(
+                "<gradient:#FFA751:#FFE259><st>───────────────</st></gradient> " +
+                    "<gradient:#CB2D3E:#EF473A>" +
+                    "\uD835\uDD74\uD835\uDD91\uD835\uDD91\uD835\uDD9E\uD835\uDD97\uD835\uDD8E\uD835\uDD86" +
+                    "</gradient> " +
+                    "<gradient:#FFE259:#FFA751><st>───────────────</st></gradient>",
+                "",
+            ),
+        var footer: List<String> =
+            listOf(
+                "",
+                "<gradient:#FFA751:#FFE259><st>──────────</st></gradient>  " +
+                    "<gradient:#CB2D3E:#EF473A>TPS:</gradient> <tps> " +
+                    "<gradient:#FFE259:#FFA751>|</gradient> " +
+                    "<gradient:#CB2D3E:#EF473A>Weather:</gradient> <weather> " +
+                    " <gradient:#FFE259:#FFA751><st>──────────</st></gradient>",
+            ),
+        var i18n: I18n = I18n(),
+    ) : ModuleConfigInterface {
+        /** Represents the internationalization strings for the module. */
+        @Serializable
+        data class I18n(
+            var weatherThundering: String = "<red>\uD83C\uDF29<reset>",
+            var weatherStorm: String = "<yellow>\uD83C\uDF26<reset>",
+            var weatherClear: String = "<green>\uD83C\uDF24<reset>",
+        )
+    }
+}

@@ -1,0 +1,250 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
+package org.xodium.vanillaplus.modules
+
+import kotlinx.serialization.Serializable
+import net.kyori.adventure.sound.Sound
+import org.bukkit.GameMode
+import org.bukkit.Material
+import org.bukkit.block.Block
+import org.bukkit.block.BlockFace
+import org.bukkit.block.data.Bisected
+import org.bukkit.block.data.BlockData
+import org.bukkit.block.data.Openable
+import org.bukkit.block.data.type.Door
+import org.bukkit.entity.Player
+import org.bukkit.event.Event
+import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
+import org.bukkit.event.block.Action
+import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.inventory.EquipmentSlot
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.data.AdjacentBlockData
+import org.xodium.vanillaplus.data.SoundData
+import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
+import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.Utils.configDelegate
+
+/** Represents a module handling openable blocks mechanics within the system. */
+internal object OpenableModule : ModuleInterface {
+    override val config by configDelegate { Config() }
+
+    private val disallowedKnockGameModes = setOf(GameMode.CREATIVE, GameMode.SPECTATOR)
+    private val possibleNeighbours: Set<AdjacentBlockData> =
+        setOf(
+            AdjacentBlockData(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
+            AdjacentBlockData(0, 1, Door.Hinge.LEFT, BlockFace.EAST),
+            AdjacentBlockData(1, 0, Door.Hinge.RIGHT, BlockFace.SOUTH),
+            AdjacentBlockData(-1, 0, Door.Hinge.LEFT, BlockFace.SOUTH),
+            AdjacentBlockData(0, 1, Door.Hinge.RIGHT, BlockFace.WEST),
+            AdjacentBlockData(0, -1, Door.Hinge.LEFT, BlockFace.WEST),
+            AdjacentBlockData(-1, 0, Door.Hinge.RIGHT, BlockFace.NORTH),
+            AdjacentBlockData(1, 0, Door.Hinge.LEFT, BlockFace.NORTH),
+        )
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    fun on(event: PlayerInteractEvent) = playerInteract(event)
+
+    /**
+     * Handles block interactions and delegates to the correct click handler.
+     * @param event The [PlayerInteractEvent] triggered by the player.
+     */
+    private fun playerInteract(event: PlayerInteractEvent) {
+        val clickedBlock = event.clickedBlock ?: return
+        if (!isValidInteraction(event)) return
+
+        when (event.action) {
+            Action.LEFT_CLICK_BLOCK -> handleLeftClick(event, clickedBlock)
+            Action.RIGHT_CLICK_BLOCK -> handleRightClick(clickedBlock)
+            else -> return
+        }
+    }
+
+    /**
+     * Toggles the state of the door or gate based on the provided [Block] and [Openable] data.
+     * @param block The [Block] representing the door or gate to be toggled.
+     * @param openable The [Openable] data representing the door or gate.
+     * @param open The desired state (open or closed) for the door or gate.
+     */
+    private fun toggleDoor(
+        block: Block,
+        openable: Openable,
+        open: Boolean,
+    ) {
+        openable.isOpen = open
+        block.blockData = openable
+    }
+
+    /**
+     * Checks if the interaction event is valid for processing.
+     * @param event The [PlayerInteractEvent] to validate.
+     * @return `true` if the interaction is valid, `false` otherwise.
+     */
+    private fun isValidInteraction(event: PlayerInteractEvent): Boolean =
+        event.hand == EquipmentSlot.HAND &&
+            event.useInteractedBlock() != Event.Result.DENY &&
+            event.useItemInHand() != Event.Result.DENY
+
+    /**
+     * Handles the left-click interaction with doors and gates, playing a knock sound if applicable.
+     * @param event The [PlayerInteractEvent] triggering the interaction.
+     * @param block The [Block] representing the door or gate being interacted with.
+     */
+    private fun handleLeftClick(
+        event: PlayerInteractEvent,
+        block: Block,
+    ) {
+        if (canKnock(event, event.player) && isKnockableBlock(block.blockData)) playKnockSound(block)
+    }
+
+    /**
+     * Handles the right-click interaction with doors and gates, toggling their state.
+     * @param block The [Block] representing the door or gate being interacted with.
+     */
+    private fun handleRightClick(block: Block) {
+        if (block.blockData is Openable && config.allowDoubleDoors) processDoorOrGateInteraction(block)
+    }
+
+    /**
+     * Plays the knocking sound to all nearby players around the specified [Block].
+     * @param block The [Block] where the knock sound originates. The sound will be played
+     *              at this block's location and propagated to nearby players.
+     */
+    private fun playKnockSound(block: Block) {
+        block.world
+            .getNearbyPlayers(block.location, config.soundProximityRadius)
+            .forEach { it.playSound(config.soundKnock.toSound()) }
+    }
+
+    /**
+     * Processes the interaction with doors or gates, toggling their state.
+     * @param block The [Block] representing the door or gate being interacted with.
+     */
+    private fun processDoorOrGateInteraction(block: Block) {
+        val door2Block = getOtherPart(getDoorBottom(block), block) ?: return
+        val secondDoor = door2Block.blockData as? Door ?: return
+
+        toggleOtherDoor(block, door2Block, !secondDoor.isOpen)
+    }
+
+    /**
+     * Checks if the [Player] can knock on the block based on their game mode and interaction conditions.
+     * @param event The [PlayerInteractEvent] to check.
+     * @param player The [Player] attempting to knock.
+     * @return `true` if the player can knock, `false` otherwise.
+     */
+    private fun canKnock(
+        event: PlayerInteractEvent,
+        player: Player,
+    ): Boolean =
+        event.action == Action.LEFT_CLICK_BLOCK &&
+            event.hand == EquipmentSlot.HAND &&
+            player.gameMode !in disallowedKnockGameModes &&
+            !isKnockingConditionViolated(player)
+
+    /**
+     * Checks if the knocking conditions are violated based on the [Player]'s state and config.
+     * @param player The [Player] attempting to knock.
+     * @return `true` if any knocking condition is violated, `false` otherwise.
+     */
+    private fun isKnockingConditionViolated(player: Player): Boolean =
+        isViolatingSneakingRequirement(player) || isViolatingEmptyHandRequirement(player)
+
+    /**
+     * Checks if the [Player] is violating the sneaking requirement for knocking.
+     * @param player The [Player] attempting to knock.
+     * @return `true` if sneaking is required, but the player isn't sneaking, `false` otherwise.
+     */
+    private fun isViolatingSneakingRequirement(player: Player): Boolean =
+        config.knockingRequiresShifting && !player.isSneaking
+
+    /**
+     * Checks if the [Player] is violating the empty hand requirement for knocking.
+     * @param player The [Player] attempting to knock.
+     * @return `true` if an empty hand is required, but the player is holding something, `false` otherwise.
+     */
+    private fun isViolatingEmptyHandRequirement(player: Player): Boolean =
+        config.knockingRequiresEmptyHand &&
+            player.inventory.itemInMainHand.type != Material.AIR
+
+    /**
+     * Checks if the [BlockData] is of a type that can be knocked on.
+     * @param data The [BlockData] to check.
+     * @return `true` if the block can be knocked on, `false` otherwise.
+     */
+    private fun isKnockableBlock(data: BlockData): Boolean = config.allowKnocking && data is Openable
+
+    /**
+     * Toggles the state of the other [Door] when one door is opened or closed.
+     * @param block The [Block] representing the first door.
+     * @param block2 The [Block] representing the second door.
+     * @param open The desired state (open or closed) for the second door.
+     * @param delay The delay in ticks before toggling the secondary door (defaults to config.initDelayInTicks).
+     *              This delay helps prevent race conditions with block updates.
+     */
+    private fun toggleOtherDoor(
+        block: Block,
+        block2: Block,
+        open: Boolean,
+        delay: Long = config.initDelayInTicks,
+    ) {
+        if (block.blockData !is Door || block2.blockData !is Door) return
+
+        instance.server.scheduler.runTaskLater(
+            instance,
+            Runnable {
+                val door = block.blockData as Door
+                val door2 = block2.blockData as Door
+
+                if (door.isOpen != door2.isOpen) toggleDoor(block2, door2, open)
+            },
+            delay,
+        )
+    }
+
+    /**
+     * Retrieves the bottom half of a [Door] if the provided [Block] is the top half.
+     * @param block The [Block] to check.
+     * @return The bottom half of the [Door] if it exists, `null` otherwise.
+     */
+    private fun getDoorBottom(block: Block): Door? {
+        val door = block.blockData as? Door ?: return null
+
+        return if (door.half == Bisected.Half.BOTTOM) door else block.getRelative(BlockFace.DOWN).blockData as? Door
+    }
+
+    /**
+     * Retrieves the other part of a [Door] if it exists.
+     * @param door The [Door] block data.
+     * @param block The [Block] to check.
+     * @return The other part of the [Door] as a [Block] if it exists, `null` otherwise.
+     */
+    private fun getOtherPart(
+        door: Door?,
+        block: Block,
+    ): Block? {
+        if (door == null) return null
+
+        return possibleNeighbours
+            .map { it to block.getRelative(it.offsetX, 0, it.offsetZ).blockData as? Door }
+            .firstOrNull { (neighbour, otherDoor) ->
+                otherDoor?.let { neighbour.matchesDoorPair(it, door, block.type) } == true
+            }?.first
+            ?.getRelativeBlock(block)
+    }
+
+    /** Represents the config of the module. */
+    @Serializable
+    data class Config(
+        override var enabled: Boolean = false,
+        var initDelayInTicks: Long = 1,
+        var allowDoubleDoors: Boolean = true,
+        var allowKnocking: Boolean = true,
+        var allowIronDoorByHand: Boolean = false,
+        var knockingRequiresEmptyHand: Boolean = true,
+        var knockingRequiresShifting: Boolean = true,
+        var soundKnock: SoundData = SoundData("entity.zombie.attack_wooden_door", Sound.Source.HOSTILE),
+        var soundProximityRadius: Double = 10.0,
+    ) : ModuleConfigInterface
+}
