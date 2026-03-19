@@ -87,13 +87,7 @@ internal object SitModule : ModuleInterface {
         val player = event.entity as? Player ?: return
 
         sittingPlayers.remove(player.uniqueId.toKotlinUuid())?.let {
-            val blockLocation =
-                it.location
-                    .clone()
-                    .subtract(blockCenterOffset)
-                    .block.location
-
-            occupiedBlocks.remove(blockLocation)
+            occupiedBlocks.remove(it.blockLocation())
 
             val safe = it.location.clone().add(playerStandUpOffset)
 
@@ -110,13 +104,7 @@ internal object SitModule : ModuleInterface {
      */
     private fun playerQuit(event: PlayerQuitEvent) {
         sittingPlayers.remove(event.player.uniqueId.toKotlinUuid())?.let {
-            val blockLocation =
-                it.location
-                    .clone()
-                    .subtract(blockCenterOffset)
-                    .block.location
-
-            occupiedBlocks.remove(blockLocation)
+            occupiedBlocks.remove(it.blockLocation())
             it.remove()
         }
     }
@@ -129,16 +117,10 @@ internal object SitModule : ModuleInterface {
         val player = event.entity as? Player ?: return
         val playerId = player.uniqueId.toKotlinUuid()
 
-        sittingPlayers[playerId]?.let {
-            val blockLocation =
-                it.location
-                    .clone()
-                    .subtract(blockCenterOffset)
-                    .block.location
-
-            occupiedBlocks.remove(blockLocation)
+        sittingPlayers.remove(playerId)?.let {
+            occupiedBlocks.remove(it.blockLocation())
             it.removePassenger(player)
-            sittingPlayers.remove(playerId)
+            it.remove()
         }
     }
 
@@ -150,9 +132,7 @@ internal object SitModule : ModuleInterface {
         val brokenBlockLocation = event.block.location
 
         sittingPlayers.entries.removeIf { (_, armorStand) ->
-            val armorStandBlock = armorStand.location.subtract(blockCenterOffset).block
-
-            if (armorStandBlock.location == brokenBlockLocation) {
+            if (armorStand.blockLocation() == brokenBlockLocation) {
                 occupiedBlocks.remove(brokenBlockLocation)
                 armorStand.passengers
                     .filterIsInstance<Player>()
@@ -195,6 +175,13 @@ internal object SitModule : ModuleInterface {
         sittingPlayers[playerId] = armorStand
         occupiedBlocks[blockLocation] = playerId
     }
+
+    /** Returns the [Location] of the block this [ArmorStand] is sitting on. */
+    private fun ArmorStand.blockLocation() =
+        location
+            .clone()
+            .subtract(blockCenterOffset)
+            .block.location
 
     /** Represents the config of the module. */
     @Serializable
