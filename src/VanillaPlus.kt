@@ -89,6 +89,7 @@ internal class VanillaPlus : JavaPlugin() {
                 TameableModule,
             )
 
+        ConfigManager.prune()
         ConfigManager.save("config.json")
 
         val modules = allModules.filter { it.config.enabled }

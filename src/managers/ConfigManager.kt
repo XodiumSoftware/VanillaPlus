@@ -12,6 +12,7 @@ import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.managers.ConfigManager.data
+import org.xodium.vanillaplus.managers.ConfigManager.decodeWith
 import org.xodium.vanillaplus.strategies.CapitalizedStrategy
 import org.xodium.vanillaplus.utils.CommandUtils.executesCatching
 import org.xodium.vanillaplus.utils.ScheduleUtils.runAsync
@@ -42,6 +43,7 @@ internal object ConfigManager {
         private set
 
     private val reloadListeners = mutableListOf<() -> Unit>()
+    private val registeredKeys = mutableSetOf<String>()
 
     /**
      * Registers a [listener] to be called whenever the configuration is reloaded.
@@ -86,7 +88,7 @@ internal object ConfigManager {
 
         if (!path.exists()) path.createDirectories()
 
-        file.writeText(json.encodeToString(data))
+        file.writeText(json.encodeToString(JsonObject(data.toSortedMap())))
     }
 
     /**
@@ -114,12 +116,21 @@ internal object ConfigManager {
         serializer: KSerializer<T>,
         default: T,
     ): T {
+        registeredKeys.add(key)
         val decoded =
             data[key]
                 ?.let { runCatching { json.decodeFromJsonElement(serializer, it) }.getOrDefault(default) }
                 ?: default
         merge(key, json.encodeToJsonElement(serializer, decoded))
         return decoded
+    }
+
+    /**
+     * Removes any keys from [data] that were not registered via [decodeWith].
+     * Call this before saving to clean up stale module entries.
+     */
+    fun prune() {
+        data = JsonObject(data.filterKeys { it in registeredKeys })
     }
 
     /** The permission required to execute the reload command. */
@@ -145,6 +156,7 @@ internal object ConfigManager {
                             runAsync {
                                 load("config.json")
                                 notifyReload()
+                                prune()
                                 save("config.json")
                                 runSync {
                                     if (sender is Player) {
