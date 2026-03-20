@@ -52,6 +52,22 @@ internal object PlayerMessageManager {
         )
 
     /**
+     * Handles the non-PvP death message (fall, fire, drowning, etc.).
+     * @param player The player who died.
+     * @param cause The vanilla death message component.
+     * @return The formatted death message component, or null if no message is set.
+     */
+    fun handleDeathNoPvp(
+        player: Player,
+        cause: Component?,
+    ): Component? =
+        MM.deserialize(
+            config.playerDeathMsg.takeUnless { it.isEmpty() } ?: return null,
+            Placeholder.component("player", player.displayName()),
+            Placeholder.component("cause", cause ?: return null),
+        )
+
+    /**
      * Handles the player death screen message.
      * @return The formatted death screen message component, or null if no message is set.
      */

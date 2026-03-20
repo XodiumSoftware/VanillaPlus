@@ -117,7 +117,17 @@ internal object PlayerModule : ModuleInterface {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerDeathEvent) {
         dropPlayerHead(event.player)
-        event.deathMessage(PlayerMessageManager.handleDeath(event.player, event.entity.killer) ?: return)
+
+        val killer = event.entity.killer
+        val deathMessage =
+            if (killer != null) {
+                PlayerMessageManager.handleDeath(event.player, killer)
+            } else {
+                PlayerMessageManager.handleDeathNoPvp(event.player, event.deathMessage())
+            }
+
+        if (deathMessage != null) event.deathMessage(deathMessage)
+
         event.deathScreenMessageOverride(PlayerMessageManager.handleDeathScreen())
     }
 
@@ -292,6 +302,8 @@ internal object PlayerModule : ModuleInterface {
             var playerJoinMsg: String = "<green>➕<reset> <gradient:#FFE259:#FFA751>›</gradient> <player>",
             var playerQuitMsg: String = "<red>➖<reset> <gradient:#FFE259:#FFA751>›</gradient> <player>",
             var playerDeathByPlayerMsg: String = "<killer> <gradient:#FFE259:#FFA751>⚔</gradient> <player>",
+            var playerDeathMsg: String =
+                "<gradient:#FFE259:#FFA751>💀</gradient> <gradient:#FFE259:#FFA751>›</gradient> <cause>",
             var playerDeathScreenMsg: String = "☠",
             var playerKickMsg: String =
                 "<red>❌<reset> <gradient:#FFE259:#FFA751>›</gradient> <player> " +
