@@ -59,16 +59,6 @@ tasks {
         minimize()
     }
     jar { enabled = false }
-    register<Exec>("deploy") {
-        dependsOn(named("shadowJar"))
-        commandLine(
-            "gio",
-            "copy",
-            "-p",
-            deployJarPath,
-            "sftp://root@sftp.xodium.org:2222/var/lib/lxc/100/rootfs/opt/docker/data/plugins/update/",
-        )
-    }
     runServer { minecraftVersion(mcVersion) }
     withType<JavaCompile> { options.encoding = "UTF-8" }
     withType(AbstractRun::class) { jvmArgs("-XX:+AllowEnhancedClassRedefinition") }
