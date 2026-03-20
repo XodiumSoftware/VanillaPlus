@@ -5,12 +5,11 @@ package org.xodium.vanillaplus.modules
 import com.destroystokyo.paper.event.player.PlayerSetSpawnEvent
 import com.mojang.brigadier.arguments.StringArgumentType
 import io.papermc.paper.command.brigadier.Commands
-import io.papermc.paper.datacomponent.DataComponentTypes
-import io.papermc.paper.datacomponent.item.ResolvableProfile
 import io.papermc.paper.event.connection.PlayerConnectionValidateLoginEvent
 import io.papermc.paper.event.entity.EntityEquipmentChangedEvent
 import io.papermc.paper.event.player.PlayerServerFullCheckEvent
 import kotlinx.serialization.Serializable
+import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -27,6 +26,8 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerKickEvent
 import org.bukkit.event.player.PlayerQuitEvent
+import org.bukkit.event.weather.ThunderChangeEvent
+import org.bukkit.event.weather.WeatherChangeEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
@@ -44,8 +45,11 @@ import org.xodium.vanillaplus.managers.PlayerMessageManager
 import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import org.xodium.vanillaplus.utils.PlayerUtils.face
+import org.xodium.vanillaplus.utils.PlayerUtils.head
+import org.xodium.vanillaplus.utils.PlayerUtils.setNickname
 import org.xodium.vanillaplus.utils.Utils.MM
 import org.xodium.vanillaplus.utils.Utils.configDelegate
+import org.xodium.vanillaplus.utils.Utils.weather
 import kotlin.random.Random
 
 /** Represents a module handling player mechanics within the system. */
@@ -86,8 +90,16 @@ internal object PlayerModule : ModuleInterface {
 
         player.setNickname()
         joinBanner(player)
+        tablist(player)
+        player.playerListName(player.displayName())
         event.joinMessage(PlayerMessageManager.handleJoin(player) ?: return)
     }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun on(event: WeatherChangeEvent) = event.world.players.forEach { tablist(it) }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun on(event: ThunderChangeEvent) = event.world.players.forEach { tablist(it) }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerQuitEvent) {
@@ -257,15 +269,28 @@ internal object PlayerModule : ModuleInterface {
         )
     }
 
-    /** Sets the display name of the player based on their nickname. */
-    private fun Player.setNickname() = displayName(MM.deserialize(nickname))
-
-    /** Drops the player's head at their location based on the configured chance. */
-    @Suppress("UnstableApiUsage")
-    private fun Player.head(): ItemStack =
-        ItemStack.of(Material.PLAYER_HEAD).apply {
-            setData(DataComponentTypes.PROFILE, ResolvableProfile.resolvableProfile(playerProfile))
-        }
+    /**
+     * Updates the tab list header and footer for the given audience.
+     * @param audience The audience to update the tab list for.
+     */
+    private fun tablist(audience: Audience) {
+        audience.sendPlayerListHeaderAndFooter(
+            MM.deserialize(config.tabList.header.joinToString("\n")),
+            MM.deserialize(
+                config.tabList.footer.joinToString("\n"),
+                Placeholder.component(
+                    "weather",
+                    MM.deserialize(
+                        instance.server.worlds[0].weather(
+                            config.tabList.i18n.weatherThundering,
+                            config.tabList.i18n.weatherStorm,
+                            config.tabList.i18n.weatherClear,
+                        ),
+                    ),
+                ),
+            ),
+        )
+    }
 
     /** Represents the config of the module. */
     @Serializable
@@ -287,8 +312,39 @@ internal object PlayerModule : ModuleInterface {
                 "<gradient:#FFA751:#FFE259>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
             ),
         var silkTouch: SilkTouchEnchantment = SilkTouchEnchantment(),
+        var tabList: TabList = TabList(),
         var i18n: I18n = I18n(),
     ) : ModuleConfigInterface {
+        /** Represents the tab list header, footer, and weather i18n configuration. */
+        @Serializable
+        data class TabList(
+            var header: List<String> =
+                listOf(
+                    "<gradient:#FFA751:#FFE259><st>───────────────</st></gradient> " +
+                        "<gradient:#CB2D3E:#EF473A>" +
+                        "\uD835\uDD74\uD835\uDD91\uD835\uDD91\uD835\uDD9E\uD835\uDD97\uD835\uDD8E\uD835\uDD86" +
+                        "</gradient> " +
+                        "<gradient:#FFE259:#FFA751><st>───────────────</st></gradient>",
+                    "",
+                ),
+            var footer: List<String> =
+                listOf(
+                    "",
+                    "<gradient:#FFA751:#FFE259><st>──────────</st></gradient>  " +
+                        "<gradient:#CB2D3E:#EF473A>Weather:</gradient> <weather> " +
+                        " <gradient:#FFE259:#FFA751><st>──────────</st></gradient>",
+                ),
+            var i18n: I18n = I18n(),
+        ) {
+            /** Represents the weather i18n strings for the tab list. */
+            @Serializable
+            data class I18n(
+                var weatherThundering: String = "<red>\uD83C\uDF29<reset>",
+                var weatherStorm: String = "<yellow>\uD83C\uDF26<reset>",
+                var weatherClear: String = "<green>\uD83C\uDF24<reset>",
+            )
+        }
+
         /** Represents the settings for the Silk Touch enchantment. */
         @Serializable
         data class SilkTouchEnchantment(

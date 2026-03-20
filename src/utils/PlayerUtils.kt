@@ -3,15 +3,21 @@
 package org.xodium.vanillaplus.utils
 
 import com.google.gson.JsonParser
+import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.ResolvableProfile
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Chunk
 import org.bukkit.Color
+import org.bukkit.Material
 import org.bukkit.block.Container
 import org.bukkit.entity.Player
 import org.bukkit.entity.Tameable
+import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
 import org.xodium.vanillaplus.pdcs.PlayerPDC.scoreboardVisibility
+import org.xodium.vanillaplus.utils.Utils.MM
 import java.net.URI
 import javax.imageio.ImageIO
 import kotlin.io.encoding.Base64
@@ -138,4 +144,14 @@ internal object PlayerUtils {
         waypointColor = color?.let { Color.fromRGB(it.value()) }
         sendActionBar(Component.text("Locator color changed!", color))
     }
+
+    /** Sets the display name of the player based on their nickname. */
+    fun Player.setNickname() = displayName(MM.deserialize(nickname))
+
+    /** Returns an [ItemStack] of this player's head with their skin profile applied. */
+    @Suppress("UnstableApiUsage")
+    fun Player.head(): ItemStack =
+        ItemStack.of(Material.PLAYER_HEAD).apply {
+            setData(DataComponentTypes.PROFILE, ResolvableProfile.resolvableProfile(playerProfile))
+        }
 }

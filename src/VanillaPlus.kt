@@ -19,7 +19,6 @@ import org.xodium.vanillaplus.modules.PlayerModule
 import org.xodium.vanillaplus.modules.ScoreBoardModule
 import org.xodium.vanillaplus.modules.ServerInfoModule
 import org.xodium.vanillaplus.modules.SitModule
-import org.xodium.vanillaplus.modules.TabListModule
 import org.xodium.vanillaplus.modules.TameableModule
 import org.xodium.vanillaplus.recipes.ChainmailRecipe
 import org.xodium.vanillaplus.recipes.DiamondRecycleRecipe
@@ -85,7 +84,6 @@ internal class VanillaPlus : JavaPlugin() {
                 ServerInfoModule,
                 ScoreBoardModule,
                 SitModule,
-                TabListModule,
                 TameableModule,
             )
 
