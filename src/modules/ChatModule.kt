@@ -15,7 +15,6 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
-import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -23,7 +22,6 @@ import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.CommandUtils.executesCatching
-import org.xodium.vanillaplus.utils.PlayerUtils.face
 import org.xodium.vanillaplus.utils.Utils.MM
 import org.xodium.vanillaplus.utils.Utils.configDelegate
 import org.xodium.vanillaplus.utils.Utils.prefix
@@ -82,9 +80,6 @@ internal object ChatModule : ModuleInterface {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: AsyncChatEvent) = asyncChat(event)
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    fun on(event: PlayerJoinEvent) = playerJoin(event)
-
     /**
      * Handles asynchronous chat events.
      * @param event The [AsyncChatEvent] to be processed.
@@ -110,28 +105,6 @@ internal object ChatModule : ModuleInterface {
             if (audience == player) base = base.appendSpace().append(createDeleteCross(event.signedMessage()))
             base
         }
-    }
-
-    /**
-     * Handles player join events.
-     * @param event The [PlayerJoinEvent] to be processed.
-     */
-    private fun playerJoin(event: PlayerJoinEvent) {
-        val player = event.player
-
-        var imageIndex = 0
-
-        player.sendMessage(
-            MM.deserialize(
-                Regex("<image>").replace(config.welcomeText.joinToString("\n")) { "<image${++imageIndex}>" },
-                Placeholder.component("player", player.displayName()),
-                *player
-                    .face()
-                    .lines()
-                    .mapIndexed { i, line -> Placeholder.component("image${i + 1}", MM.deserialize(line)) }
-                    .toTypedArray(),
-            ),
-        )
     }
 
     /**
@@ -190,19 +163,6 @@ internal object ChatModule : ModuleInterface {
     data class Config(
         override var enabled: Boolean = false,
         var chatFormat: String = "<player_head> <player> <reset><gradient:#FFE259:#FFA751>›</gradient> <message>",
-        var welcomeText: List<String> =
-            listOf(
-                "<gradient:#FFA751:#FFE259>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
-                "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
-                "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
-                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gradient:#CB2D3E:#EF473A>Welcome</gradient> <player> <click:suggest_command:'/nickname '><hover:show_text:'<gradient:#FFE259:#FFA751>Set your nickname!</gradient>'><white><sprite:items:item/name_tag></white></hover></click> <click:suggest_command:'/locator '><hover:show_text:'<gradient:#FFE259:#FFA751>Change your locator color!</gradient>'><white><sprite:items:item/compass_00></white></hover></click>",
-                "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
-                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gradient:#CB2D3E:#EF473A>Check out</gradient><gray>:</gray>",
-                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gray>✦</gray> <click:run_command:'/rules'><gradient:#13547a:#80d0c7>/rules</gradient></click:run_command>",
-                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gray>✦</gray> <click:open_url:'https://illyria.fandom.com'><gradient:#13547a:#80d0c7>wiki</gradient></click:open_url>",
-                "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
-                "<gradient:#FFA751:#FFE259>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
-            ),
         var whisperToFormat: String =
             "<gradient:#1488CC:#2B32B2>You</gradient> <gradient:#FFE259:#FFA751>➛</gradient> <player> <reset><gradient:#FFE259:#FFA751>›</gradient> <message>",
         var whisperFromFormat: String =

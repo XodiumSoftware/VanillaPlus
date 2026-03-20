@@ -40,6 +40,7 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.PlayerMessageManager
 import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
+import org.xodium.vanillaplus.utils.PlayerUtils.face
 import org.xodium.vanillaplus.utils.Utils.MM
 import org.xodium.vanillaplus.utils.Utils.configDelegate
 import kotlin.random.Random
@@ -78,8 +79,11 @@ internal object PlayerModule : ModuleInterface {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
-        event.player.setNickname()
-        event.joinMessage(PlayerMessageManager.handleJoin(event.player) ?: return)
+        val player = event.player
+
+        player.setNickname()
+        joinBanner(player)
+        event.joinMessage(PlayerMessageManager.handleJoin(player) ?: return)
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -128,6 +132,26 @@ internal object PlayerModule : ModuleInterface {
 
     @EventHandler
     fun on(event: EntityEquipmentChangedEvent) = NightVisionEnchantment.nightVision(event)
+
+    /**
+     * Sends the welcome banner to the player on join.
+     * @param player The player who joined.
+     */
+    private fun joinBanner(player: Player) {
+        var imageIndex = 0
+
+        player.sendMessage(
+            MM.deserialize(
+                Regex("<image>").replace(config.welcomeText.joinToString("\n")) { "<image${++imageIndex}>" },
+                Placeholder.component("player", player.displayName()),
+                *player
+                    .face()
+                    .lines()
+                    .mapIndexed { i, line -> Placeholder.component("image${i + 1}", MM.deserialize(line)) }
+                    .toTypedArray(),
+            ),
+        )
+    }
 
     /**
      * Attempts to drop the specified player's head at their current location.
@@ -215,6 +239,19 @@ internal object PlayerModule : ModuleInterface {
         override var enabled: Boolean = false,
         var skullDropChance: Double = 0.01,
         var xpCostToBottle: Int = 11,
+        var welcomeText: List<String> =
+            listOf(
+                "<gradient:#FFA751:#FFE259>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gradient:#CB2D3E:#EF473A>Welcome</gradient> <player> <click:suggest_command:'/nickname '><hover:show_text:'<gradient:#FFE259:#FFA751>Set your nickname!</gradient>'><white><sprite:items:item/name_tag></white></hover></click> <click:suggest_command:'/locator '><hover:show_text:'<gradient:#FFE259:#FFA751>Change your locator color!</gradient>'><white><sprite:items:item/compass_00></white></hover></click>",
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gradient:#CB2D3E:#EF473A>Check out</gradient><gray>:</gray>",
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gray>✦</gray> <click:run_command:'/rules'><gradient:#13547a:#80d0c7>/rules</gradient></click:run_command>",
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gray>✦</gray> <click:open_url:'https://illyria.fandom.com'><gradient:#13547a:#80d0c7>wiki</gradient></click:open_url>",
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
+                "<gradient:#FFA751:#FFE259>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
+            ),
         var silkTouch: SilkTouchEnchantment = SilkTouchEnchantment(),
         var i18n: I18n = I18n(),
     ) : ModuleConfigInterface {
