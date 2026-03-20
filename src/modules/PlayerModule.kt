@@ -7,7 +7,9 @@ import com.mojang.brigadier.arguments.StringArgumentType
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ResolvableProfile
+import io.papermc.paper.event.connection.PlayerConnectionValidateLoginEvent
 import io.papermc.paper.event.entity.EntityEquipmentChangedEvent
+import io.papermc.paper.event.player.PlayerServerFullCheckEvent
 import kotlinx.serialization.Serializable
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.GameMode
@@ -90,6 +92,21 @@ internal object PlayerModule : ModuleInterface {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerQuitEvent) {
         event.quitMessage(PlayerMessageManager.handleQuit(event.player) ?: return)
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    fun on(event: PlayerServerFullCheckEvent) {
+        if (event.isAllowed) return
+
+        event.deny(PlayerMessageManager.handleServerFull() ?: return)
+    }
+
+    @Suppress("UnstableApiUsage")
+    @EventHandler(priority = EventPriority.HIGH)
+    fun on(event: PlayerConnectionValidateLoginEvent) {
+        if (event.isAllowed) return
+
+        event.kickMessage(PlayerMessageManager.handleLoginDenied() ?: return)
     }
 
     @EventHandler
@@ -276,7 +293,6 @@ internal object PlayerModule : ModuleInterface {
             var playerQuitMsg: String = "<red>➖<reset> <gradient:#FFE259:#FFA751>›</gradient> <player>",
             var playerDeathByPlayerMsg: String = "<killer> <gradient:#FFE259:#FFA751>⚔</gradient> <player>",
             var playerDeathScreenMsg: String = "☠",
-            var advancementMessages: AdvancementMessages = AdvancementMessages(),
             var playerKickMsg: String =
                 "<red>❌<reset> <gradient:#FFE259:#FFA751>›</gradient> <player> " +
                     "<gradient:#FFE259:#FFA751>reason:</gradient> <reason>",
@@ -284,7 +300,9 @@ internal object PlayerModule : ModuleInterface {
                 "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> <notification>",
             var nicknameUpdated: String =
                 "<gradient:#CB2D3E:#EF473A>Nickname has been updated to: <nickname></gradient>",
+            var advancementMessages: AdvancementMessages = AdvancementMessages(),
             var bedEnterMessages: BedEnterMessages = BedEnterMessages(),
+            var loginMessages: LoginMessages = LoginMessages(),
         ) {
             /** Represents the i18n messages for each advancement type. */
             @Serializable
@@ -298,6 +316,15 @@ internal object PlayerModule : ModuleInterface {
                 var challenge: String =
                     "\uD83C\uDF89 <gradient:#FFE259:#FFA751>›</gradient> <player> " +
                         "<gradient:#FFE259:#FFA751>has completed the challenge:</gradient> <advancement>",
+            )
+
+            /** Represents the i18n messages shown to players denied during login. */
+            @Serializable
+            data class LoginMessages(
+                var full: String =
+                    "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> The server is full.",
+                var denied: String =
+                    "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> You are not allowed to join this server.",
             )
 
             /** Represents the i18n messages for bed enter failure reasons. */

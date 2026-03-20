@@ -18,22 +18,22 @@ internal object PlayerMessageManager {
      * @param player The player who joined.
      * @return The formatted join message component, or null if no message is set.
      */
-    fun handleJoin(player: Player): Component? {
-        if (config.playerJoinMsg.isEmpty()) return null
-
-        return MM.deserialize(config.playerJoinMsg, Placeholder.component("player", player.displayName()))
-    }
+    fun handleJoin(player: Player): Component? =
+        MM.deserialize(
+            config.playerJoinMsg.takeUnless { it.isEmpty() } ?: return null,
+            Placeholder.component("player", player.displayName()),
+        )
 
     /**
      * Handles the player leave message.
      * @param player The player who left.
      * @return The formatted leave message component, or null if no message is set.
      */
-    fun handleQuit(player: Player): Component? {
-        if (config.playerQuitMsg.isEmpty()) return null
-
-        return MM.deserialize(config.playerQuitMsg, Placeholder.component("player", player.displayName()))
-    }
+    fun handleQuit(player: Player): Component? =
+        MM.deserialize(
+            config.playerQuitMsg.takeUnless { it.isEmpty() } ?: return null,
+            Placeholder.component("player", player.displayName()),
+        )
 
     /**
      * Handles the player death message.
@@ -44,25 +44,19 @@ internal object PlayerMessageManager {
     fun handleDeath(
         player: Player,
         killer: Player?,
-    ): Component? {
-        if (config.playerDeathByPlayerMsg.isEmpty() || killer == null) return null
-
-        return MM.deserialize(
-            config.playerDeathByPlayerMsg,
+    ): Component? =
+        MM.deserialize(
+            config.playerDeathByPlayerMsg.takeUnless { it.isEmpty() } ?: return null,
             Placeholder.component("player", player.displayName()),
-            Placeholder.component("killer", killer.displayName()),
+            Placeholder.component("killer", (killer ?: return null).displayName()),
         )
-    }
 
     /**
      * Handles the player death screen message.
      * @return The formatted death screen message component, or null if no message is set.
      */
-    fun handleDeathScreen(): Component? {
-        if (config.playerDeathScreenMsg.isEmpty()) return null
-
-        return MM.deserialize(config.playerDeathScreenMsg)
-    }
+    fun handleDeathScreen(): Component? =
+        MM.deserialize(config.playerDeathScreenMsg.takeUnless { it.isEmpty() } ?: return null)
 
     /**
      * Handles the player advancement completion message, with different formats per advancement type.
@@ -81,22 +75,36 @@ internal object PlayerMessageManager {
                 AdvancementDisplay.Frame.TASK -> config.advancementMessages.task
                 AdvancementDisplay.Frame.GOAL -> config.advancementMessages.goal
                 AdvancementDisplay.Frame.CHALLENGE -> config.advancementMessages.challenge
-            }.takeIf { it.isNotEmpty() } ?: return null,
+            }.takeUnless { it.isEmpty() } ?: return null,
             Placeholder.component("player", player.displayName()),
             Placeholder.component("advancement", display.title()),
         )
     }
 
     /**
+     * Handles the kick message shown when the server is full.
+     * @return The formatted kick message component, or null if no message is set.
+     */
+    fun handleServerFull(): Component? =
+        MM.deserialize(config.loginMessages.full.takeUnless { it.isEmpty() } ?: return null)
+
+    /**
+     * Handles the kick message shown when a player is denied login (ban, IP ban, whitelist).
+     * @return The formatted kick message component, or null if no message is set.
+     */
+    fun handleLoginDenied(): Component? =
+        MM.deserialize(config.loginMessages.denied.takeUnless { it.isEmpty() } ?: return null)
+
+    /**
      * Handles the player kick message.
      * @param reason The reason for the kick.
      * @return The formatted kick message component, or null if no message is set.
      */
-    fun handleKick(reason: Component): Component? {
-        if (config.playerKickMsg.isEmpty()) return null
-
-        return MM.deserialize(config.playerKickMsg, Placeholder.component("reason", reason))
-    }
+    fun handleKick(reason: Component): Component? =
+        MM.deserialize(
+            config.playerKickMsg.takeUnless { it.isEmpty() } ?: return null,
+            Placeholder.component("reason", reason),
+        )
 
     /**
      * Handles the bed enter failure message.
@@ -112,7 +120,7 @@ internal object PlayerMessageManager {
                 BedEnterProblem.NOT_SAFE -> config.bedEnterMessages.notSafe
                 BedEnterProblem.EXPLOSION -> config.bedEnterMessages.explosion
                 else -> config.bedEnterMessages.other
-            }.takeIf { it.isNotEmpty() } ?: return null,
+            }.takeUnless { it.isEmpty() } ?: return null,
         )
     }
 
@@ -121,9 +129,9 @@ internal object PlayerMessageManager {
      * @param notification The original notification component.
      * @return The formatted set spawn notification component.
      */
-    fun handleSetSpawn(notification: Component): Component? {
-        if (config.playerSetSpawnMsg.isEmpty()) return null
-
-        return MM.deserialize(config.playerSetSpawnMsg, Placeholder.component("notification", notification))
-    }
+    fun handleSetSpawn(notification: Component): Component? =
+        MM.deserialize(
+            config.playerSetSpawnMsg.takeUnless { it.isEmpty() } ?: return null,
+            Placeholder.component("notification", notification),
+        )
 }
