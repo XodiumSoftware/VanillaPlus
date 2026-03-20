@@ -330,9 +330,9 @@ internal object PlayerModule : ModuleInterface {
             var footer: List<String> =
                 listOf(
                     "",
-                    "<gradient:#FFA751:#FFE259><st>──────────</st></gradient>  " +
+                    "<gradient:#FFA751:#FFE259><st>─────────────</st></gradient>  " +
                         "<gradient:#CB2D3E:#EF473A>Weather:</gradient> <weather> " +
-                        " <gradient:#FFE259:#FFA751><st>──────────</st></gradient>",
+                        " <gradient:#FFE259:#FFA751><st>─────────────</st></gradient>",
                 ),
             var i18n: I18n = I18n(),
         ) {
