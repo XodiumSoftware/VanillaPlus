@@ -1,6 +1,5 @@
 package org.xodium.vanillaplus.modules
 
-import com.destroystokyo.paper.event.player.PlayerSetSpawnEvent
 import com.mojang.brigadier.arguments.StringArgumentType
 import io.papermc.paper.chat.ChatRenderer
 import io.papermc.paper.command.brigadier.Commands
@@ -86,9 +85,6 @@ internal object ChatModule : ModuleInterface {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) = playerJoin(event)
 
-    @EventHandler
-    fun on(event: PlayerSetSpawnEvent) = playerSetSpawn(event)
-
     /**
      * Handles asynchronous chat events.
      * @param event The [AsyncChatEvent] to be processed.
@@ -136,18 +132,6 @@ internal object ChatModule : ModuleInterface {
                     .toTypedArray(),
             ),
         )
-    }
-
-    /**
-     * Handles player set spawn events.
-     * @param event The [PlayerSetSpawnEvent] to be processed.
-     */
-    private fun playerSetSpawn(event: PlayerSetSpawnEvent) {
-        event.notification =
-            MM.deserialize(
-                config.i18n.playerSetSpawn,
-                Placeholder.component("notification", event.notification ?: return),
-            )
     }
 
     /**
@@ -235,8 +219,6 @@ internal object ChatModule : ModuleInterface {
                 "${instance.prefix} <gradient:#CB2D3E:#EF473A>Player is not Online!</gradient>",
             var deleteMessage: String = "<gradient:#FFE259:#FFA751>Click to delete your message</gradient>",
             var clickToClipboard: String = "<gradient:#FFE259:#FFA751>Click to copy position to clipboard</gradient>",
-            var playerSetSpawn: String =
-                "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> <notification>",
         )
     }
 }

@@ -91,4 +91,15 @@ internal object PlayerMessageManager {
 
         return MM.deserialize(config.playerKickMsg, Placeholder.component("reason", reason))
     }
+
+    /**
+     * Handles the player set spawn notification.
+     * @param notification The original notification component.
+     * @return The formatted set spawn notification component.
+     */
+    fun handleSetSpawn(notification: Component): Component? {
+        if (config.playerSetSpawnMsg.isEmpty()) return null
+
+        return MM.deserialize(config.playerSetSpawnMsg, Placeholder.component("notification", notification))
+    }
 }

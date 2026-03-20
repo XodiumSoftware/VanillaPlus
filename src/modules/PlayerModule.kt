@@ -2,6 +2,7 @@
 
 package org.xodium.vanillaplus.modules
 
+import com.destroystokyo.paper.event.player.PlayerSetSpawnEvent
 import com.mojang.brigadier.arguments.StringArgumentType
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.datacomponent.DataComponentTypes
@@ -101,6 +102,11 @@ internal object PlayerModule : ModuleInterface {
     @EventHandler
     fun on(event: PlayerAdvancementDoneEvent) {
         event.message(PlayerMessageManager.handleAdvancement(event.player, event.advancement) ?: return)
+    }
+
+    @EventHandler
+    fun on(event: PlayerSetSpawnEvent) {
+        event.notification = PlayerMessageManager.handleSetSpawn(event.notification ?: return) ?: return
     }
 
     @EventHandler
@@ -232,6 +238,8 @@ internal object PlayerModule : ModuleInterface {
             var playerKickMsg: String =
                 "<red>❌<reset> <gradient:#FFE259:#FFA751>›</gradient> <player> " +
                     "<gradient:#FFE259:#FFA751>reason:</gradient> <reason>",
+            var playerSetSpawnMsg: String =
+                "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> <notification>",
             var nicknameUpdated: String =
                 "<gradient:#CB2D3E:#EF473A>Nickname has been updated to: <nickname></gradient>",
         )
