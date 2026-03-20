@@ -20,6 +20,7 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockDropItemEvent
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerAdvancementDoneEvent
+import org.bukkit.event.player.PlayerBedEnterEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerKickEvent
@@ -111,6 +112,12 @@ internal object PlayerModule : ModuleInterface {
     @EventHandler
     fun on(event: PlayerSetSpawnEvent) {
         event.notification = PlayerMessageManager.handleSetSpawn(event.notification ?: return) ?: return
+    }
+
+    @Suppress("UnstableApiUsage")
+    @EventHandler
+    fun on(event: PlayerBedEnterEvent) {
+        event.player.sendMessage(PlayerMessageManager.handleBedEnter(event.enterAction().problem() ?: return) ?: return)
     }
 
     @EventHandler
@@ -279,6 +286,21 @@ internal object PlayerModule : ModuleInterface {
                 "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> <notification>",
             var nicknameUpdated: String =
                 "<gradient:#CB2D3E:#EF473A>Nickname has been updated to: <nickname></gradient>",
-        )
+            var bedEnterMessages: BedEnterMessages = BedEnterMessages(),
+        ) {
+            /** Represents the i18n messages for bed enter failure reasons. */
+            @Serializable
+            data class BedEnterMessages(
+                var tooFarAway: String =
+                    "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> You are too far away from the bed.",
+                var obstructed: String =
+                    "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> Your bed is obstructed.",
+                var notSafe: String =
+                    "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> You cannot sleep while monsters are nearby.",
+                var explosion: String =
+                    "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> You cannot sleep here.",
+                var other: String = "",
+            )
+        }
     }
 }

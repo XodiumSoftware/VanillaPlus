@@ -1,5 +1,6 @@
 package org.xodium.vanillaplus.managers
 
+import io.papermc.paper.block.bed.BedEnterProblem
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.advancement.Advancement
@@ -90,6 +91,24 @@ internal object PlayerMessageManager {
         if (config.playerKickMsg.isEmpty()) return null
 
         return MM.deserialize(config.playerKickMsg, Placeholder.component("reason", reason))
+    }
+
+    /**
+     * Handles the bed enter failure message.
+     * @param problem The problem preventing the player from sleeping.
+     * @return The formatted bed enter message component, or null if no message is set for this problem.
+     */
+    @Suppress("UnstableApiUsage")
+    fun handleBedEnter(problem: BedEnterProblem): Component? {
+        return MM.deserialize(
+            when (problem) {
+                BedEnterProblem.TOO_FAR_AWAY -> config.bedEnterMessages.tooFarAway
+                BedEnterProblem.OBSTRUCTED -> config.bedEnterMessages.obstructed
+                BedEnterProblem.NOT_SAFE -> config.bedEnterMessages.notSafe
+                BedEnterProblem.EXPLOSION -> config.bedEnterMessages.explosion
+                else -> config.bedEnterMessages.other
+            }.takeIf { it.isNotEmpty() } ?: return null,
+        )
     }
 
     /**
