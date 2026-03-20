@@ -1,5 +1,6 @@
 package org.xodium.vanillaplus.managers
 
+import io.papermc.paper.advancement.AdvancementDisplay
 import io.papermc.paper.block.bed.BedEnterProblem
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
@@ -64,21 +65,25 @@ internal object PlayerMessageManager {
     }
 
     /**
-     * Handles the player advancement completion message.
+     * Handles the player advancement completion message, with different formats per advancement type.
      * @param player The player who completed the advancement.
      * @param advancement The advancement that was completed.
-     * @return The formatted advancement completion message component, or null if no message is set.
+     * @return The formatted advancement completion message component, or null if no message is set or the advancement has no display.
      */
     fun handleAdvancement(
         player: Player,
         advancement: Advancement,
     ): Component? {
-        if (config.playerAdvancementDoneMsg.isEmpty()) return null
+        val display = advancement.display ?: return null
 
         return MM.deserialize(
-            config.playerAdvancementDoneMsg,
+            when (display.frame()) {
+                AdvancementDisplay.Frame.TASK -> config.advancementMessages.task
+                AdvancementDisplay.Frame.GOAL -> config.advancementMessages.goal
+                AdvancementDisplay.Frame.CHALLENGE -> config.advancementMessages.challenge
+            }.takeIf { it.isNotEmpty() } ?: return null,
             Placeholder.component("player", player.displayName()),
-            Placeholder.component("advancement", advancement.displayName()),
+            Placeholder.component("advancement", display.title()),
         )
     }
 

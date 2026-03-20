@@ -276,9 +276,7 @@ internal object PlayerModule : ModuleInterface {
             var playerQuitMsg: String = "<red>➖<reset> <gradient:#FFE259:#FFA751>›</gradient> <player>",
             var playerDeathByPlayerMsg: String = "<killer> <gradient:#FFE259:#FFA751>⚔</gradient> <player>",
             var playerDeathScreenMsg: String = "☠",
-            var playerAdvancementDoneMsg: String =
-                "\uD83C\uDF89 <gradient:#FFE259:#FFA751>›</gradient> <player> " +
-                    "<gradient:#FFE259:#FFA751>has made the advancement:</gradient> <advancement>",
+            var advancementMessages: AdvancementMessages = AdvancementMessages(),
             var playerKickMsg: String =
                 "<red>❌<reset> <gradient:#FFE259:#FFA751>›</gradient> <player> " +
                     "<gradient:#FFE259:#FFA751>reason:</gradient> <reason>",
@@ -288,6 +286,20 @@ internal object PlayerModule : ModuleInterface {
                 "<gradient:#CB2D3E:#EF473A>Nickname has been updated to: <nickname></gradient>",
             var bedEnterMessages: BedEnterMessages = BedEnterMessages(),
         ) {
+            /** Represents the i18n messages for each advancement type. */
+            @Serializable
+            data class AdvancementMessages(
+                var task: String =
+                    "\uD83C\uDF89 <gradient:#FFE259:#FFA751>›</gradient> <player> " +
+                        "<gradient:#FFE259:#FFA751>has made the advancement:</gradient> <advancement>",
+                var goal: String =
+                    "\uD83C\uDF89 <gradient:#FFE259:#FFA751>›</gradient> <player> " +
+                        "<gradient:#FFE259:#FFA751>has reached the goal:</gradient> <advancement>",
+                var challenge: String =
+                    "\uD83C\uDF89 <gradient:#FFE259:#FFA751>›</gradient> <player> " +
+                        "<gradient:#FFE259:#FFA751>has completed the challenge:</gradient> <advancement>",
+            )
+
             /** Represents the i18n messages for bed enter failure reasons. */
             @Serializable
             data class BedEnterMessages(
