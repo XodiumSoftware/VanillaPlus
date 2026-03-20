@@ -15,6 +15,7 @@ import io.papermc.paper.tag.TagEntry
 import net.kyori.adventure.key.Key
 import org.xodium.vanillaplus.enchantments.EmbertreadEnchantment
 import org.xodium.vanillaplus.enchantments.NightVisionEnchantment
+import org.xodium.vanillaplus.enchantments.NightsightEnchantment
 import org.xodium.vanillaplus.enchantments.NimbusEnchantment
 import org.xodium.vanillaplus.enchantments.PickupEnchantment
 import org.xodium.vanillaplus.enchantments.ReplantEnchantment
@@ -85,6 +86,11 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                                 .invoke(it)
                                 .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.HEAD_ARMOR))
                         }
+                        register(NightsightEnchantment.key) {
+                            NightsightEnchantment
+                                .invoke(it)
+                                .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.HEAD_ARMOR))
+                        }
                         register(NimbusEnchantment.key) {
                             NimbusEnchantment
                                 .invoke(it)
@@ -109,7 +115,7 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                         setOf(
                             ReplantEnchantment.key,
                             PickupEnchantment.key,
-                            NightVisionEnchantment.key,
+                            NightsightEnchantment.key,
                             NimbusEnchantment.key,
                             VeinMineEnchantment.key,
                             EmbertreadEnchantment.key,

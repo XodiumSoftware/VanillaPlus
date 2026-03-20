@@ -36,7 +36,7 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.enchantments.EmbertreadEnchantment
 import org.xodium.vanillaplus.enchantments.FeatherFallingEnchantment
-import org.xodium.vanillaplus.enchantments.NightVisionEnchantment
+import org.xodium.vanillaplus.enchantments.NightsightEnchantment
 import org.xodium.vanillaplus.enchantments.PickupEnchantment
 import org.xodium.vanillaplus.enchantments.ReplantEnchantment
 import org.xodium.vanillaplus.enchantments.SilkTouchEnchantment
@@ -94,6 +94,7 @@ internal object PlayerModule : ModuleInterface {
         joinBanner(player)
         tablist(player)
         player.playerListName(player.displayName())
+        NightsightEnchantment.migrate(player)
         event.joinMessage(PlayerMessageManager.handleJoin(player) ?: return)
     }
 
@@ -182,7 +183,7 @@ internal object PlayerModule : ModuleInterface {
     fun on(event: BlockDropItemEvent) = PickupEnchantment.pickup(event)
 
     @EventHandler
-    fun on(event: EntityEquipmentChangedEvent) = NightVisionEnchantment.nightVision(event)
+    fun on(event: EntityEquipmentChangedEvent) = NightsightEnchantment.nightsight(event)
 
     /**
      * Sends the welcome banner to the player on join.
