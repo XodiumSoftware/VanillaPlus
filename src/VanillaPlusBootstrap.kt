@@ -13,6 +13,7 @@ import io.papermc.paper.registry.keys.tags.ItemTypeTagKeys
 import io.papermc.paper.registry.tag.TagKey
 import io.papermc.paper.tag.TagEntry
 import net.kyori.adventure.key.Key
+import org.xodium.vanillaplus.enchantments.EmbertreadEnchantment
 import org.xodium.vanillaplus.enchantments.NightVisionEnchantment
 import org.xodium.vanillaplus.enchantments.NimbusEnchantment
 import org.xodium.vanillaplus.enchantments.PickupEnchantment
@@ -94,6 +95,11 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                                 .invoke(it)
                                 .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.PICKAXES))
                         }
+                        register(EmbertreadEnchantment.key) {
+                            EmbertreadEnchantment
+                                .invoke(it)
+                                .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.FOOT_ARMOR))
+                        }
                     }
                 },
             )
@@ -106,6 +112,7 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                             NightVisionEnchantment.key,
                             NimbusEnchantment.key,
                             VeinMineEnchantment.key,
+                            EmbertreadEnchantment.key,
                         )
 
                     addToTag(EnchantmentTagKeys.TRADEABLE, enchants)

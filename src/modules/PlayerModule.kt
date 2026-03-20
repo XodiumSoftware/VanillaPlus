@@ -19,6 +19,7 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockDropItemEvent
+import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerAdvancementDoneEvent
 import org.bukkit.event.player.PlayerBedEnterEvent
@@ -33,6 +34,7 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
+import org.xodium.vanillaplus.enchantments.EmbertreadEnchantment
 import org.xodium.vanillaplus.enchantments.FeatherFallingEnchantment
 import org.xodium.vanillaplus.enchantments.NightVisionEnchantment
 import org.xodium.vanillaplus.enchantments.PickupEnchantment
@@ -165,6 +167,9 @@ internal object PlayerModule : ModuleInterface {
         FeatherFallingEnchantment.featherFalling(event)
         handleEnderchest(event)
     }
+
+    @EventHandler
+    fun on(event: EntityDamageEvent) = EmbertreadEnchantment.embertread(event)
 
     @EventHandler
     fun on(event: BlockBreakEvent) {
