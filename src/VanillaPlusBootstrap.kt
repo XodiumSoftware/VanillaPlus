@@ -15,13 +15,9 @@ import io.papermc.paper.tag.TagEntry
 import net.kyori.adventure.key.Key
 import org.xodium.vanillaplus.enchantments.EarthrendEnchantment
 import org.xodium.vanillaplus.enchantments.EmbertreadEnchantment
-import org.xodium.vanillaplus.enchantments.NightVisionEnchantment
 import org.xodium.vanillaplus.enchantments.NightsightEnchantment
 import org.xodium.vanillaplus.enchantments.NimbusEnchantment
-import org.xodium.vanillaplus.enchantments.PickupEnchantment
-import org.xodium.vanillaplus.enchantments.ReplantEnchantment
 import org.xodium.vanillaplus.enchantments.TetherEnchantment
-import org.xodium.vanillaplus.enchantments.VeinMineEnchantment
 import org.xodium.vanillaplus.enchantments.VerdanceEnchantment
 
 /** Main bootstrap class of the plugin. */
@@ -74,16 +70,6 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
             registerEventHandler(
                 RegistryEvents.ENCHANTMENT.compose().newHandler { event ->
                     event.registry().apply {
-                        register(ReplantEnchantment.key) {
-                            ReplantEnchantment
-                                .invoke(it)
-                                .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.HOES))
-                        }
-                        register(PickupEnchantment.key) {
-                            PickupEnchantment
-                                .invoke(it)
-                                .supportedItems(event.getOrCreateTag(TOOLS_WEAPONS))
-                        }
                         register(VerdanceEnchantment.key) {
                             VerdanceEnchantment
                                 .invoke(it)
@@ -94,11 +80,6 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                                 .invoke(it)
                                 .supportedItems(event.getOrCreateTag(TOOLS_WEAPONS))
                         }
-                        register(NightVisionEnchantment.key) {
-                            NightVisionEnchantment
-                                .invoke(it)
-                                .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.HEAD_ARMOR))
-                        }
                         register(NightsightEnchantment.key) {
                             NightsightEnchantment
                                 .invoke(it)
@@ -108,11 +89,6 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                             NimbusEnchantment
                                 .invoke(it)
                                 .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.HARNESSES))
-                        }
-                        register(VeinMineEnchantment.key) {
-                            VeinMineEnchantment
-                                .invoke(it)
-                                .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.PICKAXES))
                         }
                         register(EarthrendEnchantment.key) {
                             EarthrendEnchantment

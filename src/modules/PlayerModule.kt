@@ -94,10 +94,6 @@ internal object PlayerModule : ModuleInterface {
         joinBanner(player)
         tablist(player)
         player.playerListName(player.displayName())
-        NightsightEnchantment.migrate(player)
-        TetherEnchantment.migrate(player)
-        VerdanceEnchantment.migrate(player)
-        EarthrendEnchantment.migrate(player)
         event.joinMessage(PlayerMessageManager.handleJoin(player) ?: return)
     }
 
