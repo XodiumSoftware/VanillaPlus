@@ -34,13 +34,13 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
+import org.xodium.vanillaplus.enchantments.EarthrendEnchantment
 import org.xodium.vanillaplus.enchantments.EmbertreadEnchantment
 import org.xodium.vanillaplus.enchantments.FeatherFallingEnchantment
 import org.xodium.vanillaplus.enchantments.NightsightEnchantment
-import org.xodium.vanillaplus.enchantments.PickupEnchantment
-import org.xodium.vanillaplus.enchantments.ReplantEnchantment
 import org.xodium.vanillaplus.enchantments.SilkTouchEnchantment
-import org.xodium.vanillaplus.enchantments.VeinMineEnchantment
+import org.xodium.vanillaplus.enchantments.TetherEnchantment
+import org.xodium.vanillaplus.enchantments.VerdanceEnchantment
 import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.PlayerMessageManager
@@ -95,6 +95,9 @@ internal object PlayerModule : ModuleInterface {
         tablist(player)
         player.playerListName(player.displayName())
         NightsightEnchantment.migrate(player)
+        TetherEnchantment.migrate(player)
+        VerdanceEnchantment.migrate(player)
+        EarthrendEnchantment.migrate(player)
         event.joinMessage(PlayerMessageManager.handleJoin(player) ?: return)
     }
 
@@ -174,13 +177,13 @@ internal object PlayerModule : ModuleInterface {
 
     @EventHandler
     fun on(event: BlockBreakEvent) {
-        ReplantEnchantment.replant(event)
+        VerdanceEnchantment.verdance(event)
         SilkTouchEnchantment.silkTouch(event)
-        VeinMineEnchantment.veinMine(event)
+        EarthrendEnchantment.earthrend(event)
     }
 
     @EventHandler
-    fun on(event: BlockDropItemEvent) = PickupEnchantment.pickup(event)
+    fun on(event: BlockDropItemEvent) = TetherEnchantment.tether(event)
 
     @EventHandler
     fun on(event: EntityEquipmentChangedEvent) = NightsightEnchantment.nightsight(event)

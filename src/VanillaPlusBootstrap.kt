@@ -13,13 +13,16 @@ import io.papermc.paper.registry.keys.tags.ItemTypeTagKeys
 import io.papermc.paper.registry.tag.TagKey
 import io.papermc.paper.tag.TagEntry
 import net.kyori.adventure.key.Key
+import org.xodium.vanillaplus.enchantments.EarthrendEnchantment
 import org.xodium.vanillaplus.enchantments.EmbertreadEnchantment
 import org.xodium.vanillaplus.enchantments.NightVisionEnchantment
 import org.xodium.vanillaplus.enchantments.NightsightEnchantment
 import org.xodium.vanillaplus.enchantments.NimbusEnchantment
 import org.xodium.vanillaplus.enchantments.PickupEnchantment
 import org.xodium.vanillaplus.enchantments.ReplantEnchantment
+import org.xodium.vanillaplus.enchantments.TetherEnchantment
 import org.xodium.vanillaplus.enchantments.VeinMineEnchantment
+import org.xodium.vanillaplus.enchantments.VerdanceEnchantment
 
 /** Main bootstrap class of the plugin. */
 @Suppress("UnstableApiUsage", "Unused")
@@ -81,6 +84,16 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                                 .invoke(it)
                                 .supportedItems(event.getOrCreateTag(TOOLS_WEAPONS))
                         }
+                        register(VerdanceEnchantment.key) {
+                            VerdanceEnchantment
+                                .invoke(it)
+                                .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.HOES))
+                        }
+                        register(TetherEnchantment.key) {
+                            TetherEnchantment
+                                .invoke(it)
+                                .supportedItems(event.getOrCreateTag(TOOLS_WEAPONS))
+                        }
                         register(NightVisionEnchantment.key) {
                             NightVisionEnchantment
                                 .invoke(it)
@@ -101,6 +114,11 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                                 .invoke(it)
                                 .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.PICKAXES))
                         }
+                        register(EarthrendEnchantment.key) {
+                            EarthrendEnchantment
+                                .invoke(it)
+                                .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.PICKAXES))
+                        }
                         register(EmbertreadEnchantment.key) {
                             EmbertreadEnchantment
                                 .invoke(it)
@@ -113,11 +131,11 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                 it.registrar().apply {
                     val enchants =
                         setOf(
-                            ReplantEnchantment.key,
-                            PickupEnchantment.key,
+                            VerdanceEnchantment.key,
+                            TetherEnchantment.key,
                             NightsightEnchantment.key,
                             NimbusEnchantment.key,
-                            VeinMineEnchantment.key,
+                            EarthrendEnchantment.key,
                             EmbertreadEnchantment.key,
                         )
 
