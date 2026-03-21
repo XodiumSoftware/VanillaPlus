@@ -1,5 +1,7 @@
 package org.xodium.vanillaplus.enchantments
 
+import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.ItemLore
 import io.papermc.paper.event.entity.EntityEquipmentChangedEvent
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
 import org.bukkit.Material
@@ -20,22 +22,25 @@ internal object NimbusEnchantment : EnchantmentInterface {
 
     override val guide by lazy {
         ItemStack.of(Material.SADDLE).apply {
-            editMeta {
-                it.displayName(MM.deserialize("<!italic><b><gold>Nimbus</gold></b>"))
-                it.lore(
-                    listOf(
+            setData(DataComponentTypes.CUSTOM_NAME, MM.deserialize("<!italic><b><gold>Nimbus</gold></b>"))
+            setData(
+                DataComponentTypes.LORE,
+                ItemLore
+                    .lore()
+                    .addLine(
                         MM.deserialize(
                             "<!italic><dark_gray>Slot: <gray>Saddle</gray> | Levels: <gray>I–V</gray></dark_gray>",
                         ),
-                        MM.deserialize("<!italic>"),
-                        MM.deserialize("<!italic><dark_aqua>Boosts Happy Ghast flying speed.</dark_aqua>"),
-                        MM.deserialize("<!italic>"),
+                    ).addLine(MM.deserialize("<!italic>"))
+                    .addLine(MM.deserialize("<!italic><dark_aqua>Boosts Happy Ghast flying speed.</dark_aqua>"))
+                    .addLine(MM.deserialize("<!italic>"))
+                    .addLine(
                         MM.deserialize(
-                            "<!italic><dark_gray>I→<gray>×1.5</gray>  II→<gray>×2.0</gray>  III→<gray>×2.5</gray>  IV→<gray>×3.0</gray>  V→<gray>×3.5</gray></dark_gray>",
+                            "<!italic><dark_gray>I→<gray>×1.5</gray>  II→<gray>×2.0</gray>  " +
+                                "III→<gray>×2.5</gray>  IV→<gray>×3.0</gray>  V→<gray>×3.5</gray></dark_gray>",
                         ),
-                    ),
-                )
-            }
+                    ).build(),
+            )
         }
     }
 

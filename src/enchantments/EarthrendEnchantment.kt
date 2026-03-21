@@ -1,5 +1,7 @@
 package org.xodium.vanillaplus.enchantments
 
+import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.ItemLore
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -48,23 +50,27 @@ internal object EarthrendEnchantment : EnchantmentInterface {
 
     override val guide by lazy {
         ItemStack.of(Material.DIAMOND_PICKAXE).apply {
-            editMeta {
-                it.displayName(MM.deserialize("<!italic><b><gold>Earthrend</gold></b>"))
-                it.lore(
-                    listOf(
+            setData(DataComponentTypes.CUSTOM_NAME, MM.deserialize("<!italic><b><gold>Earthrend</gold></b>"))
+            setData(
+                DataComponentTypes.LORE,
+                ItemLore
+                    .lore()
+                    .addLine(
                         MM.deserialize(
                             "<!italic><dark_gray>Slot: <gray>Mainhand</gray> | Levels: <gray>I–III</gray></dark_gray>",
                         ),
-                        MM.deserialize("<!italic>"),
+                    ).addLine(MM.deserialize("<!italic>"))
+                    .addLine(
                         MM.deserialize("<!italic><dark_aqua>Vein-mines connected ores of the same type.</dark_aqua>"),
+                    ).addLine(
                         MM.deserialize(
-                            "<!italic><dark_gray>Lv I → <gray>16</gray>  Lv II → <gray>32</gray>  Lv III → <gray>48 blocks</gray></dark_gray>",
+                            "<!italic><dark_gray>Lv I → <gray>16</gray>  " +
+                                "Lv II → <gray>32</gray>  Lv III → <gray>48 blocks</gray></dark_gray>",
                         ),
-                        MM.deserialize("<!italic>"),
-                        MM.deserialize("<!italic><aqua>Synergises with Tether.</aqua>"),
-                    ),
-                )
-            }
+                    ).addLine(MM.deserialize("<!italic>"))
+                    .addLine(MM.deserialize("<!italic><aqua>Synergises with Tether.</aqua>"))
+                    .build(),
+            )
         }
     }
 

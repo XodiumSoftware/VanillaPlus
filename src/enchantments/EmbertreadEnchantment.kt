@@ -1,5 +1,7 @@
 package org.xodium.vanillaplus.enchantments
 
+import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.ItemLore
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
 import org.bukkit.Material
 import org.bukkit.Tag
@@ -17,19 +19,20 @@ import org.xodium.vanillaplus.utils.Utils.displayName
 internal object EmbertreadEnchantment : EnchantmentInterface {
     override val guide by lazy {
         ItemStack.of(Material.NETHERITE_BOOTS).apply {
-            editMeta {
-                it.displayName(MM.deserialize("<!italic><b><gold>Embertread</gold></b>"))
-                it.lore(
-                    listOf(
+            setData(DataComponentTypes.CUSTOM_NAME, MM.deserialize("<!italic><b><gold>Embertread</gold></b>"))
+            setData(
+                DataComponentTypes.LORE,
+                ItemLore
+                    .lore()
+                    .addLine(
                         MM.deserialize(
                             "<!italic><dark_gray>Slot: <gray>Boots</gray> | Levels: <gray>I</gray></dark_gray>",
                         ),
-                        MM.deserialize("<!italic>"),
-                        MM.deserialize("<!italic><dark_aqua>Prevents damage from magma blocks</dark_aqua>"),
-                        MM.deserialize("<!italic><dark_aqua>and campfires.</dark_aqua>"),
-                    ),
-                )
-            }
+                    ).addLine(MM.deserialize("<!italic>"))
+                    .addLine(MM.deserialize("<!italic><dark_aqua>Prevents damage from magma blocks</dark_aqua>"))
+                    .addLine(MM.deserialize("<!italic><dark_aqua>and campfires.</dark_aqua>"))
+                    .build(),
+            )
         }
     }
 

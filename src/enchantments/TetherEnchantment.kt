@@ -1,5 +1,7 @@
 package org.xodium.vanillaplus.enchantments
 
+import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.ItemLore
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
 import org.bukkit.Material
 import org.bukkit.entity.Item
@@ -16,22 +18,24 @@ import org.xodium.vanillaplus.utils.Utils.displayName
 internal object TetherEnchantment : EnchantmentInterface {
     override val guide by lazy {
         ItemStack.of(Material.LEAD).apply {
-            editMeta {
-                it.displayName(MM.deserialize("<!italic><b><gold>Tether</gold></b>"))
-                it.lore(
-                    listOf(
+            setData(DataComponentTypes.CUSTOM_NAME, MM.deserialize("<!italic><b><gold>Tether</gold></b>"))
+            setData(
+                DataComponentTypes.LORE,
+                ItemLore
+                    .lore()
+                    .addLine(
                         MM.deserialize(
                             "<!italic><dark_gray>Slot: <gray>Mainhand</gray> | Levels: <gray>I</gray></dark_gray>",
                         ),
-                        MM.deserialize("<!italic>"),
+                    ).addLine(MM.deserialize("<!italic>"))
+                    .addLine(
                         MM.deserialize(
                             "<!italic><dark_aqua>Auto-picks up block drops into your inventory.</dark_aqua>",
                         ),
-                        MM.deserialize("<!italic>"),
-                        MM.deserialize("<!italic><aqua>Synergises with Earthrend.</aqua>"),
-                    ),
-                )
-            }
+                    ).addLine(MM.deserialize("<!italic>"))
+                    .addLine(MM.deserialize("<!italic><aqua>Synergises with Earthrend.</aqua>"))
+                    .build(),
+            )
         }
     }
 
