@@ -34,7 +34,6 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
-import org.xodium.vanillaplus.dialogs.FaqDialog
 import org.xodium.vanillaplus.enchantments.EarthrendEnchantment
 import org.xodium.vanillaplus.enchantments.EmbertreadEnchantment
 import org.xodium.vanillaplus.enchantments.FeatherFallingEnchantment
@@ -76,13 +75,6 @@ internal object PlayerModule : ModuleInterface {
                 "Allows players to set or remove their nickname",
                 listOf("nick"),
             ),
-            CommandData(
-                Commands
-                    .literal("faq")
-                    .requires { it.sender.hasPermission(perms[1]) }
-                    .playerExecuted { player, _ -> player.showDialog(FaqDialog.get()) },
-                "Opens the FAQ dialog",
-            ),
         )
 
     override val perms =
@@ -90,11 +82,6 @@ internal object PlayerModule : ModuleInterface {
             Permission(
                 "${instance.javaClass.simpleName}.nickname".lowercase(),
                 "Allows use of the nickname command",
-                PermissionDefault.TRUE,
-            ),
-            Permission(
-                "${instance.javaClass.simpleName}.faq".lowercase(),
-                "Allows use of the faq command",
                 PermissionDefault.TRUE,
             ),
         )
