@@ -13,15 +13,15 @@ internal object FeatherFallingEnchantment : EnchantmentInterface {
     override val guide =
         listOf(
             listOf(
-                "<b><gold>Feather Falling",
-                "<dark_gray>Slot: <gray>Boots",
+                "<b><gold>Feather Falling</gold></b>",
+                "<dark_gray>Slot: <gray>Boots</gray></dark_gray>",
                 "",
-                "<dark_aqua>Prevents trampling",
-                "<dark_aqua>farmland while wearing",
-                "<dark_aqua>enchanted boots.",
+                "<dark_aqua>Prevents trampling</dark_aqua>",
+                "<dark_aqua>farmland while wearing</dark_aqua>",
+                "<dark_aqua>enchanted boots.</dark_aqua>",
                 "",
-                "<gray><i>(Vanilla enchantment,",
-                "<gray><i>extended behaviour)",
+                "<gray><i>(Vanilla enchantment,</i></gray>",
+                "<gray><i>extended behaviour)</i></gray>",
             ),
         )
 

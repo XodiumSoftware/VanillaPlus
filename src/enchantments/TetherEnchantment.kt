@@ -14,16 +14,16 @@ internal object TetherEnchantment : EnchantmentInterface {
     override val guide =
         listOf(
             listOf(
-                "<b><gold>Tether",
-                "<dark_gray>Slot: <gray>Mainhand",
-                "<dark_gray>Levels: <gray>I",
+                "<b><gold>Tether</gold></b>",
+                "<dark_gray>Slot: <gray>Mainhand</gray></dark_gray>",
+                "<dark_gray>Levels: <gray>I</gray></dark_gray>",
                 "",
-                "<dark_aqua>Automatically picks",
-                "<dark_aqua>up block drops into",
-                "<dark_aqua>your inventory.",
+                "<dark_aqua>Automatically picks</dark_aqua>",
+                "<dark_aqua>up block drops into</dark_aqua>",
+                "<dark_aqua>your inventory.</dark_aqua>",
                 "",
-                "<yellow>Synergises with",
-                "<yellow>Earthrend.",
+                "<aqua>Synergises with</aqua>",
+                "<aqua>Earthrend.</aqua>",
             ),
         )
 

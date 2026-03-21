@@ -17,13 +17,13 @@ internal object EmbertreadEnchantment : EnchantmentInterface {
     override val guide =
         listOf(
             listOf(
-                "<b><gold>Embertread",
-                "<dark_gray>Slot: <gray>Boots",
-                "<dark_gray>Levels: <gray>I",
+                "<b><gold>Embertread</gold></b>",
+                "<dark_gray>Slot: <gray>Boots</gray></dark_gray>",
+                "<dark_gray>Levels: <gray>I</gray></dark_gray>",
                 "",
-                "<dark_aqua>Prevents damage from",
-                "<dark_aqua>standing on magma",
-                "<dark_aqua>blocks and campfires.",
+                "<dark_aqua>Prevents damage from</dark_aqua>",
+                "<dark_aqua>standing on magma</dark_aqua>",
+                "<dark_aqua>blocks and campfires.</dark_aqua>",
             ),
         )
 

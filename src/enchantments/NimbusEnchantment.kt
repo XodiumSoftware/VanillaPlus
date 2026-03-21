@@ -18,18 +18,18 @@ internal object NimbusEnchantment : EnchantmentInterface {
     override val guide =
         listOf(
             listOf(
-                "<b><gold>Nimbus",
-                "<dark_gray>Slot: <gray>Saddle",
-                "<dark_gray>Levels: <gray>I–V",
+                "<b><gold>Nimbus</gold></b>",
+                "<dark_gray>Slot: <gray>Saddle</gray></dark_gray>",
+                "<dark_gray>Levels: <gray>I–V</gray></dark_gray>",
                 "",
-                "<dark_aqua>Boosts Happy Ghast",
-                "<dark_aqua>flying speed.",
+                "<dark_aqua>Boosts Happy Ghast</dark_aqua>",
+                "<dark_aqua>flying speed.</dark_aqua>",
                 "",
-                "<dark_gray>Lv I   → <gray>×1.5",
-                "<dark_gray>Lv II  → <gray>×2.0",
-                "<dark_gray>Lv III → <gray>×2.5",
-                "<dark_gray>Lv IV  → <gray>×3.0",
-                "<dark_gray>Lv V   → <gray>×3.5",
+                "<dark_gray>Lv I   → <gray>×1.5</gray></dark_gray>",
+                "<dark_gray>Lv II  → <gray>×2.0</gray></dark_gray>",
+                "<dark_gray>Lv III → <gray>×2.5</gray></dark_gray>",
+                "<dark_gray>Lv IV  → <gray>×3.0</gray></dark_gray>",
+                "<dark_gray>Lv V   → <gray>×3.5</gray></dark_gray>",
             ),
         )
 

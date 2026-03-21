@@ -14,13 +14,13 @@ internal object VerdanceEnchantment : EnchantmentInterface {
     override val guide =
         listOf(
             listOf(
-                "<b><gold>Verdance",
-                "<dark_gray>Slot: <gray>Hoe",
-                "<dark_gray>Levels: <gray>I",
+                "<b><gold>Verdance</gold></b>",
+                "<dark_gray>Slot: <gray>Hoe</gray></dark_gray>",
+                "<dark_gray>Levels: <gray>I</gray></dark_gray>",
                 "",
-                "<dark_aqua>Automatically",
-                "<dark_aqua>replants fully grown",
-                "<dark_aqua>crops after harvest.",
+                "<dark_aqua>Automatically</dark_aqua>",
+                "<dark_aqua>replants fully grown</dark_aqua>",
+                "<dark_aqua>crops after harvest.</dark_aqua>",
             ),
         )
 

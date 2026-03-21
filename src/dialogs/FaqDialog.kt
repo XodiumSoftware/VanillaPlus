@@ -39,12 +39,12 @@ internal object FaqDialog {
             pages =
                 listOf(
                     listOf(
-                        "<b><gold>Enchantments",
-                        "<b><gold>Guide",
+                        "<b><gold>Enchantments</gold></b>",
+                        "<b><gold>Guide</gold></b>",
                         "",
-                        "<gray>Describes all custom",
-                        "<gray>enchantments added",
-                        "<gray>by VanillaPlus.",
+                        "<gray>Describes all custom</gray>",
+                        "<gray>enchantments added</gray>",
+                        "<gray>by VanillaPlus.</gray>",
                     ),
                 ) + ENCHANTMENTS.flatMap { it.guide },
         ).toBook()

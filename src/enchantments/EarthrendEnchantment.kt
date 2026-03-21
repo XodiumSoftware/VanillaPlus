@@ -47,18 +47,18 @@ internal object EarthrendEnchantment : EnchantmentInterface {
     override val guide =
         listOf(
             listOf(
-                "<b><gold>Earthrend",
-                "<dark_gray>Slot: <gray>Mainhand",
-                "<dark_gray>Levels: <gray>I–III",
+                "<b><gold>Earthrend</gold></b>",
+                "<dark_gray>Slot: <gray>Mainhand</gray></dark_gray>",
+                "<dark_gray>Levels: <gray>I–III</gray></dark_gray>",
                 "",
-                "<dark_aqua>Vein-mines connected",
-                "<dark_aqua>ores of the same type.",
+                "<dark_aqua>Vein-mines connected</dark_aqua>",
+                "<dark_aqua>ores of the same type.</dark_aqua>",
                 "",
-                "<dark_gray>Lv I   → <gray>16 blocks",
-                "<dark_gray>Lv II  → <gray>32 blocks",
-                "<dark_gray>Lv III → <gray>48 blocks",
+                "<dark_gray>Lv I   → <gray>16 blocks</gray></dark_gray>",
+                "<dark_gray>Lv II  → <gray>32 blocks</gray></dark_gray>",
+                "<dark_gray>Lv III → <gray>48 blocks</gray></dark_gray>",
                 "",
-                "<yellow>Synergises with Tether.",
+                "<aqua>Synergises with Tether.</aqua>",
             ),
         )
 

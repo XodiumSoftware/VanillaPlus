@@ -14,15 +14,15 @@ internal object SilkTouchEnchantment : EnchantmentInterface {
     override val guide =
         listOf(
             listOf(
-                "<b><gold>Silk Touch",
-                "<dark_gray>Slot: <gray>Pickaxe",
+                "<b><gold>Silk Touch</gold></b>",
+                "<dark_gray>Slot: <gray>Pickaxe</gray></dark_gray>",
                 "",
-                "<dark_aqua>Allows collecting",
-                "<dark_aqua>spawners and budding",
-                "<dark_aqua>amethyst blocks.",
+                "<dark_aqua>Allows collecting</dark_aqua>",
+                "<dark_aqua>spawners and budding</dark_aqua>",
+                "<dark_aqua>amethyst blocks.</dark_aqua>",
                 "",
-                "<gray><i>(Vanilla enchantment,",
-                "<gray><i>extended behaviour)",
+                "<gray><i>(Vanilla enchantment,</i></gray>",
+                "<gray><i>extended behaviour)</i></gray>",
             ),
         )
 
