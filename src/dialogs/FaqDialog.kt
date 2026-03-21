@@ -6,7 +6,6 @@ import io.papermc.paper.registry.data.dialog.DialogBase
 import io.papermc.paper.registry.data.dialog.action.DialogAction
 import io.papermc.paper.registry.data.dialog.type.DialogType
 import net.kyori.adventure.text.event.ClickCallback
-import org.bukkit.entity.Player
 import org.xodium.vanillaplus.utils.Utils.MM
 
 /** Represents the FAQ dialog within the system. */
@@ -16,7 +15,7 @@ internal object FaqDialog {
         Dialog.create {
             it
                 .empty()
-                .base(DialogBase.builder(MM.deserialize("<gradient:#CB2D3E:#EF473A>FAQ</gradient>")).build())
+                .base(DialogBase.builder(MM.deserialize("<b><gradient:#CB2D3E:#EF473A>FAQ</gradient></b>")).build())
                 .type(
                     DialogType
                         .multiAction(
@@ -25,12 +24,7 @@ internal object FaqDialog {
                                     .builder(MM.deserialize("Enchantments"))
                                     .action(
                                         DialogAction.customClick(
-                                            {
-                                                _,
-                                                audience,
-                                                ->
-                                                (audience as? Player)?.showDialog(EnchantmentsDialog.dialog)
-                                            },
+                                            { _, audience -> audience.showDialog(EnchantmentsDialog.dialog) },
                                             ClickCallback.Options.builder().build(),
                                         ),
                                     ).build(),

@@ -35,7 +35,7 @@ internal object EnchantmentsDialog {
                 .empty()
                 .base(
                     DialogBase
-                        .builder(MM.deserialize("<gold>Enchantments</gold>"))
+                        .builder(MM.deserialize("<b><gradient:#CB2D3E:#EF473A>Enchantments</gradient></b>"))
                         .body(ENCHANTMENTS.map { DialogBody.item(it.guide).showTooltip(true).build() })
                         .build(),
                 ).type(DialogType.notice())
