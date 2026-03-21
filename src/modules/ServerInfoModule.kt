@@ -24,7 +24,7 @@ internal object ServerInfoModule : ModuleInterface {
                 Commands
                     .literal("faq")
                     .requires { it.sender.hasPermission(perms[0]) }
-                    .playerExecuted { player, _ -> player.showDialog(FaqDialog.get()) },
+                    .playerExecuted { player, _ -> player.showDialog(FaqDialog.dialog) },
                 "Opens the FAQ dialog",
             ),
         )

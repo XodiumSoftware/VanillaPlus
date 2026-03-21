@@ -13,7 +13,6 @@ import io.papermc.paper.registry.keys.tags.ItemTypeTagKeys
 import io.papermc.paper.registry.tag.TagKey
 import io.papermc.paper.tag.TagEntry
 import net.kyori.adventure.key.Key
-import org.xodium.vanillaplus.dialogs.FaqDialog
 import org.xodium.vanillaplus.enchantments.EarthrendEnchantment
 import org.xodium.vanillaplus.enchantments.EmbertreadEnchantment
 import org.xodium.vanillaplus.enchantments.NightsightEnchantment
@@ -68,11 +67,6 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                     )
                 }
             }
-            registerEventHandler(
-                RegistryEvents.DIALOG.compose().newHandler { event ->
-                    event.registry().register(FaqDialog.key) { FaqDialog.invoke(it) }
-                },
-            )
             registerEventHandler(
                 RegistryEvents.ENCHANTMENT.compose().newHandler { event ->
                     event.registry().apply {
