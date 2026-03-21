@@ -7,23 +7,26 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
+import org.xodium.vanillaplus.utils.Utils.MM
 
 /** Represents an object handling feather falling enchantment implementation within the system. */
 internal object FeatherFallingEnchantment : EnchantmentInterface {
-    override val guide =
-        listOf(
-            listOf(
-                "<b><gold>Feather Falling</gold></b>",
-                "<dark_gray>Slot: <gray>Boots</gray></dark_gray>",
-                "",
-                "<dark_aqua>Prevents trampling</dark_aqua>",
-                "<dark_aqua>farmland while wearing</dark_aqua>",
-                "<dark_aqua>enchanted boots.</dark_aqua>",
-                "",
-                "<gray><i>(Vanilla enchantment,</i></gray>",
-                "<gray><i>extended behaviour)</i></gray>",
-            ),
-        )
+    override val guide by lazy {
+        ItemStack.of(Material.GOLDEN_BOOTS).apply {
+            editMeta {
+                it.displayName(MM.deserialize("<!italic><b><gold>Feather Falling</gold></b>"))
+                it.lore(
+                    listOf(
+                        MM.deserialize("<!italic><dark_gray>Slot: <gray>Boots</gray></dark_gray>"),
+                        MM.deserialize("<!italic>"),
+                        MM.deserialize("<!italic><dark_aqua>Prevents trampling farmland when worn.</dark_aqua>"),
+                        MM.deserialize("<!italic>"),
+                        MM.deserialize("<!italic><gray><i>Vanilla enchantment, extended behaviour.</i></gray>"),
+                    ),
+                )
+            }
+        }
+    }
 
     /**
      * Handles the PlayerInteractEvent to prevent farmland trampling when wearing boots with Feather Falling enchantment.

@@ -5,7 +5,9 @@ import io.papermc.paper.registry.RegistryKey
 import io.papermc.paper.registry.TypedKey
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
 import net.kyori.adventure.key.Key
+import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
+import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.VanillaPlusBootstrap.Companion.INSTANCE
 import org.xodium.vanillaplus.utils.Utils.toRegistryKeyFragment
 
@@ -22,10 +24,10 @@ internal interface EnchantmentInterface {
             TypedKey.create(RegistryKey.ENCHANTMENT, Key.key(INSTANCE, javaClass.toRegistryKeyFragment<Enchantment>()))
 
     /**
-     * Returns the guide pages describing this enchantment.
-     * Each element is a page represented as a list of MiniMessage-formatted lines.
+     * Returns the guide [ItemStack] describing this enchantment.
+     * The display name is the enchantment name; the lore is its description.
      */
-    val guide: List<List<String>> get() = emptyList()
+    val guide: ItemStack get() = ItemStack.of(Material.AIR)
 
     /**
      * Configures the properties of the enchantment using the provided builder.

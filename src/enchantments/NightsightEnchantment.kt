@@ -2,29 +2,36 @@ package org.xodium.vanillaplus.enchantments
 
 import io.papermc.paper.event.entity.EntityEquipmentChangedEvent
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.EquipmentSlotGroup
+import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
+import org.xodium.vanillaplus.utils.Utils.MM
 import org.xodium.vanillaplus.utils.Utils.displayName
 
 /** Represents an object handling nightsight enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
 internal object NightsightEnchantment : EnchantmentInterface {
-    override val guide =
-        listOf(
-            listOf(
-                "<b><gold>Nightsight</gold></b>",
-                "<dark_gray>Slot: <gray>Helmet</gray></dark_gray>",
-                "<dark_gray>Levels: <gray>I</gray></dark_gray>",
-                "",
-                "<dark_aqua>Grants permanent</dark_aqua>",
-                "<dark_aqua>Night Vision while</dark_aqua>",
-                "<dark_aqua>the enchanted helmet</dark_aqua>",
-                "<dark_aqua>is worn.</dark_aqua>",
-            ),
-        )
+    override val guide by lazy {
+        ItemStack.of(Material.GOLDEN_HELMET).apply {
+            editMeta {
+                it.displayName(MM.deserialize("<!italic><b><gold>Nightsight</gold></b>"))
+                it.lore(
+                    listOf(
+                        MM.deserialize(
+                            "<!italic><dark_gray>Slot: <gray>Helmet</gray> | Levels: <gray>I</gray></dark_gray>",
+                        ),
+                        MM.deserialize("<!italic>"),
+                        MM.deserialize("<!italic><dark_aqua>Grants permanent Night Vision</dark_aqua>"),
+                        MM.deserialize("<!italic><dark_aqua>while the enchanted helmet is worn.</dark_aqua>"),
+                    ),
+                )
+            }
+        }
+    }
 
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder

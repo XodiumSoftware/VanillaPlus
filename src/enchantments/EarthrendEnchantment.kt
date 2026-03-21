@@ -8,8 +8,10 @@ import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.inventory.EquipmentSlotGroup
+import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.Damageable
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
+import org.xodium.vanillaplus.utils.Utils.MM
 import org.xodium.vanillaplus.utils.Utils.displayName
 
 /** Represents an object handling earthrend enchantment implementation within the system. */
@@ -44,23 +46,27 @@ internal object EarthrendEnchantment : EnchantmentInterface {
             Material.NETHER_GOLD_ORE,
         )
 
-    override val guide =
-        listOf(
-            listOf(
-                "<b><gold>Earthrend</gold></b>",
-                "<dark_gray>Slot: <gray>Mainhand</gray></dark_gray>",
-                "<dark_gray>Levels: <gray>I–III</gray></dark_gray>",
-                "",
-                "<dark_aqua>Vein-mines connected</dark_aqua>",
-                "<dark_aqua>ores of the same type.</dark_aqua>",
-                "",
-                "<dark_gray>Lv I   → <gray>16 blocks</gray></dark_gray>",
-                "<dark_gray>Lv II  → <gray>32 blocks</gray></dark_gray>",
-                "<dark_gray>Lv III → <gray>48 blocks</gray></dark_gray>",
-                "",
-                "<aqua>Synergises with Tether.</aqua>",
-            ),
-        )
+    override val guide by lazy {
+        ItemStack.of(Material.DIAMOND_PICKAXE).apply {
+            editMeta {
+                it.displayName(MM.deserialize("<!italic><b><gold>Earthrend</gold></b>"))
+                it.lore(
+                    listOf(
+                        MM.deserialize(
+                            "<!italic><dark_gray>Slot: <gray>Mainhand</gray> | Levels: <gray>I–III</gray></dark_gray>",
+                        ),
+                        MM.deserialize("<!italic>"),
+                        MM.deserialize("<!italic><dark_aqua>Vein-mines connected ores of the same type.</dark_aqua>"),
+                        MM.deserialize(
+                            "<!italic><dark_gray>Lv I → <gray>16</gray>  Lv II → <gray>32</gray>  Lv III → <gray>48 blocks</gray></dark_gray>",
+                        ),
+                        MM.deserialize("<!italic>"),
+                        MM.deserialize("<!italic><aqua>Synergises with Tether.</aqua>"),
+                    ),
+                )
+            }
+        }
+    }
 
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder

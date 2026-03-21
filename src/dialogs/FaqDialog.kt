@@ -7,48 +7,11 @@ import io.papermc.paper.registry.data.dialog.action.DialogAction
 import io.papermc.paper.registry.data.dialog.type.DialogType
 import net.kyori.adventure.text.event.ClickCallback
 import org.bukkit.entity.Player
-import org.xodium.vanillaplus.data.BookData
-import org.xodium.vanillaplus.enchantments.EarthrendEnchantment
-import org.xodium.vanillaplus.enchantments.EmbertreadEnchantment
-import org.xodium.vanillaplus.enchantments.FeatherFallingEnchantment
-import org.xodium.vanillaplus.enchantments.NightsightEnchantment
-import org.xodium.vanillaplus.enchantments.NimbusEnchantment
-import org.xodium.vanillaplus.enchantments.SilkTouchEnchantment
-import org.xodium.vanillaplus.enchantments.TetherEnchantment
-import org.xodium.vanillaplus.enchantments.VerdanceEnchantment
 import org.xodium.vanillaplus.utils.Utils.MM
 
 /** Represents the FAQ dialog within the system. */
 @Suppress("UnstableApiUsage")
 internal object FaqDialog {
-    private val ENCHANTMENTS =
-        listOf(
-            EarthrendEnchantment,
-            EmbertreadEnchantment,
-            FeatherFallingEnchantment,
-            NightsightEnchantment,
-            NimbusEnchantment,
-            SilkTouchEnchantment,
-            TetherEnchantment,
-            VerdanceEnchantment,
-        )
-
-    private val book =
-        BookData(
-            title = "<gold>Enchantments Guide",
-            pages =
-                listOf(
-                    listOf(
-                        "<b><gold>Enchantments</gold></b>",
-                        "<b><gold>Guide</gold></b>",
-                        "",
-                        "<gray>Describes all custom</gray>",
-                        "<gray>enchantments added</gray>",
-                        "<gray>by VanillaPlus.</gray>",
-                    ),
-                ) + ENCHANTMENTS.flatMap { it.guide },
-        ).toBook()
-
     val dialog =
         Dialog.create {
             it
@@ -62,7 +25,12 @@ internal object FaqDialog {
                                     .builder(MM.deserialize("Enchantments"))
                                     .action(
                                         DialogAction.customClick(
-                                            { _, audience -> (audience as? Player)?.openBook(book) },
+                                            {
+                                                _,
+                                                audience,
+                                                ->
+                                                (audience as? Player)?.showDialog(EnchantmentsDialog.dialog)
+                                            },
                                             ClickCallback.Options.builder().build(),
                                         ),
                                     ).build(),

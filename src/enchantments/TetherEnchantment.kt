@@ -1,31 +1,39 @@
 package org.xodium.vanillaplus.enchantments
 
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
+import org.bukkit.Material
 import org.bukkit.entity.Item
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockDropItemEvent
 import org.bukkit.inventory.EquipmentSlotGroup
+import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
+import org.xodium.vanillaplus.utils.Utils.MM
 import org.xodium.vanillaplus.utils.Utils.displayName
 
 /** Represents an object handling tether enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
 internal object TetherEnchantment : EnchantmentInterface {
-    override val guide =
-        listOf(
-            listOf(
-                "<b><gold>Tether</gold></b>",
-                "<dark_gray>Slot: <gray>Mainhand</gray></dark_gray>",
-                "<dark_gray>Levels: <gray>I</gray></dark_gray>",
-                "",
-                "<dark_aqua>Automatically picks</dark_aqua>",
-                "<dark_aqua>up block drops into</dark_aqua>",
-                "<dark_aqua>your inventory.</dark_aqua>",
-                "",
-                "<aqua>Synergises with</aqua>",
-                "<aqua>Earthrend.</aqua>",
-            ),
-        )
+    override val guide by lazy {
+        ItemStack.of(Material.LEAD).apply {
+            editMeta {
+                it.displayName(MM.deserialize("<!italic><b><gold>Tether</gold></b>"))
+                it.lore(
+                    listOf(
+                        MM.deserialize(
+                            "<!italic><dark_gray>Slot: <gray>Mainhand</gray> | Levels: <gray>I</gray></dark_gray>",
+                        ),
+                        MM.deserialize("<!italic>"),
+                        MM.deserialize(
+                            "<!italic><dark_aqua>Auto-picks up block drops into your inventory.</dark_aqua>",
+                        ),
+                        MM.deserialize("<!italic>"),
+                        MM.deserialize("<!italic><aqua>Synergises with Earthrend.</aqua>"),
+                    ),
+                )
+            }
+        }
+    }
 
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder

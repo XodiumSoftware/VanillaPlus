@@ -8,23 +8,27 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 import org.xodium.vanillaplus.modules.PlayerModule
+import org.xodium.vanillaplus.utils.Utils.MM
 
 /** Represents an object handling silk touch enchantment implementation within the system. */
 internal object SilkTouchEnchantment : EnchantmentInterface {
-    override val guide =
-        listOf(
-            listOf(
-                "<b><gold>Silk Touch</gold></b>",
-                "<dark_gray>Slot: <gray>Pickaxe</gray></dark_gray>",
-                "",
-                "<dark_aqua>Allows collecting</dark_aqua>",
-                "<dark_aqua>spawners and budding</dark_aqua>",
-                "<dark_aqua>amethyst blocks.</dark_aqua>",
-                "",
-                "<gray><i>(Vanilla enchantment,</i></gray>",
-                "<gray><i>extended behaviour)</i></gray>",
-            ),
-        )
+    override val guide by lazy {
+        ItemStack.of(Material.SPAWNER).apply {
+            editMeta {
+                it.displayName(MM.deserialize("<!italic><b><gold>Silk Touch</gold></b>"))
+                it.lore(
+                    listOf(
+                        MM.deserialize("<!italic><dark_gray>Slot: <gray>Pickaxe</gray></dark_gray>"),
+                        MM.deserialize("<!italic>"),
+                        MM.deserialize("<!italic><dark_aqua>Allows collecting spawners and</dark_aqua>"),
+                        MM.deserialize("<!italic><dark_aqua>budding amethyst blocks.</dark_aqua>"),
+                        MM.deserialize("<!italic>"),
+                        MM.deserialize("<!italic><gray><i>Vanilla enchantment, extended behaviour.</i></gray>"),
+                    ),
+                )
+            }
+        }
+    }
 
     private val config = PlayerModule.config.silkTouch
 

@@ -9,23 +9,29 @@ import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
+import org.xodium.vanillaplus.utils.Utils.MM
 import org.xodium.vanillaplus.utils.Utils.displayName
 
 /** Represents an object handling embertread enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
 internal object EmbertreadEnchantment : EnchantmentInterface {
-    override val guide =
-        listOf(
-            listOf(
-                "<b><gold>Embertread</gold></b>",
-                "<dark_gray>Slot: <gray>Boots</gray></dark_gray>",
-                "<dark_gray>Levels: <gray>I</gray></dark_gray>",
-                "",
-                "<dark_aqua>Prevents damage from</dark_aqua>",
-                "<dark_aqua>standing on magma</dark_aqua>",
-                "<dark_aqua>blocks and campfires.</dark_aqua>",
-            ),
-        )
+    override val guide by lazy {
+        ItemStack.of(Material.NETHERITE_BOOTS).apply {
+            editMeta {
+                it.displayName(MM.deserialize("<!italic><b><gold>Embertread</gold></b>"))
+                it.lore(
+                    listOf(
+                        MM.deserialize(
+                            "<!italic><dark_gray>Slot: <gray>Boots</gray> | Levels: <gray>I</gray></dark_gray>",
+                        ),
+                        MM.deserialize("<!italic>"),
+                        MM.deserialize("<!italic><dark_aqua>Prevents damage from magma blocks</dark_aqua>"),
+                        MM.deserialize("<!italic><dark_aqua>and campfires.</dark_aqua>"),
+                    ),
+                )
+            }
+        }
+    }
 
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
