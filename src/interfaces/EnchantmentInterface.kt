@@ -22,17 +22,17 @@ internal interface EnchantmentInterface {
             TypedKey.create(RegistryKey.ENCHANTMENT, Key.key(INSTANCE, javaClass.toRegistryKeyFragment<Enchantment>()))
 
     /**
+     * Returns the guide pages describing this enchantment.
+     * Each element is a page represented as a list of MiniMessage-formatted lines.
+     */
+    val guide: List<List<String>> get() = emptyList()
+
+    /**
      * Configures the properties of the enchantment using the provided builder.
      * @param invoke The builder used to define the enchantment properties.
      * @return The builder for method chaining.
      */
     fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder = builder
-
-    /**
-     * Returns the guide pages describing this enchantment.
-     * Each element is a page represented as a list of MiniMessage-formatted lines.
-     */
-    val guide: List<List<String>> get() = emptyList()
 
     /**
      * Retrieves the enchantment from the registry.
