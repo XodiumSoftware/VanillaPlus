@@ -44,6 +44,24 @@ internal object EarthrendEnchantment : EnchantmentInterface {
             Material.NETHER_GOLD_ORE,
         )
 
+    override val guide =
+        listOf(
+            listOf(
+                "<b><gold>Earthrend",
+                "<dark_gray>Slot: <gray>Mainhand",
+                "<dark_gray>Levels: <gray>I–III",
+                "",
+                "<dark_aqua>Vein-mines connected",
+                "<dark_aqua>ores of the same type.",
+                "",
+                "<dark_gray>Lv I   → <gray>16 blocks",
+                "<dark_gray>Lv II  → <gray>32 blocks",
+                "<dark_gray>Lv III → <gray>48 blocks",
+                "",
+                "<yellow>Synergises with Tether.",
+            ),
+        )
+
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
             .description(key.displayName())

@@ -14,6 +14,19 @@ import org.xodium.vanillaplus.utils.Utils.displayName
 /** Represents an object handling embertread enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
 internal object EmbertreadEnchantment : EnchantmentInterface {
+    override val guide =
+        listOf(
+            listOf(
+                "<b><gold>Embertread",
+                "<dark_gray>Slot: <gray>Boots",
+                "<dark_gray>Levels: <gray>I",
+                "",
+                "<dark_aqua>Prevents damage from",
+                "<dark_aqua>standing on magma",
+                "<dark_aqua>blocks and campfires.",
+            ),
+        )
+
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
             .description(key.displayName())

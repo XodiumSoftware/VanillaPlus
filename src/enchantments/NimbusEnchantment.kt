@@ -15,6 +15,24 @@ internal object NimbusEnchantment : EnchantmentInterface {
     private const val DEFAULT_FLY_SPEED = 0.05
     private val SPEED_MODIFIER = mapOf(1 to 1.5, 2 to 2.0, 3 to 2.5, 4 to 3.0, 5 to 3.5)
 
+    override val guide =
+        listOf(
+            listOf(
+                "<b><gold>Nimbus",
+                "<dark_gray>Slot: <gray>Saddle",
+                "<dark_gray>Levels: <gray>I–V",
+                "",
+                "<dark_aqua>Boosts Happy Ghast",
+                "<dark_aqua>flying speed.",
+                "",
+                "<dark_gray>Lv I   → <gray>×1.5",
+                "<dark_gray>Lv II  → <gray>×2.0",
+                "<dark_gray>Lv III → <gray>×2.5",
+                "<dark_gray>Lv IV  → <gray>×3.0",
+                "<dark_gray>Lv V   → <gray>×3.5",
+            ),
+        )
+
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
             .description(key.displayName())

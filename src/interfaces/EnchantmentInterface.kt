@@ -29,6 +29,12 @@ internal interface EnchantmentInterface {
     fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder = builder
 
     /**
+     * Returns the guide pages describing this enchantment.
+     * Each element is a page represented as a list of MiniMessage-formatted lines.
+     */
+    val guide: List<List<String>> get() = emptyList()
+
+    /**
      * Retrieves the enchantment from the registry.
      * @return The [Enchantment] instance corresponding to the key.
      * @throws NoSuchElementException if the enchantment is not found in the registry.

@@ -11,6 +11,22 @@ import org.xodium.vanillaplus.utils.Utils.displayName
 /** Represents an object handling tether enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
 internal object TetherEnchantment : EnchantmentInterface {
+    override val guide =
+        listOf(
+            listOf(
+                "<b><gold>Tether",
+                "<dark_gray>Slot: <gray>Mainhand",
+                "<dark_gray>Levels: <gray>I",
+                "",
+                "<dark_aqua>Automatically picks",
+                "<dark_aqua>up block drops into",
+                "<dark_aqua>your inventory.",
+                "",
+                "<yellow>Synergises with",
+                "<yellow>Earthrend.",
+            ),
+        )
+
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
             .description(key.displayName())

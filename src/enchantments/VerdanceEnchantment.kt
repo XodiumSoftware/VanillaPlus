@@ -11,6 +11,19 @@ import org.xodium.vanillaplus.utils.Utils.displayName
 /** Represents an object handling verdance enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
 internal object VerdanceEnchantment : EnchantmentInterface {
+    override val guide =
+        listOf(
+            listOf(
+                "<b><gold>Verdance",
+                "<dark_gray>Slot: <gray>Hoe",
+                "<dark_gray>Levels: <gray>I",
+                "",
+                "<dark_aqua>Automatically",
+                "<dark_aqua>replants fully grown",
+                "<dark_aqua>crops after harvest.",
+            ),
+        )
+
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
             .description(key.displayName())

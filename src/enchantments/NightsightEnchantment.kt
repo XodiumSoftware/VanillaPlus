@@ -12,6 +12,20 @@ import org.xodium.vanillaplus.utils.Utils.displayName
 /** Represents an object handling nightsight enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
 internal object NightsightEnchantment : EnchantmentInterface {
+    override val guide =
+        listOf(
+            listOf(
+                "<b><gold>Nightsight",
+                "<dark_gray>Slot: <gray>Helmet",
+                "<dark_gray>Levels: <gray>I",
+                "",
+                "<dark_aqua>Grants permanent",
+                "<dark_aqua>Night Vision while",
+                "<dark_aqua>the enchanted helmet",
+                "<dark_aqua>is worn.",
+            ),
+        )
+
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
             .description(key.displayName())

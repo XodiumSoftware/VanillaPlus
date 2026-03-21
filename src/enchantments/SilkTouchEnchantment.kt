@@ -11,6 +11,21 @@ import org.xodium.vanillaplus.modules.PlayerModule
 
 /** Represents an object handling silk touch enchantment implementation within the system. */
 internal object SilkTouchEnchantment : EnchantmentInterface {
+    override val guide =
+        listOf(
+            listOf(
+                "<b><gold>Silk Touch",
+                "<dark_gray>Slot: <gray>Pickaxe",
+                "",
+                "<dark_aqua>Allows collecting",
+                "<dark_aqua>spawners and budding",
+                "<dark_aqua>amethyst blocks.",
+                "",
+                "<gray><i>(Vanilla enchantment,",
+                "<gray><i>extended behaviour)",
+            ),
+        )
+
     private val config = PlayerModule.config.silkTouch
 
     /**

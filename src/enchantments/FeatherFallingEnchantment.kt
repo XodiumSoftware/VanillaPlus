@@ -10,6 +10,21 @@ import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 
 /** Represents an object handling feather falling enchantment implementation within the system. */
 internal object FeatherFallingEnchantment : EnchantmentInterface {
+    override val guide =
+        listOf(
+            listOf(
+                "<b><gold>Feather Falling",
+                "<dark_gray>Slot: <gray>Boots",
+                "",
+                "<dark_aqua>Prevents trampling",
+                "<dark_aqua>farmland while wearing",
+                "<dark_aqua>enchanted boots.",
+                "",
+                "<gray><i>(Vanilla enchantment,",
+                "<gray><i>extended behaviour)",
+            ),
+        )
+
     /**
      * Handles the PlayerInteractEvent to prevent farmland trampling when wearing boots with Feather Falling enchantment.
      * @param event The PlayerInteractEvent to handle.
