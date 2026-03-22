@@ -1,6 +1,6 @@
 site_name: VanillaPlus
 site_description: Documentation for the VanillaPlus Paper Minecraft plugin
-site_url: https://xodiumsoftware.github.io/VanillaPlus/
+site_url: //vanillaplus.xodium.org/
 repo_name: XodiumSoftware/VanillaPlus
 repo_url: https://github.com/XodiumSoftware/VanillaPlus
 edit_uri: edit/main/docs/
@@ -8,20 +8,9 @@ edit_uri: edit/main/docs/
 theme:
   name: material
   palette:
-    - media: "(prefers-color-scheme: light)"
-      scheme: default
-      primary: red
-      accent: amber
-      toggle:
-        icon: material/brightness-7
-        name: Switch to dark mode
-    - media: "(prefers-color-scheme: dark)"
-      scheme: slate
-      primary: red
-      accent: amber
-      toggle:
-        icon: material/brightness-4
-        name: Switch to light mode
+    scheme: slate
+    primary: red
+    accent: amber
   features:
     - navigation.tabs
     - navigation.sections
