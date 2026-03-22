@@ -10,7 +10,6 @@ import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 import org.xodium.vanillaplus.modules.PlayerModule
 
 /** Represents an object handling silk touch enchantment implementation within the system. */
-@Suppress("UnstableApiUsage")
 internal object SilkTouchEnchantment : EnchantmentInterface {
     private val config = PlayerModule.config.silkTouch
 

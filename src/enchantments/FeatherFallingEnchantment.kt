@@ -9,7 +9,6 @@ import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 
 /** Represents an object handling feather falling enchantment implementation within the system. */
-@Suppress("UnstableApiUsage")
 internal object FeatherFallingEnchantment : EnchantmentInterface {
     /**
      * Handles the PlayerInteractEvent to prevent farmland trampling when wearing boots with Feather Falling enchantment.
