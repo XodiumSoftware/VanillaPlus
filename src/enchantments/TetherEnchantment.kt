@@ -1,44 +1,16 @@
 package org.xodium.vanillaplus.enchantments
 
-import io.papermc.paper.datacomponent.DataComponentTypes
-import io.papermc.paper.datacomponent.item.ItemLore
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
-import org.bukkit.Material
 import org.bukkit.entity.Item
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockDropItemEvent
 import org.bukkit.inventory.EquipmentSlotGroup
-import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
-import org.xodium.vanillaplus.utils.Utils.MM
 import org.xodium.vanillaplus.utils.Utils.displayName
 
 /** Represents an object handling tether enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
 internal object TetherEnchantment : EnchantmentInterface {
-    override val guide by lazy {
-        ItemStack.of(Material.LEAD).apply {
-            setData(DataComponentTypes.CUSTOM_NAME, MM.deserialize("<!italic><b><gold>Tether</gold></b>"))
-            setData(
-                DataComponentTypes.LORE,
-                ItemLore
-                    .lore()
-                    .addLine(
-                        MM.deserialize(
-                            "<!italic><dark_gray>Slot: <gray>Mainhand</gray> | Levels: <gray>I</gray></dark_gray>",
-                        ),
-                    ).addLine(MM.deserialize("<!italic>"))
-                    .addLine(
-                        MM.deserialize(
-                            "<!italic><dark_aqua>Auto-picks up block drops into your inventory.</dark_aqua>",
-                        ),
-                    ).addLine(MM.deserialize("<!italic>"))
-                    .addLine(MM.deserialize("<!italic><aqua>Synergises with Earthrend.</aqua>"))
-                    .build(),
-            )
-        }
-    }
-
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
             .description(key.displayName())

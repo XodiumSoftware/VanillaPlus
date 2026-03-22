@@ -1,40 +1,16 @@
 package org.xodium.vanillaplus.enchantments
 
-import io.papermc.paper.datacomponent.DataComponentTypes
-import io.papermc.paper.datacomponent.item.ItemLore
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
-import org.bukkit.Material
 import org.bukkit.block.data.Ageable
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.inventory.EquipmentSlotGroup
-import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
-import org.xodium.vanillaplus.utils.Utils.MM
 import org.xodium.vanillaplus.utils.Utils.displayName
 
 /** Represents an object handling verdance enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
 internal object VerdanceEnchantment : EnchantmentInterface {
-    override val guide by lazy {
-        ItemStack.of(Material.DIAMOND_HOE).apply {
-            setData(DataComponentTypes.CUSTOM_NAME, MM.deserialize("<!italic><b><gold>Verdance</gold></b>"))
-            setData(
-                DataComponentTypes.LORE,
-                ItemLore
-                    .lore()
-                    .addLine(
-                        MM.deserialize(
-                            "<!italic><dark_gray>Slot: <gray>Hoe</gray> | Levels: <gray>I</gray></dark_gray>",
-                        ),
-                    ).addLine(MM.deserialize("<!italic>"))
-                    .addLine(MM.deserialize("<!italic><dark_aqua>Automatically replants fully grown</dark_aqua>"))
-                    .addLine(MM.deserialize("<!italic><dark_aqua>crops after harvest.</dark_aqua>"))
-                    .build(),
-            )
-        }
-    }
-
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
             .description(key.displayName())
