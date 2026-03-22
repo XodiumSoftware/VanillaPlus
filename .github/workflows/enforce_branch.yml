@@ -28,9 +28,9 @@ jobs:
         run: |
           if [ "$BASE_REF" == "main" ] && [ "$HEAD_REF" != "dev" ]; then
             echo "❌ PR is targeting 'main' but not from 'dev'. Changing target to 'dev'..."
-          
+
             gh pr edit "$PR_NUMBER" --repo "$REPO" --base dev
-          
+
             echo "changed=true" >> $GITHUB_OUTPUT
             echo "✅ Target branch automatically changed to 'dev'"
             echo "⚠️  To merge to 'main', please create a PR from 'dev' branch"
