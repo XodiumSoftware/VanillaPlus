@@ -30,7 +30,7 @@ internal object ServerInfoModule : ModuleInterface {
         @Suppress("UnstableApiUsage") var serverLinks: Map<ServerLinks.Type, String> =
             mapOf(
                 ServerLinks.Type.WEBSITE to "https://xodium.org/",
-                ServerLinks.Type.REPORT_BUG to "https://github.com/XodiumSoftware/VanillaPlus/issues",
+                ServerLinks.Type.REPORT_BUG to "https://discord.gg/jusYH9aYUh",
                 ServerLinks.Type.STATUS to "https://modrinth.com/server/illyria",
                 ServerLinks.Type.COMMUNITY to "https://discord.gg/jusYH9aYUh",
                 ServerLinks.Type.COMMUNITY_GUIDELINES to "https://vanillaplus.xodium.org/",
