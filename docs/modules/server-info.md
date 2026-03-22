@@ -4,19 +4,10 @@ Registers server links that appear in the Minecraft client's pause menu (1.21+).
 
 ## Config
 
-| Key           | Type                | Default   | Description             |
-|---------------|---------------------|-----------|-------------------------|
-| `Enabled`     | `Boolean`           | `false`   | Enable this module      |
-| `ServerLinks` | `Map<Type, String>` | See below | Map of link type to URL |
-
-### Supported link types
-
-| Type         | Where it shows     |
-|--------------|--------------------|
-| `WEBSITE`    | Official site      |
-| `REPORT_BUG` | Bug report link    |
-| `STATUS`     | Server status page |
-| `COMMUNITY`  | Discord or forum   |
+| Key           | Type                            | Default                                                                                  | Description             |
+|---------------|---------------------------------|------------------------------------------------------------------------------------------|-------------------------|
+| `Enabled`     | `Boolean`                       | `false`                                                                                  | Enable this module      |
+| `ServerLinks` | `Map<ServerLinks.Type, String>` | [ServerLinks.Type](https://jd.papermc.io/paper/1.21.11/org/bukkit/ServerLinks.Type.html) | Map of link type to URL |
 
 ## Behaviour
 

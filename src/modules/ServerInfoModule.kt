@@ -33,6 +33,7 @@ internal object ServerInfoModule : ModuleInterface {
                 ServerLinks.Type.REPORT_BUG to "https://github.com/XodiumSoftware/VanillaPlus/issues",
                 ServerLinks.Type.STATUS to "https://modrinth.com/server/illyria",
                 ServerLinks.Type.COMMUNITY to "https://discord.gg/jusYH9aYUh",
+                ServerLinks.Type.COMMUNITY_GUIDELINES to "https://vanillaplus.xodium.org/",
             ),
     ) : ModuleConfigInterface
 }
