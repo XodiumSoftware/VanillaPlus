@@ -17,6 +17,9 @@ Thumbs.db
 # Server files
 run/
 
+# MkDocs generated site
+site/
+
 # IDE specific files
 .idea/libraries/
 .idea/shelf/

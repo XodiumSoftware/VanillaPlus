@@ -8,9 +8,9 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 import org.xodium.vanillaplus.utils.Utils.displayName
 
-/** Represents an object handling replant enchantment implementation within the system. */
+/** Represents an object handling verdance enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
-internal object ReplantEnchantment : EnchantmentInterface {
+internal object VerdanceEnchantment : EnchantmentInterface {
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
             .description(key.displayName())
@@ -25,7 +25,7 @@ internal object ReplantEnchantment : EnchantmentInterface {
      * Automatically replants a crop block after it has been fully grown and harvested.
      * @param event The BlockBreakEvent triggered when a block is broken.
      */
-    fun replant(event: BlockBreakEvent) {
+    fun verdance(event: BlockBreakEvent) {
         val block = event.block
         val ageable = block.blockData as? Ageable ?: return
         val itemInHand = event.player.inventory.itemInMainHand

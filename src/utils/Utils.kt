@@ -6,6 +6,7 @@ import io.papermc.paper.registry.TypedKey
 import kotlinx.serialization.serializer
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
+import org.bukkit.World
 import org.bukkit.enchantments.Enchantment
 import org.xodium.vanillaplus.VanillaPlus
 import org.xodium.vanillaplus.delegates.ModuleConfigDelegate
@@ -46,6 +47,23 @@ internal object Utils {
         val least = leastSignificantBits
         return intArrayOf((most shr 32).toInt(), most.toInt(), (least shr 32).toInt(), least.toInt())
     }
+
+    /**
+     * Returns the i18n string matching the current weather state of this world.
+     * @param thundering The string to return when it is thundering.
+     * @param storm The string to return when there is a storm.
+     * @param clear The string to return when the weather is clear.
+     */
+    fun World.weather(
+        thundering: String,
+        storm: String,
+        clear: String,
+    ): String =
+        when {
+            isThundering -> thundering
+            hasStorm() -> storm
+            else -> clear
+        }
 
     /**
      * Creates a [ModuleConfigDelegate] for this [ModuleInterface], using the implementing class's

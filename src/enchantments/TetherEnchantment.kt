@@ -8,9 +8,9 @@ import org.bukkit.inventory.EquipmentSlotGroup
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 import org.xodium.vanillaplus.utils.Utils.displayName
 
-/** Represents an object handling pickup enchantment implementation within the system. */
+/** Represents an object handling tether enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
-internal object PickupEnchantment : EnchantmentInterface {
+internal object TetherEnchantment : EnchantmentInterface {
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
             .description(key.displayName())
@@ -22,10 +22,10 @@ internal object PickupEnchantment : EnchantmentInterface {
             .activeSlots(EquipmentSlotGroup.MAINHAND)
 
     /**
-     * Handles the block break event to automatically pick up drops when the tool has the Pickup enchantment.
+     * Handles the block break event to automatically pick up drops when the tool has the Tether enchantment.
      * @param event The BlockBreakEvent triggered when a block is broken.
      */
-    fun pickup(event: BlockDropItemEvent) {
+    fun tether(event: BlockDropItemEvent) {
         val player = event.player
         val itemInHand = player.inventory.itemInMainHand
 

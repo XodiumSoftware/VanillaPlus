@@ -14,13 +14,9 @@ internal object MotdModule : ModuleInterface {
     override val config by configDelegate { Config() }
 
     @EventHandler(priority = EventPriority.HIGH)
-    fun on(event: ServerListPingEvent) = motd(event)
-
-    /**
-     * Sets the MOTD for the server list ping event.
-     * @param event The server list ping event.
-     */
-    private fun motd(event: ServerListPingEvent) = event.motd(MM.deserialize(config.motd.joinToString("\n")))
+    fun on(event: ServerListPingEvent) {
+        event.motd(MM.deserialize(config.motd.joinToString("\n")))
+    }
 
     /** Represents the config of the module. */
     @Serializable

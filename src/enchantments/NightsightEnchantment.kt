@@ -9,9 +9,9 @@ import org.bukkit.potion.PotionEffectType
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 import org.xodium.vanillaplus.utils.Utils.displayName
 
-/** Represents an object handling night vision enchantment implementation within the system. */
+/** Represents an object handling nightsight enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
-internal object NightVisionEnchantment : EnchantmentInterface {
+internal object NightsightEnchantment : EnchantmentInterface {
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
             .description(key.displayName())
@@ -26,7 +26,7 @@ internal object NightVisionEnchantment : EnchantmentInterface {
      * Handles the equipment change event to apply or remove night vision effect based on the helmet enchantment.
      * @param event The EntityEquipmentChangedEvent triggered when an entity's equipment changes.
      */
-    fun nightVision(event: EntityEquipmentChangedEvent) {
+    fun nightsight(event: EntityEquipmentChangedEvent) {
         val player = event.entity as? Player ?: return
         val helmet = player.inventory.helmet
 

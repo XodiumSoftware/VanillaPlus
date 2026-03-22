@@ -12,9 +12,9 @@ import org.bukkit.inventory.meta.Damageable
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 import org.xodium.vanillaplus.utils.Utils.displayName
 
-/** Represents an object handling vein mine enchantment implementation within the system. */
+/** Represents an object handling earthrend enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
-internal object VeinMineEnchantment : EnchantmentInterface {
+internal object EarthrendEnchantment : EnchantmentInterface {
     private val DIRECTIONS =
         arrayOf(
             BlockFace.UP,
@@ -58,7 +58,7 @@ internal object VeinMineEnchantment : EnchantmentInterface {
      * Handles the vein mining logic when a [Block] is broken.
      * @param event The [BlockBreakEvent].
      */
-    fun veinMine(event: BlockBreakEvent) {
+    fun earthrend(event: BlockBreakEvent) {
         val player = event.player
 
         if (player.gameMode == GameMode.CREATIVE) return
@@ -77,13 +77,13 @@ internal object VeinMineEnchantment : EnchantmentInterface {
 
         if (connectedBlocks.size <= 1) return
 
-        val hasPickupEnchant = itemInHand.itemMeta.hasEnchant(PickupEnchantment.get())
+        val hasTetherEnchant = itemInHand.itemMeta.hasEnchant(TetherEnchantment.get())
         val damageableMeta = itemInHand.itemMeta as? Damageable ?: return
         var currentDamage = damageableMeta.damage
 
         for (connectedBlock in connectedBlocks) {
             if (connectedBlock == block) continue
-            if (hasPickupEnchant) {
+            if (hasTetherEnchant) {
                 val drops = connectedBlock.getDrops(itemInHand, player)
 
                 connectedBlock.type = Material.AIR

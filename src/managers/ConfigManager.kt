@@ -161,8 +161,8 @@ internal object ConfigManager {
                 .then(
                     Commands
                         .literal("reload")
-                        .executesCatching {
-                            val sender = it.source.sender
+                        .executesCatching { ctx ->
+                            val sender = ctx.source.sender
                             runAsync {
                                 load("config.json")
                                 notifyReload()

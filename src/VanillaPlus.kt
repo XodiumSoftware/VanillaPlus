@@ -5,7 +5,6 @@ package org.xodium.vanillaplus
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import org.bukkit.plugin.java.JavaPlugin
 import org.xodium.vanillaplus.managers.ConfigManager
-import org.xodium.vanillaplus.modules.BookModule
 import org.xodium.vanillaplus.modules.BookshelfModule
 import org.xodium.vanillaplus.modules.ChatModule
 import org.xodium.vanillaplus.modules.DimensionModule
@@ -19,7 +18,6 @@ import org.xodium.vanillaplus.modules.PlayerModule
 import org.xodium.vanillaplus.modules.ScoreBoardModule
 import org.xodium.vanillaplus.modules.ServerInfoModule
 import org.xodium.vanillaplus.modules.SitModule
-import org.xodium.vanillaplus.modules.TabListModule
 import org.xodium.vanillaplus.modules.TameableModule
 import org.xodium.vanillaplus.recipes.ChainmailRecipe
 import org.xodium.vanillaplus.recipes.DiamondRecycleRecipe
@@ -72,7 +70,6 @@ internal class VanillaPlus : JavaPlugin() {
         val allModules =
             listOf(
                 BookshelfModule,
-                BookModule,
                 ChatModule,
                 DimensionModule,
                 EntityModule,
@@ -85,7 +82,6 @@ internal class VanillaPlus : JavaPlugin() {
                 ServerInfoModule,
                 ScoreBoardModule,
                 SitModule,
-                TabListModule,
                 TameableModule,
             )
 
