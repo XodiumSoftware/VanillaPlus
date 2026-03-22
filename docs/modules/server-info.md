@@ -7,7 +7,7 @@ Registers server links that appear in the Minecraft client's pause menu (1.21+).
 | Key           | Type                | Default   | Description             |
 |---------------|---------------------|-----------|-------------------------|
 | `Enabled`     | `Boolean`           | `false`   | Enable this module      |
-| `ServerLinks` | `Map<Type, String>` | See above | Map of link type to URL |
+| `ServerLinks` | `Map<Type, String>` | See below | Map of link type to URL |
 
 ### Supported link types
 

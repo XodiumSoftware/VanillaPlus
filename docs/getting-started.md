@@ -21,10 +21,12 @@ You can reload the plugin at any time with `/vp reload` (requires `vanillaplus.r
 ## Example: enabling double doors
 
 ```json
-"OpenableModule": {
-"Enabled": true,
-"AllowDoubleDoors": true,
-"AllowKnocking": true
+{
+    "OpenableModule": {
+        "Enabled": true,
+        "AllowDoubleDoors": true,
+        "AllowKnocking": true
+    }
 }
 ```
 

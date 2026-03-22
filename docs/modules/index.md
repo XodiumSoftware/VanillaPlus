@@ -26,8 +26,10 @@ VanillaPlus is built around independent modules. Each module is self-contained, 
 Every module shares the same base config structure:
 
 ```json
-"FooModule": {
-"Enabled": false
+{
+    "FooModule": {
+        "Enabled": false
+    }
 }
 ```
 
