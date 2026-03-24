@@ -18,15 +18,26 @@
 [![Contributors][contributors_shield_url]][contributors_url]
 [![Issues][issues_shield_url]][issues_url]
 [![Roadmap][roadmap_shield_url]][roadmap_url]
+[![Docs][docs_shield_url]][docs_url]
 </div>
 
 ## Table of Contents
 
+- [Architecture][architecture_url]
 - [Built With](#built-with)
 - [Code of Conduct][code_of_conduct_url]
 - [Contributing][contributing_url]
+- [Getting Started][getting_started_url]
 - [License][license_url]
+- [Requirements](#requirements)
 - [Security][security_url]
+
+## Requirements
+
+- [Paper](https://papermc.io/) 1.21.11
+- Java 21
+
+<p align="right"><a href="#readme-top">▲</a></p>
 
 ## Built With
 
@@ -37,15 +48,38 @@
 
 <p align="right"><a href="#readme-top">▲</a></p>
 
+[architecture_url]: https://github.com/XodiumSoftware/VanillaPlus/blob/main/ARCHITECTURE.md
+
+[enchantments_url]: https://vanillaplus.xodium.org/enchantments
+
+[getting_started_url]: https://vanillaplus.xodium.org/getting-started
+
+[modules_url]: https://vanillaplus.xodium.org/modules
+
+[docs_shield_url]: https://img.shields.io/badge/Docs-Click%20Me!-blue.svg?style=for-the-badge
+
+[docs_url]: https://vanillaplus.xodium.org
+
 [built_with_shield_url]: https://skillicons.dev/icons?i=kotlin,gradle,github,githubactions
+
 [built_with_url]: https://skillicons.dev
+
 [code_of_conduct_url]: https://github.com/XodiumSoftware/VanillaPlus?tab=coc-ov-file
+
 [contributing_url]: https://github.com/XodiumSoftware/VanillaPlus/blob/main/CONTRIBUTING.md
+
 [contributors_shield_url]: https://img.shields.io/github/contributors/XodiumSoftware/VanillaPlus?style=for-the-badge&color=blue
+
 [contributors_url]: https://github.com/XodiumSoftware/VanillaPlus/graphs/contributors
+
 [issues_shield_url]: https://img.shields.io/github/issues/XodiumSoftware/VanillaPlus?style=for-the-badge&color=yellow
+
 [issues_url]: https://github.com/XodiumSoftware/VanillaPlus/issues
+
 [license_url]: https://github.com/XodiumSoftware/VanillaPlus?tab=AGPL-3.0-1-ov-file
+
 [roadmap_shield_url]: https://img.shields.io/badge/Roadmap-Click%20Me!-purple.svg?style=for-the-badge
+
 [roadmap_url]: https://github.com/orgs/XodiumSoftware/projects/4
+
 [security_url]: https://github.com/XodiumSoftware/VanillaPlus?tab=security-ov-file
