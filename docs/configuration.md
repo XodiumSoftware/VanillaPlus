@@ -37,15 +37,15 @@ Modules that are absent from the file use their built-in defaults and remain **d
 
 ```json
 {
-    "BookshelfModule": {
-        "Enabled": false
-    },
     "ChatModule": {
         "Enabled": false,
         "ChatFormat": "<player_head> <player> <reset><gradient:#FFE259:#FFA751>›</gradient> <message>",
         "WhisperToFormat": "<gradient:#1488CC:#2B32B2>You</gradient> <gradient:#FFE259:#FFA751>➛</gradient> <player> <reset><gradient:#FFE259:#FFA751>›</gradient> <message>",
         "WhisperFromFormat": "<player> <reset><gradient:#FFE259:#FFA751>➛</gradient> <gradient:#1488CC:#2B32B2>You</gradient> <gradient:#FFE259:#FFA751>›</gradient> <message>",
         "DeleteCross": "<dark_gray>[<dark_red><b>X</b></dark_red><dark_gray>]"
+    },
+    "ChiseledBookshelfModule": {
+        "Enabled": false
     },
     "DimensionModule": {
         "Enabled": false,

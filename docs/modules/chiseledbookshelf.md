@@ -1,4 +1,4 @@
-# Bookshelf
+# Chiseled Bookshelf
 
 Displays information on the action bar when a player left-clicks a **chiseled bookshelf** from the front face.
 
