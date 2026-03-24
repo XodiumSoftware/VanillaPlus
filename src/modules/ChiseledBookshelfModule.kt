@@ -22,7 +22,7 @@ import org.xodium.vanillaplus.utils.Utils.configDelegate
 import org.bukkit.block.data.type.ChiseledBookshelf as ChiseledBookshelfData
 
 /** Represents a module handling bookshelf mechanics within the system. */
-internal object BookshelfModule : ModuleInterface {
+internal object ChiseledBookshelfModule : ModuleInterface {
     override val config by configDelegate { Config() }
 
     @EventHandler
