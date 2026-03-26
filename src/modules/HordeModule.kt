@@ -1,8 +1,10 @@
 package org.xodium.vanillaplus.modules
 
+import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.BannerPatternLayers
 import org.bukkit.DyeColor
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
 import org.bukkit.block.banner.Pattern
@@ -13,12 +15,37 @@ import org.bukkit.entity.Skeleton
 import org.bukkit.entity.Zombie
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
+import org.bukkit.permissions.Permission
+import org.bukkit.permissions.PermissionDefault
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import org.xodium.vanillaplus.utils.Utils.MM
 import kotlin.random.Random
 
 /** Represents a module handling horde mechanics within the system. */
 internal object HordeModule : ModuleInterface {
+    override val cmds =
+        listOf(
+            CommandData(
+                Commands
+                    .literal("horde")
+                    .requires { it.sender.hasPermission(perms[0]) }
+                    .playerExecuted { player, _ -> spawnFormation(player.location) },
+                "Spawns a horde formation at your location",
+            ),
+        )
+
+    override val perms =
+        listOf(
+            Permission(
+                "${instance.javaClass.simpleName}.horde".lowercase(),
+                "Allows spawning a horde formation",
+                PermissionDefault.OP,
+            ),
+        )
+
     /** Applies a black base with a red skull pattern to this [ItemStack] shield. */
     @Suppress("UnstableApiUsage")
     private val shield =
@@ -32,6 +59,65 @@ internal object HordeModule : ModuleInterface {
                     .build(),
             )
         }
+
+    /**
+     * Spawns a full horde formation centered at the given [location].
+     * The formation follows a medieval rows layout: goblins up front, orcs behind them,
+     * trolls further back, dark knights flanking, and the warlord commanding from the rear.
+     * @param location The [Location] used as the front-center of the formation.
+     */
+    fun spawnFormation(location: Location) {
+        spawnRow(location, rowZ = 0.0, spacing = 4.0, count = 6) { location ->
+            location.world.spawn(location, Zombie::class.java) { it.goblin() }
+        }
+        spawnRow(location, rowZ = 8.0, spacing = 5.0, count = 4) { location ->
+            location.world.spawn(location, Zombie::class.java) { it.orc() }
+        }
+        spawnRow(location, rowZ = 18.0, spacing = 10.0, count = 2) { location ->
+            location.world.spawn(location, Zombie::class.java) { it.troll() }
+        }
+        spawnRow(location, rowZ = 28.0, spacing = 8.0, count = 2) { spawnDarkKnight(it) }
+        spawnWarlord(location.clone().add(0.0, 0.0, 36.0))
+    }
+
+    /**
+     * Spawns a Dark Knight at the given location — a [Skeleton] riding a black [Horse].
+     * @param location The [Location] at which to spawn the Dark Knight.
+     * @return The spawned [Skeleton] entity.
+     */
+    private fun spawnDarkKnight(location: Location): Skeleton {
+        val horse = location.world.spawn(location, Horse::class.java) { it.darkKnightHorse() }
+        return location.world.spawn(location, Skeleton::class.java) { it.darkKnight() }.also { horse.addPassenger(it) }
+    }
+
+    /**
+     * Spawns a Warlord at the given location — a [Zombie] riding a white [Horse].
+     * @param location The [Location] at which to spawn the Warlord.
+     * @return The spawned [Zombie] entity.
+     */
+    private fun spawnWarlord(location: Location): Zombie {
+        val horse = location.world.spawn(location, Horse::class.java) { it.warlordHorse() }
+        return location.world.spawn(location, Zombie::class.java) { it.warlord() }.also { horse.addPassenger(it) }
+    }
+
+    /**
+     * Spawns a centered row of entities along the X axis relative to [location].
+     * @param location The origin of the formation.
+     * @param rowZ The Z offset from the origin for this row.
+     * @param spacing The distance between each entity in the row.
+     * @param count The number of entities to spawn.
+     * @param spawner A lambda that spawns a single entity at the given [Location].
+     */
+    private fun spawnRow(
+        location: Location,
+        rowZ: Double,
+        spacing: Double,
+        count: Int,
+        spawner: (Location) -> Unit,
+    ) {
+        val halfWidth = (count - 1) * spacing / 2.0
+        repeat(count) { i -> spawner(location.clone().add(-halfWidth + i * spacing, 0.0, rowZ)) }
+    }
 
     /** Configures this [Skeleton] as a Dark Knight, applying its name, persistence, netherite loadout, and 50 health. */
     private fun Skeleton.darkKnight() {
