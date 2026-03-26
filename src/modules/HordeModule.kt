@@ -76,6 +76,7 @@ internal object HordeModule : ModuleInterface {
 
     @EventHandler
     fun on(event: EntityDeathEvent) {
+        // TODO: check if its the warlord.
         bossBars.remove(event.entity.uniqueId.toKotlinUuid())?.removeAll()
     }
 
