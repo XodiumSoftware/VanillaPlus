@@ -11,6 +11,5 @@
     "extends": [
         "config:recommended"
     ],
-    "prHeader": "Dependencies Updater",
-    "commitMessagePrefix": "[ci-skip]"
+    "prHeader": "Dependencies Updater"
 }
