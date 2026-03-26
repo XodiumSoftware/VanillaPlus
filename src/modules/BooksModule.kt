@@ -1,25 +1,20 @@
 package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.command.brigadier.Commands
-import kotlinx.serialization.Serializable
 import org.bukkit.permissions.Permission
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.BookData
 import org.xodium.vanillaplus.data.CommandData
-import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
-import org.xodium.vanillaplus.utils.Utils.configDelegate
 
 /** Represents a module handling book mechanics within the system. */
 internal object BooksModule : ModuleInterface {
-    override val config by configDelegate { Config() }
-
     private val permPrefix: String = "${instance.javaClass.simpleName}.book".lowercase()
 
     override val cmds
         get() =
-            config.books.map { book ->
+            Config.books.map { book ->
                 CommandData(
                     Commands
                         .literal(book.cmd.lowercase())
@@ -31,7 +26,7 @@ internal object BooksModule : ModuleInterface {
 
     override val perms
         get() =
-            config.books.map {
+            Config.books.map {
                 Permission(
                     "$permPrefix.${it.cmd.lowercase()}",
                     "Allows use of the book command: ${it.cmd}",
@@ -40,9 +35,7 @@ internal object BooksModule : ModuleInterface {
             }
 
     /** Represents the config of the module. */
-    @Serializable
-    data class Config(
-        override var enabled: Boolean = false,
+    object Config {
         var books: List<BookData> =
             listOf(
                 BookData(
@@ -80,6 +73,6 @@ internal object BooksModule : ModuleInterface {
                             ),
                         ),
                 ),
-            ),
-    ) : ModuleConfigInterface
+            )
+    }
 }

@@ -1,6 +1,5 @@
 package org.xodium.vanillaplus.modules
 
-import kotlinx.serialization.Serializable
 import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.Material
@@ -19,9 +18,7 @@ import org.bukkit.event.entity.EntityDismountEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.util.Vector
-import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.utils.Utils.configDelegate
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 import kotlin.uuid.toKotlinUuid
@@ -29,8 +26,6 @@ import kotlin.uuid.toKotlinUuid
 /** Represents a module handling sit mechanics within the system. */
 @OptIn(ExperimentalUuidApi::class)
 internal object SitModule : ModuleInterface {
-    override val config by configDelegate { Config() }
-
     private val sittingPlayers = mutableMapOf<Uuid, ArmorStand>()
     private val occupiedBlocks = mutableMapOf<Location, Uuid>()
     private val blockCenterOffset = Vector(0.5, 0.5, 0.5)
@@ -66,8 +61,8 @@ internal object SitModule : ModuleInterface {
         val blockData = block.blockData
         val isSitTarget =
             when {
-                config.useStairs && blockData is Stairs && blockData.half == Bisected.Half.BOTTOM -> true
-                config.useSlabs && blockData is Slab && blockData.type == Slab.Type.BOTTOM -> true
+                Config.useStairs && blockData is Stairs && blockData.half == Bisected.Half.BOTTOM -> true
+                Config.useSlabs && blockData is Slab && blockData.type == Slab.Type.BOTTOM -> true
                 else -> false
             }
 
@@ -184,10 +179,8 @@ internal object SitModule : ModuleInterface {
             .block.location
 
     /** Represents the config of the module. */
-    @Serializable
-    data class Config(
-        override var enabled: Boolean = false,
-        var useStairs: Boolean = true,
-        var useSlabs: Boolean = true,
-    ) : ModuleConfigInterface
+    object Config {
+        var useStairs: Boolean = true
+        var useSlabs: Boolean = true
+    }
 }

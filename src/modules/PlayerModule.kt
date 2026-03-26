@@ -8,7 +8,6 @@ import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.event.connection.PlayerConnectionValidateLoginEvent
 import io.papermc.paper.event.entity.EntityEquipmentChangedEvent
 import io.papermc.paper.event.player.PlayerServerFullCheckEvent
-import kotlinx.serialization.Serializable
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.GameMode
@@ -41,7 +40,6 @@ import org.xodium.vanillaplus.enchantments.NightsightEnchantment
 import org.xodium.vanillaplus.enchantments.SilkTouchEnchantment
 import org.xodium.vanillaplus.enchantments.TetherEnchantment
 import org.xodium.vanillaplus.enchantments.VerdanceEnchantment
-import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.PlayerMessageManager
 import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
@@ -50,14 +48,11 @@ import org.xodium.vanillaplus.utils.PlayerUtils.face
 import org.xodium.vanillaplus.utils.PlayerUtils.head
 import org.xodium.vanillaplus.utils.PlayerUtils.setNickname
 import org.xodium.vanillaplus.utils.Utils.MM
-import org.xodium.vanillaplus.utils.Utils.configDelegate
 import org.xodium.vanillaplus.utils.Utils.weather
 import kotlin.random.Random
 
 /** Represents a module handling player mechanics within the system. */
 internal object PlayerModule : ModuleInterface {
-    override val config by configDelegate { Config() }
-
     override val cmds =
         listOf(
             CommandData(
@@ -193,7 +188,7 @@ internal object PlayerModule : ModuleInterface {
 
         player.sendMessage(
             MM.deserialize(
-                Regex("<image>").replace(config.welcomeText.joinToString("\n")) { "<image${++imageIndex}>" },
+                Regex("<image>").replace(Config.welcomeText.joinToString("\n")) { "<image${++imageIndex}>" },
                 Placeholder.component("player", player.displayName()),
                 *player
                     .face()
@@ -209,7 +204,7 @@ internal object PlayerModule : ModuleInterface {
      * @param player The player whose head may be dropped.
      */
     private fun dropPlayerHead(player: Player) {
-        if (Random.nextDouble() > config.skullDropChance) return
+        if (Random.nextDouble() > Config.skullDropChance) return
 
         player.world.dropItemNaturally(player.location, player.head())
     }
@@ -245,9 +240,9 @@ internal object PlayerModule : ModuleInterface {
 
         val player = event.player
 
-        if (player.calculateTotalExperiencePoints() < config.xpCostToBottle) return
+        if (player.calculateTotalExperiencePoints() < Config.xpCostToBottle) return
 
-        player.giveExp(-config.xpCostToBottle)
+        player.giveExp(-Config.xpCostToBottle)
         event.item?.subtract(1)
         player.inventory
             .addItem(ItemStack.of(Material.EXPERIENCE_BOTTLE, 1))
@@ -268,7 +263,7 @@ internal object PlayerModule : ModuleInterface {
         player.displayName(MM.deserialize(player.nickname))
         player.sendActionBar(
             MM.deserialize(
-                config.i18n.nicknameUpdated,
+                Config.PlayerMessages.updateNickname,
                 Placeholder.component("nickname", player.displayName()),
             ),
         )
@@ -280,16 +275,16 @@ internal object PlayerModule : ModuleInterface {
      */
     private fun tablist(audience: Audience) {
         audience.sendPlayerListHeaderAndFooter(
-            MM.deserialize(config.tabList.header.joinToString("\n")),
+            MM.deserialize(Config.TabList.header.joinToString("\n")),
             MM.deserialize(
-                config.tabList.footer.joinToString("\n"),
+                Config.TabList.footer.joinToString("\n"),
                 Placeholder.component(
                     "weather",
                     MM.deserialize(
                         instance.server.worlds[0].weather(
-                            config.tabList.i18n.weatherThundering,
-                            config.tabList.i18n.weatherStorm,
-                            config.tabList.i18n.weatherClear,
+                            Config.TabList.weatherThundering,
+                            Config.TabList.weatherStorm,
+                            Config.TabList.weatherClear,
                         ),
                     ),
                 ),
@@ -298,11 +293,9 @@ internal object PlayerModule : ModuleInterface {
     }
 
     /** Represents the config of the module. */
-    @Serializable
-    data class Config(
-        override var enabled: Boolean = false,
-        var skullDropChance: Double = 0.01,
-        var xpCostToBottle: Int = 11,
+    object Config {
+        var skullDropChance: Double = 0.01
+        var xpCostToBottle: Int = 11
         var welcomeText: List<String> =
             listOf(
                 "<gradient:#FFA751:#FFE259>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
@@ -315,14 +308,10 @@ internal object PlayerModule : ModuleInterface {
                 "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gray>✦</gray> <click:open_url:'https://vanillaplus.xodium.org'><gradient:#13547a:#80d0c7>wiki</gradient></click:open_url>",
                 "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
                 "<gradient:#FFA751:#FFE259>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
-            ),
-        var silkTouch: SilkTouchEnchantment = SilkTouchEnchantment(),
-        var tabList: TabList = TabList(),
-        var i18n: I18n = I18n(),
-    ) : ModuleConfigInterface {
+            )
+
         /** Represents the tab list header, footer, and weather i18n configuration. */
-        @Serializable
-        data class TabList(
+        object TabList {
             var header: List<String> =
                 listOf(
                     "<gradient:#FFA751:#FFE259><st>───────────────</st></gradient> " +
@@ -331,88 +320,74 @@ internal object PlayerModule : ModuleInterface {
                         "</gradient> " +
                         "<gradient:#FFE259:#FFA751><st>───────────────</st></gradient>",
                     "",
-                ),
+                )
             var footer: List<String> =
                 listOf(
                     "",
                     "<gradient:#FFA751:#FFE259><st>─────────────</st></gradient>  " +
                         "<gradient:#CB2D3E:#EF473A>Weather:</gradient> <weather> " +
                         " <gradient:#FFE259:#FFA751><st>─────────────</st></gradient>",
-                ),
-            var i18n: I18n = I18n(),
-        ) {
-            /** Represents the weather i18n strings for the tab list. */
-            @Serializable
-            data class I18n(
-                var weatherThundering: String = "<red>\uD83C\uDF29<reset>",
-                var weatherStorm: String = "<yellow>\uD83C\uDF26<reset>",
-                var weatherClear: String = "<green>\uD83C\uDF24<reset>",
-            )
+                )
+            var weatherThundering: String = "<red>\uD83C\uDF29<reset>"
+            var weatherStorm: String = "<yellow>\uD83C\uDF26<reset>"
+            var weatherClear: String = "<green>\uD83C\uDF24<reset>"
         }
 
         /** Represents the settings for the Silk Touch enchantment. */
-        @Serializable
-        data class SilkTouchEnchantment(
-            var allowSpawnerSilk: Boolean = true,
-            var allowBuddingAmethystSilk: Boolean = true,
-        )
+        object SilkTouchEnchantment {
+            var allowSpawnerSilk: Boolean = true
+            var allowBuddingAmethystSilk: Boolean = true
+        }
 
-        /** Represents the internationalization strings for the module. */
-        @Serializable
-        data class I18n(
-            var playerJoinMsg: String = "<green>➕<reset> <gradient:#FFE259:#FFA751>›</gradient> <player>",
-            var playerQuitMsg: String = "<red>➖<reset> <gradient:#FFE259:#FFA751>›</gradient> <player>",
-            var playerDeathByPlayerMsg: String = "<killer> <gradient:#FFE259:#FFA751>⚔</gradient> <player>",
-            var playerDeathMsg: String =
-                "<gradient:#FFE259:#FFA751>💀</gradient> <gradient:#FFE259:#FFA751>›</gradient> <cause>",
-            var playerDeathScreenMsg: String = "☠",
-            var playerKickMsg: String =
+        /** Represents the player-facing message strings for the module. */
+        object PlayerMessages {
+            var join: String = "<green>➕<reset> <gradient:#FFE259:#FFA751>›</gradient> <player>"
+            var quit: String = "<red>➖<reset> <gradient:#FFE259:#FFA751>›</gradient> <player>"
+            var deathByPlayer: String = "<killer> <gradient:#FFE259:#FFA751>⚔</gradient> <player>"
+            var death: String =
+                "<gradient:#FFE259:#FFA751>💀</gradient> <gradient:#FFE259:#FFA751>›</gradient> <cause>"
+            var deathScreen: String = "☠"
+            var kick: String =
                 "<red>❌<reset> <gradient:#FFE259:#FFA751>›</gradient> <player> " +
-                    "<gradient:#FFE259:#FFA751>reason:</gradient> <reason>",
-            var playerSetSpawnMsg: String =
-                "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> <notification>",
-            var nicknameUpdated: String =
-                "<gradient:#CB2D3E:#EF473A>Nickname has been updated to: <nickname></gradient>",
-            var advancementMessages: AdvancementMessages = AdvancementMessages(),
-            var bedEnterMessages: BedEnterMessages = BedEnterMessages(),
-            var loginMessages: LoginMessages = LoginMessages(),
-        ) {
-            /** Represents the i18n messages for each advancement type. */
-            @Serializable
-            data class AdvancementMessages(
-                var task: String =
-                    "\uD83C\uDF89 <gradient:#FFE259:#FFA751>›</gradient> <player> " +
-                        "<gradient:#FFE259:#FFA751>has made the advancement:</gradient> <advancement>",
-                var goal: String =
-                    "\uD83C\uDF89 <gradient:#FFE259:#FFA751>›</gradient> <player> " +
-                        "<gradient:#FFE259:#FFA751>has reached the goal:</gradient> <advancement>",
-                var challenge: String =
-                    "\uD83C\uDF89 <gradient:#FFE259:#FFA751>›</gradient> <player> " +
-                        "<gradient:#FFE259:#FFA751>has completed the challenge:</gradient> <advancement>",
-            )
+                    "<gradient:#FFE259:#FFA751>reason:</gradient> <reason>"
+            var setSpawn: String =
+                "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> <notification>"
+            var updateNickname: String =
+                "<gradient:#CB2D3E:#EF473A>Nickname has been updated to: <nickname></gradient>"
+        }
 
-            /** Represents the i18n messages shown to players denied during login. */
-            @Serializable
-            data class LoginMessages(
-                var full: String =
-                    "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> The server is full.",
-                var denied: String =
-                    "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> You are not allowed to join this server.",
-            )
+        /** Represents the i18n messages for each advancement type. */
+        object AdvancementMessages {
+            var task: String =
+                "\uD83C\uDF89 <gradient:#FFE259:#FFA751>›</gradient> <player> " +
+                    "<gradient:#FFE259:#FFA751>has made the advancement:</gradient> <advancement>"
+            var goal: String =
+                "\uD83C\uDF89 <gradient:#FFE259:#FFA751>›</gradient> <player> " +
+                    "<gradient:#FFE259:#FFA751>has reached the goal:</gradient> <advancement>"
+            var challenge: String =
+                "\uD83C\uDF89 <gradient:#FFE259:#FFA751>›</gradient> <player> " +
+                    "<gradient:#FFE259:#FFA751>has completed the challenge:</gradient> <advancement>"
+        }
 
-            /** Represents the i18n messages for bed enter failure reasons. */
-            @Serializable
-            data class BedEnterMessages(
-                var tooFarAway: String =
-                    "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> You are too far away from the bed.",
-                var obstructed: String =
-                    "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> Your bed is obstructed.",
-                var notSafe: String =
-                    "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> You cannot sleep while monsters are nearby.",
-                var explosion: String =
-                    "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> You cannot sleep here.",
-                var other: String = "",
-            )
+        /** Represents the i18n messages shown to players denied during login. */
+        object LoginMessages {
+            var full: String =
+                "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> The server is full."
+            var denied: String =
+                "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> You are not allowed to join this server."
+        }
+
+        /** Represents the i18n messages for bed enter failure reasons. */
+        object BedEnterMessages {
+            var tooFarAway: String =
+                "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> You are too far away from the bed."
+            var obstructed: String =
+                "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> Your bed is obstructed."
+            var notSafe: String =
+                "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> You cannot sleep while monsters are nearby."
+            var explosion: String =
+                "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> You cannot sleep here."
+            var other: String = ""
         }
     }
 }

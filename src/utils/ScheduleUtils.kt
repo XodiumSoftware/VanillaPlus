@@ -22,18 +22,4 @@ internal object ScheduleUtils {
         instance.server.scheduler.runTaskTimer(instance, content, delay, period).also { task ->
             duration?.let { instance.server.scheduler.runTaskLater(instance, task::cancel, it) }
         }
-
-    /**
-     * Runs a task asynchronously off the main server thread.
-     * @param content The task to execute on a worker thread.
-     * @return The scheduled [BukkitTask].
-     */
-    fun runAsync(content: () -> Unit): BukkitTask = instance.server.scheduler.runTaskAsynchronously(instance, content)
-
-    /**
-     * Runs a task synchronously on the main server thread.
-     * @param content The task to execute on the main thread.
-     * @return The scheduled [BukkitTask].
-     */
-    fun runSync(content: () -> Unit): BukkitTask = instance.server.scheduler.runTask(instance, content)
 }

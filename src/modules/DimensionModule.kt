@@ -1,6 +1,5 @@
 package org.xodium.vanillaplus.modules
 
-import kotlinx.serialization.Serializable
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.World
@@ -13,16 +12,12 @@ import org.bukkit.event.player.PlayerPortalEvent
 import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.event.world.PortalCreateEvent
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.Utils.MM
-import org.xodium.vanillaplus.utils.Utils.configDelegate
 import kotlin.math.hypot
 
 /** Represents a module handling dimension mechanics within the system. */
 internal object DimensionModule : ModuleInterface {
-    override val config by configDelegate { Config() }
-
     private const val NETHER_TO_OVERWORLD_RATIO = 8
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -67,7 +62,7 @@ internal object DimensionModule : ModuleInterface {
                 val overworld = getOverworld()
                 val destination = player.respawnLocation?.takeIf { it.world == overworld } ?: overworld.spawnLocation
 
-                player.sendActionBar(MM.deserialize(config.i18n.portalCreationDenied))
+                player.sendActionBar(MM.deserialize(Config.I18n.portalCreationDenied))
                 player.teleport(destination, PlayerTeleportEvent.TeleportCause.PLUGIN)
             }
         }
@@ -83,7 +78,7 @@ internal object DimensionModule : ModuleInterface {
     private fun findCorrespondingPortal(
         netherPortal: Location,
         overworld: World,
-        searchRadius: Int = config.portalSearchRadius,
+        searchRadius: Int = Config.portalSearchRadius,
     ): Location? {
         val targetX = netherPortal.x * NETHER_TO_OVERWORLD_RATIO
         val targetZ = netherPortal.z * NETHER_TO_OVERWORLD_RATIO
@@ -134,17 +129,13 @@ internal object DimensionModule : ModuleInterface {
     private fun getOverworld(): World = instance.server.getWorld("world") ?: error("Overworld (world) is not loaded.")
 
     /** Represents the config of the module. */
-    @Serializable
-    data class Config(
-        override var enabled: Boolean = false,
-        var portalSearchRadius: Int = 128,
-        var i18n: I18n = I18n(),
-    ) : ModuleConfigInterface {
+    object Config {
+        var portalSearchRadius: Int = 128
+
         /** Represents the internationalization strings for the module. */
-        @Serializable
-        data class I18n(
+        object I18n {
             var portalCreationDenied: String =
-                "<gradient:#CB2D3E:#EF473A>No corresponding active portal found in the Overworld!</gradient>",
-        )
+                "<gradient:#CB2D3E:#EF473A>No corresponding active portal found in the Overworld!</gradient>"
+        }
     }
 }

@@ -4,7 +4,6 @@ plugins {
     id("java")
     id("idea")
     kotlin("jvm") version "2.3.20"
-    kotlin("plugin.serialization") version "2.3.20"
     id("com.gradleup.shadow") version "9.4.0"
     id("xyz.jpenilla.run-paper") version "3.0.2"
     id("xyz.jpenilla.resource-factory-paper-convention") version "1.3.1"
@@ -36,7 +35,6 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:$mcVersion-R0.1-SNAPSHOT")
 
     implementation(kotlin("stdlib"))
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
 }
 
 java {

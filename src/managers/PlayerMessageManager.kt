@@ -11,8 +11,6 @@ import org.xodium.vanillaplus.utils.Utils.MM
 
 /** Manages player messages and internationalization. */
 internal object PlayerMessageManager {
-    private val config = PlayerModule.config.i18n
-
     /**
      * Handles the player join message.
      * @param player The player who joined.
@@ -20,7 +18,8 @@ internal object PlayerMessageManager {
      */
     fun handleJoin(player: Player): Component? =
         MM.deserialize(
-            config.playerJoinMsg.takeUnless { it.isEmpty() } ?: return null,
+            PlayerModule.Config.PlayerMessages.join
+                .takeUnless { it.isEmpty() } ?: return null,
             Placeholder.component("player", player.displayName()),
         )
 
@@ -31,7 +30,8 @@ internal object PlayerMessageManager {
      */
     fun handleQuit(player: Player): Component? =
         MM.deserialize(
-            config.playerQuitMsg.takeUnless { it.isEmpty() } ?: return null,
+            PlayerModule.Config.PlayerMessages.quit
+                .takeUnless { it.isEmpty() } ?: return null,
             Placeholder.component("player", player.displayName()),
         )
 
@@ -46,7 +46,8 @@ internal object PlayerMessageManager {
         killer: Player?,
     ): Component? =
         MM.deserialize(
-            config.playerDeathByPlayerMsg.takeUnless { it.isEmpty() } ?: return null,
+            PlayerModule.Config.PlayerMessages.deathByPlayer
+                .takeUnless { it.isEmpty() } ?: return null,
             Placeholder.component("player", player.displayName()),
             Placeholder.component("killer", (killer ?: return null).displayName()),
         )
@@ -62,7 +63,8 @@ internal object PlayerMessageManager {
         cause: Component?,
     ): Component? =
         MM.deserialize(
-            config.playerDeathMsg.takeUnless { it.isEmpty() } ?: return null,
+            PlayerModule.Config.PlayerMessages.death
+                .takeUnless { it.isEmpty() } ?: return null,
             Placeholder.component("player", player.displayName()),
             Placeholder.component("cause", cause ?: return null),
         )
@@ -72,7 +74,10 @@ internal object PlayerMessageManager {
      * @return The formatted death screen message component, or null if no message is set.
      */
     fun handleDeathScreen(): Component? =
-        MM.deserialize(config.playerDeathScreenMsg.takeUnless { it.isEmpty() } ?: return null)
+        MM.deserialize(
+            PlayerModule.Config.PlayerMessages.deathScreen
+                .takeUnless { it.isEmpty() } ?: return null,
+        )
 
     /**
      * Handles the player advancement completion message, with different formats per advancement type.
@@ -88,9 +93,9 @@ internal object PlayerMessageManager {
 
         return MM.deserialize(
             when (display.frame()) {
-                AdvancementDisplay.Frame.TASK -> config.advancementMessages.task
-                AdvancementDisplay.Frame.GOAL -> config.advancementMessages.goal
-                AdvancementDisplay.Frame.CHALLENGE -> config.advancementMessages.challenge
+                AdvancementDisplay.Frame.TASK -> PlayerModule.Config.AdvancementMessages.task
+                AdvancementDisplay.Frame.GOAL -> PlayerModule.Config.AdvancementMessages.goal
+                AdvancementDisplay.Frame.CHALLENGE -> PlayerModule.Config.AdvancementMessages.challenge
             }.takeUnless { it.isEmpty() } ?: return null,
             Placeholder.component("player", player.displayName()),
             Placeholder.component("advancement", display.title()),
@@ -102,14 +107,20 @@ internal object PlayerMessageManager {
      * @return The formatted kick message component, or null if no message is set.
      */
     fun handleServerFull(): Component? =
-        MM.deserialize(config.loginMessages.full.takeUnless { it.isEmpty() } ?: return null)
+        MM.deserialize(
+            PlayerModule.Config.LoginMessages.full
+                .takeUnless { it.isEmpty() } ?: return null,
+        )
 
     /**
      * Handles the kick message shown when a player is denied login (ban, IP ban, whitelist).
      * @return The formatted kick message component, or null if no message is set.
      */
     fun handleLoginDenied(): Component? =
-        MM.deserialize(config.loginMessages.denied.takeUnless { it.isEmpty() } ?: return null)
+        MM.deserialize(
+            PlayerModule.Config.LoginMessages.denied
+                .takeUnless { it.isEmpty() } ?: return null,
+        )
 
     /**
      * Handles the player kick message.
@@ -118,7 +129,8 @@ internal object PlayerMessageManager {
      */
     fun handleKick(reason: Component): Component? =
         MM.deserialize(
-            config.playerKickMsg.takeUnless { it.isEmpty() } ?: return null,
+            PlayerModule.Config.PlayerMessages.kick
+                .takeUnless { it.isEmpty() } ?: return null,
             Placeholder.component("reason", reason),
         )
 
@@ -131,11 +143,11 @@ internal object PlayerMessageManager {
     fun handleBedEnter(problem: BedEnterProblem): Component? {
         return MM.deserialize(
             when (problem) {
-                BedEnterProblem.TOO_FAR_AWAY -> config.bedEnterMessages.tooFarAway
-                BedEnterProblem.OBSTRUCTED -> config.bedEnterMessages.obstructed
-                BedEnterProblem.NOT_SAFE -> config.bedEnterMessages.notSafe
-                BedEnterProblem.EXPLOSION -> config.bedEnterMessages.explosion
-                else -> config.bedEnterMessages.other
+                BedEnterProblem.TOO_FAR_AWAY -> PlayerModule.Config.BedEnterMessages.tooFarAway
+                BedEnterProblem.OBSTRUCTED -> PlayerModule.Config.BedEnterMessages.obstructed
+                BedEnterProblem.NOT_SAFE -> PlayerModule.Config.BedEnterMessages.notSafe
+                BedEnterProblem.EXPLOSION -> PlayerModule.Config.BedEnterMessages.explosion
+                else -> PlayerModule.Config.BedEnterMessages.other
             }.takeUnless { it.isEmpty() } ?: return null,
         )
     }
@@ -147,7 +159,8 @@ internal object PlayerMessageManager {
      */
     fun handleSetSpawn(notification: Component): Component? =
         MM.deserialize(
-            config.playerSetSpawnMsg.takeUnless { it.isEmpty() } ?: return null,
+            PlayerModule.Config.PlayerMessages.setSpawn
+                .takeUnless { it.isEmpty() } ?: return null,
             Placeholder.component("notification", notification),
         )
 }

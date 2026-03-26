@@ -1,6 +1,5 @@
 package org.xodium.vanillaplus.modules
 
-import kotlinx.serialization.Serializable
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
 import org.bukkit.GameMode
@@ -15,16 +14,12 @@ import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.meta.BookMeta
 import org.bukkit.inventory.meta.EnchantmentStorageMeta
 import org.bukkit.util.Vector
-import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.Utils.MM
-import org.xodium.vanillaplus.utils.Utils.configDelegate
 import org.bukkit.block.data.type.ChiseledBookshelf as ChiseledBookshelfData
 
 /** Represents a module handling bookshelf mechanics within the system. */
 internal object ChiseledBookshelfModule : ModuleInterface {
-    override val config by configDelegate { Config() }
-
     @EventHandler
     fun on(event: PlayerInteractEvent) {
         val player = event.player
@@ -120,9 +115,4 @@ internal object ChiseledBookshelfModule : ModuleInterface {
             .append(Component.join(JoinConfiguration.separator(MM.deserialize("<gray>, </gray>")), enchantments))
     }
 
-    /** Represents the config of the module. */
-    @Serializable
-    data class Config(
-        override var enabled: Boolean = false,
-    ) : ModuleConfigInterface
 }
