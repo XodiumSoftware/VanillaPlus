@@ -31,9 +31,15 @@ import org.bukkit.scheduler.BukkitTask
 import org.bukkit.util.Vector
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
+import org.xodium.vanillaplus.data.FormationMemberData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.modules.HordeModule.DETECTION_RANGE
+import org.xodium.vanillaplus.modules.HordeModule.ROAM_RADIUS
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import org.xodium.vanillaplus.utils.Utils.MM
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
 import kotlin.random.Random
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -61,6 +67,10 @@ internal object HordeModule : ModuleInterface {
                 PermissionDefault.OP,
             ),
         )
+
+    private const val DETECTION_RANGE = 48.0
+    private const val IDLE_CIRCLE_RADIUS = 10.0
+    private const val ROAM_RADIUS = 5.0
 
     private val bossBars = mutableMapOf<Uuid, BossBar>()
     private val formationTasks = mutableMapOf<Uuid, BukkitTask>()
@@ -114,12 +124,12 @@ internal object HordeModule : ModuleInterface {
     private fun spawnFormation(location: Location) {
         val warlordLoc = location.clone().add(0.0, 0.0, 36.0)
         val warlord = spawnWarlord(warlordLoc)
-        val formation = mutableListOf<Pair<Mob, Vector>>()
+        val rawFormation = mutableListOf<Pair<Mob, Vector>>()
 
         fun collectRow(entities: List<Mob>) =
             entities.forEach { mob ->
                 val raw = mob.location.toVector().subtract(warlordLoc.toVector())
-                formation += mob to Vector(raw.x, 0.0, raw.z)
+                rawFormation += mob to Vector(raw.x, 0.0, raw.z)
             }
 
         collectRow(spawnRow(location, 0.0, 4.0, 6) { loc -> loc.world.spawn(loc, Zombie::class.java) { it.goblin() } })
@@ -127,6 +137,11 @@ internal object HordeModule : ModuleInterface {
         collectRow(spawnRow(location, 18.0, 10.0, 2) { loc -> loc.world.spawn(loc, Zombie::class.java) { it.troll() } })
         collectRow(spawnRow(location, 28.0, 8.0, 2) { spawnDarkKnight(it) })
 
+        val total = rawFormation.size
+        val formation =
+            rawFormation.mapIndexed { i, (mob, offset) ->
+                FormationMemberData(mob, offset, 2 * PI * i / total)
+            }
         startFormationTask(warlord, formation)
     }
 
@@ -177,25 +192,55 @@ internal object HordeModule : ModuleInterface {
     }
 
     /**
-     * Starts a repeating task that marches the [warlord] toward the nearest player and keeps all
-     * [formation] members at their assigned offset relative to the warlord.
-     * The task cancels automatically when the warlord is dead or invalid.
+     * Starts a repeating task that drives two formation states:
+     * - **Active** (a survival/adventure player is within [DETECTION_RANGE]): the [warlord] marches toward
+     *   the nearest such player and all [formation] members hold their row offsets relative to the warlord.
+     * - **Idle** (no player in range): the [warlord] stops moving and each [formation] member is free to
+     *   roam within [ROAM_RADIUS] of its assigned circle slot; if it strays further it pathfinds back.
      */
     private fun startFormationTask(
         warlord: Zombie,
-        formation: List<Pair<Mob, Vector>>,
+        formation: List<FormationMemberData>,
     ) {
         formationTasks[warlord.uniqueId.toKotlinUuid()] =
             instance.server.scheduler.runTaskTimer(
                 instance,
                 Runnable {
                     if (warlord.isDead || !warlord.isValid) return@Runnable
-                    warlord.world.players
-                        .filter { !it.isDead && it.gameMode in setOf(GameMode.SURVIVAL, GameMode.ADVENTURE) }
-                        .minByOrNull { it.location.distanceSquared(warlord.location) }
-                        ?.let { warlord.pathfinder.moveTo(it, 1.0) }
-                    formation.forEach { (mob, offset) ->
-                        if (!mob.isDead && mob.isValid) mob.pathfinder.moveTo(warlord.location.clone().add(offset), 1.0)
+                    val target =
+                        warlord.world.players
+                            .filter { !it.isDead && it.gameMode in setOf(GameMode.SURVIVAL, GameMode.ADVENTURE) }
+                            .filter {
+                                it.location.distanceSquared(
+                                    warlord.location,
+                                ) <= DETECTION_RANGE * DETECTION_RANGE
+                            }.minByOrNull { it.location.distanceSquared(warlord.location) }
+
+                    if (target != null) {
+                        warlord.pathfinder.moveTo(target, 1.0)
+                        formation.forEach { (mob, marchOffset, _) ->
+                            if (!mob.isDead && mob.isValid) {
+                                mob.pathfinder.moveTo(
+                                    warlord.location.clone().add(marchOffset),
+                                    1.0,
+                                )
+                            }
+                        }
+                    } else {
+                        warlord.pathfinder.stopPathfinding()
+                        formation.forEach { (mob, _, idleAngle) ->
+                            if (!mob.isDead && mob.isValid) {
+                                val idleHome =
+                                    warlord.location.clone().add(
+                                        cos(idleAngle) * IDLE_CIRCLE_RADIUS,
+                                        0.0,
+                                        sin(idleAngle) * IDLE_CIRCLE_RADIUS,
+                                    )
+                                if (mob.location.distanceSquared(idleHome) > ROAM_RADIUS * ROAM_RADIUS) {
+                                    mob.pathfinder.moveTo(idleHome, 1.0)
+                                }
+                            }
+                        }
                     }
                 },
                 0L,

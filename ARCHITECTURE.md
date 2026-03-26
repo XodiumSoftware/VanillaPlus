@@ -65,7 +65,7 @@ Recipe objects implement **`RecipeInterface`** and are listed in `VanillaPlus.on
 | Package         | Contents                                                                               |
 |-----------------|----------------------------------------------------------------------------------------|
 | `modules/`      | 16 feature module singletons                                                           |
-| `data/`         | `CommandData`, `BookData`, `AdjacentBlockData`                                         |
+| `data/`         | `CommandData`, `BookData`, `AdjacentBlockData`, `FormationMemberData`                  |
 | `enchantments/` | Verdance, Tether, Nightsight, Nimbus, Earthrend, Embertread, SilkTouch, FeatherFalling |
 | `interfaces/`   | `ModuleInterface`, `EnchantmentInterface`, `RecipeInterface`                           |
 | `managers/`     | `PlayerMessageManager`                                                                 |
