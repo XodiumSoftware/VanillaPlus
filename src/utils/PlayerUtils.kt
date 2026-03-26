@@ -61,27 +61,27 @@ internal object PlayerUtils {
 
         // 3. scale & build MiniMessage
         val scale = FACE_WIDTH.toDouble() / size
-        val builder = StringBuilder()
 
-        for (y in 0 until size) {
-            for (x in 0 until size) {
-                val px = (x * scale).toInt().coerceAtMost(MAX_COORDINATE)
-                val py = (y * scale).toInt().coerceAtMost(MAX_COORDINATE)
-                val rgb = face.getRGB(px, py)
-                val a = (rgb ushr ALPHA_SHIFT) and COLOR_MASK
-                val r = (rgb shr RED_SHIFT) and COLOR_MASK
-                val g = (rgb shr GREEN_SHIFT) and COLOR_MASK
-                val b = rgb and COLOR_MASK
+        return buildString {
+            for (y in 0 until size) {
+                for (x in 0 until size) {
+                    val px = (x * scale).toInt().coerceAtMost(MAX_COORDINATE)
+                    val py = (y * scale).toInt().coerceAtMost(MAX_COORDINATE)
+                    val rgb = face.getRGB(px, py)
+                    val a = (rgb ushr ALPHA_SHIFT) and COLOR_MASK
+                    val r = (rgb shr RED_SHIFT) and COLOR_MASK
+                    val g = (rgb shr GREEN_SHIFT) and COLOR_MASK
+                    val b = rgb and COLOR_MASK
 
-                if (a == 0) {
-                    builder.append("<color:$BLACK_COLOR>$PIXEL_CHAR</color>")
-                } else {
-                    builder.append("<color:#%02x%02x%02x>$PIXEL_CHAR</color>".format(r, g, b))
+                    if (a == 0) {
+                        append("<color:$BLACK_COLOR>$PIXEL_CHAR</color>")
+                    } else {
+                        append("<color:#%02x%02x%02x>$PIXEL_CHAR</color>".format(r, g, b))
+                    }
                 }
+                append("\n")
             }
-            builder.append("\n")
         }
-        return builder.toString()
     }
 
     /**
