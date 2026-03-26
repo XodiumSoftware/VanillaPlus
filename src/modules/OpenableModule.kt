@@ -2,6 +2,7 @@
 
 package org.xodium.vanillaplus.modules
 
+import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -20,13 +21,11 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.AdjacentBlockData
-import org.xodium.vanillaplus.data.SoundData
-import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 
 /** Represents a module handling openable blocks mechanics within the system. */
 internal object OpenableModule : ModuleInterface {
-    override val config = Config()
+    val config = Config()
 
     private val disallowedKnockGameModes = setOf(GameMode.CREATIVE, GameMode.SPECTATOR)
     private val possibleNeighbours: Set<AdjacentBlockData> =
@@ -112,7 +111,7 @@ internal object OpenableModule : ModuleInterface {
     private fun playKnockSound(block: Block) {
         block.world
             .getNearbyPlayers(block.location, config.soundProximityRadius)
-            .forEach { it.playSound(config.soundKnock.toSound()) }
+            .forEach { it.playSound(config.soundKnock) }
     }
 
     /**
@@ -234,14 +233,19 @@ internal object OpenableModule : ModuleInterface {
 
     /** Represents the config of the module. */
     data class Config(
-        override var enabled: Boolean = false,
         var initDelayInTicks: Long = 1,
         var allowDoubleDoors: Boolean = true,
         var allowKnocking: Boolean = true,
         var allowIronDoorByHand: Boolean = false,
         var knockingRequiresEmptyHand: Boolean = true,
         var knockingRequiresShifting: Boolean = true,
-        var soundKnock: SoundData = SoundData("entity.zombie.attack_wooden_door", Sound.Source.HOSTILE),
+        var soundKnock: Sound =
+            Sound.sound(
+                Key.key("entity.zombie.attack_wooden_door"),
+                Sound.Source.HOSTILE,
+                1.0f,
+                1.0f,
+            ),
         var soundProximityRadius: Double = 10.0,
-    ) : ModuleConfigInterface
+    )
 }

@@ -10,7 +10,6 @@ import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerRegisterChannelEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.MessageUtils
 import kotlin.random.Random
@@ -21,7 +20,7 @@ import kotlin.uuid.toKotlinUuid
 /** Represents a module handling map mechanics within the system. */
 @OptIn(ExperimentalUuidApi::class)
 internal object MapModule : ModuleInterface {
-    override val config = Config()
+    val config = Config()
 
     private val lastTrackTime = mutableMapOf<Uuid, Long>()
     private val lastBlockPos = mutableMapOf<Uuid, Triple<Int, Int, Int>>()
@@ -33,7 +32,7 @@ internal object MapModule : ModuleInterface {
     }
 
     init {
-        if (config.enabled) {
+        if (enabled) {
             instance.server.messenger.apply {
                 registerOutgoingPluginChannel(instance, Channel.WORLD_MAP)
                 registerOutgoingPluginChannel(instance, Channel.MINI_MAP)
@@ -185,7 +184,6 @@ internal object MapModule : ModuleInterface {
 
     /** Represents the config of the module. */
     data class Config(
-        override var enabled: Boolean = false,
         var serverId: Int = Random.nextInt(),
-    ) : ModuleConfigInterface
+    )
 }

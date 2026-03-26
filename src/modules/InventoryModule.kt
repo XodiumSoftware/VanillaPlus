@@ -4,6 +4,7 @@ package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes
+import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Color
@@ -17,8 +18,6 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
-import org.xodium.vanillaplus.data.SoundData
-import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.BlockUtils.center
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
@@ -28,7 +27,7 @@ import org.xodium.vanillaplus.utils.Utils.MM
 
 /** Represents a module handling inventory mechanics within the system. */
 internal object InventoryModule : ModuleInterface {
-    override val config = Config()
+    val config = Config()
 
     override val cmds =
         listOf(
@@ -81,7 +80,7 @@ internal object InventoryModule : ModuleInterface {
     ) {
         if (material == Material.AIR) {
             player.sendActionBar(MM.deserialize(config.i18n.noMaterialSpecified))
-            player.playSound(config.searchFailedSound.toSound())
+            player.playSound(config.searchFailedSound)
             return
         }
 
@@ -94,7 +93,7 @@ internal object InventoryModule : ModuleInterface {
                     Placeholder.component("material", MM.deserialize(material.name)),
                 ),
             )
-            player.playSound(config.searchFailedSound.toSound())
+            player.playSound(config.searchFailedSound)
             return
         }
 
@@ -105,7 +104,7 @@ internal object InventoryModule : ModuleInterface {
             ),
         )
 
-        player.playSound(config.searchSuccessfulSound.toSound())
+        player.playSound(config.searchSuccessfulSound)
 
         ScheduleUtils.schedule(duration = 200L) {
             containers.forEach {
@@ -141,7 +140,7 @@ internal object InventoryModule : ModuleInterface {
 
         if (containers.isEmpty()) {
             player.sendActionBar(MM.deserialize(config.i18n.noContainersFound))
-            player.playSound(config.unloadFailedSound.toSound())
+            player.playSound(config.unloadFailedSound)
             return
         }
 
@@ -183,10 +182,10 @@ internal object InventoryModule : ModuleInterface {
         }
 
         if (usedContainers.isEmpty()) {
-            player.playSound(config.unloadFailedSound.toSound())
+            player.playSound(config.unloadFailedSound)
             return
         } else {
-            player.playSound(config.unloadSuccessfulSound.toSound())
+            player.playSound(config.unloadSuccessfulSound)
         }
 
         ScheduleUtils.schedule(duration = 40L) {
@@ -203,13 +202,24 @@ internal object InventoryModule : ModuleInterface {
 
     /** Represents the config of the module. */
     data class Config(
-        override var enabled: Boolean = false,
-        var searchSuccessfulSound: SoundData = SoundData("entity.player.levelup", Sound.Source.PLAYER),
-        var searchFailedSound: SoundData = SoundData("block.anvil.land", Sound.Source.PLAYER),
-        var unloadSuccessfulSound: SoundData = SoundData("entity.player.levelup", Sound.Source.PLAYER),
-        var unloadFailedSound: SoundData = SoundData("block.anvil.land", Sound.Source.PLAYER),
+        var searchSuccessfulSound: Sound =
+            Sound.sound(
+                Key.key("entity.player.levelup"),
+                Sound.Source.PLAYER,
+                1.0f,
+                1.0f,
+            ),
+        var searchFailedSound: Sound = Sound.sound(Key.key("block.anvil.land"), Sound.Source.PLAYER, 1.0f, 1.0f),
+        var unloadSuccessfulSound: Sound =
+            Sound.sound(
+                Key.key("entity.player.levelup"),
+                Sound.Source.PLAYER,
+                1.0f,
+                1.0f,
+            ),
+        var unloadFailedSound: Sound = Sound.sound(Key.key("block.anvil.land"), Sound.Source.PLAYER, 1.0f, 1.0f),
         var i18n: I18n = I18n(),
-    ) : ModuleConfigInterface {
+    ) {
         /** Represents the internationalization strings for the module. */
         data class I18n(
             var noMaterialSpecified: String =

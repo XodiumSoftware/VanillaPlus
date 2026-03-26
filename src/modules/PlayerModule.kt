@@ -40,7 +40,6 @@ import org.xodium.vanillaplus.enchantments.NightsightEnchantment
 import org.xodium.vanillaplus.enchantments.SilkTouchEnchantment
 import org.xodium.vanillaplus.enchantments.TetherEnchantment
 import org.xodium.vanillaplus.enchantments.VerdanceEnchantment
-import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.PlayerMessageManager
 import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
@@ -54,7 +53,7 @@ import kotlin.random.Random
 
 /** Represents a module handling player mechanics within the system. */
 internal object PlayerModule : ModuleInterface {
-    override val config = Config()
+    val config = Config()
 
     override val cmds =
         listOf(
@@ -297,7 +296,6 @@ internal object PlayerModule : ModuleInterface {
 
     /** Represents the config of the module. */
     data class Config(
-        override var enabled: Boolean = false,
         var skullDropChance: Double = 0.01,
         var xpCostToBottle: Int = 11,
         var welcomeText: List<String> =
@@ -316,7 +314,7 @@ internal object PlayerModule : ModuleInterface {
         var silkTouch: SilkTouchEnchantment = SilkTouchEnchantment(),
         var tabList: TabList = TabList(),
         var i18n: I18n = I18n(),
-    ) : ModuleConfigInterface {
+    ) {
         /** Represents the tab list header, footer, and weather i18n configuration. */
         data class TabList(
             var header: List<String> =

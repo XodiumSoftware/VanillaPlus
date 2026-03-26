@@ -12,14 +12,13 @@ import org.bukkit.event.player.PlayerPortalEvent
 import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.event.world.PortalCreateEvent
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.Utils.MM
 import kotlin.math.hypot
 
 /** Represents a module handling dimension mechanics within the system. */
 internal object DimensionModule : ModuleInterface {
-    override val config = Config()
+    val config = Config()
 
     private const val NETHER_TO_OVERWORLD_RATIO = 8
 
@@ -133,10 +132,9 @@ internal object DimensionModule : ModuleInterface {
 
     /** Represents the config of the module. */
     data class Config(
-        override var enabled: Boolean = false,
         var portalSearchRadius: Int = 128,
         var i18n: I18n = I18n(),
-    ) : ModuleConfigInterface {
+    ) {
         /** Represents the internationalization strings for the module. */
         data class I18n(
             var portalCreationDenied: String =

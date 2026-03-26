@@ -5,13 +5,12 @@ import org.bukkit.permissions.Permission
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.BookData
 import org.xodium.vanillaplus.data.CommandData
-import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 
 /** Represents a module handling book mechanics within the system. */
 internal object BooksModule : ModuleInterface {
-    override val config = Config()
+    val config = Config()
 
     private val permPrefix: String = "${instance.javaClass.simpleName}.book".lowercase()
 
@@ -39,7 +38,6 @@ internal object BooksModule : ModuleInterface {
 
     /** Represents the config of the module. */
     data class Config(
-        override var enabled: Boolean = false,
         var books: List<BookData> =
             listOf(
                 BookData(
@@ -78,5 +76,5 @@ internal object BooksModule : ModuleInterface {
                         ),
                 ),
             ),
-    ) : ModuleConfigInterface
+    )
 }

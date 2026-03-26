@@ -4,14 +4,11 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractEntityEvent
-import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.PlayerUtils.getLeashedEntity
 
 /** Represents a module handling tameable mechanics within the system. */
 internal object TameableModule : ModuleInterface {
-    override val config = Config()
-
     @EventHandler
     fun on(event: PlayerInteractEntityEvent) {
         transferPetOwnership(event.player, event.rightClicked as? Player ?: return)
@@ -38,8 +35,4 @@ internal object TameableModule : ModuleInterface {
         pet.setLeashHolder(target)
     }
 
-    /** Represents the config of the module. */
-    data class Config(
-        override var enabled: Boolean = false,
-    ) : ModuleConfigInterface
 }

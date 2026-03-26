@@ -9,11 +9,8 @@ import kotlin.time.measureTime
 
 /** Represents a contract for a module within the system. */
 internal interface ModuleInterface : Listener {
-    /**
-     * Retrieves the module-specific configuration.
-     * @return A [ModuleConfigInterface] representing the configuration for this module.
-     */
-    val config: ModuleConfigInterface
+    /** Whether this module is active. Defaults to true. Override to disable a module. */
+    val enabled: Boolean get() = true
 
     /**
      * Retrieves a list of command data associated with the module.

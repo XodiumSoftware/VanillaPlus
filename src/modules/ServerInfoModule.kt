@@ -2,13 +2,12 @@ package org.xodium.vanillaplus.modules
 
 import org.bukkit.ServerLinks
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import java.net.URI
 
 /** Represents a module handling server info mechanics within the system. */
 internal object ServerInfoModule : ModuleInterface {
-    override val config = Config()
+    val config = Config()
 
     init {
         serverLinks()
@@ -23,7 +22,6 @@ internal object ServerInfoModule : ModuleInterface {
 
     /** Represents the config of the module. */
     data class Config(
-        override var enabled: Boolean = false,
         @Suppress("UnstableApiUsage") var serverLinks: Map<ServerLinks.Type, String> =
             mapOf(
                 ServerLinks.Type.WEBSITE to "https://xodium.org/",
@@ -32,5 +30,5 @@ internal object ServerInfoModule : ModuleInterface {
                 ServerLinks.Type.COMMUNITY to "https://discord.gg/jusYH9aYUh",
                 ServerLinks.Type.COMMUNITY_GUIDELINES to "https://vanillaplus.xodium.org/",
             ),
-    ) : ModuleConfigInterface
+    )
 }
