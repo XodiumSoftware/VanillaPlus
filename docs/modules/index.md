@@ -8,6 +8,7 @@ VanillaPlus is built around independent modules. Each module is self-contained, 
 |--------------------------------------------|---------------------------------------------------------------------------------|----------------------|
 | [Chiseled Bookshelf](chiseledbookshelf.md) | Action-bar display when interacting with chiseled bookshelves                   | —                    |
 | [Chat](chat.md)                            | Custom chat format, whispers, welcome text                                      | `/whisper`           |
+| [Horde](horde.md)                          | Spawn a ranked medieval enemy formation with boss bar                           | `/horde`             |
 | [Dimensions](dimensions.md)                | Nether portal grief prevention                                                  | —                    |
 | [Entity](entity.md)                        | Per-mob grief prevention, spawn egg drops                                       | —                    |
 | [Inventory](inventory.md)                  | Search and unload nearby containers                                             | `/search`, `/unload` |

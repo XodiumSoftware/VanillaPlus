@@ -33,4 +33,10 @@ All permission nodes follow the pattern `vanillaplus.<name>`.
 |----------------|---------------|---------------------------|----------|-----------------------------------|
 | `/leaderboard` | `lb`, `board` | `vanillaplus.leaderboard` | Everyone | Toggle the leaderboard scoreboard |
 
-All permissions default to **Everyone**.
+## Horde
+
+| Command  | Aliases | Permission          | Default | Description                              |
+|----------|---------|---------------------|---------|------------------------------------------|
+| `/horde` | —       | `vanillaplus.horde` | OP      | Spawn a horde formation at your location |
+
+All permissions default to **Everyone** unless noted otherwise.
