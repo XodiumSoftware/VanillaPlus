@@ -60,11 +60,8 @@ internal object SitModule : ModuleInterface {
         val block = event.clickedBlock ?: return
         val blockData = block.blockData
         val isSitTarget =
-            when {
-                Config.useStairs && blockData is Stairs && blockData.half == Bisected.Half.BOTTOM -> true
-                Config.useSlabs && blockData is Slab && blockData.type == Slab.Type.BOTTOM -> true
-                else -> false
-            }
+            (Config.useStairs && blockData is Stairs && blockData.half == Bisected.Half.BOTTOM) ||
+                (Config.useSlabs && blockData is Slab && blockData.type == Slab.Type.BOTTOM)
 
         if (!isSitTarget) return
         if (block.getRelative(BlockFace.UP).type.isCollidable) return
@@ -83,12 +80,12 @@ internal object SitModule : ModuleInterface {
 
         sittingPlayers.remove(player.uniqueId.toKotlinUuid())?.let {
             occupiedBlocks.remove(it.blockLocation())
-
-            val safe = it.location.clone().add(playerStandUpOffset)
-
-            safe.yaw = player.location.yaw
-            safe.pitch = player.location.pitch
-            player.teleport(safe)
+            player.teleport(
+                it.location.clone().add(playerStandUpOffset).apply {
+                    yaw = player.location.yaw
+                    pitch = player.location.pitch
+                },
+            )
             it.remove()
         }
     }
