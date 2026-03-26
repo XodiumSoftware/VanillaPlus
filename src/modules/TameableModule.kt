@@ -11,8 +11,7 @@ import org.xodium.vanillaplus.utils.PlayerUtils.getLeashedEntity
 internal object TameableModule : ModuleInterface {
     @EventHandler
     fun on(event: PlayerInteractEntityEvent) {
-        transferPetOwnership(event.player, event.rightClicked as? Player ?: return)
-        event.isCancelled = true
+        if (transferPetOwnership(event.player, event.rightClicked as? Player ?: return)) event.isCancelled = true
     }
 
     /**
@@ -20,19 +19,20 @@ internal object TameableModule : ModuleInterface {
      * Requires [source] to hold a lead in their main hand and be the current owner of the pet.
      * @param source The player initiating the transfer.
      * @param target The player receiving ownership.
+     * @return `true` if ownership was successfully transferred; `false` otherwise.
      */
     private fun transferPetOwnership(
         source: Player,
         target: Player,
-    ) {
-        if (source.inventory.itemInMainHand.type != Material.LEAD) return
+    ): Boolean {
+        if (source.inventory.itemInMainHand.type != Material.LEAD) return false
 
-        val pet = source.getLeashedEntity() ?: return
+        val pet = source.getLeashedEntity() ?: return false
 
-        if (!pet.isTamed || pet.owner != source) return
+        if (!pet.isTamed || pet.owner != source) return false
 
         pet.owner = target
         pet.setLeashHolder(target)
+        return true
     }
-
 }
