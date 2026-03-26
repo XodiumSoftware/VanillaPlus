@@ -39,5 +39,4 @@ internal object ScoreBoardModule : ModuleInterface {
 
     @EventHandler
     fun on(event: PlayerJoinEvent) = event.player.applyScoreboard()
-
 }

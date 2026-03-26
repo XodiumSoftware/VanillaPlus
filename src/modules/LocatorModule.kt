@@ -52,5 +52,4 @@ internal object LocatorModule : ModuleInterface {
                 PermissionDefault.TRUE,
             ),
         )
-
 }

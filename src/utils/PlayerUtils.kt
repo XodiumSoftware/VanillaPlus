@@ -122,7 +122,7 @@ internal object PlayerUtils {
     fun Player.getLeashedEntity(radius: Double = 10.0): Tameable? =
         getNearbyEntities(radius, radius, radius)
             .filterIsInstance<Tameable>()
-            .firstOrNull { it.isLeashed && it.leashHolder == player }
+            .firstOrNull { it.isLeashed && it.leashHolder == this }
 
     /**
      * Applies the correct scoreboard to a [Player] based on their visibility preference.

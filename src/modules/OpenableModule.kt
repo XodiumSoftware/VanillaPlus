@@ -90,7 +90,7 @@ internal object OpenableModule : ModuleInterface {
         event: PlayerInteractEvent,
         block: Block,
     ) {
-        if (canKnock(event, event.player) && isKnockableBlock(block.blockData)) playKnockSound(block)
+        if (canKnock(event.player) && isKnockableBlock(block.blockData)) playKnockSound(block)
     }
 
     /**
@@ -125,17 +125,11 @@ internal object OpenableModule : ModuleInterface {
 
     /**
      * Checks if the [Player] can knock on the block based on their game mode and interaction conditions.
-     * @param event The [PlayerInteractEvent] to check.
      * @param player The [Player] attempting to knock.
      * @return `true` if the player can knock, `false` otherwise.
      */
-    private fun canKnock(
-        event: PlayerInteractEvent,
-        player: Player,
-    ): Boolean =
-        event.action == Action.LEFT_CLICK_BLOCK &&
-            event.hand == EquipmentSlot.HAND &&
-            player.gameMode !in disallowedKnockGameModes &&
+    private fun canKnock(player: Player): Boolean =
+        player.gameMode !in disallowedKnockGameModes &&
             !isKnockingConditionViolated(player)
 
     /**

@@ -55,11 +55,12 @@ internal object DimensionModule : ModuleInterface {
         if (event.world.environment == World.Environment.NETHER &&
             event.reason == PortalCreateEvent.CreateReason.FIRE
         ) {
-            if (findCorrespondingPortal(calcPortalCentre(event.blocks), getOverworld()) == null) {
+            val overworld = getOverworld()
+
+            if (findCorrespondingPortal(calcPortalCentre(event.blocks), overworld) == null) {
                 event.isCancelled = true
 
                 val player = event.entity as? Player ?: return
-                val overworld = getOverworld()
                 val destination = player.respawnLocation?.takeIf { it.world == overworld } ?: overworld.spawnLocation
 
                 player.sendActionBar(MM.deserialize(Config.I18n.portalCreationDenied))
