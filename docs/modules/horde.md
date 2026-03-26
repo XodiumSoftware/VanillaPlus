@@ -43,6 +43,12 @@ All units are persistent and drop no equipment.
 
 When the Warlord spawns, a red boss bar labelled **Warlord** is shown to all online players. The bar tracks the Warlord's current health in real time and is removed when the Warlord dies. Players who join mid-fight are automatically added to the boss bar.
 
+### Formation movement
+
+Once spawned, the entire formation marches together. Every 10 ticks (0.5 s) the Warlord's pathfinder is pointed at the nearest player, and every other unit's pathfinder is pointed at their fixed offset position relative to the Warlord. This keeps the rows intact as the formation advances. Units still engage in melee combat when a player enters their attack range — the formation movement does not suppress vanilla combat AI.
+
+The movement task is cancelled automatically when the Warlord dies.
+
 ### Shield
 
 Orcs, Dark Knights, and the Warlord carry a custom shield: black base colour with a red skull banner pattern.

@@ -4,6 +4,7 @@ import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.BannerPatternLayers
 import org.bukkit.DyeColor
+import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
@@ -15,6 +16,7 @@ import org.bukkit.boss.BossBar
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Horse
 import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.Mob
 import org.bukkit.entity.Skeleton
 import org.bukkit.entity.Zombie
 import org.bukkit.event.EventHandler
@@ -25,6 +27,8 @@ import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
+import org.bukkit.scheduler.BukkitTask
+import org.bukkit.util.Vector
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
@@ -59,6 +63,7 @@ internal object HordeModule : ModuleInterface {
         )
 
     private val bossBars = mutableMapOf<Uuid, BossBar>()
+    private val formationTasks = mutableMapOf<Uuid, BukkitTask>()
 
     @EventHandler
     fun on(event: EntityDamageEvent) {
@@ -76,7 +81,9 @@ internal object HordeModule : ModuleInterface {
 
     @EventHandler
     fun on(event: EntityDeathEvent) {
-        bossBars.remove(event.entity.uniqueId.toKotlinUuid())?.removeAll()
+        val uuid = event.entity.uniqueId.toKotlinUuid()
+        bossBars.remove(uuid)?.removeAll()
+        formationTasks.remove(uuid)?.cancel()
     }
 
     @EventHandler
@@ -105,17 +112,22 @@ internal object HordeModule : ModuleInterface {
      * @param location The [Location] used as the front-center of the formation.
      */
     private fun spawnFormation(location: Location) {
-        spawnRow(location, rowZ = 0.0, spacing = 4.0, count = 6) { location ->
-            location.world.spawn(location, Zombie::class.java) { it.goblin() }
-        }
-        spawnRow(location, rowZ = 8.0, spacing = 5.0, count = 4) { location ->
-            location.world.spawn(location, Zombie::class.java) { it.orc() }
-        }
-        spawnRow(location, rowZ = 18.0, spacing = 10.0, count = 2) { location ->
-            location.world.spawn(location, Zombie::class.java) { it.troll() }
-        }
-        spawnRow(location, rowZ = 28.0, spacing = 8.0, count = 2) { spawnDarkKnight(it) }
-        spawnWarlord(location.clone().add(0.0, 0.0, 36.0))
+        val warlordLoc = location.clone().add(0.0, 0.0, 36.0)
+        val warlord = spawnWarlord(warlordLoc)
+        val formation = mutableListOf<Pair<Mob, Vector>>()
+
+        fun collectRow(entities: List<Mob>) =
+            entities.forEach { mob ->
+                val raw = mob.location.toVector().subtract(warlordLoc.toVector())
+                formation += mob to Vector(raw.x, 0.0, raw.z)
+            }
+
+        collectRow(spawnRow(location, 0.0, 4.0, 6) { loc -> loc.world.spawn(loc, Zombie::class.java) { it.goblin() } })
+        collectRow(spawnRow(location, 8.0, 5.0, 4) { loc -> loc.world.spawn(loc, Zombie::class.java) { it.orc() } })
+        collectRow(spawnRow(location, 18.0, 10.0, 2) { loc -> loc.world.spawn(loc, Zombie::class.java) { it.troll() } })
+        collectRow(spawnRow(location, 28.0, 8.0, 2) { spawnDarkKnight(it) })
+
+        startFormationTask(warlord, formation)
     }
 
     /**
@@ -146,7 +158,7 @@ internal object HordeModule : ModuleInterface {
     }
 
     /**
-     * Spawns a centered row of entities along the X axis relative to [location].
+     * Spawns a centered row of entities along the X axis relative to [location] and returns them.
      * @param location The origin of the formation.
      * @param rowZ The Z offset from the origin for this row.
      * @param spacing The distance between each entity in the row.
@@ -158,10 +170,37 @@ internal object HordeModule : ModuleInterface {
         rowZ: Double,
         spacing: Double,
         count: Int,
-        spawner: (Location) -> Unit,
-    ) {
+        spawner: (Location) -> Mob,
+    ): List<Mob> {
         val halfWidth = (count - 1) * spacing / 2.0
-        repeat(count) { i -> spawner(location.clone().add(-halfWidth + i * spacing, 0.0, rowZ)) }
+        return (0 until count).map { i -> spawner(location.clone().add(-halfWidth + i * spacing, 0.0, rowZ)) }
+    }
+
+    /**
+     * Starts a repeating task that marches the [warlord] toward the nearest player and keeps all
+     * [formation] members at their assigned offset relative to the warlord.
+     * The task cancels automatically when the warlord is dead or invalid.
+     */
+    private fun startFormationTask(
+        warlord: Zombie,
+        formation: List<Pair<Mob, Vector>>,
+    ) {
+        formationTasks[warlord.uniqueId.toKotlinUuid()] =
+            instance.server.scheduler.runTaskTimer(
+                instance,
+                Runnable {
+                    if (warlord.isDead || !warlord.isValid) return@Runnable
+                    warlord.world.players
+                        .filter { !it.isDead && it.gameMode in setOf(GameMode.SURVIVAL, GameMode.ADVENTURE) }
+                        .minByOrNull { it.location.distanceSquared(warlord.location) }
+                        ?.let { warlord.pathfinder.moveTo(it, 1.0) }
+                    formation.forEach { (mob, offset) ->
+                        if (!mob.isDead && mob.isValid) mob.pathfinder.moveTo(warlord.location.clone().add(offset), 1.0)
+                    }
+                },
+                0L,
+                10L,
+            )
     }
 
     /** Configures this [Skeleton] as a Dark Knight, applying its name, persistence, netherite loadout, and 50 health. */
