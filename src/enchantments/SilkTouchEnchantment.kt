@@ -11,7 +11,7 @@ import org.xodium.vanillaplus.modules.PlayerModule
 
 /** Represents an object handling silk touch enchantment implementation within the system. */
 internal object SilkTouchEnchantment : EnchantmentInterface {
-    private val config = PlayerModule.config.silkTouch
+    private val config = PlayerModule.Config.SilkTouchEnchantment
 
     /**
      * Handles breaking blocks with Silk Touch.

@@ -23,8 +23,6 @@ import kotlin.random.Random
 
 /** Represents a module handling entity mechanics within the system. */
 internal object EntityModule : ModuleInterface {
-    val config = Config()
-
     @EventHandler
     fun on(event: EntityChangeBlockEvent) {
         if (shouldCancelGrief(event.entity)) event.isCancelled = true
@@ -37,7 +35,7 @@ internal object EntityModule : ModuleInterface {
 
     @EventHandler
     fun on(event: EntityDeathEvent) {
-        if (Random.nextDouble() <= config.entityEggDropChance) {
+        if (Random.nextDouble() <= Config.entityEggDropChance) {
             event.drops.add(ItemStack.of(Material.matchMaterial("${event.entity.type.name}_SPAWN_EGG") ?: return))
         }
     }
@@ -52,24 +50,24 @@ internal object EntityModule : ModuleInterface {
      */
     private fun shouldCancelGrief(entity: Entity): Boolean =
         when (entity) {
-            is WitherSkull -> config.disableWitherGrief
-            is Fireball -> config.disableGhastGrief
-            is Blaze -> config.disableBlazeGrief
-            is Creeper -> config.disableCreeperGrief
-            is EnderDragon -> config.disableEnderDragonGrief
-            is Enderman -> config.disableEndermanGrief
-            is Wither -> config.disableWitherGrief
+            is WitherSkull -> Config.disableWitherGrief
+            is Fireball -> Config.disableGhastGrief
+            is Blaze -> Config.disableBlazeGrief
+            is Creeper -> Config.disableCreeperGrief
+            is EnderDragon -> Config.disableEnderDragonGrief
+            is Enderman -> Config.disableEndermanGrief
+            is Wither -> Config.disableWitherGrief
             else -> false
         }
 
     /** Represents the config of the module. */
-    data class Config(
-        var disableBlazeGrief: Boolean = true,
-        var disableCreeperGrief: Boolean = true,
-        var disableEnderDragonGrief: Boolean = true,
-        var disableEndermanGrief: Boolean = true,
-        var disableGhastGrief: Boolean = true,
-        var disableWitherGrief: Boolean = true,
-        var entityEggDropChance: Double = 0.001,
-    )
+    object Config {
+        var disableBlazeGrief: Boolean = true
+        var disableCreeperGrief: Boolean = true
+        var disableEnderDragonGrief: Boolean = true
+        var disableEndermanGrief: Boolean = true
+        var disableGhastGrief: Boolean = true
+        var disableWitherGrief: Boolean = true
+        var entityEggDropChance: Double = 0.001
+    }
 }

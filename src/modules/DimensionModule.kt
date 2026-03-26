@@ -18,8 +18,6 @@ import kotlin.math.hypot
 
 /** Represents a module handling dimension mechanics within the system. */
 internal object DimensionModule : ModuleInterface {
-    val config = Config()
-
     private const val NETHER_TO_OVERWORLD_RATIO = 8
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -64,7 +62,7 @@ internal object DimensionModule : ModuleInterface {
                 val overworld = getOverworld()
                 val destination = player.respawnLocation?.takeIf { it.world == overworld } ?: overworld.spawnLocation
 
-                player.sendActionBar(MM.deserialize(config.i18n.portalCreationDenied))
+                player.sendActionBar(MM.deserialize(Config.I18n.portalCreationDenied))
                 player.teleport(destination, PlayerTeleportEvent.TeleportCause.PLUGIN)
             }
         }
@@ -80,7 +78,7 @@ internal object DimensionModule : ModuleInterface {
     private fun findCorrespondingPortal(
         netherPortal: Location,
         overworld: World,
-        searchRadius: Int = config.portalSearchRadius,
+        searchRadius: Int = Config.portalSearchRadius,
     ): Location? {
         val targetX = netherPortal.x * NETHER_TO_OVERWORLD_RATIO
         val targetZ = netherPortal.z * NETHER_TO_OVERWORLD_RATIO
@@ -131,14 +129,13 @@ internal object DimensionModule : ModuleInterface {
     private fun getOverworld(): World = instance.server.getWorld("world") ?: error("Overworld (world) is not loaded.")
 
     /** Represents the config of the module. */
-    data class Config(
-        var portalSearchRadius: Int = 128,
-        var i18n: I18n = I18n(),
-    ) {
+    object Config {
+        var portalSearchRadius: Int = 128
+
         /** Represents the internationalization strings for the module. */
-        data class I18n(
+        object I18n {
             var portalCreationDenied: String =
-                "<gradient:#CB2D3E:#EF473A>No corresponding active portal found in the Overworld!</gradient>",
-        )
+                "<gradient:#CB2D3E:#EF473A>No corresponding active portal found in the Overworld!</gradient>"
+        }
     }
 }

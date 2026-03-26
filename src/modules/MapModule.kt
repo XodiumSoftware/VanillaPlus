@@ -20,8 +20,6 @@ import kotlin.uuid.toKotlinUuid
 /** Represents a module handling map mechanics within the system. */
 @OptIn(ExperimentalUuidApi::class)
 internal object MapModule : ModuleInterface {
-    val config = Config()
-
     private val lastTrackTime = mutableMapOf<Uuid, Long>()
     private val lastBlockPos = mutableMapOf<Uuid, Triple<Int, Int, Int>>()
     private const val TRACK_THROTTLE_MS = 150L
@@ -121,7 +119,7 @@ internal object MapModule : ModuleInterface {
         player: Player,
         channel: String,
     ) {
-        player.sendPluginMessage(instance, channel, MessageUtils.getLevelIdMessage(config.serverId))
+        player.sendPluginMessage(instance, channel, MessageUtils.getLevelIdMessage(Config.serverId))
     }
 
     /**
@@ -183,7 +181,7 @@ internal object MapModule : ModuleInterface {
     }
 
     /** Represents the config of the module. */
-    data class Config(
-        var serverId: Int = Random.nextInt(),
-    )
+    object Config {
+        var serverId: Int = Random.nextInt()
+    }
 }

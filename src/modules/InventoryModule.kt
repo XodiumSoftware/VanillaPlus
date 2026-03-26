@@ -27,8 +27,6 @@ import org.xodium.vanillaplus.utils.Utils.MM
 
 /** Represents a module handling inventory mechanics within the system. */
 internal object InventoryModule : ModuleInterface {
-    val config = Config()
-
     override val cmds =
         listOf(
             CommandData(
@@ -79,8 +77,8 @@ internal object InventoryModule : ModuleInterface {
         material: Material,
     ) {
         if (material == Material.AIR) {
-            player.sendActionBar(MM.deserialize(config.i18n.noMaterialSpecified))
-            player.playSound(config.searchFailedSound)
+            player.sendActionBar(MM.deserialize(Config.I18n.noMaterialSpecified))
+            player.playSound(Config.searchFailedSound)
             return
         }
 
@@ -89,22 +87,22 @@ internal object InventoryModule : ModuleInterface {
         if (containers.isEmpty()) {
             player.sendActionBar(
                 MM.deserialize(
-                    config.i18n.noMatchingItems,
+                    Config.I18n.noMatchingItems,
                     Placeholder.component("material", MM.deserialize(material.name)),
                 ),
             )
-            player.playSound(config.searchFailedSound)
+            player.playSound(Config.searchFailedSound)
             return
         }
 
         player.sendActionBar(
             MM.deserialize(
-                config.i18n.foundItemsInChests,
+                Config.I18n.foundItemsInChests,
                 Placeholder.component("material", MM.deserialize(material.name)),
             ),
         )
 
-        player.playSound(config.searchSuccessfulSound)
+        player.playSound(Config.searchSuccessfulSound)
 
         ScheduleUtils.schedule(duration = 200L) {
             containers.forEach {
@@ -139,8 +137,8 @@ internal object InventoryModule : ModuleInterface {
                 }
 
         if (containers.isEmpty()) {
-            player.sendActionBar(MM.deserialize(config.i18n.noContainersFound))
-            player.playSound(config.unloadFailedSound)
+            player.sendActionBar(MM.deserialize(Config.I18n.noContainersFound))
+            player.playSound(Config.unloadFailedSound)
             return
         }
 
@@ -182,10 +180,10 @@ internal object InventoryModule : ModuleInterface {
         }
 
         if (usedContainers.isEmpty()) {
-            player.playSound(config.unloadFailedSound)
+            player.playSound(Config.unloadFailedSound)
             return
         } else {
-            player.playSound(config.unloadSuccessfulSound)
+            player.playSound(Config.unloadSuccessfulSound)
         }
 
         ScheduleUtils.schedule(duration = 40L) {
@@ -201,37 +199,28 @@ internal object InventoryModule : ModuleInterface {
     }
 
     /** Represents the config of the module. */
-    data class Config(
+    object Config {
         var searchSuccessfulSound: Sound =
-            Sound.sound(
-                Key.key("entity.player.levelup"),
-                Sound.Source.PLAYER,
-                1.0f,
-                1.0f,
-            ),
-        var searchFailedSound: Sound = Sound.sound(Key.key("block.anvil.land"), Sound.Source.PLAYER, 1.0f, 1.0f),
+            Sound.sound(Key.key("entity.player.levelup"), Sound.Source.PLAYER, 1.0f, 1.0f)
+        var searchFailedSound: Sound =
+            Sound.sound(Key.key("block.anvil.land"), Sound.Source.PLAYER, 1.0f, 1.0f)
         var unloadSuccessfulSound: Sound =
-            Sound.sound(
-                Key.key("entity.player.levelup"),
-                Sound.Source.PLAYER,
-                1.0f,
-                1.0f,
-            ),
-        var unloadFailedSound: Sound = Sound.sound(Key.key("block.anvil.land"), Sound.Source.PLAYER, 1.0f, 1.0f),
-        var i18n: I18n = I18n(),
-    ) {
+            Sound.sound(Key.key("entity.player.levelup"), Sound.Source.PLAYER, 1.0f, 1.0f)
+        var unloadFailedSound: Sound =
+            Sound.sound(Key.key("block.anvil.land"), Sound.Source.PLAYER, 1.0f, 1.0f)
+
         /** Represents the internationalization strings for the module. */
-        data class I18n(
+        object I18n {
             var noMaterialSpecified: String =
                 "<gradient:#CB2D3E:#EF473A>You must specify a valid material " +
-                    "or hold something in your hand</gradient>",
+                    "or hold something in your hand</gradient>"
             var noMatchingItems: String =
                 "<gradient:#CB2D3E:#EF473A>No containers contain " +
-                    "<gradient:#F4C4F3:#FC67FA><b><material></b></gradient></gradient>",
+                    "<gradient:#F4C4F3:#FC67FA><b><material></b></gradient></gradient>"
             var foundItemsInChests: String =
                 "<gradient:#FFE259:#FFA751>Found <gradient:#F4C4F3:#FC67FA><b><material></b></gradient> " +
-                    "in container(s), follow trail(s)</gradient>",
-            var noContainersFound: String = "<gradient:#CB2D3E:#EF473A>No containers found nearby</gradient>",
-        )
+                    "in container(s), follow trail(s)</gradient>"
+            var noContainersFound: String = "<gradient:#CB2D3E:#EF473A>No containers found nearby</gradient>"
+        }
     }
 }

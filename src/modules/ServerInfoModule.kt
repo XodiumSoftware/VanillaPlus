@@ -7,8 +7,6 @@ import java.net.URI
 
 /** Represents a module handling server info mechanics within the system. */
 internal object ServerInfoModule : ModuleInterface {
-    val config = Config()
-
     init {
         serverLinks()
     }
@@ -16,12 +14,12 @@ internal object ServerInfoModule : ModuleInterface {
     /** Configures server links based on the module's configuration. */
     @Suppress("UnstableApiUsage")
     private fun serverLinks() =
-        config.serverLinks.forEach { (type, url) ->
+        Config.serverLinks.forEach { (type, url) ->
             runCatching { URI.create(url) }.getOrNull()?.let { instance.server.serverLinks.setLink(type, it) }
         }
 
     /** Represents the config of the module. */
-    data class Config(
+    object Config {
         @Suppress("UnstableApiUsage") var serverLinks: Map<ServerLinks.Type, String> =
             mapOf(
                 ServerLinks.Type.WEBSITE to "https://xodium.org/",
@@ -29,6 +27,6 @@ internal object ServerInfoModule : ModuleInterface {
                 ServerLinks.Type.STATUS to "https://modrinth.com/server/illyria",
                 ServerLinks.Type.COMMUNITY to "https://discord.gg/jusYH9aYUh",
                 ServerLinks.Type.COMMUNITY_GUIDELINES to "https://vanillaplus.xodium.org/",
-            ),
-    )
+            )
+    }
 }

@@ -26,8 +26,6 @@ import kotlin.uuid.toKotlinUuid
 /** Represents a module handling sit mechanics within the system. */
 @OptIn(ExperimentalUuidApi::class)
 internal object SitModule : ModuleInterface {
-    val config = Config()
-
     private val sittingPlayers = mutableMapOf<Uuid, ArmorStand>()
     private val occupiedBlocks = mutableMapOf<Location, Uuid>()
     private val blockCenterOffset = Vector(0.5, 0.5, 0.5)
@@ -63,8 +61,8 @@ internal object SitModule : ModuleInterface {
         val blockData = block.blockData
         val isSitTarget =
             when {
-                config.useStairs && blockData is Stairs && blockData.half == Bisected.Half.BOTTOM -> true
-                config.useSlabs && blockData is Slab && blockData.type == Slab.Type.BOTTOM -> true
+                Config.useStairs && blockData is Stairs && blockData.half == Bisected.Half.BOTTOM -> true
+                Config.useSlabs && blockData is Slab && blockData.type == Slab.Type.BOTTOM -> true
                 else -> false
             }
 
@@ -181,8 +179,8 @@ internal object SitModule : ModuleInterface {
             .block.location
 
     /** Represents the config of the module. */
-    data class Config(
-        var useStairs: Boolean = true,
-        var useSlabs: Boolean = true,
-    )
+    object Config {
+        var useStairs: Boolean = true
+        var useSlabs: Boolean = true
+    }
 }
