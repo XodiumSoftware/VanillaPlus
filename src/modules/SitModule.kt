@@ -19,6 +19,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.util.Vector
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.modules.SitModule.occupiedBlocks
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 import kotlin.uuid.toKotlinUuid
@@ -65,7 +66,7 @@ internal object SitModule : ModuleInterface {
 
         if (!isSitTarget) return
         if (block.getRelative(BlockFace.UP).type.isCollidable) return
-        if (occupiedBlocks.containsKey(block.location)) return
+        if (block.location in occupiedBlocks) return
 
         event.isCancelled = true
         sit(player, block.location.add(blockCenterOffset))
@@ -79,14 +80,13 @@ internal object SitModule : ModuleInterface {
         val player = event.entity as? Player ?: return
 
         sittingPlayers.remove(player.uniqueId.toKotlinUuid())?.let {
-            occupiedBlocks.remove(it.blockLocation())
             player.teleport(
                 it.location.clone().add(playerStandUpOffset).apply {
                     yaw = player.location.yaw
                     pitch = player.location.pitch
                 },
             )
-            it.remove()
+            it.removeSeat()
         }
     }
 
@@ -95,10 +95,7 @@ internal object SitModule : ModuleInterface {
      * @param event The [PlayerQuitEvent] triggered when the player leaves the server.
      */
     private fun playerQuit(event: PlayerQuitEvent) {
-        sittingPlayers.remove(event.player.uniqueId.toKotlinUuid())?.let {
-            occupiedBlocks.remove(it.blockLocation())
-            it.remove()
-        }
+        sittingPlayers.remove(event.player.uniqueId.toKotlinUuid())?.removeSeat()
     }
 
     /**
@@ -107,12 +104,10 @@ internal object SitModule : ModuleInterface {
      */
     private fun entityDamage(event: EntityDamageEvent) {
         val player = event.entity as? Player ?: return
-        val playerId = player.uniqueId.toKotlinUuid()
 
-        sittingPlayers.remove(playerId)?.let {
-            occupiedBlocks.remove(it.blockLocation())
+        sittingPlayers.remove(player.uniqueId.toKotlinUuid())?.let {
             it.removePassenger(player)
-            it.remove()
+            it.removeSeat()
         }
     }
 
@@ -124,15 +119,11 @@ internal object SitModule : ModuleInterface {
         val brokenBlockLocation = event.block.location
 
         sittingPlayers.entries.removeIf { (_, armorStand) ->
-            if (armorStand.blockLocation() == brokenBlockLocation) {
-                occupiedBlocks.remove(brokenBlockLocation)
-                armorStand.passengers
-                    .filterIsInstance<Player>()
-                    .forEach { armorStand.removePassenger(it) }
-                armorStand.remove()
-                true
-            } else {
-                false
+            (armorStand.blockLocation() == brokenBlockLocation).also { matches ->
+                if (matches) {
+                    armorStand.passengers.filterIsInstance<Player>().forEach { armorStand.removePassenger(it) }
+                    armorStand.removeSeat()
+                }
             }
         }
     }
@@ -174,6 +165,12 @@ internal object SitModule : ModuleInterface {
             .clone()
             .subtract(blockCenterOffset)
             .block.location
+
+    /** Removes this [ArmorStand] and clears it from [occupiedBlocks]. */
+    private fun ArmorStand.removeSeat() {
+        occupiedBlocks.remove(blockLocation())
+        remove()
+    }
 
     /** Represents the config of the module. */
     object Config {
