@@ -3,15 +3,11 @@
 package org.xodium.vanillaplus.utils
 
 import io.papermc.paper.registry.TypedKey
-import kotlinx.serialization.serializer
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.World
 import org.bukkit.enchantments.Enchantment
 import org.xodium.vanillaplus.VanillaPlus
-import org.xodium.vanillaplus.delegates.ModuleConfigDelegate
-import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
-import org.xodium.vanillaplus.interfaces.ModuleInterface
 import java.util.*
 
 /** General utilities. */
@@ -65,14 +61,4 @@ internal object Utils {
             else -> clear
         }
 
-    /**
-     * Creates a [ModuleConfigDelegate] for this [ModuleInterface], using the implementing class's
-     * simple name as the JSON key and [default] as the fallback config factory.
-     * @param C The module config type, which must implement [ModuleConfigInterface].
-     * @param default A factory that produces the default [C] instance.
-     * @return A [ModuleConfigDelegate] that autoloads and caches the module's config section.
-     */
-    internal inline fun <reified C : ModuleConfigInterface> ModuleInterface.configDelegate(
-        noinline default: () -> C,
-    ): ModuleConfigDelegate<C> = ModuleConfigDelegate(this::class.simpleName!!, serializer<C>(), default)
 }

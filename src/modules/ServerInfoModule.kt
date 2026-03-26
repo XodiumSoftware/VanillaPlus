@@ -1,16 +1,14 @@
 package org.xodium.vanillaplus.modules
 
-import kotlinx.serialization.Serializable
 import org.bukkit.ServerLinks
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.utils.Utils.configDelegate
 import java.net.URI
 
 /** Represents a module handling server info mechanics within the system. */
 internal object ServerInfoModule : ModuleInterface {
-    override val config by configDelegate { Config() }
+    override val config = Config()
 
     init {
         serverLinks()
@@ -24,7 +22,6 @@ internal object ServerInfoModule : ModuleInterface {
         }
 
     /** Represents the config of the module. */
-    @Serializable
     data class Config(
         override var enabled: Boolean = false,
         @Suppress("UnstableApiUsage") var serverLinks: Map<ServerLinks.Type, String> =

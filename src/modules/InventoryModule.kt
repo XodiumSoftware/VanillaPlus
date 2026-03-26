@@ -4,7 +4,6 @@ package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes
-import kotlinx.serialization.Serializable
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Color
@@ -26,11 +25,10 @@ import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import org.xodium.vanillaplus.utils.PlayerUtils.getContainersAround
 import org.xodium.vanillaplus.utils.ScheduleUtils
 import org.xodium.vanillaplus.utils.Utils.MM
-import org.xodium.vanillaplus.utils.Utils.configDelegate
 
 /** Represents a module handling inventory mechanics within the system. */
 internal object InventoryModule : ModuleInterface {
-    override val config by configDelegate { Config() }
+    override val config = Config()
 
     override val cmds =
         listOf(
@@ -204,7 +202,6 @@ internal object InventoryModule : ModuleInterface {
     }
 
     /** Represents the config of the module. */
-    @Serializable
     data class Config(
         override var enabled: Boolean = false,
         var searchSuccessfulSound: SoundData = SoundData("entity.player.levelup", Sound.Source.PLAYER),
@@ -214,7 +211,6 @@ internal object InventoryModule : ModuleInterface {
         var i18n: I18n = I18n(),
     ) : ModuleConfigInterface {
         /** Represents the internationalization strings for the module. */
-        @Serializable
         data class I18n(
             var noMaterialSpecified: String =
                 "<gradient:#CB2D3E:#EF473A>You must specify a valid material " +

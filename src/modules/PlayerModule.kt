@@ -8,7 +8,6 @@ import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.event.connection.PlayerConnectionValidateLoginEvent
 import io.papermc.paper.event.entity.EntityEquipmentChangedEvent
 import io.papermc.paper.event.player.PlayerServerFullCheckEvent
-import kotlinx.serialization.Serializable
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.GameMode
@@ -50,13 +49,12 @@ import org.xodium.vanillaplus.utils.PlayerUtils.face
 import org.xodium.vanillaplus.utils.PlayerUtils.head
 import org.xodium.vanillaplus.utils.PlayerUtils.setNickname
 import org.xodium.vanillaplus.utils.Utils.MM
-import org.xodium.vanillaplus.utils.Utils.configDelegate
 import org.xodium.vanillaplus.utils.Utils.weather
 import kotlin.random.Random
 
 /** Represents a module handling player mechanics within the system. */
 internal object PlayerModule : ModuleInterface {
-    override val config by configDelegate { Config() }
+    override val config = Config()
 
     override val cmds =
         listOf(
@@ -298,7 +296,6 @@ internal object PlayerModule : ModuleInterface {
     }
 
     /** Represents the config of the module. */
-    @Serializable
     data class Config(
         override var enabled: Boolean = false,
         var skullDropChance: Double = 0.01,
@@ -321,7 +318,6 @@ internal object PlayerModule : ModuleInterface {
         var i18n: I18n = I18n(),
     ) : ModuleConfigInterface {
         /** Represents the tab list header, footer, and weather i18n configuration. */
-        @Serializable
         data class TabList(
             var header: List<String> =
                 listOf(
@@ -342,7 +338,6 @@ internal object PlayerModule : ModuleInterface {
             var i18n: I18n = I18n(),
         ) {
             /** Represents the weather i18n strings for the tab list. */
-            @Serializable
             data class I18n(
                 var weatherThundering: String = "<red>\uD83C\uDF29<reset>",
                 var weatherStorm: String = "<yellow>\uD83C\uDF26<reset>",
@@ -351,14 +346,12 @@ internal object PlayerModule : ModuleInterface {
         }
 
         /** Represents the settings for the Silk Touch enchantment. */
-        @Serializable
         data class SilkTouchEnchantment(
             var allowSpawnerSilk: Boolean = true,
             var allowBuddingAmethystSilk: Boolean = true,
         )
 
         /** Represents the internationalization strings for the module. */
-        @Serializable
         data class I18n(
             var playerJoinMsg: String = "<green>➕<reset> <gradient:#FFE259:#FFA751>›</gradient> <player>",
             var playerQuitMsg: String = "<red>➖<reset> <gradient:#FFE259:#FFA751>›</gradient> <player>",
@@ -378,7 +371,6 @@ internal object PlayerModule : ModuleInterface {
             var loginMessages: LoginMessages = LoginMessages(),
         ) {
             /** Represents the i18n messages for each advancement type. */
-            @Serializable
             data class AdvancementMessages(
                 var task: String =
                     "\uD83C\uDF89 <gradient:#FFE259:#FFA751>›</gradient> <player> " +
@@ -392,7 +384,6 @@ internal object PlayerModule : ModuleInterface {
             )
 
             /** Represents the i18n messages shown to players denied during login. */
-            @Serializable
             data class LoginMessages(
                 var full: String =
                     "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> The server is full.",
@@ -401,7 +392,6 @@ internal object PlayerModule : ModuleInterface {
             )
 
             /** Represents the i18n messages for bed enter failure reasons. */
-            @Serializable
             data class BedEnterMessages(
                 var tooFarAway: String =
                     "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> You are too far away from the bed.",

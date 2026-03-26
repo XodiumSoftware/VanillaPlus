@@ -1,6 +1,5 @@
 package org.xodium.vanillaplus.modules
 
-import kotlinx.serialization.Serializable
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -8,11 +7,10 @@ import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.PlayerUtils.getLeashedEntity
-import org.xodium.vanillaplus.utils.Utils.configDelegate
 
 /** Represents a module handling tameable mechanics within the system. */
 internal object TameableModule : ModuleInterface {
-    override val config by configDelegate { Config() }
+    override val config = Config()
 
     @EventHandler
     fun on(event: PlayerInteractEntityEvent) {
@@ -41,7 +39,6 @@ internal object TameableModule : ModuleInterface {
     }
 
     /** Represents the config of the module. */
-    @Serializable
     data class Config(
         override var enabled: Boolean = false,
     ) : ModuleConfigInterface

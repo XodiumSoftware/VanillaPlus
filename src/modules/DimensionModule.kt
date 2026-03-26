@@ -1,6 +1,5 @@
 package org.xodium.vanillaplus.modules
 
-import kotlinx.serialization.Serializable
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.World
@@ -16,12 +15,11 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.Utils.MM
-import org.xodium.vanillaplus.utils.Utils.configDelegate
 import kotlin.math.hypot
 
 /** Represents a module handling dimension mechanics within the system. */
 internal object DimensionModule : ModuleInterface {
-    override val config by configDelegate { Config() }
+    override val config = Config()
 
     private const val NETHER_TO_OVERWORLD_RATIO = 8
 
@@ -134,14 +132,12 @@ internal object DimensionModule : ModuleInterface {
     private fun getOverworld(): World = instance.server.getWorld("world") ?: error("Overworld (world) is not loaded.")
 
     /** Represents the config of the module. */
-    @Serializable
     data class Config(
         override var enabled: Boolean = false,
         var portalSearchRadius: Int = 128,
         var i18n: I18n = I18n(),
     ) : ModuleConfigInterface {
         /** Represents the internationalization strings for the module. */
-        @Serializable
         data class I18n(
             var portalCreationDenied: String =
                 "<gradient:#CB2D3E:#EF473A>No corresponding active portal found in the Overworld!</gradient>",

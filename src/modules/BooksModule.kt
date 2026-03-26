@@ -1,7 +1,6 @@
 package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.command.brigadier.Commands
-import kotlinx.serialization.Serializable
 import org.bukkit.permissions.Permission
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.BookData
@@ -9,11 +8,10 @@ import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
-import org.xodium.vanillaplus.utils.Utils.configDelegate
 
 /** Represents a module handling book mechanics within the system. */
 internal object BooksModule : ModuleInterface {
-    override val config by configDelegate { Config() }
+    override val config = Config()
 
     private val permPrefix: String = "${instance.javaClass.simpleName}.book".lowercase()
 
@@ -40,7 +38,6 @@ internal object BooksModule : ModuleInterface {
             }
 
     /** Represents the config of the module. */
-    @Serializable
     data class Config(
         override var enabled: Boolean = false,
         var books: List<BookData> =

@@ -2,7 +2,6 @@
 
 package org.xodium.vanillaplus.modules
 
-import kotlinx.serialization.Serializable
 import net.kyori.adventure.sound.Sound
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -24,11 +23,10 @@ import org.xodium.vanillaplus.data.AdjacentBlockData
 import org.xodium.vanillaplus.data.SoundData
 import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.utils.Utils.configDelegate
 
 /** Represents a module handling openable blocks mechanics within the system. */
 internal object OpenableModule : ModuleInterface {
-    override val config by configDelegate { Config() }
+    override val config = Config()
 
     private val disallowedKnockGameModes = setOf(GameMode.CREATIVE, GameMode.SPECTATOR)
     private val possibleNeighbours: Set<AdjacentBlockData> =
@@ -235,7 +233,6 @@ internal object OpenableModule : ModuleInterface {
     }
 
     /** Represents the config of the module. */
-    @Serializable
     data class Config(
         override var enabled: Boolean = false,
         var initDelayInTicks: Long = 1,

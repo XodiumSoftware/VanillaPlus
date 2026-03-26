@@ -3,7 +3,6 @@
 package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.event.entity.EntityEquipmentChangedEvent
-import kotlinx.serialization.Serializable
 import org.bukkit.Material
 import org.bukkit.entity.Blaze
 import org.bukkit.entity.Creeper
@@ -21,12 +20,11 @@ import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.enchantments.NimbusEnchantment
 import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.utils.Utils.configDelegate
 import kotlin.random.Random
 
 /** Represents a module handling entity mechanics within the system. */
 internal object EntityModule : ModuleInterface {
-    override val config by configDelegate { Config() }
+    override val config = Config()
 
     @EventHandler
     fun on(event: EntityChangeBlockEvent) {
@@ -66,7 +64,6 @@ internal object EntityModule : ModuleInterface {
         }
 
     /** Represents the config of the module. */
-    @Serializable
     data class Config(
         override var enabled: Boolean = false,
         var disableBlazeGrief: Boolean = true,

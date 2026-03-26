@@ -2,9 +2,7 @@
 
 package org.xodium.vanillaplus
 
-import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import org.bukkit.plugin.java.JavaPlugin
-import org.xodium.vanillaplus.managers.ConfigManager
 import org.xodium.vanillaplus.modules.BooksModule
 import org.xodium.vanillaplus.modules.ChatModule
 import org.xodium.vanillaplus.modules.ChiseledBookshelfModule
@@ -43,18 +41,6 @@ internal class VanillaPlus : JavaPlugin() {
 
         if (!server.version.contains(pluginMeta.version.substringBefore("+"))) disablePlugin(unsupportedVersionMsg)
 
-        instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) {
-            it.registrar().register(
-                ConfigManager.reloadCommand.builder.build(),
-                ConfigManager.reloadCommand.description,
-                ConfigManager.reloadCommand.aliases,
-            )
-        }
-
-        instance.server.pluginManager.addPermission(ConfigManager.reloadPermission)
-
-        ConfigManager.load("config.json")
-
         val recipes =
             listOf(
                 ChainmailRecipe,
@@ -68,7 +54,7 @@ internal class VanillaPlus : JavaPlugin() {
             "Registered: ${recipes.sumOf { it.recipes.size }} recipes(s) | Took ${recipes.sumOf { it.register() }}ms",
         )
 
-        val allModules =
+        val modules =
             listOf(
                 BooksModule,
                 ChatModule,
@@ -85,24 +71,7 @@ internal class VanillaPlus : JavaPlugin() {
                 ScoreBoardModule,
                 SitModule,
                 TameableModule,
-            )
-
-        ConfigManager.prune()
-        ConfigManager.save("config.json")
-
-        val startupEnabled = allModules.associate { it::class.simpleName!! to it.config.enabled }
-
-        ConfigManager.onReload {
-            allModules
-                .filter { it.config.enabled != startupEnabled[it::class.simpleName] }
-                .forEach {
-                    ConfigManager.addReloadWarning(
-                        "${it::class.simpleName} 'Enabled' changed — restart required for this to take effect.",
-                    )
-                }
-        }
-
-        val modules = allModules.filter { it.config.enabled }
+            ).filter { it.config.enabled }
 
         logger.info(
             "Registered: ${modules.size} module(s) | Took ${modules.sumOf { it.register() }}ms",

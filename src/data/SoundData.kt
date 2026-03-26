@@ -1,6 +1,5 @@
 package org.xodium.vanillaplus.data
 
-import kotlinx.serialization.Serializable
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 
@@ -11,7 +10,6 @@ import net.kyori.adventure.sound.Sound
  * @property volume The [volume] of the sound. Defaults to 1.0f.
  * @property pitch The [pitch] of the sound. Defaults to 1.0f.
  */
-@Serializable
 internal data class SoundData(
     var name: String,
     var source: Sound.Source = Sound.Source.MASTER,

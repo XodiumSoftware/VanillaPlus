@@ -6,7 +6,6 @@ import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes
 import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver
 import io.papermc.paper.event.player.AsyncChatEvent
-import kotlinx.serialization.Serializable
 import net.kyori.adventure.chat.SignedMessage
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
@@ -23,12 +22,11 @@ import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.CommandUtils.executesCatching
 import org.xodium.vanillaplus.utils.Utils.MM
-import org.xodium.vanillaplus.utils.Utils.configDelegate
 import org.xodium.vanillaplus.utils.Utils.prefix
 
 /** Represents a module handling chat mechanics within the system. */
 internal object ChatModule : ModuleInterface {
-    override val config by configDelegate { Config() }
+    override val config = Config()
 
     override val cmds =
         listOf(
@@ -159,7 +157,6 @@ internal object ChatModule : ModuleInterface {
             .clickEvent(ClickEvent.callback { instance.server.deleteMessage(signedMessage) })
 
     /** Represents the config of the module. */
-    @Serializable
     data class Config(
         override var enabled: Boolean = false,
         var chatFormat: String = "<player_head> <player> <reset><gradient:#FFE259:#FFA751>›</gradient> <message>",
@@ -171,7 +168,6 @@ internal object ChatModule : ModuleInterface {
         var i18n: I18n = I18n(),
     ) : ModuleConfigInterface {
         /** Represents the internationalization strings for the module. */
-        @Serializable
         data class I18n(
             var clickMe: String = "<gradient:#FFE259:#FFA751>Click me!</gradient>",
             var clickToWhisper: String = "<gradient:#FFE259:#FFA751>Click to Whisper</gradient>",

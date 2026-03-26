@@ -2,7 +2,6 @@
 
 package org.xodium.vanillaplus.modules
 
-import kotlinx.serialization.Serializable
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerChangedWorldEvent
@@ -14,7 +13,6 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.MessageUtils
-import org.xodium.vanillaplus.utils.Utils.configDelegate
 import kotlin.random.Random
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -23,7 +21,7 @@ import kotlin.uuid.toKotlinUuid
 /** Represents a module handling map mechanics within the system. */
 @OptIn(ExperimentalUuidApi::class)
 internal object MapModule : ModuleInterface {
-    override val config by configDelegate { Config() }
+    override val config = Config()
 
     private val lastTrackTime = mutableMapOf<Uuid, Long>()
     private val lastBlockPos = mutableMapOf<Uuid, Triple<Int, Int, Int>>()
@@ -186,7 +184,6 @@ internal object MapModule : ModuleInterface {
     }
 
     /** Represents the config of the module. */
-    @Serializable
     data class Config(
         override var enabled: Boolean = false,
         var serverId: Int = Random.nextInt(),

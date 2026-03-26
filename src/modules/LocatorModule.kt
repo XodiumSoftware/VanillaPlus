@@ -4,7 +4,6 @@ package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes
-import kotlinx.serialization.Serializable
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.permissions.Permission
@@ -15,11 +14,10 @@ import org.xodium.vanillaplus.interfaces.ModuleConfigInterface
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import org.xodium.vanillaplus.utils.PlayerUtils.locator
-import org.xodium.vanillaplus.utils.Utils.configDelegate
 
 /** Represents a module handling locator mechanics within the system. */
 internal object LocatorModule : ModuleInterface {
-    override val config by configDelegate { Config() }
+    override val config = Config()
 
     override val cmds =
         listOf(
@@ -59,7 +57,6 @@ internal object LocatorModule : ModuleInterface {
         )
 
     /** Represents the config of the module. */
-    @Serializable
     data class Config(
         override var enabled: Boolean = false,
     ) : ModuleConfigInterface
