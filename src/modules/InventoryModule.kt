@@ -179,12 +179,9 @@ internal object InventoryModule : ModuleInterface {
             }
         }
 
-        if (usedContainers.isEmpty()) {
-            player.playSound(Config.unloadFailedSound)
-            return
-        } else {
-            player.playSound(Config.unloadSuccessfulSound)
-        }
+        player.playSound(if (usedContainers.isEmpty()) Config.unloadFailedSound else Config.unloadSuccessfulSound)
+
+        if (usedContainers.isEmpty()) return
 
         ScheduleUtils.schedule(duration = 40L) {
             usedContainers.forEach {

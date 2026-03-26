@@ -91,13 +91,10 @@ internal object ChiseledBookshelfModule : ModuleInterface {
         meta: BookMeta,
         itemKey: String,
     ): Component {
-        val title = meta.title
-        val author = meta.author
-
         var message = MM.deserialize("<white><sprite:items:item/$itemKey></white>")
 
-        if (title != null) message = message.append(MM.deserialize(" <white>$title</white>"))
-        if (author != null) message = message.append(MM.deserialize("<gray> by $author</gray>"))
+        meta.title?.let { message = message.append(MM.deserialize(" <white>$it</white>")) }
+        meta.author?.let { message = message.append(MM.deserialize("<gray> by $it</gray>")) }
 
         return message
     }

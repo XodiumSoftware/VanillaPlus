@@ -52,8 +52,7 @@ internal object MapModule : ModuleInterface {
         val player = event.player
         val uuid = player.uniqueId.toKotlinUuid()
 
-        lastBlockPos.remove(uuid)
-        lastTrackTime.remove(uuid)
+        clearPlayerTracking(uuid)
 
         untrackPlayer(player)
         sendLevelId(player, Channel.WORLD_MAP)
@@ -87,8 +86,7 @@ internal object MapModule : ModuleInterface {
     fun on(event: PlayerQuitEvent) {
         val uuid = event.player.uniqueId.toKotlinUuid()
 
-        lastBlockPos.remove(uuid)
-        lastTrackTime.remove(uuid)
+        clearPlayerTracking(uuid)
 
         untrackPlayer(event.player)
     }
@@ -122,15 +120,20 @@ internal object MapModule : ModuleInterface {
         player.sendPluginMessage(instance, channel, MessageUtils.getLevelIdMessage(Config.serverId))
     }
 
+    /** Removes tracking state for the given [uuid]. */
+    private fun clearPlayerTracking(uuid: Uuid) {
+        lastBlockPos.remove(uuid)
+        lastTrackTime.remove(uuid)
+    }
+
     /**
      * Synchronizes all currently online players to the specified [Player].
      * @param player The [Player] that should receive tracking data.
      */
     private fun trackOthers(player: Player) {
         player.world.players
-            .filter { it != player }
-            .takeIf { it.isNotEmpty() }
-            ?.forEach { trackPlayer(it) }
+            .filterNot { it == player }
+            .forEach { trackPlayer(it) }
     }
 
     /**
@@ -172,9 +175,8 @@ internal object MapModule : ModuleInterface {
         message: ByteArray,
     ) {
         player.world.players
-            .filter { it != player }
-            .takeIf { it.isNotEmpty() }
-            ?.forEach {
+            .filterNot { it == player }
+            .forEach {
                 it.sendPluginMessage(instance, Channel.MINI_MAP, message)
                 it.sendPluginMessage(instance, Channel.WORLD_MAP, message)
             }

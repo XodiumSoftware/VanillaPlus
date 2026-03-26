@@ -15,7 +15,7 @@ internal object ServerInfoModule : ModuleInterface {
     @Suppress("UnstableApiUsage")
     private fun serverLinks() =
         Config.serverLinks.forEach { (type, url) ->
-            runCatching { URI.create(url) }.getOrNull()?.let { instance.server.serverLinks.setLink(type, it) }
+            runCatching { instance.server.serverLinks.setLink(type, URI.create(url)) }
         }
 
     /** Represents the config of the module. */
