@@ -11,7 +11,6 @@ import org.bukkit.entity.Enderman
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Fireball
 import org.bukkit.entity.Wither
-import org.bukkit.entity.WitherSkull
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.EntityChangeBlockEvent
 import org.bukkit.event.entity.EntityDeathEvent
@@ -44,30 +43,16 @@ internal object EntityModule : ModuleInterface {
     fun on(event: EntityEquipmentChangedEvent) = NimbusEnchantment.nimbus(event)
 
     /**
-     * Determines whether an entity's griefing behaviour should be cancelled based on configuration settings.
+     * Determines whether an entity's griefing behaviour should be cancelled.
      * @param entity The entity whose griefing behaviour is being evaluated.
-     * @return `true` if the entity's griefing behaviour should be cancelled; `false` otherwise.
+     * @return `true` if the entity's type is in [Config.griefCancelTypes]; `false` otherwise.
      */
-    private fun shouldCancelGrief(entity: Entity): Boolean =
-        when (entity) {
-            is WitherSkull -> Config.disableWitherGrief
-            is Fireball -> Config.disableGhastGrief
-            is Blaze -> Config.disableBlazeGrief
-            is Creeper -> Config.disableCreeperGrief
-            is EnderDragon -> Config.disableEnderDragonGrief
-            is Enderman -> Config.disableEndermanGrief
-            is Wither -> Config.disableWitherGrief
-            else -> false
-        }
+    private fun shouldCancelGrief(entity: Entity): Boolean = Config.griefCancelTypes.any { it.isInstance(entity) }
 
     /** Represents the config of the module. */
     object Config {
-        var disableBlazeGrief: Boolean = true
-        var disableCreeperGrief: Boolean = true
-        var disableEnderDragonGrief: Boolean = true
-        var disableEndermanGrief: Boolean = true
-        var disableGhastGrief: Boolean = true
-        var disableWitherGrief: Boolean = true
+        val griefCancelTypes =
+            setOf(Blaze::class, Creeper::class, EnderDragon::class, Enderman::class, Fireball::class, Wither::class)
         var entityEggDropChance: Double = 0.001
     }
 }
