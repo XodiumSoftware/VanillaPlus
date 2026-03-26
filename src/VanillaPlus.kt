@@ -8,6 +8,7 @@ import org.xodium.vanillaplus.modules.ChatModule
 import org.xodium.vanillaplus.modules.ChiseledBookshelfModule
 import org.xodium.vanillaplus.modules.DimensionModule
 import org.xodium.vanillaplus.modules.EntityModule
+import org.xodium.vanillaplus.modules.HordeModule
 import org.xodium.vanillaplus.modules.InventoryModule
 import org.xodium.vanillaplus.modules.LocatorModule
 import org.xodium.vanillaplus.modules.MapModule
@@ -61,6 +62,7 @@ internal class VanillaPlus : JavaPlugin() {
                 ChiseledBookshelfModule,
                 DimensionModule,
                 EntityModule,
+                HordeModule,
                 InventoryModule,
                 LocatorModule,
                 MapModule,
