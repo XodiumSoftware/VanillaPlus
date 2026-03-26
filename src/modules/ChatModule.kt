@@ -50,7 +50,7 @@ internal object ChatModule : ModuleInterface {
                                         val target =
                                             targetResolver.resolve(it.source).singleOrNull()
                                                 ?: return@executesCatching sender.sendMessage(
-                                                    MM.deserialize(Config.I18n.playerIsNotOnline),
+                                                    MM.deserialize(Config.ChatMessages.playerIsNotOnline),
                                                 )
                                         val message = it.getArgument("message", String().javaClass)
 
@@ -91,7 +91,7 @@ internal object ChatModule : ModuleInterface {
                         displayName
                             .clickEvent(ClickEvent.suggestCommand("/w ${player.name} "))
                             .hoverEvent(
-                                HoverEvent.showText(MM.deserialize(Config.I18n.clickToWhisper)),
+                                HoverEvent.showText(MM.deserialize(Config.ChatMessages.clickToWhisper)),
                             ),
                     ),
                     Placeholder.component("message", message),
@@ -121,7 +121,7 @@ internal object ChatModule : ModuleInterface {
                     target
                         .displayName()
                         .clickEvent(ClickEvent.suggestCommand("/w ${target.name} "))
-                        .hoverEvent(HoverEvent.showText(MM.deserialize(Config.I18n.clickToWhisper))),
+                        .hoverEvent(HoverEvent.showText(MM.deserialize(Config.ChatMessages.clickToWhisper))),
                 ),
                 Placeholder.component("message", MM.deserialize(message)),
             ),
@@ -135,7 +135,7 @@ internal object ChatModule : ModuleInterface {
                     sender
                         .displayName()
                         .clickEvent(ClickEvent.suggestCommand("/w ${sender.name} "))
-                        .hoverEvent(HoverEvent.showText(MM.deserialize(Config.I18n.clickToWhisper))),
+                        .hoverEvent(HoverEvent.showText(MM.deserialize(Config.ChatMessages.clickToWhisper))),
                 ),
                 Placeholder.component("message", MM.deserialize(message)),
             ),
@@ -150,7 +150,7 @@ internal object ChatModule : ModuleInterface {
     private fun createDeleteCross(signedMessage: SignedMessage): Component =
         MM
             .deserialize(Config.deleteCross)
-            .hoverEvent(MM.deserialize(Config.I18n.deleteMessage))
+            .hoverEvent(MM.deserialize(Config.ChatMessages.deleteMessage))
             .clickEvent(ClickEvent.callback { instance.server.deleteMessage(signedMessage) })
 
     /** Represents the config of the module. */
@@ -162,14 +162,12 @@ internal object ChatModule : ModuleInterface {
             "<player> <reset><gradient:#FFE259:#FFA751>➛</gradient> <gradient:#1488CC:#2B32B2>You</gradient> <gradient:#FFE259:#FFA751>›</gradient> <message>"
         var deleteCross: String = "<dark_gray>[<dark_red><b>X</b></dark_red><dark_gray>]"
 
-        /** Represents the internationalization strings for the module. */
-        object I18n {
-            var clickMe: String = "<gradient:#FFE259:#FFA751>Click me!</gradient>"
+        /** Represents the chat message strings for the module. */
+        object ChatMessages {
             var clickToWhisper: String = "<gradient:#FFE259:#FFA751>Click to Whisper</gradient>"
             var playerIsNotOnline: String =
                 "${instance.prefix} <gradient:#CB2D3E:#EF473A>Player is not Online!</gradient>"
             var deleteMessage: String = "<gradient:#FFE259:#FFA751>Click to delete your message</gradient>"
-            var clickToClipboard: String = "<gradient:#FFE259:#FFA751>Click to copy position to clipboard</gradient>"
         }
     }
 }

@@ -234,7 +234,6 @@ internal object OpenableModule : ModuleInterface {
         var initDelayInTicks: Long = 1
         var allowDoubleDoors: Boolean = true
         var allowKnocking: Boolean = true
-        var allowIronDoorByHand: Boolean = false
         var knockingRequiresEmptyHand: Boolean = true
         var knockingRequiresShifting: Boolean = true
         var soundKnock: Sound =

@@ -339,6 +339,7 @@ internal object PlayerModule : ModuleInterface {
             var allowBuddingAmethystSilk: Boolean = true
         }
 
+        /** Represents the player-facing message strings for the module. */
         object PlayerMessages {
             var join: String = "<green>➕<reset> <gradient:#FFE259:#FFA751>›</gradient> <player>"
             var quit: String = "<red>➖<reset> <gradient:#FFE259:#FFA751>›</gradient> <player>"
