@@ -9,10 +9,18 @@ import org.bukkit.Material
 import org.bukkit.attribute.Attribute
 import org.bukkit.block.banner.Pattern
 import org.bukkit.block.banner.PatternType
+import org.bukkit.boss.BarColor
+import org.bukkit.boss.BarStyle
+import org.bukkit.boss.BossBar
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Horse
+import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Skeleton
 import org.bukkit.entity.Zombie
+import org.bukkit.event.EventHandler
+import org.bukkit.event.entity.EntityDamageEvent
+import org.bukkit.event.entity.EntityDeathEvent
+import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.permissions.Permission
@@ -23,8 +31,12 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import org.xodium.vanillaplus.utils.Utils.MM
 import kotlin.random.Random
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
+import kotlin.uuid.toKotlinUuid
 
 /** Represents a module handling horde mechanics within the system. */
+@OptIn(ExperimentalUuidApi::class)
 internal object HordeModule : ModuleInterface {
     override val cmds =
         listOf(
@@ -46,6 +58,32 @@ internal object HordeModule : ModuleInterface {
             ),
         )
 
+    private val bossBars = mutableMapOf<Uuid, BossBar>()
+
+    @EventHandler
+    fun on(event: EntityDamageEvent) {
+        val bossBar = bossBars[event.entity.uniqueId.toKotlinUuid()] ?: return
+        val entity = event.entity as? LivingEntity ?: return
+        instance.server.scheduler.runTaskLater(
+            instance,
+            Runnable {
+                val max = entity.getAttribute(Attribute.MAX_HEALTH)?.value ?: return@Runnable
+                bossBar.progress = (entity.health / max).coerceIn(0.0, 1.0)
+            },
+            1L,
+        )
+    }
+
+    @EventHandler
+    fun on(event: EntityDeathEvent) {
+        bossBars.remove(event.entity.uniqueId.toKotlinUuid())?.removeAll()
+    }
+
+    @EventHandler
+    fun on(event: PlayerJoinEvent) {
+        bossBars.values.forEach { it.addPlayer(event.player) }
+    }
+
     /** Applies a black base with a red skull pattern to this [ItemStack] shield. */
     @Suppress("UnstableApiUsage")
     private val shield =
@@ -66,7 +104,7 @@ internal object HordeModule : ModuleInterface {
      * trolls further back, dark knights flanking, and the warlord commanding from the rear.
      * @param location The [Location] used as the front-center of the formation.
      */
-    fun spawnFormation(location: Location) {
+    private fun spawnFormation(location: Location) {
         spawnRow(location, rowZ = 0.0, spacing = 4.0, count = 6) { location ->
             location.world.spawn(location, Zombie::class.java) { it.goblin() }
         }
@@ -97,7 +135,14 @@ internal object HordeModule : ModuleInterface {
      */
     private fun spawnWarlord(location: Location): Zombie {
         val horse = location.world.spawn(location, Horse::class.java) { it.warlordHorse() }
-        return location.world.spawn(location, Zombie::class.java) { it.warlord() }.also { horse.addPassenger(it) }
+        return location.world
+            .spawn(location, Zombie::class.java) { it.warlord() }
+            .also { horse.addPassenger(it) }
+            .also { warlord ->
+                val bossBar = instance.server.createBossBar("Warlord", BarColor.RED, BarStyle.SOLID)
+                instance.server.onlinePlayers.forEach { bossBar.addPlayer(it) }
+                bossBars[warlord.uniqueId.toKotlinUuid()] = bossBar
+            }
     }
 
     /**
