@@ -35,7 +35,7 @@ internal object EntityModule : ModuleInterface {
     @EventHandler
     fun on(event: EntityDeathEvent) {
         if (Random.nextDouble() <= Config.entityEggDropChance) {
-            event.drops.add(ItemStack.of(Material.matchMaterial("${event.entity.type.name}_SPAWN_EGG") ?: return))
+            Material.matchMaterial("${event.entity.type.name}_SPAWN_EGG")?.let { event.drops.add(ItemStack.of(it)) }
         }
     }
 
