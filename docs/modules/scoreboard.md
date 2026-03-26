@@ -2,12 +2,6 @@
 
 Adds a `/leaderboard` command, which toggles a persistent scoreboard overlay for the player.
 
-## Config
-
-| Key       | Type      | Default | Description        |
-|-----------|-----------|---------|--------------------|
-| `Enabled` | `Boolean` | `false` | Enable this module |
-
 ## Commands & Permissions
 
 | Command        | Aliases       | Permission                | Default  | Description                              |

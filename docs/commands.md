@@ -2,12 +2,6 @@
 
 All permission nodes follow the pattern `vanillaplus.<name>`.
 
-## Admin
-
-| Command                            | Permission           | Default | Description                                        |
-|------------------------------------|----------------------|---------|----------------------------------------------------|
-| `/vanillaplus reload` `/vp reload` | `vanillaplus.reload` | OP      | Reload `config.json` without restarting the server |
-
 ## Chat
 
 | Command                       | Aliases                       | Permission            | Default  | Description                        |
@@ -39,11 +33,4 @@ All permission nodes follow the pattern `vanillaplus.<name>`.
 |----------------|---------------|---------------------------|----------|-----------------------------------|
 | `/leaderboard` | `lb`, `board` | `vanillaplus.leaderboard` | Everyone | Toggle the leaderboard scoreboard |
 
----
-
-## Permission defaults summary
-
-| Default      | Permissions           |
-|--------------|-----------------------|
-| **OP only**  | `vanillaplus.reload`  |
-| **Everyone** | All other permissions |
+All permissions default to **Everyone**.

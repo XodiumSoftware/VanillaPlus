@@ -2,13 +2,11 @@
 
 Prevents Nether portal grief by blocking new portal creation from the Nether side unless a corresponding Overworld portal already exists.
 
-## Config
+## Defaults
 
-| Key                         | Type      | Default   | Description                                            |
-|-----------------------------|-----------|-----------|--------------------------------------------------------|
-| `Enabled`                   | `Boolean` | `false`   | Enable this module                                     |
-| `PortalSearchRadius`        | `Int`     | `128`     | Block radius searched for an existing Overworld portal |
-| `I18n.PortalCreationDenied` | `String`  | See above | Message shown when portal creation is denied           |
+| Field                | Default | Description                                            |
+|----------------------|---------|--------------------------------------------------------|
+| `portalSearchRadius` | `128`   | Block radius searched for an existing Overworld portal |
 
 ## Behaviour
 

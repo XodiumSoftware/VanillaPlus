@@ -2,14 +2,15 @@
 
 Registers server links that appear in the Minecraft client's pause menu (1.21+).
 
-## Config
+## Defaults
 
-| Key           | Type                            | Default                                                                                  | Description             |
-|---------------|---------------------------------|------------------------------------------------------------------------------------------|-------------------------|
-| `Enabled`     | `Boolean`                       | `false`                                                                                  | Enable this module      |
-| `ServerLinks` | `Map<ServerLinks.Type, String>` | [ServerLinks.Type](https://jd.papermc.io/paper/1.21.11/org/bukkit/ServerLinks.Type.html) | Map of link type to URL |
+| Field         | Type                            | Description             |
+|---------------|---------------------------------|-------------------------|
+| `serverLinks` | `Map<ServerLinks.Type, String>` | Map of link type to URL |
+
+See [ServerLinks.Type](https://jd.papermc.io/paper/1.21.11/org/bukkit/ServerLinks.Type.html) for valid keys.
 
 ## Behaviour
 
-- Links are registered at plugin startup and updated on `/vp reload`.
+- Links are registered at plugin startup.
 - Invalid URLs are silently skipped.

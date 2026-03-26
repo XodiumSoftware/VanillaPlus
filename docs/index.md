@@ -1,6 +1,6 @@
 # VanillaPlus
 
-VanillaPlus is a [Paper](https://papermc.io/) Minecraft plugin written in Kotlin that enhances the vanilla gameplay without replacing it. Every feature is modular and independently toggleable via a single `config.json`.
+VanillaPlus is a [Paper](https://papermc.io/) Minecraft plugin written in Kotlin that enhances the vanilla gameplay without replacing it. Every feature is modular and enabled by default.
 
 ## Features at a glance
 

@@ -2,18 +2,17 @@
 
 Per-mob grief prevention and random spawn egg drops from entity deaths.
 
-## Config
+## Defaults
 
-| Key                       | Type      | Default | Description                                           |
-|---------------------------|-----------|---------|-------------------------------------------------------|
-| `Enabled`                 | `Boolean` | `false` | Enable this module                                    |
-| `DisableBlazeGrief`       | `Boolean` | `true`  | Prevent Blazes from destroying blocks                 |
-| `DisableCreeperGrief`     | `Boolean` | `true`  | Prevent Creeper explosions from destroying blocks     |
-| `DisableEnderDragonGrief` | `Boolean` | `true`  | Prevent the Ender Dragon from destroying blocks       |
-| `DisableEndermanGrief`    | `Boolean` | `true`  | Prevent Endermen from picking up blocks               |
-| `DisableGhastGrief`       | `Boolean` | `true`  | Prevent Ghast fireballs from destroying blocks        |
-| `DisableWitherGrief`      | `Boolean` | `true`  | Prevent the Wither from destroying blocks             |
-| `EntityEggDropChance`     | `Double`  | `0.001` | Chance (0–1) for a mob to drop its spawn egg on death |
+| Field                     | Default | Description                                           |
+|---------------------------|---------|-------------------------------------------------------|
+| `disableBlazeGrief`       | `true`  | Prevent Blazes from destroying blocks                 |
+| `disableCreeperGrief`     | `true`  | Prevent Creeper explosions from destroying blocks     |
+| `disableEnderDragonGrief` | `true`  | Prevent the Ender Dragon from destroying blocks       |
+| `disableEndermanGrief`    | `true`  | Prevent Endermen from picking up blocks               |
+| `disableGhastGrief`       | `true`  | Prevent Ghast fireballs from destroying blocks        |
+| `disableWitherGrief`      | `true`  | Prevent the Wither from destroying blocks             |
+| `entityEggDropChance`     | `0.001` | Chance (0–1) for a mob to drop its spawn egg on death |
 
 ## Behaviour
 

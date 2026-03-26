@@ -2,12 +2,6 @@
 
 Allows players to personalize the colour of their locator bar.
 
-## Config
-
-| Key       | Type      | Default | Description        |
-|-----------|-----------|---------|--------------------|
-| `Enabled` | `Boolean` | `false` | Enable this module |
-
 ## Commands & Permissions
 
 | Command                        | Aliases | Permission            | Default  | Description                                                   |

@@ -2,15 +2,14 @@
 
 The most feature-rich module. Handles nicknames, skull drops, XP bottles, custom join/quit/death messages, enchantment event routing, and tab list formatting.
 
-## Config
+## Defaults
 
-| Key                                  | Type      | Default | Description                                       |
-|--------------------------------------|-----------|---------|---------------------------------------------------|
-| `Enabled`                            | `Boolean` | `false` | Enable this module                                |
-| `SkullDropChance`                    | `Double`  | `0.01`  | Chance (0–1) a player drops their head on death   |
-| `XpCostToBottle`                     | `Int`     | `11`    | XP levels consumed when bottling XP               |
-| `SilkTouch.AllowSpawnerSilk`         | `Boolean` | `true`  | Allow collecting spawners with Silk Touch         |
-| `SilkTouch.AllowBuddingAmethystSilk` | `Boolean` | `true`  | Allow collecting budding amethyst with Silk Touch |
+| Field                                           | Default | Description                                       |
+|-------------------------------------------------|---------|---------------------------------------------------|
+| `skullDropChance`                               | `0.01`  | Chance (0–1) a player drops their head on death   |
+| `xpCostToBottle`                                | `11`    | XP levels consumed when bottling XP               |
+| `SilkTouchEnchantment.allowSpawnerSilk`         | `true`  | Allow collecting spawners with Silk Touch         |
+| `SilkTouchEnchantment.allowBuddingAmethystSilk` | `true`  | Allow collecting budding amethyst with Silk Touch |
 
 ## Commands & Permissions
 
@@ -42,7 +41,7 @@ Handled through this module's event handlers (requires [Enchantments](../enchant
 
 ### Messages
 
-All join, quit, death, kick, spawn-set, advancement, and bed-enter messages are customizable via the `I18n` config block. All strings support [MiniMessage](https://docs.advntr.dev/minimessage/) and the following placeholders:
+All join, quit, death, kick, spawn-set, advancement, and bed-enter messages are defined in `Config.PlayerMessages` and related nested objects. All strings support [MiniMessage](https://docs.advntr.dev/minimessage/) and the following placeholders:
 
 | Placeholder      | Available in            |
 |------------------|-------------------------|

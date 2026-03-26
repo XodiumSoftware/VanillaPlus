@@ -2,15 +2,14 @@
 
 Replaces the default chat with a custom format, adds whispers, and shows a welcome banner on first join.
 
-## Config
+## Defaults
 
-| Key                 | Type      | Default   | Description                                       |
-|---------------------|-----------|-----------|---------------------------------------------------|
-| `Enabled`           | `Boolean` | `false`   | Enable this module                                |
-| `ChatFormat`        | `String`  | See above | MiniMessage format for public chat                |
-| `WhisperToFormat`   | `String`  | See above | Format shown to the sender of a whisper           |
-| `WhisperFromFormat` | `String`  | See above | Format shown to the receiver of a whisper         |
-| `DeleteCross`       | `String`  | See above | Clickable delete button appended to chat messages |
+| Field               | Default                                                                                                                                            | Description                                       |
+|---------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------|
+| `chatFormat`        | `<player_head> <player> <reset><gradient:#FFE259:#FFA751>›</gradient> <message>`                                                                   | MiniMessage format for public chat                |
+| `whisperToFormat`   | `<gradient:#1488CC:#2B32B2>You</gradient> <gradient:#FFE259:#FFA751>➛</gradient> <player> <reset><gradient:#FFE259:#FFA751>›</gradient> <message>` | Format shown to the sender of a whisper           |
+| `whisperFromFormat` | `<player> <reset><gradient:#FFE259:#FFA751>➛</gradient> <gradient:#1488CC:#2B32B2>You</gradient> <gradient:#FFE259:#FFA751>›</gradient> <message>` | Format shown to the receiver of a whisper         |
+| `deleteCross`       | `<dark_gray>[<dark_red><b>X</b></dark_red><dark_gray>]`                                                                                            | Clickable delete button appended to chat messages |
 
 All strings support [MiniMessage](https://docs.advntr.dev/minimessage/) formatting.
 

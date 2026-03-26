@@ -2,13 +2,12 @@
 
 Allows players to sit on **stairs** and **slabs** by right-clicking them.
 
-## Config
+## Defaults
 
-| Key         | Type      | Default | Description                   |
-|-------------|-----------|---------|-------------------------------|
-| `Enabled`   | `Boolean` | `false` | Enable this module            |
-| `UseStairs` | `Boolean` | `true`  | Allow sitting on stair blocks |
-| `UseSlabs`  | `Boolean` | `true`  | Allow sitting on slab blocks  |
+| Field       | Default | Description                   |
+|-------------|---------|-------------------------------|
+| `useStairs` | `true`  | Allow sitting on stair blocks |
+| `useSlabs`  | `true`  | Allow sitting on slab blocks  |
 
 ## Behaviour
 

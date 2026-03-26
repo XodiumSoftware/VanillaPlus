@@ -2,15 +2,14 @@
 
 Two commands for interacting with nearby containers: search for items and unload your inventory.
 
-## Config
+## Defaults
 
-| Key                     | Type        | Default                 | Description                |
-|-------------------------|-------------|-------------------------|----------------------------|
-| `Enabled`               | `Boolean`   | `false`                 | Enable this module         |
-| `SearchSuccessfulSound` | `SoundData` | `entity.player.levelup` | Sound on successful search |
-| `SearchFailedSound`     | `SoundData` | `block.anvil.land`      | Sound on failed search     |
-| `UnloadSuccessfulSound` | `SoundData` | `entity.player.levelup` | Sound on successful unload |
-| `UnloadFailedSound`     | `SoundData` | `block.anvil.land`      | Sound on failed unload     |
+| Field                   | Default                 | Description                |
+|-------------------------|-------------------------|----------------------------|
+| `searchSuccessfulSound` | `entity.player.levelup` | Sound on successful search |
+| `searchFailedSound`     | `block.anvil.land`      | Sound on failed search     |
+| `unloadSuccessfulSound` | `entity.player.levelup` | Sound on successful unload |
+| `unloadFailedSound`     | `block.anvil.land`      | Sound on failed unload     |
 
 ## Commands & Permissions
 
