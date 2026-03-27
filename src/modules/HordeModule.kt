@@ -27,8 +27,6 @@ import org.xodium.vanillaplus.mobs.Goblin
 import org.xodium.vanillaplus.mobs.Orc
 import org.xodium.vanillaplus.mobs.Troll
 import org.xodium.vanillaplus.mobs.Warlord
-import org.xodium.vanillaplus.modules.HordeModule.DETECTION_RANGE
-import org.xodium.vanillaplus.modules.HordeModule.ROAM_RADIUS
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import kotlin.math.PI
 import kotlin.math.cos
@@ -59,10 +57,6 @@ internal object HordeModule : ModuleInterface {
                 PermissionDefault.OP,
             ),
         )
-
-    private const val DETECTION_RANGE = 48.0
-    private const val IDLE_CIRCLE_RADIUS = 10.0
-    private const val ROAM_RADIUS = 5.0
 
     private val bossBars = mutableMapOf<Uuid, BossBar>()
     private val formationTasks = mutableMapOf<Uuid, BukkitTask>()
@@ -156,10 +150,10 @@ internal object HordeModule : ModuleInterface {
 
     /**
      * Starts a repeating task that drives two formation states:
-     * - **Active** (a survival/adventure player is within [DETECTION_RANGE]): the [warlord] marches toward
+     * - **Active** (a survival/adventure player is within [Config.detectionRange]): the [warlord] marches toward
      *   the nearest such player and all [formation] members hold their row offsets relative to the warlord.
      * - **Idle** (no player in range): the [warlord] stops moving and each [formation] member is free to
-     *   roam within [ROAM_RADIUS] of its assigned circle slot; if it strays further it pathfinds back.
+     *   roam within [Config.roamRadius] of its assigned circle slot; if it strays further it pathfinds back.
      */
     private fun startFormationTask(
         warlord: Zombie,
@@ -176,7 +170,7 @@ internal object HordeModule : ModuleInterface {
                             .filter {
                                 it.location.distanceSquared(
                                     warlord.location,
-                                ) <= DETECTION_RANGE * DETECTION_RANGE
+                                ) <= Config.detectionRange * Config.detectionRange
                             }.minByOrNull { it.location.distanceSquared(warlord.location) }
 
                     if (target != null) {
@@ -195,11 +189,11 @@ internal object HordeModule : ModuleInterface {
                             if (!mob.isDead && mob.isValid) {
                                 val idleHome =
                                     warlord.location.clone().add(
-                                        cos(idleAngle) * IDLE_CIRCLE_RADIUS,
+                                        cos(idleAngle) * Config.idleCircleRadius,
                                         0.0,
-                                        sin(idleAngle) * IDLE_CIRCLE_RADIUS,
+                                        sin(idleAngle) * Config.idleCircleRadius,
                                     )
-                                if (mob.location.distanceSquared(idleHome) > ROAM_RADIUS * ROAM_RADIUS) {
+                                if (mob.location.distanceSquared(idleHome) > Config.roamRadius * Config.roamRadius) {
                                     mob.pathfinder.moveTo(idleHome, 1.0)
                                 }
                             }
@@ -209,5 +203,12 @@ internal object HordeModule : ModuleInterface {
                 0L,
                 10L,
             )
+    }
+
+    /** Represents the config of the module. */
+    object Config {
+        var detectionRange: Double = 48.0
+        var idleCircleRadius: Double = 10.0
+        var roamRadius: Double = 5.0
     }
 }
