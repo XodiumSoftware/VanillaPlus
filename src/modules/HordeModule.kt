@@ -92,27 +92,35 @@ internal object HordeModule : ModuleInterface {
      *
      * Layout (front → rear along +Z):
      * ```
-     *  G G G G G G    Goblin      ×6   z=+0   spacing=4
-     *   O  O  O  O    Orc         ×4   z=+8   spacing=5
-     *      T    T     Troll       ×2   z=+18  spacing=10
-     *       D  D      DarkKnight  ×2   z=+28  spacing=8
-     *         W       Warlord     ×1   z=+36
+     *  G G G G G G G    Goblin      ×7   z=+0
+     *  O O O O O O O    Orc         ×7   z=+8
+     *  T O O O O O T    Orc+Troll   ×5+2 z=+16
+     *      D W D        DarkKnight  ×2   z=+36 (flanking Warlord)
      * ```
+     * Spacing between entities is controlled by [Config.formationSpacing].
      *
      * @param location The [Location] used as the front-center of the formation.
      */
     private fun spawnFormation(location: Location) {
         val warlordLoc = location.clone().add(0.0, 0.0, 36.0)
         val warlord = spawnWarlord(warlordLoc)
+        val spacing = Config.formationSpacing
+        val orcOuterX = 3 * spacing
         val rawFormation =
             listOf(
-                spawnRow(location, 0.0, 4.0, 6) { Goblin.spawn(it) },
-                spawnRow(location, 8.0, 5.0, 4) { Orc.spawn(it) },
-                spawnRow(location, 18.0, 10.0, 2) { Troll.spawn(it) },
-                spawnRow(location, 28.0, 8.0, 2) { DarkKnight.spawn(it) },
+                spawnRow(location, 0.0, 7) { Goblin.spawn(it) },
+                spawnRow(location, 8.0, 7) { Orc.spawn(it) },
+                spawnRow(location, 16.0, 5) { Orc.spawn(it) },
+                listOf(
+                    Troll.spawn(location.clone().add(-orcOuterX, 0.0, 16.0)),
+                    Troll.spawn(location.clone().add(orcOuterX, 0.0, 16.0)),
+                ),
+                listOf(
+                    DarkKnight.spawn(warlordLoc.clone().add(-spacing, 0.0, 0.0)),
+                    DarkKnight.spawn(warlordLoc.clone().add(spacing, 0.0, 0.0)),
+                ),
             ).flatten().map {
                 val raw = it.location.toVector().subtract(warlordLoc.toVector())
-
                 it to Vector(raw.x, 0.0, raw.z)
             }
         val total = rawFormation.size
@@ -134,19 +142,19 @@ internal object HordeModule : ModuleInterface {
 
     /**
      * Spawns a centered row of entities along the X axis relative to [location] and returns them.
+     * Entity spacing is controlled by [Config.formationSpacing].
      * @param location The origin of the formation.
      * @param rowZ The Z offset from the origin for this row.
-     * @param spacing The distance between each entity in the row.
      * @param count The number of entities to spawn.
      * @param spawner A lambda that spawns a single entity at the given [Location].
      */
     private fun spawnRow(
         location: Location,
         rowZ: Double,
-        spacing: Double,
         count: Int,
         spawner: (Location) -> Mob,
     ): List<Mob> {
+        val spacing = Config.formationSpacing
         val halfWidth = (count - 1) * spacing / 2.0
 
         return (0 until count).map { i -> spawner(location.clone().add(-halfWidth + i * spacing, 0.0, rowZ)) }
@@ -178,5 +186,6 @@ internal object HordeModule : ModuleInterface {
         var detectionRange: Double = 48.0
         var idleCircleRadius: Double = 10.0
         var roamRadius: Double = 5.0
+        var formationSpacing: Double = 4.0
     }
 }
