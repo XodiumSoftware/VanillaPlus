@@ -4,8 +4,12 @@ package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.dialog.Dialog
+import io.papermc.paper.registry.data.dialog.ActionButton
 import io.papermc.paper.registry.data.dialog.DialogBase
+import io.papermc.paper.registry.data.dialog.action.DialogAction
+import io.papermc.paper.registry.data.dialog.input.DialogInput
 import io.papermc.paper.registry.data.dialog.type.DialogType
+import net.kyori.adventure.text.event.ClickCallback
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -49,10 +53,42 @@ internal object KingdomModule : ModuleInterface {
 
     /** Returns a [Dialog] representing this [KingdomData], with the kingdom name as the title. */
     private fun KingdomData.dialog(): Dialog =
-        Dialog.create {
-            it
+        Dialog.create { builder ->
+            builder
                 .empty()
-                .base(DialogBase.builder(MM.deserialize(name)).build())
-                .type(DialogType.notice())
+                .base(
+                    DialogBase
+                        .builder(MM.deserialize(name))
+                        .inputs(
+                            listOf(
+                                DialogInput
+                                    .text("name", MM.deserialize("Rename Kingdom"))
+                                    .maxLength(32)
+                                    .build(),
+                            ),
+                        ).build(),
+                ).type(
+                    DialogType.confirmation(
+                        ActionButton
+                            .builder(MM.deserialize("Rename"))
+                            .action(
+                                DialogAction.customClick(
+                                    { response, _ ->
+                                        DatabaseManager.setKingdom(
+                                            copy(
+                                                name =
+                                                    response
+                                                        .getText("name")
+                                                        ?.takeIf { it.isNotBlank() }
+                                                        ?: return@customClick,
+                                            ),
+                                        )
+                                    },
+                                    ClickCallback.Options.builder().build(),
+                                ),
+                            ).build(),
+                        ActionButton.builder(MM.deserialize("Cancel")).build(),
+                    ),
+                )
         }
 }
