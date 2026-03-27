@@ -3,9 +3,12 @@ package org.xodium.vanillaplus.modules
 import io.papermc.paper.command.brigadier.Commands
 import net.kyori.adventure.bossbar.BossBar
 import org.bukkit.Location
+import org.bukkit.Particle
+import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Mob
+import org.bukkit.entity.Villager
 import org.bukkit.entity.Zombie
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.EntityDamageEvent
@@ -59,6 +62,7 @@ internal object HordeModule : ModuleInterface {
 
     private val bossBars = mutableMapOf<Uuid, BossBar>()
     private val formationTasks = mutableMapOf<Uuid, BukkitTask>()
+    private val formationMembers = mutableMapOf<Uuid, MutableList<FormationMemberData>>()
 
     @EventHandler
     fun on(event: EntityDamageEvent) {
@@ -81,6 +85,7 @@ internal object HordeModule : ModuleInterface {
         val uuid = event.entity.uniqueId.toKotlinUuid()
         bossBars.remove(uuid)?.dismiss()
         formationTasks.remove(uuid)?.cancel()
+        formationMembers.remove(uuid)?.let { dissolveFormation(it, event.entity.location) }
     }
 
     @EventHandler
@@ -160,7 +165,9 @@ internal object HordeModule : ModuleInterface {
         warlord: Zombie,
         formation: MutableList<FormationMemberData>,
     ) {
-        formationTasks[warlord.uniqueId.toKotlinUuid()] =
+        val uuid = warlord.uniqueId.toKotlinUuid()
+        formationMembers[uuid] = formation
+        formationTasks[uuid] =
             instance.server.scheduler.runTaskTimer(
                 instance,
                 Runnable {
@@ -171,6 +178,37 @@ internal object HordeModule : ModuleInterface {
                 0L,
                 10L,
             )
+    }
+
+    /**
+     * Converts all living [members] to villagers with a dark-spell-release effect.
+     * Plays a curse-break burst at the [warlordLocation], then a liberation flash at each mob.
+     * @param members The list of [FormationMemberData] to convert.
+     * @param warlordLocation The [Location] of the dead warlord, used as the effect epicenter.
+     */
+    private fun dissolveFormation(
+        members: MutableList<FormationMemberData>,
+        warlordLocation: Location,
+    ) {
+        warlordLocation.world.apply {
+            spawnParticle(Particle.WITCH, warlordLocation, 300, 2.0, 1.5, 2.0, 0.0)
+            spawnParticle(Particle.PORTAL, warlordLocation, 200, 1.5, 1.0, 1.5, 0.5)
+            spawnParticle(Particle.LARGE_SMOKE, warlordLocation, 60, 1.5, 1.0, 1.5, 0.0)
+            playSound(warlordLocation, Sound.ENTITY_WITHER_DEATH, 1.0f, 0.6f)
+            playSound(warlordLocation, Sound.ENTITY_ENDER_DRAGON_GROWL, 0.4f, 1.5f)
+        }
+        members.forEach { (mob, _, _) ->
+            if (!mob.isDead && mob.isValid) {
+                val loc = mob.location
+                mob.world.apply {
+                    spawnParticle(Particle.TOTEM_OF_UNDYING, loc, 60, 0.4, 0.8, 0.4, 0.1)
+                    spawnParticle(Particle.WITCH, loc, 20, 0.3, 0.6, 0.3, 0.0)
+                    playSound(loc, Sound.ENTITY_PLAYER_LEVELUP, 0.4f, 1.8f)
+                }
+                mob.world.spawn(loc, Villager::class.java)
+                mob.remove()
+            }
+        }
     }
 
     /** Represents the config of the module. */
