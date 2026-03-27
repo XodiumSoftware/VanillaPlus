@@ -1,7 +1,10 @@
 package org.xodium.vanillaplus.modules
 
+import com.mojang.brigadier.arguments.StringArgumentType
 import io.papermc.paper.command.brigadier.Commands
 import net.kyori.adventure.bossbar.BossBar
+import net.kyori.adventure.text.event.ClickEvent
+import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.title.Title
 import org.bukkit.GameMode
 import org.bukkit.Location
@@ -61,9 +64,16 @@ internal object HordeModule : ModuleInterface {
                     .then(
                         Commands
                             .literal("remove")
-                            .playerExecuted { player, _ -> removeNearestHorde(player) },
+                            .playerExecuted { player, _ -> listHordes(player) }
+                            .then(
+                                Commands
+                                    .argument("id", StringArgumentType.word())
+                                    .playerExecuted { player, ctx ->
+                                        removeHorde(player, StringArgumentType.getString(ctx, "id"))
+                                    },
+                            ),
                     ),
-                "Spawns a horde formation at your location. Use 'remove' to despawn the nearest horde.",
+                "Spawns a horde formation at your location. Use 'remove' to list and despawn active hordes.",
             ),
         )
 
@@ -290,22 +300,50 @@ internal object HordeModule : ModuleInterface {
     }
 
     /**
-     * Removes the nearest active horde to [player] by killing its warlord.
-     * Sends a feedback message to the player if no horde is found in the same world.
-     * @param player The [Player] issuing the remove command.
+     * Sends [player] a clickable list of all active hordes.
+     * Each entry shows the horde's world and block coordinates with a [Remove] button
+     * that runs `/horde remove <id>`.
+     * @param player The [Player] to send the list to.
      */
-    private fun removeNearestHorde(player: Player) {
-        val nearest =
-            activeWarlords.values
-                .filter { it.world == player.world && it.isValid && !it.isDead }
-                .minByOrNull { it.location.distanceSquared(player.location) }
-
-        if (nearest == null) {
-            player.sendMessage(MM.deserialize("${instance.prefix} <red>No active hordes in this world."))
+    private fun listHordes(player: Player) {
+        if (activeWarlords.isEmpty()) {
+            player.sendMessage(MM.deserialize("${instance.prefix} <red>No active hordes."))
             return
         }
 
-        nearest.health = 0.0
+        player.sendMessage(MM.deserialize("${instance.prefix} <yellow>Active hordes:"))
+        activeWarlords.entries.forEachIndexed { i, (uuid, warlord) ->
+            val loc = warlord.location
+            val removeBtn =
+                MM
+                    .deserialize(" <red>[Remove]")
+                    .clickEvent(ClickEvent.runCommand("/horde remove $uuid"))
+                    .hoverEvent(HoverEvent.showText(MM.deserialize("<gray>Click to remove this horde")))
+
+            player.sendMessage(
+                MM.deserialize("<gray>${i + 1}. ${loc.world.name} (${loc.blockX}, ${loc.blockZ})").append(removeBtn),
+            )
+        }
+    }
+
+    /**
+     * Removes the active horde identified by [id] (warlord UUID string).
+     * @param player The [Player] issuing the command.
+     * @param id The string UUID of the warlord to remove.
+     */
+    private fun removeHorde(
+        player: Player,
+        id: String,
+    ) {
+        val uuid = runCatching { Uuid.parse(id) }.getOrNull()
+        val warlord = uuid?.let { activeWarlords[it] }
+
+        if (warlord == null || warlord.isDead || !warlord.isValid) {
+            player.sendMessage(MM.deserialize("${instance.prefix} <red>Horde not found."))
+            return
+        }
+
+        warlord.health = 0.0
         player.sendMessage(MM.deserialize("${instance.prefix} <green>Horde removed."))
     }
 
