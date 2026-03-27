@@ -1,5 +1,6 @@
 package org.xodium.vanillaplus.mobs
 
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Horse
@@ -11,9 +12,6 @@ import kotlin.random.Random
 
 /** A netherite-clad skeleton mounted on a black horse. */
 internal object DarkKnight : MobInterface<Skeleton, Horse> {
-    override val mobClass = Skeleton::class.java
-    override val mountClass = Horse::class.java
-
     override fun mob(entity: Skeleton) {
         entity.apply {
             customName(MM.deserialize("<b><color:#7B2FBE>Dark Knight</color></b>"))
@@ -50,4 +48,9 @@ internal object DarkKnight : MobInterface<Skeleton, Horse> {
             inventory.armor = ItemStack.of(Material.NETHERITE_HORSE_ARMOR)
         }
     }
+
+    override fun spawn(location: Location): Skeleton =
+        location.world.spawn(location, Skeleton::class.java) { mob(it) }.also { rider ->
+            location.world.spawn(location, Horse::class.java) { mount(it) }.addPassenger(rider)
+        }
 }

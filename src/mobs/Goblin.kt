@@ -1,5 +1,6 @@
 package org.xodium.vanillaplus.mobs
 
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Entity
@@ -11,8 +12,6 @@ import kotlin.random.Random
 
 /** A small, fast zombie archer with iron armor and a randomized ranged weapon. */
 internal object Goblin : MobInterface<Zombie, Entity> {
-    override val mobClass = Zombie::class.java
-
     override fun mob(entity: Zombie) {
         entity.apply {
             customName(MM.deserialize("<b><color:#47B33B>Goblin</color></b>"))
@@ -35,4 +34,6 @@ internal object Goblin : MobInterface<Zombie, Entity> {
             }
         }
     }
+
+    override fun spawn(location: Location): Zombie = location.world.spawn(location, Zombie::class.java) { mob(it) }
 }

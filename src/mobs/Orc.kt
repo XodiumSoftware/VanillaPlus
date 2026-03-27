@@ -1,5 +1,6 @@
 package org.xodium.vanillaplus.mobs
 
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Entity
@@ -10,8 +11,6 @@ import org.xodium.vanillaplus.utils.Utils.MM
 
 /** A large, heavily armored zombie spearman with a shield. */
 internal object Orc : MobInterface<Zombie, Entity> {
-    override val mobClass = Zombie::class.java
-
     override fun mob(entity: Zombie) {
         entity.apply {
             customName(MM.deserialize("<b><color:#B87333>Orc</color></b>"))
@@ -36,4 +35,6 @@ internal object Orc : MobInterface<Zombie, Entity> {
             }
         }
     }
+
+    override fun spawn(location: Location): Zombie = location.world.spawn(location, Zombie::class.java) { mob(it) }
 }

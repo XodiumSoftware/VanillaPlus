@@ -1,6 +1,7 @@
 package org.xodium.vanillaplus.mobs
 
 import io.papermc.paper.datacomponent.DataComponentTypes
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
 import org.bukkit.enchantments.Enchantment
@@ -14,9 +15,6 @@ import org.xodium.vanillaplus.utils.Utils.MM
 /** A netherite warlord zombie mounted on a white horse — the formation commander. */
 @Suppress("UnstableApiUsage")
 internal object Warlord : MobInterface<Zombie, Horse> {
-    override val mobClass = Zombie::class.java
-    override val mountClass = Horse::class.java
-
     override fun mob(entity: Zombie) {
         entity.apply {
             customName(MM.deserialize("<b><color:#B22222>Warlord</color></b>"))
@@ -73,4 +71,9 @@ internal object Warlord : MobInterface<Zombie, Horse> {
             equipment.setDropChance(EquipmentSlot.BODY, 0f)
         }
     }
+
+    override fun spawn(location: Location): Zombie =
+        location.world.spawn(location, Zombie::class.java) { mob(it) }.also { rider ->
+            location.world.spawn(location, Horse::class.java) { mount(it) }.addPassenger(rider)
+        }
 }

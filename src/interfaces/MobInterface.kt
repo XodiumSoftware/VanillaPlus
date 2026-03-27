@@ -28,12 +28,6 @@ internal interface MobInterface<T : Mob, M : Entity> {
                 )
             }
 
-    /** The class of the entity this mob represents. */
-    val mobClass: Class<T>
-
-    /** The class of the mount entity, or null if this mob has no mount. */
-    val mountClass: Class<out M>? get() = null
-
     /**
      * Configures the given [entity] with this mob's stats, equipment, and appearance.
      * @param entity The entity to configure.
@@ -41,20 +35,15 @@ internal interface MobInterface<T : Mob, M : Entity> {
     fun mob(entity: T)
 
     /**
-     * Configures the mount [entity]. No-op by default; override when [mountClass] is set.
+     * Configures the mount [entity]. No-op by default; override when a mount is needed.
      * @param entity The mount entity to configure.
      */
     fun mount(entity: M) {}
 
     /**
-     * Spawns this mob at the given [location]. If [mountClass] is set, also spawns and
-     * configures the mount via [mount], then seats this mob on it.
+     * Spawns this mob at the given [location].
      * @param location The [Location] to spawn the mob at.
      * @return The spawned entity.
      */
-    @Suppress("UNCHECKED_CAST")
-    fun spawn(location: Location): T =
-        location.world.spawn(location, mobClass) { mob(it) }.also { rider ->
-            mountClass?.let { cls -> location.world.spawn(location, cls as Class<M>) { mount(it) }.addPassenger(rider) }
-        }
+    fun spawn(location: Location): T
 }
