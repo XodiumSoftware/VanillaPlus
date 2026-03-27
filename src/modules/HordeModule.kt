@@ -1,30 +1,19 @@
 package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.command.brigadier.Commands
-import io.papermc.paper.datacomponent.DataComponentTypes
-import io.papermc.paper.datacomponent.item.BannerPatternLayers
-import org.bukkit.DyeColor
 import org.bukkit.GameMode
 import org.bukkit.Location
-import org.bukkit.Material
 import org.bukkit.attribute.Attribute
-import org.bukkit.block.banner.Pattern
-import org.bukkit.block.banner.PatternType
 import org.bukkit.boss.BarColor
 import org.bukkit.boss.BarStyle
 import org.bukkit.boss.BossBar
-import org.bukkit.enchantments.Enchantment
-import org.bukkit.entity.Horse
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Mob
-import org.bukkit.entity.Skeleton
 import org.bukkit.entity.Zombie
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.player.PlayerJoinEvent
-import org.bukkit.inventory.EquipmentSlot
-import org.bukkit.inventory.ItemStack
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.bukkit.scheduler.BukkitTask
@@ -33,14 +22,17 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.FormationMemberData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.mobs.DarkKnight
+import org.xodium.vanillaplus.mobs.Goblin
+import org.xodium.vanillaplus.mobs.Orc
+import org.xodium.vanillaplus.mobs.Troll
+import org.xodium.vanillaplus.mobs.Warlord
 import org.xodium.vanillaplus.modules.HordeModule.DETECTION_RANGE
 import org.xodium.vanillaplus.modules.HordeModule.ROAM_RADIUS
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
-import org.xodium.vanillaplus.utils.Utils.MM
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
-import kotlin.random.Random
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 import kotlin.uuid.toKotlinUuid
@@ -101,20 +93,6 @@ internal object HordeModule : ModuleInterface {
         bossBars.values.forEach { it.addPlayer(event.player) }
     }
 
-    /** Applies a black base with a red skull pattern to this [ItemStack] shield. */
-    @Suppress("UnstableApiUsage")
-    private val shield =
-        ItemStack.of(Material.SHIELD).apply {
-            setData(DataComponentTypes.BASE_COLOR, DyeColor.BLACK)
-            setData(
-                DataComponentTypes.BANNER_PATTERNS,
-                BannerPatternLayers
-                    .bannerPatternLayers()
-                    .add(Pattern(DyeColor.RED, PatternType.SKULL))
-                    .build(),
-            )
-        }
-
     /**
      * Spawns a full horde formation centered at the given [location].
      * The formation follows a medieval rows layout: goblins up front, orcs behind them,
@@ -132,10 +110,10 @@ internal object HordeModule : ModuleInterface {
                 rawFormation += mob to Vector(raw.x, 0.0, raw.z)
             }
 
-        collectRow(spawnRow(location, 0.0, 4.0, 6) { loc -> loc.world.spawn(loc, Zombie::class.java) { it.goblin() } })
-        collectRow(spawnRow(location, 8.0, 5.0, 4) { loc -> loc.world.spawn(loc, Zombie::class.java) { it.orc() } })
-        collectRow(spawnRow(location, 18.0, 10.0, 2) { loc -> loc.world.spawn(loc, Zombie::class.java) { it.troll() } })
-        collectRow(spawnRow(location, 28.0, 8.0, 2) { spawnDarkKnight(it) })
+        collectRow(spawnRow(location, 0.0, 4.0, 6) { Goblin.spawn(it) })
+        collectRow(spawnRow(location, 8.0, 5.0, 4) { Orc.spawn(it) })
+        collectRow(spawnRow(location, 18.0, 10.0, 2) { Troll.spawn(it) })
+        collectRow(spawnRow(location, 28.0, 8.0, 2) { DarkKnight.spawn(it) })
 
         val total = rawFormation.size
         val formation =
@@ -146,31 +124,16 @@ internal object HordeModule : ModuleInterface {
     }
 
     /**
-     * Spawns a Dark Knight at the given location — a [Skeleton] riding a black [Horse].
-     * @param location The [Location] at which to spawn the Dark Knight.
-     * @return The spawned [Skeleton] entity.
-     */
-    private fun spawnDarkKnight(location: Location): Skeleton {
-        val horse = location.world.spawn(location, Horse::class.java) { it.darkKnightHorse() }
-        return location.world.spawn(location, Skeleton::class.java) { it.darkKnight() }.also { horse.addPassenger(it) }
-    }
-
-    /**
-     * Spawns a Warlord at the given location — a [Zombie] riding a white [Horse].
+     * Spawns a Warlord at the given [location] and registers its boss bar.
      * @param location The [Location] at which to spawn the Warlord.
      * @return The spawned [Zombie] entity.
      */
-    private fun spawnWarlord(location: Location): Zombie {
-        val horse = location.world.spawn(location, Horse::class.java) { it.warlordHorse() }
-        return location.world
-            .spawn(location, Zombie::class.java) { it.warlord() }
-            .also { horse.addPassenger(it) }
-            .also { warlord ->
-                val bossBar = instance.server.createBossBar("Warlord", BarColor.RED, BarStyle.SOLID)
-                instance.server.onlinePlayers.forEach { bossBar.addPlayer(it) }
-                bossBars[warlord.uniqueId.toKotlinUuid()] = bossBar
-            }
-    }
+    private fun spawnWarlord(location: Location): Zombie =
+        Warlord.spawn(location).also { warlord ->
+            val bossBar = instance.server.createBossBar("Warlord", BarColor.RED, BarStyle.SOLID)
+            instance.server.onlinePlayers.forEach { bossBar.addPlayer(it) }
+            bossBars[warlord.uniqueId.toKotlinUuid()] = bossBar
+        }
 
     /**
      * Spawns a centered row of entities along the X axis relative to [location] and returns them.
@@ -246,164 +209,5 @@ internal object HordeModule : ModuleInterface {
                 0L,
                 10L,
             )
-    }
-
-    /** Configures this [Skeleton] as a Dark Knight, applying its name, persistence, netherite loadout, and 50 health. */
-    private fun Skeleton.darkKnight() {
-        customName(MM.deserialize("<b><color:#7B2FBE>Dark Knight</color></b>"))
-        isCustomNameVisible = true
-        isPersistent = true
-        getAttribute(Attribute.MAX_HEALTH)?.baseValue = 50.0
-        health = 50.0
-        equipment.apply {
-            helmet = ItemStack.of(Material.NETHERITE_HELMET)
-            chestplate = ItemStack.of(Material.NETHERITE_CHESTPLATE)
-            leggings = ItemStack.of(Material.NETHERITE_LEGGINGS)
-            boots = ItemStack.of(Material.NETHERITE_BOOTS)
-            setItemInMainHand(
-                ItemStack.of(if (Random.nextBoolean()) Material.NETHERITE_SWORD else Material.NETHERITE_SPEAR),
-            )
-            setItemInOffHand(shield)
-            helmetDropChance = 0f
-            chestplateDropChance = 0f
-            leggingsDropChance = 0f
-            bootsDropChance = 0f
-            itemInMainHandDropChance = 0f
-            itemInOffHandDropChance = 0f
-        }
-    }
-
-    /** Configures this [Horse] as the Dark Knight's mount — black, tamed, persistent, and armored with netherite. */
-    private fun Horse.darkKnightHorse() {
-        color = Horse.Color.BLACK
-        isTamed = true
-        isPersistent = true
-        getAttribute(Attribute.MAX_HEALTH)?.baseValue = 25.0
-        health = 25.0
-        inventory.armor = ItemStack.of(Material.NETHERITE_HORSE_ARMOR)
-    }
-
-    /** Configures this [Zombie] as a Goblin, applying its name, persistence, full iron armor, and a random ranged weapon. */
-    private fun Zombie.goblin() {
-        customName(MM.deserialize("<b><color:#47B33B>Goblin</color></b>"))
-        isCustomNameVisible = true
-        isPersistent = true
-        getAttribute(Attribute.MAX_HEALTH)?.baseValue = 25.0
-        getAttribute(Attribute.SCALE)?.baseValue = 0.75
-        health = 25.0
-        equipment.apply {
-            helmet = ItemStack.of(Material.IRON_HELMET)
-            chestplate = ItemStack.of(Material.IRON_CHESTPLATE)
-            leggings = ItemStack.of(Material.IRON_LEGGINGS)
-            boots = ItemStack.of(Material.IRON_BOOTS)
-            setItemInMainHand(ItemStack.of(if (Random.nextBoolean()) Material.BOW else Material.CROSSBOW))
-            helmetDropChance = 0f
-            chestplateDropChance = 0f
-            leggingsDropChance = 0f
-            bootsDropChance = 0f
-            itemInMainHandDropChance = 0f
-        }
-    }
-
-    /** Configures this [Zombie] as an Orc, applying its name, persistence, and full iron loadout. */
-    private fun Zombie.orc() {
-        customName(MM.deserialize("<b><color:#B87333>Orc</color></b>"))
-        isCustomNameVisible = true
-        isPersistent = true
-        getAttribute(Attribute.MAX_HEALTH)?.baseValue = 40.0
-        getAttribute(Attribute.SCALE)?.baseValue = 1.5
-        health = 40.0
-        equipment.apply {
-            helmet = ItemStack.of(Material.IRON_HELMET)
-            chestplate = ItemStack.of(Material.IRON_CHESTPLATE)
-            leggings = ItemStack.of(Material.IRON_LEGGINGS)
-            boots = ItemStack.of(Material.IRON_BOOTS)
-            setItemInMainHand(ItemStack.of(Material.IRON_SPEAR))
-            setItemInOffHand(shield)
-            helmetDropChance = 0f
-            chestplateDropChance = 0f
-            leggingsDropChance = 0f
-            bootsDropChance = 0f
-            itemInMainHandDropChance = 0f
-            itemInOffHandDropChance = 0f
-        }
-    }
-
-    /** Configures this [Zombie] as a Troll, applying its name, persistence, full chainmail armor, and a mace. */
-    private fun Zombie.troll() {
-        customName(MM.deserialize("<b><color:#7A8B6F>Troll</color></b>"))
-        isCustomNameVisible = true
-        isPersistent = true
-        getAttribute(Attribute.MAX_HEALTH)?.baseValue = 100.0
-        getAttribute(Attribute.SCALE)?.baseValue = 3.0
-        health = 100.0
-        equipment.apply {
-            helmet = ItemStack.of(Material.CHAINMAIL_HELMET)
-            chestplate = ItemStack.of(Material.CHAINMAIL_CHESTPLATE)
-            leggings = ItemStack.of(Material.CHAINMAIL_LEGGINGS)
-            boots = ItemStack.of(Material.CHAINMAIL_BOOTS)
-            setItemInMainHand(ItemStack.of(Material.MACE))
-            helmetDropChance = 0f
-            chestplateDropChance = 0f
-            leggingsDropChance = 0f
-            bootsDropChance = 0f
-            itemInMainHandDropChance = 0f
-        }
-    }
-
-    /** Configures this [Zombie] as a Warlord, applying its name, persistence, netherite loadout with a carved pumpkin helmet, mace, and shield. */
-    @Suppress("UnstableApiUsage")
-    private fun Zombie.warlord() {
-        customName(MM.deserialize("<b><color:#B22222>Warlord</color></b>"))
-        isCustomNameVisible = true
-        isPersistent = true
-        getAttribute(Attribute.MAX_HEALTH)?.baseValue = 300.0
-        getAttribute(Attribute.SCALE)?.baseValue = 1.25
-        health = 150.0
-        equipment.apply {
-            helmet =
-                ItemStack.of(Material.CARVED_PUMPKIN).apply {
-                    setData(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true)
-                }
-            chestplate =
-                ItemStack.of(Material.NETHERITE_CHESTPLATE).apply {
-                    addEnchantment(Enchantment.PROTECTION, 3)
-                    addEnchantment(Enchantment.THORNS, 2)
-                }
-            leggings =
-                ItemStack.of(Material.NETHERITE_LEGGINGS).apply {
-                    addEnchantment(Enchantment.PROTECTION, 3)
-                }
-            boots =
-                ItemStack.of(Material.NETHERITE_BOOTS).apply {
-                    addEnchantment(Enchantment.PROTECTION, 3)
-                    addEnchantment(Enchantment.FEATHER_FALLING, 2)
-                }
-            setItemInMainHand(
-                ItemStack.of(Material.MACE).apply {
-                    addEnchantment(Enchantment.DENSITY, 4)
-                    addEnchantment(Enchantment.FIRE_ASPECT, 2)
-                },
-            )
-            setItemInOffHand(shield)
-            helmetDropChance = 0f
-            chestplateDropChance = 0f
-            leggingsDropChance = 0f
-            bootsDropChance = 0f
-            itemInMainHandDropChance = 0f
-            itemInOffHandDropChance = 0f
-        }
-    }
-
-    /** Configures this [Horse] as the Warlord's mount — white, tamed, persistent, and armored with netherite. */
-    private fun Horse.warlordHorse() {
-        color = Horse.Color.WHITE
-        isTamed = true
-        isPersistent = true
-        getAttribute(Attribute.MAX_HEALTH)?.baseValue = 150.0
-        getAttribute(Attribute.SCALE)?.baseValue = 1.25
-        health = 150.0
-        inventory.armor = ItemStack.of(Material.NETHERITE_HORSE_ARMOR)
-        equipment.setDropChance(EquipmentSlot.BODY, 0f)
     }
 }
