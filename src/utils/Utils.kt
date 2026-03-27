@@ -3,11 +3,13 @@
 package org.xodium.vanillaplus.utils
 
 import io.papermc.paper.registry.TypedKey
+import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.World
 import org.bukkit.enchantments.Enchantment
 import org.xodium.vanillaplus.VanillaPlus
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import java.util.*
 
 /** General utilities. */
@@ -61,4 +63,9 @@ internal object Utils {
             else -> clear
         }
 
+    /** Shows this [BossBar] to all currently online players. */
+    fun BossBar.broadcast() = instance.server.onlinePlayers.forEach { it.showBossBar(this) }
+
+    /** Hides this [BossBar] from all currently online players. */
+    fun BossBar.dismiss() = instance.server.onlinePlayers.forEach { it.hideBossBar(this) }
 }

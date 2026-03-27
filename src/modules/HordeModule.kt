@@ -26,6 +26,8 @@ import org.xodium.vanillaplus.mobs.Orc
 import org.xodium.vanillaplus.mobs.Troll
 import org.xodium.vanillaplus.mobs.Warlord
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
+import org.xodium.vanillaplus.utils.Utils.broadcast
+import org.xodium.vanillaplus.utils.Utils.dismiss
 import kotlin.math.PI
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -56,10 +58,6 @@ internal object HordeModule : ModuleInterface {
 
     private val bossBars = mutableMapOf<Uuid, BossBar>()
     private val formationTasks = mutableMapOf<Uuid, BukkitTask>()
-
-    private fun BossBar.broadcast() = instance.server.onlinePlayers.forEach { it.showBossBar(this) }
-
-    private fun BossBar.dismiss() = instance.server.onlinePlayers.forEach { it.hideBossBar(this) }
 
     @EventHandler
     fun on(event: EntityDamageEvent) {
