@@ -89,27 +89,32 @@ internal object HordeModule : ModuleInterface {
 
     /**
      * Spawns a full horde formation centered at the given [location].
-     * The formation follows a medieval rows layout: goblins up front, orcs behind them,
-     * trolls further back, dark knights flanking, and the warlord commanding from the rear.
+     *
+     * Layout (front → rear along +Z):
+     * ```
+     *  G G G G G G    Goblin      ×6   z=+0   spacing=4
+     *   O  O  O  O    Orc         ×4   z=+8   spacing=5
+     *      T    T     Troll       ×2   z=+18  spacing=10
+     *       D  D      DarkKnight  ×2   z=+28  spacing=8
+     *         W       Warlord     ×1   z=+36
+     * ```
+     *
      * @param location The [Location] used as the front-center of the formation.
      */
     private fun spawnFormation(location: Location) {
         val warlordLoc = location.clone().add(0.0, 0.0, 36.0)
         val warlord = spawnWarlord(warlordLoc)
-        val rawFormation = mutableListOf<Pair<Mob, Vector>>()
+        val rawFormation =
+            listOf(
+                spawnRow(location, 0.0, 4.0, 6) { Goblin.spawn(it) },
+                spawnRow(location, 8.0, 5.0, 4) { Orc.spawn(it) },
+                spawnRow(location, 18.0, 10.0, 2) { Troll.spawn(it) },
+                spawnRow(location, 28.0, 8.0, 2) { DarkKnight.spawn(it) },
+            ).flatten().map {
+                val raw = it.location.toVector().subtract(warlordLoc.toVector())
 
-        fun collectRow(entities: List<Mob>) =
-            entities.forEach { mob ->
-                val raw = mob.location.toVector().subtract(warlordLoc.toVector())
-
-                rawFormation += mob to Vector(raw.x, 0.0, raw.z)
+                it to Vector(raw.x, 0.0, raw.z)
             }
-
-        collectRow(spawnRow(location, 0.0, 4.0, 6) { Goblin.spawn(it) })
-        collectRow(spawnRow(location, 8.0, 5.0, 4) { Orc.spawn(it) })
-        collectRow(spawnRow(location, 18.0, 10.0, 2) { Troll.spawn(it) })
-        collectRow(spawnRow(location, 28.0, 8.0, 2) { DarkKnight.spawn(it) })
-
         val total = rawFormation.size
         val formation =
             rawFormation.mapIndexed { i, (mob, offset) -> FormationMemberData(mob, offset, 2 * PI * i / total) }
