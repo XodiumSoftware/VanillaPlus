@@ -154,4 +154,18 @@ internal object PlayerUtils {
         ItemStack.of(Material.PLAYER_HEAD).apply {
             setData(DataComponentTypes.PROFILE, ResolvableProfile.resolvableProfile(playerProfile))
         }
+
+    /**
+     * Returns a player-head [ItemStack] for the given [uuid], resolving the skin profile lazily.
+     * Works for both online and offline players.
+     * @param uuid The [java.util.UUID] of the player.
+     */
+    @Suppress("UnstableApiUsage")
+    fun headOf(uuid: java.util.UUID): ItemStack =
+        ItemStack.of(Material.PLAYER_HEAD).apply {
+            setData(
+                DataComponentTypes.PROFILE,
+                ResolvableProfile.resolvableProfile(instance.server.createProfile(uuid)),
+            )
+        }
 }

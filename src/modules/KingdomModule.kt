@@ -7,6 +7,7 @@ import io.papermc.paper.dialog.Dialog
 import io.papermc.paper.registry.data.dialog.ActionButton
 import io.papermc.paper.registry.data.dialog.DialogBase
 import io.papermc.paper.registry.data.dialog.action.DialogAction
+import io.papermc.paper.registry.data.dialog.body.DialogBody
 import io.papermc.paper.registry.data.dialog.input.DialogInput
 import io.papermc.paper.registry.data.dialog.type.DialogType
 import net.kyori.adventure.text.event.ClickCallback
@@ -17,8 +18,10 @@ import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.KingdomData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
+import org.xodium.vanillaplus.utils.PlayerUtils.headOf
 import org.xodium.vanillaplus.utils.Utils.MM
 import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.toJavaUuid
 import kotlin.uuid.toKotlinUuid
 
 /** Represents a module handling kingdom mechanics within the system. */
@@ -58,6 +61,7 @@ internal object KingdomModule : ModuleInterface {
                 .base(
                     DialogBase
                         .builder(MM.deserialize(name))
+                        .body(members.map { DialogBody.item(headOf(it.toJavaUuid())).build() })
                         .inputs(
                             listOf(
                                 DialogInput
