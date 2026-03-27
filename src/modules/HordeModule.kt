@@ -2,7 +2,6 @@ package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.command.brigadier.Commands
 import net.kyori.adventure.bossbar.BossBar
-import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.LivingEntity
@@ -20,6 +19,7 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.FormationMemberData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.managers.FormationManager
 import org.xodium.vanillaplus.mobs.DarkKnight
 import org.xodium.vanillaplus.mobs.Goblin
 import org.xodium.vanillaplus.mobs.Orc
@@ -27,8 +27,6 @@ import org.xodium.vanillaplus.mobs.Troll
 import org.xodium.vanillaplus.mobs.Warlord
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import kotlin.math.PI
-import kotlin.math.cos
-import kotlin.math.sin
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 import kotlin.uuid.toKotlinUuid
@@ -147,11 +145,9 @@ internal object HordeModule : ModuleInterface {
     }
 
     /**
-     * Starts a repeating task that drives two formation states:
-     * - **Active** (a survival/adventure player is within [Config.detectionRange]): the [warlord] marches toward
-     *   the nearest such player and all [formation] members hold their row offsets relative to the warlord.
-     * - **Idle** (no player in range): the [warlord] stops moving and each [formation] member is free to
-     *   roam within [Config.roamRadius] of its assigned circle slot; if it strays further it pathfinds back.
+     * Starts a repeating task that delegates formation state each tick to [FormationManager].
+     * @param warlord The commanding [Zombie] leading the formation.
+     * @param formation The list of [FormationMemberData] belonging to this formation.
      */
     private fun startFormationTask(
         warlord: Zombie,
@@ -162,41 +158,7 @@ internal object HordeModule : ModuleInterface {
                 instance,
                 Runnable {
                     if (warlord.isDead || !warlord.isValid) return@Runnable
-                    val target =
-                        warlord.world.players
-                            .filter { !it.isDead && it.gameMode in setOf(GameMode.SURVIVAL, GameMode.ADVENTURE) }
-                            .filter {
-                                it.location.distanceSquared(
-                                    warlord.location,
-                                ) <= Config.detectionRange * Config.detectionRange
-                            }.minByOrNull { it.location.distanceSquared(warlord.location) }
-
-                    if (target != null) {
-                        warlord.pathfinder.moveTo(target, 1.0)
-                        formation.forEach { (mob, marchOffset, _) ->
-                            if (!mob.isDead && mob.isValid) {
-                                mob.pathfinder.moveTo(
-                                    warlord.location.clone().add(marchOffset),
-                                    1.0,
-                                )
-                            }
-                        }
-                    } else {
-                        warlord.pathfinder.stopPathfinding()
-                        formation.forEach { (mob, _, idleAngle) ->
-                            if (!mob.isDead && mob.isValid) {
-                                val idleHome =
-                                    warlord.location.clone().add(
-                                        cos(idleAngle) * Config.idleCircleRadius,
-                                        0.0,
-                                        sin(idleAngle) * Config.idleCircleRadius,
-                                    )
-                                if (mob.location.distanceSquared(idleHome) > Config.roamRadius * Config.roamRadius) {
-                                    mob.pathfinder.moveTo(idleHome, 1.0)
-                                }
-                            }
-                        }
-                    }
+                    FormationManager.tick(warlord, formation)
                 },
                 0L,
                 10L,
