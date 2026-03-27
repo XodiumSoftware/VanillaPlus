@@ -3,6 +3,7 @@
 package org.xodium.vanillaplus
 
 import org.bukkit.plugin.java.JavaPlugin
+import org.xodium.vanillaplus.data.KingdomData
 import org.xodium.vanillaplus.managers.DatabaseManager
 import org.xodium.vanillaplus.modules.BooksModule
 import org.xodium.vanillaplus.modules.ChatModule
@@ -44,6 +45,7 @@ internal class VanillaPlus : JavaPlugin() {
         if (!server.version.contains(pluginMeta.version.substringBefore("+"))) disablePlugin(unsupportedVersionMsg)
 
         DatabaseManager.init()
+        DatabaseManager.connection.createStatement().use { it.execute(KingdomData.KINGDOMS) }
 
         val recipes =
             listOf(

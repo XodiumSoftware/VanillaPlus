@@ -16,7 +16,6 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.KingdomData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.managers.DatabaseManager
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import org.xodium.vanillaplus.utils.Utils.MM
 import kotlin.uuid.ExperimentalUuidApi
@@ -33,8 +32,8 @@ internal object KingdomModule : ModuleInterface {
                     .requires { it.sender.hasPermission(perms[0]) }
                     .playerExecuted { player, _ ->
                         player.uniqueId.toKotlinUuid().let { uuid ->
-                            DatabaseManager.getKingdom(uuid)?.let { player.showDialog(it.dialog()) }
-                                ?: DatabaseManager.setKingdom(KingdomData(uuid, "${player.name}'s Kingdom"))
+                            KingdomData.get(uuid)?.let { player.showDialog(it.dialog()) }
+                                ?: KingdomData(uuid, "${player.name}'s Kingdom", listOf(uuid)).save()
                         }
                     },
                 "Claim your kingdom",
@@ -70,24 +69,22 @@ internal object KingdomModule : ModuleInterface {
                 ).type(
                     DialogType.confirmation(
                         ActionButton
-                            .builder(MM.deserialize("Rename"))
+                            .builder(MM.deserialize("<green>Save</green>"))
                             .action(
                                 DialogAction.customClick(
                                     { response, _ ->
-                                        DatabaseManager.setKingdom(
-                                            copy(
-                                                name =
-                                                    response
-                                                        .getText("name")
-                                                        ?.takeIf { it.isNotBlank() }
-                                                        ?: return@customClick,
-                                            ),
-                                        )
+                                        copy(
+                                            name =
+                                                response
+                                                    .getText("name")
+                                                    ?.takeIf { it.isNotBlank() }
+                                                    ?: return@customClick,
+                                        ).save()
                                     },
                                     ClickCallback.Options.builder().build(),
                                 ),
                             ).build(),
-                        ActionButton.builder(MM.deserialize("Cancel")).build(),
+                        ActionButton.builder(MM.deserialize("<red>Cancel</red>")).build(),
                     ),
                 )
         }
