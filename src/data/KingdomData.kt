@@ -16,9 +16,18 @@ internal data class KingdomData(
     /** The [Uuid]s of all players in this kingdom, including the owner. */
     val members: List<Uuid> = emptyList(),
 ) {
+    /** Deletes this kingdom record from the database. */
+    fun delete() {
+        val sql = "DELETE FROM kingdoms WHERE owner = ?"
+
+        DatabaseManager.connection.prepareStatement(sql).use { stmt ->
+            stmt.setString(1, owner.toString())
+            stmt.executeUpdate()
+        }
+    }
+
     /** Inserts or replaces this kingdom record in the database. */
     fun save() {
-        @Language("SQL")
         val sql = "INSERT OR REPLACE INTO kingdoms (owner, name, members) VALUES (?, ?, ?)"
 
         DatabaseManager.connection.prepareStatement(sql).use { stmt ->
@@ -45,7 +54,6 @@ internal data class KingdomData(
          * @param owner The [Uuid] of the kingdom owner.
          */
         fun get(owner: Uuid): KingdomData? {
-            @Language("SQL")
             val sql = "SELECT name, members FROM kingdoms WHERE owner = ?"
 
             return DatabaseManager.connection.prepareStatement(sql).use { stmt ->

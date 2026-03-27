@@ -13,6 +13,7 @@ import io.papermc.paper.registry.data.dialog.body.DialogBody
 import io.papermc.paper.registry.data.dialog.input.DialogInput
 import io.papermc.paper.registry.data.dialog.type.DialogType
 import net.kyori.adventure.text.event.ClickCallback
+import org.bukkit.entity.Player
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -23,6 +24,7 @@ import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import org.xodium.vanillaplus.utils.PlayerUtils.headOf
 import org.xodium.vanillaplus.utils.Utils.MM
 import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 import kotlin.uuid.toJavaUuid
 import kotlin.uuid.toKotlinUuid
 
@@ -88,25 +90,96 @@ internal object KingdomModule : ModuleInterface {
                             },
                         ).build(),
                 ).type(
-                    DialogType.confirmation(
-                        ActionButton
-                            .builder(MM.deserialize("<green>Save</green>"))
-                            .action(
-                                DialogAction.customClick(
-                                    { response, _ ->
-                                        copy(
-                                            name =
-                                                response
-                                                    .getText("name")
-                                                    ?.takeIf { it.isNotBlank() }
-                                                    ?: return@customClick,
-                                        ).save()
-                                    },
-                                    ClickCallback.Options.builder().build(),
+                    DialogType
+                        .multiAction(
+                            buildList {
+                                add(
+                                    ActionButton
+                                        .builder(MM.deserialize("<green>Save</green>"))
+                                        .action(
+                                            DialogAction.customClick(
+                                                { response, _ ->
+                                                    copy(
+                                                        name =
+                                                            response
+                                                                .getText("name")
+                                                                ?.takeIf { it.isNotBlank() }
+                                                                ?: return@customClick,
+                                                    ).save()
+                                                },
+                                                ClickCallback.Options.builder().build(),
+                                            ),
+                                        ).build(),
+                                )
+                                members.forEach { uuid ->
+                                    val memberName =
+                                        instance.server.getOfflinePlayer(uuid.toJavaUuid()).name ?: uuid.toString()
+                                    add(
+                                        ActionButton
+                                            .builder(MM.deserialize("Manage $memberName"))
+                                            .action(
+                                                DialogAction.customClick(
+                                                    { _, audience ->
+                                                        (audience as? Player)?.showDialog(memberDialog(uuid))
+                                                    },
+                                                    ClickCallback.Options.builder().build(),
+                                                ),
+                                            ).build(),
+                                    )
+                                }
+                            },
+                        ).exitAction(ActionButton.builder(MM.deserialize("<red>Cancel</red>")).build())
+                        .build(),
+                )
+        }
+
+    /** Returns a member-management [Dialog] for the given [memberUuid] within this [KingdomData]. */
+    private fun KingdomData.memberDialog(memberUuid: Uuid): Dialog =
+        Dialog.create { builder ->
+            val memberName = instance.server.getOfflinePlayer(memberUuid.toJavaUuid()).name ?: memberUuid.toString()
+            builder
+                .empty()
+                .base(DialogBase.builder(MM.deserialize("Manage $memberName")).build())
+                .type(
+                    if (memberUuid == owner) {
+                        DialogType.confirmation(
+                            ActionButton
+                                .builder(MM.deserialize("<red>Delete Kingdom</red>"))
+                                .action(
+                                    DialogAction.customClick(
+                                        { _, _ -> delete() },
+                                        ClickCallback.Options.builder().build(),
+                                    ),
+                                ).build(),
+                            ActionButton.builder(MM.deserialize("<gray>Cancel</gray>")).build(),
+                        )
+                    } else {
+                        DialogType
+                            .multiAction(
+                                listOf(
+                                    ActionButton
+                                        .builder(MM.deserialize("Transfer Ownership"))
+                                        .action(
+                                            DialogAction.customClick(
+                                                { _, _ ->
+                                                    delete()
+                                                    copy(owner = memberUuid).save()
+                                                },
+                                                ClickCallback.Options.builder().build(),
+                                            ),
+                                        ).build(),
+                                    ActionButton
+                                        .builder(MM.deserialize("<red>Kick</red>"))
+                                        .action(
+                                            DialogAction.customClick(
+                                                { _, _ -> copy(members = members - memberUuid).save() },
+                                                ClickCallback.Options.builder().build(),
+                                            ),
+                                        ).build(),
                                 ),
-                            ).build(),
-                        ActionButton.builder(MM.deserialize("<red>Cancel</red>")).build(),
-                    ),
+                            ).exitAction(ActionButton.builder(MM.deserialize("<gray>Cancel</gray>")).build())
+                            .build()
+                    },
                 )
         }
 }
