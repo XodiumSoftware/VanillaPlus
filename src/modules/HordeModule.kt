@@ -276,7 +276,10 @@ internal object HordeModule : ModuleInterface {
         val angle = Random.nextDouble(0.0, 2 * PI)
         val dist = Random.nextDouble(Config.hordeSpawnRadius * 0.5, Config.hordeSpawnRadius)
 
-        return anchor.location.clone().add(cos(angle) * dist, 0.0, sin(angle) * dist)
+        val loc = anchor.location.clone().add(cos(angle) * dist, 0.0, sin(angle) * dist)
+
+        loc.y = (loc.world.getHighestBlockYAt(loc.blockX, loc.blockZ) + 1).toDouble()
+        return loc
     }
 
     /**

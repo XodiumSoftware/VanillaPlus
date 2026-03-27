@@ -27,7 +27,7 @@ internal object Warlord : MobInterface<Zombie, Horse> {
             isPersistent = true
             getAttribute(Attribute.MAX_HEALTH)?.baseValue = 300.0
             getAttribute(Attribute.SCALE)?.baseValue = 1.25
-            health = 150.0
+            health = 300.0
             equipment.apply {
                 helmet =
                     ItemStack.of(Material.CARVED_PUMPKIN).apply {
