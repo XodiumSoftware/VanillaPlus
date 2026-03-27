@@ -3,6 +3,7 @@
 package org.xodium.vanillaplus
 
 import org.bukkit.plugin.java.JavaPlugin
+import org.xodium.vanillaplus.managers.DatabaseManager
 import org.xodium.vanillaplus.modules.BooksModule
 import org.xodium.vanillaplus.modules.ChatModule
 import org.xodium.vanillaplus.modules.ChiseledBookshelfModule
@@ -41,6 +42,8 @@ internal class VanillaPlus : JavaPlugin() {
             "This plugin requires a supported server version. Supported versions: ${pluginMeta.version}."
 
         if (!server.version.contains(pluginMeta.version.substringBefore("+"))) disablePlugin(unsupportedVersionMsg)
+
+        DatabaseManager.init()
 
         val recipes =
             listOf(
@@ -81,6 +84,7 @@ internal class VanillaPlus : JavaPlugin() {
     }
 
     override fun onDisable() {
+        DatabaseManager.close()
         server.messenger.unregisterOutgoingPluginChannel(instance)
     }
 

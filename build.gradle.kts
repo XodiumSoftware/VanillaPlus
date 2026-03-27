@@ -35,6 +35,7 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:$mcVersion-R0.1-SNAPSHOT")
 
     implementation(kotlin("stdlib"))
+    implementation("org.xerial:sqlite-jdbc:3.47.2.0")
 }
 
 java {
