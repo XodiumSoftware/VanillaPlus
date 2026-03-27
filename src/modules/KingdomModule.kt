@@ -35,8 +35,10 @@ internal object KingdomModule : ModuleInterface {
                     .requires { it.sender.hasPermission(perms[0]) }
                     .playerExecuted { player, _ ->
                         player.uniqueId.toKotlinUuid().let { uuid ->
-                            KingdomData.get(uuid)?.let { player.showDialog(it.dialog()) }
-                                ?: KingdomData(uuid, "${player.name}'s Kingdom", listOf(uuid)).save()
+                            (
+                                KingdomData.get(uuid)
+                                    ?: KingdomData(uuid, "${player.name}'s Kingdom", listOf(uuid)).also { it.save() }
+                            ).let { player.showDialog(it.dialog()) }
                         }
                     },
                 "Claim your kingdom",
@@ -61,7 +63,6 @@ internal object KingdomModule : ModuleInterface {
                 .base(
                     DialogBase
                         .builder(MM.deserialize(name))
-                        .body(members.map { DialogBody.item(headOf(it.toJavaUuid())).build() })
                         .inputs(
                             listOf(
                                 DialogInput
@@ -69,7 +70,8 @@ internal object KingdomModule : ModuleInterface {
                                     .maxLength(32)
                                     .build(),
                             ),
-                        ).build(),
+                        ).body(members.map { DialogBody.item(headOf(it.toJavaUuid())).build() })
+                        .build(),
                 ).type(
                     DialogType.confirmation(
                         ActionButton
