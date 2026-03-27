@@ -301,7 +301,7 @@ internal object HordeModule : ModuleInterface {
 
     /**
      * Sends [player] a clickable list of all active hordes.
-     * Each entry shows the horde's world and block coordinates with a [Remove] button
+     * Each entry shows the horde's world and block coordinates with a `Remove` button
      * that runs `/horde remove <id>`.
      * @param player The [Player] to send the list to.
      */
