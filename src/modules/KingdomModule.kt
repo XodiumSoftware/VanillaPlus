@@ -1,6 +1,11 @@
+@file:Suppress("UnstableApiUsage")
+
 package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.command.brigadier.Commands
+import io.papermc.paper.dialog.Dialog
+import io.papermc.paper.registry.data.dialog.DialogBase
+import io.papermc.paper.registry.data.dialog.type.DialogType
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -9,6 +14,7 @@ import org.xodium.vanillaplus.data.KingdomData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.DatabaseManager
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
+import org.xodium.vanillaplus.utils.Utils.MM
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.toKotlinUuid
 
@@ -22,10 +28,10 @@ internal object KingdomModule : ModuleInterface {
                     .literal("kingdom")
                     .requires { it.sender.hasPermission(perms[0]) }
                     .playerExecuted { player, _ ->
-                        player.uniqueId
-                            .toKotlinUuid()
-                            .takeIf { DatabaseManager.getKingdom(it) == null }
-                            ?.let { DatabaseManager.setKingdom(KingdomData(it, "${player.name}'s Kingdom")) }
+                        player.uniqueId.toKotlinUuid().let { uuid ->
+                            DatabaseManager.getKingdom(uuid)?.let { player.showDialog(it.dialog()) }
+                                ?: DatabaseManager.setKingdom(KingdomData(uuid, "${player.name}'s Kingdom"))
+                        }
                     },
                 "Claim your kingdom",
                 listOf("k"),
@@ -41,6 +47,12 @@ internal object KingdomModule : ModuleInterface {
             ),
         )
 
-    /** Represents the config of the module. */
-    object Config
+    /** Returns a [Dialog] representing this [KingdomData], with the kingdom name as the title. */
+    private fun KingdomData.dialog(): Dialog =
+        Dialog.create {
+            it
+                .empty()
+                .base(DialogBase.builder(MM.deserialize(name)).build())
+                .type(DialogType.notice())
+        }
 }
