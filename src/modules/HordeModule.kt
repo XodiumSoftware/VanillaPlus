@@ -57,14 +57,20 @@ internal object HordeModule : ModuleInterface {
     private val bossBars = mutableMapOf<Uuid, BossBar>()
     private val formationTasks = mutableMapOf<Uuid, BukkitTask>()
 
+    private fun BossBar.broadcast() = instance.server.onlinePlayers.forEach { it.showBossBar(this) }
+
+    private fun BossBar.dismiss() = instance.server.onlinePlayers.forEach { it.hideBossBar(this) }
+
     @EventHandler
     fun on(event: EntityDamageEvent) {
         val bossBar = bossBars[event.entity.uniqueId.toKotlinUuid()] ?: return
         val entity = event.entity as? LivingEntity ?: return
+
         instance.server.scheduler.runTaskLater(
             instance,
             Runnable {
                 val max = entity.getAttribute(Attribute.MAX_HEALTH)?.value ?: return@Runnable
+
                 bossBar.progress((entity.health / max).coerceIn(0.0, 1.0).toFloat())
             },
             1L,
@@ -74,7 +80,7 @@ internal object HordeModule : ModuleInterface {
     @EventHandler
     fun on(event: EntityDeathEvent) {
         val uuid = event.entity.uniqueId.toKotlinUuid()
-        bossBars.remove(uuid)?.let { bar -> instance.server.onlinePlayers.forEach { it.hideBossBar(bar) } }
+        bossBars.remove(uuid)?.dismiss()
         formationTasks.remove(uuid)?.cancel()
     }
 
@@ -97,6 +103,7 @@ internal object HordeModule : ModuleInterface {
         fun collectRow(entities: List<Mob>) =
             entities.forEach { mob ->
                 val raw = mob.location.toVector().subtract(warlordLoc.toVector())
+
                 rawFormation += mob to Vector(raw.x, 0.0, raw.z)
             }
 
@@ -107,9 +114,8 @@ internal object HordeModule : ModuleInterface {
 
         val total = rawFormation.size
         val formation =
-            rawFormation.mapIndexed { i, (mob, offset) ->
-                FormationMemberData(mob, offset, 2 * PI * i / total)
-            }
+            rawFormation.mapIndexed { i, (mob, offset) -> FormationMemberData(mob, offset, 2 * PI * i / total) }
+
         startFormationTask(warlord, formation)
     }
 
@@ -120,9 +126,7 @@ internal object HordeModule : ModuleInterface {
      */
     private fun spawnWarlord(location: Location): Zombie =
         Warlord.spawn(location).also { warlord ->
-            val bossBar = Warlord.bossBar
-            instance.server.onlinePlayers.forEach { it.showBossBar(bossBar) }
-            bossBars[warlord.uniqueId.toKotlinUuid()] = bossBar
+            bossBars[warlord.uniqueId.toKotlinUuid()] = Warlord.bossBar.also { it.broadcast() }
         }
 
     /**
@@ -141,6 +145,7 @@ internal object HordeModule : ModuleInterface {
         spawner: (Location) -> Mob,
     ): List<Mob> {
         val halfWidth = (count - 1) * spacing / 2.0
+
         return (0 until count).map { i -> spawner(location.clone().add(-halfWidth + i * spacing, 0.0, rowZ)) }
     }
 
