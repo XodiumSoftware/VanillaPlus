@@ -1,6 +1,7 @@
 package org.xodium.vanillaplus.mobs
 
 import io.papermc.paper.datacomponent.DataComponentTypes
+import net.kyori.adventure.bossbar.BossBar
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
@@ -15,9 +16,13 @@ import org.xodium.vanillaplus.utils.Utils.MM
 /** A netherite warlord zombie mounted on a white horse — the formation commander. */
 @Suppress("UnstableApiUsage")
 internal object Warlord : MobInterface<Zombie, Horse> {
+    private val fmtName = MM.deserialize("<b><color:#B22222>Warlord</color></b>")
+
+    override val bossBar get() = BossBar.bossBar(fmtName, 1.0f, BossBar.Color.RED, BossBar.Overlay.PROGRESS)
+
     override fun mob(entity: Zombie) {
         entity.apply {
-            customName(MM.deserialize("<b><color:#B22222>Warlord</color></b>"))
+            customName(fmtName)
             isCustomNameVisible = true
             isPersistent = true
             getAttribute(Attribute.MAX_HEALTH)?.baseValue = 300.0

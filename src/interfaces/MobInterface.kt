@@ -2,6 +2,7 @@ package org.xodium.vanillaplus.interfaces
 
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.BannerPatternLayers
+import net.kyori.adventure.bossbar.BossBar
 import org.bukkit.DyeColor
 import org.bukkit.Location
 import org.bukkit.Material
@@ -27,6 +28,12 @@ internal interface MobInterface<T : Mob, M : Entity> {
                         .build(),
                 )
             }
+
+    /**
+     * The optional [BossBar] for this mob. Returns null by default;
+     * override to provide a boss bar when the mob is spawned.
+     */
+    val bossBar: BossBar? get() = null
 
     /**
      * Configures the given [entity] with this mob's stats, equipment, and appearance.

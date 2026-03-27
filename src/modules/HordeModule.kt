@@ -1,12 +1,10 @@
 package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.command.brigadier.Commands
+import net.kyori.adventure.bossbar.BossBar
 import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.attribute.Attribute
-import org.bukkit.boss.BarColor
-import org.bukkit.boss.BarStyle
-import org.bukkit.boss.BossBar
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Mob
 import org.bukkit.entity.Zombie
@@ -69,7 +67,7 @@ internal object HordeModule : ModuleInterface {
             instance,
             Runnable {
                 val max = entity.getAttribute(Attribute.MAX_HEALTH)?.value ?: return@Runnable
-                bossBar.progress = (entity.health / max).coerceIn(0.0, 1.0)
+                bossBar.progress((entity.health / max).coerceIn(0.0, 1.0).toFloat())
             },
             1L,
         )
@@ -78,13 +76,13 @@ internal object HordeModule : ModuleInterface {
     @EventHandler
     fun on(event: EntityDeathEvent) {
         val uuid = event.entity.uniqueId.toKotlinUuid()
-        bossBars.remove(uuid)?.removeAll()
+        bossBars.remove(uuid)?.let { bar -> instance.server.onlinePlayers.forEach { it.hideBossBar(bar) } }
         formationTasks.remove(uuid)?.cancel()
     }
 
     @EventHandler
     fun on(event: PlayerJoinEvent) {
-        bossBars.values.forEach { it.addPlayer(event.player) }
+        bossBars.values.forEach { event.player.showBossBar(it) }
     }
 
     /**
@@ -124,8 +122,8 @@ internal object HordeModule : ModuleInterface {
      */
     private fun spawnWarlord(location: Location): Zombie =
         Warlord.spawn(location).also { warlord ->
-            val bossBar = instance.server.createBossBar("Warlord", BarColor.RED, BarStyle.SOLID)
-            instance.server.onlinePlayers.forEach { bossBar.addPlayer(it) }
+            val bossBar = Warlord.bossBar
+            instance.server.onlinePlayers.forEach { it.showBossBar(bossBar) }
             bossBars[warlord.uniqueId.toKotlinUuid()] = bossBar
         }
 
