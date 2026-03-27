@@ -67,7 +67,9 @@ internal object FormationManager {
                 val idleHome =
                     warlord.location.clone().add(cos(idleAngle) * circleRadius, 0.0, sin(idleAngle) * circleRadius)
 
-                if (mob.location.distanceSquared(idleHome) > roamRadiusSq) mob.pathfinder.moveTo(idleHome, 1.0)
+                if (mob.location.distanceSquared(idleHome) > roamRadiusSq && !mob.pathfinder.hasPath()) {
+                    mob.pathfinder.moveTo(idleHome, 1.0)
+                }
             }
         }
     }
