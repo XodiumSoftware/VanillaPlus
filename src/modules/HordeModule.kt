@@ -2,12 +2,15 @@ package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.command.brigadier.Commands
 import net.kyori.adventure.bossbar.BossBar
+import net.kyori.adventure.title.Title
+import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Mob
+import org.bukkit.entity.Player
 import org.bukkit.entity.Villager
 import org.bukkit.entity.Zombie
 import org.bukkit.event.EventHandler
@@ -16,6 +19,8 @@ import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 import org.bukkit.scheduler.BukkitTask
 import org.bukkit.util.Vector
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -30,9 +35,15 @@ import org.xodium.vanillaplus.mobs.Orc
 import org.xodium.vanillaplus.mobs.Troll
 import org.xodium.vanillaplus.mobs.Warlord
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
+import org.xodium.vanillaplus.utils.Utils.MM
 import org.xodium.vanillaplus.utils.Utils.broadcast
 import org.xodium.vanillaplus.utils.Utils.dismiss
+import org.xodium.vanillaplus.utils.Utils.prefix
+import java.time.Duration
 import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.random.Random
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 import kotlin.uuid.toKotlinUuid
@@ -46,8 +57,13 @@ internal object HordeModule : ModuleInterface {
                 Commands
                     .literal("horde")
                     .requires { it.sender.hasPermission(perms[0]) }
-                    .playerExecuted { player, _ -> spawnFormation(player.location) },
-                "Spawns a horde formation at your location",
+                    .playerExecuted { player, _ -> spawnFormation(player.location) }
+                    .then(
+                        Commands
+                            .literal("remove")
+                            .playerExecuted { player, _ -> removeNearestHorde(player) },
+                    ),
+                "Spawns a horde formation at your location. Use 'remove' to despawn the nearest horde.",
             ),
         )
 
@@ -55,7 +71,7 @@ internal object HordeModule : ModuleInterface {
         listOf(
             Permission(
                 "${instance.javaClass.simpleName}.horde".lowercase(),
-                "Allows spawning a horde formation",
+                "Allows spawning and removing horde formations",
                 PermissionDefault.OP,
             ),
         )
@@ -63,6 +79,8 @@ internal object HordeModule : ModuleInterface {
     private val bossBars = mutableMapOf<Uuid, BossBar>()
     private val formationTasks = mutableMapOf<Uuid, BukkitTask>()
     private val formationMembers = mutableMapOf<Uuid, MutableList<FormationMemberData>>()
+    private val activeWarlords = mutableMapOf<Uuid, Zombie>()
+    private var villagerKillCount = 0
 
     @EventHandler
     fun on(event: EntityDamageEvent) {
@@ -82,9 +100,20 @@ internal object HordeModule : ModuleInterface {
 
     @EventHandler
     fun on(event: EntityDeathEvent) {
+        if (event.entity is Villager && event.entity.killer != null) {
+            villagerKillCount++
+            if (villagerKillCount >= Config.villagerKillThreshold) {
+                villagerKillCount = 0
+                triggerHorde()
+            }
+            return
+        }
+
         val uuid = event.entity.uniqueId.toKotlinUuid()
+
         bossBars.remove(uuid)?.dismiss()
         formationTasks.remove(uuid)?.cancel()
+        activeWarlords.remove(uuid)
         formationMembers.remove(uuid)?.let { dissolveFormation(it, event.entity.location) }
     }
 
@@ -169,6 +198,7 @@ internal object HordeModule : ModuleInterface {
     ) {
         val uuid = warlord.uniqueId.toKotlinUuid()
 
+        activeWarlords[uuid] = warlord
         formationMembers[uuid] = formation
         formationTasks[uuid] =
             instance.server.scheduler.runTaskTimer(
@@ -215,11 +245,77 @@ internal object HordeModule : ModuleInterface {
         }
     }
 
+    /**
+     * Broadcasts a title warning to all players, applies darkness, and spawns a horde
+     * at a random location near the densest cluster of players.
+     * Called automatically when [Config.villagerKillThreshold] is reached.
+     */
+    private fun triggerHorde() {
+        val loc = findHordeSpawnLocation() ?: return
+
+        instance.server.onlinePlayers.forEach { player ->
+            player.showTitle(
+                Title.title(
+                    MM.deserialize("<b><color:#8B0000>You have angered the gods</color></b>"),
+                    MM.deserialize("<color:#4A0000>A horde approaches...</color>"),
+                    Title.Times.times(Duration.ofSeconds(1), Duration.ofSeconds(3), Duration.ofSeconds(1)),
+                ),
+            )
+            player.addPotionEffect(PotionEffect(PotionEffectType.DARKNESS, 100, 0, false, false))
+        }
+
+        spawnFormation(loc)
+    }
+
+    /**
+     * Finds a random spawn [Location] near the densest cluster of eligible players.
+     * Returns null if no eligible players are online.
+     */
+    private fun findHordeSpawnLocation(): Location? {
+        val players =
+            instance.server.onlinePlayers.filter {
+                !it.isDead && it.gameMode in setOf(GameMode.SURVIVAL, GameMode.ADVENTURE)
+            }
+
+        if (players.isEmpty()) return null
+
+        val anchor =
+            players.maxByOrNull { p ->
+                players.count { it.world == p.world && it.location.distanceSquared(p.location) <= 10000.0 }
+            } ?: return null
+        val angle = Random.nextDouble(0.0, 2 * PI)
+        val dist = Random.nextDouble(Config.hordeSpawnRadius * 0.5, Config.hordeSpawnRadius)
+
+        return anchor.location.clone().add(cos(angle) * dist, 0.0, sin(angle) * dist)
+    }
+
+    /**
+     * Removes the nearest active horde to [player] by killing its warlord.
+     * Sends a feedback message to the player if no horde is found in the same world.
+     * @param player The [Player] issuing the remove command.
+     */
+    private fun removeNearestHorde(player: Player) {
+        val nearest =
+            activeWarlords.values
+                .filter { it.world == player.world && it.isValid && !it.isDead }
+                .minByOrNull { it.location.distanceSquared(player.location) }
+
+        if (nearest == null) {
+            player.sendMessage(MM.deserialize("${instance.prefix} <red>No active hordes in this world."))
+            return
+        }
+
+        nearest.health = 0.0
+        player.sendMessage(MM.deserialize("${instance.prefix} <green>Horde removed."))
+    }
+
     /** Represents the config of the module. */
     object Config {
         var detectionRange: Double = 48.0
         var idleCircleRadius: Double = 10.0
         var roamRadius: Double = 5.0
+        var villagerKillThreshold: Int = 10
+        var hordeSpawnRadius: Double = 50.0
         var formation: FormationData =
             FormationData(
                 listOf(
