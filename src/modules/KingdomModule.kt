@@ -3,13 +3,10 @@
 package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.command.brigadier.Commands
-import io.papermc.paper.datacomponent.DataComponentTypes
-import io.papermc.paper.datacomponent.item.ItemLore
 import io.papermc.paper.dialog.Dialog
 import io.papermc.paper.registry.data.dialog.ActionButton
 import io.papermc.paper.registry.data.dialog.DialogBase
 import io.papermc.paper.registry.data.dialog.action.DialogAction
-import io.papermc.paper.registry.data.dialog.body.DialogBody
 import io.papermc.paper.registry.data.dialog.input.DialogInput
 import io.papermc.paper.registry.data.dialog.type.DialogType
 import net.kyori.adventure.text.event.ClickCallback
@@ -21,7 +18,6 @@ import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.KingdomData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
-import org.xodium.vanillaplus.utils.PlayerUtils.headOf
 import org.xodium.vanillaplus.utils.Utils.MM
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -64,48 +60,18 @@ internal object KingdomModule : ModuleInterface {
         Dialog.create { builder ->
             builder
                 .empty()
-                .base(
-                    DialogBase
-                        .builder(MM.deserialize(name))
-                        .inputs(
-                            listOf(
-                                DialogInput
-                                    .text("name", MM.deserialize("Rename Kingdom"))
-                                    .maxLength(32)
-                                    .build(),
-                            ),
-                        ).body(
-                            members.map { uuid ->
-                                DialogBody
-                                    .item(
-                                        headOf(uuid.toJavaUuid()).apply {
-                                            if (uuid == owner) {
-                                                setData(
-                                                    DataComponentTypes.LORE,
-                                                    ItemLore.lore(listOf(MM.deserialize("<gold>Owner</gold>"))),
-                                                )
-                                            }
-                                        },
-                                    ).build()
-                            },
-                        ).build(),
-                ).type(
+                .base(DialogBase.builder(MM.deserialize(name)).build())
+                .type(
                     DialogType
                         .multiAction(
                             buildList {
                                 add(
                                     ActionButton
-                                        .builder(MM.deserialize("<green>Save</green>"))
+                                        .builder(MM.deserialize("Rename"))
                                         .action(
                                             DialogAction.customClick(
-                                                { response, _ ->
-                                                    copy(
-                                                        name =
-                                                            response
-                                                                .getText("name")
-                                                                ?.takeIf { it.isNotBlank() }
-                                                                ?: return@customClick,
-                                                    ).save()
+                                                { _, audience ->
+                                                    (audience as? Player)?.showDialog(renameDialog())
                                                 },
                                                 ClickCallback.Options.builder().build(),
                                             ),
@@ -130,6 +96,44 @@ internal object KingdomModule : ModuleInterface {
                             },
                         ).exitAction(ActionButton.builder(MM.deserialize("<red>Cancel</red>")).build())
                         .build(),
+                )
+        }
+
+    /** Returns a rename [Dialog] for this [KingdomData]. */
+    private fun KingdomData.renameDialog(): Dialog =
+        Dialog.create { builder ->
+            builder
+                .empty()
+                .base(
+                    DialogBase
+                        .builder(MM.deserialize("Rename Kingdom"))
+                        .inputs(
+                            listOf(
+                                DialogInput
+                                    .text("name", MM.deserialize("New Name"))
+                                    .maxLength(32)
+                                    .build(),
+                            ),
+                        ).build(),
+                ).type(
+                    DialogType.confirmation(
+                        ActionButton
+                            .builder(MM.deserialize("<green>Save</green>"))
+                            .action(
+                                DialogAction.customClick(
+                                    { response, audience ->
+                                        val newName =
+                                            response.getText("name")?.takeIf { it.isNotBlank() }
+                                                ?: return@customClick
+                                        copy(name = newName).also { it.save() }.let {
+                                            (audience as? Player)?.showDialog(it.dialog())
+                                        }
+                                    },
+                                    ClickCallback.Options.builder().build(),
+                                ),
+                            ).build(),
+                        ActionButton.builder(MM.deserialize("<red>Cancel</red>")).build(),
+                    ),
                 )
         }
 
