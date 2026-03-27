@@ -9,6 +9,7 @@ import org.xodium.vanillaplus.modules.ChiseledBookshelfModule
 import org.xodium.vanillaplus.modules.DimensionModule
 import org.xodium.vanillaplus.modules.EntityModule
 import org.xodium.vanillaplus.modules.InventoryModule
+import org.xodium.vanillaplus.modules.KingdomModule
 import org.xodium.vanillaplus.modules.LocatorModule
 import org.xodium.vanillaplus.modules.MapModule
 import org.xodium.vanillaplus.modules.MotdModule
@@ -62,6 +63,7 @@ internal class VanillaPlus : JavaPlugin() {
                 DimensionModule,
                 EntityModule,
                 InventoryModule,
+                KingdomModule,
                 LocatorModule,
                 MapModule,
                 MotdModule,
