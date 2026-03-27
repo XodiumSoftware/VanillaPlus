@@ -21,8 +21,10 @@ internal object FormationManager {
      */
     fun tick(
         warlord: Zombie,
-        formation: List<FormationMemberData>,
+        formation: MutableList<FormationMemberData>,
     ) {
+        formation.removeAll { it.mob.isDead || !it.mob.isValid }
+
         val target = nearestTarget(warlord)
 
         if (target != null) attack(warlord, formation, target) else idle(warlord, formation)
@@ -37,7 +39,7 @@ internal object FormationManager {
      */
     fun attack(
         warlord: Zombie,
-        formation: List<FormationMemberData>,
+        formation: MutableList<FormationMemberData>,
         target: Player,
     ) {
         warlord.pathfinder.moveTo(target, 1.0)
@@ -54,7 +56,7 @@ internal object FormationManager {
      */
     fun idle(
         warlord: Zombie,
-        formation: List<FormationMemberData>,
+        formation: MutableList<FormationMemberData>,
     ) {
         val circleRadius = HordeModule.Config.idleCircleRadius
         val roamRadiusSq = HordeModule.Config.roamRadius.let { it * it }

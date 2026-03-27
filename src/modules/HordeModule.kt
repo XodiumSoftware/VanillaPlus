@@ -104,6 +104,10 @@ internal object HordeModule : ModuleInterface {
         val rowSpacing = formationData.rowSpacing
         val centerCol = (layout.maxOf { it.length } - 1) / 2.0
         val warlordRow = layout.indexOfFirst { 'W' in it }
+        if (warlordRow == -1) {
+            instance.logger.warning("Formation layout has no Warlord ('W') — horde aborted.")
+            return
+        }
         val warlordCol = layout[warlordRow].indexOf('W')
         val warlordLoc = location.clone().add((warlordCol - centerCol) * spacing, 0.0, warlordRow * rowSpacing)
         val warlord = spawnWarlord(warlordLoc)
@@ -130,7 +134,9 @@ internal object HordeModule : ModuleInterface {
 
         val total = rawFormation.size
         val formation =
-            rawFormation.mapIndexed { i, (mob, offset) -> FormationMemberData(mob, offset, 2 * PI * i / total) }
+            rawFormation.mapIndexedTo(mutableListOf()) { i, (mob, offset) ->
+                FormationMemberData(mob, offset, 2 * PI * i / total)
+            }
 
         startFormationTask(warlord, formation)
     }
@@ -152,7 +158,7 @@ internal object HordeModule : ModuleInterface {
      */
     private fun startFormationTask(
         warlord: Zombie,
-        formation: List<FormationMemberData>,
+        formation: MutableList<FormationMemberData>,
     ) {
         formationTasks[warlord.uniqueId.toKotlinUuid()] =
             instance.server.scheduler.runTaskTimer(
