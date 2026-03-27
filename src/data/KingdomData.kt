@@ -1,5 +1,6 @@
 package org.xodium.vanillaplus.data
 
+import org.intellij.lang.annotations.Language
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -14,6 +15,7 @@ internal data class KingdomData(
     val members: List<Uuid> = emptyList(),
 ) {
     companion object Schema {
+        @Language("SQL")
         val KINGDOMS =
             """
             CREATE TABLE IF NOT EXISTS kingdoms (
@@ -22,6 +24,7 @@ internal data class KingdomData(
             )
             """.trimIndent()
 
+        @Language("SQL")
         val KINGDOM_MEMBERS =
             """
             CREATE TABLE IF NOT EXISTS kingdom_members (

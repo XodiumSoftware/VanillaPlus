@@ -1,5 +1,6 @@
 package org.xodium.vanillaplus.managers
 
+import org.intellij.lang.annotations.Language
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.KingdomData
 import java.sql.Connection
@@ -35,9 +36,15 @@ internal object DatabaseManager {
      * @param ownerUuid The UUID of the kingdom owner.
      */
     fun getKingdom(ownerUuid: Uuid): KingdomData? {
+        @Language("SQL")
+        val selectKingdom = "SELECT name FROM kingdoms WHERE owner_uuid = ?"
+
+        @Language("SQL")
+        val selectMembers = "SELECT member_uuid FROM kingdom_members WHERE owner_uuid = ?"
+
         val kingdom =
             connection
-                .prepareStatement("SELECT name FROM kingdoms WHERE owner_uuid = ?")
+                .prepareStatement(selectKingdom)
                 .use { stmt ->
                     stmt.setString(1, ownerUuid.toString())
                     stmt.executeQuery().use { rs ->
@@ -47,7 +54,7 @@ internal object DatabaseManager {
 
         val members =
             connection
-                .prepareStatement("SELECT member_uuid FROM kingdom_members WHERE owner_uuid = ?")
+                .prepareStatement(selectMembers)
                 .use { stmt ->
                     stmt.setString(1, ownerUuid.toString())
                     stmt.executeQuery().use { rs ->
@@ -71,10 +78,19 @@ internal object DatabaseManager {
      * @param kingdom The [KingdomData] to persist.
      */
     fun setKingdom(kingdom: KingdomData) {
+        @Language("SQL")
+        val upsertKingdom = "INSERT OR REPLACE INTO kingdoms (owner_uuid, name) VALUES (?, ?)"
+
+        @Language("SQL")
+        val deleteMembers = "DELETE FROM kingdom_members WHERE owner_uuid = ?"
+
+        @Language("SQL")
+        val insertMember = "INSERT INTO kingdom_members (owner_uuid, member_uuid) VALUES (?, ?)"
+
         connection.autoCommit = false
         runCatching {
             connection
-                .prepareStatement("INSERT OR REPLACE INTO kingdoms (owner_uuid, name) VALUES (?, ?)")
+                .prepareStatement(upsertKingdom)
                 .use { stmt ->
                     stmt.setString(1, kingdom.owner.toString())
                     stmt.setString(2, kingdom.name)
@@ -82,14 +98,14 @@ internal object DatabaseManager {
                 }
 
             connection
-                .prepareStatement("DELETE FROM kingdom_members WHERE owner_uuid = ?")
+                .prepareStatement(deleteMembers)
                 .use { stmt ->
                     stmt.setString(1, kingdom.owner.toString())
                     stmt.executeUpdate()
                 }
 
             connection
-                .prepareStatement("INSERT INTO kingdom_members (owner_uuid, member_uuid) VALUES (?, ?)")
+                .prepareStatement(insertMember)
                 .use { stmt ->
                     kingdom.members.forEach { member ->
                         stmt.setString(1, kingdom.owner.toString())
