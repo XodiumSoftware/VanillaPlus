@@ -24,14 +24,13 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
-import org.bukkit.scheduler.BukkitTask
 import org.bukkit.util.Vector
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.FormationData
 import org.xodium.vanillaplus.data.FormationMemberData
+import org.xodium.vanillaplus.goals.FormationLeaderGoal
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.managers.FormationManager
 import org.xodium.vanillaplus.mobs.DarkKnight
 import org.xodium.vanillaplus.mobs.Goblin
 import org.xodium.vanillaplus.mobs.Orc
@@ -87,7 +86,6 @@ internal object HordeModule : ModuleInterface {
         )
 
     private val bossBars = mutableMapOf<Uuid, BossBar>()
-    private val formationTasks = mutableMapOf<Uuid, BukkitTask>()
     private val formationMembers = mutableMapOf<Uuid, MutableList<FormationMemberData>>()
     private val activeWarlords = mutableMapOf<Uuid, Zombie>()
     private var villagerKillCount = 0
@@ -122,7 +120,6 @@ internal object HordeModule : ModuleInterface {
         val uuid = event.entity.uniqueId.toKotlinUuid()
 
         bossBars.remove(uuid)?.dismiss()
-        formationTasks.remove(uuid)?.cancel()
         activeWarlords.remove(uuid)
         formationMembers.remove(uuid)?.let { dissolveFormation(it, event.entity.location) }
     }
@@ -184,7 +181,16 @@ internal object HordeModule : ModuleInterface {
                 FormationMemberData(mob, offset, 2 * PI * i / total)
             }
 
-        startFormationTask(warlord, formation)
+        val uuid = warlord.uniqueId.toKotlinUuid()
+        val server = instance.server
+
+        rawFormation.forEach { (mob, _) -> server.mobGoals.removeAllGoals(mob) }
+        server.mobGoals.removeAllGoals(warlord)
+        (warlord.vehicle as? Mob)?.let { server.mobGoals.removeAllGoals(it) }
+
+        activeWarlords[uuid] = warlord
+        formationMembers[uuid] = formation
+        server.mobGoals.addGoal(warlord, 1, FormationLeaderGoal(warlord, formation))
     }
 
     /**
@@ -196,32 +202,6 @@ internal object HordeModule : ModuleInterface {
         Warlord.spawn(location).also { warlord ->
             bossBars[warlord.uniqueId.toKotlinUuid()] = Warlord.bossBar.also { it.broadcast() }
         }
-
-    /**
-     * Starts a repeating task that delegates formation state each tick to [FormationManager].
-     * @param warlord The commanding [Zombie] leading the formation.
-     * @param formation The list of [FormationMemberData] belonging to this formation.
-     */
-    private fun startFormationTask(
-        warlord: Zombie,
-        formation: MutableList<FormationMemberData>,
-    ) {
-        val uuid = warlord.uniqueId.toKotlinUuid()
-
-        activeWarlords[uuid] = warlord
-        formationMembers[uuid] = formation
-        formationTasks[uuid] =
-            instance.server.scheduler.runTaskTimer(
-                instance,
-                Runnable {
-                    if (warlord.isDead || !warlord.isValid) return@Runnable
-
-                    FormationManager.tick(warlord, formation)
-                },
-                0L,
-                10L,
-            )
-    }
 
     /**
      * Converts all living [members] to villagers with a dark-spell-release effect.

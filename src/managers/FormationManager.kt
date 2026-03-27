@@ -37,7 +37,7 @@ internal object FormationManager {
      * @param formation The list of [FormationMemberData] belonging to this formation.
      * @param target The [Player] the formation is marching toward.
      */
-    fun attack(
+    private fun attack(
         warlord: Zombie,
         formation: MutableList<FormationMemberData>,
         target: Player,
@@ -54,7 +54,7 @@ internal object FormationManager {
      * @param warlord The commanding [Zombie] leading the formation.
      * @param formation The list of [FormationMemberData] belonging to this formation.
      */
-    fun idle(
+    private fun idle(
         warlord: Zombie,
         formation: MutableList<FormationMemberData>,
     ) {
