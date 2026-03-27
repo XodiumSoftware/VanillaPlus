@@ -3,6 +3,8 @@
 package org.xodium.vanillaplus.modules
 
 import io.papermc.paper.command.brigadier.Commands
+import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.ItemLore
 import io.papermc.paper.dialog.Dialog
 import io.papermc.paper.registry.data.dialog.ActionButton
 import io.papermc.paper.registry.data.dialog.DialogBase
@@ -10,6 +12,7 @@ import io.papermc.paper.registry.data.dialog.action.DialogAction
 import io.papermc.paper.registry.data.dialog.body.DialogBody
 import io.papermc.paper.registry.data.dialog.input.DialogInput
 import io.papermc.paper.registry.data.dialog.type.DialogType
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickCallback
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
@@ -70,7 +73,28 @@ internal object KingdomModule : ModuleInterface {
                                     .maxLength(32)
                                     .build(),
                             ),
-                        ).body(members.map { DialogBody.item(headOf(it.toJavaUuid())).build() })
+                        ).body(
+                            members.map { uuid ->
+                                val javaUuid = uuid.toJavaUuid()
+                                val displayName =
+                                    instance.server.getPlayer(javaUuid)?.displayName()
+                                        ?: Component.text(
+                                            instance.server.getOfflinePlayer(javaUuid).name ?: javaUuid.toString(),
+                                        )
+                                DialogBody
+                                    .item(
+                                        headOf(javaUuid).apply {
+                                            setData(DataComponentTypes.ITEM_NAME, displayName)
+                                            if (uuid == owner) {
+                                                setData(
+                                                    DataComponentTypes.LORE,
+                                                    ItemLore.lore(listOf(MM.deserialize("<gold>Owner</gold>"))),
+                                                )
+                                            }
+                                        },
+                                    ).build()
+                            },
+                        )
                         .build(),
                 ).type(
                     DialogType.confirmation(
