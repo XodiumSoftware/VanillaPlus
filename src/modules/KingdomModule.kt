@@ -12,7 +12,6 @@ import io.papermc.paper.registry.data.dialog.action.DialogAction
 import io.papermc.paper.registry.data.dialog.body.DialogBody
 import io.papermc.paper.registry.data.dialog.input.DialogInput
 import io.papermc.paper.registry.data.dialog.type.DialogType
-import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickCallback
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
@@ -75,16 +74,9 @@ internal object KingdomModule : ModuleInterface {
                             ),
                         ).body(
                             members.map { uuid ->
-                                val javaUuid = uuid.toJavaUuid()
-                                val displayName =
-                                    instance.server.getPlayer(javaUuid)?.displayName()
-                                        ?: Component.text(
-                                            instance.server.getOfflinePlayer(javaUuid).name ?: javaUuid.toString(),
-                                        )
                                 DialogBody
                                     .item(
-                                        headOf(javaUuid).apply {
-                                            setData(DataComponentTypes.ITEM_NAME, displayName)
+                                        headOf(uuid.toJavaUuid()).apply {
                                             if (uuid == owner) {
                                                 setData(
                                                     DataComponentTypes.LORE,
@@ -94,8 +86,7 @@ internal object KingdomModule : ModuleInterface {
                                         },
                                     ).build()
                             },
-                        )
-                        .build(),
+                        ).build(),
                 ).type(
                     DialogType.confirmation(
                         ActionButton
