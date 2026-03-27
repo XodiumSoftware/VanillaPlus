@@ -23,7 +23,5 @@ internal class FormationLeaderGoal(
 
     override fun shouldActivate(): Boolean = !warlord.isDead && warlord.isValid
 
-    override fun shouldContinueActivating(): Boolean = shouldActivate()
-
     override fun tick() = FormationManager.tick(warlord, formation)
 }
