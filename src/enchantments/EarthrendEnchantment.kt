@@ -1,9 +1,9 @@
 package org.xodium.vanillaplus.enchantments
 
+import com.destroystokyo.paper.MaterialTags
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
 import org.bukkit.GameMode
 import org.bukkit.Material
-import org.bukkit.Tag
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.event.block.BlockBreakEvent
@@ -25,24 +25,6 @@ internal object EarthrendEnchantment : EnchantmentInterface {
             BlockFace.NORTH,
         )
     private val LEVEL_TO_MAX_BLOCKS = mapOf(1 to 16, 2 to 32, 3 to 48)
-    private val ORE_TAGS by lazy {
-        setOf(
-            Tag.COAL_ORES,
-            Tag.COPPER_ORES,
-            Tag.IRON_ORES,
-            Tag.GOLD_ORES,
-            Tag.DIAMOND_ORES,
-            Tag.EMERALD_ORES,
-            Tag.REDSTONE_ORES,
-            Tag.LAPIS_ORES,
-        )
-    }
-    private val SPECIAL_ORES =
-        setOf(
-            Material.ANCIENT_DEBRIS,
-            Material.NETHER_QUARTZ_ORE,
-            Material.NETHER_GOLD_ORE,
-        )
 
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
@@ -69,7 +51,7 @@ internal object EarthrendEnchantment : EnchantmentInterface {
 
         val block = event.block
 
-        if (!isOre(block.type)) return
+        if (!MaterialTags.ORES.isTagged(block.type)) return
 
         val blockType = block.type
         val enchantLevel = itemInHand.itemMeta.getEnchantLevel(get())
@@ -145,11 +127,4 @@ internal object EarthrendEnchantment : EnchantmentInterface {
 
         return visited.toList()
     }
-
-    /**
-     * Checks if a [Material] is considered an ore for vein mining purposes.
-     * @param material The [Material] to check.
-     * @return `true` if the material is a valid ore, `false` otherwise.
-     */
-    private fun isOre(material: Material): Boolean = ORE_TAGS.any { it.isTagged(material) } || material in SPECIAL_ORES
 }
