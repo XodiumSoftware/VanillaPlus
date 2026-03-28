@@ -9,7 +9,7 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 
 /** Represents a module handling book mechanics within the system. */
-internal object BooksModule : ModuleInterface {
+internal object BookModule : ModuleInterface {
     private val permPrefix: String = "${instance.javaClass.simpleName}.book".lowercase()
 
     override val cmds

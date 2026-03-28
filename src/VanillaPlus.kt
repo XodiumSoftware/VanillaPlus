@@ -3,7 +3,7 @@
 package org.xodium.vanillaplus
 
 import org.bukkit.plugin.java.JavaPlugin
-import org.xodium.vanillaplus.modules.BooksModule
+import org.xodium.vanillaplus.modules.BookModule
 import org.xodium.vanillaplus.modules.ChatModule
 import org.xodium.vanillaplus.modules.ChiseledBookshelfModule
 import org.xodium.vanillaplus.modules.DimensionModule
@@ -56,7 +56,7 @@ internal class VanillaPlus : JavaPlugin() {
 
         val modules =
             listOf(
-                BooksModule,
+                BookModule,
                 ChatModule,
                 ChiseledBookshelfModule,
                 DimensionModule,
