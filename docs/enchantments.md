@@ -36,19 +36,6 @@ While wearing boots enchanted with Embertread, walking on magma blocks and stand
 
 ---
 
-### Nightsight
-
-> Grants permanent Night Vision while worn.
-
-| Property   | Value          |
-|------------|----------------|
-| **Slot**   | Head (Helmets) |
-| **Levels** | I              |
-
-Applying or removing the helmet immediately adds or removes the Night Vision effect. The effect has no visible particles.
-
----
-
 ### Nimbus
 
 > Boosts Happy Ghast flying speed.

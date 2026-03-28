@@ -36,7 +36,6 @@ Handled through this module's event handlers (requires [Enchantments](../enchant
 - **Earthrend** — vein mining
 - **Tether** — auto-pickup drops
 - **Verdance** — auto-replant crops
-- **Nightsight** — night vision on a helmet equip
 - **Embertread** — magma/campfire protection
 
 ### Messages

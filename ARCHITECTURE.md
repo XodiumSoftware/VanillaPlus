@@ -36,7 +36,6 @@ Each module exposes a nested `object Config` with hardcoded default values. Ther
 
 All modules are instantiated as `object` singletons and listed explicitly in `VanillaPlus.onEnable()`.
 
-
 ### Enchantments
 
 Custom enchantments implement **`EnchantmentInterface`** and are registered in `VanillaPlusBootstrap` via `RegistryEvents.ENCHANTMENT`. Their registry key is derived automatically from the class name (e.g. `VerdanceEnchantment` → `vanillaplus:verdance`). Six enchantments are actively registered and tagged as tradeable, non-treasure, and in-enchanting-table:
@@ -45,7 +44,6 @@ Custom enchantments implement **`EnchantmentInterface`** and are registered in `
 |-------------|-----------------------------------------------|
 | Verdance    | Hoes                                          |
 | Tether      | Tools + Weapons (`vanillaplus:tools_weapons`) |
-| Nightsight  | Head armor                                    |
 | Nimbus      | Harnesses (chestplates)                       |
 | Earthrend   | Pickaxes                                      |
 | Embertread  | Foot armor                                    |
@@ -62,16 +60,16 @@ Recipe objects implement **`RecipeInterface`** and are listed in `VanillaPlus.on
 
 ### Package Structure (`org.xodium.vanillaplus`)
 
-| Package         | Contents                                                                               |
-|-----------------|----------------------------------------------------------------------------------------|
-| `modules/`      | 15 feature module singletons                                                           |
-| `data/`         | `CommandData`, `BookData`, `AdjacentBlockData`                                         |
-| `enchantments/` | Verdance, Tether, Nightsight, Nimbus, Earthrend, Embertread, SilkTouch, FeatherFalling |
-| `interfaces/`   | `ModuleInterface`, `EnchantmentInterface`, `RecipeInterface`                           |
-| `managers/`     | `PlayerMessageManager`                                                                 |
-| `pdcs/`         | `PlayerPDC`                                                                            |
-| `recipes/`      | Chainmail, DiamondRecycle, Painting, RottenFlesh, WoodLog                              |
-| `utils/`        | `Utils`, `CommandUtils`, `BlockUtils`, `MessageUtils`, `PlayerUtils`, `ScheduleUtils`  |
+| Package         | Contents                                                                              |
+|-----------------|---------------------------------------------------------------------------------------|
+| `modules/`      | 15 feature module singletons                                                          |
+| `data/`         | `CommandData`, `BookData`, `AdjacentBlockData`                                        |
+| `enchantments/` | Verdance, Tether, Nimbus, Earthrend, Embertread, SilkTouch, FeatherFalling            |
+| `interfaces/`   | `ModuleInterface`, `EnchantmentInterface`, `RecipeInterface`                          |
+| `managers/`     | `PlayerMessageManager`                                                                |
+| `pdcs/`         | `PlayerPDC`                                                                           |
+| `recipes/`      | Chainmail, DiamondRecycle, Painting, RottenFlesh, WoodLog                             |
+| `utils/`        | `Utils`, `CommandUtils`, `BlockUtils`, `MessageUtils`, `PlayerUtils`, `ScheduleUtils` |
 
 ### Key Conventions
 

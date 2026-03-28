@@ -6,7 +6,6 @@ import com.destroystokyo.paper.event.player.PlayerSetSpawnEvent
 import com.mojang.brigadier.arguments.StringArgumentType
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.event.connection.PlayerConnectionValidateLoginEvent
-import io.papermc.paper.event.entity.EntityEquipmentChangedEvent
 import io.papermc.paper.event.player.PlayerServerFullCheckEvent
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
@@ -36,7 +35,6 @@ import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.enchantments.EarthrendEnchantment
 import org.xodium.vanillaplus.enchantments.EmbertreadEnchantment
 import org.xodium.vanillaplus.enchantments.FeatherFallingEnchantment
-import org.xodium.vanillaplus.enchantments.NightsightEnchantment
 import org.xodium.vanillaplus.enchantments.SilkTouchEnchantment
 import org.xodium.vanillaplus.enchantments.TetherEnchantment
 import org.xodium.vanillaplus.enchantments.VerdanceEnchantment
@@ -175,9 +173,6 @@ internal object PlayerModule : ModuleInterface {
 
     @EventHandler
     fun on(event: BlockDropItemEvent) = TetherEnchantment.tether(event)
-
-    @EventHandler
-    fun on(event: EntityEquipmentChangedEvent) = NightsightEnchantment.nightsight(event)
 
     /**
      * Sends the welcome banner to the player on join.
