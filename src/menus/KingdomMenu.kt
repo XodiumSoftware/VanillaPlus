@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package org.xodium.vanillaplus.menus
 
 import io.papermc.paper.datacomponent.DataComponentTypes
@@ -6,14 +8,20 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.SkullMeta
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.KingdomData
 import org.xodium.vanillaplus.utils.Utils.MM
 import xyz.xenondevs.invui.gui.Gui
+import xyz.xenondevs.invui.gui.PagedGui
+import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.ItemWrapper
 import xyz.xenondevs.invui.item.impl.AbstractItem
 import xyz.xenondevs.invui.item.impl.SimpleItem
+import xyz.xenondevs.invui.item.impl.controlitem.PageItem
 import xyz.xenondevs.invui.window.AnvilWindow
 import xyz.xenondevs.invui.window.Window
+import java.util.*
 import kotlin.uuid.ExperimentalUuidApi
 
 /** GUI for the kingdom management screen. */
@@ -64,15 +72,113 @@ internal object KingdomMenu {
                 }
             }
 
+        val membersBtn =
+            object : AbstractItem() {
+                override fun getItemProvider() =
+                    ItemWrapper(
+                        ItemStack.of(Material.PLAYER_HEAD).apply {
+                            setData(
+                                DataComponentTypes.CUSTOM_NAME,
+                                MM.deserialize("<b>Members</b> <dark_gray>(${kingdom.members.size})"),
+                            )
+                        },
+                    )
+
+                override fun handleClick(
+                    clickType: ClickType,
+                    player: Player,
+                    event: InventoryClickEvent,
+                ) {
+                    if (clickType.isLeftClick) members(player, kingdom)
+                }
+            }
+
         Window
             .single()
             .setTitle(kingdom.name)
             .setGui(
                 Gui
                     .normal()
-                    .setStructure("R . . . D")
+                    .setStructure("R . M . D")
                     .addIngredient('R', rename)
+                    .addIngredient('M', membersBtn)
                     .addIngredient('D', disband)
+                    .build(),
+            ).open(player)
+    }
+
+    /** Opens the paginated members list GUI for [player] showing all members of [kingdom]. */
+    fun members(
+        player: Player,
+        kingdom: KingdomData,
+    ) {
+        val items =
+            kingdom.members.map { uuid ->
+                val offline = instance.server.getOfflinePlayer(UUID.fromString(uuid.toString()))
+
+                SimpleItem(
+                    ItemWrapper(
+                        ItemStack.of(Material.PLAYER_HEAD).apply {
+                            editMeta(SkullMeta::class.java) { meta ->
+                                meta.owningPlayer = offline
+                                if (uuid == kingdom.owner) {
+                                    meta.lore(listOf(MM.deserialize("<gold>Owner")))
+                                }
+                            }
+                            setData(
+                                DataComponentTypes.CUSTOM_NAME,
+                                MM.deserialize("<white>${offline.name ?: uuid}"),
+                            )
+                        },
+                    ),
+                )
+            }
+
+        val back =
+            object : PageItem(false) {
+                override fun getItemProvider(gui: PagedGui<*>) =
+                    ItemWrapper(
+                        ItemStack.of(Material.ARROW).apply {
+                            setData(DataComponentTypes.CUSTOM_NAME, MM.deserialize("<gray>Previous Page"))
+                        },
+                    )
+            }
+
+        val forward =
+            object : PageItem(true) {
+                override fun getItemProvider(gui: PagedGui<*>) =
+                    ItemWrapper(
+                        ItemStack.of(Material.ARROW).apply {
+                            setData(DataComponentTypes.CUSTOM_NAME, MM.deserialize("<gray>Next Page"))
+                        },
+                    )
+            }
+
+        val border =
+            SimpleItem(
+                ItemWrapper(
+                    ItemStack.of(Material.GRAY_STAINED_GLASS_PANE).apply {
+                        setData(DataComponentTypes.CUSTOM_NAME, MM.deserialize("<!italic><dark_gray> "))
+                    },
+                ),
+            )
+
+        Window
+            .single()
+            .setTitle("${kingdom.name} — Members")
+            .setGui(
+                PagedGui
+                    .items()
+                    .setStructure(
+                        "# # # # # # # # #",
+                        "# x x x x x x x #",
+                        "# x x x x x x x #",
+                        "# # # < # > # # #",
+                    ).addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
+                    .addIngredient('#', border)
+                    .addIngredient('<', back)
+                    .addIngredient('>', forward)
+                    .setContent(items)
                     .build(),
             ).open(player)
     }
