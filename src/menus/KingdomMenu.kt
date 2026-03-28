@@ -121,9 +121,8 @@ internal object KingdomMenu {
                         ItemStack.of(Material.PLAYER_HEAD).apply {
                             editMeta(SkullMeta::class.java) { meta ->
                                 meta.owningPlayer = offline
-                                if (uuid == kingdom.owner) {
-                                    meta.lore(listOf(MM.deserialize("<gold>Owner")))
-                                }
+
+                                if (uuid == kingdom.owner) meta.lore(listOf(MM.deserialize("<gold>Owner")))
                             }
                             setData(
                                 DataComponentTypes.CUSTOM_NAME,
