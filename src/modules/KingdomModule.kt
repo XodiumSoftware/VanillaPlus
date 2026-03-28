@@ -9,6 +9,7 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.data.KingdomData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.menus.KingdomMenu
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.toKotlinUuid
@@ -27,7 +28,7 @@ internal object KingdomModule : ModuleInterface {
                             (
                                 KingdomData.get(uuid)
                                     ?: KingdomData(uuid, "${player.name}'s Kingdom", listOf(uuid)).also { it.save() }
-                            ).let { TODO() }
+                            ).let { KingdomMenu.main(player, it) }
                         }
                     },
                 "Claim your kingdom",
