@@ -114,14 +114,14 @@ internal object KingdomMenu {
     ) {
         val items =
             kingdom.members.map { uuid ->
-                val offline = instance.server.getOfflinePlayer(UUID.fromString(uuid.toString()))
+                val offlinePlayer = instance.server.getOfflinePlayer(UUID.fromString(uuid.toString()))
 
                 SimpleItem(
                     ItemWrapper(
                         ItemStack.of(Material.PLAYER_HEAD).apply {
                             setData(
                                 DataComponentTypes.CUSTOM_NAME,
-                                MM.deserialize("<white>${offline.name ?: uuid}"),
+                                MM.deserialize("<white>${offlinePlayer.name ?: uuid}"),
                             )
                             if (uuid == kingdom.owner) {
                                 setData(
