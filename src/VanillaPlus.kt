@@ -26,6 +26,7 @@ import org.xodium.vanillaplus.recipes.DiamondRecycleRecipe
 import org.xodium.vanillaplus.recipes.PaintingRecipe
 import org.xodium.vanillaplus.recipes.RottenFleshRecipe
 import org.xodium.vanillaplus.recipes.WoodLogRecipe
+import xyz.xenondevs.invui.InvUI
 
 /** Main class of the plugin. */
 internal class VanillaPlus : JavaPlugin() {
@@ -39,6 +40,8 @@ internal class VanillaPlus : JavaPlugin() {
     }
 
     override fun onEnable() {
+        InvUI.getInstance().setPlugin(this)
+
         val unsupportedVersionMsg =
             "This plugin requires a supported server version. Supported versions: ${pluginMeta.version}."
 

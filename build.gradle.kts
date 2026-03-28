@@ -29,10 +29,13 @@ val deployJarPath: String =
 repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
+    maven("https://repo.xenondevs.xyz/releases")
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:$mcVersion-R0.1-SNAPSHOT")
+    compileOnly("xyz.xenondevs.invui:invui:1.49")
+    compileOnly("xyz.xenondevs.invui:invui-kotlin:1.49")
 
     implementation(kotlin("stdlib"))
     implementation("org.xerial:sqlite-jdbc:3.47.2.0")
@@ -69,4 +72,5 @@ paperPluginYaml {
     authors.add("Xodium")
     apiVersion.set(mcVersion)
     bootstrapper.set("org.xodium.vanillaplus.VanillaPlusBootstrap")
+    loader.set("org.xodium.vanillaplus.VanillaPlusLoader")
 }
