@@ -140,8 +140,8 @@ internal object PlayerMessageManager {
      * @return The formatted bed enter message component, or null if no message is set for this problem.
      */
     @Suppress("UnstableApiUsage")
-    fun handleBedEnter(problem: BedEnterProblem): Component? {
-        return MM.deserialize(
+    fun handleBedEnter(problem: BedEnterProblem): Component? =
+        MM.deserialize(
             when (problem) {
                 BedEnterProblem.TOO_FAR_AWAY -> PlayerModule.Config.BedEnterMessages.tooFarAway
                 BedEnterProblem.OBSTRUCTED -> PlayerModule.Config.BedEnterMessages.obstructed
@@ -150,7 +150,6 @@ internal object PlayerMessageManager {
                 else -> PlayerModule.Config.BedEnterMessages.other
             }.takeIf { it.isNotEmpty() } ?: return null,
         )
-    }
 
     /**
      * Handles the player set spawn notification.
