@@ -3,12 +3,12 @@
 package org.xodium.vanillaplus.menus
 
 import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.ItemLore
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.meta.SkullMeta
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.KingdomData
 import org.xodium.vanillaplus.utils.Utils.MM
@@ -119,15 +119,16 @@ internal object KingdomMenu {
                 SimpleItem(
                     ItemWrapper(
                         ItemStack.of(Material.PLAYER_HEAD).apply {
-                            editMeta(SkullMeta::class.java) { meta ->
-                                meta.owningPlayer = offline
-
-                                if (uuid == kingdom.owner) meta.lore(listOf(MM.deserialize("<gold>Owner")))
-                            }
                             setData(
                                 DataComponentTypes.CUSTOM_NAME,
                                 MM.deserialize("<white>${offline.name ?: uuid}"),
                             )
+                            if (uuid == kingdom.owner) {
+                                setData(
+                                    DataComponentTypes.LORE,
+                                    ItemLore.lore().addLines(listOf(MM.deserialize("<gold>Owner</gold>"))),
+                                )
+                            }
                         },
                     ),
                 )
