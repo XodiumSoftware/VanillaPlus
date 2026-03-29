@@ -28,9 +28,7 @@ internal object RuneMenu {
 
         player.runeSlots.forEachIndexed { index, typeName ->
             if (typeName.isNotEmpty()) {
-                RuneModule.RuneType.entries.firstOrNull { it.name == typeName }?.let {
-                    view.topInventory.setItem(index, RuneModule.createGemForType(it))
-                }
+                RuneModule.RUNES.firstOrNull { it.id == typeName }?.let { view.topInventory.setItem(index, it.item) }
             }
         }
         player.openInventory(view)

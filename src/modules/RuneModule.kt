@@ -5,8 +5,6 @@ package org.xodium.vanillaplus.modules
 import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
-import org.bukkit.attribute.Attribute
-import org.bukkit.attribute.AttributeModifier
 import org.bukkit.entity.ElderGuardian
 import org.bukkit.entity.EnderDragon
 import org.bukkit.entity.Player
@@ -24,20 +22,19 @@ import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.interfaces.RuneInterface
 import org.xodium.vanillaplus.menus.RuneMenu
 import org.xodium.vanillaplus.pdcs.PlayerPDC.runeSlots
+import org.xodium.vanillaplus.runes.HealthRune
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
-import org.xodium.vanillaplus.utils.Utils.MM
 import kotlin.random.Random
 
 /** Represents a module handling rune mechanics within the system. */
 internal object RuneModule : ModuleInterface {
     val RUNE_TYPE_KEY = NamespacedKey(instance, "rune_type")
 
-    private val HEALTH_MODIFIER_KEY = NamespacedKey(instance, "rune_health_bonus")
-
-    /** Represents the type of rune that can be slotted. */
-    enum class RuneType { HEALTH, }
+    /** All registered runes. Add new [RuneInterface] implementations here to activate them. */
+    val RUNES: List<RuneInterface> = listOf(HealthRune)
 
     override val cmds =
         listOf(
@@ -65,7 +62,7 @@ internal object RuneModule : ModuleInterface {
         val entity = event.entity
 
         if (entity !is ElderGuardian && entity !is Wither && entity !is EnderDragon) return
-        if (Random.nextDouble() < Config.gemDropChance) event.drops.add(createGemForType(RuneType.HEALTH))
+        if (Random.nextDouble() < Config.runeDropChance) event.drops.add(HealthRune.item)
     }
 
     @EventHandler
@@ -76,17 +73,19 @@ internal object RuneModule : ModuleInterface {
     @EventHandler
     fun on(event: InventoryCloseEvent) {
         if (!RuneMenu.openViews.containsKey(event.view)) return
+
         val player = event.player as? Player ?: return
         val slots =
             (0 until 5).map { i ->
                 val item = event.view.topInventory.getItem(i) ?: return@map ""
+
                 if (isRune(item)) {
-                    item.itemMeta?.persistentDataContainer?.getOrDefault(RUNE_TYPE_KEY, PersistentDataType.STRING, "")
-                        ?: ""
+                    item.persistentDataContainer.getOrDefault(RUNE_TYPE_KEY, PersistentDataType.STRING, "")
                 } else {
                     ""
                 }
             }
+
         player.runeSlots = slots
         applyRuneModifiers(player, slots)
     }
@@ -112,52 +111,18 @@ internal object RuneModule : ModuleInterface {
         if (event.rawSlots.any { it < 5 } && !isRune(event.oldCursor)) event.isCancelled = true
     }
 
-    /** Creates an [ItemStack] representing the given [RuneType]. */
-    fun createGemForType(type: RuneType): ItemStack {
-        val item = ItemStack.of(Material.AMETHYST_SHARD)
-
-        item.editMeta { meta ->
-            meta.displayName(MM.deserialize("<!italic><gradient:#CB2D3E:#EF473A>Health Gem</gradient>"))
-            meta.lore(
-                listOf(
-                    MM.deserialize(
-                        "<!italic><gray>Grants +${Config.healthPerGem.toInt()} max health when slotted</gray>",
-                    ),
-                ),
-            )
-            meta.persistentDataContainer.set(RUNE_TYPE_KEY, PersistentDataType.STRING, type.name)
-        }
-
-        return item
-    }
-
-    /** Returns `true` if the given [ItemStack] is a rune gem. */
-    internal fun isRune(item: ItemStack): Boolean = item.itemMeta?.persistentDataContainer?.has(RUNE_TYPE_KEY) == true
+    /** Returns `true` if the given [ItemStack] carries a rune PDC tag. */
+    private fun isRune(item: ItemStack): Boolean = item.persistentDataContainer.has(RUNE_TYPE_KEY)
 
     private fun applyRuneModifiers(
         player: Player,
         slots: List<String>,
     ) {
-        val healthAttr = player.getAttribute(Attribute.MAX_HEALTH) ?: return
-
-        healthAttr.modifiers.filter { it.key == HEALTH_MODIFIER_KEY }.forEach { healthAttr.removeModifier(it) }
-
-        val healthCount = slots.count { it == RuneType.HEALTH.name }
-
-        if (healthCount > 0) {
-            healthAttr.addModifier(
-                AttributeModifier(
-                    HEALTH_MODIFIER_KEY,
-                    healthCount * Config.healthPerGem,
-                    AttributeModifier.Operation.ADD_NUMBER,
-                ),
-            )
-        }
+        RUNES.forEach { rune -> rune.modifiers(player, slots.count { it == rune.id }) }
     }
 
     /** Represents the config of the module. */
     object Config {
-        var gemDropChance: Double = 0.10
-        var healthPerGem: Double = 2.0
+        var runeDropChance: Double = 0.10
     }
 }
