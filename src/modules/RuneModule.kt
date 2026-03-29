@@ -40,11 +40,11 @@ internal object RuneModule : ModuleInterface {
         listOf(
             CommandData(
                 Commands
-                    .literal("rune")
+                    .literal("runes")
                     .requires { it.sender.hasPermission(perms[0]) }
                     .playerExecuted { player, _ -> RuneMenu.open(player) },
                 "Opens the rune equipment menu",
-                listOf("runes"),
+                listOf("r"),
             ),
         )
 

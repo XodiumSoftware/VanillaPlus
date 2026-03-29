@@ -2,7 +2,6 @@
 
 package org.xodium.vanillaplus.menus
 
-import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.MenuType
@@ -16,7 +15,7 @@ import java.util.*
 internal object RuneMenu {
     val openViews: WeakHashMap<InventoryView, Unit> = WeakHashMap()
 
-    private val TITLE: Component = MM.deserialize("<!italic><gold>Rune Slots</gold>")
+    private val TITLE = MM.deserialize("<gradient:#FFA751:#FFE259><b>Rune Slots</b></gradient>")
 
     /**
      * Opens the rune equipment menu for the given player,
