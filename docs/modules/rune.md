@@ -1,6 +1,6 @@
 # Rune Module
 
-> Adds a gem-based slot system that lets players permanently boost their max health.
+> Adds a gem-based slot system that lets players permanently boost their stats.
 
 ## How it works
 
@@ -15,15 +15,14 @@ Rare **gem items** drop from the three vanilla bosses. Players open `/rune` to m
 
 ## Gems
 
-| Gem        | Material       | Effect per slot          |
-|------------|----------------|--------------------------|
-| Health Gem | Amethyst Shard | +2 max health (+1 heart) |
+| Gem         | Material       | Effect per slot          |
+|-------------|----------------|--------------------------|
+| Health Rune | Amethyst Shard | +2 max health (+1 heart) |
 
 ## Config
 
 ```kotlin
 object Config {
-    var gemDropChance: Double = 0.10  // 10 % chance per boss kill
-    var healthPerGem: Double = 2.0   // max-health increase per equipped gem
+    var runeDropChance: Double = 0.10  // 10 % chance per boss kill
 }
 ```
