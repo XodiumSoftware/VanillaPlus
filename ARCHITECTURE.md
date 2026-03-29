@@ -50,6 +50,12 @@ Custom enchantments implement **`EnchantmentInterface`** and are registered in `
 
 SilkTouch and FeatherFalling exist as implementations but are not currently registered in the bootstrap.
 
+### Rune System
+
+`RuneModule` implements a gem-based rune system. Bosses (Elder Guardian, Wither, Ender Dragon) drop gem items with a configurable chance. Players open `/rune` to view their 5 rune slots (a `MenuType.HOPPER` inventory). Placing a gem in a slot equips it; removing it returns the item. On close, slot state is saved to `PlayerPDC.runeSlots` (comma-separated string) and `Attribute.MAX_HEALTH` modifiers are applied via a `NamespacedKey`-keyed `AttributeModifier`. Modifiers are also restored on `PlayerJoinEvent`.
+
+`RuneMenu` in `menus/` handles menu creation and tracks open views via a `WeakHashMap<InventoryView, Unit>`. `RuneModule` reads that map in its `InventoryCloseEvent`, `InventoryClickEvent`, and `InventoryDragEvent` handlers to scope behaviour to rune menus only.
+
 ### PDCs (Persistent Data Containers)
 
 PDC helpers in `pdcs/` expose Kotlin property delegates on entity types.
@@ -62,11 +68,12 @@ Recipe objects implement **`RecipeInterface`** and are listed in `VanillaPlus.on
 
 | Package         | Contents                                                                              |
 |-----------------|---------------------------------------------------------------------------------------|
-| `modules/`      | 15 feature module singletons                                                          |
+| `modules/`      | 16 feature module singletons                                                          |
 | `data/`         | `CommandData`, `BookData`, `AdjacentBlockData`                                        |
 | `enchantments/` | Verdance, Tether, Nimbus, Earthrend, Embertread, SilkTouch, FeatherFalling            |
 | `interfaces/`   | `ModuleInterface`, `EnchantmentInterface`, `RecipeInterface`                          |
 | `managers/`     | `PlayerMessageManager`                                                                |
+| `menus/`        | `RuneMenu`                                                                            |
 | `pdcs/`         | `PlayerPDC`                                                                           |
 | `recipes/`      | Chainmail, DiamondRecycle, Painting, RottenFlesh, WoodLog                             |
 | `utils/`        | `Utils`, `CommandUtils`, `BlockUtils`, `MessageUtils`, `PlayerUtils`, `ScheduleUtils` |
