@@ -1,9 +1,7 @@
 package org.xodium.vanillaplus.enchantments
 
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
-import org.bukkit.Material
 import org.bukkit.Tag
-import org.bukkit.block.BlockFace
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.inventory.EquipmentSlotGroup
@@ -25,7 +23,7 @@ internal object EmbertreadEnchantment : EnchantmentInterface {
             .activeSlots(EquipmentSlotGroup.FEET)
 
     /**
-     * Handles the entity damage event to prevent damage from magma blocks and campfires
+     * Handles the entity damage event to prevent damage from fire and hot floors
      * when wearing boots with the Embertread enchantment.
      * @param event The EntityDamageEvent to handle.
      */
@@ -35,17 +33,9 @@ internal object EmbertreadEnchantment : EnchantmentInterface {
         if (!isValidBoots(player.inventory.boots)) return
 
         when (event.cause) {
-            EntityDamageEvent.DamageCause.HOT_FLOOR -> {
-                event.isCancelled = true
-            }
-
-            EntityDamageEvent.DamageCause.FIRE -> {
-                val block = player.location.block.getRelative(BlockFace.DOWN)
-
-                if (block.type == Material.CAMPFIRE || block.type == Material.SOUL_CAMPFIRE) event.isCancelled = true
-            }
-
-            else -> {}
+            EntityDamageEvent.DamageCause.HOT_FLOOR -> event.isCancelled = true
+            EntityDamageEvent.DamageCause.FIRE -> event.isCancelled = true
+            else -> return
         }
     }
 
@@ -55,7 +45,5 @@ internal object EmbertreadEnchantment : EnchantmentInterface {
      * @return `true` if the item is foot armor with Embertread, otherwise `false`.
      */
     private fun isValidBoots(item: ItemStack?): Boolean =
-        item?.let {
-            Tag.ITEMS_FOOT_ARMOR.isTagged(it.type) && it.containsEnchantment(get())
-        } ?: false
+        item?.let { Tag.ITEMS_FOOT_ARMOR.isTagged(it.type) && it.containsEnchantment(get()) } ?: false
 }

@@ -25,14 +25,14 @@ Combine with **Tether** to automatically collect all vein-mined drops directly i
 
 ### Embertread
 
-> Prevents damage from magma blocks and campfires.
+> Prevents damage from fire and magma blocks.
 
 | Property   | Value        |
 |------------|--------------|
 | **Slot**   | Feet (Boots) |
 | **Levels** | I            |
 
-While wearing boots enchanted with Embertread, walking on magma blocks and standing next to campfires deal no damage.
+While wearing boots enchanted with Embertread, walking on magma blocks or through fire and soul fire deals no damage.
 
 ---
 
