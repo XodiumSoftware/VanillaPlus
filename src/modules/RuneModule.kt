@@ -28,6 +28,7 @@ import org.xodium.vanillaplus.interfaces.RuneInterface.Companion.RUNE_TYPE_KEY
 import org.xodium.vanillaplus.menus.RuneMenu
 import org.xodium.vanillaplus.pdcs.PlayerPDC.runeSlots
 import org.xodium.vanillaplus.runes.HealthRune
+import org.xodium.vanillaplus.runes.SpeedRune
 import org.xodium.vanillaplus.utils.CommandUtils.executesCatching
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import kotlin.random.Random
@@ -35,7 +36,7 @@ import kotlin.random.Random
 /** Represents a module handling rune mechanics within the system. */
 internal object RuneModule : ModuleInterface {
     /** All registered runes across all tiers. Add new [RuneInterface] implementations here to activate them. */
-    val RUNES: List<RuneInterface> = HealthRune.tiers
+    val RUNES: List<RuneInterface> = HealthRune.tiers + SpeedRune.tiers
 
     /** All items giveable via `/runes give`: every registered rune tier. */
     private val GIVE_ITEMS: Map<String, ItemStack> = RUNES.associate { it.id to it.item }

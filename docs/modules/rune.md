@@ -23,15 +23,31 @@ Amethyst Shard. Grants bonus max health while equipped.
 
 | Tier | Name            | Max Health Bonus |
 |------|-----------------|------------------|
-| I    | Health Rune I   | +2 ❤             |
-| II   | Health Rune II  | +4 ❤             |
-| III  | Health Rune III | +6 ❤             |
-| …    | …               | +2 per tier      |
-| XX   | Health Rune XX  | +40 ❤            |
+| I    | Health Rune I   | +8 ❤             |
+| II   | Health Rune II  | +16 ❤            |
+| III  | Health Rune III | +24 ❤            |
+| IV   | Health Rune IV  | +32 ❤            |
+| V    | Health Rune V   | +40 ❤            |
 
-![Health Rune tiers](../images/health_tiers_sheet.png)
+![Health Rune tiers](../images/healthrune_tiers_sheet.png)
 
 Only **Tier I** drops from bosses. Higher tiers are obtained by combining two runes of the same tier in an anvil (see below).
+
+### Speed Rune
+
+Feather. Grants bonus movement speed while equipped.
+
+| Tier | Name           | Move Speed Bonus |
+|------|----------------|------------------|
+| I    | Speed Rune I   | +10% ⚡           |
+| II   | Speed Rune II  | +20% ⚡           |
+| III  | Speed Rune III | +30% ⚡           |
+| IV   | Speed Rune IV  | +40% ⚡           |
+| V    | Speed Rune V   | +50% ⚡           |
+
+![Speed Rune tiers](../images/speedrune_tiers_sheet.png)
+
+Only **Tier I** drops from bosses. Higher tiers are obtained via anvil combining.
 
 ## Anvil Combining
 
@@ -47,7 +63,24 @@ e.g. combining two Tier I runes costs `1 × 5 = 5` levels; combining two Tier XI
 
 ```kotlin
 object Config {
-    var runeDropChance: Double = 0.10  // 10 % chance per boss kill
-    var anvilCombineCost: Int = 5      // XP level multiplier per tier step
+    var dropChances: Map<EntityType, Double> = mapOf(
+        EntityType.ELDER_GUARDIAN to 0.05,
+        EntityType.WITHER to 0.10,
+        EntityType.ENDER_DRAGON to 0.20,
+    )
+    var anvilCombineCost: Int = 5  // XP level multiplier per tier step
 }
 ```
+
+## Future Rune Ideas
+
+1. **Attack Rune** — bonus attack damage per tier
+2. **Defence Rune** — bonus armor per tier
+3. **Luck Rune** — increases the luck attribute (affects loot tables)
+4. **Mending Rune** — passive health regeneration
+5. **Reach Rune** — extended block and entity interaction range
+6. **Stamina Rune** — increased oxygen / reduced hunger drain
+7. **Featherfall Rune** — reduces fall damage
+8. **Depth Rune** — Elder Guardian drop; underwater breathing + mining speed
+9. **Soul Rune** — Wither drop; bonus XP gain or undead damage resistance
+10. **Void Rune** — Ender Dragon drop; ender pearl cooldown reduction
