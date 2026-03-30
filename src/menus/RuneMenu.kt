@@ -43,7 +43,7 @@ internal object RuneMenu {
         openViews.add(view)
     }
 
-    /** Returns a gray glass pane [ItemStack] placeholder displayed in rune slots locked behind [requiredLevel]. */
+    /** Returns a placeholder [ItemStack] displayed in rune slots that require [requiredLevel] to unlock. */
     private fun lockedSlotItem(requiredLevel: Int): ItemStack =
         ItemStack.of(Material.BARRIER).apply {
             setData(DataComponentTypes.ITEM_NAME, MM.deserialize("<!italic><red><b>Locked"))
