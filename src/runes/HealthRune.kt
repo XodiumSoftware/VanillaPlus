@@ -38,17 +38,17 @@ internal object HealthRune : RuneInterface {
 
     override fun modifiers(
         player: Player,
-        count: Int,
+        equipped: Boolean,
     ) {
         val attr = player.getAttribute(Attribute.MAX_HEALTH) ?: return
 
         attr.modifiers.filter { it.key == modifierKey }.forEach { attr.removeModifier(it) }
 
-        if (count > 0) {
+        if (equipped) {
             attr.addModifier(
                 AttributeModifier(
                     modifierKey,
-                    count * HEALTH_PER_RUNE,
+                    HEALTH_PER_RUNE,
                     AttributeModifier.Operation.ADD_NUMBER,
                 ),
             )

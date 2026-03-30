@@ -23,13 +23,12 @@ internal interface RuneInterface {
     val item: ItemStack
 
     /**
-     * Applies or removes this rune's modifier on the given [player] based on [count].
-     * A count of 0 removes the modifier; any positive value applies it scaled by count.
+     * Applies or removes this rune's modifier on the given [player].
      * @param player The player to modify.
-     * @param count The number of this rune type currently equipped.
+     * @param equipped Whether this rune is currently equipped.
      */
     fun modifiers(
         player: Player,
-        count: Int,
+        equipped: Boolean,
     )
 }

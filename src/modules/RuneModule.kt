@@ -2,6 +2,7 @@
 
 package org.xodium.vanillaplus.modules
 
+import com.mojang.brigadier.arguments.StringArgumentType
 import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
@@ -15,6 +16,7 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.inventory.InventoryDragEvent
 import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
@@ -26,6 +28,7 @@ import org.xodium.vanillaplus.interfaces.RuneInterface
 import org.xodium.vanillaplus.menus.RuneMenu
 import org.xodium.vanillaplus.pdcs.PlayerPDC.runeSlots
 import org.xodium.vanillaplus.runes.HealthRune
+import org.xodium.vanillaplus.utils.CommandUtils.executesCatching
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import kotlin.random.Random
 
@@ -42,7 +45,41 @@ internal object RuneModule : ModuleInterface {
                 Commands
                     .literal("runes")
                     .requires { it.sender.hasPermission(perms[0]) }
-                    .playerExecuted { player, _ -> RuneMenu.open(player) },
+                    .playerExecuted { player, _ -> RuneMenu.open(player) }
+                    .then(
+                        Commands
+                            .literal("give")
+                            .requires { it.sender.hasPermission(perms[1]) }
+                            .then(
+                                Commands
+                                    .argument("rune", StringArgumentType.word())
+                                    .suggests { _, builder ->
+                                        RUNES.forEach { builder.suggest(it.id) }
+                                        builder.buildFuture()
+                                    }.playerExecuted { player, ctx ->
+                                        val runeId = StringArgumentType.getString(ctx, "rune")
+                                        val rune = RUNES.firstOrNull { it.id == runeId } ?: return@playerExecuted
+                                        player.inventory.addItem(rune.item.clone())
+                                    }.then(
+                                        Commands
+                                            .argument("target", StringArgumentType.word())
+                                            .suggests { _, builder ->
+                                                instance.server.onlinePlayers.forEach { builder.suggest(it.name) }
+                                                builder.buildFuture()
+                                            }.executesCatching { ctx ->
+                                                val runeId = StringArgumentType.getString(ctx, "rune")
+                                                val rune =
+                                                    RUNES.firstOrNull { it.id == runeId }
+                                                        ?: return@executesCatching
+                                                val targetName = StringArgumentType.getString(ctx, "target")
+                                                val target =
+                                                    instance.server.getPlayerExact(targetName)
+                                                        ?: return@executesCatching
+                                                target.inventory.addItem(rune.item.clone())
+                                            },
+                                    ),
+                            ),
+                    ),
                 "Opens the rune equipment menu",
                 listOf("r"),
             ),
@@ -54,6 +91,11 @@ internal object RuneModule : ModuleInterface {
                 "${instance.javaClass.simpleName}.rune".lowercase(),
                 "Allows use of the rune command",
                 PermissionDefault.TRUE,
+            ),
+            Permission(
+                "${instance.javaClass.simpleName}.rune.give".lowercase(),
+                "Allows giving runes to players",
+                PermissionDefault.OP,
             ),
         )
 
@@ -67,7 +109,7 @@ internal object RuneModule : ModuleInterface {
 
     @EventHandler
     fun on(event: PlayerJoinEvent) {
-        applyRuneModifiers(event.player, event.player.runeSlots)
+        applyRuneModifiers(event.player)
     }
 
     @EventHandler
@@ -87,7 +129,7 @@ internal object RuneModule : ModuleInterface {
             }
 
         player.runeSlots = slots
-        applyRuneModifiers(player, slots)
+        applyRuneModifiers(player)
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -95,30 +137,68 @@ internal object RuneModule : ModuleInterface {
         if (!RuneMenu.openViews.containsKey(event.view)) return
 
         val clickedInv = event.clickedInventory ?: return
+        val top = event.view.topInventory
 
-        if (clickedInv == event.view.topInventory) {
-            if (event.cursor.type != Material.AIR && !isRune(event.cursor)) event.isCancelled = true
+        if (clickedInv == top) {
+            val cursor = event.cursor
+
+            if (cursor.type != Material.AIR) {
+                if (!isRune(cursor) || isDuplicateRune(top, cursor, excludeSlots = setOf(event.slot))) {
+                    event.isCancelled = true
+                }
+            }
         } else if (event.isShiftClick) {
             val item = event.currentItem ?: return
 
-            if (item.type != Material.AIR && !isRune(item)) event.isCancelled = true
+            if (item.type != Material.AIR) {
+                if (!isRune(item) || isDuplicateRune(top, item)) {
+                    event.isCancelled = true
+                }
+            }
         }
     }
 
     @EventHandler(ignoreCancelled = true)
     fun on(event: InventoryDragEvent) {
         if (!RuneMenu.openViews.containsKey(event.view)) return
-        if (event.rawSlots.any { it < 5 } && !isRune(event.oldCursor)) event.isCancelled = true
+
+        val topSlots = event.rawSlots.filter { it < 5 }.toSet()
+
+        if (topSlots.isEmpty()) return
+
+        if (!isRune(event.oldCursor) ||
+            isDuplicateRune(
+                event.view.topInventory,
+                event.oldCursor,
+                excludeSlots = topSlots,
+            )
+        ) {
+            event.isCancelled = true
+        }
     }
 
     /** Returns `true` if the given [ItemStack] carries a rune PDC tag. */
     private fun isRune(item: ItemStack): Boolean = item.persistentDataContainer.has(RUNE_TYPE_KEY)
 
-    private fun applyRuneModifiers(
-        player: Player,
-        slots: List<String>,
-    ) {
-        RUNES.forEach { rune -> rune.modifiers(player, slots.count { it == rune.id }) }
+    /**
+     * Returns `true` if a rune of the same type as [rune] already occupies any slot in the top
+     * inventory, ignoring slots in [excludeSlots] (e.g. the slot currently being replaced).
+     */
+    private fun isDuplicateRune(
+        inventory: Inventory,
+        rune: ItemStack,
+        excludeSlots: Set<Int> = emptySet(),
+    ): Boolean =
+        (0 until 5).any { slot ->
+            slot !in excludeSlots &&
+                inventory.getItem(slot)?.persistentDataContainer?.get(
+                    RUNE_TYPE_KEY,
+                    PersistentDataType.STRING,
+                ) == (rune.persistentDataContainer.get(RUNE_TYPE_KEY, PersistentDataType.STRING) ?: return false)
+        }
+
+    private fun applyRuneModifiers(player: Player) {
+        RUNES.forEach { rune -> rune.modifiers(player, player.runeSlots.any { it == rune.id }) }
     }
 
     /** Represents the config of the module. */
