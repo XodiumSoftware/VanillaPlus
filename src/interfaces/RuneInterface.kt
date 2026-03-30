@@ -1,9 +1,18 @@
+@file:Suppress("UnstableApiUsage")
+
 package org.xodium.vanillaplus.interfaces
 
+import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.CustomModelData
+import io.papermc.paper.datacomponent.item.ItemLore
+import net.kyori.adventure.text.Component
+import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.utils.Utils.MM
 
 /** Represents a contract for runes within the system. */
 internal interface RuneInterface {
@@ -11,8 +20,34 @@ internal interface RuneInterface {
         /** The [NamespacedKey] used to tag rune items with their type identifier. */
         val RUNE_TYPE_KEY = NamespacedKey(instance, "rune_type")
 
-        /** The [NamespacedKey] used to tag rune items with their family, for duplicate slot detection. */
-        val RUNE_FAMILY_KEY = NamespacedKey(instance, "rune_family")
+        /**
+         * Builds the [ItemStack] for a rune tier from its varying properties.
+         * Shared structure (lore header, stack size, CMD, PDC) is applied automatically.
+         */
+        fun buildItem(
+            id: String,
+            tier: Int,
+            material: Material,
+            name: Component,
+            modifierLine: Component,
+        ): ItemStack =
+            ItemStack.of(material).apply {
+                setData(DataComponentTypes.ITEM_NAME, name)
+                setData(
+                    DataComponentTypes.LORE,
+                    ItemLore.lore().addLines(listOf(MM.deserialize("<!italic><gray>Modifiers:"), modifierLine)),
+                )
+                setData(DataComponentTypes.MAX_STACK_SIZE, 1)
+                setData(
+                    DataComponentTypes.ITEM_MODEL,
+                    NamespacedKey(instance, "rune/${id.substringBefore("_").lowercase()}s"),
+                )
+                setData(
+                    DataComponentTypes.CUSTOM_MODEL_DATA,
+                    CustomModelData.customModelData().addFloat(tier.toFloat()).build(),
+                )
+                editPersistentDataContainer { it.set(RUNE_TYPE_KEY, PersistentDataType.STRING, id) }
+            }
     }
 
     /**
@@ -20,17 +55,6 @@ internal interface RuneInterface {
      * Defaults to the implementing class simple name.
      */
     val id: String get() = javaClass.simpleName
-
-    /**
-     * The family identifier shared across all tiers of this rune type.
-     * Used to prevent equipping multiple tiers of the same rune simultaneously. Defaults to [id].
-     */
-    val family: String get() = id
-
-    /**
-     * Whether this rune can drop from boss mobs. Higher tiers should override to `false`.
-     */
-    val droppable: Boolean get() = true
 
     /**
      * A unique [NamespacedKey] for this rune's attribute modifier, derived from [id].

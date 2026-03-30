@@ -23,7 +23,6 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.interfaces.RuneInterface
-import org.xodium.vanillaplus.interfaces.RuneInterface.Companion.RUNE_FAMILY_KEY
 import org.xodium.vanillaplus.interfaces.RuneInterface.Companion.RUNE_TYPE_KEY
 import org.xodium.vanillaplus.menus.RuneMenu
 import org.xodium.vanillaplus.pdcs.PlayerPDC.runeSlots
@@ -37,6 +36,9 @@ import kotlin.random.Random
 internal object RuneModule : ModuleInterface {
     /** All registered runes across all tiers. Add new [RuneInterface] implementations here to activate them. */
     val RUNES: List<RuneInterface> = HealthRune.tiers + SpeedRune.tiers
+
+    /** Runes that can drop from boss mobs. Edit this list to control what bosses drop. */
+    private val DROPPABLE: List<RuneInterface> = listOf(HealthRune.tiers[0], SpeedRune.tiers[0])
 
     /** All items giveable via `/runes give`: every registered rune tier. */
     private val GIVE_ITEMS: Map<String, ItemStack> = RUNES.associate { it.id to it.item }
@@ -104,9 +106,8 @@ internal object RuneModule : ModuleInterface {
     @EventHandler
     fun on(event: EntityDeathEvent) {
         val chance = Config.dropChances[event.entity.type] ?: return
-        val droppable = RUNES.filter { it.droppable }
 
-        if (droppable.isNotEmpty() && Random.nextDouble() < chance) event.drops.add(droppable.random().item.clone())
+        if (DROPPABLE.isNotEmpty() && Random.nextDouble() < chance) event.drops.add(DROPPABLE.random().item.clone())
     }
 
     @EventHandler
@@ -175,13 +176,28 @@ internal object RuneModule : ModuleInterface {
         }
     }
 
+    @Suppress("UnstableApiUsage")
+    @EventHandler
+    fun on(event: PrepareAnvilEvent) {
+        val first = event.inventory.getItem(0) ?: return
+        val second = event.inventory.getItem(1) ?: return
+
+        val firstType = runeTypeOf(first) ?: return
+        if (firstType != runeTypeOf(second)) return
+
+        val rune = RUNES.firstOrNull { it.id == firstType } ?: return
+        val next = rune.nextTier() ?: return
+
+        event.result = next.item.clone()
+        event.view.repairCost = (RUNES.indexOf(rune) + 1) * Config.anvilCombineCost
+    }
+
     /** Returns the rune type identifier of [item], or `null` if it is not a rune. */
     private fun runeTypeOf(item: ItemStack): String? =
         item.persistentDataContainer.get(RUNE_TYPE_KEY, PersistentDataType.STRING)
 
-    /** Returns the rune family of [item], or `null` if it is not a rune. */
-    private fun runeFamilyOf(item: ItemStack): String? =
-        item.persistentDataContainer.get(RUNE_FAMILY_KEY, PersistentDataType.STRING)
+    /** Returns the rune family of [item] derived from its type id, or `null` if it is not a rune. */
+    private fun runeFamilyOf(item: ItemStack): String? = runeTypeOf(item)?.substringBeforeLast("_")
 
     /** Returns `true` if the given [ItemStack] carries a rune PDC tag. */
     private fun isRune(item: ItemStack): Boolean = runeTypeOf(item) != null
@@ -200,22 +216,6 @@ internal object RuneModule : ModuleInterface {
         return (0 until 5).any { slot ->
             slot !in excludeSlots && inventory.getItem(slot)?.let { runeFamilyOf(it) } == family
         }
-    }
-
-    @Suppress("UnstableApiUsage")
-    @EventHandler
-    fun on(event: PrepareAnvilEvent) {
-        val first = event.inventory.getItem(0) ?: return
-        val second = event.inventory.getItem(1) ?: return
-
-        val firstType = runeTypeOf(first) ?: return
-        if (firstType != runeTypeOf(second)) return
-
-        val rune = RUNES.firstOrNull { it.id == firstType } ?: return
-        val next = rune.nextTier() ?: return
-
-        event.result = next.item.clone()
-        event.view.repairCost = (RUNES.indexOf(rune) + 1) * Config.anvilCombineCost
     }
 
     /** Applies or removes each registered rune's modifier on [player] based on their current slots. */
