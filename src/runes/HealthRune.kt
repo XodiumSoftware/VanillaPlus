@@ -17,6 +17,7 @@ import org.xodium.vanillaplus.interfaces.RuneInterface.Companion.RUNE_FAMILY_KEY
 import org.xodium.vanillaplus.interfaces.RuneInterface.Companion.RUNE_TYPE_KEY
 import org.xodium.vanillaplus.runes.HealthRune.Companion.MAX_TIERS
 import org.xodium.vanillaplus.utils.Utils.MM
+import org.xodium.vanillaplus.utils.Utils.toRoman
 
 /** Represents a tiered rune that increases the player's maximum health. Each tier grants +2 max health. */
 internal class HealthRune private constructor(
@@ -39,19 +40,6 @@ internal class HealthRune private constructor(
                 else -> "diamond"
             }
 
-        private fun toRoman(n: Int): String {
-            val values = intArrayOf(1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1)
-            val symbols = arrayOf("M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I")
-            var num = n
-            val sb = StringBuilder()
-            for (i in values.indices) {
-                while (num >= values[i]) {
-                    sb.append(symbols[i])
-                    num -= values[i]
-                }
-            }
-            return sb.toString()
-        }
     }
 
     override val id: String = "${FAMILY}_$tier"
@@ -64,7 +52,7 @@ internal class HealthRune private constructor(
         ItemStack.of(Material.AMETHYST_SHARD).apply {
             setData(
                 DataComponentTypes.ITEM_NAME,
-                MM.deserialize("<!italic><gradient:#CB2D3E:#EF473A><b>Health Rune ${toRoman(tier)}</b></gradient>"),
+                MM.deserialize("<!italic><gradient:#CB2D3E:#EF473A><b>Health Rune ${tier.toRoman()}</b></gradient>"),
             )
             setData(
                 DataComponentTypes.LORE,
