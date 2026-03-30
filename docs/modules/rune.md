@@ -76,6 +76,6 @@ object Config {
 
 1. **Attack Rune** — bonus attack damage per tier
 2. **Defence Rune** — bonus armor per tier
-8. **Depth Rune** — Elder Guardian drop; underwater breathing + mining speed
-9. **Soul Rune** — Wither drop; bonus XP gain or undead damage resistance
-10. **Void Rune** — Ender Dragon drop; ender pearl cooldown reduction
+3. **Depth Rune** — Elder Guardian drop; underwater breathing + mining speed
+4. **Soul Rune** — Wither drop; bonus XP gain or undead damage resistance
+5. **Void Rune** — Ender Dragon drop; ender pearl cooldown reduction
