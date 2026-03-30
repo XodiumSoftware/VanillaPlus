@@ -55,7 +55,7 @@ internal class SpeedRune private constructor(
                 ),
             )
             setData(DataComponentTypes.MAX_STACK_SIZE, 1)
-            setData(DataComponentTypes.ITEM_MODEL, NamespacedKey(instance, "rune/speed"))
+            setData(DataComponentTypes.ITEM_MODEL, NamespacedKey(instance, "rune/speedrunes"))
             setData(
                 DataComponentTypes.CUSTOM_MODEL_DATA,
                 CustomModelData.customModelData().addFloat(tier.toFloat()).build(),

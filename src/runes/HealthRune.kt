@@ -55,7 +55,7 @@ internal class HealthRune private constructor(
                 ),
             )
             setData(DataComponentTypes.MAX_STACK_SIZE, 1)
-            setData(DataComponentTypes.ITEM_MODEL, NamespacedKey(instance, "rune/health"))
+            setData(DataComponentTypes.ITEM_MODEL, NamespacedKey(instance, "rune/healthrunes"))
             setData(
                 DataComponentTypes.CUSTOM_MODEL_DATA,
                 CustomModelData.customModelData().addFloat(tier.toFloat()).build(),
