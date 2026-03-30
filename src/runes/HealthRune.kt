@@ -3,11 +3,13 @@ package org.xodium.vanillaplus.runes
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
 import org.bukkit.Material
+import org.bukkit.NamespacedKey
 import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeModifier
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.RuneInterface
 import org.xodium.vanillaplus.interfaces.RuneInterface.Companion.RUNE_TYPE_KEY
 import org.xodium.vanillaplus.utils.Utils.MM
@@ -33,6 +35,7 @@ internal object HealthRune : RuneInterface {
                     ),
                 ),
             )
+            setData(DataComponentTypes.ITEM_MODEL, NamespacedKey(instance, "rune/health"))
             editPersistentDataContainer { it.set(RUNE_TYPE_KEY, PersistentDataType.STRING, id) }
         }
 
