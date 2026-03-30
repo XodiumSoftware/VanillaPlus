@@ -194,6 +194,7 @@ internal object RuneModule : ModuleInterface {
             )
         }
 
+    /** Applies or removes each registered rune's modifier on [player] based on their current slots. */
     private fun applyRuneModifiers(player: Player) {
         RUNES.forEach { rune -> rune.modifiers(player, player.runeSlots.any { it == rune.id }) }
     }
