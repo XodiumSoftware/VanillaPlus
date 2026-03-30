@@ -35,7 +35,9 @@ internal interface RuneInterface {
                 setData(DataComponentTypes.ITEM_NAME, name)
                 setData(
                     DataComponentTypes.LORE,
-                    ItemLore.lore().addLines(listOf(MM.deserialize("<!italic><gray>Modifiers:"), modifierLine)),
+                    ItemLore
+                        .lore()
+                        .addLines(listOf(Component.empty(), MM.deserialize("<!italic><gray>Modifiers:"), modifierLine)),
                 )
                 setData(DataComponentTypes.MAX_STACK_SIZE, 1)
                 setData(
