@@ -2,6 +2,14 @@
 
 All permission nodes follow the pattern `vanillaplus.<name>`.
 
+## Book
+
+| Command  | Aliases | Permission               | Default  | Description                 |
+|----------|---------|--------------------------|----------|-----------------------------|
+| `/rules` | —       | `vanillaplus.book.rules` | Everyone | Opens the server rules book |
+
+Each configured book generates its own command and permission derived from its `cmd` field.
+
 ## Chat
 
 | Command                       | Aliases                       | Permission            | Default  | Description                        |
@@ -26,6 +34,12 @@ All permission nodes follow the pattern `vanillaplus.<name>`.
 | Command            | Aliases | Permission             | Default  | Description                        |
 |--------------------|---------|------------------------|----------|------------------------------------|
 | `/nickname [name]` | `nick`  | `vanillaplus.nickname` | Everyone | Set or clear your display nickname |
+
+## Rune
+
+| Command  | Aliases | Permission         | Default  | Description                  |
+|----------|---------|--------------------|----------|------------------------------|
+| `/runes` | `r`     | `vanillaplus.rune` | Everyone | Open the rune equipment menu |
 
 ## Scoreboard
 

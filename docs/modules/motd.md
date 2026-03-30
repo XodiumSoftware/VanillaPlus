@@ -8,7 +8,7 @@ Sets a custom server list MOTD (the two lines shown below the server name in the
 |--------|-----------|------------------------------------------------------------|
 | `motd` | See above | Up to 2 lines of MiniMessage text shown in the server list |
 
-All strings support [MiniMessage](https://docs.advntr.dev/minimessage/) formatting including gradients, colours, and bold/italic.
+All strings support [MiniMessage](https://docs.advntr.dev/minimessage/) formatting including gradients, colours and bold/italic.
 
 ## Behaviour
 

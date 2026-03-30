@@ -4,11 +4,11 @@
 
 ## How it works
 
-Rare **gem items** drop from the three vanilla bosses. Players open `/rune` to manage up to **5 rune slots** displayed as a hopper inventory. Placing a gem into a slot equips it; removing it returns the gem to the player's inventory. Modifiers take effect immediately on close and are restored on login.
+Rare **gem items** drop from the three vanilla bosses. Players open `/rune` to manage up to **5 rune slots** displayed as a hopper inventory. Placing a gem into a slot equips it; removing it returns the gem to the player's inventory. Modifiers take effect immediately on close and are restored on `login`.
 
 | Detail           | Value                                |
 |------------------|--------------------------------------|
-| **Command**      | `/rune` (alias: `/runes`)            |
+| **Command**      | `/runes` (alias: `r`)                |
 | **Permission**   | `vanillaplus.rune` (default: true)   |
 | **Slots**        | 5                                    |
 | **Drop sources** | Elder Guardian, Wither, Ender Dragon |
