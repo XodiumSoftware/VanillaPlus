@@ -39,6 +39,17 @@ internal object RuneModule : ModuleInterface {
     /** All registered runes across all tiers. Add new [RuneInterface] implementations here to activate them. */
     val RUNES: List<RuneInterface> = HealthRune.tiers
 
+    /** All items giveable via `/runes give`: every rune tier plus the gem and containers. */
+    private val GIVE_ITEMS: Map<String, ItemStack> =
+        buildMap {
+            RUNES.forEach { put(it.id, it.item) }
+            put("health_gem", HealthRune.GEM)
+            put("container_copper", HealthRune.CONTAINER_COPPER)
+            put("container_iron", HealthRune.CONTAINER_IRON)
+            put("container_gold", HealthRune.CONTAINER_GOLD)
+            put("container_diamond", HealthRune.CONTAINER_DIAMOND)
+        }
+
     override val cmds =
         listOf(
             CommandData(
@@ -54,13 +65,13 @@ internal object RuneModule : ModuleInterface {
                                 Commands
                                     .argument("rune", StringArgumentType.word())
                                     .suggests { _, builder ->
-                                        RUNES.forEach { builder.suggest(it.id) }
+                                        GIVE_ITEMS.keys.forEach { builder.suggest(it) }
                                         builder.buildFuture()
                                     }.playerExecuted { player, ctx ->
-                                        val runeId = StringArgumentType.getString(ctx, "rune")
-                                        val rune = RUNES.firstOrNull { it.id == runeId } ?: return@playerExecuted
+                                        val id = StringArgumentType.getString(ctx, "rune")
+                                        val item = GIVE_ITEMS[id] ?: return@playerExecuted
 
-                                        player.inventory.addItem(rune.item.clone())
+                                        player.inventory.addItem(item.clone())
                                     }.then(
                                         Commands
                                             .argument("target", StringArgumentType.word())
@@ -68,15 +79,14 @@ internal object RuneModule : ModuleInterface {
                                                 instance.server.onlinePlayers.forEach { builder.suggest(it.name) }
                                                 builder.buildFuture()
                                             }.executesCatching { ctx ->
-                                                val runeId = StringArgumentType.getString(ctx, "rune")
-                                                val rune =
-                                                    RUNES.firstOrNull { it.id == runeId } ?: return@executesCatching
+                                                val id = StringArgumentType.getString(ctx, "rune")
+                                                val item = GIVE_ITEMS[id] ?: return@executesCatching
                                                 val targetName = StringArgumentType.getString(ctx, "target")
                                                 val target =
                                                     instance.server.getPlayerExact(targetName)
                                                         ?: return@executesCatching
 
-                                                target.inventory.addItem(rune.item.clone())
+                                                target.inventory.addItem(item.clone())
                                             },
                                     ),
                             ),
