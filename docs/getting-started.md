@@ -8,7 +8,7 @@
 
 All modules are **enabled by default** and active immediately after install. No configuration file is required.
 
-## Customising behaviour
+## Customizing behaviour
 
 Settings are hardcoded defaults defined in each module's `object Config`. To change a value, edit the source and rebuild:
 

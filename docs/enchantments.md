@@ -18,8 +18,7 @@ VanillaPlus adds **6 custom enchantments** and **extends 2 vanilla enchantments*
 
 Breaks all connected blocks of the same ore type in a single swing. Works with all standard ores plus Ancient Debris, Nether Quartz Ore, and Nether Gold Ore.
 
-!!! tip "Synergy"
-Combine with **Tether** to automatically collect all vein-mined drops directly into your inventory.
+> **Synergy:** Combine with **Tether** to automatically collect all vein-mined drops directly into your inventory.
 
 ---
 
@@ -61,8 +60,7 @@ Applies to the harness slot of a Happy Ghast. Higher levels increase the base fl
 
 Broken block drops are collected directly into the player's inventory instead of being dropped as item entities. Overflow that doesn't fit is still dropped normally.
 
-!!! tip "Synergy"
-Combine with **Earthrend** to collect entire ore veins without running around to pick up drops.
+> **Synergy:** Combine with **Earthrend** to collect entire ore veins without running around to pick up drops.
 
 ---
 

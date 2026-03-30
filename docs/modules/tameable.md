@@ -8,5 +8,4 @@ Allows a pet owner to transfer ownership of their tamed animals to another playe
 - All tamed animals owned by the source player within range are transferred to the target player.
 - The lead is not consumed.
 
-!!! note
-Only the current owner can initiate a transfer. The target player does not need to do anything.
+> Only the current owner can initiate a transfer. The target player does not need to do anything.

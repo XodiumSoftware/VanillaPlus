@@ -1,6 +1,6 @@
 # Entity
 
-Per-mob grief prevention, random spawn egg drops from entity deaths, and horse armor enchanting via anvil.
+Per-mob grief prevention, random spawn egg drops from entity deaths, and horse armor enchanting via the anvil.
 
 ## Defaults
 
@@ -12,7 +12,7 @@ Per-mob grief prevention, random spawn egg drops from entity deaths, and horse a
 
 ### Grief prevention
 
-Grief cancellation is always active for: Blaze, Creeper, Ender Dragon, Enderman, Fireball (Ghast/WitherSkull), and Wither. To change which types are affected, edit `Config.griefCancelTypes` in the source.
+Grief cancellation is always active for: Blaze, Creeper, Ender Dragon, Enderman, Fireball (Ghast/WitherSkull), and Wither. To change, which types are affected, edit `Config.griefCancelTypes` in the source.
 
 ### Spawn egg drops
 

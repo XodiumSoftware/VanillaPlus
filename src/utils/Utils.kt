@@ -8,7 +8,6 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.World
 import org.bukkit.enchantments.Enchantment
 import org.xodium.vanillaplus.VanillaPlus
-import java.util.*
 
 /** General utilities. */
 internal object Utils {
@@ -21,6 +20,35 @@ internal object Utils {
             "<gradient:#FFA751:#FFE259>[</gradient><gradient:#CB2D3E:#EF473A>" +
                 "${this.javaClass.simpleName}" +
                 "</gradient><gradient:#FFE259:#FFA751>]</gradient>"
+
+    /** Extension function to convert a positive [Int] to its Roman numeral string representation. */
+    fun Int.toRoman(): String {
+        val numerals =
+            listOf(
+                1000 to "M",
+                900 to "CM",
+                500 to "D",
+                400 to "CD",
+                100 to "C",
+                90 to "XC",
+                50 to "L",
+                40 to "XL",
+                10 to "X",
+                9 to "IX",
+                5 to "V",
+                4 to "IV",
+                1 to "I",
+            )
+
+        var num = this
+
+        return buildString {
+            for ((value, symbol) in numerals) {
+                repeat(num / value) { append(symbol) }
+                num %= value
+            }
+        }
+    }
 
     /** Extension function to convert snake_case to Proper Case with spaces. */
     fun String.snakeToProperCase(): String =
@@ -36,13 +64,6 @@ internal object Utils {
             .split(Regex("(?=[A-Z])"))
             .filter { it.isNotEmpty() }
             .joinToString("_") { it.lowercase() }
-
-    /** Extension function to convert a UUID to a 4-element integer array representation. */
-    fun UUID.toIntArray(): IntArray {
-        val most = mostSignificantBits
-        val least = leastSignificantBits
-        return intArrayOf((most shr 32).toInt(), most.toInt(), (least shr 32).toInt(), least.toInt())
-    }
 
     /**
      * Returns the i18n string matching the current weather state of this world.
@@ -60,5 +81,4 @@ internal object Utils {
             hasStorm() -> storm
             else -> clear
         }
-
 }

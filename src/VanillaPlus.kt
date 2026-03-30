@@ -10,10 +10,10 @@ import org.xodium.vanillaplus.modules.DimensionModule
 import org.xodium.vanillaplus.modules.EntityModule
 import org.xodium.vanillaplus.modules.InventoryModule
 import org.xodium.vanillaplus.modules.LocatorModule
-import org.xodium.vanillaplus.modules.MapModule
 import org.xodium.vanillaplus.modules.MotdModule
 import org.xodium.vanillaplus.modules.OpenableModule
 import org.xodium.vanillaplus.modules.PlayerModule
+import org.xodium.vanillaplus.modules.RuneModule
 import org.xodium.vanillaplus.modules.ScoreBoardModule
 import org.xodium.vanillaplus.modules.ServerInfoModule
 import org.xodium.vanillaplus.modules.SitModule
@@ -63,10 +63,10 @@ internal class VanillaPlus : JavaPlugin() {
                 EntityModule,
                 InventoryModule,
                 LocatorModule,
-                MapModule,
                 MotdModule,
                 OpenableModule,
                 PlayerModule,
+                RuneModule,
                 ServerInfoModule,
                 ScoreBoardModule,
                 SitModule,
@@ -76,10 +76,6 @@ internal class VanillaPlus : JavaPlugin() {
         logger.info(
             "Registered: ${modules.size} module(s) | Took ${modules.sumOf { it.register() }}ms",
         )
-    }
-
-    override fun onDisable() {
-        server.messenger.unregisterOutgoingPluginChannel(instance)
     }
 
     /**
