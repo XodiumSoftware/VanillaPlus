@@ -76,11 +76,6 @@ object Config {
 
 1. **Attack Rune** — bonus attack damage per tier
 2. **Defence Rune** — bonus armor per tier
-3. **Luck Rune** — increases the luck attribute (affects loot tables)
-4. **Mending Rune** — passive health regeneration
-5. **Reach Rune** — extended block and entity interaction range
-6. **Stamina Rune** — increased oxygen / reduced hunger drain
-7. **Featherfall Rune** — reduces fall damage
 8. **Depth Rune** — Elder Guardian drop; underwater breathing + mining speed
 9. **Soul Rune** — Wither drop; bonus XP gain or undead damage resistance
 10. **Void Rune** — Ender Dragon drop; ender pearl cooldown reduction
