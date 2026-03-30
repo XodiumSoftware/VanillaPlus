@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 package org.xodium.vanillaplus.runes
 
 import io.papermc.paper.datacomponent.DataComponentTypes
@@ -11,32 +13,65 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.RuneInterface
+import org.xodium.vanillaplus.interfaces.RuneInterface.Companion.RUNE_FAMILY_KEY
 import org.xodium.vanillaplus.interfaces.RuneInterface.Companion.RUNE_TYPE_KEY
+import org.xodium.vanillaplus.runes.HealthRune.Companion.MAX_TIERS
 import org.xodium.vanillaplus.utils.Utils.MM
 
-/** Represents a rune that increases the player's maximum health. */
-internal object HealthRune : RuneInterface {
-    private const val HEALTH_PER_RUNE = 2.0
+/** Represents a tiered rune that increases the player's maximum health. Each tier grants +2 max health. */
+internal class HealthRune private constructor(
+    val tier: Int,
+) : RuneInterface {
+    companion object {
+        const val FAMILY = "HealthRune"
+        private const val HEALTH_PER_TIER = 2.0
+        const val MAX_TIERS = 20
 
-    @Suppress("UnstableApiUsage")
+        /** All tiers of [HealthRune], from I to [MAX_TIERS]. */
+        val tiers: List<HealthRune> = (1..MAX_TIERS).map { HealthRune(it) }
+
+        private fun toRoman(n: Int): String {
+            val values = intArrayOf(1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1)
+            val symbols = arrayOf("M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I")
+            var num = n
+            val sb = StringBuilder()
+            for (i in values.indices) {
+                while (num >= values[i]) {
+                    sb.append(symbols[i])
+                    num -= values[i]
+                }
+            }
+            return sb.toString()
+        }
+    }
+
+    override val id: String = "${FAMILY}_$tier"
+    override val family: String = FAMILY
+    override val droppable: Boolean = tier == 1
+
+    override fun nextTier(): RuneInterface? = if (tier < MAX_TIERS) tiers[tier] else null
+
     override val item: ItemStack =
         ItemStack.of(Material.AMETHYST_SHARD).apply {
             setData(
                 DataComponentTypes.ITEM_NAME,
-                MM.deserialize("<!italic><gradient:#CB2D3E:#EF473A>Health Rune</gradient>"),
+                MM.deserialize("<!italic><gradient:#CB2D3E:#EF473A><b>Health Rune ${toRoman(tier)}</b></gradient>"),
             )
             setData(
                 DataComponentTypes.LORE,
                 ItemLore.lore().addLines(
                     listOf(
-                        MM.deserialize(
-                            "<!italic><gray>Grants +${HEALTH_PER_RUNE} max health when slotted</gray>",
-                        ),
+                        MM.deserialize("<!italic><gray>Modifiers:"),
+                        MM.deserialize("<!italic><blue>+${(tier * HEALTH_PER_TIER).toInt()} Max Health <red>\u2665"),
                     ),
                 ),
             )
+            setData(DataComponentTypes.MAX_STACK_SIZE, 1)
             setData(DataComponentTypes.ITEM_MODEL, NamespacedKey(instance, "rune/health"))
-            editPersistentDataContainer { it.set(RUNE_TYPE_KEY, PersistentDataType.STRING, id) }
+            editPersistentDataContainer {
+                it.set(RUNE_TYPE_KEY, PersistentDataType.STRING, id)
+                it.set(RUNE_FAMILY_KEY, PersistentDataType.STRING, family)
+            }
         }
 
     override fun modifiers(
@@ -51,7 +86,7 @@ internal object HealthRune : RuneInterface {
             attr.addModifier(
                 AttributeModifier(
                     modifierKey,
-                    HEALTH_PER_RUNE,
+                    tier * HEALTH_PER_TIER,
                     AttributeModifier.Operation.ADD_NUMBER,
                 ),
             )

@@ -14,6 +14,7 @@ import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.inventory.InventoryDragEvent
+import org.bukkit.event.inventory.PrepareAnvilEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
@@ -24,6 +25,7 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.interfaces.RuneInterface
+import org.xodium.vanillaplus.interfaces.RuneInterface.Companion.RUNE_FAMILY_KEY
 import org.xodium.vanillaplus.interfaces.RuneInterface.Companion.RUNE_TYPE_KEY
 import org.xodium.vanillaplus.menus.RuneMenu
 import org.xodium.vanillaplus.pdcs.PlayerPDC.runeSlots
@@ -34,8 +36,8 @@ import kotlin.random.Random
 
 /** Represents a module handling rune mechanics within the system. */
 internal object RuneModule : ModuleInterface {
-    /** All registered runes. Add new [RuneInterface] implementations here to activate them. */
-    val RUNES: List<RuneInterface> = listOf(HealthRune)
+    /** All registered runes across all tiers. Add new [RuneInterface] implementations here to activate them. */
+    val RUNES: List<RuneInterface> = HealthRune.tiers
 
     override val cmds =
         listOf(
@@ -103,7 +105,10 @@ internal object RuneModule : ModuleInterface {
         val entity = event.entity
 
         if (entity !is ElderGuardian && entity !is Wither && entity !is EnderDragon) return
-        if (Random.nextDouble() < Config.runeDropChance) event.drops.add(RUNES.random().item.clone())
+        val droppable = RUNES.filter { it.droppable }
+        if (droppable.isNotEmpty() && Random.nextDouble() < Config.runeDropChance) {
+            event.drops.add(droppable.random().item.clone())
+        }
     }
 
     @EventHandler
@@ -176,23 +181,43 @@ internal object RuneModule : ModuleInterface {
     private fun runeTypeOf(item: ItemStack): String? =
         item.persistentDataContainer.get(RUNE_TYPE_KEY, PersistentDataType.STRING)
 
+    /** Returns the rune family of [item], or `null` if it is not a rune. */
+    private fun runeFamilyOf(item: ItemStack): String? =
+        item.persistentDataContainer.get(RUNE_FAMILY_KEY, PersistentDataType.STRING)
+
     /** Returns `true` if the given [ItemStack] carries a rune PDC tag. */
     private fun isRune(item: ItemStack): Boolean = runeTypeOf(item) != null
 
     /**
-     * Returns `true` if a rune of the same type as [rune] already occupies any slot in the top
+     * Returns `true` if a rune of the same family as [rune] already occupies any slot in the top
      * inventory, ignoring slots in [excludeSlots] (e.g. the slot currently being replaced).
      */
     private fun isDuplicateRune(
         inventory: Inventory,
         rune: ItemStack,
         excludeSlots: Set<Int> = emptySet(),
-    ): Boolean =
-        (0 until 5).any { slot ->
-            slot !in excludeSlots && inventory.getItem(slot)?.let { runeTypeOf(it) } == (
-                runeTypeOf(rune) ?: return false
-            )
+    ): Boolean {
+        val family = runeFamilyOf(rune) ?: return false
+        return (0 until 5).any { slot ->
+            slot !in excludeSlots && inventory.getItem(slot)?.let { runeFamilyOf(it) } == family
         }
+    }
+
+    @Suppress("UnstableApiUsage")
+    @EventHandler
+    fun on(event: PrepareAnvilEvent) {
+        val first = event.inventory.getItem(0) ?: return
+        val second = event.inventory.getItem(1) ?: return
+
+        val firstType = runeTypeOf(first) ?: return
+        if (firstType != runeTypeOf(second)) return
+
+        val rune = RUNES.firstOrNull { it.id == firstType } ?: return
+        val next = rune.nextTier() ?: return
+
+        event.result = next.item.clone()
+        event.view.repairCost = (RUNES.indexOf(rune) + 1) * Config.anvilCombineCost
+    }
 
     /** Applies or removes each registered rune's modifier on [player] based on their current slots. */
     private fun applyRuneModifiers(player: Player) {
@@ -202,5 +227,6 @@ internal object RuneModule : ModuleInterface {
     /** Represents the config of the module. */
     object Config {
         var runeDropChance: Double = 0.10
+        var anvilCombineCost: Int = 5
     }
 }
