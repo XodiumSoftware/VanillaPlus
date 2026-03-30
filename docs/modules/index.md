@@ -13,7 +13,6 @@ VanillaPlus is built around independent modules. Each module is self-contained a
 | [Entity](entity.md)                        | Per-mob grief prevention, spawn egg drops                                       | —                    |
 | [Inventory](inventory.md)                  | Search and unload nearby containers                                             | `/search`, `/unload` |
 | [Locator](locator.md)                      | Personalise locator bar colour                                                  | `/locator`           |
-| [Map](map.md)                              | Xaero's World Map & Minimap integration                                         | —                    |
 | [MOTD](motd.md)                            | Custom server list MOTD                                                         | —                    |
 | [Openable](openable.md)                    | Double doors, knocking sounds                                                   | —                    |
 | [Player](player.md)                        | Nicknames, skull drops, XP bottles, death/join/quit messages, enchantment hooks | `/nickname`          |
