@@ -15,7 +15,7 @@ Only one rune per family can be equipped at a time — equipping a higher-tier r
 | **Slots**        | 5                                    |
 | **Drop sources** | Elder Guardian, Wither, Ender Dragon |
 
-## Gems
+## Runes
 
 ### Health Rune
 
