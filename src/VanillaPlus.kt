@@ -20,6 +20,7 @@ import org.xodium.vanillaplus.modules.SitModule
 import org.xodium.vanillaplus.modules.TameableModule
 import org.xodium.vanillaplus.recipes.ChainmailRecipe
 import org.xodium.vanillaplus.recipes.DiamondRecycleRecipe
+import org.xodium.vanillaplus.recipes.HealthRuneRecipe
 import org.xodium.vanillaplus.recipes.PaintingRecipe
 import org.xodium.vanillaplus.recipes.RottenFleshRecipe
 import org.xodium.vanillaplus.recipes.WoodLogRecipe
@@ -45,6 +46,7 @@ internal class VanillaPlus : JavaPlugin() {
             listOf(
                 ChainmailRecipe,
                 DiamondRecycleRecipe,
+                HealthRuneRecipe,
                 PaintingRecipe,
                 RottenFleshRecipe,
                 WoodLogRecipe,

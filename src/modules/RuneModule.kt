@@ -105,9 +105,8 @@ internal object RuneModule : ModuleInterface {
         val entity = event.entity
 
         if (entity !is ElderGuardian && entity !is Wither && entity !is EnderDragon) return
-        val droppable = RUNES.filter { it.droppable }
-        if (droppable.isNotEmpty() && Random.nextDouble() < Config.runeDropChance) {
-            event.drops.add(droppable.random().item.clone())
+        if (Random.nextDouble() < Config.runeDropChance) {
+            event.drops.add(HealthRune.GEM.clone())
         }
     }
 
