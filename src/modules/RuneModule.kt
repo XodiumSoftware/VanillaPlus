@@ -59,6 +59,7 @@ internal object RuneModule : ModuleInterface {
                                     }.playerExecuted { player, ctx ->
                                         val runeId = StringArgumentType.getString(ctx, "rune")
                                         val rune = RUNES.firstOrNull { it.id == runeId } ?: return@playerExecuted
+
                                         player.inventory.addItem(rune.item.clone())
                                     }.then(
                                         Commands
@@ -69,12 +70,12 @@ internal object RuneModule : ModuleInterface {
                                             }.executesCatching { ctx ->
                                                 val runeId = StringArgumentType.getString(ctx, "rune")
                                                 val rune =
-                                                    RUNES.firstOrNull { it.id == runeId }
-                                                        ?: return@executesCatching
+                                                    RUNES.firstOrNull { it.id == runeId } ?: return@executesCatching
                                                 val targetName = StringArgumentType.getString(ctx, "target")
                                                 val target =
                                                     instance.server.getPlayerExact(targetName)
                                                         ?: return@executesCatching
+
                                                 target.inventory.addItem(rune.item.clone())
                                             },
                                     ),
