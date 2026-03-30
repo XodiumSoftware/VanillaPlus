@@ -30,6 +30,15 @@ internal class HealthRune private constructor(
         /** All tiers of [HealthRune], from I to [MAX_TIERS]. */
         val tiers: List<HealthRune> = (1..MAX_TIERS).map { HealthRune(it) }
 
+        /** Returns the texture group name for [tier]: copper (I–V), iron (VI–X), gold (XI–XV), diamond (XVI–XX). */
+        private fun tierGroup(tier: Int): String =
+            when {
+                tier <= 5 -> "copper"
+                tier <= 10 -> "iron"
+                tier <= 15 -> "gold"
+                else -> "diamond"
+            }
+
         private fun toRoman(n: Int): String {
             val values = intArrayOf(1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1)
             val symbols = arrayOf("M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I")
@@ -67,7 +76,7 @@ internal class HealthRune private constructor(
                 ),
             )
             setData(DataComponentTypes.MAX_STACK_SIZE, 1)
-            setData(DataComponentTypes.ITEM_MODEL, NamespacedKey(instance, "rune/health"))
+            setData(DataComponentTypes.ITEM_MODEL, NamespacedKey(instance, "rune/health_${tierGroup(tier)}"))
             editPersistentDataContainer {
                 it.set(RUNE_TYPE_KEY, PersistentDataType.STRING, id)
                 it.set(RUNE_FAMILY_KEY, PersistentDataType.STRING, family)
