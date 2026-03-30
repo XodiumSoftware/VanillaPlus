@@ -32,7 +32,7 @@ internal class SpeedRune private constructor(
             id = id,
             tier = tier,
             material = Material.FEATHER,
-            name = MM.deserialize("<!italic><gradient:#56CCF2:#2F80ED><b>Speed Rune ${tier.toRoman()}</b></gradient>"),
+            name = MM.deserialize("<!italic><gradient:#56CCF2:#2F80ED><b>Zephyrite ${tier.toRoman()}</b></gradient>"),
             modifierLine = MM.deserialize("<!italic><blue>+${tier * 10}% Move Speed"),
         )
 

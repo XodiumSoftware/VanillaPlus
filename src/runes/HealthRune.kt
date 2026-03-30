@@ -32,7 +32,7 @@ internal class HealthRune private constructor(
             id = id,
             tier = tier,
             material = Material.AMETHYST_SHARD,
-            name = MM.deserialize("<!italic><gradient:#CB2D3E:#EF473A><b>Health Rune ${tier.toRoman()}</b></gradient>"),
+            name = MM.deserialize("<!italic><gradient:#CB2D3E:#EF473A><b>Crimsonite ${tier.toRoman()}</b></gradient>"),
             modifierLine = MM.deserialize("<!italic><blue>+${(tier * HEALTH_PER_TIER).toInt()} Max Health"),
         )
 
