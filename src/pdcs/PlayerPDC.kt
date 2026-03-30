@@ -47,10 +47,12 @@ internal object PlayerPDC {
      * @return A list of 5 slot values.
      */
     var Player.runeSlots: List<String>
-        get() =
-            persistentDataContainer
-                .getOrDefault(RUNE_SLOTS_KEY, PersistentDataType.STRING, "")
-                .split(",")
-                .let { parts -> List(5) { i -> parts.getOrElse(i) { "" } } }
+        get() {
+            val raw =
+                persistentDataContainer.get(RUNE_SLOTS_KEY, PersistentDataType.STRING)
+                    ?: return List(5) { "" }
+            val parts = raw.split(",")
+            return List(5) { i -> parts.getOrElse(i) { "" } }
+        }
         set(value) = persistentDataContainer.set(RUNE_SLOTS_KEY, PersistentDataType.STRING, value.joinToString(","))
 }

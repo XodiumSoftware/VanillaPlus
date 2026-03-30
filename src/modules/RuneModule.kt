@@ -5,7 +5,6 @@ package org.xodium.vanillaplus.modules
 import com.mojang.brigadier.arguments.StringArgumentType
 import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.Material
-import org.bukkit.NamespacedKey
 import org.bukkit.entity.ElderGuardian
 import org.bukkit.entity.EnderDragon
 import org.bukkit.entity.Player
@@ -25,6 +24,7 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.interfaces.RuneInterface
+import org.xodium.vanillaplus.interfaces.RuneInterface.Companion.RUNE_TYPE_KEY
 import org.xodium.vanillaplus.menus.RuneMenu
 import org.xodium.vanillaplus.pdcs.PlayerPDC.runeSlots
 import org.xodium.vanillaplus.runes.HealthRune
@@ -34,8 +34,6 @@ import kotlin.random.Random
 
 /** Represents a module handling rune mechanics within the system. */
 internal object RuneModule : ModuleInterface {
-    val RUNE_TYPE_KEY = NamespacedKey(instance, "rune_type")
-
     /** All registered runes. Add new [RuneInterface] implementations here to activate them. */
     val RUNES: List<RuneInterface> = listOf(HealthRune)
 
@@ -115,16 +113,14 @@ internal object RuneModule : ModuleInterface {
 
     @EventHandler
     fun on(event: InventoryCloseEvent) {
-        if (!RuneMenu.openViews.containsKey(event.view)) return
+        if (event.view !in RuneMenu.openViews) return
 
         val player = event.player as? Player ?: return
         val slots =
             (0 until 5).map { i ->
                 event.view.topInventory
                     .getItem(i)
-                    ?.persistentDataContainer
-                    ?.get(RUNE_TYPE_KEY, PersistentDataType.STRING)
-                    ?: ""
+                    ?.let { runeTypeOf(it) } ?: ""
             }
 
         player.runeSlots = slots
@@ -133,7 +129,7 @@ internal object RuneModule : ModuleInterface {
 
     @EventHandler(ignoreCancelled = true)
     fun on(event: InventoryClickEvent) {
-        if (!RuneMenu.openViews.containsKey(event.view)) return
+        if (event.view !in RuneMenu.openViews) return
 
         val clickedInv = event.clickedInventory ?: return
         val top = event.view.topInventory
@@ -159,7 +155,7 @@ internal object RuneModule : ModuleInterface {
 
     @EventHandler(ignoreCancelled = true)
     fun on(event: InventoryDragEvent) {
-        if (!RuneMenu.openViews.containsKey(event.view)) return
+        if (event.view !in RuneMenu.openViews) return
 
         val topSlots = event.rawSlots.filter { it < 5 }.toSet()
 
@@ -176,8 +172,12 @@ internal object RuneModule : ModuleInterface {
         }
     }
 
+    /** Returns the rune type identifier of [item], or `null` if it is not a rune. */
+    private fun runeTypeOf(item: ItemStack): String? =
+        item.persistentDataContainer.get(RUNE_TYPE_KEY, PersistentDataType.STRING)
+
     /** Returns `true` if the given [ItemStack] carries a rune PDC tag. */
-    private fun isRune(item: ItemStack): Boolean = item.persistentDataContainer.has(RUNE_TYPE_KEY)
+    private fun isRune(item: ItemStack): Boolean = runeTypeOf(item) != null
 
     /**
      * Returns `true` if a rune of the same type as [rune] already occupies any slot in the top
@@ -189,11 +189,9 @@ internal object RuneModule : ModuleInterface {
         excludeSlots: Set<Int> = emptySet(),
     ): Boolean =
         (0 until 5).any { slot ->
-            slot !in excludeSlots &&
-                inventory.getItem(slot)?.persistentDataContainer?.get(
-                    RUNE_TYPE_KEY,
-                    PersistentDataType.STRING,
-                ) == (rune.persistentDataContainer.get(RUNE_TYPE_KEY, PersistentDataType.STRING) ?: return false)
+            slot !in excludeSlots && inventory.getItem(slot)?.let { runeTypeOf(it) } == (
+                runeTypeOf(rune) ?: return false
+            )
         }
 
     private fun applyRuneModifiers(player: Player) {

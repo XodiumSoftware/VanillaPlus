@@ -7,6 +7,11 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 
 /** Represents a contract for runes within the system. */
 internal interface RuneInterface {
+    companion object {
+        /** The [NamespacedKey] used to tag rune items with their type identifier. */
+        val RUNE_TYPE_KEY = NamespacedKey(instance, "rune_type")
+    }
+
     /**
      * A stable identifier for this rune, used as the PDC tag value and for slot persistence.
      * Defaults to the implementing class simple name.

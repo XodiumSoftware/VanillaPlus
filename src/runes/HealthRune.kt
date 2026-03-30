@@ -9,7 +9,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.interfaces.RuneInterface
-import org.xodium.vanillaplus.modules.RuneModule
+import org.xodium.vanillaplus.interfaces.RuneInterface.Companion.RUNE_TYPE_KEY
 import org.xodium.vanillaplus.utils.Utils.MM
 
 /** Represents a rune that increases the player's maximum health. */
@@ -33,7 +33,7 @@ internal object HealthRune : RuneInterface {
                     ),
                 ),
             )
-            editPersistentDataContainer { it.set(RuneModule.RUNE_TYPE_KEY, PersistentDataType.STRING, id) }
+            editPersistentDataContainer { it.set(RUNE_TYPE_KEY, PersistentDataType.STRING, id) }
         }
 
     override fun modifiers(

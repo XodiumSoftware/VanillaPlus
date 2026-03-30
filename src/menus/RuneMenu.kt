@@ -13,7 +13,7 @@ import java.util.*
 /** Represents the rune equipment menu. */
 @Suppress("UnstableApiUsage")
 internal object RuneMenu {
-    val openViews: WeakHashMap<InventoryView, Unit> = WeakHashMap()
+    val openViews: MutableSet<InventoryView> = Collections.newSetFromMap(WeakHashMap())
 
     private val TITLE = MM.deserialize("<gradient:#FFA751:#FFE259><b>Rune Slots</b></gradient>")
 
@@ -31,6 +31,6 @@ internal object RuneMenu {
             }
         }
         player.openInventory(view)
-        openViews[view] = Unit
+        openViews.add(view)
     }
 }
