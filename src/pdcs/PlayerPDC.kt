@@ -43,7 +43,7 @@ internal object PlayerPDC {
 
     /**
      * Gets or sets the list of rune types equipped in the player's rune slots.
-     * Each entry is a [RuneType][org.xodium.vanillaplus.modules.RuneModule.RuneType] name or empty string for an empty slot.
+     * Each entry is a rune [id][org.xodium.vanillaplus.interfaces.RuneInterface.id] or empty string for an empty slot.
      * @return A list of 5 slot values.
      */
     var Player.runeSlots: List<String>

@@ -105,7 +105,7 @@ internal object RuneModule : ModuleInterface {
         val entity = event.entity
 
         if (entity !is ElderGuardian && entity !is Wither && entity !is EnderDragon) return
-        if (Random.nextDouble() < Config.runeDropChance) event.drops.add(HealthRune.item)
+        if (Random.nextDouble() < Config.runeDropChance) event.drops.add(RUNES.random().item.clone())
     }
 
     @EventHandler
@@ -120,13 +120,11 @@ internal object RuneModule : ModuleInterface {
         val player = event.player as? Player ?: return
         val slots =
             (0 until 5).map { i ->
-                val item = event.view.topInventory.getItem(i) ?: return@map ""
-
-                if (isRune(item)) {
-                    item.persistentDataContainer.getOrDefault(RUNE_TYPE_KEY, PersistentDataType.STRING, "")
-                } else {
-                    ""
-                }
+                event.view.topInventory
+                    .getItem(i)
+                    ?.persistentDataContainer
+                    ?.get(RUNE_TYPE_KEY, PersistentDataType.STRING)
+                    ?: ""
             }
 
         player.runeSlots = slots
