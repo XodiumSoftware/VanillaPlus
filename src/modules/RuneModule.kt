@@ -39,16 +39,8 @@ internal object RuneModule : ModuleInterface {
     /** All registered runes across all tiers. Add new [RuneInterface] implementations here to activate them. */
     val RUNES: List<RuneInterface> = HealthRune.tiers
 
-    /** All items giveable via `/runes give`: every rune tier plus the gem and containers. */
-    private val GIVE_ITEMS: Map<String, ItemStack> =
-        buildMap {
-            RUNES.forEach { put(it.id, it.item) }
-            put("health_gem", HealthRune.GEM)
-            put("container_copper", HealthRune.CONTAINER_COPPER)
-            put("container_iron", HealthRune.CONTAINER_IRON)
-            put("container_gold", HealthRune.CONTAINER_GOLD)
-            put("container_diamond", HealthRune.CONTAINER_DIAMOND)
-        }
+    /** All items giveable via `/runes give`: every registered rune tier. */
+    private val GIVE_ITEMS: Map<String, ItemStack> = RUNES.associate { it.id to it.item }
 
     override val cmds =
         listOf(
@@ -115,8 +107,9 @@ internal object RuneModule : ModuleInterface {
         val entity = event.entity
 
         if (entity !is ElderGuardian && entity !is Wither && entity !is EnderDragon) return
-        if (Random.nextDouble() < Config.runeDropChance) {
-            event.drops.add(HealthRune.GEM.clone())
+        val droppable = RUNES.filter { it.droppable }
+        if (droppable.isNotEmpty() && Random.nextDouble() < Config.runeDropChance) {
+            event.drops.add(droppable.random().item.clone())
         }
     }
 
