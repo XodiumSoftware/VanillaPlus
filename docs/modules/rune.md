@@ -1,6 +1,6 @@
 # Rune Module
 
-> Adds a gem-based slot system that lets players permanently boost their stats.
+> Adds a rune-based slot system that lets players permanently boost their stats.
 
 ## How it works
 
