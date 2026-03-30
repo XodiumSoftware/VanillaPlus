@@ -4,16 +4,16 @@
 
 ## How it works
 
-Rare **gem items** drop from the three vanilla bosses. Players open `/runes` to manage up to **5 rune slots** displayed as a hopper inventory. Placing a gem into a slot equips it; removing it returns the gem to the player's inventory. Modifiers take effect immediately on close and are restored on `login`.
+Rare **rune items** drop from the three vanilla bosses. Players open `/runes` to manage up to **5 rune slots** displayed as a hopper inventory. Placing a rune into a slot equips it; removing it returns the rune to the player's inventory. Modifiers take effect immediately on close and are restored on `login`.
 
 Only one rune per family can be equipped at a time — equipping a higher-tier rune of the same family replaces the existing one.
 
-| Detail           | Value                                |
-|------------------|--------------------------------------|
-| **Command**      | `/runes` (alias: `r`)                |
-| **Permission**   | `vanillaplus.rune` (default: true)   |
-| **Slots**        | 5                                    |
-| **Drop sources** | Elder Guardian, Wither, Ender Dragon |
+| Detail           | Value                                        |
+|------------------|----------------------------------------------|
+| **Command**      | `/runes` (alias: `r`)                        |
+| **Permission**   | `vanillaplus.rune` (default: true)           |
+| **Slots**        | 5                                            |
+| **Drop sources** | Elder Guardian, Wither, Warden, Ender Dragon |
 
 ## Runes
 
@@ -57,7 +57,7 @@ Place two identical runes in an anvil to produce the next tier. The XP cost scal
 cost = tier × anvilCombineCost
 ```
 
-e.g. combining two Tier I runes costs `1 × 5 = 5` levels; combining two Tier XIX runes costs `19 × 5 = 95` levels.
+e.g. combining two Tier I runes costs `1 × 5 = 5` levels; combining two Tier IV runes costs `4 × 5 = 20` levels.
 
 ## Config
 
@@ -66,6 +66,7 @@ object Config {
     var dropChances: Map<EntityType, Double> = mapOf(
         EntityType.ELDER_GUARDIAN to 0.05,
         EntityType.WITHER to 0.10,
+        EntityType.WARDEN to 0.15,
         EntityType.ENDER_DRAGON to 0.20,
     )
     var anvilCombineCost: Int = 5  // XP level multiplier per tier step

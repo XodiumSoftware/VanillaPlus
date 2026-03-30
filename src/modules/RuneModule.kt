@@ -26,8 +26,8 @@ import org.xodium.vanillaplus.interfaces.RuneInterface
 import org.xodium.vanillaplus.interfaces.RuneInterface.Companion.RUNE_TYPE_KEY
 import org.xodium.vanillaplus.menus.RuneMenu
 import org.xodium.vanillaplus.pdcs.PlayerPDC.runeSlots
-import org.xodium.vanillaplus.runes.HealthRune
-import org.xodium.vanillaplus.runes.SpeedRune
+import org.xodium.vanillaplus.runes.CrimsoniteRune
+import org.xodium.vanillaplus.runes.ZephyriteRune
 import org.xodium.vanillaplus.utils.CommandUtils.executesCatching
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import kotlin.random.Random
@@ -35,10 +35,10 @@ import kotlin.random.Random
 /** Represents a module handling rune mechanics within the system. */
 internal object RuneModule : ModuleInterface {
     /** All registered runes across all tiers. Add new [RuneInterface] implementations here to activate them. */
-    val RUNES: List<RuneInterface> = HealthRune.tiers + SpeedRune.tiers
+    val RUNES: List<RuneInterface> = CrimsoniteRune.tiers + ZephyriteRune.tiers
 
     /** Runes that can drop from boss mobs. Edit this list to control what bosses drop. */
-    private val DROPPABLE: List<RuneInterface> = listOf(HealthRune.tiers[0], SpeedRune.tiers[0])
+    private val DROPPABLE: List<RuneInterface> = listOf(CrimsoniteRune.tiers[0], ZephyriteRune.tiers[0])
 
     /** All items giveable via `/runes give`: every registered rune tier. */
     private val GIVE_ITEMS: Map<String, ItemStack> = RUNES.associate { it.id to it.item }
@@ -229,6 +229,7 @@ internal object RuneModule : ModuleInterface {
             mapOf(
                 EntityType.ELDER_GUARDIAN to 0.05,
                 EntityType.WITHER to 0.10,
+                EntityType.WARDEN to 0.15,
                 EntityType.ENDER_DRAGON to 0.20,
             )
         var anvilCombineCost: Int = 5

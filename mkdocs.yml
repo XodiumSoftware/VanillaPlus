@@ -41,16 +41,17 @@ nav:
   - Getting Started: getting-started.md
   - Modules:
       - modules/index.md
-      - Bookshelf: modules/bookshelf.md
+      - Book: modules/book.md
+      - Chiseled Bookshelf: modules/chiseledbookshelf.md
       - Chat: modules/chat.md
       - Dimensions: modules/dimensions.md
       - Entity: modules/entity.md
       - Inventory: modules/inventory.md
       - Locator: modules/locator.md
-      - Map: modules/map.md
       - MOTD: modules/motd.md
       - Openable: modules/openable.md
       - Player: modules/player.md
+      - Rune: modules/rune.md
       - Scoreboard: modules/scoreboard.md
       - Server Info: modules/server-info.md
       - Sit: modules/sit.md

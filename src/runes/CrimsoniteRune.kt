@@ -7,20 +7,20 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.interfaces.RuneInterface
 import org.xodium.vanillaplus.interfaces.RuneInterface.Companion.buildItem
-import org.xodium.vanillaplus.runes.HealthRune.Companion.MAX_TIERS
+import org.xodium.vanillaplus.runes.CrimsoniteRune.Companion.MAX_TIERS
 import org.xodium.vanillaplus.utils.Utils.MM
 import org.xodium.vanillaplus.utils.Utils.toRoman
 
 /** Represents a tiered rune that increases the player's maximum health. Each tier grants +8 max health. */
-internal class HealthRune private constructor(
+internal class CrimsoniteRune private constructor(
     val tier: Int,
 ) : RuneInterface {
     companion object {
         private const val HEALTH_PER_TIER = 8.0
         const val MAX_TIERS = 5
 
-        /** All tiers of [HealthRune], from I to [MAX_TIERS]. */
-        val tiers: List<HealthRune> = (1..MAX_TIERS).map { HealthRune(it) }
+        /** All tiers of [CrimsoniteRune], from I to [MAX_TIERS]. */
+        val tiers: List<CrimsoniteRune> = (1..MAX_TIERS).map { CrimsoniteRune(it) }
     }
 
     override val id: String = "${javaClass.simpleName}_$tier"

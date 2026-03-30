@@ -7,20 +7,20 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.interfaces.RuneInterface
 import org.xodium.vanillaplus.interfaces.RuneInterface.Companion.buildItem
-import org.xodium.vanillaplus.runes.SpeedRune.Companion.MAX_TIERS
+import org.xodium.vanillaplus.runes.ZephyriteRune.Companion.MAX_TIERS
 import org.xodium.vanillaplus.utils.Utils.MM
 import org.xodium.vanillaplus.utils.Utils.toRoman
 
 /** Represents a tiered rune that increases the player's movement speed. Each tier grants +10% move speed. */
-internal class SpeedRune private constructor(
+internal class ZephyriteRune private constructor(
     val tier: Int,
 ) : RuneInterface {
     companion object {
         private const val SPEED_PER_TIER = 0.01
         const val MAX_TIERS = 5
 
-        /** All tiers of [SpeedRune], from I to [MAX_TIERS]. */
-        val tiers: List<SpeedRune> = (1..MAX_TIERS).map { SpeedRune(it) }
+        /** All tiers of [ZephyriteRune], from I to [MAX_TIERS]. */
+        val tiers: List<ZephyriteRune> = (1..MAX_TIERS).map { ZephyriteRune(it) }
     }
 
     override val id: String = "${javaClass.simpleName}_$tier"
