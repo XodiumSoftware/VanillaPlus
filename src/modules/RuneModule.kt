@@ -120,11 +120,16 @@ internal object RuneModule : ModuleInterface {
         if (event.view !in RuneMenu.openViews) return
 
         val player = event.player as? Player ?: return
+        val existing = player.runeSlots
         val slots =
             (0 until 5).map { i ->
-                event.view.topInventory
-                    .getItem(i)
-                    ?.let { runeTypeOf(it) } ?: ""
+                if (isSlotLocked(player, i)) {
+                    existing[i]
+                } else {
+                    event.view.topInventory
+                        .getItem(i)
+                        ?.let { runeTypeOf(it) } ?: ""
+                }
             }
 
         player.runeSlots = slots
@@ -139,6 +144,13 @@ internal object RuneModule : ModuleInterface {
         val top = event.view.topInventory
 
         if (clickedInv == top) {
+            val player = event.whoClicked as? Player ?: return
+
+            if (isSlotLocked(player, event.slot)) {
+                event.isCancelled = true
+                return
+            }
+
             val cursor = event.cursor
 
             if (cursor.type != Material.AIR) {
@@ -165,7 +177,10 @@ internal object RuneModule : ModuleInterface {
 
         if (topSlots.isEmpty()) return
 
-        if (!isRune(event.oldCursor) ||
+        val player = event.whoClicked as? Player ?: return
+
+        if (topSlots.any { isSlotLocked(player, it) } ||
+            !isRune(event.oldCursor) ||
             isDuplicateRune(
                 event.view.topInventory,
                 event.oldCursor,
@@ -218,9 +233,21 @@ internal object RuneModule : ModuleInterface {
         }
     }
 
-    /** Applies or removes each registered rune's modifier on [player] based on their current slots. */
+    /** Returns `true` if [slot] in the rune menu is locked for [player] based on their XP level. */
+    private fun isSlotLocked(
+        player: Player,
+        slot: Int,
+    ): Boolean = player.level < Config.slotLevelRequirements.getOrElse(slot) { Int.MAX_VALUE }
+
+    /** Applies or removes each registered rune's modifier on [player] based on their current slots and level. */
     private fun applyRuneModifiers(player: Player) {
-        RUNES.forEach { rune -> rune.modifiers(player, player.runeSlots.any { it == rune.id }) }
+        val slots = player.runeSlots
+        val equippedIds =
+            slots
+                .mapIndexedNotNull { i, id -> id.takeIf { it.isNotEmpty() && !isSlotLocked(player, i) } }
+                .toSet()
+
+        RUNES.forEach { rune -> rune.modifiers(player, rune.id in equippedIds) }
     }
 
     /** Represents the config of the module. */
@@ -233,5 +260,6 @@ internal object RuneModule : ModuleInterface {
                 EntityType.ENDER_DRAGON to 0.20,
             )
         var anvilCombineCost: Int = 5
+        val slotLevelRequirements: List<Int> = listOf(0, 10, 20, 30, 40)
     }
 }
