@@ -17,35 +17,35 @@ Only one rune per family can be equipped at a time — equipping a higher-tier r
 
 ## Runes
 
-### Health Rune
+### Crimsonite Rune
 
 Amethyst Shard. Grants bonus max health while equipped.
 
-| Tier | Name            | Max Health Bonus |
-|------|-----------------|------------------|
-| I    | Health Rune I   | +8 ❤             |
-| II   | Health Rune II  | +16 ❤            |
-| III  | Health Rune III | +24 ❤            |
-| IV   | Health Rune IV  | +32 ❤            |
-| V    | Health Rune V   | +40 ❤            |
+| Tier | Name           | Max Health Bonus |
+|------|----------------|------------------|
+| I    | Crimsonite I   | +8 ❤             |
+| II   | Crimsonite II  | +16 ❤            |
+| III  | Crimsonite III | +24 ❤            |
+| IV   | Crimsonite IV  | +32 ❤            |
+| V    | Crimsonite V   | +40 ❤            |
 
-![Health Rune tiers](../images/healthrune_tiers_sheet.png)
+![Crimsonite Rune tiers](../images/crimsoniterune_tiers_sheet.png)
 
 Only **Tier I** drops from bosses. Higher tiers are obtained by combining two runes of the same tier in an anvil (see below).
 
-### Speed Rune
+### Zephyrite Rune
 
 Feather. Grants bonus movement speed while equipped.
 
-| Tier | Name           | Move Speed Bonus |
-|------|----------------|------------------|
-| I    | Speed Rune I   | +10% ⚡           |
-| II   | Speed Rune II  | +20% ⚡           |
-| III  | Speed Rune III | +30% ⚡           |
-| IV   | Speed Rune IV  | +40% ⚡           |
-| V    | Speed Rune V   | +50% ⚡           |
+| Tier | Name          | Move Speed Bonus |
+|------|---------------|------------------|
+| I    | Zephyrite I   | +10% ⚡           |
+| II   | Zephyrite II  | +20% ⚡           |
+| III  | Zephyrite III | +30% ⚡           |
+| IV   | Zephyrite IV  | +40% ⚡           |
+| V    | Zephyrite V   | +50% ⚡           |
 
-![Speed Rune tiers](../images/speedrune_tiers_sheet.png)
+![Zephyrite Rune tiers](../images/zephyriterune_tiers_sheet.png)
 
 Only **Tier I** drops from bosses. Higher tiers are obtained via anvil combining.
 
