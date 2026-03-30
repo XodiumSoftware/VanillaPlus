@@ -5,10 +5,8 @@ package org.xodium.vanillaplus.modules
 import com.mojang.brigadier.arguments.StringArgumentType
 import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.Material
-import org.bukkit.entity.ElderGuardian
-import org.bukkit.entity.EnderDragon
+import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
-import org.bukkit.entity.Wither
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -104,13 +102,10 @@ internal object RuneModule : ModuleInterface {
 
     @EventHandler
     fun on(event: EntityDeathEvent) {
-        val entity = event.entity
-
-        if (entity !is ElderGuardian && entity !is Wither && entity !is EnderDragon) return
+        val chance = Config.dropChances[event.entity.type] ?: return
         val droppable = RUNES.filter { it.droppable }
-        if (droppable.isNotEmpty() && Random.nextDouble() < Config.runeDropChance) {
-            event.drops.add(droppable.random().item.clone())
-        }
+
+        if (droppable.isNotEmpty() && Random.nextDouble() < chance) event.drops.add(droppable.random().item.clone())
     }
 
     @EventHandler
@@ -200,6 +195,7 @@ internal object RuneModule : ModuleInterface {
         excludeSlots: Set<Int> = emptySet(),
     ): Boolean {
         val family = runeFamilyOf(rune) ?: return false
+
         return (0 until 5).any { slot ->
             slot !in excludeSlots && inventory.getItem(slot)?.let { runeFamilyOf(it) } == family
         }
@@ -228,7 +224,12 @@ internal object RuneModule : ModuleInterface {
 
     /** Represents the config of the module. */
     object Config {
-        var runeDropChance: Double = 0.10
+        var dropChances: Map<EntityType, Double> =
+            mapOf(
+                EntityType.ELDER_GUARDIAN to 0.05,
+                EntityType.WITHER to 0.10,
+                EntityType.ENDER_DRAGON to 0.20,
+            )
         var anvilCombineCost: Int = 5
     }
 }
