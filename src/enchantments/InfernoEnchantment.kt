@@ -16,6 +16,7 @@ import org.bukkit.util.Vector
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 import org.xodium.vanillaplus.pdcs.PlayerPDC.mana
+import org.xodium.vanillaplus.utils.ScheduleUtils
 import org.xodium.vanillaplus.utils.Utils.MM
 import org.xodium.vanillaplus.utils.Utils.displayName
 import java.util.*
@@ -32,6 +33,8 @@ internal object InfernoEnchantment : EnchantmentInterface<PlayerInteractEvent> {
         const val MAX_MANA = 100
         const val MANA_COST_PER_FIREBALL = 10
         const val BAR_HIDE_DELAY_TICKS = 60L
+        const val MANA_REGEN_AMOUNT = 5
+        const val MANA_REGEN_PERIOD_TICKS = 40L
     }
 
     private val bossBars = WeakHashMap<Player, BossBar>()
@@ -48,7 +51,6 @@ internal object InfernoEnchantment : EnchantmentInterface<PlayerInteractEvent> {
             .activeSlots(EquipmentSlotGroup.MAINHAND)
 
     // TODO: add Effect on the fireball.
-    // TODO: add potions to replenish mana.
     // TODO: enchantment only goes on books. which have to be held in offhand to apply to blaze rod or just normal hand?.
     override fun effect(event: PlayerInteractEvent) {
         if (event.action != Action.LEFT_CLICK_AIR && event.action != Action.LEFT_CLICK_BLOCK) return
@@ -98,6 +100,21 @@ internal object InfernoEnchantment : EnchantmentInterface<PlayerInteractEvent> {
             fireball.shooter = player
             fireball.direction = spread.multiply(1.5)
             fireball.yield = 0.0f
+        }
+    }
+
+    /**
+     * Starts a repeating task that regenerates mana for all online players every
+     * [Config.MANA_REGEN_PERIOD_TICKS] ticks, up to [Config.MAX_MANA].
+     * Should be called once from [org.xodium.vanillaplus.VanillaPlus.onEnable].
+     */
+    fun startRegenTask() {
+        ScheduleUtils.schedule(period = Config.MANA_REGEN_PERIOD_TICKS) {
+            instance.server.onlinePlayers.forEach {
+                if (it.mana < Config.MAX_MANA) {
+                    it.mana = (it.mana + Config.MANA_REGEN_AMOUNT).coerceAtMost(Config.MAX_MANA)
+                }
+            }
         }
     }
 

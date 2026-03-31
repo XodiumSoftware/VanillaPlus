@@ -3,6 +3,7 @@
 package org.xodium.vanillaplus
 
 import org.bukkit.plugin.java.JavaPlugin
+import org.xodium.vanillaplus.enchantments.InfernoEnchantment
 import org.xodium.vanillaplus.modules.BookModule
 import org.xodium.vanillaplus.modules.ChatModule
 import org.xodium.vanillaplus.modules.ChiseledBookshelfModule
@@ -76,6 +77,8 @@ internal class VanillaPlus : JavaPlugin() {
         logger.info(
             "Registered: ${modules.size} module(s) | Took ${modules.sumOf { it.register() }}ms",
         )
+
+        InfernoEnchantment.startRegenTask()
     }
 
     /**
