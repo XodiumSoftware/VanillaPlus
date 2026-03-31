@@ -24,7 +24,7 @@ internal interface EnchantmentInterface<T : Event> {
 
     /**
      * Configures the properties of the enchantment using the provided builder.
-     * @param invoke The builder used to define the enchantment properties.
+     * @param builder The builder used to define the enchantment properties.
      * @return The builder for method chaining.
      */
     fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder = builder
