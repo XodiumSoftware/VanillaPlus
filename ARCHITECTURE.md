@@ -25,7 +25,7 @@ There are no automated tests in this project.
 
 ### Entry Points
 
-- **`VanillaPlusBootstrap`** — `PluginBootstrap` implementation. Runs before plugin enable. Creates item tags (`vanillaplus:tools`, `vanillaplus:weapons`, `vanillaplus:tools_weapons`, `vanillaplus:blaze_rods`, `vanillaplus:ice_wands`), registers seven custom enchantments into Paper's registry via `RegistryEvents.ENCHANTMENT`, then tags all seven as tradeable, non-treasure, and in-enchanting-table via `LifecycleEvents.TAGS.postFlatten`.
+- **`VanillaPlusBootstrap`** — `PluginBootstrap` implementation. Runs before plugin enable. Creates item tags (`vanillaplus:tools`, `vanillaplus:weapons`, `vanillaplus:tools_weapons`, `vanillaplus:blaze_rods`), registers seven custom enchantments into Paper's registry via `RegistryEvents.ENCHANTMENT`, then tags all seven as tradeable, non-treasure, and in-enchanting-table via `LifecycleEvents.TAGS.postFlatten`.
 - **`VanillaPlus`** — `JavaPlugin` main class. On enable: validates server version, registers all recipes, registers all modules, then calls `ManaUtils.startRegenTask()` to begin the shared mana regeneration loop. All modules are active by default (`enabled` defaults to `true` on `ModuleInterface`); override `enabled` to `false` in a specific module to disable it at compile time.
 
 ### Module System
@@ -48,7 +48,7 @@ Custom enchantments implement **`EnchantmentInterface<T : Event>`** (generic on 
 | Earthrend   | Pickaxes                                      |
 | Embertread  | Foot armor                                    |
 | Inferno     | Blaze Rods (`vanillaplus:blaze_rods`)         |
-| Frostbind   | Packed Ice (`vanillaplus:ice_wands`)          |
+| Frostbind   | Blaze Rods (`vanillaplus:blaze_rods`)         |
 
 SilkTouch and FeatherFalling exist as implementations but are not currently registered in the bootstrap.
 

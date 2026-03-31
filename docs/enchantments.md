@@ -95,12 +95,12 @@ Left-clicking with an enchanted Blaze Rod fires a small fireball in the directio
 
 | Property          | Value                 |
 |-------------------|-----------------------|
-| **Slot**          | Mainhand (Packed Ice) |
+| **Slot**          | Mainhand (Blaze Rods) |
 | **Levels**        | I                     |
 | **Mana cost**     | 10                    |
 | **Freeze radius** | 3 blocks              |
 
-Left-clicking with enchanted Packed Ice fires a snowball in the direction you are looking. On impact, all living entities within 3 blocks (excluding the caster) are fully frozen for the maximum freeze duration. Leaves a snowflake particle trail and bursts on hit. Draws from the same shared mana pool as Inferno; displays the **Spellbite** mana bar on cast. Only usable in Survival or Adventure mode.
+Left-clicking with a Frostbind Blaze Rod fires a snowball in the direction you are looking. On impact, all living entities within 3 blocks (excluding the caster) are fully frozen for the maximum freeze duration. Leaves a snowflake particle trail and bursts on hit. Draws from the same shared mana pool as Inferno; displays the **Spellbite** mana bar on cast. Only usable in Survival or Adventure mode.
 
 ---
 

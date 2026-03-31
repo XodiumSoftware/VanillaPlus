@@ -37,13 +37,12 @@ internal object FrostbindEnchantment : EnchantmentInterface<PlayerInteractEvent>
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(65, 5))
             .activeSlots(EquipmentSlotGroup.MAINHAND)
 
-    // TODO: add potions to replenish mana.
     override fun effect(event: PlayerInteractEvent) {
         if (event.action != Action.LEFT_CLICK_AIR && event.action != Action.LEFT_CLICK_BLOCK) return
 
         val item = event.item ?: return
 
-        if (item.type != Material.PACKED_ICE) return
+        if (item.type != Material.BLAZE_ROD) return
         if (!item.containsEnchantment(get())) return
 
         val player = event.player
