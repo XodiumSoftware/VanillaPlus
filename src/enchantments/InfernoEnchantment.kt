@@ -10,15 +10,18 @@ import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.util.Vector
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 import org.xodium.vanillaplus.utils.Utils.displayName
-import java.util.*
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
+import kotlin.uuid.toKotlinUuid
 
 /** Represents an object handling inferno enchantment implementation within the system. */
+@OptIn(ExperimentalUuidApi::class)
 @Suppress("UnstableApiUsage")
 internal object InfernoEnchantment : EnchantmentInterface<PlayerInteractEvent> {
-    private val cooldowns = HashMap<UUID, Long>()
+    private val cooldowns = HashMap<Uuid, Long>()
     private const val COOLDOWN_MS = 1500L
 
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
@@ -45,9 +48,9 @@ internal object InfernoEnchantment : EnchantmentInterface<PlayerInteractEvent> {
 
         val now = System.currentTimeMillis()
 
-        if ((cooldowns[player.uniqueId] ?: 0L) > now) return
+        if ((cooldowns[player.uniqueId.toKotlinUuid()] ?: 0L) > now) return
 
-        cooldowns[player.uniqueId] = now + COOLDOWN_MS
+        cooldowns[player.uniqueId.toKotlinUuid()] = now + COOLDOWN_MS
 
         event.isCancelled = true
 
