@@ -1,6 +1,6 @@
 # Enchantments
 
-VanillaPlus adds **6 custom enchantments** and **extends 2 vanilla enchantments**. All are obtainable through the enchanting table, anvil and villager trades (tradeable, non-treasure).
+VanillaPlus adds **7 custom enchantments** and **extends 2 vanilla enchantments**. All are obtainable through the enchanting table, anvil and villager trades (tradeable, non-treasure).
 
 ---
 
@@ -77,16 +77,30 @@ When a fully grown crop is harvested with a Verdance hoe, the crop block is rese
 
 ### Inferno
 
-> Launches fireballs on right-click with a Blaze Rod.
+> Launches a fireball on left-click with a Blaze Rod.
 
-| Property     | Value                                      |
-|--------------|--------------------------------------------|
-| **Slot**     | Mainhand (Blaze Rods)                      |
-| **Levels**   | I – III                                    |
-| **Spread**   | Lv I → 1 fireball · Lv II → 3 · Lv III → 5 |
-| **Cooldown** | 1.5 s                                      |
+| Property      | Value                 |
+|---------------|-----------------------|
+| **Slot**      | Mainhand (Blaze Rods) |
+| **Levels**    | I                     |
+| **Mana cost** | 10                    |
 
-Right-clicking with a Blaze Rod fires a spread of small fireballs in the direction you are looking. The number of fireballs scales with the enchantment level; higher levels fan out at ±10° / ±20° offsets. Only usable in Survival mode. Fireballs deal no block damage (`yield = 0`).
+Left-clicking with an enchanted Blaze Rod fires a small fireball in the direction you are looking. Fireballs deal no block damage (`yield = 0`) and leave a trail of flame and lava particles. Requires mana; displays the shared **Spellbite** mana bar on cast. Only usable in Survival or Adventure mode.
+
+---
+
+### Frostbind
+
+> Launches an ice bolt on left-click with Packed Ice that freezes nearby targets on impact.
+
+| Property          | Value                 |
+|-------------------|-----------------------|
+| **Slot**          | Mainhand (Packed Ice) |
+| **Levels**        | I                     |
+| **Mana cost**     | 10                    |
+| **Freeze radius** | 3 blocks              |
+
+Left-clicking with enchanted Packed Ice fires a snowball in the direction you are looking. On impact, all living entities within 3 blocks (excluding the caster) are fully frozen for the maximum freeze duration. Leaves a snowflake particle trail and bursts on hit. Draws from the same shared mana pool as Inferno; displays the **Spellbite** mana bar on cast. Only usable in Survival or Adventure mode.
 
 ---
 
