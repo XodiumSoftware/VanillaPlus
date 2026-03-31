@@ -1,10 +1,9 @@
 package org.xodium.vanillaplus.runes
 
+import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
-import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.interfaces.RuneInterface
-import org.xodium.vanillaplus.interfaces.RuneInterface.Companion.buildItem
 import org.xodium.vanillaplus.interfaces.RuneInterface.Companion.buildTiers
 import org.xodium.vanillaplus.utils.Utils.MM
 import org.xodium.vanillaplus.utils.Utils.toRoman
@@ -18,16 +17,12 @@ internal class CrimsoniteRune private constructor(
         val tiers: List<CrimsoniteRune> = buildTiers(::CrimsoniteRune)
     }
 
+    override val name: Component =
+        MM.deserialize("<!italic><gradient:#CB2D3E:#EF473A><b>Crimsonite ${tier.toRoman()}</b></gradient>")
+    override val material: Material = Material.AMETHYST_SHARD
     override val attribute: Attribute = Attribute.MAX_HEALTH
-    override val valuePerTier: Double = 8.0
-    override val item: ItemStack =
-        buildItem(
-            id = id,
-            tier = tier,
-            material = Material.AMETHYST_SHARD,
-            name = MM.deserialize("<!italic><gradient:#CB2D3E:#EF473A><b>Crimsonite ${tier.toRoman()}</b></gradient>"),
-            modifierLine = MM.deserialize("<!italic><blue>+${(tier * valuePerTier).toInt()} Max Health"),
-        )
+    override val modifier: Double = 8.0
+    override val modifierLore: Component = MM.deserialize("<!italic><blue>+${(tier * modifier).toInt()} Max Health")
 
     override fun nextTier(): RuneInterface? = tiers.getOrNull(tier)
 }

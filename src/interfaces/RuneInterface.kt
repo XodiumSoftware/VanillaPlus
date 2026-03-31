@@ -76,14 +76,23 @@ internal interface RuneInterface {
      */
     val modifierKey: NamespacedKey get() = NamespacedKey(instance, "rune_${id.lowercase()}_modifier")
 
+    /** The material used to represent this rune as an [ItemStack]. */
+    val material: Material
+
+    /** The display name of this rune. */
+    val name: Component
+
+    /** The lore line describing this rune's modifier. */
+    val modifierLore: Component
+
     /** The gem [ItemStack] that represents this rune in the world and in the rune menu. */
-    val item: ItemStack
+    val item: ItemStack get() = buildItem(id, tier, material, name, modifierLore)
 
     /** The [Attribute] this rune modifies. */
     val attribute: Attribute
 
     /** The amount added to [attribute] per tier. */
-    val valuePerTier: Double
+    val modifier: Double
 
     /**
      * Returns the next upgrade tier of this rune, or `null` if this is the maximum tier.
@@ -109,7 +118,7 @@ internal interface RuneInterface {
             attr.addModifier(
                 AttributeModifier(
                     modifierKey,
-                    tier * valuePerTier,
+                    tier * modifier,
                     AttributeModifier.Operation.ADD_NUMBER,
                 ),
             )
