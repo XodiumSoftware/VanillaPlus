@@ -4,6 +4,7 @@ import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
 import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.pdcs.PlayerPDC.MANA_KEY
 import org.xodium.vanillaplus.pdcs.PlayerPDC.NICKNAME_KEY
 import org.xodium.vanillaplus.pdcs.PlayerPDC.RUNE_SLOTS_KEY
 import org.xodium.vanillaplus.pdcs.PlayerPDC.SCOREBOARD_VISIBILITY_KEY
@@ -13,11 +14,13 @@ import org.xodium.vanillaplus.pdcs.PlayerPDC.SCOREBOARD_VISIBILITY_KEY
  * @property NICKNAME_KEY The [NamespacedKey] used for storing nickname data.
  * @property SCOREBOARD_VISIBILITY_KEY The [NamespacedKey] used for storing scoreboard visibility preferences.
  * @property RUNE_SLOTS_KEY The [NamespacedKey] used for storing equipped rune slot data.
+ * @property MANA_KEY The [NamespacedKey] used for storing current mana.
  */
 internal object PlayerPDC {
     private val NICKNAME_KEY = NamespacedKey(instance, "nickname")
     private val SCOREBOARD_VISIBILITY_KEY = NamespacedKey(instance, "scoreboard_visibility")
     private val RUNE_SLOTS_KEY = NamespacedKey(instance, "rune_slots")
+    val MANA_KEY = NamespacedKey(instance, "mana")
 
     /**
      * Gets or sets a [Player]'s nickname in their persistent data container.
@@ -40,6 +43,14 @@ internal object PlayerPDC {
     var Player.scoreboardVisibility: Boolean
         get() = persistentDataContainer.getOrDefault(SCOREBOARD_VISIBILITY_KEY, PersistentDataType.BOOLEAN, false)
         set(value) = persistentDataContainer.set(SCOREBOARD_VISIBILITY_KEY, PersistentDataType.BOOLEAN, value)
+
+    /**
+     * Gets or sets the player's current mana stored in their persistent data container.
+     * @return The player's current mana value, defaulting to 100 if unset.
+     */
+    var Player.mana: Int
+        get() = persistentDataContainer.getOrDefault(MANA_KEY, PersistentDataType.INTEGER, 100)
+        set(value) = persistentDataContainer.set(MANA_KEY, PersistentDataType.INTEGER, value)
 
     /**
      * Gets or sets the list of rune types equipped in the player's rune slots.

@@ -1,15 +1,24 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package org.xodium.vanillaplus.enchantments
 
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
+import net.kyori.adventure.bossbar.BossBar
 import org.bukkit.GameMode
 import org.bukkit.Material
+import org.bukkit.entity.Player
 import org.bukkit.entity.SmallFireball
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlotGroup
+import org.bukkit.scheduler.BukkitTask
 import org.bukkit.util.Vector
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
+import org.xodium.vanillaplus.pdcs.PlayerPDC.mana
+import org.xodium.vanillaplus.utils.Utils.MM
 import org.xodium.vanillaplus.utils.Utils.displayName
+import java.util.*
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
@@ -19,6 +28,15 @@ import kotlin.uuid.ExperimentalUuidApi
 @OptIn(ExperimentalUuidApi::class)
 @Suppress("UnstableApiUsage")
 internal object InfernoEnchantment : EnchantmentInterface<PlayerInteractEvent> {
+    object Config {
+        const val MAX_MANA = 100
+        const val MANA_COST_PER_FIREBALL = 10
+        const val BAR_HIDE_DELAY_TICKS = 60L
+    }
+
+    private val bossBars = WeakHashMap<Player, BossBar>()
+    private val hideTasks = WeakHashMap<Player, BukkitTask>()
+
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
             .description(key.displayName())
@@ -29,7 +47,6 @@ internal object InfernoEnchantment : EnchantmentInterface<PlayerInteractEvent> {
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(65, 5))
             .activeSlots(EquipmentSlotGroup.MAINHAND)
 
-    // TODO: setup mana system.
     // TODO: add Effect on the fireball.
     // TODO: add potions to replenish mana.
     // TODO: enchantment only goes on books. which have to be held in offhand to apply to blaze rod or just normal hand?.
@@ -45,8 +62,6 @@ internal object InfernoEnchantment : EnchantmentInterface<PlayerInteractEvent> {
 
         if (player.gameMode != GameMode.SURVIVAL) return
 
-        event.isCancelled = true
-
         val level = item.getEnchantmentLevel(get())
         val angleOffsets =
             when (level) {
@@ -54,6 +69,17 @@ internal object InfernoEnchantment : EnchantmentInterface<PlayerInteractEvent> {
                 2 -> doubleArrayOf(-10.0, 0.0, 10.0)
                 else -> doubleArrayOf(-20.0, -10.0, 0.0, 10.0, 20.0)
             }
+        val manaCost = angleOffsets.size * Config.MANA_COST_PER_FIREBALL
+
+        if (player.mana < manaCost) {
+            showManaBar(player)
+            return
+        }
+
+        event.isCancelled = true
+        player.mana -= manaCost
+        showManaBar(player)
+
         val direction = player.location.direction.normalize()
         val spawnLocation = player.eyeLocation.add(direction.clone().multiply(1.5))
 
@@ -73,5 +99,35 @@ internal object InfernoEnchantment : EnchantmentInterface<PlayerInteractEvent> {
             fireball.direction = spread.multiply(1.5)
             fireball.yield = 0.0f
         }
+    }
+
+    /**
+     * Shows or updates the mana [BossBar] for [player], then schedules it to be hidden after
+     * [Config.BAR_HIDE_DELAY_TICKS] ticks. Any pending hide task is cancelled and rescheduled on
+     * each call so the bar stays visible while the player is actively casting.
+     * @param player The [Player] whose mana bar should be shown.
+     */
+    private fun showManaBar(player: Player) {
+        val progress = (player.mana.toFloat() / Config.MAX_MANA).coerceIn(0f, 1f)
+        val name = MM.deserialize("<gradient:#CB2D3E:#EF473A><b>Mana</b></gradient>")
+        val bar =
+            bossBars.getOrPut(player) {
+                BossBar
+                    .bossBar(name, progress, BossBar.Color.RED, BossBar.Overlay.NOTCHED_10)
+                    .also { player.showBossBar(it) }
+            }
+        bar.name(name)
+        bar.progress(progress)
+
+        hideTasks.remove(player)?.cancel()
+        hideTasks[player] =
+            instance.server.scheduler.runTaskLater(
+                instance,
+                Runnable {
+                    player.hideBossBar(bar)
+                    bossBars.remove(player)
+                },
+                Config.BAR_HIDE_DELAY_TICKS,
+            )
     }
 }
