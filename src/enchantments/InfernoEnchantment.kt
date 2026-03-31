@@ -14,16 +14,11 @@ import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
-import kotlin.uuid.toKotlinUuid
 
 /** Represents an object handling inferno enchantment implementation within the system. */
 @OptIn(ExperimentalUuidApi::class)
 @Suppress("UnstableApiUsage")
 internal object InfernoEnchantment : EnchantmentInterface<PlayerInteractEvent> {
-    private val cooldowns = HashMap<Uuid, Long>()
-    private const val COOLDOWN_MS = 1500L
-
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
             .description(key.displayName())
@@ -35,7 +30,7 @@ internal object InfernoEnchantment : EnchantmentInterface<PlayerInteractEvent> {
             .activeSlots(EquipmentSlotGroup.MAINHAND)
 
     override fun effect(event: PlayerInteractEvent) {
-        if (event.action != Action.RIGHT_CLICK_AIR && event.action != Action.RIGHT_CLICK_BLOCK) return
+        if (event.action != Action.LEFT_CLICK_AIR && event.action != Action.LEFT_CLICK_BLOCK) return
 
         val item = event.item ?: return
 
@@ -45,12 +40,6 @@ internal object InfernoEnchantment : EnchantmentInterface<PlayerInteractEvent> {
         val player = event.player
 
         if (player.gameMode != GameMode.SURVIVAL) return
-
-        val now = System.currentTimeMillis()
-
-        if ((cooldowns[player.uniqueId.toKotlinUuid()] ?: 0L) > now) return
-
-        cooldowns[player.uniqueId.toKotlinUuid()] = now + COOLDOWN_MS
 
         event.isCancelled = true
 
