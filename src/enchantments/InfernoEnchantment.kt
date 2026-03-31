@@ -58,7 +58,6 @@ internal object InfernoEnchantment : EnchantmentInterface<PlayerInteractEvent> {
                 2 -> doubleArrayOf(-10.0, 0.0, 10.0)
                 else -> doubleArrayOf(-20.0, -10.0, 0.0, 10.0, 20.0)
             }
-
         val direction = player.location.direction.normalize()
         val spawnLocation = player.eyeLocation.add(direction.clone().multiply(1.5))
 
@@ -72,12 +71,10 @@ internal object InfernoEnchantment : EnchantmentInterface<PlayerInteractEvent> {
                     direction.y,
                     direction.x * sin + direction.z * cos,
                 ).normalize()
-
             val fireball = player.world.spawn(spawnLocation, SmallFireball::class.java)
 
             fireball.shooter = player
             fireball.direction = spread.multiply(1.5)
-            fireball.isIncendiary = true
             fireball.yield = 0.0f
         }
     }
