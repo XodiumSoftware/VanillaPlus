@@ -64,6 +64,9 @@ internal interface RuneInterface {
     /** The tier of this rune, from 1 to the type's maximum. */
     val tier: Int
 
+    /** All tiers of this rune type, used for tier progression. */
+    val tiers: List<RuneInterface>
+
     /**
      * A stable identifier for this rune, used as the PDC tag value and for slot persistence.
      * Defaults to the implementing class simple name.
@@ -98,7 +101,7 @@ internal interface RuneInterface {
      * Returns the next upgrade tier of this rune, or `null` if this is the maximum tier.
      * Used by the anvil combining mechanic.
      */
-    fun nextTier(): RuneInterface? = null
+    fun nextTier(): RuneInterface? = tiers.getOrNull(tier)
 
     /**
      * Applies or removes this rune's modifier on the given [player].
