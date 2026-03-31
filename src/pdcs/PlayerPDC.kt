@@ -14,7 +14,7 @@ import org.xodium.vanillaplus.pdcs.PlayerPDC.SCOREBOARD_VISIBILITY_KEY
  * @property NICKNAME_KEY The [NamespacedKey] used for storing nickname data.
  * @property SCOREBOARD_VISIBILITY_KEY The [NamespacedKey] used for storing scoreboard visibility preferences.
  * @property RUNE_SLOTS_KEY The [NamespacedKey] used for storing equipped rune slot data.
- * @property MANA_KEY The [NamespacedKey] used for storing current mana.
+ * @property MANA_KEY The [NamespacedKey] used for storing mana (shared between Inferno and Glacial).
  */
 internal object PlayerPDC {
     private val NICKNAME_KEY = NamespacedKey(instance, "nickname")
@@ -46,6 +46,7 @@ internal object PlayerPDC {
 
     /**
      * Gets or sets the player's current mana stored in their persistent data container.
+     * This pool is shared between Inferno and Glacial enchantments.
      * @return The player's current mana value, defaulting to 100 if unset.
      */
     var Player.mana: Int

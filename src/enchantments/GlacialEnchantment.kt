@@ -6,7 +6,7 @@ import net.kyori.adventure.sound.Sound
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.Particle
-import org.bukkit.entity.SmallFireball
+import org.bukkit.entity.Snowball
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlotGroup
@@ -17,15 +17,14 @@ import org.xodium.vanillaplus.pdcs.PlayerPDC.mana
 import org.xodium.vanillaplus.utils.ManaUtils
 import org.xodium.vanillaplus.utils.ManaUtils.NO_MANA_SOUND
 import org.xodium.vanillaplus.utils.Utils.displayName
-import kotlin.uuid.ExperimentalUuidApi
 
-/** Represents an object handling inferno enchantment implementation within the system. */
-@OptIn(ExperimentalUuidApi::class)
+/** Represents an object handling glacial enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
-internal object InfernoEnchantment : EnchantmentInterface<PlayerInteractEvent> {
+internal object GlacialEnchantment : EnchantmentInterface<PlayerInteractEvent> {
     object Config {
         const val MANA_COST = 10
-        val LAUNCH_SOUND: Sound = Sound.sound(Key.key("entity.blaze.shoot"), Sound.Source.HOSTILE, 1.0f, 1.0f)
+        const val FREEZE_RADIUS = 3.0
+        val LAUNCH_SOUND: Sound = Sound.sound(Key.key("entity.snowball.throw"), Sound.Source.PLAYER, 1.0f, 0.6f)
     }
 
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
@@ -43,7 +42,7 @@ internal object InfernoEnchantment : EnchantmentInterface<PlayerInteractEvent> {
 
         val item = event.item ?: return
 
-        if (item.type != Material.BLAZE_ROD) return
+        if (item.type != Material.PACKED_ICE) return
         if (!item.containsEnchantment(get())) return
 
         val player = event.player
@@ -62,42 +61,47 @@ internal object InfernoEnchantment : EnchantmentInterface<PlayerInteractEvent> {
 
         val direction = player.location.direction.normalize()
         val spawnLocation = player.eyeLocation.add(direction.clone().multiply(1.5))
-        val fireball = player.world.spawn(spawnLocation, SmallFireball::class.java)
+        val snowball = player.world.spawn(spawnLocation, Snowball::class.java)
 
-        fireball.shooter = player
-        fireball.direction = direction.clone().multiply(1.5)
-        fireball.yield = 0.0f
-        spawnFireballTrail(fireball)
+        snowball.shooter = player
+        snowball.velocity = direction.multiply(2.0)
+        spawnSnowballTrail(snowball)
         player.playSound(Config.LAUNCH_SOUND)
     }
 
     /**
-     * Spawns a repeating particle trail behind [fireball] every tick until the entity is no longer valid.
-     * Emits [Particle.FLAME] and [Particle.LAVA] at the fireball's current location.
-     * @param fireball The [SmallFireball] to trail.
+     * Spawns a repeating particle trail behind [snowball] every tick until the entity is no longer valid.
+     * Emits [Particle.SNOWFLAKE] along the flight path. On impact, freezes all nearby living entities
+     * within [Config.FREEZE_RADIUS] blocks and bursts [Particle.SNOWFLAKE] at the hit location.
+     * @param snowball The [Snowball] to trail.
      */
-    private fun spawnFireballTrail(fireball: SmallFireball) {
+    private fun spawnSnowballTrail(snowball: Snowball) {
+        var lastLoc = snowball.location
         var task: BukkitTask? = null
         task =
             instance.server.scheduler.runTaskTimer(
                 instance,
                 Runnable {
-                    if (!fireball.isValid) {
+                    if (!snowball.isValid) {
                         task?.cancel()
+                        lastLoc.world
+                            ?.getNearbyLivingEntities(lastLoc, Config.FREEZE_RADIUS)
+                            ?.filter { it != snowball.shooter }
+                            ?.forEach { it.freezeTicks = it.maxFreezeTicks }
+                        Particle.SNOWFLAKE
+                            .builder()
+                            .location(lastLoc)
+                            .count(40)
+                            .offset(0.5, 0.5, 0.5)
+                            .spawn()
                         return@Runnable
                     }
-                    val loc = fireball.location
-
-                    Particle.FLAME
+                    lastLoc = snowball.location
+                    Particle.SNOWFLAKE
                         .builder()
-                        .location(loc)
-                        .count(5)
+                        .location(lastLoc)
+                        .count(3)
                         .offset(0.05, 0.05, 0.05)
-                        .spawn()
-                    Particle.LAVA
-                        .builder()
-                        .location(loc)
-                        .count(1)
                         .spawn()
                 },
                 1L,
