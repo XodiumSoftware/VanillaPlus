@@ -3,7 +3,6 @@ package org.xodium.vanillaplus.enchantments
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
 import org.bukkit.Tag
 import org.bukkit.entity.Player
-import org.bukkit.event.Event
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.inventory.ItemStack
@@ -12,7 +11,7 @@ import org.xodium.vanillaplus.utils.Utils.displayName
 
 /** Represents an object handling embertread enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
-internal object EmbertreadEnchantment : EnchantmentInterface {
+internal object EmbertreadEnchantment : EnchantmentInterface<EntityDamageEvent> {
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
             .description(key.displayName())
@@ -23,8 +22,7 @@ internal object EmbertreadEnchantment : EnchantmentInterface {
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(60, 0))
             .activeSlots(EquipmentSlotGroup.FEET)
 
-    override fun effect(event: Event) {
-        val event = event as? EntityDamageEvent ?: return
+    override fun effect(event: EntityDamageEvent) {
         val player = event.entity as? Player ?: return
 
         if (!isValidBoots(player.inventory.boots)) return

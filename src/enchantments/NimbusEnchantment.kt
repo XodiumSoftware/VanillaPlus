@@ -4,7 +4,6 @@ import io.papermc.paper.event.entity.EntityEquipmentChangedEvent
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.HappyGhast
-import org.bukkit.event.Event
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
@@ -12,7 +11,7 @@ import org.xodium.vanillaplus.utils.Utils.displayName
 
 /** Represents an object handling nimbus enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
-internal object NimbusEnchantment : EnchantmentInterface {
+internal object NimbusEnchantment : EnchantmentInterface<EntityEquipmentChangedEvent> {
     private const val DEFAULT_FLY_SPEED = 0.05
     private val SPEED_MODIFIER = mapOf(1 to 1.5, 2 to 2.0, 3 to 2.5, 4 to 3.0, 5 to 3.5)
 
@@ -26,8 +25,7 @@ internal object NimbusEnchantment : EnchantmentInterface {
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(75, 10))
             .activeSlots(EquipmentSlotGroup.SADDLE)
 
-    override fun effect(event: Event) {
-        val event = event as? EntityEquipmentChangedEvent ?: return
+    override fun effect(event: EntityEquipmentChangedEvent) {
         val entity = event.entity as? HappyGhast ?: return
         val harness = entity.equipment.getItem(EquipmentSlot.BODY)
         val attribute = entity.getAttribute(Attribute.FLYING_SPEED)

@@ -6,7 +6,6 @@ import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
-import org.bukkit.event.Event
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.inventory.meta.Damageable
@@ -15,7 +14,7 @@ import org.xodium.vanillaplus.utils.Utils.displayName
 
 /** Represents an object handling earthrend enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
-internal object EarthrendEnchantment : EnchantmentInterface {
+internal object EarthrendEnchantment : EnchantmentInterface<BlockBreakEvent> {
     private val DIRECTIONS =
         arrayOf(
             BlockFace.UP,
@@ -37,8 +36,7 @@ internal object EarthrendEnchantment : EnchantmentInterface {
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(75, 10))
             .activeSlots(EquipmentSlotGroup.MAINHAND)
 
-    override fun effect(event: Event) {
-        val event = event as? BlockBreakEvent ?: return
+    override fun effect(event: BlockBreakEvent) {
         val player = event.player
 
         if (player.gameMode == GameMode.CREATIVE) return

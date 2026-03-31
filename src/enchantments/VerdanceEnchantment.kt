@@ -2,7 +2,6 @@ package org.xodium.vanillaplus.enchantments
 
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
 import org.bukkit.block.data.Ageable
-import org.bukkit.event.Event
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -11,7 +10,7 @@ import org.xodium.vanillaplus.utils.Utils.displayName
 
 /** Represents an object handling verdance enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
-internal object VerdanceEnchantment : EnchantmentInterface {
+internal object VerdanceEnchantment : EnchantmentInterface<BlockBreakEvent> {
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
             .description(key.displayName())
@@ -22,8 +21,7 @@ internal object VerdanceEnchantment : EnchantmentInterface {
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(75, 0))
             .activeSlots(EquipmentSlotGroup.MAINHAND)
 
-    override fun effect(event: Event) {
-        val event = event as? BlockBreakEvent ?: return
+    override fun effect(event: BlockBreakEvent) {
         val block = event.block
         val ageable = block.blockData as? Ageable ?: return
         val itemInHand = event.player.inventory.itemInMainHand

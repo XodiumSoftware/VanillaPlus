@@ -12,7 +12,7 @@ import org.xodium.vanillaplus.utils.Utils.toRegistryKeyFragment
 
 /** Represents a contract for enchantments within the system. */
 @Suppress("UnstableApiUsage")
-internal interface EnchantmentInterface {
+internal interface EnchantmentInterface<T : Event> {
     /**
      * The unique typed key identifies this enchantment in the registry.
      * @see TypedKey
@@ -33,7 +33,7 @@ internal interface EnchantmentInterface {
      * Applies the enchantment's effect in response to the triggering event.
      * @param event The event that triggered the enchantment effect.
      */
-    fun effect(event: Event)
+    fun effect(event: T)
 
     /**
      * Retrieves the enchantment from the registry.

@@ -3,7 +3,6 @@ package org.xodium.vanillaplus.enchantments
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
 import org.bukkit.entity.Item
 import org.bukkit.entity.Player
-import org.bukkit.event.Event
 import org.bukkit.event.block.BlockDropItemEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
@@ -11,7 +10,7 @@ import org.xodium.vanillaplus.utils.Utils.displayName
 
 /** Represents an object handling tether enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
-internal object TetherEnchantment : EnchantmentInterface {
+internal object TetherEnchantment : EnchantmentInterface<BlockDropItemEvent> {
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
             .description(key.displayName())
@@ -22,8 +21,7 @@ internal object TetherEnchantment : EnchantmentInterface {
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(75, 0))
             .activeSlots(EquipmentSlotGroup.MAINHAND)
 
-    override fun effect(event: Event) {
-        val event = event as? BlockDropItemEvent ?: return
+    override fun effect(event: BlockDropItemEvent) {
         val player = event.player
         val itemInHand = player.inventory.itemInMainHand
 

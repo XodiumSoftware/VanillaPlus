@@ -4,7 +4,6 @@ import io.papermc.paper.registry.data.EnchantmentRegistryEntry
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.entity.SmallFireball
-import org.bukkit.event.Event
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlotGroup
@@ -17,7 +16,7 @@ import kotlin.math.sin
 
 /** Represents an object handling inferno enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
-internal object InfernoEnchantment : EnchantmentInterface {
+internal object InfernoEnchantment : EnchantmentInterface<PlayerInteractEvent> {
     private val cooldowns = HashMap<UUID, Long>()
     private const val COOLDOWN_MS = 1500L
 
@@ -31,8 +30,7 @@ internal object InfernoEnchantment : EnchantmentInterface {
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(65, 5))
             .activeSlots(EquipmentSlotGroup.MAINHAND)
 
-    override fun effect(event: Event) {
-        val event = event as? PlayerInteractEvent ?: return
+    override fun effect(event: PlayerInteractEvent) {
         if (event.action != Action.RIGHT_CLICK_AIR && event.action != Action.RIGHT_CLICK_BLOCK) return
 
         val item = event.item ?: return
