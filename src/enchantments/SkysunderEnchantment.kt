@@ -1,0 +1,79 @@
+package org.xodium.vanillaplus.enchantments
+
+import io.papermc.paper.registry.data.EnchantmentRegistryEntry
+import net.kyori.adventure.key.Key
+import net.kyori.adventure.sound.Sound
+import org.bukkit.GameMode
+import org.bukkit.Material
+import org.bukkit.Particle
+import org.bukkit.event.block.Action
+import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.inventory.EquipmentSlotGroup
+import org.xodium.vanillaplus.interfaces.EnchantmentInterface
+import org.xodium.vanillaplus.pdcs.PlayerPDC.mana
+import org.xodium.vanillaplus.utils.ManaUtils
+import org.xodium.vanillaplus.utils.ManaUtils.NO_MANA_SOUND
+import org.xodium.vanillaplus.utils.Utils.displayName
+
+/** Represents an object handling skysunder enchantment implementation within the system. */
+@Suppress("UnstableApiUsage")
+internal object SkysunderEnchantment : EnchantmentInterface<PlayerInteractEvent> {
+    object Config {
+        const val MANA_COST = 20
+        const val RANGE = 30.0
+        val LAUNCH_SOUND: Sound =
+            Sound.sound(Key.key("entity.lightning_bolt.thunder"), Sound.Source.WEATHER, 0.4f, 1.5f)
+    }
+
+    override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
+        builder
+            .description(key.displayName())
+            .anvilCost(4)
+            .maxLevel(1)
+            .weight(1)
+            .minimumCost(EnchantmentRegistryEntry.EnchantmentCost.of(20, 5))
+            .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(65, 5))
+            .activeSlots(EquipmentSlotGroup.MAINHAND)
+
+    override fun effect(event: PlayerInteractEvent) {
+        if (event.action != Action.LEFT_CLICK_AIR && event.action != Action.LEFT_CLICK_BLOCK) return
+
+        val item = event.item ?: return
+
+        if (item.type != Material.BLAZE_ROD) return
+        if (!item.containsEnchantment(get())) return
+
+        val player = event.player
+
+        if (player.gameMode !in setOf(GameMode.SURVIVAL, GameMode.ADVENTURE)) return
+
+        if (player.mana < Config.MANA_COST) {
+            player.playSound(NO_MANA_SOUND)
+            ManaUtils.showManaBar(player)
+            return
+        }
+
+        event.isCancelled = true
+        player.mana -= Config.MANA_COST
+        ManaUtils.showManaBar(player)
+
+        val result = player.rayTraceBlocks(Config.RANGE)
+        val target =
+            result?.hitPosition?.toLocation(player.world)
+                ?: player.eyeLocation.add(
+                    player.location.direction
+                        .normalize()
+                        .multiply(Config.RANGE),
+                )
+
+        Particle.ELECTRIC_SPARK
+            .builder()
+            .location(target)
+            .count(30)
+            .offset(0.3, 0.5, 0.3)
+            .spawn()
+
+        player.world.strikeLightning(target)
+        player.playSound(Config.LAUNCH_SOUND)
+    }
+}

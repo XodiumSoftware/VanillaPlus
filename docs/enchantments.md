@@ -1,6 +1,6 @@
 # Enchantments
 
-VanillaPlus adds **7 custom enchantments** and **extends 2 vanilla enchantments**. All are obtainable through the enchanting table, anvil and villager trades (tradeable, non-treasure).
+VanillaPlus adds **8 custom enchantments** and **extends 2 vanilla enchantments**. All are obtainable through the enchanting table, anvil and villager trades (tradeable, non-treasure).
 
 ---
 
@@ -101,6 +101,19 @@ Left-clicking with an enchanted Blaze Rod fires a small fireball in the directio
 | **Freeze radius** | 3 blocks              |
 
 Left-clicking with a Frostbind Blaze Rod fires a snowball in the direction you are looking. On impact, all living entities within 3 blocks (excluding the caster) are fully frozen for the maximum freeze duration. Leaves a snowflake particle trail and bursts on hit. Draws from the same shared mana pool as Inferno; displays the **Spellbite** mana bar on cast. Only usable in Survival or Adventure mode.
+
+### Skysunder
+
+> Calls down a lightning bolt on left-click with a Blaze Rod.
+
+| Property      | Value                 |
+|---------------|-----------------------|
+| **Slot**      | Mainhand (Blaze Rods) |
+| **Levels**    | I                     |
+| **Mana cost** | 20                    |
+| **Range**     | 30 blocks             |
+
+Left-clicking with a Skysunder Blaze Rod ray-traces up to 30 blocks in the direction you are looking. A real lightning bolt (dealing damage) strikes the first block hit, or the maximum range point if no block is found. Bursts `ELECTRIC_SPARK` particles at the strike location. Draws from the shared **Spellbite** mana pool (costs twice as much as Inferno/Frostbind). Only usable in Survival or Adventure mode.
 
 ---
 

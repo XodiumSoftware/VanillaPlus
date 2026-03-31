@@ -18,6 +18,7 @@ import org.xodium.vanillaplus.enchantments.EmbertreadEnchantment
 import org.xodium.vanillaplus.enchantments.FrostbindEnchantment
 import org.xodium.vanillaplus.enchantments.InfernoEnchantment
 import org.xodium.vanillaplus.enchantments.NimbusEnchantment
+import org.xodium.vanillaplus.enchantments.SkysunderEnchantment
 import org.xodium.vanillaplus.enchantments.TetherEnchantment
 import org.xodium.vanillaplus.enchantments.VerdanceEnchantment
 
@@ -113,6 +114,11 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                                 .invoke(it)
                                 .supportedItems(event.getOrCreateTag(BLAZE_RODS))
                         }
+                        register(SkysunderEnchantment.key) {
+                            SkysunderEnchantment
+                                .invoke(it)
+                                .supportedItems(event.getOrCreateTag(BLAZE_RODS))
+                        }
                     }
                 },
             )
@@ -127,6 +133,7 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                             EmbertreadEnchantment.key,
                             InfernoEnchantment.key,
                             FrostbindEnchantment.key,
+                            SkysunderEnchantment.key,
                         )
 
                     addToTag(EnchantmentTagKeys.TRADEABLE, enchants)

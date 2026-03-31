@@ -38,6 +38,7 @@ import org.xodium.vanillaplus.enchantments.FeatherFallingEnchantment
 import org.xodium.vanillaplus.enchantments.FrostbindEnchantment
 import org.xodium.vanillaplus.enchantments.InfernoEnchantment
 import org.xodium.vanillaplus.enchantments.SilkTouchEnchantment
+import org.xodium.vanillaplus.enchantments.SkysunderEnchantment
 import org.xodium.vanillaplus.enchantments.TetherEnchantment
 import org.xodium.vanillaplus.enchantments.VerdanceEnchantment
 import org.xodium.vanillaplus.interfaces.ModuleInterface
@@ -163,6 +164,7 @@ internal object PlayerModule : ModuleInterface {
         handleEnderchest(event)
         InfernoEnchantment.effect(event)
         FrostbindEnchantment.effect(event)
+        SkysunderEnchantment.effect(event)
     }
 
     @EventHandler
