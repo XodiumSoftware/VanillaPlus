@@ -52,6 +52,9 @@ internal interface RuneInterface {
             }
     }
 
+    /** The tier of this rune, from 1 to the type's maximum. */
+    val tier: Int
+
     /**
      * A stable identifier for this rune, used as the PDC tag value and for slot persistence.
      * Defaults to the implementing class simple name.

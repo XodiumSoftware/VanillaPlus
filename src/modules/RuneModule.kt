@@ -203,7 +203,7 @@ internal object RuneModule : ModuleInterface {
         val next = rune.nextTier() ?: return
 
         event.result = next.item.clone()
-        event.view.repairCost = (RUNES.indexOf(rune) + 1) * Config.anvilCombineCost
+        event.view.repairCost = rune.tier * Config.anvilCombineCost
     }
 
     /** Returns the rune type identifier of [item], or `null` if it is not a rune. */
@@ -250,16 +250,14 @@ internal object RuneModule : ModuleInterface {
         }
     }
 
-    private val all = listOf(CrimsoniteRune.tiers[0], ZephyriteRune.tiers[0])
-
     /** Represents the config of the module. */
     object Config {
         var dropTable: List<RuneDropTableData> =
             listOf(
-                RuneDropTableData(EntityType.ELDER_GUARDIAN, 0.05, all),
-                RuneDropTableData(EntityType.WITHER, 0.10, all),
-                RuneDropTableData(EntityType.WARDEN, 0.15, all),
-                RuneDropTableData(EntityType.ENDER_DRAGON, 0.20, all),
+                RuneDropTableData(EntityType.ELDER_GUARDIAN, 0.05),
+                RuneDropTableData(EntityType.WITHER, 0.10),
+                RuneDropTableData(EntityType.WARDEN, 0.15),
+                RuneDropTableData(EntityType.ENDER_DRAGON, 0.20),
             )
         var anvilCombineCost: Int = 5
         val slotLevelRequirements: List<Int> = listOf(0, 10, 20, 30, 40)

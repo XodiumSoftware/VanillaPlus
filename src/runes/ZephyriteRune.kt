@@ -13,7 +13,7 @@ import org.xodium.vanillaplus.utils.Utils.toRoman
 
 /** Represents a tiered rune that increases the player's movement speed. Each tier grants +10% move speed. */
 internal class ZephyriteRune private constructor(
-    val tier: Int,
+    override val tier: Int,
 ) : RuneInterface {
     companion object {
         private const val SPEED_PER_TIER = 0.01

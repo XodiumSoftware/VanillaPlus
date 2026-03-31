@@ -13,7 +13,7 @@ import org.xodium.vanillaplus.utils.Utils.toRoman
 
 /** Represents a tiered rune that increases the player's maximum health. Each tier grants +8 max health. */
 internal class CrimsoniteRune private constructor(
-    val tier: Int,
+    override val tier: Int,
 ) : RuneInterface {
     companion object {
         private const val HEALTH_PER_TIER = 8.0
