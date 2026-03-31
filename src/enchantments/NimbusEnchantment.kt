@@ -4,6 +4,7 @@ import io.papermc.paper.event.entity.EntityEquipmentChangedEvent
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.HappyGhast
+import org.bukkit.event.Event
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
@@ -25,11 +26,8 @@ internal object NimbusEnchantment : EnchantmentInterface {
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(75, 10))
             .activeSlots(EquipmentSlotGroup.SADDLE)
 
-    /**
-     * Handles the event when an entity's equipment changes, specifically for Happy Ghasts with the nimbus enchantment.
-     * @param event The event representing the change in entity equipment.
-     */
-    fun nimbus(event: EntityEquipmentChangedEvent) {
+    override fun effect(event: Event) {
+        val event = event as? EntityEquipmentChangedEvent ?: return
         val entity = event.entity as? HappyGhast ?: return
         val harness = entity.equipment.getItem(EquipmentSlot.BODY)
         val attribute = entity.getAttribute(Attribute.FLYING_SPEED)

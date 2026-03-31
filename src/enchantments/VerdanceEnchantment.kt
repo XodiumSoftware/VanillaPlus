@@ -2,6 +2,7 @@ package org.xodium.vanillaplus.enchantments
 
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
 import org.bukkit.block.data.Ageable
+import org.bukkit.event.Event
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -21,11 +22,8 @@ internal object VerdanceEnchantment : EnchantmentInterface {
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(75, 0))
             .activeSlots(EquipmentSlotGroup.MAINHAND)
 
-    /**
-     * Automatically replants a crop block after it has been fully grown and harvested.
-     * @param event The BlockBreakEvent triggered when a block is broken.
-     */
-    fun verdance(event: BlockBreakEvent) {
+    override fun effect(event: Event) {
+        val event = event as? BlockBreakEvent ?: return
         val block = event.block
         val ageable = block.blockData as? Ageable ?: return
         val itemInHand = event.player.inventory.itemInMainHand

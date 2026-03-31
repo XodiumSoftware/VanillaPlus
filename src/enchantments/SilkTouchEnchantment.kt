@@ -4,6 +4,7 @@ import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.block.CreatureSpawner
 import org.bukkit.enchantments.Enchantment
+import org.bukkit.event.Event
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
@@ -13,11 +14,8 @@ import org.xodium.vanillaplus.modules.PlayerModule
 internal object SilkTouchEnchantment : EnchantmentInterface {
     private val config = PlayerModule.Config.SilkTouchEnchantment
 
-    /**
-     * Handles breaking blocks with Silk Touch.
-     * @param event The block break event.
-     */
-    fun silkTouch(event: BlockBreakEvent) {
+    override fun effect(event: Event) {
+        val event = event as? BlockBreakEvent ?: return
         if (!isValidTool(event.player.inventory.itemInMainHand)) return
 
         when (event.block.type) {

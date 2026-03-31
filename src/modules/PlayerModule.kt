@@ -35,6 +35,7 @@ import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.enchantments.EarthrendEnchantment
 import org.xodium.vanillaplus.enchantments.EmbertreadEnchantment
 import org.xodium.vanillaplus.enchantments.FeatherFallingEnchantment
+import org.xodium.vanillaplus.enchantments.InfernoEnchantment
 import org.xodium.vanillaplus.enchantments.SilkTouchEnchantment
 import org.xodium.vanillaplus.enchantments.TetherEnchantment
 import org.xodium.vanillaplus.enchantments.VerdanceEnchantment
@@ -157,22 +158,23 @@ internal object PlayerModule : ModuleInterface {
     @EventHandler
     fun on(event: PlayerInteractEvent) {
         xpToBottle(event)
-        FeatherFallingEnchantment.featherFalling(event)
+        FeatherFallingEnchantment.effect(event)
         handleEnderchest(event)
+        InfernoEnchantment.effect(event)
     }
 
     @EventHandler
-    fun on(event: EntityDamageEvent) = EmbertreadEnchantment.embertread(event)
+    fun on(event: EntityDamageEvent) = EmbertreadEnchantment.effect(event)
 
     @EventHandler
     fun on(event: BlockBreakEvent) {
-        VerdanceEnchantment.verdance(event)
-        SilkTouchEnchantment.silkTouch(event)
-        EarthrendEnchantment.earthrend(event)
+        VerdanceEnchantment.effect(event)
+        SilkTouchEnchantment.effect(event)
+        EarthrendEnchantment.effect(event)
     }
 
     @EventHandler
-    fun on(event: BlockDropItemEvent) = TetherEnchantment.tether(event)
+    fun on(event: BlockDropItemEvent) = TetherEnchantment.effect(event)
 
     /**
      * Sends the welcome banner to the player on join.

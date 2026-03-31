@@ -6,6 +6,7 @@ import io.papermc.paper.registry.TypedKey
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
 import net.kyori.adventure.key.Key
 import org.bukkit.enchantments.Enchantment
+import org.bukkit.event.Event
 import org.xodium.vanillaplus.VanillaPlusBootstrap.Companion.INSTANCE
 import org.xodium.vanillaplus.utils.Utils.toRegistryKeyFragment
 
@@ -27,6 +28,12 @@ internal interface EnchantmentInterface {
      * @return The builder for method chaining.
      */
     fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder = builder
+
+    /**
+     * Applies the enchantment's effect in response to the triggering event.
+     * @param event The event that triggered the enchantment effect.
+     */
+    fun effect(event: Event)
 
     /**
      * Retrieves the enchantment from the registry.

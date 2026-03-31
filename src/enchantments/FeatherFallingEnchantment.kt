@@ -3,6 +3,7 @@ package org.xodium.vanillaplus.enchantments
 import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.enchantments.Enchantment
+import org.bukkit.event.Event
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
@@ -10,11 +11,8 @@ import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 
 /** Represents an object handling feather falling enchantment implementation within the system. */
 internal object FeatherFallingEnchantment : EnchantmentInterface {
-    /**
-     * Handles the PlayerInteractEvent to prevent farmland trampling when wearing boots with Feather Falling enchantment.
-     * @param event The PlayerInteractEvent to handle.
-     */
-    fun featherFalling(event: PlayerInteractEvent) {
+    override fun effect(event: Event) {
+        val event = event as? PlayerInteractEvent ?: return
         when {
             event.action != Action.PHYSICAL -> return
             event.clickedBlock?.type != Material.FARMLAND -> return

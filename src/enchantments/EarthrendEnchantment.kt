@@ -6,6 +6,7 @@ import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
+import org.bukkit.event.Event
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.inventory.meta.Damageable
@@ -36,11 +37,8 @@ internal object EarthrendEnchantment : EnchantmentInterface {
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(75, 10))
             .activeSlots(EquipmentSlotGroup.MAINHAND)
 
-    /**
-     * Handles the vein mining logic when a [Block] is broken.
-     * @param event The [BlockBreakEvent].
-     */
-    fun earthrend(event: BlockBreakEvent) {
+    override fun effect(event: Event) {
+        val event = event as? BlockBreakEvent ?: return
         val player = event.player
 
         if (player.gameMode == GameMode.CREATIVE) return

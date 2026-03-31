@@ -15,6 +15,7 @@ import io.papermc.paper.tag.TagEntry
 import net.kyori.adventure.key.Key
 import org.xodium.vanillaplus.enchantments.EarthrendEnchantment
 import org.xodium.vanillaplus.enchantments.EmbertreadEnchantment
+import org.xodium.vanillaplus.enchantments.InfernoEnchantment
 import org.xodium.vanillaplus.enchantments.NimbusEnchantment
 import org.xodium.vanillaplus.enchantments.TetherEnchantment
 import org.xodium.vanillaplus.enchantments.VerdanceEnchantment
@@ -28,6 +29,7 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
         val TOOLS = TagKey.create(RegistryKey.ITEM, Key.key(INSTANCE, "tools"))
         val WEAPONS = TagKey.create(RegistryKey.ITEM, Key.key(INSTANCE, "weapons"))
         val TOOLS_WEAPONS = TagKey.create(RegistryKey.ITEM, Key.key(INSTANCE, "tools_weapons"))
+        val BLAZE_RODS = TagKey.create(RegistryKey.ITEM, Key.key(INSTANCE, "blaze_rods"))
     }
 
     override fun bootstrap(ctx: BootstrapContext) {
@@ -64,6 +66,12 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                             TagEntry.tagEntry(WEAPONS),
                         ),
                     )
+                    setTag(
+                        BLAZE_RODS,
+                        setOf(
+                            TagEntry.valueEntry(ItemTypeKeys.BLAZE_ROD),
+                        ),
+                    )
                 }
             }
             registerEventHandler(
@@ -94,6 +102,11 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                                 .invoke(it)
                                 .supportedItems(event.getOrCreateTag(ItemTypeTagKeys.FOOT_ARMOR))
                         }
+                        register(InfernoEnchantment.key) {
+                            InfernoEnchantment
+                                .invoke(it)
+                                .supportedItems(event.getOrCreateTag(BLAZE_RODS))
+                        }
                     }
                 },
             )
@@ -106,6 +119,7 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                             NimbusEnchantment.key,
                             EarthrendEnchantment.key,
                             EmbertreadEnchantment.key,
+                            InfernoEnchantment.key,
                         )
 
                     addToTag(EnchantmentTagKeys.TRADEABLE, enchants)

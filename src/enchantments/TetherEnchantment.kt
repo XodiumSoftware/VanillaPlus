@@ -3,6 +3,7 @@ package org.xodium.vanillaplus.enchantments
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
 import org.bukkit.entity.Item
 import org.bukkit.entity.Player
+import org.bukkit.event.Event
 import org.bukkit.event.block.BlockDropItemEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
@@ -21,11 +22,8 @@ internal object TetherEnchantment : EnchantmentInterface {
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(75, 0))
             .activeSlots(EquipmentSlotGroup.MAINHAND)
 
-    /**
-     * Handles the block break event to automatically pick up drops when the tool has the Tether enchantment.
-     * @param event The BlockBreakEvent triggered when a block is broken.
-     */
-    fun tether(event: BlockDropItemEvent) {
+    override fun effect(event: Event) {
+        val event = event as? BlockDropItemEvent ?: return
         val player = event.player
         val itemInHand = player.inventory.itemInMainHand
 
