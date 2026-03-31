@@ -17,6 +17,8 @@ Only one rune per family can be equipped at a time — equipping a higher-tier r
 
 ## Runes
 
+![All rune tiers](../images/runes_sheet.png)
+
 ### Crimsonite Rune
 
 Grants bonus max health while equipped.
@@ -28,8 +30,6 @@ Grants bonus max health while equipped.
 | III  | Crimsonite III | +24 ❤            |
 | IV   | Crimsonite IV  | +32 ❤            |
 | V    | Crimsonite V   | +40 ❤            |
-
-![Crimsonite Rune tiers](../images/crimsoniterune_tiers_sheet.png)
 
 Only **Tier I** drops from bosses. Higher tiers are obtained by combining two runes of the same tier in an anvil (see below).
 
@@ -44,8 +44,6 @@ Grants bonus movement speed while equipped.
 | III  | Zephyrite III | +30% ⚡           |
 | IV   | Zephyrite IV  | +40% ⚡           |
 | V    | Zephyrite V   | +50% ⚡           |
-
-![Zephyrite Rune tiers](../images/zephyriterune_tiers_sheet.png)
 
 Only **Tier I** drops from bosses. Higher tiers are obtained via anvil combining.
 

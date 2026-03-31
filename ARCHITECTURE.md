@@ -47,7 +47,7 @@ Custom enchantments implement **`EnchantmentInterface<T : Event>`** (generic on 
 | Nimbus      | Harnesses (chestplates)                       |
 | Earthrend   | Pickaxes                                      |
 | Embertread  | Foot armor                                    |
-| Inferno     | Blaze Rods                                    |
+| Inferno     | Blaze Rods (mainhand)                         |
 
 SilkTouch and FeatherFalling exist as implementations but are not currently registered in the bootstrap.
 
@@ -59,7 +59,9 @@ Each rune type is an `internal object` in `runes/` implementing **`RuneInterface
 
 `RuneMenu` in `menus/` handles menu creation and tracks open views via a `WeakHashMap<InventoryView, Unit>`. `RuneModule` reads that map in its `InventoryCloseEvent`, `InventoryClickEvent`, and `InventoryDragEvent` handlers to scope behaviour to rune menus only.
 
-**Adding a new rune:** create `runes/FooRune.kt : RuneInterface`, implement `item` and `modifiers()`, and add it to `RuneModule.runes`.
+**Resourcepack integration:** `buildItem` sets `DataComponentTypes.ITEM_MODEL` to `vanillaplus:rune/<classname>` (class simple name, lowercased, suffix stripped at `_`). This resolves to `assets/vanillaplus/items/rune/<name>.json` in the IRP resourcepack, which in turn references a model in `assets/vanillaplus/models/item/rune/<name>.json`. Each rune type has one texture regardless of tier — there is no per-tier `CustomModelData`.
+
+**Adding a new rune:** create `runes/FooRune.kt : RuneInterface`, implement `item` and `modifiers()`, add it to `RuneModule.runes`, and add the corresponding item definition, model, and texture files to the IRP resourcepack under `vanillaplus:rune/<name>`.
 
 ### PDCs (Persistent Data Containers)
 

@@ -75,6 +75,19 @@ Broken block drops are collected directly into the player's inventory instead of
 
 When a fully grown crop is harvested with a Verdance hoe, the crop block is reset to age 0 two ticks later — effectively auto-replanting without consuming seeds.
 
+### Inferno
+
+> Launches fireballs on right-click with a Blaze Rod.
+
+| Property     | Value                                      |
+|--------------|--------------------------------------------|
+| **Slot**     | Mainhand (Blaze Rods)                      |
+| **Levels**   | I – III                                    |
+| **Spread**   | Lv I → 1 fireball · Lv II → 3 · Lv III → 5 |
+| **Cooldown** | 1.5 s                                      |
+
+Right-clicking with a Blaze Rod fires a spread of small fireballs in the direction you are looking. The number of fireballs scales with the enchantment level; higher levels fan out at ±10° / ±20° offsets. Only usable in Survival mode. Fireballs deal no block damage (`yield = 0`).
+
 ---
 
 ## Extended vanilla enchantments

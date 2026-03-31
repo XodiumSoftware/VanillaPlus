@@ -3,7 +3,6 @@
 package org.xodium.vanillaplus.interfaces
 
 import io.papermc.paper.datacomponent.DataComponentTypes
-import io.papermc.paper.datacomponent.item.CustomModelData
 import io.papermc.paper.datacomponent.item.ItemLore
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
@@ -51,11 +50,7 @@ internal interface RuneInterface {
                 setData(DataComponentTypes.MAX_STACK_SIZE, 1)
                 setData(
                     DataComponentTypes.ITEM_MODEL,
-                    NamespacedKey(instance, "rune/${id.substringBefore("_").lowercase()}s"),
-                )
-                setData(
-                    DataComponentTypes.CUSTOM_MODEL_DATA,
-                    CustomModelData.customModelData().addFloat(tier.toFloat()).build(),
+                    NamespacedKey(instance, "rune/${id.substringBefore("_").lowercase()}"),
                 )
                 editPersistentDataContainer { it.set(RUNE_TYPE_KEY, PersistentDataType.STRING, id) }
             }
