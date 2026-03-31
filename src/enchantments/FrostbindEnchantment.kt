@@ -6,8 +6,11 @@ import net.kyori.adventure.sound.Sound
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.Particle
+import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.Player
 import org.bukkit.entity.Snowball
 import org.bukkit.event.block.Action
+import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.scheduler.BukkitTask
@@ -67,6 +70,25 @@ internal object FrostbindEnchantment : EnchantmentInterface<PlayerInteractEvent>
         snowball.velocity = direction.multiply(2.0)
         spawnSnowballTrail(snowball)
         player.playSound(Config.LAUNCH_SOUND)
+    }
+
+    /**
+     * Freezes the living entity directly struck by the Frostbind snowball.
+     * Only triggers when the shooter is a [Player] holding the enchanted item.
+     * @param event The [ProjectileHitEvent] fired on impact.
+     */
+    fun onProjectileHit(event: ProjectileHitEvent) {
+        val snowball = event.entity as? Snowball ?: return
+        val shooter = snowball.shooter as? Player ?: return
+
+        if (!shooter.inventory.itemInMainHand.containsEnchantment(get())) return
+
+        val target = event.hitEntity as? LivingEntity ?: return
+
+        if (target == shooter) return
+
+        // TODO: change to something high for more damage.
+        target.freezeTicks = target.maxFreezeTicks
     }
 
     /**

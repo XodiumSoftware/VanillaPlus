@@ -19,6 +19,7 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockDropItemEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.PlayerDeathEvent
+import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.event.player.PlayerAdvancementDoneEvent
 import org.bukkit.event.player.PlayerBedEnterEvent
 import org.bukkit.event.player.PlayerInteractEvent
@@ -169,6 +170,9 @@ internal object PlayerModule : ModuleInterface {
 
     @EventHandler
     fun on(event: EntityDamageEvent) = EmbertreadEnchantment.effect(event)
+
+    @EventHandler
+    fun on(event: ProjectileHitEvent) = FrostbindEnchantment.onProjectileHit(event)
 
     @EventHandler
     fun on(event: BlockBreakEvent) {
