@@ -21,6 +21,7 @@ import org.bukkit.permissions.PermissionDefault
 import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
+import org.xodium.vanillaplus.data.RuneDropTableData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.interfaces.RuneInterface
 import org.xodium.vanillaplus.interfaces.RuneInterface.Companion.RUNE_TYPE_KEY
@@ -36,9 +37,6 @@ import kotlin.random.Random
 internal object RuneModule : ModuleInterface {
     /** All registered runes across all tiers. Add new [RuneInterface] implementations here to activate them. */
     val RUNES: List<RuneInterface> = CrimsoniteRune.tiers + ZephyriteRune.tiers
-
-    /** Runes that can drop from boss mobs. Edit this list to control what bosses drop. */
-    private val DROPPABLE: List<RuneInterface> = listOf(CrimsoniteRune.tiers[0], ZephyriteRune.tiers[0])
 
     /** All items giveable via `/runes give`: every registered rune tier. */
     private val GIVE_ITEMS: Map<String, ItemStack> = RUNES.associate { it.id to it.item }
@@ -105,9 +103,10 @@ internal object RuneModule : ModuleInterface {
 
     @EventHandler
     fun on(event: EntityDeathEvent) {
-        val chance = Config.dropChances[event.entity.type] ?: return
+        val entry = Config.dropTable.firstOrNull { it.entityType == event.entity.type } ?: return
+        val pool = entry.runes
 
-        if (DROPPABLE.isNotEmpty() && Random.nextDouble() < chance) event.drops.add(DROPPABLE.random().item.clone())
+        if (pool.isNotEmpty() && Random.nextDouble() < entry.chance) event.drops.add(pool.random().item.clone())
     }
 
     @EventHandler
@@ -250,14 +249,16 @@ internal object RuneModule : ModuleInterface {
         RUNES.forEach { rune -> rune.modifiers(player, rune.id in equippedIds) }
     }
 
+    private val all = listOf(CrimsoniteRune.tiers[0], ZephyriteRune.tiers[0])
+
     /** Represents the config of the module. */
     object Config {
-        var dropChances: Map<EntityType, Double> =
-            mapOf(
-                EntityType.ELDER_GUARDIAN to 0.05,
-                EntityType.WITHER to 0.10,
-                EntityType.WARDEN to 0.15,
-                EntityType.ENDER_DRAGON to 0.20,
+        var dropTable: List<RuneDropTableData> =
+            listOf(
+                RuneDropTableData(EntityType.ELDER_GUARDIAN, 0.05, all),
+                RuneDropTableData(EntityType.WITHER, 0.10, all),
+                RuneDropTableData(EntityType.WARDEN, 0.15, all),
+                RuneDropTableData(EntityType.ENDER_DRAGON, 0.20, all),
             )
         var anvilCombineCost: Int = 5
         val slotLevelRequirements: List<Int> = listOf(0, 10, 20, 30, 40)

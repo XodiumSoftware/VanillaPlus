@@ -63,11 +63,12 @@ e.g. combining two Tier I runes costs `1 × 5 = 5` levels; combining two Tier IV
 
 ```kotlin
 object Config {
-    var dropChances: Map<EntityType, Double> = mapOf(
-        EntityType.ELDER_GUARDIAN to 0.05,
-        EntityType.WITHER to 0.10,
-        EntityType.WARDEN to 0.15,
-        EntityType.ENDER_DRAGON to 0.20,
+    // Each entry pairs an entity type with its drop chance and the runes that can drop.
+    var dropTable: List<RuneDropTableData> = listOf(
+        RuneDropTableData(EntityType.ELDER_GUARDIAN, 0.05, all),
+        RuneDropTableData(EntityType.WITHER, 0.10, all),
+        RuneDropTableData(EntityType.WARDEN, 0.15, all),
+        RuneDropTableData(EntityType.ENDER_DRAGON, 0.20, all),
     )
     var anvilCombineCost: Int = 5  // XP level multiplier per tier step
 }
