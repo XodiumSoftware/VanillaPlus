@@ -1,7 +1,6 @@
 package org.xodium.vanillaplus.runes
 
 import net.kyori.adventure.text.Component
-import org.bukkit.Material
 import org.bukkit.attribute.Attribute
 import org.xodium.vanillaplus.interfaces.RuneInterface
 import org.xodium.vanillaplus.interfaces.RuneInterface.Companion.buildTiers
@@ -20,7 +19,6 @@ internal class ZephyriteRune private constructor(
     override val tiers: List<RuneInterface> get() = Companion.tiers
     override val name: Component =
         MM.deserialize("<!italic><gradient:#56CCF2:#2F80ED><b>Zephyrite ${tier.toRoman()}</b></gradient>")
-    override val material: Material = Material.FEATHER
     override val attribute: Attribute = Attribute.MOVEMENT_SPEED
     override val modifier: Double = 0.01
     override val modifierLore: Component = MM.deserialize("<!italic><blue>+${tier * 10}% Move Speed")

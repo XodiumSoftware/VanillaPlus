@@ -80,7 +80,7 @@ internal interface RuneInterface {
     val modifierKey: NamespacedKey get() = NamespacedKey(instance, "rune_${id.lowercase()}_modifier")
 
     /** The material used to represent this rune as an [ItemStack]. */
-    val material: Material
+    val material: Material get() = Material.STICK
 
     /** The display name of this rune. */
     val name: Component

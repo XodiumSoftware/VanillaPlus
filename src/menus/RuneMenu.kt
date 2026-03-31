@@ -40,7 +40,7 @@ internal object RuneMenu {
                 val item =
                     when {
                         player.level < requiredLevel -> lockedSlotItems[requiredLevel]?.clone()
-                        typeName.isNotEmpty() -> RuneModule.RUNES.firstOrNull { it.id == typeName }?.item
+                        typeName.isNotEmpty() -> RuneModule.runes.firstOrNull { it.id == typeName }?.item
                         else -> null
                     }
 

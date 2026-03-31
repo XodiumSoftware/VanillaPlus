@@ -27,7 +27,12 @@ import org.xodium.vanillaplus.interfaces.RuneInterface
 import org.xodium.vanillaplus.interfaces.RuneInterface.Companion.RUNE_TYPE_KEY
 import org.xodium.vanillaplus.menus.RuneMenu
 import org.xodium.vanillaplus.pdcs.PlayerPDC.runeSlots
+import org.xodium.vanillaplus.runes.AureliteRune
 import org.xodium.vanillaplus.runes.CrimsoniteRune
+import org.xodium.vanillaplus.runes.FerriteRune
+import org.xodium.vanillaplus.runes.GalvaniteRune
+import org.xodium.vanillaplus.runes.ObsiditeRune
+import org.xodium.vanillaplus.runes.VigoriteRune
 import org.xodium.vanillaplus.runes.ZephyriteRune
 import org.xodium.vanillaplus.utils.CommandUtils.executesCatching
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
@@ -36,10 +41,17 @@ import kotlin.random.Random
 /** Represents a module handling rune mechanics within the system. */
 internal object RuneModule : ModuleInterface {
     /** All registered runes across all tiers. Add new [RuneInterface] implementations here to activate them. */
-    val RUNES: List<RuneInterface> = CrimsoniteRune.tiers + ZephyriteRune.tiers
+    val runes: List<RuneInterface> =
+        CrimsoniteRune.tiers +
+            ZephyriteRune.tiers +
+            FerriteRune.tiers +
+            ObsiditeRune.tiers +
+            AureliteRune.tiers +
+            VigoriteRune.tiers +
+            GalvaniteRune.tiers
 
     /** All items giveable via `/runes give`: every registered rune tier. */
-    private val GIVE_ITEMS: Map<String, ItemStack> = RUNES.associate { it.id to it.item }
+    private val GIVE_ITEMS: Map<String, ItemStack> = runes.associate { it.id to it.item }
 
     override val cmds =
         listOf(
@@ -199,7 +211,7 @@ internal object RuneModule : ModuleInterface {
         val firstType = runeTypeOf(first) ?: return
         if (firstType != runeTypeOf(second)) return
 
-        val rune = RUNES.firstOrNull { it.id == firstType } ?: return
+        val rune = runes.firstOrNull { it.id == firstType } ?: return
         val next = rune.nextTier() ?: return
 
         event.result = next.item.clone()
@@ -239,7 +251,7 @@ internal object RuneModule : ModuleInterface {
 
     /** Applies or removes each registered rune's modifier on [player] based on their current slots and level. */
     private fun applyRuneModifiers(player: Player) {
-        RUNES.forEach { rune ->
+        runes.forEach { rune ->
             rune.modifiers(
                 player,
                 rune.id in
@@ -254,10 +266,10 @@ internal object RuneModule : ModuleInterface {
     object Config {
         var dropTable: List<RuneDropTableData> =
             listOf(
-                RuneDropTableData(EntityType.ELDER_GUARDIAN, 0.05, RUNES.filter { it.tier == 1 }),
-                RuneDropTableData(EntityType.WITHER, 0.10, RUNES.filter { it.tier == 1 }),
-                RuneDropTableData(EntityType.WARDEN, 0.15, RUNES.filter { it.tier == 1 }),
-                RuneDropTableData(EntityType.ENDER_DRAGON, 0.20, RUNES.filter { it.tier == 1 }),
+                RuneDropTableData(EntityType.ELDER_GUARDIAN, 0.05, runes.filter { it.tier == 1 }),
+                RuneDropTableData(EntityType.WITHER, 0.10, runes.filter { it.tier == 1 }),
+                RuneDropTableData(EntityType.WARDEN, 0.15, runes.filter { it.tier == 1 }),
+                RuneDropTableData(EntityType.ENDER_DRAGON, 0.20, runes.filter { it.tier == 1 }),
             )
         var anvilCombineCost: Int = 5
         val slotLevelRequirements: List<Int> = listOf(0, 10, 20, 30, 40)
