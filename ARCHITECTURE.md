@@ -38,7 +38,7 @@ All modules are instantiated as `object` singletons and listed explicitly in `Va
 
 ### Enchantments
 
-Custom enchantments implement **`EnchantmentInterface`** and are registered in `VanillaPlusBootstrap` via `RegistryEvents.ENCHANTMENT`. Their registry key is derived automatically from the class name (e.g. `VerdanceEnchantment` → `vanillaplus:verdance`). Six enchantments are actively registered and tagged as tradeable, non-treasure, and in-enchanting-table:
+Custom enchantments implement **`EnchantmentInterface<T : Event>`** (generic on event type) and are registered in `VanillaPlusBootstrap` via `RegistryEvents.ENCHANTMENT`. Their registry key is derived automatically from the class name (e.g. `VerdanceEnchantment` → `vanillaplus:verdance`). Seven enchantments are actively registered and tagged as tradeable, non-treasure, and in-enchanting-table:
 
 | Enchantment | Supported Items                               |
 |-------------|-----------------------------------------------|
@@ -47,6 +47,7 @@ Custom enchantments implement **`EnchantmentInterface`** and are registered in `
 | Nimbus      | Harnesses (chestplates)                       |
 | Earthrend   | Pickaxes                                      |
 | Embertread  | Foot armor                                    |
+| Inferno     | Blaze Rods                                    |
 
 SilkTouch and FeatherFalling exist as implementations but are not currently registered in the bootstrap.
 
@@ -58,7 +59,7 @@ Each rune type is an `internal object` in `runes/` implementing **`RuneInterface
 
 `RuneMenu` in `menus/` handles menu creation and tracks open views via a `WeakHashMap<InventoryView, Unit>`. `RuneModule` reads that map in its `InventoryCloseEvent`, `InventoryClickEvent`, and `InventoryDragEvent` handlers to scope behaviour to rune menus only.
 
-**Adding a new rune:** create `runes/FooRune.kt : RuneInterface`, implement `item` and `modifiers()`, and add it to `RuneModule.RUNES`.
+**Adding a new rune:** create `runes/FooRune.kt : RuneInterface`, implement `item` and `modifiers()`, and add it to `RuneModule.runes`.
 
 ### PDCs (Persistent Data Containers)
 
@@ -70,17 +71,17 @@ Recipe objects implement **`RecipeInterface`** and are listed in `VanillaPlus.on
 
 ### Package Structure (`org.xodium.vanillaplus`)
 
-| Package         | Contents                                                                      |
-|-----------------|-------------------------------------------------------------------------------|
-| `modules/`      | 15 feature module singletons                                                  |
-| `data/`         | `CommandData`, `BookData`, `AdjacentBlockData`                                |
-| `enchantments/` | Verdance, Tether, Nimbus, Earthrend, Embertread, SilkTouch, FeatherFalling    |
-| `interfaces/`   | `ModuleInterface`, `EnchantmentInterface`, `RecipeInterface`, `RuneInterface` |
-| `runes/`        | `CrimsoniteRune`, `ZephyriteRune`                                             |
-| `menus/`        | `RuneMenu`                                                                    |
-| `pdcs/`         | `PlayerPDC`                                                                   |
-| `recipes/`      | Chainmail, DiamondRecycle, Painting, RottenFlesh, WoodLog                     |
-| `utils/`        | `Utils`, `CommandUtils`, `BlockUtils`, `PlayerUtils`, `ScheduleUtils`         |
+| Package         | Contents                                                                                                          |
+|-----------------|-------------------------------------------------------------------------------------------------------------------|
+| `modules/`      | 15 feature module singletons                                                                                      |
+| `data/`         | `CommandData`, `BookData`, `AdjacentBlockData`                                                                    |
+| `enchantments/` | Verdance, Tether, Nimbus, Earthrend, Embertread, SilkTouch, FeatherFalling                                        |
+| `interfaces/`   | `ModuleInterface`, `EnchantmentInterface`, `RecipeInterface`, `RuneInterface`                                     |
+| `runes/`        | `CrimsoniteRune`, `ZephyriteRune`, `FerriteRune`, `ObsiditeRune`, `AureliteRune`, `VigoriteRune`, `GalvaniteRune` |
+| `menus/`        | `RuneMenu`                                                                                                        |
+| `pdcs/`         | `PlayerPDC`                                                                                                       |
+| `recipes/`      | Chainmail, DiamondRecycle, Painting, RottenFlesh, WoodLog                                                         |
+| `utils/`        | `Utils`, `CommandUtils`, `BlockUtils`, `PlayerUtils`, `ScheduleUtils`                                             |
 
 ### Key Conventions
 

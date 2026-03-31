@@ -32,7 +32,6 @@ import org.xodium.vanillaplus.runes.CrimsoniteRune
 import org.xodium.vanillaplus.runes.FerriteRune
 import org.xodium.vanillaplus.runes.GalvaniteRune
 import org.xodium.vanillaplus.runes.ObsiditeRune
-import org.xodium.vanillaplus.runes.VigoriteRune
 import org.xodium.vanillaplus.runes.ZephyriteRune
 import org.xodium.vanillaplus.utils.CommandUtils.executesCatching
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
@@ -47,7 +46,6 @@ internal object RuneModule : ModuleInterface {
             FerriteRune.tiers +
             ObsiditeRune.tiers +
             AureliteRune.tiers +
-            VigoriteRune.tiers +
             GalvaniteRune.tiers
 
     /** All items giveable via `/runes give`: every registered rune tier. */

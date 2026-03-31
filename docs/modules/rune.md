@@ -19,7 +19,7 @@ Only one rune per family can be equipped at a time — equipping a higher-tier r
 
 ### Crimsonite Rune
 
-Amethyst Shard. Grants bonus max health while equipped.
+Grants bonus max health while equipped.
 
 | Tier | Name           | Max Health Bonus |
 |------|----------------|------------------|
@@ -35,7 +35,7 @@ Only **Tier I** drops from bosses. Higher tiers are obtained by combining two ru
 
 ### Zephyrite Rune
 
-Feather. Grants bonus movement speed while equipped.
+Grants bonus movement speed while equipped.
 
 | Tier | Name          | Move Speed Bonus |
 |------|---------------|------------------|
@@ -46,6 +46,76 @@ Feather. Grants bonus movement speed while equipped.
 | V    | Zephyrite V   | +50% ⚡           |
 
 ![Zephyrite Rune tiers](../images/zephyriterune_tiers_sheet.png)
+
+Only **Tier I** drops from bosses. Higher tiers are obtained via anvil combining.
+
+### Ferrite Rune
+
+Grants bonus attack damage while equipped.
+
+| Tier | Name        | Attack Damage Bonus |
+|------|-------------|---------------------|
+| I    | Ferrite I   | +1                  |
+| II   | Ferrite II  | +2                  |
+| III  | Ferrite III | +3                  |
+| IV   | Ferrite IV  | +4                  |
+| V    | Ferrite V   | +5                  |
+
+Only **Tier I** drops from bosses. Higher tiers are obtained via anvil combining.
+
+### Obsidite Rune
+
+Grants bonus armor while equipped.
+
+| Tier | Name         | Armor Bonus |
+|------|--------------|-------------|
+| I    | Obsidite I   | +2          |
+| II   | Obsidite II  | +4          |
+| III  | Obsidite III | +6          |
+| IV   | Obsidite IV  | +8          |
+| V    | Obsidite V   | +10         |
+
+Only **Tier I** drops from bosses. Higher tiers are obtained via anvil combining.
+
+### Aurelite Rune
+
+Grants bonus luck while equipped.
+
+| Tier | Name         | Luck Bonus |
+|------|--------------|------------|
+| I    | Aurelite I   | +1         |
+| II   | Aurelite II  | +2         |
+| III  | Aurelite III | +3         |
+| IV   | Aurelite IV  | +4         |
+| V    | Aurelite V   | +5         |
+
+Only **Tier I** drops from bosses. Higher tiers are obtained via anvil combining.
+
+### Vigorite Rune
+
+Grants bonus max absorption while equipped.
+
+| Tier | Name         | Max Absorption Bonus |
+|------|--------------|----------------------|
+| I    | Vigorite I   | +4                   |
+| II   | Vigorite II  | +8                   |
+| III  | Vigorite III | +12                  |
+| IV   | Vigorite IV  | +16                  |
+| V    | Vigorite V   | +20                  |
+
+Only **Tier I** drops from bosses. Higher tiers are obtained via anvil combining.
+
+### Galvanite Rune
+
+Grants bonus attack speed while equipped.
+
+| Tier | Name          | Attack Speed Bonus |
+|------|---------------|--------------------|
+| I    | Galvanite I   | +0.2               |
+| II   | Galvanite II  | +0.4               |
+| III  | Galvanite III | +0.6               |
+| IV   | Galvanite IV  | +0.8               |
+| V    | Galvanite V   | +1.0               |
 
 Only **Tier I** drops from bosses. Higher tiers are obtained via anvil combining.
 
@@ -76,8 +146,6 @@ object Config {
 
 ## Future Rune Ideas
 
-1. **Attack Rune** — bonus attack damage per tier
-2. **Defence Rune** — bonus armor per tier
-3. **Depth Rune** — Elder Guardian drop; underwater breathing + mining speed
-4. **Soul Rune** — Wither drop; bonus XP gain or undead damage resistance
-5. **Void Rune** — Ender Dragon drop; ender pearl cooldown reduction
+1. **Depth Rune** — Elder Guardian drop; underwater breathing + mining speed
+2. **Soul Rune** — Wither drop; bonus XP gain or undead damage resistance
+3. **Void Rune** — Ender Dragon drop; ender pearl cooldown reduction
