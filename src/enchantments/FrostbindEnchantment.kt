@@ -18,9 +18,9 @@ import org.xodium.vanillaplus.utils.ManaUtils
 import org.xodium.vanillaplus.utils.ManaUtils.NO_MANA_SOUND
 import org.xodium.vanillaplus.utils.Utils.displayName
 
-/** Represents an object handling glacial enchantment implementation within the system. */
+/** Represents an object handling frostbind enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
-internal object GlacialEnchantment : EnchantmentInterface<PlayerInteractEvent> {
+internal object FrostbindEnchantment : EnchantmentInterface<PlayerInteractEvent> {
     object Config {
         const val MANA_COST = 10
         const val FREEZE_RADIUS = 3.0
@@ -37,6 +37,7 @@ internal object GlacialEnchantment : EnchantmentInterface<PlayerInteractEvent> {
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(65, 5))
             .activeSlots(EquipmentSlotGroup.MAINHAND)
 
+    // TODO: add potions to replenish mana.
     override fun effect(event: PlayerInteractEvent) {
         if (event.action != Action.LEFT_CLICK_AIR && event.action != Action.LEFT_CLICK_BLOCK) return
 
