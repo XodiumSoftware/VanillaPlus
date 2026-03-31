@@ -4,8 +4,11 @@ package org.xodium.vanillaplus.enchantments
 
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
 import net.kyori.adventure.bossbar.BossBar
+import net.kyori.adventure.key.Key
+import net.kyori.adventure.sound.Sound
 import org.bukkit.GameMode
 import org.bukkit.Material
+import org.bukkit.Particle
 import org.bukkit.entity.Player
 import org.bukkit.entity.SmallFireball
 import org.bukkit.event.block.Action
@@ -35,6 +38,8 @@ internal object InfernoEnchantment : EnchantmentInterface<PlayerInteractEvent> {
         const val BAR_HIDE_DELAY_TICKS = 60L
         const val MANA_REGEN_AMOUNT = 5
         const val MANA_REGEN_PERIOD_TICKS = 40L
+        val LAUNCH_SOUND: Sound = Sound.sound(Key.key("entity.blaze.shoot"), Sound.Source.HOSTILE, 1.0f, 1.0f)
+        val NO_MANA_SOUND: Sound = Sound.sound(Key.key("block.fire.extinguish"), Sound.Source.PLAYER, 1.0f, 0.8f)
     }
 
     private val bossBars = WeakHashMap<Player, BossBar>()
@@ -50,8 +55,6 @@ internal object InfernoEnchantment : EnchantmentInterface<PlayerInteractEvent> {
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(65, 5))
             .activeSlots(EquipmentSlotGroup.MAINHAND)
 
-    // TODO: add Effect on the fireball.
-    // TODO: enchantment only goes on books. which have to be held in offhand to apply to blaze rod or just normal hand?.
     override fun effect(event: PlayerInteractEvent) {
         if (event.action != Action.LEFT_CLICK_AIR && event.action != Action.LEFT_CLICK_BLOCK) return
 
@@ -74,6 +77,7 @@ internal object InfernoEnchantment : EnchantmentInterface<PlayerInteractEvent> {
         val manaCost = angleOffsets.size * Config.MANA_COST_PER_FIREBALL
 
         if (player.mana < manaCost) {
+            player.playSound(Config.NO_MANA_SOUND)
             showManaBar(player)
             return
         }
@@ -100,7 +104,44 @@ internal object InfernoEnchantment : EnchantmentInterface<PlayerInteractEvent> {
             fireball.shooter = player
             fireball.direction = spread.multiply(1.5)
             fireball.yield = 0.0f
+            spawnFireballTrail(fireball)
         }
+
+        player.playSound(Config.LAUNCH_SOUND)
+    }
+
+    /**
+     * Spawns a repeating particle trail behind [fireball] every tick until the entity is no longer valid.
+     * Emits [Particle.FLAME] and [Particle.LAVA] at the fireball's current location.
+     * @param fireball The [SmallFireball] to trail.
+     */
+    private fun spawnFireballTrail(fireball: SmallFireball) {
+        var task: BukkitTask? = null
+        task =
+            instance.server.scheduler.runTaskTimer(
+                instance,
+                Runnable {
+                    if (!fireball.isValid) {
+                        task?.cancel()
+                        return@Runnable
+                    }
+                    val loc = fireball.location
+
+                    Particle.FLAME
+                        .builder()
+                        .location(loc)
+                        .count(5)
+                        .offset(0.05, 0.05, 0.05)
+                        .spawn()
+                    Particle.LAVA
+                        .builder()
+                        .location(loc)
+                        .count(1)
+                        .spawn()
+                },
+                1L,
+                1L,
+            )
     }
 
     /**
