@@ -19,6 +19,10 @@ import java.util.*
 internal object RuneMenu {
     private val openViews: MutableSet<InventoryView> = Collections.newSetFromMap(WeakHashMap())
     private val title = MM.deserialize("<gradient:#FFA751:#FFE259><b>Rune Slots</b></gradient>")
+    private val lockedSlotItems: Map<Int, ItemStack> =
+        RuneModule.Config.slotLevelRequirements
+            .filter { it > 0 }
+            .associateWith { lockedSlotItem(it) }
 
     /** Returns `true` if [view] is a currently open rune menu. */
     operator fun contains(view: InventoryView): Boolean = view in openViews
@@ -36,7 +40,7 @@ internal object RuneMenu {
             val requiredLevel = RuneModule.Config.slotLevelRequirements[index]
 
             if (player.level < requiredLevel) {
-                view.topInventory.setItem(index, lockedSlotItem(requiredLevel))
+                lockedSlotItems[requiredLevel]?.let { view.topInventory.setItem(index, it.clone()) }
             } else if (typeName.isNotEmpty()) {
                 RuneModule.RUNES.firstOrNull { it.id == typeName }?.let { view.topInventory.setItem(index, it.item) }
             }
