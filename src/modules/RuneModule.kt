@@ -116,7 +116,7 @@ internal object RuneModule : ModuleInterface {
 
     @EventHandler
     fun on(event: InventoryCloseEvent) {
-        if (event.view !in RuneMenu.openViews) return
+        if (event.view !in RuneMenu) return
 
         val player = event.player as? Player ?: return
         val existing = player.runeSlots
@@ -137,7 +137,7 @@ internal object RuneModule : ModuleInterface {
 
     @EventHandler(ignoreCancelled = true)
     fun on(event: InventoryClickEvent) {
-        if (event.view !in RuneMenu.openViews) return
+        if (event.view !in RuneMenu) return
 
         val clickedInv = event.clickedInventory ?: return
         val top = event.view.topInventory
@@ -170,7 +170,7 @@ internal object RuneModule : ModuleInterface {
 
     @EventHandler(ignoreCancelled = true)
     fun on(event: InventoryDragEvent) {
-        if (event.view !in RuneMenu.openViews) return
+        if (event.view !in RuneMenu) return
 
         val topSlots = event.rawSlots.filter { it < 5 }.toSet()
 
@@ -254,10 +254,10 @@ internal object RuneModule : ModuleInterface {
     object Config {
         var dropTable: List<RuneDropTableData> =
             listOf(
-                RuneDropTableData(EntityType.ELDER_GUARDIAN, 0.05),
-                RuneDropTableData(EntityType.WITHER, 0.10),
-                RuneDropTableData(EntityType.WARDEN, 0.15),
-                RuneDropTableData(EntityType.ENDER_DRAGON, 0.20),
+                RuneDropTableData(EntityType.ELDER_GUARDIAN, 0.05, RUNES.filter { it.tier == 1 }),
+                RuneDropTableData(EntityType.WITHER, 0.10, RUNES.filter { it.tier == 1 }),
+                RuneDropTableData(EntityType.WARDEN, 0.15, RUNES.filter { it.tier == 1 }),
+                RuneDropTableData(EntityType.ENDER_DRAGON, 0.20, RUNES.filter { it.tier == 1 }),
             )
         var anvilCombineCost: Int = 5
         val slotLevelRequirements: List<Int> = listOf(0, 10, 20, 30, 40)

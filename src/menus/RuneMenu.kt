@@ -17,9 +17,11 @@ import java.util.*
 /** Represents the rune equipment menu. */
 @Suppress("UnstableApiUsage")
 internal object RuneMenu {
-    val openViews: MutableSet<InventoryView> = Collections.newSetFromMap(WeakHashMap())
+    private val openViews: MutableSet<InventoryView> = Collections.newSetFromMap(WeakHashMap())
+    private val title = MM.deserialize("<gradient:#FFA751:#FFE259><b>Rune Slots</b></gradient>")
 
-    private val TITLE = MM.deserialize("<gradient:#FFA751:#FFE259><b>Rune Slots</b></gradient>")
+    /** Returns `true` if [view] is a currently open rune menu. */
+    operator fun contains(view: InventoryView): Boolean = view in openViews
 
     /**
      * Opens the rune equipment menu for the given player,
@@ -28,7 +30,7 @@ internal object RuneMenu {
      * @param player The player to open the menu for.
      */
     fun open(player: Player) {
-        val view = MenuType.HOPPER.create(player, TITLE)
+        val view = MenuType.HOPPER.create(player, title)
 
         player.runeSlots.forEachIndexed { index, typeName ->
             val requiredLevel = RuneModule.Config.slotLevelRequirements[index]

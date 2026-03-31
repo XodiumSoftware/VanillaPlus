@@ -25,7 +25,7 @@ internal class CrimsoniteRune private constructor(
 
     override val id: String = "${javaClass.simpleName}_$tier"
 
-    override fun nextTier(): RuneInterface? = if (tier < MAX_TIERS) tiers[tier] else null
+    override fun nextTier(): RuneInterface? = tiers.getOrNull(tier)
 
     override val item: ItemStack =
         buildItem(
