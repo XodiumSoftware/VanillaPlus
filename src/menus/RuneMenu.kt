@@ -34,19 +34,21 @@ internal object RuneMenu {
      * @param player The player to open the menu for.
      */
     fun open(player: Player) {
-        val view = MenuType.HOPPER.create(player, title)
+        MenuType.HOPPER.create(player, title).also { view ->
+            player.runeSlots.forEachIndexed { index, typeName ->
+                val requiredLevel = RuneModule.Config.slotLevelRequirements[index]
+                val item =
+                    when {
+                        player.level < requiredLevel -> lockedSlotItems[requiredLevel]?.clone()
+                        typeName.isNotEmpty() -> RuneModule.RUNES.firstOrNull { it.id == typeName }?.item
+                        else -> null
+                    }
 
-        player.runeSlots.forEachIndexed { index, typeName ->
-            val requiredLevel = RuneModule.Config.slotLevelRequirements[index]
-
-            if (player.level < requiredLevel) {
-                lockedSlotItems[requiredLevel]?.let { view.topInventory.setItem(index, it.clone()) }
-            } else if (typeName.isNotEmpty()) {
-                RuneModule.RUNES.firstOrNull { it.id == typeName }?.let { view.topInventory.setItem(index, it.item) }
+                item?.let { view.topInventory.setItem(index, it) }
             }
+            player.openInventory(view)
+            openViews.add(view)
         }
-        player.openInventory(view)
-        openViews.add(view)
     }
 
     /** Returns a placeholder [ItemStack] displayed in rune slots that require [requiredLevel] to unlock. */
