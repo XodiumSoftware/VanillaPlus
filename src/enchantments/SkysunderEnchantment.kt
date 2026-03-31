@@ -1,8 +1,6 @@
 package org.xodium.vanillaplus.enchantments
 
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
-import net.kyori.adventure.key.Key
-import net.kyori.adventure.sound.Sound
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.Particle
@@ -21,8 +19,6 @@ internal object SkysunderEnchantment : EnchantmentInterface<PlayerInteractEvent>
     object Config {
         const val MANA_COST = 20
         const val RANGE = 30.0
-        val LAUNCH_SOUND: Sound =
-            Sound.sound(Key.key("entity.lightning_bolt.thunder"), Sound.Source.WEATHER, 0.4f, 1.5f)
     }
 
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
@@ -74,6 +70,5 @@ internal object SkysunderEnchantment : EnchantmentInterface<PlayerInteractEvent>
             .spawn()
 
         player.world.strikeLightning(target)
-        player.playSound(Config.LAUNCH_SOUND)
     }
 }
