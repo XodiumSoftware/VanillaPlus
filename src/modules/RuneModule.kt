@@ -224,13 +224,12 @@ internal object RuneModule : ModuleInterface {
         inventory: Inventory,
         rune: ItemStack,
         excludeSlots: Set<Int> = emptySet(),
-    ): Boolean {
-        val family = runeFamilyOf(rune) ?: return false
-
-        return (0 until 5).any { slot ->
-            slot !in excludeSlots && inventory.getItem(slot)?.let { runeFamilyOf(it) } == family
+    ): Boolean =
+        (0 until 5).any { slot ->
+            slot !in excludeSlots && inventory.getItem(slot)?.let { runeFamilyOf(it) } == (
+                runeFamilyOf(rune) ?: return false
+            )
         }
-    }
 
     /** Returns `true` if [slot] in the rune menu is locked for [player] based on their XP level. */
     private fun isSlotLocked(
@@ -240,13 +239,15 @@ internal object RuneModule : ModuleInterface {
 
     /** Applies or removes each registered rune's modifier on [player] based on their current slots and level. */
     private fun applyRuneModifiers(player: Player) {
-        val slots = player.runeSlots
-        val equippedIds =
-            slots
-                .mapIndexedNotNull { i, id -> id.takeIf { it.isNotEmpty() && !isSlotLocked(player, i) } }
-                .toSet()
-
-        RUNES.forEach { rune -> rune.modifiers(player, rune.id in equippedIds) }
+        RUNES.forEach { rune ->
+            rune.modifiers(
+                player,
+                rune.id in
+                    player.runeSlots
+                        .mapIndexedNotNull { i, id -> id.takeIf { it.isNotEmpty() && !isSlotLocked(player, i) } }
+                        .toSet(),
+            )
+        }
     }
 
     private val all = listOf(CrimsoniteRune.tiers[0], ZephyriteRune.tiers[0])
