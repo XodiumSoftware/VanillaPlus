@@ -29,6 +29,10 @@ internal object InfernoEnchantment : EnchantmentInterface<PlayerInteractEvent> {
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(65, 5))
             .activeSlots(EquipmentSlotGroup.MAINHAND)
 
+    // TODO: setup mana system.
+    // TODO: add Effect on the fireball.
+    // TODO: add potions to replenish mana.
+    // TODO: enchantment only goes on books. which have to be held in offhand to apply to blaze rod or just normal hand?.
     override fun effect(event: PlayerInteractEvent) {
         if (event.action != Action.LEFT_CLICK_AIR && event.action != Action.LEFT_CLICK_BLOCK) return
 
