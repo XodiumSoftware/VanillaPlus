@@ -49,7 +49,7 @@ internal object InfernoEnchantment : EnchantmentInterface<PlayerInteractEvent> {
         builder
             .description(key.displayName())
             .anvilCost(4)
-            .maxLevel(3)
+            .maxLevel(1)
             .weight(1)
             .minimumCost(EnchantmentRegistryEntry.EnchantmentCost.of(20, 5))
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(65, 5))
@@ -67,13 +67,7 @@ internal object InfernoEnchantment : EnchantmentInterface<PlayerInteractEvent> {
 
         if (player.gameMode != GameMode.SURVIVAL) return
 
-        val level = item.getEnchantmentLevel(get())
-        val angleOffsets =
-            when (level) {
-                1 -> doubleArrayOf(0.0)
-                2 -> doubleArrayOf(-10.0, 0.0, 10.0)
-                else -> doubleArrayOf(-20.0, -10.0, 0.0, 10.0, 20.0)
-            }
+        val angleOffsets = doubleArrayOf(0.0)
         val manaCost = angleOffsets.size * Config.MANA_COST_PER_FIREBALL
 
         if (player.mana < manaCost) {
