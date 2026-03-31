@@ -11,6 +11,7 @@ import org.bukkit.util.Vector
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 import org.xodium.vanillaplus.utils.Utils.displayName
 import java.util.*
+import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -62,7 +63,7 @@ internal object InfernoEnchantment : EnchantmentInterface<PlayerInteractEvent> {
         val spawnLocation = player.eyeLocation.add(direction.clone().multiply(1.5))
 
         for (angleDeg in angleOffsets) {
-            val radians = Math.toRadians(angleDeg)
+            val radians = angleDeg * PI / 180.0
             val cos = cos(radians)
             val sin = sin(radians)
             val spread =
