@@ -61,6 +61,11 @@ internal object ManaManager {
 
         val player = event.player
 
+        if (player.gameMode == GameMode.CREATIVE) {
+            event.isCancelled = true
+            return player
+        }
+
         if (player.gameMode !in ACTIVE_GAME_MODES) return null
         if (player.mana < manaCost) {
             player.playSound(NO_MANA_SOUND)
