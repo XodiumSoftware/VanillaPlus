@@ -26,7 +26,7 @@ There are no automated tests in this project.
 ### Entry Points
 
 - **`VanillaPlusBootstrap`** — `PluginBootstrap` implementation. Runs before plugin enable. Creates item tags (`vanillaplus:tools`, `vanillaplus:weapons`, `vanillaplus:tools_weapons`, `vanillaplus:blaze_rods`), registers eight custom enchantments into Paper's registry via `RegistryEvents.ENCHANTMENT`, then tags all eight as tradeable, non-treasure, and in-enchanting-table via `LifecycleEvents.TAGS.postFlatten`.
-- **`VanillaPlus`** — `JavaPlugin` main class. On enable: validates server version, registers all recipes, registers all modules, then calls `ManaUtils.startRegenTask()` to begin the shared mana regeneration loop. All modules are active by default (`enabled` defaults to `true` on `ModuleInterface`); override `enabled` to `false` in a specific module to disable it at compile time.
+- **`VanillaPlus`** — `JavaPlugin` main class. On enable: validates server version, registers all recipes, registers all modules, then calls `ManaManager.startRegenTask()` to begin the shared mana regeneration loop. All modules are active by default (`enabled` defaults to `true` on `ModuleInterface`); override `enabled` to `false` in a specific module to disable it at compile time.
 
 ### Module System
 
@@ -59,7 +59,7 @@ Event handling is done via ordinary `@EventHandler` methods in each enchantment 
 
 SilkTouch and FeatherFalling exist as implementations but are not currently registered in the bootstrap.
 
-**Mana system:** Inferno, Frostbind, and Skysunder share a single mana pool stored in `PlayerPDC.mana`. `ManaUtils` owns the bossbar display (`showManaBar`), regen scheduler (`startRegenTask`), and the no-mana sound (`NO_MANA_SOUND`). The bossbar uses the **Spellbite** gradient (`#832466 → #BF4299 → #832466`) with `NOTCHED_10` overlay.
+**Mana system:** Inferno, Frostbind, and Skysunder share a single mana pool stored in `PlayerPDC.mana`. `ManaManager` owns the bossbar display (`showManaBar`), regen scheduler (`startRegenTask`), and the no-mana sound (`NO_MANA_SOUND`). The bossbar uses the **Spellbite** gradient (`#832466 → #BF4299 → #832466`) with `NOTCHED_10` overlay.
 
 ### PDCs (Persistent Data Containers)
 
@@ -77,6 +77,7 @@ Recipe objects implement **`RecipeInterface`** and are listed in `VanillaPlus.on
 | `data/`         | `CommandData`, `BookData`, `AdjacentBlockData`                                                            |
 | `enchantments/` | Verdance, Tether, Nimbus, Earthrend, Embertread, Inferno, Frostbind, Skysunder, SilkTouch, FeatherFalling |
 | `interfaces/`   | `ModuleInterface`, `EnchantmentInterface`, `RecipeInterface`                                              |
+| `managers/`     | `ManaManager`, `PlayerMessageManager`                                                                     |
 | `pdcs/`         | `PlayerPDC`                                                                                               |
 | `recipes/`      | Chainmail, DiamondRecycle, Painting, RottenFlesh, WoodLog                                                 |
 | `utils/`        | `Utils`, `CommandUtils`, `BlockUtils`, `PlayerUtils`, `ScheduleUtils`                                     |

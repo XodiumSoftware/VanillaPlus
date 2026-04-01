@@ -1,6 +1,6 @@
 @file:Suppress("ktlint:standard:no-wildcard-imports")
 
-package org.xodium.vanillaplus.utils
+package org.xodium.vanillaplus.managers
 
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.key.Key
@@ -13,13 +13,14 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.scheduler.BukkitTask
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.managers.ManaManager.NO_MANA_SOUND
 import org.xodium.vanillaplus.pdcs.PlayerPDC.mana
-import org.xodium.vanillaplus.utils.ManaUtils.NO_MANA_SOUND
+import org.xodium.vanillaplus.utils.ScheduleUtils
 import org.xodium.vanillaplus.utils.Utils.MM
 import java.util.*
 
-/** Utility object for managing the shared mana pool: bossbar display and passive regeneration. */
-internal object ManaUtils {
+/** Manages the shared mana pool: bossbar display, passive regeneration, and mana consumption. */
+internal object ManaManager {
     object Config {
         const val MAX_MANA = 100
         const val BAR_HIDE_DELAY_TICKS = 60L

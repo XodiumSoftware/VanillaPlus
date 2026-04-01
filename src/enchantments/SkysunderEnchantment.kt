@@ -5,7 +5,7 @@ import org.bukkit.Particle
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
-import org.xodium.vanillaplus.utils.ManaUtils
+import org.xodium.vanillaplus.managers.ManaManager
 import org.xodium.vanillaplus.utils.Utils.displayName
 
 /** Represents an object handling skysunder enchantment implementation within the system. */
@@ -31,7 +31,7 @@ internal object SkysunderEnchantment : EnchantmentInterface {
      * @param event The [PlayerInteractEvent] to handle.
      */
     fun onPlayerInteract(event: PlayerInteractEvent) {
-        val player = ManaUtils.consumeMana(event, get(), Config.MANA_COST) ?: return
+        val player = ManaManager.consumeMana(event, get(), Config.MANA_COST) ?: return
         val result = player.rayTraceBlocks(Config.RANGE)
         val target =
             result?.hitPosition?.toLocation(player.world)

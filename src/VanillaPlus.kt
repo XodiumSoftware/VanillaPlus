@@ -3,6 +3,7 @@
 package org.xodium.vanillaplus
 
 import org.bukkit.plugin.java.JavaPlugin
+import org.xodium.vanillaplus.managers.ManaManager
 import org.xodium.vanillaplus.modules.BookModule
 import org.xodium.vanillaplus.modules.ChatModule
 import org.xodium.vanillaplus.modules.ChiseledBookshelfModule
@@ -22,7 +23,6 @@ import org.xodium.vanillaplus.recipes.DiamondRecycleRecipe
 import org.xodium.vanillaplus.recipes.PaintingRecipe
 import org.xodium.vanillaplus.recipes.RottenFleshRecipe
 import org.xodium.vanillaplus.recipes.WoodLogRecipe
-import org.xodium.vanillaplus.utils.ManaUtils
 
 /** Main class of the plugin. */
 internal class VanillaPlus : JavaPlugin() {
@@ -76,7 +76,7 @@ internal class VanillaPlus : JavaPlugin() {
             "Registered: ${modules.size} module(s) | Took ${modules.sumOf { it.register() }}ms",
         )
 
-        ManaUtils.startRegenTask()
+        ManaManager.startRegenTask()
     }
 
     /**

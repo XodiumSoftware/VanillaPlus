@@ -10,7 +10,7 @@ import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.scheduler.BukkitTask
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
-import org.xodium.vanillaplus.utils.ManaUtils
+import org.xodium.vanillaplus.managers.ManaManager
 import org.xodium.vanillaplus.utils.Utils.displayName
 import kotlin.uuid.ExperimentalUuidApi
 
@@ -38,7 +38,7 @@ internal object InfernoEnchantment : EnchantmentInterface {
      * @param event The [PlayerInteractEvent] to handle.
      */
     fun onPlayerInteract(event: PlayerInteractEvent) {
-        val player = ManaUtils.consumeMana(event, get(), Config.MANA_COST) ?: return
+        val player = ManaManager.consumeMana(event, get(), Config.MANA_COST) ?: return
         val direction = player.location.direction.normalize()
         val spawnLocation = player.eyeLocation.add(direction.clone().multiply(1.5))
         val fireball = player.world.spawn(spawnLocation, SmallFireball::class.java)
