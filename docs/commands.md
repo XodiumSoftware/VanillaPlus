@@ -35,14 +35,6 @@ Each configured book generates its own command and permission derived from its `
 |--------------------|---------|------------------------|----------|------------------------------------|
 | `/nickname [name]` | `nick`  | `vanillaplus.nickname` | Everyone | Set or clear your display nickname |
 
-## Rune
-
-| Command                       | Aliases | Permission              | Default  | Description                   |
-|-------------------------------|---------|-------------------------|----------|-------------------------------|
-| `/runes`                      | `r`     | `vanillaplus.rune`      | Everyone | Open the rune equipment menu  |
-| `/runes give <rune>`          | —       | `vanillaplus.rune.give` | OP       | Give yourself a rune          |
-| `/runes give <rune> <player>` | —       | `vanillaplus.rune.give` | OP       | Give a rune to another player |
-
 ## Scoreboard
 
 | Command        | Aliases       | Permission                | Default  | Description                       |

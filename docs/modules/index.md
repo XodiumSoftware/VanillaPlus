@@ -16,7 +16,6 @@ VanillaPlus is built around independent modules. Each module is self-contained a
 | [MOTD](motd.md)                            | Custom server list MOTD                                                         | —                    |
 | [Openable](openable.md)                    | Double doors, knocking sounds                                                   | —                    |
 | [Player](player.md)                        | Nicknames, skull drops, XP bottles, death/join/quit messages, enchantment hooks | `/nickname`          |
-| [Rune](rune.md)                            | Gem slots that increase max health; gems drop from bosses                       | `/runes`             |
 | [Scoreboard](scoreboard.md)                | Leaderboard scoreboard toggle                                                   | `/leaderboard`       |
 | [Server Info](server-info.md)              | Server links (website, Discord, bug tracker)                                    | —                    |
 | [Sit](sit.md)                              | Sit on stairs and slabs                                                         | —                    |
