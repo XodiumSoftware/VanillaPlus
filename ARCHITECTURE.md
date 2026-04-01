@@ -25,7 +25,7 @@ There are no automated tests in this project.
 
 ### Entry Points
 
-- **`VanillaPlusBootstrap`** — `PluginBootstrap` implementation. Runs before plugin enable. Creates item tags (`vanillaplus:tools`, `vanillaplus:weapons`, `vanillaplus:tools_weapons`, `vanillaplus:blaze_rods`), registers eight custom enchantments into Paper's registry via `RegistryEvents.ENCHANTMENT`, then tags all eight as tradeable, non-treasure, and in-enchanting-table via `LifecycleEvents.TAGS.postFlatten`.
+- **`VanillaPlusBootstrap`** — `PluginBootstrap` implementation. Runs before plugin enable. Creates item tags (`vanillaplus:tools`, `vanillaplus:weapons`, `vanillaplus:tools_weapons`, `vanillaplus:blaze_rods`), registers eleven custom enchantments into Paper's registry via `RegistryEvents.ENCHANTMENT`, then tags all eleven as tradeable, non-treasure, and in-enchanting-table via `LifecycleEvents.TAGS.postFlatten`.
 - **`VanillaPlus`** — `JavaPlugin` main class. On enable: validates server version, registers all recipes, registers all modules, then calls `ManaManager.startRegenTask()` to begin the shared mana regeneration loop. All modules are active by default (`enabled` defaults to `true` on `ModuleInterface`); override `enabled` to `false` in a specific module to disable it at compile time.
 
 ### Module System
@@ -44,7 +44,7 @@ Custom enchantments implement **`EnchantmentInterface`** and are registered in `
 - **`invoke(builder)`** — override to configure the enchantment's registry entry (description, anvil cost, level range, weight, slot group, etc.). The default implementation is a no-op pass-through.
 - **`get()`** — looks up and returns the live `Enchantment` instance from the registry after bootstrap.
 
-Event handling is done via ordinary `@EventHandler` methods in each enchantment object — there is no generic event type on the interface. Eight enchantments are actively registered and tagged as tradeable, non-treasure, and in-enchanting-table:
+Event handling is done via ordinary `@EventHandler` methods in each enchantment object — there is no generic event type on the interface. Eleven enchantments are actively registered and tagged as tradeable, non-treasure, and in-enchanting-table:
 
 | Enchantment | Slot Group | Supported Items                               |
 |-------------|------------|-----------------------------------------------|
@@ -55,10 +55,14 @@ Event handling is done via ordinary `@EventHandler` methods in each enchantment 
 | Embertread  | `FEET`     | Foot armor                                    |
 | Inferno     | `MAINHAND` | Blaze Rods (`vanillaplus:blaze_rods`)         |
 | Skysunder   | `MAINHAND` | Blaze Rods (`vanillaplus:blaze_rods`)         |
+| Witherbrand | `MAINHAND` | Blaze Rods (`vanillaplus:blaze_rods`)         |
+| Glacialbind | `MAINHAND` | Blaze Rods (`vanillaplus:blaze_rods`)         |
+| Tempest     | `MAINHAND` | Blaze Rods (`vanillaplus:blaze_rods`)         |
+| Voidpull    | `MAINHAND` | Blaze Rods (`vanillaplus:blaze_rods`)         |
 
 SilkTouch and FeatherFalling exist as implementations but are not currently registered in the bootstrap.
 
-**Mana system:** Inferno and Skysunder share a single mana pool stored in `PlayerPDC.mana`. `ManaManager` owns the bossbar display (`showManaBar`), regen scheduler (`startRegenTask`), and the no-mana sound (`NO_MANA_SOUND`). The bossbar uses the **Spellbite** gradient (`#832466 → #BF4299 → #832466`) with `NOTCHED_10` overlay.
+**Mana system:** All five Blaze Rod spell enchantments (Inferno, Skysunder, Witherbrand, Glacialbind, Voidpull) and Tempest share a single mana pool stored in `PlayerPDC.mana`. All five are mutually exclusive with each other via `exclusiveWith`. `ManaManager` owns the bossbar display (`showManaBar`), regen scheduler (`startRegenTask`), and the no-mana sound (`NO_MANA_SOUND`). The bossbar uses the **Spellbite** gradient (`#832466 → #BF4299 → #832466`) with `NOTCHED_10` overlay. Glacialbind tags its `Snowball` projectiles with a `NamespacedKey` (`glacialbind_projectile`) and resolves the hit in `ProjectileHitEvent`.
 
 ### PDCs (Persistent Data Containers)
 
@@ -70,16 +74,16 @@ Recipe objects implement **`RecipeInterface`** and are listed in `VanillaPlus.on
 
 ### Package Structure (`org.xodium.vanillaplus`)
 
-| Package         | Contents                                                                                       |
-|-----------------|------------------------------------------------------------------------------------------------|
-| `modules/`      | 14 feature module singletons                                                                   |
-| `data/`         | `CommandData`, `BookData`, `AdjacentBlockData`                                                 |
-| `enchantments/` | Verdance, Tether, Nimbus, Earthrend, Embertread, Inferno, Skysunder, SilkTouch, FeatherFalling |
-| `interfaces/`   | `ModuleInterface`, `EnchantmentInterface`, `RecipeInterface`                                   |
-| `managers/`     | `ManaManager`, `PlayerMessageManager`                                                          |
-| `pdcs/`         | `PlayerPDC`                                                                                    |
-| `recipes/`      | Chainmail, DiamondRecycle, Painting, RottenFlesh, WoodLog                                      |
-| `utils/`        | `Utils`, `CommandUtils`, `BlockUtils`, `PlayerUtils`, `ScheduleUtils`                          |
+| Package         | Contents                                                                                                                                    |
+|-----------------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| `modules/`      | 14 feature module singletons                                                                                                                |
+| `data/`         | `CommandData`, `BookData`, `AdjacentBlockData`                                                                                              |
+| `enchantments/` | Verdance, Tether, Nimbus, Earthrend, Embertread, Inferno, Skysunder, Witherbrand, Glacialbind, Tempest, Voidpull, SilkTouch, FeatherFalling |
+| `interfaces/`   | `ModuleInterface`, `EnchantmentInterface`, `RecipeInterface`                                                                                |
+| `managers/`     | `ManaManager`, `PlayerMessageManager`                                                                                                       |
+| `pdcs/`         | `PlayerPDC`                                                                                                                                 |
+| `recipes/`      | Chainmail, DiamondRecycle, Painting, RottenFlesh, WoodLog                                                                                   |
+| `utils/`        | `Utils`, `CommandUtils`, `BlockUtils`, `PlayerUtils`, `ScheduleUtils`                                                                       |
 
 ### Key Conventions
 
