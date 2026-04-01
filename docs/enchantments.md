@@ -89,19 +89,6 @@ Left-clicking with an enchanted Blaze Rod fires a small fireball in the directio
 
 ---
 
-### Frostbind
-
-> Launches an ice bolt on left-click with Packed Ice that freezes nearby targets on impact.
-
-| Property          | Value                 |
-|-------------------|-----------------------|
-| **Slot**          | Mainhand (Blaze Rods) |
-| **Levels**        | I                     |
-| **Mana cost**     | 10                    |
-| **Freeze radius** | 3 blocks              |
-
-Left-clicking with a Frostbind Blaze Rod fires a snowball in the direction you are looking. On impact, all living entities within 3 blocks (excluding the caster) are fully frozen for the maximum freeze duration. Leaves a snowflake particle trail and bursts on hit. Draws from the same shared mana pool as Inferno; displays the **Spellbite** mana bar on cast. Only usable in Survival or Adventure mode.
-
 ### Skysunder
 
 > Calls down a lightning bolt on left-click with a Blaze Rod.
@@ -113,7 +100,7 @@ Left-clicking with a Frostbind Blaze Rod fires a snowball in the direction you a
 | **Mana cost** | 20                    |
 | **Range**     | 30 blocks             |
 
-Left-clicking with a Skysunder Blaze Rod ray-traces up to 30 blocks in the direction you are looking. A real lightning bolt (dealing damage) strikes the first block hit, or the maximum range point if no block is found. Bursts `ELECTRIC_SPARK` particles at the strike location. Draws from the shared **Spellbite** mana pool (costs twice as much as Inferno/Frostbind). Only usable in Survival or Adventure mode.
+Left-clicking with a Skysunder Blaze Rod ray-traces up to 30 blocks in the direction you are looking. A real lightning bolt (dealing damage) strikes the first block hit, or the maximum range point if no block is found. Bursts `ELECTRIC_SPARK` particles at the strike location. Draws from the shared **Spellbite** mana pool (costs twice as much as Inferno). Only usable in Survival or Adventure mode.
 
 ---
 

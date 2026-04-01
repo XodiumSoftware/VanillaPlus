@@ -54,12 +54,11 @@ Event handling is done via ordinary `@EventHandler` methods in each enchantment 
 | Earthrend   | `MAINHAND` | Pickaxes                                      |
 | Embertread  | `FEET`     | Foot armor                                    |
 | Inferno     | `MAINHAND` | Blaze Rods (`vanillaplus:blaze_rods`)         |
-| Frostbind   | `MAINHAND` | Blaze Rods (`vanillaplus:blaze_rods`)         |
 | Skysunder   | `MAINHAND` | Blaze Rods (`vanillaplus:blaze_rods`)         |
 
 SilkTouch and FeatherFalling exist as implementations but are not currently registered in the bootstrap.
 
-**Mana system:** Inferno, Frostbind, and Skysunder share a single mana pool stored in `PlayerPDC.mana`. `ManaManager` owns the bossbar display (`showManaBar`), regen scheduler (`startRegenTask`), and the no-mana sound (`NO_MANA_SOUND`). The bossbar uses the **Spellbite** gradient (`#832466 → #BF4299 → #832466`) with `NOTCHED_10` overlay.
+**Mana system:** Inferno and Skysunder share a single mana pool stored in `PlayerPDC.mana`. `ManaManager` owns the bossbar display (`showManaBar`), regen scheduler (`startRegenTask`), and the no-mana sound (`NO_MANA_SOUND`). The bossbar uses the **Spellbite** gradient (`#832466 → #BF4299 → #832466`) with `NOTCHED_10` overlay.
 
 ### PDCs (Persistent Data Containers)
 
@@ -71,16 +70,16 @@ Recipe objects implement **`RecipeInterface`** and are listed in `VanillaPlus.on
 
 ### Package Structure (`org.xodium.vanillaplus`)
 
-| Package         | Contents                                                                                                  |
-|-----------------|-----------------------------------------------------------------------------------------------------------|
-| `modules/`      | 14 feature module singletons                                                                              |
-| `data/`         | `CommandData`, `BookData`, `AdjacentBlockData`                                                            |
-| `enchantments/` | Verdance, Tether, Nimbus, Earthrend, Embertread, Inferno, Frostbind, Skysunder, SilkTouch, FeatherFalling |
-| `interfaces/`   | `ModuleInterface`, `EnchantmentInterface`, `RecipeInterface`                                              |
-| `managers/`     | `ManaManager`, `PlayerMessageManager`                                                                     |
-| `pdcs/`         | `PlayerPDC`                                                                                               |
-| `recipes/`      | Chainmail, DiamondRecycle, Painting, RottenFlesh, WoodLog                                                 |
-| `utils/`        | `Utils`, `CommandUtils`, `BlockUtils`, `PlayerUtils`, `ScheduleUtils`                                     |
+| Package         | Contents                                                                                       |
+|-----------------|------------------------------------------------------------------------------------------------|
+| `modules/`      | 14 feature module singletons                                                                   |
+| `data/`         | `CommandData`, `BookData`, `AdjacentBlockData`                                                 |
+| `enchantments/` | Verdance, Tether, Nimbus, Earthrend, Embertread, Inferno, Skysunder, SilkTouch, FeatherFalling |
+| `interfaces/`   | `ModuleInterface`, `EnchantmentInterface`, `RecipeInterface`                                   |
+| `managers/`     | `ManaManager`, `PlayerMessageManager`                                                          |
+| `pdcs/`         | `PlayerPDC`                                                                                    |
+| `recipes/`      | Chainmail, DiamondRecycle, Painting, RottenFlesh, WoodLog                                      |
+| `utils/`        | `Utils`, `CommandUtils`, `BlockUtils`, `PlayerUtils`, `ScheduleUtils`                          |
 
 ### Key Conventions
 

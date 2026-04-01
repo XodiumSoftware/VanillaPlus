@@ -19,7 +19,6 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockDropItemEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.PlayerDeathEvent
-import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.event.player.PlayerAdvancementDoneEvent
 import org.bukkit.event.player.PlayerBedEnterEvent
 import org.bukkit.event.player.PlayerInteractEvent
@@ -36,7 +35,6 @@ import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.enchantments.EarthrendEnchantment
 import org.xodium.vanillaplus.enchantments.EmbertreadEnchantment
 import org.xodium.vanillaplus.enchantments.FeatherFallingEnchantment
-import org.xodium.vanillaplus.enchantments.FrostbindEnchantment
 import org.xodium.vanillaplus.enchantments.InfernoEnchantment
 import org.xodium.vanillaplus.enchantments.SilkTouchEnchantment
 import org.xodium.vanillaplus.enchantments.SkysunderEnchantment
@@ -164,15 +162,11 @@ internal object PlayerModule : ModuleInterface {
         FeatherFallingEnchantment.onPlayerInteract(event)
         handleEnderchest(event)
         InfernoEnchantment.onPlayerInteract(event)
-        FrostbindEnchantment.onPlayerInteract(event)
         SkysunderEnchantment.onPlayerInteract(event)
     }
 
     @EventHandler
     fun on(event: EntityDamageEvent) = EmbertreadEnchantment.onEntityDamage(event)
-
-    @EventHandler
-    fun on(event: ProjectileHitEvent) = FrostbindEnchantment.onProjectileHit(event)
 
     @EventHandler
     fun on(event: BlockBreakEvent) {
