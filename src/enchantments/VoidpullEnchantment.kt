@@ -66,6 +66,7 @@ internal object VoidpullEnchantment : EnchantmentInterface {
         val spawnLocation = player.eyeLocation.add(direction.clone().multiply(1.5))
         val pearl = player.world.spawn(spawnLocation, EnderPearl::class.java)
 
+        pearl.setGravity(false)
         pearl.velocity = direction.multiply(Config.VELOCITY)
         pearl.persistentDataContainer.set(PROJECTILE_KEY, PersistentDataType.STRING, player.uniqueId.toString())
 

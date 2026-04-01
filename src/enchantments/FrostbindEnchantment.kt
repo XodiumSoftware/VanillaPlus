@@ -61,6 +61,7 @@ internal object FrostbindEnchantment : EnchantmentInterface {
         val snowball = player.world.spawn(spawnLocation, Snowball::class.java)
 
         snowball.shooter = player
+        snowball.setGravity(false)
         snowball.velocity = direction.multiply(2.0)
         snowball.persistentDataContainer.set(PROJECTILE_KEY, PersistentDataType.BOOLEAN, true)
         spawnSnowballTrail(snowball)
