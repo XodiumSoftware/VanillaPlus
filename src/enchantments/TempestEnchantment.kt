@@ -5,10 +5,13 @@ import io.papermc.paper.registry.data.EnchantmentRegistryEntry
 import io.papermc.paper.registry.set.RegistrySet
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
+import org.bukkit.Particle
 import org.bukkit.entity.WindCharge
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlotGroup
+import org.bukkit.scheduler.BukkitTask
 import org.bukkit.util.Vector
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 import org.xodium.vanillaplus.managers.ManaManager
 import org.xodium.vanillaplus.utils.Utils.displayName
@@ -62,8 +65,44 @@ internal object TempestEnchantment : EnchantmentInterface {
 
             charge.shooter = player
             charge.velocity = dir.multiply(1.5)
+            spawnWindChargeTrail(charge)
         }
 
         player.playSound(Config.LAUNCH_SOUND)
+    }
+
+    /**
+     * Spawns a repeating particle trail behind [charge] every tick until the entity is no longer valid.
+     * @param charge The [WindCharge] to trail.
+     */
+    private fun spawnWindChargeTrail(charge: WindCharge) {
+        var task: BukkitTask? = null
+        task =
+            instance.server.scheduler.runTaskTimer(
+                instance,
+                Runnable {
+                    if (!charge.isValid) {
+                        task?.cancel()
+                        return@Runnable
+                    }
+
+                    val loc = charge.location
+
+                    Particle.GUST
+                        .builder()
+                        .location(loc)
+                        .count(1)
+                        .spawn()
+                    Particle.CLOUD
+                        .builder()
+                        .location(loc)
+                        .count(3)
+                        .offset(0.05, 0.05, 0.05)
+                        .extra(0.02)
+                        .spawn()
+                },
+                1L,
+                1L,
+            )
     }
 }

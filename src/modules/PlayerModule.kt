@@ -175,7 +175,10 @@ internal object PlayerModule : ModuleInterface {
     }
 
     @EventHandler
-    fun on(event: ProjectileHitEvent) = FrostbindEnchantment.onProjectileHit(event)
+    fun on(event: ProjectileHitEvent) {
+        FrostbindEnchantment.onProjectileHit(event)
+        VoidpullEnchantment.onProjectileHit(event)
+    }
 
     @EventHandler
     fun on(event: EntityDamageEvent) = EmbertreadEnchantment.onEntityDamage(event)

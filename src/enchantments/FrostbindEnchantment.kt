@@ -12,6 +12,7 @@ import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.persistence.PersistentDataType
+import org.bukkit.scheduler.BukkitTask
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 import org.xodium.vanillaplus.managers.ManaManager
@@ -62,7 +63,43 @@ internal object FrostbindEnchantment : EnchantmentInterface {
         snowball.shooter = player
         snowball.velocity = direction.multiply(2.0)
         snowball.persistentDataContainer.set(PROJECTILE_KEY, PersistentDataType.BOOLEAN, true)
+        spawnSnowballTrail(snowball)
         player.playSound(Config.LAUNCH_SOUND)
+    }
+
+    /**
+     * Spawns a repeating particle trail behind [snowball] every tick until the entity is no longer valid.
+     * @param snowball The [Snowball] to trail.
+     */
+    private fun spawnSnowballTrail(snowball: Snowball) {
+        var task: BukkitTask? = null
+        task =
+            instance.server.scheduler.runTaskTimer(
+                instance,
+                Runnable {
+                    if (!snowball.isValid) {
+                        task?.cancel()
+                        return@Runnable
+                    }
+
+                    val loc = snowball.location
+
+                    Particle.SNOWFLAKE
+                        .builder()
+                        .location(loc)
+                        .count(5)
+                        .offset(0.05, 0.05, 0.05)
+                        .spawn()
+                    Particle.ITEM_SNOWBALL
+                        .builder()
+                        .location(loc)
+                        .count(2)
+                        .offset(0.05, 0.05, 0.05)
+                        .spawn()
+                },
+                1L,
+                1L,
+            )
     }
 
     /**

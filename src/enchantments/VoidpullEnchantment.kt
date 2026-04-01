@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package org.xodium.vanillaplus.enchantments
 
 import io.papermc.paper.registry.RegistryKey
@@ -5,21 +7,32 @@ import io.papermc.paper.registry.data.EnchantmentRegistryEntry
 import io.papermc.paper.registry.set.RegistrySet
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
+import org.bukkit.NamespacedKey
 import org.bukkit.Particle
+import org.bukkit.entity.EnderPearl
+import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlotGroup
+import org.bukkit.persistence.PersistentDataType
+import org.bukkit.scheduler.BukkitTask
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 import org.xodium.vanillaplus.managers.ManaManager
 import org.xodium.vanillaplus.utils.Utils.displayName
+import java.util.*
 
 /** Represents an object handling voidpull enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
 internal object VoidpullEnchantment : EnchantmentInterface {
     object Config {
         const val MANA_COST = 20
-        const val RANGE = 30.0
+        const val VELOCITY = 2.5
+        val LAUNCH_SOUND: Sound = Sound.sound(Key.key("entity.ender_pearl.throw"), Sound.Source.PLAYER, 1.0f, 1.0f)
         val PULL_SOUND: Sound = Sound.sound(Key.key("entity.enderman.teleport"), Sound.Source.HOSTILE, 1.0f, 0.8f)
     }
+
+    private val PROJECTILE_KEY by lazy { NamespacedKey(instance, "voidpull_projectile") }
+    private val trailTasks = mutableMapOf<UUID, BukkitTask>()
 
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
@@ -42,21 +55,80 @@ internal object VoidpullEnchantment : EnchantmentInterface {
             )
 
     /**
-     * Handles a left-click interaction to pull a targeted entity to the player via Voidpull.
-     * Ray-traces up to [Config.RANGE] blocks for an entity; if found, teleports it directly in front of the player.
+     * Handles a left-click interaction to launch a Voidpull ender pearl.
+     * The pearl trails PORTAL particles in flight; on entity hit it teleports the target to the player.
      * @param event The [PlayerInteractEvent] to handle.
      */
     fun onPlayerInteract(event: PlayerInteractEvent) {
         val player = ManaManager.consumeMana(event, get(), Config.MANA_COST) ?: return
-        val result = player.rayTraceEntities(Config.RANGE.toInt()) ?: return
-        val target = result.hitEntity ?: return
+        val direction = player.location.direction.normalize()
+        val spawnLocation = player.eyeLocation.add(direction.clone().multiply(1.5))
+        val pearl = player.world.spawn(spawnLocation, EnderPearl::class.java)
+
+        pearl.velocity = direction.multiply(Config.VELOCITY)
+        pearl.persistentDataContainer.set(PROJECTILE_KEY, PersistentDataType.STRING, player.uniqueId.toString())
+
+        trailTasks[pearl.uniqueId] = spawnPearlTrail(pearl)
+        player.playSound(Config.LAUNCH_SOUND)
+    }
+
+    /**
+     * Spawns a repeating PORTAL particle trail behind [pearl] every tick until the entity is no longer valid.
+     * @param pearl The [EnderPearl] to trail.
+     * @return The [BukkitTask] running the trail, so it can be cancelled early on hit.
+     */
+    private fun spawnPearlTrail(pearl: EnderPearl): BukkitTask {
+        var task: BukkitTask? = null
+
+        task =
+            instance.server.scheduler.runTaskTimer(
+                instance,
+                Runnable {
+                    if (!pearl.isValid) {
+                        task?.cancel()
+                        return@Runnable
+                    }
+
+                    val loc = pearl.location
+
+                    Particle.PORTAL
+                        .builder()
+                        .location(loc)
+                        .count(8)
+                        .offset(0.1, 0.1, 0.1)
+                        .spawn()
+                    Particle.REVERSE_PORTAL
+                        .builder()
+                        .location(loc)
+                        .count(3)
+                        .offset(0.05, 0.05, 0.05)
+                        .spawn()
+                },
+                1L,
+                1L,
+            )
+        return task
+    }
+
+    /**
+     * Handles a projectile hit event, teleporting the struck entity to the shooter if the projectile is a Voidpull pearl.
+     * @param event The [ProjectileHitEvent] to handle.
+     */
+    fun onProjectileHit(event: ProjectileHitEvent) {
+        val projectile = event.entity
+        val playerUuidStr =
+            projectile.persistentDataContainer.get(PROJECTILE_KEY, PersistentDataType.STRING) ?: return
+
+        trailTasks.remove(projectile.uniqueId)?.cancel()
+
+        val target = event.hitEntity ?: return
+        val player = instance.server.getPlayer(UUID.fromString(playerUuidStr)) ?: return
         val destination =
-            player.location.add(
+            player.location.clone().add(
                 player.location.direction
                     .normalize()
                     .multiply(2.0),
             )
-
         destination.y = player.location.y
 
         Particle.PORTAL
