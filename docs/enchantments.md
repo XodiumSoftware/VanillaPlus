@@ -106,6 +106,21 @@ Left-clicking with a Skysunder Blaze Rod ray-traces up to 30 blocks in the direc
 
 ---
 
+### Witherbrand
+
+> Launches a wither skull on left-click with a Blaze Rod.
+
+| Property           | Value                 |
+|--------------------|-----------------------|
+| **Slot**           | Mainhand (Blaze Rods) |
+| **Levels**         | I                     |
+| **Mana cost**      | 15                    |
+| **Exclusive with** | Inferno, Skysunder    |
+
+Left-clicking with a Witherbrand Blaze Rod fires an uncharged wither skull in the direction you are looking. The skull applies the Wither effect on hit and leaves a trail of soul and ash particles. Requires mana; draws from the shared **Spellbite** mana pool. Only usable in Survival or Adventure mode.
+
+---
+
 ## Extended vanilla enchantments
 
 These enchantments already exist in vanilla Minecraft. VanillaPlus adds extra behaviour on top of their normal effects. The extended behaviour is togglable in [PlayerModule config](modules/player.md).

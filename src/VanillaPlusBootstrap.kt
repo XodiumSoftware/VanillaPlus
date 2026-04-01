@@ -20,6 +20,7 @@ import org.xodium.vanillaplus.enchantments.NimbusEnchantment
 import org.xodium.vanillaplus.enchantments.SkysunderEnchantment
 import org.xodium.vanillaplus.enchantments.TetherEnchantment
 import org.xodium.vanillaplus.enchantments.VerdanceEnchantment
+import org.xodium.vanillaplus.enchantments.WitherbrandEnchantment
 
 /** Main bootstrap class of the plugin. */
 @Suppress("UnstableApiUsage", "Unused")
@@ -113,6 +114,11 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                                 .invoke(it)
                                 .supportedItems(event.getOrCreateTag(BLAZE_RODS))
                         }
+                        register(WitherbrandEnchantment.key) {
+                            WitherbrandEnchantment
+                                .invoke(it)
+                                .supportedItems(event.getOrCreateTag(BLAZE_RODS))
+                        }
                     }
                 },
             )
@@ -127,6 +133,7 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                             EmbertreadEnchantment.key,
                             InfernoEnchantment.key,
                             SkysunderEnchantment.key,
+                            WitherbrandEnchantment.key,
                         )
 
                     addToTag(EnchantmentTagKeys.TRADEABLE, enchants)

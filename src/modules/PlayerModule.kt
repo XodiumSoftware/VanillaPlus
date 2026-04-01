@@ -40,6 +40,7 @@ import org.xodium.vanillaplus.enchantments.SilkTouchEnchantment
 import org.xodium.vanillaplus.enchantments.SkysunderEnchantment
 import org.xodium.vanillaplus.enchantments.TetherEnchantment
 import org.xodium.vanillaplus.enchantments.VerdanceEnchantment
+import org.xodium.vanillaplus.enchantments.WitherbrandEnchantment
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.PlayerMessageManager
 import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
@@ -163,6 +164,7 @@ internal object PlayerModule : ModuleInterface {
         handleEnderchest(event)
         InfernoEnchantment.onPlayerInteract(event)
         SkysunderEnchantment.onPlayerInteract(event)
+        WitherbrandEnchantment.onPlayerInteract(event)
     }
 
     @EventHandler

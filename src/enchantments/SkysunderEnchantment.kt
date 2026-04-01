@@ -27,7 +27,13 @@ internal object SkysunderEnchantment : EnchantmentInterface {
             .minimumCost(EnchantmentRegistryEntry.EnchantmentCost.of(20, 5))
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(65, 5))
             .activeSlots(EquipmentSlotGroup.MAINHAND)
-            .exclusiveWith(RegistrySet.keySet(RegistryKey.ENCHANTMENT, InfernoEnchantment.key))
+            .exclusiveWith(
+                RegistrySet.keySet(
+                    RegistryKey.ENCHANTMENT,
+                    InfernoEnchantment.key,
+                    WitherbrandEnchantment.key,
+                ),
+            )
 
     /**
      * Handles a left-click interaction to call down a lightning strike via Skysunder.
