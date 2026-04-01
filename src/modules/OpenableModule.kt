@@ -25,7 +25,6 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 
 /** Represents a module handling openable blocks mechanics within the system. */
 internal object OpenableModule : ModuleInterface {
-    private val disallowedKnockGameModes = setOf(GameMode.CREATIVE, GameMode.SPECTATOR)
     private val possibleNeighbours: Set<AdjacentBlockData> =
         setOf(
             AdjacentBlockData(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
@@ -47,6 +46,7 @@ internal object OpenableModule : ModuleInterface {
      */
     private fun playerInteract(event: PlayerInteractEvent) {
         val clickedBlock = event.clickedBlock ?: return
+
         if (!isValidInteraction(event)) return
 
         when (event.action) {
@@ -129,8 +129,7 @@ internal object OpenableModule : ModuleInterface {
      * @return `true` if the player can knock, `false` otherwise.
      */
     private fun canKnock(player: Player): Boolean =
-        player.gameMode !in disallowedKnockGameModes &&
-            !isKnockingConditionViolated(player)
+        player.gameMode !in Config.allowedGameModes && !isKnockingConditionViolated(player)
 
     /**
      * Checks if the knocking conditions are violated based on the [Player]'s state and Config.
@@ -154,8 +153,7 @@ internal object OpenableModule : ModuleInterface {
      * @return `true` if an empty hand is required, but the player is holding something, `false` otherwise.
      */
     private fun isViolatingEmptyHandRequirement(player: Player): Boolean =
-        Config.knockingRequiresEmptyHand &&
-            player.inventory.itemInMainHand.type != Material.AIR
+        Config.knockingRequiresEmptyHand && player.inventory.itemInMainHand.type != Material.AIR
 
     /**
      * Checks if the [BlockData] is of a type that can be knocked on.
@@ -225,6 +223,7 @@ internal object OpenableModule : ModuleInterface {
 
     /** Represents the config of the module. */
     object Config {
+        var allowedGameModes = setOf(GameMode.SURVIVAL, GameMode.ADVENTURE)
         var initDelayInTicks: Long = 1
         var allowDoubleDoors: Boolean = true
         var allowKnocking: Boolean = true
