@@ -4,19 +4,16 @@ import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
 import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.pdcs.PlayerPDC.MANA_KEY
-import org.xodium.vanillaplus.pdcs.PlayerPDC.NICKNAME_KEY
-import org.xodium.vanillaplus.pdcs.PlayerPDC.SCOREBOARD_VISIBILITY_KEY
 
-/**
- * Provides access to [Player]-specific persistent data including nicknames and scoreboard preferences.
- * @property NICKNAME_KEY The [NamespacedKey] used for storing nickname data.
- * @property SCOREBOARD_VISIBILITY_KEY The [NamespacedKey] used for storing scoreboard visibility preferences.
- * @property MANA_KEY The [NamespacedKey] used for storing mana (shared between Inferno and Glacial).
- */
+/** Provides access to [Player]-specific persistent data including nicknames and scoreboard preferences. */
 internal object PlayerPDC {
+    /** The [NamespacedKey] used for storing nickname data. */
     private val NICKNAME_KEY = NamespacedKey(instance, "nickname")
+
+    /** The [NamespacedKey] used for storing scoreboard visibility preferences. */
     private val SCOREBOARD_VISIBILITY_KEY = NamespacedKey(instance, "scoreboard_visibility")
+
+    /** The [NamespacedKey] used for storing mana (shared between Inferno and Glacial). */
     val MANA_KEY = NamespacedKey(instance, "mana")
 
     /**
@@ -49,5 +46,4 @@ internal object PlayerPDC {
     var Player.mana: Int
         get() = persistentDataContainer.getOrDefault(MANA_KEY, PersistentDataType.INTEGER, 100)
         set(value) = persistentDataContainer.set(MANA_KEY, PersistentDataType.INTEGER, value)
-
 }
