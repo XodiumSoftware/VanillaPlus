@@ -85,6 +85,7 @@ internal object ManaManager {
             instance.server.onlinePlayers.forEach {
                 if (it.mana < Config.MAX_MANA) {
                     it.mana = (it.mana + Config.MANA_REGEN_AMOUNT).coerceAtMost(Config.MAX_MANA)
+                    showManaBar(it)
                 }
             }
         }
