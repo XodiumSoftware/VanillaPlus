@@ -9,9 +9,6 @@ import kotlin.time.measureTime
 
 /** Represents a contract for a module within the system. */
 internal interface ModuleInterface : Listener {
-    /** Whether this module is active. Defaults to true. Override to disable a module. */
-    val enabled: Boolean get() = true
-
     /**
      * Retrieves a list of command data associated with the module.
      * @return A [Collection] of [CommandData] objects representing the commands for the module.

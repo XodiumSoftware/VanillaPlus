@@ -32,7 +32,7 @@ There are no automated tests in this project.
 
 Every feature is an `object` implementing **`ModuleInterface`** (which extends `Listener`). Modules self-register as Bukkit event listeners and register their commands/permissions via `register()`.
 
-Each module exposes a nested `object Config` with hardcoded default values. There is no file-based configuration — all settings are compile-time constants. `ModuleInterface` provides `val enabled: Boolean get() = true`; modules that should be inactive override this to `false`.
+Each module exposes a nested `object Config` with hardcoded default values. There is no file-based configuration — all settings are compile-time constants.
 
 All modules are instantiated as `object` singletons and listed explicitly in `VanillaPlus.onEnable()`.
 

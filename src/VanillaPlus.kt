@@ -72,7 +72,7 @@ internal class VanillaPlus : JavaPlugin() {
                 ScoreBoardModule,
                 SitModule,
                 TameableModule,
-            ).filter { it.enabled }
+            )
 
         logger.info(
             "Registered: ${modules.size} module(s) | Took ${modules.sumOf { it.register() }}ms",
