@@ -79,11 +79,12 @@ When a fully grown crop is harvested with a Verdance hoe, the crop block is rese
 
 > Launches a fireball on left-click with a Blaze Rod.
 
-| Property      | Value                 |
-|---------------|-----------------------|
-| **Slot**      | Mainhand (Blaze Rods) |
-| **Levels**    | I                     |
-| **Mana cost** | 10                    |
+| Property           | Value                 |
+|--------------------|-----------------------|
+| **Slot**           | Mainhand (Blaze Rods) |
+| **Levels**         | I                     |
+| **Mana cost**      | 10                    |
+| **Exclusive with** | Skysunder             |
 
 Left-clicking with an enchanted Blaze Rod fires a small fireball in the direction you are looking. Fireballs deal no block damage (`yield = 0`) and leave a trail of flame and lava particles. Requires mana; displays the shared **Spellbite** mana bar on cast. Only usable in Survival or Adventure mode.
 
@@ -93,12 +94,13 @@ Left-clicking with an enchanted Blaze Rod fires a small fireball in the directio
 
 > Calls down a lightning bolt on left-click with a Blaze Rod.
 
-| Property      | Value                 |
-|---------------|-----------------------|
-| **Slot**      | Mainhand (Blaze Rods) |
-| **Levels**    | I                     |
-| **Mana cost** | 20                    |
-| **Range**     | 30 blocks             |
+| Property           | Value                 |
+|--------------------|-----------------------|
+| **Slot**           | Mainhand (Blaze Rods) |
+| **Levels**         | I                     |
+| **Mana cost**      | 20                    |
+| **Range**          | 30 blocks             |
+| **Exclusive with** | Inferno               |
 
 Left-clicking with a Skysunder Blaze Rod ray-traces up to 30 blocks in the direction you are looking. A real lightning bolt (dealing damage) strikes the first block hit, or the maximum range point if no block is found. Bursts `ELECTRIC_SPARK` particles at the strike location. Draws from the shared **Spellbite** mana pool (costs twice as much as Inferno). Only usable in Survival or Adventure mode.
 
