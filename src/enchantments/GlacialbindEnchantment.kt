@@ -45,6 +45,7 @@ internal object GlacialbindEnchantment : EnchantmentInterface {
                     SkysunderEnchantment.key,
                     WitherbrandEnchantment.key,
                     TempestEnchantment.key,
+                    VoidpullEnchantment.key,
                 ),
             )
 
@@ -71,7 +72,9 @@ internal object GlacialbindEnchantment : EnchantmentInterface {
      */
     fun onProjectileHit(event: ProjectileHitEvent) {
         val projectile = event.entity
+
         if (!projectile.persistentDataContainer.has(PROJECTILE_KEY)) return
+
         val entity = event.hitEntity ?: return
 
         entity.freezeTicks = Config.FREEZE_TICKS

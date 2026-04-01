@@ -22,6 +22,7 @@ import org.xodium.vanillaplus.enchantments.SkysunderEnchantment
 import org.xodium.vanillaplus.enchantments.TempestEnchantment
 import org.xodium.vanillaplus.enchantments.TetherEnchantment
 import org.xodium.vanillaplus.enchantments.VerdanceEnchantment
+import org.xodium.vanillaplus.enchantments.VoidpullEnchantment
 import org.xodium.vanillaplus.enchantments.WitherbrandEnchantment
 
 /** Main bootstrap class of the plugin. */
@@ -131,6 +132,11 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                                 .invoke(it)
                                 .supportedItems(event.getOrCreateTag(BLAZE_RODS))
                         }
+                        register(VoidpullEnchantment.key) {
+                            VoidpullEnchantment
+                                .invoke(it)
+                                .supportedItems(event.getOrCreateTag(BLAZE_RODS))
+                        }
                     }
                 },
             )
@@ -148,6 +154,7 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                             WitherbrandEnchantment.key,
                             GlacialbindEnchantment.key,
                             TempestEnchantment.key,
+                            VoidpullEnchantment.key,
                         )
 
                     addToTag(EnchantmentTagKeys.TRADEABLE, enchants)

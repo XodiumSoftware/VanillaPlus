@@ -39,6 +39,7 @@ internal object WitherbrandEnchantment : EnchantmentInterface {
                     SkysunderEnchantment.key,
                     GlacialbindEnchantment.key,
                     TempestEnchantment.key,
+                    VoidpullEnchantment.key,
                 ),
             )
 

@@ -39,6 +39,7 @@ internal object TempestEnchantment : EnchantmentInterface {
                     SkysunderEnchantment.key,
                     WitherbrandEnchantment.key,
                     GlacialbindEnchantment.key,
+                    VoidpullEnchantment.key,
                 ),
             )
 
@@ -52,12 +53,13 @@ internal object TempestEnchantment : EnchantmentInterface {
         val baseDir = player.location.direction.normalize()
         val right = baseDir.clone().crossProduct(Vector(0, 1, 0)).normalize()
         val spawnBase = player.eyeLocation.add(baseDir.clone().multiply(1.5))
-
         val offsets = listOf(-Config.SPREAD_AMOUNT, 0.0, Config.SPREAD_AMOUNT)
-        offsets.forEach { offset ->
-            val dir = baseDir.clone().add(right.clone().multiply(offset)).normalize()
+
+        offsets.forEach {
+            val dir = baseDir.clone().add(right.clone().multiply(it)).normalize()
             val charge =
-                player.world.spawn(spawnBase.clone().add(right.clone().multiply(offset * 0.5)), WindCharge::class.java)
+                player.world.spawn(spawnBase.clone().add(right.clone().multiply(it * 0.5)), WindCharge::class.java)
+
             charge.shooter = player
             charge.velocity = dir.multiply(1.5)
         }

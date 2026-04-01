@@ -3,6 +3,8 @@ package org.xodium.vanillaplus.enchantments
 import io.papermc.paper.registry.RegistryKey
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
 import io.papermc.paper.registry.set.RegistrySet
+import net.kyori.adventure.key.Key
+import net.kyori.adventure.sound.Sound
 import org.bukkit.Particle
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlotGroup
@@ -10,12 +12,13 @@ import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 import org.xodium.vanillaplus.managers.ManaManager
 import org.xodium.vanillaplus.utils.Utils.displayName
 
-/** Represents an object handling skysunder enchantment implementation within the system. */
+/** Represents an object handling voidpull enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
-internal object SkysunderEnchantment : EnchantmentInterface {
+internal object VoidpullEnchantment : EnchantmentInterface {
     object Config {
         const val MANA_COST = 20
         const val RANGE = 30.0
+        val PULL_SOUND: Sound = Sound.sound(Key.key("entity.enderman.teleport"), Sound.Source.HOSTILE, 1.0f, 0.8f)
     }
 
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
@@ -31,50 +34,47 @@ internal object SkysunderEnchantment : EnchantmentInterface {
                 RegistrySet.keySet(
                     RegistryKey.ENCHANTMENT,
                     InfernoEnchantment.key,
+                    SkysunderEnchantment.key,
                     WitherbrandEnchantment.key,
                     GlacialbindEnchantment.key,
                     TempestEnchantment.key,
-                    VoidpullEnchantment.key,
                 ),
             )
 
     /**
-     * Handles a left-click interaction to call down a lightning strike via Skysunder.
+     * Handles a left-click interaction to pull a targeted entity to the player via Voidpull.
+     * Ray-traces up to [Config.RANGE] blocks for an entity; if found, teleports it directly in front of the player.
      * @param event The [PlayerInteractEvent] to handle.
      */
     fun onPlayerInteract(event: PlayerInteractEvent) {
         val player = ManaManager.consumeMana(event, get(), Config.MANA_COST) ?: return
-        val blockResult = player.rayTraceBlocks(Config.RANGE)
-        val entityResult = player.rayTraceEntities(Config.RANGE.toInt())
-        val eyeLoc = player.eyeLocation
-        val blockDist = blockResult?.hitPosition?.distance(eyeLoc.toVector())
-        val entityDist = entityResult?.hitPosition?.distance(eyeLoc.toVector())
-        val target =
-            when {
-                blockDist != null && (entityDist == null || blockDist <= entityDist) -> {
-                    blockResult.hitPosition.toLocation(player.world)
-                }
+        val result = player.rayTraceEntities(Config.RANGE.toInt()) ?: return
+        val target = result.hitEntity ?: return
+        val destination =
+            player.location.add(
+                player.location.direction
+                    .normalize()
+                    .multiply(2.0),
+            )
 
-                entityDist != null -> {
-                    entityResult.hitPosition.toLocation(player.world)
-                }
+        destination.y = player.location.y
 
-                else -> {
-                    eyeLoc.add(
-                        player.location.direction
-                            .normalize()
-                            .multiply(Config.RANGE),
-                    )
-                }
-            }
-
-        Particle.ELECTRIC_SPARK
+        Particle.PORTAL
             .builder()
-            .location(target)
+            .location(target.location.add(0.0, 1.0, 0.0))
             .count(30)
             .offset(0.3, 0.5, 0.3)
             .spawn()
 
-        player.world.strikeLightning(target)
+        target.teleport(destination)
+
+        Particle.PORTAL
+            .builder()
+            .location(destination.add(0.0, 1.0, 0.0))
+            .count(30)
+            .offset(0.3, 0.5, 0.3)
+            .spawn()
+
+        player.playSound(Config.PULL_SOUND)
     }
 }

@@ -36,13 +36,14 @@ import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.enchantments.EarthrendEnchantment
 import org.xodium.vanillaplus.enchantments.EmbertreadEnchantment
 import org.xodium.vanillaplus.enchantments.FeatherFallingEnchantment
+import org.xodium.vanillaplus.enchantments.GlacialbindEnchantment
 import org.xodium.vanillaplus.enchantments.InfernoEnchantment
 import org.xodium.vanillaplus.enchantments.SilkTouchEnchantment
 import org.xodium.vanillaplus.enchantments.SkysunderEnchantment
+import org.xodium.vanillaplus.enchantments.TempestEnchantment
 import org.xodium.vanillaplus.enchantments.TetherEnchantment
 import org.xodium.vanillaplus.enchantments.VerdanceEnchantment
-import org.xodium.vanillaplus.enchantments.GlacialbindEnchantment
-import org.xodium.vanillaplus.enchantments.TempestEnchantment
+import org.xodium.vanillaplus.enchantments.VoidpullEnchantment
 import org.xodium.vanillaplus.enchantments.WitherbrandEnchantment
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.PlayerMessageManager
@@ -170,6 +171,7 @@ internal object PlayerModule : ModuleInterface {
         WitherbrandEnchantment.onPlayerInteract(event)
         GlacialbindEnchantment.onPlayerInteract(event)
         TempestEnchantment.onPlayerInteract(event)
+        VoidpullEnchantment.onPlayerInteract(event)
     }
 
     @EventHandler

@@ -106,6 +106,22 @@ Left-clicking with a Skysunder Blaze Rod ray-traces up to 30 blocks in the direc
 
 ---
 
+### Voidpull
+
+> Yanks a targeted entity to you on left-click with a Blaze Rod.
+
+| Property           | Value                                                 |
+|--------------------|-------------------------------------------------------|
+| **Slot**           | Mainhand (Blaze Rods)                                 |
+| **Levels**         | I                                                     |
+| **Mana cost**      | 20                                                    |
+| **Range**          | 30 blocks                                             |
+| **Exclusive with** | Inferno, Skysunder, Witherbrand, Glacialbind, Tempest |
+
+Left-clicking with a Voidpull Blaze Rod ray-traces up to 30 blocks for an entity. The first entity hit is teleported directly in front of the player. Portal particles burst at both the origin and arrival location. Requires mana; draws from the shared **Spellbite** mana pool. Only usable in Survival or Adventure mode.
+
+---
+
 ### Glacialbind
 
 > Launches a freezing snowball on left-click with a Blaze Rod.

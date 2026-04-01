@@ -41,6 +41,7 @@ internal object InfernoEnchantment : EnchantmentInterface {
                     WitherbrandEnchantment.key,
                     GlacialbindEnchantment.key,
                     TempestEnchantment.key,
+                    VoidpullEnchantment.key,
                 ),
             )
 
@@ -76,6 +77,7 @@ internal object InfernoEnchantment : EnchantmentInterface {
                         task?.cancel()
                         return@Runnable
                     }
+
                     val loc = fireball.location
 
                     Particle.FLAME
