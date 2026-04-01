@@ -113,10 +113,8 @@ internal object ManaManager {
             instance.server.scheduler.runTaskLater(
                 instance,
                 Runnable {
-                    // Only hide and remove the bar if it is still the current one for this player.
-                    if (bossBars[player] !== bar) {
-                        return@Runnable
-                    }
+                    if (bossBars[player] !== bar) return@Runnable
+
                     player.hideBossBar(bar)
                     bossBars.remove(player)
                 },
