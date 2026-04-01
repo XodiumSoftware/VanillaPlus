@@ -38,18 +38,24 @@ All modules are instantiated as `object` singletons and listed explicitly in `Va
 
 ### Enchantments
 
-Custom enchantments implement **`EnchantmentInterface<T : Event>`** (generic on event type) and are registered in `VanillaPlusBootstrap` via `RegistryEvents.ENCHANTMENT`. Their registry key is derived automatically from the class name (e.g. `VerdanceEnchantment` → `vanillaplus:verdance`). Eight enchantments are actively registered and tagged as tradeable, non-treasure, and in-enchanting-table:
+Custom enchantments implement **`EnchantmentInterface`** and are registered in `VanillaPlusBootstrap` via `RegistryEvents.ENCHANTMENT`. The interface provides:
 
-| Enchantment | Supported Items                               |
-|-------------|-----------------------------------------------|
-| Verdance    | Hoes                                          |
-| Tether      | Tools + Weapons (`vanillaplus:tools_weapons`) |
-| Nimbus      | Harnesses (chestplates)                       |
-| Earthrend   | Pickaxes                                      |
-| Embertread  | Foot armor                                    |
-| Inferno     | Blaze Rods (`vanillaplus:blaze_rods`)         |
-| Frostbind   | Blaze Rods (`vanillaplus:blaze_rods`)         |
-| Skysunder   | Blaze Rods (`vanillaplus:blaze_rods`)         |
+- **`key`** — a `TypedKey<Enchantment>` derived automatically from the class name (e.g. `VerdanceEnchantment` → `vanillaplus:verdance`).
+- **`invoke(builder)`** — override to configure the enchantment's registry entry (description, anvil cost, level range, weight, slot group, etc.). The default implementation is a no-op pass-through.
+- **`get()`** — looks up and returns the live `Enchantment` instance from the registry after bootstrap.
+
+Event handling is done via ordinary `@EventHandler` methods in each enchantment object — there is no generic event type on the interface. Eight enchantments are actively registered and tagged as tradeable, non-treasure, and in-enchanting-table:
+
+| Enchantment | Slot Group | Supported Items                               |
+|-------------|------------|-----------------------------------------------|
+| Verdance    | `MAINHAND` | Hoes                                          |
+| Tether      | `MAINHAND` | Tools + Weapons (`vanillaplus:tools_weapons`) |
+| Nimbus      | `SADDLE`   | Harnesses (Happy Ghast saddle slot)           |
+| Earthrend   | `MAINHAND` | Pickaxes                                      |
+| Embertread  | `FEET`     | Foot armor                                    |
+| Inferno     | `MAINHAND` | Blaze Rods (`vanillaplus:blaze_rods`)         |
+| Frostbind   | `MAINHAND` | Blaze Rods (`vanillaplus:blaze_rods`)         |
+| Skysunder   | `MAINHAND` | Blaze Rods (`vanillaplus:blaze_rods`)         |
 
 SilkTouch and FeatherFalling exist as implementations but are not currently registered in the bootstrap.
 
@@ -81,7 +87,7 @@ Recipe objects implement **`RecipeInterface`** and are listed in `VanillaPlus.on
 |-----------------|-------------------------------------------------------------------------------------------------------------------|
 | `modules/`      | 15 feature module singletons                                                                                      |
 | `data/`         | `CommandData`, `BookData`, `AdjacentBlockData`                                                                    |
-| `enchantments/` | Verdance, Tether, Nimbus, Earthrend, Embertread, SilkTouch, FeatherFalling                                        |
+| `enchantments/` | Verdance, Tether, Nimbus, Earthrend, Embertread, Inferno, Frostbind, Skysunder, SilkTouch, FeatherFalling         |
 | `interfaces/`   | `ModuleInterface`, `EnchantmentInterface`, `RecipeInterface`, `RuneInterface`                                     |
 | `runes/`        | `CrimsoniteRune`, `ZephyriteRune`, `FerriteRune`, `ObsiditeRune`, `AureliteRune`, `VigoriteRune`, `GalvaniteRune` |
 | `menus/`        | `RuneMenu`                                                                                                        |
