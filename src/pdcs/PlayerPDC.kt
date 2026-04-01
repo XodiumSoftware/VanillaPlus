@@ -6,6 +6,7 @@ import org.bukkit.persistence.PersistentDataType
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 
 /** Provides access to [Player]-specific persistent data including nicknames and scoreboard preferences. */
+@Suppress("Unused")
 internal object PlayerPDC {
     /** The [NamespacedKey] used for storing nickname data. */
     private val NICKNAME_KEY = NamespacedKey(instance, "nickname")
