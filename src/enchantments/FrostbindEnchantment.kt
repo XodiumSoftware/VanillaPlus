@@ -47,6 +47,7 @@ internal object FrostbindEnchantment : EnchantmentInterface {
                     WitherbrandEnchantment.key,
                     TempestEnchantment.key,
                     VoidpullEnchantment.key,
+                    BloodpactEnchantment.key,
                 ),
             )
 

@@ -33,6 +33,7 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
+import org.xodium.vanillaplus.enchantments.BloodpactEnchantment
 import org.xodium.vanillaplus.enchantments.EarthrendEnchantment
 import org.xodium.vanillaplus.enchantments.EmbertreadEnchantment
 import org.xodium.vanillaplus.enchantments.FeatherFallingEnchantment
@@ -172,6 +173,7 @@ internal object PlayerModule : ModuleInterface {
         FrostbindEnchantment.onPlayerInteract(event)
         TempestEnchantment.onPlayerInteract(event)
         VoidpullEnchantment.onPlayerInteract(event)
+        BloodpactEnchantment.onPlayerInteract(event)
     }
 
     @EventHandler

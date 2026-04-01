@@ -52,6 +52,7 @@ internal object VoidpullEnchantment : EnchantmentInterface {
                     WitherbrandEnchantment.key,
                     FrostbindEnchantment.key,
                     TempestEnchantment.key,
+                    BloodpactEnchantment.key,
                 ),
             )
 
