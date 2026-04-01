@@ -161,28 +161,28 @@ internal object PlayerModule : ModuleInterface {
     @EventHandler
     fun on(event: PlayerInteractEvent) {
         xpToBottle(event)
-        FeatherFallingEnchantment.effect(event)
+        FeatherFallingEnchantment.onPlayerInteract(event)
         handleEnderchest(event)
-        InfernoEnchantment.effect(event)
-        FrostbindEnchantment.effect(event)
-        SkysunderEnchantment.effect(event)
+        InfernoEnchantment.onPlayerInteract(event)
+        FrostbindEnchantment.onPlayerInteract(event)
+        SkysunderEnchantment.onPlayerInteract(event)
     }
 
     @EventHandler
-    fun on(event: EntityDamageEvent) = EmbertreadEnchantment.effect(event)
+    fun on(event: EntityDamageEvent) = EmbertreadEnchantment.onEntityDamage(event)
 
     @EventHandler
     fun on(event: ProjectileHitEvent) = FrostbindEnchantment.onProjectileHit(event)
 
     @EventHandler
     fun on(event: BlockBreakEvent) {
-        VerdanceEnchantment.effect(event)
-        SilkTouchEnchantment.effect(event)
-        EarthrendEnchantment.effect(event)
+        VerdanceEnchantment.onBlockBreak(event)
+        SilkTouchEnchantment.onBlockBreak(event)
+        EarthrendEnchantment.onBlockBreak(event)
     }
 
     @EventHandler
-    fun on(event: BlockDropItemEvent) = TetherEnchantment.effect(event)
+    fun on(event: BlockDropItemEvent) = TetherEnchantment.onBlockDropItem(event)
 
     /**
      * Sends the welcome banner to the player on join.

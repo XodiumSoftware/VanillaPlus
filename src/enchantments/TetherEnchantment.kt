@@ -5,12 +5,14 @@ import org.bukkit.entity.Item
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockDropItemEvent
 import org.bukkit.inventory.EquipmentSlotGroup
+import org.xodium.vanillaplus.enchantments.TetherEnchantment.transferItemEntitiesToInventory
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 import org.xodium.vanillaplus.utils.Utils.displayName
 
 /** Represents an object handling tether enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
-internal object TetherEnchantment : EnchantmentInterface<BlockDropItemEvent> {
+internal object TetherEnchantment : EnchantmentInterface {
+    /** Configures the [TetherEnchantment] registry entry. */
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
             .description(key.displayName())
@@ -21,7 +23,12 @@ internal object TetherEnchantment : EnchantmentInterface<BlockDropItemEvent> {
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(75, 0))
             .activeSlots(EquipmentSlotGroup.MAINHAND)
 
-    override fun effect(event: BlockDropItemEvent) {
+    /**
+     * Pulls block drops directly into the player's inventory when holding a Tether-enchanted tool.
+     * Delegates the actual transfer to [transferItemEntitiesToInventory].
+     * @param event The [BlockDropItemEvent] to handle.
+     */
+    fun onBlockDropItem(event: BlockDropItemEvent) {
         val player = event.player
         val itemInHand = player.inventory.itemInMainHand
 
@@ -35,7 +42,7 @@ internal object TetherEnchantment : EnchantmentInterface<BlockDropItemEvent> {
      * @param player The player whose inventory to transfer to
      * @param items The mutable collection of item entities to transfer
      */
-    fun transferItemEntitiesToInventory(
+    private fun transferItemEntitiesToInventory(
         player: Player,
         items: MutableCollection<Item>,
     ) {

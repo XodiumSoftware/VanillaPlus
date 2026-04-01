@@ -12,6 +12,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.scheduler.BukkitTask
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.enchantments.InfernoEnchantment.spawnFireballTrail
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 import org.xodium.vanillaplus.pdcs.PlayerPDC.mana
 import org.xodium.vanillaplus.utils.ManaUtils
@@ -22,7 +23,7 @@ import kotlin.uuid.ExperimentalUuidApi
 /** Represents an object handling inferno enchantment implementation within the system. */
 @OptIn(ExperimentalUuidApi::class)
 @Suppress("UnstableApiUsage")
-internal object InfernoEnchantment : EnchantmentInterface<PlayerInteractEvent> {
+internal object InfernoEnchantment : EnchantmentInterface {
     object Config {
         const val MANA_COST = 10
         val LAUNCH_SOUND: Sound = Sound.sound(Key.key("entity.blaze.shoot"), Sound.Source.HOSTILE, 1.0f, 1.0f)
@@ -38,7 +39,15 @@ internal object InfernoEnchantment : EnchantmentInterface<PlayerInteractEvent> {
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(65, 5))
             .activeSlots(EquipmentSlotGroup.MAINHAND)
 
-    override fun effect(event: PlayerInteractEvent) {
+    /**
+     * Handles a left-click interaction to launch an Inferno fireball.
+     * Requires a [Material.BLAZE_ROD] with the Inferno enchantment in the main hand,
+     * the player to be in survival or adventure mode, and sufficient mana.
+     * Deducts [Config.MANA_COST] mana, spawns a non-explosive [SmallFireball] in the look direction,
+     * and begins a particle trail via [spawnFireballTrail].
+     * @param event The [PlayerInteractEvent] to handle.
+     */
+    fun onPlayerInteract(event: PlayerInteractEvent) {
         if (event.action != Action.LEFT_CLICK_AIR && event.action != Action.LEFT_CLICK_BLOCK) return
 
         val item = event.item ?: return

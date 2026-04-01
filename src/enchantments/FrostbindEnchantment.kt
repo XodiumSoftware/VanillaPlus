@@ -15,6 +15,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.scheduler.BukkitTask
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.vanillaplus.enchantments.FrostbindEnchantment.spawnSnowballTrail
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 import org.xodium.vanillaplus.pdcs.PlayerPDC.mana
 import org.xodium.vanillaplus.utils.ManaUtils
@@ -23,7 +24,7 @@ import org.xodium.vanillaplus.utils.Utils.displayName
 
 /** Represents an object handling frostbind enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
-internal object FrostbindEnchantment : EnchantmentInterface<PlayerInteractEvent> {
+internal object FrostbindEnchantment : EnchantmentInterface {
     object Config {
         const val MANA_COST = 10
         const val FREEZE_RADIUS = 3.0
@@ -40,7 +41,15 @@ internal object FrostbindEnchantment : EnchantmentInterface<PlayerInteractEvent>
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(65, 5))
             .activeSlots(EquipmentSlotGroup.MAINHAND)
 
-    override fun effect(event: PlayerInteractEvent) {
+    /**
+     * Handles a left-click interaction to fire a Frostbind snowball.
+     * Requires a [Material.BLAZE_ROD] with the Frostbind enchantment in the main hand,
+     * the player to be in survival or adventure mode, and sufficient mana.
+     * Deducts [Config.MANA_COST] mana, launches a [Snowball] in the look direction,
+     * and begins a particle trail via [spawnSnowballTrail].
+     * @param event The [PlayerInteractEvent] to handle.
+     */
+    fun onPlayerInteract(event: PlayerInteractEvent) {
         if (event.action != Action.LEFT_CLICK_AIR && event.action != Action.LEFT_CLICK_BLOCK) return
 
         val item = event.item ?: return

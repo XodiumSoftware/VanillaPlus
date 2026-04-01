@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package org.xodium.vanillaplus.utils
 
 import net.kyori.adventure.bossbar.BossBar

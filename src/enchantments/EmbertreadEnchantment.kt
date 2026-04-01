@@ -11,7 +11,7 @@ import org.xodium.vanillaplus.utils.Utils.displayName
 
 /** Represents an object handling embertread enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
-internal object EmbertreadEnchantment : EnchantmentInterface<EntityDamageEvent> {
+internal object EmbertreadEnchantment : EnchantmentInterface {
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
             .description(key.displayName())
@@ -22,7 +22,12 @@ internal object EmbertreadEnchantment : EnchantmentInterface<EntityDamageEvent> 
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(60, 0))
             .activeSlots(EquipmentSlotGroup.FEET)
 
-    override fun effect(event: EntityDamageEvent) {
+    /**
+     * Cancels fire-related damage for a player wearing Embertread boots.
+     * Suppresses [EntityDamageEvent.DamageCause.HOT_FLOOR] and [EntityDamageEvent.DamageCause.FIRE] damage causes.
+     * @param event The [EntityDamageEvent] to handle.
+     */
+    fun onEntityDamage(event: EntityDamageEvent) {
         val player = event.entity as? Player ?: return
 
         if (!isValidBoots(player.inventory.boots)) return

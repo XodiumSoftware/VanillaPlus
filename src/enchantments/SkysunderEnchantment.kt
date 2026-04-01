@@ -15,7 +15,7 @@ import org.xodium.vanillaplus.utils.Utils.displayName
 
 /** Represents an object handling skysunder enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
-internal object SkysunderEnchantment : EnchantmentInterface<PlayerInteractEvent> {
+internal object SkysunderEnchantment : EnchantmentInterface {
     object Config {
         const val MANA_COST = 20
         const val RANGE = 30.0
@@ -31,7 +31,15 @@ internal object SkysunderEnchantment : EnchantmentInterface<PlayerInteractEvent>
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(65, 5))
             .activeSlots(EquipmentSlotGroup.MAINHAND)
 
-    override fun effect(event: PlayerInteractEvent) {
+    /**
+     * Handles a left-click interaction to call down a lightning strike via Skysunder.
+     * Requires a [Material.BLAZE_ROD] with the Skysunder enchantment in the main hand,
+     * the player to be in survival or adventure mode, and sufficient mana.
+     * Deducts [Config.MANA_COST] mana, ray-traces up to [Config.RANGE] blocks to find the target position,
+     * spawns [Particle.ELECTRIC_SPARK] at the target, and strikes lightning there.
+     * @param event The [PlayerInteractEvent] to handle.
+     */
+    fun onPlayerInteract(event: PlayerInteractEvent) {
         if (event.action != Action.LEFT_CLICK_AIR && event.action != Action.LEFT_CLICK_BLOCK) return
 
         val item = event.item ?: return

@@ -10,7 +10,7 @@ import org.xodium.vanillaplus.utils.Utils.displayName
 
 /** Represents an object handling verdance enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
-internal object VerdanceEnchantment : EnchantmentInterface<BlockBreakEvent> {
+internal object VerdanceEnchantment : EnchantmentInterface {
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
             .description(key.displayName())
@@ -21,7 +21,14 @@ internal object VerdanceEnchantment : EnchantmentInterface<BlockBreakEvent> {
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(75, 0))
             .activeSlots(EquipmentSlotGroup.MAINHAND)
 
-    override fun effect(event: BlockBreakEvent) {
+    /**
+     * Resets a fully-grown crop back to age 0 after it is broken with a Verdance-enchanted tool.
+     * Only activates when the broken block is an [Ageable] at its maximum age and the player
+     * holds a Verdance-enchanted item. The reset is scheduled 2 ticks later to allow the
+     * break event to complete first.
+     * @param event The [BlockBreakEvent] to handle.
+     */
+    fun onBlockBreak(event: BlockBreakEvent) {
         val block = event.block
         val ageable = block.blockData as? Ageable ?: return
         val itemInHand = event.player.inventory.itemInMainHand

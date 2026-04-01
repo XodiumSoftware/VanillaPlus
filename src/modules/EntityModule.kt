@@ -44,7 +44,7 @@ internal object EntityModule : ModuleInterface {
     }
 
     @EventHandler
-    fun on(event: EntityEquipmentChangedEvent) = NimbusEnchantment.effect(event)
+    fun on(event: EntityEquipmentChangedEvent) = NimbusEnchantment.onEntityEquipmentChanged(event)
 
     @EventHandler
     fun on(event: PrepareAnvilEvent) = horseArmor(event)

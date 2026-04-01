@@ -6,12 +6,14 @@ import org.bukkit.attribute.Attribute
 import org.bukkit.entity.HappyGhast
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.EquipmentSlotGroup
+import org.xodium.vanillaplus.enchantments.NimbusEnchantment.DEFAULT_FLY_SPEED
+import org.xodium.vanillaplus.enchantments.NimbusEnchantment.SPEED_MODIFIER
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 import org.xodium.vanillaplus.utils.Utils.displayName
 
 /** Represents an object handling nimbus enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
-internal object NimbusEnchantment : EnchantmentInterface<EntityEquipmentChangedEvent> {
+internal object NimbusEnchantment : EnchantmentInterface {
     private const val DEFAULT_FLY_SPEED = 0.05
     private val SPEED_MODIFIER = mapOf(1 to 1.5, 2 to 2.0, 3 to 2.5, 4 to 3.0, 5 to 3.5)
 
@@ -25,7 +27,14 @@ internal object NimbusEnchantment : EnchantmentInterface<EntityEquipmentChangedE
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(75, 10))
             .activeSlots(EquipmentSlotGroup.SADDLE)
 
-    override fun effect(event: EntityEquipmentChangedEvent) {
+    /**
+     * Adjusts a [HappyGhast]'s flying speed when its harness equipment changes.
+     * If the harness carries the Nimbus enchantment, the base flying speed is scaled by
+     * the corresponding multiplier from [SPEED_MODIFIER] relative to [DEFAULT_FLY_SPEED].
+     * Reverts to [DEFAULT_FLY_SPEED] when the enchantment is absent.
+     * @param event The [EntityEquipmentChangedEvent] to handle.
+     */
+    fun onEntityEquipmentChanged(event: EntityEquipmentChangedEvent) {
         val entity = event.entity as? HappyGhast ?: return
         val harness = entity.equipment.getItem(EquipmentSlot.BODY)
         val attribute = entity.getAttribute(Attribute.FLYING_SPEED)

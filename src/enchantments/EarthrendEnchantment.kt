@@ -9,12 +9,13 @@ import org.bukkit.block.BlockFace
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.inventory.meta.Damageable
+import org.xodium.vanillaplus.enchantments.EarthrendEnchantment.LEVEL_TO_MAX_BLOCKS
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 import org.xodium.vanillaplus.utils.Utils.displayName
 
 /** Represents an object handling earthrend enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
-internal object EarthrendEnchantment : EnchantmentInterface<BlockBreakEvent> {
+internal object EarthrendEnchantment : EnchantmentInterface {
     private val DIRECTIONS =
         arrayOf(
             BlockFace.UP,
@@ -36,7 +37,15 @@ internal object EarthrendEnchantment : EnchantmentInterface<BlockBreakEvent> {
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(75, 10))
             .activeSlots(EquipmentSlotGroup.MAINHAND)
 
-    override fun effect(event: BlockBreakEvent) {
+    /**
+     * Chain-mines all connected ore blocks of the same type when an ore is broken.
+     * Only activates in non-creative mode with an Earthrend-enchanted tool in the main hand.
+     * The number of additional blocks broken is capped by the enchantment level via [LEVEL_TO_MAX_BLOCKS].
+     * If the tool also has [TetherEnchantment], drops are pulled directly into the player's inventory.
+     * Durability is consumed for each extra block broken.
+     * @param event The [BlockBreakEvent] to handle.
+     */
+    fun onBlockBreak(event: BlockBreakEvent) {
         val player = event.player
 
         if (player.gameMode == GameMode.CREATIVE) return
