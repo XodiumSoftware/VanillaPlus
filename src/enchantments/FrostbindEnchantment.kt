@@ -3,23 +3,17 @@ package org.xodium.vanillaplus.enchantments
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
-import org.bukkit.GameMode
-import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.entity.Snowball
-import org.bukkit.event.block.Action
 import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.scheduler.BukkitTask
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.enchantments.FrostbindEnchantment.spawnSnowballTrail
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
-import org.xodium.vanillaplus.pdcs.PlayerPDC.mana
 import org.xodium.vanillaplus.utils.ManaUtils
-import org.xodium.vanillaplus.utils.ManaUtils.NO_MANA_SOUND
 import org.xodium.vanillaplus.utils.Utils.displayName
 
 /** Represents an object handling frostbind enchantment implementation within the system. */
@@ -43,34 +37,10 @@ internal object FrostbindEnchantment : EnchantmentInterface {
 
     /**
      * Handles a left-click interaction to fire a Frostbind snowball.
-     * Requires a [Material.BLAZE_ROD] with the Frostbind enchantment in the main hand,
-     * the player to be in survival or adventure mode, and sufficient mana.
-     * Deducts [Config.MANA_COST] mana, launches a [Snowball] in the look direction,
-     * and begins a particle trail via [spawnSnowballTrail].
      * @param event The [PlayerInteractEvent] to handle.
      */
     fun onPlayerInteract(event: PlayerInteractEvent) {
-        if (event.action != Action.LEFT_CLICK_AIR && event.action != Action.LEFT_CLICK_BLOCK) return
-
-        val item = event.item ?: return
-
-        if (item.type != Material.BLAZE_ROD) return
-        if (!item.containsEnchantment(get())) return
-
-        val player = event.player
-
-        if (player.gameMode !in setOf(GameMode.SURVIVAL, GameMode.ADVENTURE)) return
-
-        if (player.mana < Config.MANA_COST) {
-            player.playSound(NO_MANA_SOUND)
-            ManaUtils.showManaBar(player)
-            return
-        }
-
-        event.isCancelled = true
-        player.mana -= Config.MANA_COST
-        ManaUtils.showManaBar(player)
-
+        val player = ManaUtils.consumeMana(event, get(), Config.MANA_COST) ?: return
         val direction = player.location.direction.normalize()
         val spawnLocation = player.eyeLocation.add(direction.clone().multiply(1.5))
         val snowball = player.world.spawn(spawnLocation, Snowball::class.java)
@@ -109,6 +79,7 @@ internal object FrostbindEnchantment : EnchantmentInterface {
     private fun spawnSnowballTrail(snowball: Snowball) {
         var lastLoc = snowball.location
         var task: BukkitTask? = null
+
         task =
             instance.server.scheduler.runTaskTimer(
                 instance,
@@ -127,6 +98,7 @@ internal object FrostbindEnchantment : EnchantmentInterface {
                             .spawn()
                         return@Runnable
                     }
+
                     lastLoc = snowball.location
                     Particle.SNOWFLAKE
                         .builder()

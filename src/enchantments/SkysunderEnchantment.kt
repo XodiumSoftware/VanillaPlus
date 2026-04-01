@@ -1,16 +1,11 @@
 package org.xodium.vanillaplus.enchantments
 
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
-import org.bukkit.GameMode
-import org.bukkit.Material
 import org.bukkit.Particle
-import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
-import org.xodium.vanillaplus.pdcs.PlayerPDC.mana
 import org.xodium.vanillaplus.utils.ManaUtils
-import org.xodium.vanillaplus.utils.ManaUtils.NO_MANA_SOUND
 import org.xodium.vanillaplus.utils.Utils.displayName
 
 /** Represents an object handling skysunder enchantment implementation within the system. */
@@ -33,34 +28,10 @@ internal object SkysunderEnchantment : EnchantmentInterface {
 
     /**
      * Handles a left-click interaction to call down a lightning strike via Skysunder.
-     * Requires a [Material.BLAZE_ROD] with the Skysunder enchantment in the main hand,
-     * the player to be in survival or adventure mode, and sufficient mana.
-     * Deducts [Config.MANA_COST] mana, ray-traces up to [Config.RANGE] blocks to find the target position,
-     * spawns [Particle.ELECTRIC_SPARK] at the target, and strikes lightning there.
      * @param event The [PlayerInteractEvent] to handle.
      */
     fun onPlayerInteract(event: PlayerInteractEvent) {
-        if (event.action != Action.LEFT_CLICK_AIR && event.action != Action.LEFT_CLICK_BLOCK) return
-
-        val item = event.item ?: return
-
-        if (item.type != Material.BLAZE_ROD) return
-        if (!item.containsEnchantment(get())) return
-
-        val player = event.player
-
-        if (player.gameMode !in setOf(GameMode.SURVIVAL, GameMode.ADVENTURE)) return
-
-        if (player.mana < Config.MANA_COST) {
-            player.playSound(NO_MANA_SOUND)
-            ManaUtils.showManaBar(player)
-            return
-        }
-
-        event.isCancelled = true
-        player.mana -= Config.MANA_COST
-        ManaUtils.showManaBar(player)
-
+        val player = ManaUtils.consumeMana(event, get(), Config.MANA_COST) ?: return
         val result = player.rayTraceBlocks(Config.RANGE)
         val target =
             result?.hitPosition?.toLocation(player.world)
