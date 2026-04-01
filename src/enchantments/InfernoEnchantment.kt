@@ -1,6 +1,8 @@
 package org.xodium.vanillaplus.enchantments
 
+import io.papermc.paper.registry.RegistryKey
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
+import io.papermc.paper.registry.set.RegistrySet
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import org.bukkit.Particle
@@ -32,6 +34,7 @@ internal object InfernoEnchantment : EnchantmentInterface {
             .minimumCost(EnchantmentRegistryEntry.EnchantmentCost.of(20, 5))
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(65, 5))
             .activeSlots(EquipmentSlotGroup.MAINHAND)
+            .exclusiveWith(RegistrySet.keySet(RegistryKey.ENCHANTMENT, SkysunderEnchantment.key))
 
     /**
      * Handles a left-click interaction to launch an Inferno fireball.

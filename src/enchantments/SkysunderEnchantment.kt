@@ -1,6 +1,8 @@
 package org.xodium.vanillaplus.enchantments
 
+import io.papermc.paper.registry.RegistryKey
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
+import io.papermc.paper.registry.set.RegistrySet
 import org.bukkit.Particle
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlotGroup
@@ -25,6 +27,7 @@ internal object SkysunderEnchantment : EnchantmentInterface {
             .minimumCost(EnchantmentRegistryEntry.EnchantmentCost.of(20, 5))
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(65, 5))
             .activeSlots(EquipmentSlotGroup.MAINHAND)
+            .exclusiveWith(RegistrySet.keySet(RegistryKey.ENCHANTMENT, InfernoEnchantment.key))
 
     /**
      * Handles a left-click interaction to call down a lightning strike via Skysunder.
