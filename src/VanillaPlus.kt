@@ -13,7 +13,6 @@ import org.xodium.vanillaplus.modules.LocatorModule
 import org.xodium.vanillaplus.modules.MotdModule
 import org.xodium.vanillaplus.modules.OpenableModule
 import org.xodium.vanillaplus.modules.PlayerModule
-import org.xodium.vanillaplus.modules.RuneModule
 import org.xodium.vanillaplus.modules.ScoreBoardModule
 import org.xodium.vanillaplus.modules.ServerInfoModule
 import org.xodium.vanillaplus.modules.SitModule
@@ -67,7 +66,6 @@ internal class VanillaPlus : JavaPlugin() {
                 MotdModule,
                 OpenableModule,
                 PlayerModule,
-                RuneModule,
                 ServerInfoModule,
                 ScoreBoardModule,
                 SitModule,
