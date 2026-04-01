@@ -1,5 +1,7 @@
 package org.xodium.vanillaplus.utils
 
+import org.bukkit.Location
+import org.bukkit.entity.Entity
 import org.bukkit.scheduler.BukkitTask
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 
@@ -22,4 +24,29 @@ internal object ScheduleUtils {
         instance.server.scheduler.runTaskTimer(instance, content, delay, period).also { task ->
             duration?.let { instance.server.scheduler.runTaskLater(instance, task::cancel, it) }
         }
+
+    /**
+     * Spawns a repeating particle trail on [entity] every tick until it is no longer valid.
+     * @param entity The entity to follow.
+     * @param particles Called each tick with the entity's current [Location] to spawn particles.
+     * @return The [BukkitTask] running the trail.
+     */
+    fun spawnProjectileTrail(
+        entity: Entity,
+        particles: (Location) -> Unit,
+    ): BukkitTask {
+        lateinit var task: BukkitTask
+
+        task =
+            schedule(delay = 1L, period = 1L) {
+                if (!entity.isValid) {
+                    task.cancel()
+                    return@schedule
+                }
+
+                particles(entity.location)
+            }
+
+        return task
+    }
 }

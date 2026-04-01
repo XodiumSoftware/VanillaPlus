@@ -9,11 +9,10 @@ import org.bukkit.Particle
 import org.bukkit.entity.WindCharge
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlotGroup
-import org.bukkit.scheduler.BukkitTask
 import org.bukkit.util.Vector
-import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 import org.xodium.vanillaplus.managers.ManaManager
+import org.xodium.vanillaplus.utils.ScheduleUtils
 import org.xodium.vanillaplus.utils.Utils.displayName
 
 /** Represents an object handling tempest enchantment implementation within the system. */
@@ -75,35 +74,19 @@ internal object TempestEnchantment : EnchantmentInterface {
      * Spawns a repeating particle trail behind [charge] every tick until the entity is no longer valid.
      * @param charge The [WindCharge] to trail.
      */
-    private fun spawnWindChargeTrail(charge: WindCharge) {
-        lateinit var task: BukkitTask
-
-        task =
-            instance.server.scheduler.runTaskTimer(
-                instance,
-                Runnable {
-                    if (!charge.isValid) {
-                        task.cancel()
-                        return@Runnable
-                    }
-
-                    val loc = charge.location
-
-                    Particle.GUST
-                        .builder()
-                        .location(loc)
-                        .count(1)
-                        .spawn()
-                    Particle.CLOUD
-                        .builder()
-                        .location(loc)
-                        .count(3)
-                        .offset(0.05, 0.05, 0.05)
-                        .extra(0.02)
-                        .spawn()
-                },
-                1L,
-                1L,
-            )
-    }
+    private fun spawnWindChargeTrail(charge: WindCharge) =
+        ScheduleUtils.spawnProjectileTrail(charge) {
+            Particle.GUST
+                .builder()
+                .location(it)
+                .count(1)
+                .spawn()
+            Particle.CLOUD
+                .builder()
+                .location(it)
+                .count(3)
+                .offset(0.05, 0.05, 0.05)
+                .extra(0.02)
+                .spawn()
+        }
 }

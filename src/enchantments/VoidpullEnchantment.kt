@@ -18,6 +18,7 @@ import org.bukkit.scheduler.BukkitTask
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 import org.xodium.vanillaplus.managers.ManaManager
+import org.xodium.vanillaplus.utils.ScheduleUtils
 import org.xodium.vanillaplus.utils.Utils.displayName
 import java.util.*
 
@@ -77,38 +78,21 @@ internal object VoidpullEnchantment : EnchantmentInterface {
      * @param pearl The [EnderPearl] to trail.
      * @return The [BukkitTask] running the trail, so it can be cancelled early on hit.
      */
-    private fun spawnPearlTrail(pearl: EnderPearl): BukkitTask {
-        lateinit var task: BukkitTask
-
-        task =
-            instance.server.scheduler.runTaskTimer(
-                instance,
-                Runnable {
-                    if (!pearl.isValid) {
-                        task.cancel()
-                        return@Runnable
-                    }
-
-                    val loc = pearl.location
-
-                    Particle.PORTAL
-                        .builder()
-                        .location(loc)
-                        .count(8)
-                        .offset(0.1, 0.1, 0.1)
-                        .spawn()
-                    Particle.REVERSE_PORTAL
-                        .builder()
-                        .location(loc)
-                        .count(3)
-                        .offset(0.05, 0.05, 0.05)
-                        .spawn()
-                },
-                1L,
-                1L,
-            )
-        return task
-    }
+    private fun spawnPearlTrail(pearl: EnderPearl) =
+        ScheduleUtils.spawnProjectileTrail(pearl) {
+            Particle.PORTAL
+                .builder()
+                .location(it)
+                .count(8)
+                .offset(0.1, 0.1, 0.1)
+                .spawn()
+            Particle.REVERSE_PORTAL
+                .builder()
+                .location(it)
+                .count(3)
+                .offset(0.05, 0.05, 0.05)
+                .spawn()
+        }
 
     /**
      * Handles a projectile hit event, teleporting the struck entity to the shooter if the projectile is a Voidpull pearl.

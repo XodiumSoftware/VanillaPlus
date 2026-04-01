@@ -12,10 +12,10 @@ import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.persistence.PersistentDataType
-import org.bukkit.scheduler.BukkitTask
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 import org.xodium.vanillaplus.managers.ManaManager
+import org.xodium.vanillaplus.utils.ScheduleUtils
 import org.xodium.vanillaplus.utils.Utils.displayName
 
 /** Represents an object handling frostbind enchantment implementation within the system. */
@@ -71,37 +71,21 @@ internal object FrostbindEnchantment : EnchantmentInterface {
      * Spawns a repeating particle trail behind [snowball] every tick until the entity is no longer valid.
      * @param snowball The [Snowball] to trail.
      */
-    private fun spawnSnowballTrail(snowball: Snowball) {
-        lateinit var task: BukkitTask
-
-        task =
-            instance.server.scheduler.runTaskTimer(
-                instance,
-                Runnable {
-                    if (!snowball.isValid) {
-                        task.cancel()
-                        return@Runnable
-                    }
-
-                    val loc = snowball.location
-
-                    Particle.SNOWFLAKE
-                        .builder()
-                        .location(loc)
-                        .count(5)
-                        .offset(0.05, 0.05, 0.05)
-                        .spawn()
-                    Particle.ITEM_SNOWBALL
-                        .builder()
-                        .location(loc)
-                        .count(2)
-                        .offset(0.05, 0.05, 0.05)
-                        .spawn()
-                },
-                1L,
-                1L,
-            )
-    }
+    private fun spawnSnowballTrail(snowball: Snowball) =
+        ScheduleUtils.spawnProjectileTrail(snowball) {
+            Particle.SNOWFLAKE
+                .builder()
+                .location(it)
+                .count(5)
+                .offset(0.05, 0.05, 0.05)
+                .spawn()
+            Particle.ITEM_SNOWBALL
+                .builder()
+                .location(it)
+                .count(2)
+                .offset(0.05, 0.05, 0.05)
+                .spawn()
+        }
 
     /**
      * Handles a projectile hit event, freezing the struck entity if the projectile is a Frostbind snowball.
