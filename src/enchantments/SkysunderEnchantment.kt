@@ -32,14 +32,29 @@ internal object SkysunderEnchantment : EnchantmentInterface {
      */
     fun onPlayerInteract(event: PlayerInteractEvent) {
         val player = ManaManager.consumeMana(event, get(), Config.MANA_COST) ?: return
-        val result = player.rayTraceBlocks(Config.RANGE)
+        val blockResult = player.rayTraceBlocks(Config.RANGE)
+        val entityResult = player.rayTraceEntities(Config.RANGE.toInt())
+        val eyeLoc = player.eyeLocation
+        val blockDist = blockResult?.hitPosition?.distance(eyeLoc.toVector())
+        val entityDist = entityResult?.hitPosition?.distance(eyeLoc.toVector())
         val target =
-            result?.hitPosition?.toLocation(player.world)
-                ?: player.eyeLocation.add(
-                    player.location.direction
-                        .normalize()
-                        .multiply(Config.RANGE),
-                )
+            when {
+                blockDist != null && (entityDist == null || blockDist <= entityDist) -> {
+                    blockResult.hitPosition.toLocation(player.world)
+                }
+
+                entityDist != null -> {
+                    entityResult.hitPosition.toLocation(player.world)
+                }
+
+                else -> {
+                    eyeLoc.add(
+                        player.location.direction
+                            .normalize()
+                            .multiply(Config.RANGE),
+                    )
+                }
+            }
 
         Particle.ELECTRIC_SPARK
             .builder()
