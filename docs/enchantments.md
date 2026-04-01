@@ -106,6 +106,36 @@ Left-clicking with a Skysunder Blaze Rod ray-traces up to 30 blocks in the direc
 
 ---
 
+### Glacialbind
+
+> Launches a freezing snowball on left-click with a Blaze Rod.
+
+| Property           | Value                                    |
+|--------------------|------------------------------------------|
+| **Slot**           | Mainhand (Blaze Rods)                    |
+| **Levels**         | I                                        |
+| **Mana cost**      | 15                                       |
+| **Exclusive with** | Inferno, Skysunder, Witherbrand, Tempest |
+
+Left-clicking with a Glacialbind Blaze Rod fires a snowball in the direction you are looking. On hit, the struck entity is frozen solid for several seconds (set to full freeze ticks, decaying naturally outside powder snow). Bursts snowflake particles at the impact location. Requires mana; draws from the shared **Spellbite** mana pool. Only usable in Survival or Adventure mode.
+
+---
+
+### Tempest
+
+> Launches a burst of wind charges on left-click with a Blaze Rod.
+
+| Property           | Value                                        |
+|--------------------|----------------------------------------------|
+| **Slot**           | Mainhand (Blaze Rods)                        |
+| **Levels**         | I                                            |
+| **Mana cost**      | 25                                           |
+| **Exclusive with** | Inferno, Skysunder, Witherbrand, Glacialbind |
+
+Left-clicking with a Tempest Blaze Rod fires three wind charges in a horizontal spread. Each charge knocks back anything it hits on explosion. Requires mana; the highest mana cost of all Blaze Rod spells. Only usable in Survival or Adventure mode.
+
+---
+
 ### Witherbrand
 
 > Launches a wither skull on left-click with a Blaze Rod.

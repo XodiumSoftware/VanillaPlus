@@ -15,9 +15,11 @@ import io.papermc.paper.tag.TagEntry
 import net.kyori.adventure.key.Key
 import org.xodium.vanillaplus.enchantments.EarthrendEnchantment
 import org.xodium.vanillaplus.enchantments.EmbertreadEnchantment
+import org.xodium.vanillaplus.enchantments.GlacialbindEnchantment
 import org.xodium.vanillaplus.enchantments.InfernoEnchantment
 import org.xodium.vanillaplus.enchantments.NimbusEnchantment
 import org.xodium.vanillaplus.enchantments.SkysunderEnchantment
+import org.xodium.vanillaplus.enchantments.TempestEnchantment
 import org.xodium.vanillaplus.enchantments.TetherEnchantment
 import org.xodium.vanillaplus.enchantments.VerdanceEnchantment
 import org.xodium.vanillaplus.enchantments.WitherbrandEnchantment
@@ -119,6 +121,16 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                                 .invoke(it)
                                 .supportedItems(event.getOrCreateTag(BLAZE_RODS))
                         }
+                        register(GlacialbindEnchantment.key) {
+                            GlacialbindEnchantment
+                                .invoke(it)
+                                .supportedItems(event.getOrCreateTag(BLAZE_RODS))
+                        }
+                        register(TempestEnchantment.key) {
+                            TempestEnchantment
+                                .invoke(it)
+                                .supportedItems(event.getOrCreateTag(BLAZE_RODS))
+                        }
                     }
                 },
             )
@@ -134,6 +146,8 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                             InfernoEnchantment.key,
                             SkysunderEnchantment.key,
                             WitherbrandEnchantment.key,
+                            GlacialbindEnchantment.key,
+                            TempestEnchantment.key,
                         )
 
                     addToTag(EnchantmentTagKeys.TRADEABLE, enchants)

@@ -39,6 +39,8 @@ internal object InfernoEnchantment : EnchantmentInterface {
                     RegistryKey.ENCHANTMENT,
                     SkysunderEnchantment.key,
                     WitherbrandEnchantment.key,
+                    GlacialbindEnchantment.key,
+                    TempestEnchantment.key,
                 ),
             )
 

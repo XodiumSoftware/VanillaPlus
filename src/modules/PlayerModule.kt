@@ -19,6 +19,7 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockDropItemEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.PlayerDeathEvent
+import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.event.player.PlayerAdvancementDoneEvent
 import org.bukkit.event.player.PlayerBedEnterEvent
 import org.bukkit.event.player.PlayerInteractEvent
@@ -40,6 +41,8 @@ import org.xodium.vanillaplus.enchantments.SilkTouchEnchantment
 import org.xodium.vanillaplus.enchantments.SkysunderEnchantment
 import org.xodium.vanillaplus.enchantments.TetherEnchantment
 import org.xodium.vanillaplus.enchantments.VerdanceEnchantment
+import org.xodium.vanillaplus.enchantments.GlacialbindEnchantment
+import org.xodium.vanillaplus.enchantments.TempestEnchantment
 import org.xodium.vanillaplus.enchantments.WitherbrandEnchantment
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.PlayerMessageManager
@@ -165,7 +168,12 @@ internal object PlayerModule : ModuleInterface {
         InfernoEnchantment.onPlayerInteract(event)
         SkysunderEnchantment.onPlayerInteract(event)
         WitherbrandEnchantment.onPlayerInteract(event)
+        GlacialbindEnchantment.onPlayerInteract(event)
+        TempestEnchantment.onPlayerInteract(event)
     }
+
+    @EventHandler
+    fun on(event: ProjectileHitEvent) = GlacialbindEnchantment.onProjectileHit(event)
 
     @EventHandler
     fun on(event: EntityDamageEvent) = EmbertreadEnchantment.onEntityDamage(event)
