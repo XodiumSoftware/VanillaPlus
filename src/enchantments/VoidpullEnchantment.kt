@@ -36,7 +36,7 @@ internal object VoidpullEnchantment : EnchantmentInterface {
                     InfernoEnchantment.key,
                     SkysunderEnchantment.key,
                     WitherbrandEnchantment.key,
-                    GlacialbindEnchantment.key,
+                    FrostbindEnchantment.key,
                     TempestEnchantment.key,
                 ),
             )

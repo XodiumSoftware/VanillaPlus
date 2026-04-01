@@ -110,19 +110,19 @@ Left-clicking with a Skysunder Blaze Rod ray-traces up to 30 blocks in the direc
 
 > Yanks a targeted entity to you on left-click with a Blaze Rod.
 
-| Property           | Value                                                 |
-|--------------------|-------------------------------------------------------|
-| **Slot**           | Mainhand (Blaze Rods)                                 |
-| **Levels**         | I                                                     |
-| **Mana cost**      | 20                                                    |
-| **Range**          | 30 blocks                                             |
-| **Exclusive with** | Inferno, Skysunder, Witherbrand, Glacialbind, Tempest |
+| Property           | Value                                               |
+|--------------------|-----------------------------------------------------|
+| **Slot**           | Mainhand (Blaze Rods)                               |
+| **Levels**         | I                                                   |
+| **Mana cost**      | 20                                                  |
+| **Range**          | 30 blocks                                           |
+| **Exclusive with** | Inferno, Skysunder, Witherbrand, Frostbind, Tempest |
 
 Left-clicking with a Voidpull Blaze Rod ray-traces up to 30 blocks for an entity. The first entity hit is teleported directly in front of the player. Portal particles burst at both the origin and arrival location. Requires mana; draws from the shared **Spellbite** mana pool. Only usable in Survival or Adventure mode.
 
 ---
 
-### Glacialbind
+### Frostbind
 
 > Launches a freezing snowball on left-click with a Blaze Rod.
 
@@ -133,7 +133,7 @@ Left-clicking with a Voidpull Blaze Rod ray-traces up to 30 blocks for an entity
 | **Mana cost**      | 15                                       |
 | **Exclusive with** | Inferno, Skysunder, Witherbrand, Tempest |
 
-Left-clicking with a Glacialbind Blaze Rod fires a snowball in the direction you are looking. On hit, the struck entity is frozen solid for several seconds (set to full freeze ticks, decaying naturally outside powder snow). Bursts snowflake particles at the impact location. Requires mana; draws from the shared **Spellbite** mana pool. Only usable in Survival or Adventure mode.
+Left-clicking with a Frostbind Blaze Rod fires a snowball in the direction you are looking. On hit, the struck entity is frozen solid for several seconds (set to full freeze ticks, decaying naturally outside powder snow). Bursts snowflake particles at the impact location. Requires mana; draws from the shared **Spellbite** mana pool. Only usable in Survival or Adventure mode.
 
 ---
 
@@ -141,12 +141,12 @@ Left-clicking with a Glacialbind Blaze Rod fires a snowball in the direction you
 
 > Launches a burst of wind charges on left-click with a Blaze Rod.
 
-| Property           | Value                                        |
-|--------------------|----------------------------------------------|
-| **Slot**           | Mainhand (Blaze Rods)                        |
-| **Levels**         | I                                            |
-| **Mana cost**      | 25                                           |
-| **Exclusive with** | Inferno, Skysunder, Witherbrand, Glacialbind |
+| Property           | Value                                      |
+|--------------------|--------------------------------------------|
+| **Slot**           | Mainhand (Blaze Rods)                      |
+| **Levels**         | I                                          |
+| **Mana cost**      | 25                                         |
+| **Exclusive with** | Inferno, Skysunder, Witherbrand, Frostbind |
 
 Left-clicking with a Tempest Blaze Rod fires three wind charges in a horizontal spread. Each charge knocks back anything it hits on explosion. Requires mana; the highest mana cost of all Blaze Rod spells. Only usable in Survival or Adventure mode.
 

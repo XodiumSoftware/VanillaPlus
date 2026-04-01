@@ -37,7 +37,7 @@ internal object WitherbrandEnchantment : EnchantmentInterface {
                     RegistryKey.ENCHANTMENT,
                     InfernoEnchantment.key,
                     SkysunderEnchantment.key,
-                    GlacialbindEnchantment.key,
+                    FrostbindEnchantment.key,
                     TempestEnchantment.key,
                     VoidpullEnchantment.key,
                 ),

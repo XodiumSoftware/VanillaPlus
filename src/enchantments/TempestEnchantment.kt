@@ -38,7 +38,7 @@ internal object TempestEnchantment : EnchantmentInterface {
                     InfernoEnchantment.key,
                     SkysunderEnchantment.key,
                     WitherbrandEnchantment.key,
-                    GlacialbindEnchantment.key,
+                    FrostbindEnchantment.key,
                     VoidpullEnchantment.key,
                 ),
             )

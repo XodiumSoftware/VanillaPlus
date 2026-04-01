@@ -17,9 +17,9 @@ import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 import org.xodium.vanillaplus.managers.ManaManager
 import org.xodium.vanillaplus.utils.Utils.displayName
 
-/** Represents an object handling glacialbind enchantment implementation within the system. */
+/** Represents an object handling frostbind enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
-internal object GlacialbindEnchantment : EnchantmentInterface {
+internal object FrostbindEnchantment : EnchantmentInterface {
     object Config {
         const val MANA_COST = 15
         const val FREEZE_TICKS = 500
@@ -27,7 +27,7 @@ internal object GlacialbindEnchantment : EnchantmentInterface {
         val HIT_SOUND: Sound = Sound.sound(Key.key("block.powder_snow.place"), Sound.Source.BLOCK, 1.0f, 0.8f)
     }
 
-    private val PROJECTILE_KEY by lazy { NamespacedKey(instance, "glacialbind_projectile") }
+    private val PROJECTILE_KEY by lazy { NamespacedKey(instance, "frostbind_projectile") }
 
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
@@ -50,7 +50,7 @@ internal object GlacialbindEnchantment : EnchantmentInterface {
             )
 
     /**
-     * Handles a left-click interaction to launch a Glacialbind snowball.
+     * Handles a left-click interaction to launch a Frostbind snowball.
      * @param event The [PlayerInteractEvent] to handle.
      */
     fun onPlayerInteract(event: PlayerInteractEvent) {
@@ -66,7 +66,7 @@ internal object GlacialbindEnchantment : EnchantmentInterface {
     }
 
     /**
-     * Handles a projectile hit event, freezing the struck entity if the projectile is a Glacialbind snowball.
+     * Handles a projectile hit event, freezing the struck entity if the projectile is a Frostbind snowball.
      * Sets [Config.FREEZE_TICKS] on the hit entity, causing it to be fully frozen for several seconds.
      * @param event The [ProjectileHitEvent] to handle.
      */

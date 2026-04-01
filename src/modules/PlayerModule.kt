@@ -36,7 +36,7 @@ import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.enchantments.EarthrendEnchantment
 import org.xodium.vanillaplus.enchantments.EmbertreadEnchantment
 import org.xodium.vanillaplus.enchantments.FeatherFallingEnchantment
-import org.xodium.vanillaplus.enchantments.GlacialbindEnchantment
+import org.xodium.vanillaplus.enchantments.FrostbindEnchantment
 import org.xodium.vanillaplus.enchantments.InfernoEnchantment
 import org.xodium.vanillaplus.enchantments.SilkTouchEnchantment
 import org.xodium.vanillaplus.enchantments.SkysunderEnchantment
@@ -169,13 +169,13 @@ internal object PlayerModule : ModuleInterface {
         InfernoEnchantment.onPlayerInteract(event)
         SkysunderEnchantment.onPlayerInteract(event)
         WitherbrandEnchantment.onPlayerInteract(event)
-        GlacialbindEnchantment.onPlayerInteract(event)
+        FrostbindEnchantment.onPlayerInteract(event)
         TempestEnchantment.onPlayerInteract(event)
         VoidpullEnchantment.onPlayerInteract(event)
     }
 
     @EventHandler
-    fun on(event: ProjectileHitEvent) = GlacialbindEnchantment.onProjectileHit(event)
+    fun on(event: ProjectileHitEvent) = FrostbindEnchantment.onProjectileHit(event)
 
     @EventHandler
     fun on(event: EntityDamageEvent) = EmbertreadEnchantment.onEntityDamage(event)
