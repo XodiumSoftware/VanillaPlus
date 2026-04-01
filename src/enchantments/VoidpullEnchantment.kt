@@ -78,14 +78,14 @@ internal object VoidpullEnchantment : EnchantmentInterface {
      * @return The [BukkitTask] running the trail, so it can be cancelled early on hit.
      */
     private fun spawnPearlTrail(pearl: EnderPearl): BukkitTask {
-        var task: BukkitTask? = null
+        lateinit var task: BukkitTask
 
         task =
             instance.server.scheduler.runTaskTimer(
                 instance,
                 Runnable {
                     if (!pearl.isValid) {
-                        task?.cancel()
+                        task.cancel()
                         return@Runnable
                     }
 

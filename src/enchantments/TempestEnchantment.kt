@@ -76,13 +76,14 @@ internal object TempestEnchantment : EnchantmentInterface {
      * @param charge The [WindCharge] to trail.
      */
     private fun spawnWindChargeTrail(charge: WindCharge) {
-        var task: BukkitTask? = null
+        lateinit var task: BukkitTask
+
         task =
             instance.server.scheduler.runTaskTimer(
                 instance,
                 Runnable {
                     if (!charge.isValid) {
-                        task?.cancel()
+                        task.cancel()
                         return@Runnable
                     }
 

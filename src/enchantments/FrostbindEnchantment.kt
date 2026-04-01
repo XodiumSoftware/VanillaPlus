@@ -72,13 +72,14 @@ internal object FrostbindEnchantment : EnchantmentInterface {
      * @param snowball The [Snowball] to trail.
      */
     private fun spawnSnowballTrail(snowball: Snowball) {
-        var task: BukkitTask? = null
+        lateinit var task: BukkitTask
+
         task =
             instance.server.scheduler.runTaskTimer(
                 instance,
                 Runnable {
                     if (!snowball.isValid) {
-                        task?.cancel()
+                        task.cancel()
                         return@Runnable
                     }
 

@@ -68,13 +68,14 @@ internal object InfernoEnchantment : EnchantmentInterface {
      * @param fireball The [SmallFireball] to trail.
      */
     private fun spawnFireballTrail(fireball: SmallFireball) {
-        var task: BukkitTask? = null
+        lateinit var task: BukkitTask
+
         task =
             instance.server.scheduler.runTaskTimer(
                 instance,
                 Runnable {
                     if (!fireball.isValid) {
-                        task?.cancel()
+                        task.cancel()
                         return@Runnable
                     }
 
