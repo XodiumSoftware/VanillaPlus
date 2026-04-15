@@ -50,7 +50,7 @@ internal object EntityModule : ModuleInterface {
     fun on(event: PrepareAnvilEvent) = horseArmor(event)
 
     @Suppress("UnstableApiUsage")
-    fun horseArmor(event: PrepareAnvilEvent) {
+    private fun horseArmor(event: PrepareAnvilEvent) {
         val armor = event.inventory.getItem(0) ?: return
         val book = event.inventory.getItem(1) ?: return
 
