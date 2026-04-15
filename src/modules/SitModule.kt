@@ -61,8 +61,8 @@ internal object SitModule : ModuleInterface {
         val block = event.clickedBlock ?: return
         val blockData = block.blockData
         val isSitTarget =
-            (Config.useStairs && blockData is Stairs && blockData.half == Bisected.Half.BOTTOM) ||
-                (Config.useSlabs && blockData is Slab && blockData.type == Slab.Type.BOTTOM)
+            (blockData is Stairs && blockData.half == Bisected.Half.BOTTOM) ||
+                (blockData is Slab && blockData.type == Slab.Type.BOTTOM)
 
         if (!isSitTarget) return
         if (block.getRelative(BlockFace.UP).type.isCollidable) return
@@ -170,11 +170,5 @@ internal object SitModule : ModuleInterface {
     private fun ArmorStand.removeSeat() {
         occupiedBlocks.remove(blockLocation())
         remove()
-    }
-
-    /** Represents the config of the module. */
-    object Config {
-        var useStairs: Boolean = true
-        var useSlabs: Boolean = true
     }
 }

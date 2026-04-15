@@ -9,12 +9,9 @@ import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.enchantments.SilkTouchEnchantment.handleBuddingAmethystBreak
 import org.xodium.vanillaplus.enchantments.SilkTouchEnchantment.handleSpawnerBreak
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
-import org.xodium.vanillaplus.modules.PlayerModule
 
 /** Represents an object handling silk touch enchantment implementation within the system. */
 internal object SilkTouchEnchantment : EnchantmentInterface {
-    private val config = PlayerModule.Config.SilkTouchEnchantment
-
     /**
      * Routes special block breaks for a Silk Touch pickaxe to the appropriate handler.
      * Delegates [Material.SPAWNER] breaks to [handleSpawnerBreak] and
@@ -36,8 +33,6 @@ internal object SilkTouchEnchantment : EnchantmentInterface {
      * @param event The block break event.
      */
     private fun handleSpawnerBreak(event: BlockBreakEvent) {
-        if (!config.allowSpawnerSilk) return
-
         event.isDropItems = false
         event.expToDrop = 0
 
@@ -57,8 +52,6 @@ internal object SilkTouchEnchantment : EnchantmentInterface {
      * @param event The block break event.
      */
     private fun handleBuddingAmethystBreak(event: BlockBreakEvent) {
-        if (!config.allowBuddingAmethystSilk) return
-
         event.isDropItems = false
         event.block.world.dropItemNaturally(event.block.location, ItemStack.of(Material.BUDDING_AMETHYST))
     }

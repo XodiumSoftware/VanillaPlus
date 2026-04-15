@@ -43,7 +43,7 @@ internal object EntityModule : ModuleInterface {
      * @param event The death event of the entity.
      */
     private fun dropEntitySpawnEgg(event: EntityDeathEvent) {
-        if (Random.nextDouble() <= Config.entityEggDropChance) {
+        if (Random.nextDouble() <= Config.ENTITY_EGG_DROP_CHANCE) {
             Material.matchMaterial("${event.entity.type.name}_SPAWN_EGG")?.let { event.drops.add(ItemStack.of(it)) }
         }
     }
@@ -51,14 +51,14 @@ internal object EntityModule : ModuleInterface {
     /**
      * Determines whether an entity's griefing behaviour should be cancelled.
      * @param entity The entity whose griefing behaviour is being evaluated.
-     * @return `true` if the entity's type is in [Config.griefCancelTypes]; `false` otherwise.
+     * @return `true` if the entity's type is in [Config.GRIEF_CANCEL_TYPES]; `false` otherwise.
      */
-    private fun shouldCancelGrief(entity: Entity): Boolean = Config.griefCancelTypes.any { it.isInstance(entity) }
+    private fun shouldCancelGrief(entity: Entity): Boolean = Config.GRIEF_CANCEL_TYPES.any { it.isInstance(entity) }
 
     /** Represents the config of the module. */
     object Config {
-        val griefCancelTypes =
+        val GRIEF_CANCEL_TYPES =
             setOf(Blaze::class, Creeper::class, EnderDragon::class, Enderman::class, Fireball::class, Wither::class)
-        var entityEggDropChance: Double = 0.001
+        const val ENTITY_EGG_DROP_CHANCE: Double = 0.001
     }
 }

@@ -204,7 +204,7 @@ internal object PlayerModule : ModuleInterface {
 
         player.sendMessage(
             MM.deserialize(
-                Regex("<image>").replace(Config.welcomeText.joinToString("\n")) { "<image${++imageIndex}>" },
+                Regex("<image>").replace(Config.WELCOME_TEXT.joinToString("\n")) { "<image${++imageIndex}>" },
                 Placeholder.component("player", player.displayName()),
                 *player
                     .face()
@@ -220,7 +220,7 @@ internal object PlayerModule : ModuleInterface {
      * @param player The player whose head may be dropped.
      */
     private fun dropPlayerHead(player: Player) {
-        if (Random.nextDouble() > Config.skullDropChance) return
+        if (Random.nextDouble() > Config.SKULL_DROP_CHANCE) return
 
         player.world.dropItemNaturally(player.location, player.head())
     }
@@ -256,9 +256,9 @@ internal object PlayerModule : ModuleInterface {
 
         val player = event.player
 
-        if (player.calculateTotalExperiencePoints() < Config.xpCostToBottle) return
+        if (player.calculateTotalExperiencePoints() < Config.XP_COST_TO_BOTTLE) return
 
-        player.giveExp(-Config.xpCostToBottle)
+        player.giveExp(-Config.XP_COST_TO_BOTTLE)
         event.item?.subtract(1)
         player.inventory
             .addItem(ItemStack.of(Material.EXPERIENCE_BOTTLE, 1))
@@ -279,7 +279,7 @@ internal object PlayerModule : ModuleInterface {
         player.displayName(MM.deserialize(player.nickname))
         player.sendActionBar(
             MM.deserialize(
-                Config.PlayerMessages.updateNickname,
+                Config.PlayerMessages.UPDATE_NICKNAME,
                 Placeholder.component("nickname", player.displayName()),
             ),
         )
@@ -291,16 +291,16 @@ internal object PlayerModule : ModuleInterface {
      */
     private fun tablist(audience: Audience) {
         audience.sendPlayerListHeaderAndFooter(
-            MM.deserialize(Config.TabList.header.joinToString("\n")),
+            MM.deserialize(Config.TabList.HEADER.joinToString("\n")),
             MM.deserialize(
-                Config.TabList.footer.joinToString("\n"),
+                Config.TabList.FOOTER.joinToString("\n"),
                 Placeholder.component(
                     "weather",
                     MM.deserialize(
                         instance.server.worlds[0].weather(
-                            Config.TabList.weatherThundering,
-                            Config.TabList.weatherStorm,
-                            Config.TabList.weatherClear,
+                            Config.TabList.WEATHER_THUNDERING,
+                            Config.TabList.WEATHER_STORM,
+                            Config.TabList.WEATHER_CLEAR,
                         ),
                     ),
                 ),
@@ -308,11 +308,11 @@ internal object PlayerModule : ModuleInterface {
         )
     }
 
-    /** Represents the config of the module. */
+    /** Configuration for the PlayerModule. */
     object Config {
-        var skullDropChance: Double = 0.01
-        var xpCostToBottle: Int = 11
-        var welcomeText: List<String> =
+        const val SKULL_DROP_CHANCE: Double = 0.01
+        const val XP_COST_TO_BOTTLE: Int = 11
+        val WELCOME_TEXT: List<String> =
             listOf(
                 "<gradient:#FFA751:#FFE259>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
                 "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
@@ -326,9 +326,9 @@ internal object PlayerModule : ModuleInterface {
                 "<gradient:#FFA751:#FFE259>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
             )
 
-        /** Represents the tab list header, footer, and weather i18n configuration. */
+        /** Tab list header, footer, and weather icon configuration. */
         object TabList {
-            var header: List<String> =
+            val HEADER: List<String> =
                 listOf(
                     "<gradient:#FFA751:#FFE259><st>───────────────</st></gradient> " +
                         "<gradient:#CB2D3E:#EF473A>" +
@@ -337,73 +337,67 @@ internal object PlayerModule : ModuleInterface {
                         "<gradient:#FFE259:#FFA751><st>───────────────</st></gradient>",
                     "",
                 )
-            var footer: List<String> =
+            val FOOTER: List<String> =
                 listOf(
                     "",
                     "<gradient:#FFA751:#FFE259><st>─────────────</st></gradient>  " +
                         "<gradient:#CB2D3E:#EF473A>Weather:</gradient> <weather> " +
                         " <gradient:#FFE259:#FFA751><st>─────────────</st></gradient>",
                 )
-            var weatherThundering: String = "<red>\uD83C\uDF29<reset>"
-            var weatherStorm: String = "<yellow>\uD83C\uDF26<reset>"
-            var weatherClear: String = "<green>\uD83C\uDF24<reset>"
+            const val WEATHER_THUNDERING: String = "<red>\uD83C\uDF29<reset>"
+            const val WEATHER_STORM: String = "<yellow>\uD83C\uDF26<reset>"
+            const val WEATHER_CLEAR: String = "<green>\uD83C\uDF24<reset>"
         }
 
-        /** Represents the settings for the Silk Touch enchantment. */
-        object SilkTouchEnchantment {
-            var allowSpawnerSilk: Boolean = true
-            var allowBuddingAmethystSilk: Boolean = true
-        }
-
-        /** Represents the player-facing message strings for the module. */
+        /** Player join, quit, death, and kick message strings. */
         object PlayerMessages {
-            var join: String = "<green>➕<reset> <gradient:#FFE259:#FFA751>›</gradient> <player>"
-            var quit: String = "<red>➖<reset> <gradient:#FFE259:#FFA751>›</gradient> <player>"
-            var deathByPlayer: String = "<killer> <gradient:#FFE259:#FFA751>⚔</gradient> <player>"
-            var death: String =
+            const val JOIN: String = "<green>➕<reset> <gradient:#FFE259:#FFA751>›</gradient> <player>"
+            const val QUIT: String = "<red>➖<reset> <gradient:#FFE259:#FFA751>›</gradient> <player>"
+            const val DEATH_BY_PLAYER: String = "<killer> <gradient:#FFE259:#FFA751>⚔</gradient> <player>"
+            const val DEATH: String =
                 "<gradient:#FFE259:#FFA751>💀</gradient> <gradient:#FFE259:#FFA751>›</gradient> <cause>"
-            var deathScreen: String = "☠"
-            var kick: String =
+            const val DEATH_SCREEN: String = "☠"
+            const val KICK: String =
                 "<red>❌<reset> <gradient:#FFE259:#FFA751>›</gradient> <player> " +
                     "<gradient:#FFE259:#FFA751>reason:</gradient> <reason>"
-            var setSpawn: String =
+            const val SET_SPAWN: String =
                 "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> <notification>"
-            var updateNickname: String =
+            const val UPDATE_NICKNAME: String =
                 "<gradient:#CB2D3E:#EF473A>Nickname has been updated to: <nickname></gradient>"
         }
 
-        /** Represents the i18n messages for each advancement type. */
+        /** Advancement completion message strings by type (task, goal, challenge). */
         object AdvancementMessages {
-            var task: String =
+            const val TASK: String =
                 "\uD83C\uDF89 <gradient:#FFE259:#FFA751>›</gradient> <player> " +
                     "<gradient:#FFE259:#FFA751>has made the advancement:</gradient> <advancement>"
-            var goal: String =
+            const val GOAL: String =
                 "\uD83C\uDF89 <gradient:#FFE259:#FFA751>›</gradient> <player> " +
                     "<gradient:#FFE259:#FFA751>has reached the goal:</gradient> <advancement>"
-            var challenge: String =
+            const val CHALLENGE: String =
                 "\uD83C\uDF89 <gradient:#FFE259:#FFA751>›</gradient> <player> " +
                     "<gradient:#FFE259:#FFA751>has completed the challenge:</gradient> <advancement>"
         }
 
-        /** Represents the i18n messages shown to players denied during login. */
+        /** Login denial messages (server full, access denied). */
         object LoginMessages {
-            var full: String =
+            const val FULL: String =
                 "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> The server is full."
-            var denied: String =
+            const val DENIED: String =
                 "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> You are not allowed to join this server."
         }
 
-        /** Represents the i18n messages for bed enter failure reasons. */
+        /** Bed enter failure messages by reason. */
         object BedEnterMessages {
-            var tooFarAway: String =
+            const val TOO_FAR_AWAY: String =
                 "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> You are too far away from the bed."
-            var obstructed: String =
+            const val OBSTRUCTED: String =
                 "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> Your bed is obstructed."
-            var notSafe: String =
+            const val NOT_SAFE: String =
                 "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> You cannot sleep while monsters are nearby."
-            var explosion: String =
+            const val EXPLOSION: String =
                 "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> You cannot sleep here."
-            var other: String = ""
+            const val OTHER: String = ""
         }
     }
 }

@@ -14,7 +14,7 @@ internal object BookModule : ModuleInterface {
 
     override val cmds
         get() =
-            Config.books.map { book ->
+            Config.BOOKS.map { book ->
                 CommandData(
                     Commands
                         .literal(book.cmd.lowercase())
@@ -26,7 +26,7 @@ internal object BookModule : ModuleInterface {
 
     override val perms
         get() =
-            Config.books.map {
+            Config.BOOKS.map {
                 Permission(
                     "$permPrefix.${it.cmd.lowercase()}",
                     "Allows use of the book command: ${it.cmd}",
@@ -36,7 +36,7 @@ internal object BookModule : ModuleInterface {
 
     /** Represents the config of the module. */
     object Config {
-        var books: List<BookData> =
+        val BOOKS: List<BookData> =
             listOf(
                 BookData(
                     cmd = "rules",

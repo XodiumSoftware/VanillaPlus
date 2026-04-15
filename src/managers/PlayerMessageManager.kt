@@ -18,7 +18,7 @@ internal object PlayerMessageManager {
      */
     fun handleJoin(player: Player): Component? =
         MM.deserialize(
-            PlayerModule.Config.PlayerMessages.join
+            PlayerModule.Config.PlayerMessages.JOIN
                 .takeIf { it.isNotEmpty() } ?: return null,
             Placeholder.component("player", player.displayName()),
         )
@@ -30,7 +30,7 @@ internal object PlayerMessageManager {
      */
     fun handleQuit(player: Player): Component? =
         MM.deserialize(
-            PlayerModule.Config.PlayerMessages.quit
+            PlayerModule.Config.PlayerMessages.QUIT
                 .takeIf { it.isNotEmpty() } ?: return null,
             Placeholder.component("player", player.displayName()),
         )
@@ -46,7 +46,7 @@ internal object PlayerMessageManager {
         killer: Player?,
     ): Component? =
         MM.deserialize(
-            PlayerModule.Config.PlayerMessages.deathByPlayer
+            PlayerModule.Config.PlayerMessages.DEATH_BY_PLAYER
                 .takeIf { it.isNotEmpty() } ?: return null,
             Placeholder.component("player", player.displayName()),
             Placeholder.component("killer", (killer ?: return null).displayName()),
@@ -63,7 +63,7 @@ internal object PlayerMessageManager {
         cause: Component?,
     ): Component? =
         MM.deserialize(
-            PlayerModule.Config.PlayerMessages.death
+            PlayerModule.Config.PlayerMessages.DEATH
                 .takeIf { it.isNotEmpty() } ?: return null,
             Placeholder.component("player", player.displayName()),
             Placeholder.component("cause", cause ?: return null),
@@ -75,7 +75,7 @@ internal object PlayerMessageManager {
      */
     fun handleDeathScreen(): Component? =
         MM.deserialize(
-            PlayerModule.Config.PlayerMessages.deathScreen
+            PlayerModule.Config.PlayerMessages.DEATH_SCREEN
                 .takeIf { it.isNotEmpty() } ?: return null,
         )
 
@@ -93,9 +93,9 @@ internal object PlayerMessageManager {
 
         return MM.deserialize(
             when (display.frame()) {
-                AdvancementDisplay.Frame.TASK -> PlayerModule.Config.AdvancementMessages.task
-                AdvancementDisplay.Frame.GOAL -> PlayerModule.Config.AdvancementMessages.goal
-                AdvancementDisplay.Frame.CHALLENGE -> PlayerModule.Config.AdvancementMessages.challenge
+                AdvancementDisplay.Frame.TASK -> PlayerModule.Config.AdvancementMessages.TASK
+                AdvancementDisplay.Frame.GOAL -> PlayerModule.Config.AdvancementMessages.GOAL
+                AdvancementDisplay.Frame.CHALLENGE -> PlayerModule.Config.AdvancementMessages.CHALLENGE
             }.takeIf { it.isNotEmpty() } ?: return null,
             Placeholder.component("player", player.displayName()),
             Placeholder.component("advancement", display.title()),
@@ -108,7 +108,7 @@ internal object PlayerMessageManager {
      */
     fun handleServerFull(): Component? =
         MM.deserialize(
-            PlayerModule.Config.LoginMessages.full
+            PlayerModule.Config.LoginMessages.FULL
                 .takeIf { it.isNotEmpty() } ?: return null,
         )
 
@@ -118,7 +118,7 @@ internal object PlayerMessageManager {
      */
     fun handleLoginDenied(): Component? =
         MM.deserialize(
-            PlayerModule.Config.LoginMessages.denied
+            PlayerModule.Config.LoginMessages.DENIED
                 .takeIf { it.isNotEmpty() } ?: return null,
         )
 
@@ -129,7 +129,7 @@ internal object PlayerMessageManager {
      */
     fun handleKick(reason: Component): Component? =
         MM.deserialize(
-            PlayerModule.Config.PlayerMessages.kick
+            PlayerModule.Config.PlayerMessages.KICK
                 .takeIf { it.isNotEmpty() } ?: return null,
             Placeholder.component("reason", reason),
         )
@@ -143,11 +143,11 @@ internal object PlayerMessageManager {
     fun handleBedEnter(problem: BedEnterProblem): Component? =
         MM.deserialize(
             when (problem) {
-                BedEnterProblem.TOO_FAR_AWAY -> PlayerModule.Config.BedEnterMessages.tooFarAway
-                BedEnterProblem.OBSTRUCTED -> PlayerModule.Config.BedEnterMessages.obstructed
-                BedEnterProblem.NOT_SAFE -> PlayerModule.Config.BedEnterMessages.notSafe
-                BedEnterProblem.EXPLOSION -> PlayerModule.Config.BedEnterMessages.explosion
-                else -> PlayerModule.Config.BedEnterMessages.other
+                BedEnterProblem.TOO_FAR_AWAY -> PlayerModule.Config.BedEnterMessages.TOO_FAR_AWAY
+                BedEnterProblem.OBSTRUCTED -> PlayerModule.Config.BedEnterMessages.OBSTRUCTED
+                BedEnterProblem.NOT_SAFE -> PlayerModule.Config.BedEnterMessages.NOT_SAFE
+                BedEnterProblem.EXPLOSION -> PlayerModule.Config.BedEnterMessages.EXPLOSION
+                else -> PlayerModule.Config.BedEnterMessages.OTHER
             }.takeIf { it.isNotEmpty() } ?: return null,
         )
 
@@ -158,7 +158,7 @@ internal object PlayerMessageManager {
      */
     fun handleSetSpawn(notification: Component): Component? =
         MM.deserialize(
-            PlayerModule.Config.PlayerMessages.setSpawn
+            PlayerModule.Config.PlayerMessages.SET_SPAWN
                 .takeIf { it.isNotEmpty() } ?: return null,
             Placeholder.component("notification", notification),
         )

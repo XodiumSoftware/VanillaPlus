@@ -14,13 +14,14 @@ internal object ServerInfoModule : ModuleInterface {
     /** Configures server links based on the module's configuration. */
     @Suppress("UnstableApiUsage")
     private fun serverLinks() =
-        Config.serverLinks.forEach { (type, url) ->
+        Config.SERVER_LINKS.forEach { (type, url) ->
             runCatching { instance.server.serverLinks.setLink(type, URI.create(url)) }
         }
 
     /** Represents the config of the module. */
     object Config {
-        @Suppress("UnstableApiUsage") var serverLinks: Map<ServerLinks.Type, String> =
+        @Suppress("UnstableApiUsage")
+        val SERVER_LINKS: Map<ServerLinks.Type, String> =
             mapOf(
                 ServerLinks.Type.WEBSITE to "https://xodium.org/",
                 ServerLinks.Type.REPORT_BUG to "https://discord.gg/jusYH9aYUh",

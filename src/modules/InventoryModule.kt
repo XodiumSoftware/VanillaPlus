@@ -77,8 +77,8 @@ internal object InventoryModule : ModuleInterface {
         material: Material,
     ) {
         if (material == Material.AIR) {
-            player.sendActionBar(MM.deserialize(Config.InventoryMessages.noMaterialSpecified))
-            player.playSound(Config.searchFailedSound)
+            player.sendActionBar(MM.deserialize(Config.InventoryMessages.NO_MATERIAL_SPECIFIED))
+            player.playSound(Config.SEARCH_FAILED_SOUND)
             return
         }
 
@@ -87,22 +87,22 @@ internal object InventoryModule : ModuleInterface {
         if (containers.isEmpty()) {
             player.sendActionBar(
                 MM.deserialize(
-                    Config.InventoryMessages.noMatchingItems,
+                    Config.InventoryMessages.NO_MATCHING_ITEMS,
                     Placeholder.component("material", MM.deserialize(material.name)),
                 ),
             )
-            player.playSound(Config.searchFailedSound)
+            player.playSound(Config.SEARCH_FAILED_SOUND)
             return
         }
 
         player.sendActionBar(
             MM.deserialize(
-                Config.InventoryMessages.foundItemsInChests,
+                Config.InventoryMessages.FOUND_ITEMS_IN_CHESTS,
                 Placeholder.component("material", MM.deserialize(material.name)),
             ),
         )
 
-        player.playSound(Config.searchSuccessfulSound)
+        player.playSound(Config.SEARCH_SUCCESSFUL_SOUND)
 
         ScheduleUtils.schedule(duration = 200L) {
             containers.forEach {
@@ -137,8 +137,8 @@ internal object InventoryModule : ModuleInterface {
                 }
 
         if (containers.isEmpty()) {
-            player.sendActionBar(MM.deserialize(Config.InventoryMessages.noContainersFound))
-            player.playSound(Config.unloadFailedSound)
+            player.sendActionBar(MM.deserialize(Config.InventoryMessages.NO_CONTAINERS_FOUND))
+            player.playSound(Config.UNLOAD_FAILED_SOUND)
             return
         }
 
@@ -179,7 +179,7 @@ internal object InventoryModule : ModuleInterface {
             }
         }
 
-        player.playSound(if (usedContainers.isEmpty()) Config.unloadFailedSound else Config.unloadSuccessfulSound)
+        player.playSound(if (usedContainers.isEmpty()) Config.UNLOAD_FAILED_SOUND else Config.UNLOAD_SUCCESSFUL_SOUND)
 
         if (usedContainers.isEmpty()) return
 
@@ -197,27 +197,27 @@ internal object InventoryModule : ModuleInterface {
 
     /** Represents the config of the module. */
     object Config {
-        var searchSuccessfulSound: Sound =
+        val SEARCH_SUCCESSFUL_SOUND: Sound =
             Sound.sound(Key.key("entity.player.levelup"), Sound.Source.PLAYER, 1.0f, 1.0f)
-        var searchFailedSound: Sound =
+        val SEARCH_FAILED_SOUND: Sound =
             Sound.sound(Key.key("block.anvil.land"), Sound.Source.PLAYER, 1.0f, 1.0f)
-        var unloadSuccessfulSound: Sound =
+        val UNLOAD_SUCCESSFUL_SOUND: Sound =
             Sound.sound(Key.key("entity.player.levelup"), Sound.Source.PLAYER, 1.0f, 1.0f)
-        var unloadFailedSound: Sound =
+        val UNLOAD_FAILED_SOUND: Sound =
             Sound.sound(Key.key("block.anvil.land"), Sound.Source.PLAYER, 1.0f, 1.0f)
 
         /** Represents the user-facing message strings for the module. */
         object InventoryMessages {
-            var noMaterialSpecified: String =
+            const val NO_MATERIAL_SPECIFIED: String =
                 "<gradient:#CB2D3E:#EF473A>You must specify a valid material " +
                     "or hold something in your hand</gradient>"
-            var noMatchingItems: String =
+            const val NO_MATCHING_ITEMS: String =
                 "<gradient:#CB2D3E:#EF473A>No containers contain " +
                     "<gradient:#F4C4F3:#FC67FA><b><material></b></gradient></gradient>"
-            var foundItemsInChests: String =
+            const val FOUND_ITEMS_IN_CHESTS: String =
                 "<gradient:#FFE259:#FFA751>Found <gradient:#F4C4F3:#FC67FA><b><material></b></gradient> " +
                     "in container(s), follow trail(s)</gradient>"
-            var noContainersFound: String = "<gradient:#CB2D3E:#EF473A>No containers found nearby</gradient>"
+            const val NO_CONTAINERS_FOUND: String = "<gradient:#CB2D3E:#EF473A>No containers found nearby</gradient>"
         }
     }
 }

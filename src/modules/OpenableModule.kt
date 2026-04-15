@@ -86,7 +86,6 @@ internal object OpenableModule : ModuleInterface {
         event: PlayerInteractEvent,
         block: Block,
     ) {
-        if (!Config.doubleDoorEnabled) return
         if (block.blockData !is Door) return
         if (event.player.isSneaking) return
 
@@ -99,10 +98,9 @@ internal object OpenableModule : ModuleInterface {
      * @return `true` if the player can knock, `false` otherwise.
      */
     private fun canKnock(player: Player): Boolean {
-        if (!Config.doorKnockingEnabled) return false
-        if (player.gameMode in Config.blockedKnockingGameModes) return false
-        if (Config.knockingRequiresSneaking && !player.isSneaking) return false
-        if (Config.knockingRequiresEmptyHand && player.inventory.itemInMainHand.type != Material.AIR) return false
+        if (player.gameMode in Config.BLOCKED_KNOCKING_GAME_MODES) return false
+        if (!player.isSneaking) return false
+        if (player.inventory.itemInMainHand.type != Material.AIR) return false
 
         return true
     }
@@ -120,8 +118,8 @@ internal object OpenableModule : ModuleInterface {
      */
     private fun playKnockSound(block: Block) {
         block.world
-            .getNearbyPlayers(block.location, Config.knockSoundRadius)
-            .forEach { it.playSound(Config.knockSound) }
+            .getNearbyPlayers(block.location, Config.KNOCK_SOUND_RADIUS)
+            .forEach { it.playSound(Config.KNOCK_SOUND) }
     }
 
     /**
@@ -147,7 +145,7 @@ internal object OpenableModule : ModuleInterface {
         sourceBlock: Block,
         targetBlock: Block,
         open: Boolean,
-        delay: Long = Config.doubleDoorDelayTicks,
+        delay: Long = Config.DOUBLE_DOOR_DELAY_TICKS,
     ) {
         instance.server.scheduler.runTaskLater(
             instance,
@@ -200,19 +198,15 @@ internal object OpenableModule : ModuleInterface {
 
     /** Configuration for the OpenableModule. */
     object Config {
-        var blockedKnockingGameModes: Set<GameMode> = setOf(GameMode.SURVIVAL, GameMode.ADVENTURE)
-        var doubleDoorDelayTicks: Long = 1
-        var doubleDoorEnabled: Boolean = true
-        var doorKnockingEnabled: Boolean = true
-        var knockingRequiresEmptyHand: Boolean = true
-        var knockingRequiresSneaking: Boolean = true
-        var knockSound: Sound =
+        val BLOCKED_KNOCKING_GAME_MODES: Set<GameMode> = setOf(GameMode.SURVIVAL, GameMode.ADVENTURE)
+        const val DOUBLE_DOOR_DELAY_TICKS: Long = 1
+        val KNOCK_SOUND: Sound =
             Sound.sound(
                 Key.key("entity.zombie.attack_wooden_door"),
                 Sound.Source.HOSTILE,
                 1.0f,
                 1.0f,
             )
-        var knockSoundRadius: Double = 10.0
+        const val KNOCK_SOUND_RADIUS: Double = 10.0
     }
 }

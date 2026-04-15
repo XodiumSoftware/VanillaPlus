@@ -63,7 +63,7 @@ internal object DimensionModule : ModuleInterface {
                 val player = event.entity as? Player ?: return
                 val destination = player.respawnLocation?.takeIf { it.world == overworld } ?: overworld.spawnLocation
 
-                player.sendActionBar(MM.deserialize(Config.I18n.portalCreationDenied))
+                player.sendActionBar(MM.deserialize(Config.PortalMessages.CREATION_DENIED))
                 player.teleport(destination, PlayerTeleportEvent.TeleportCause.PLUGIN)
             }
         }
@@ -79,7 +79,7 @@ internal object DimensionModule : ModuleInterface {
     private fun findCorrespondingPortal(
         netherPortal: Location,
         overworld: World,
-        searchRadius: Int = Config.portalSearchRadius,
+        searchRadius: Int = Config.PORTAL_SEARCH_RADIUS,
     ): Location? {
         val targetX = netherPortal.x * NETHER_TO_OVERWORLD_RATIO
         val targetZ = netherPortal.z * NETHER_TO_OVERWORLD_RATIO
@@ -131,11 +131,11 @@ internal object DimensionModule : ModuleInterface {
 
     /** Represents the config of the module. */
     object Config {
-        var portalSearchRadius: Int = 128
+        const val PORTAL_SEARCH_RADIUS: Int = 128
 
         /** Represents the internationalization strings for the module. */
-        object I18n {
-            var portalCreationDenied: String =
+        object PortalMessages {
+            const val CREATION_DENIED: String =
                 "<gradient:#CB2D3E:#EF473A>No corresponding active portal found in the Overworld!</gradient>"
         }
     }

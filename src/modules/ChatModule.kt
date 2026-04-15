@@ -84,14 +84,14 @@ internal object ChatModule : ModuleInterface {
         event.renderer { player, displayName, message, audience ->
             var base =
                 MM.deserialize(
-                    Config.chatFormat,
+                    Config.CHAT_FORMAT,
                     Placeholder.component("player_head", MM.deserialize("<head:${player.uniqueId}>")),
                     Placeholder.component(
                         "player",
                         displayName
                             .clickEvent(ClickEvent.suggestCommand("/w ${player.name} "))
                             .hoverEvent(
-                                HoverEvent.showText(MM.deserialize(Config.ChatMessages.clickToWhisper)),
+                                HoverEvent.showText(MM.deserialize(Config.ChatMessages.CLICK_TO_WHISPER)),
                             ),
                     ),
                     Placeholder.component("message", message),
@@ -115,13 +115,13 @@ internal object ChatModule : ModuleInterface {
     ) {
         sender.sendMessage(
             MM.deserialize(
-                Config.whisperToFormat,
+                Config.WHISPER_TO_FORMAT,
                 Placeholder.component(
                     "player",
                     target
                         .displayName()
                         .clickEvent(ClickEvent.suggestCommand("/w ${target.name} "))
-                        .hoverEvent(HoverEvent.showText(MM.deserialize(Config.ChatMessages.clickToWhisper))),
+                        .hoverEvent(HoverEvent.showText(MM.deserialize(Config.ChatMessages.CLICK_TO_WHISPER))),
                 ),
                 Placeholder.component("message", MM.deserialize(message)),
             ),
@@ -129,13 +129,13 @@ internal object ChatModule : ModuleInterface {
 
         target.sendMessage(
             MM.deserialize(
-                Config.whisperFromFormat,
+                Config.WHISPER_FROM_FORMAT,
                 Placeholder.component(
                     "player",
                     sender
                         .displayName()
                         .clickEvent(ClickEvent.suggestCommand("/w ${sender.name} "))
-                        .hoverEvent(HoverEvent.showText(MM.deserialize(Config.ChatMessages.clickToWhisper))),
+                        .hoverEvent(HoverEvent.showText(MM.deserialize(Config.ChatMessages.CLICK_TO_WHISPER))),
                 ),
                 Placeholder.component("message", MM.deserialize(message)),
             ),
@@ -149,25 +149,25 @@ internal object ChatModule : ModuleInterface {
      */
     private fun createDeleteCross(signedMessage: SignedMessage): Component =
         MM
-            .deserialize(Config.deleteCross)
-            .hoverEvent(MM.deserialize(Config.ChatMessages.deleteMessage))
+            .deserialize(Config.DELETE_SYMBOL)
+            .hoverEvent(MM.deserialize(Config.ChatMessages.CLICK_TO_DELETE))
             .clickEvent(ClickEvent.callback { instance.server.deleteMessage(signedMessage) })
 
     /** Represents the config of the module. */
     object Config {
-        var chatFormat: String = "<player_head> <player> <reset><gradient:#FFE259:#FFA751>›</gradient> <message>"
-        var whisperToFormat: String =
+        const val CHAT_FORMAT: String = "<player_head> <player> <reset><gradient:#FFE259:#FFA751>›</gradient> <message>"
+        const val WHISPER_TO_FORMAT: String =
             "<gradient:#1488CC:#2B32B2>You</gradient> <gradient:#FFE259:#FFA751>➛</gradient> <player> <reset><gradient:#FFE259:#FFA751>›</gradient> <message>"
-        var whisperFromFormat: String =
+        const val WHISPER_FROM_FORMAT: String =
             "<player> <reset><gradient:#FFE259:#FFA751>➛</gradient> <gradient:#1488CC:#2B32B2>You</gradient> <gradient:#FFE259:#FFA751>›</gradient> <message>"
-        var deleteCross: String = "<dark_gray>[<dark_red><b>X</b></dark_red><dark_gray>]"
+        const val DELETE_SYMBOL: String = "<dark_gray>[<dark_red><b>X</b></dark_red><dark_gray>]"
 
         /** Represents the chat message strings for the module. */
         object ChatMessages {
-            var clickToWhisper: String = "<gradient:#FFE259:#FFA751>Click to Whisper</gradient>"
-            var playerIsNotOnline: String =
+            const val CLICK_TO_WHISPER: String = "<gradient:#FFE259:#FFA751>Click to Whisper</gradient>"
+            val playerIsNotOnline: String =
                 "${instance.prefix} <gradient:#CB2D3E:#EF473A>Player is not Online!</gradient>"
-            var deleteMessage: String = "<gradient:#FFE259:#FFA751>Click to delete your message</gradient>"
+            const val CLICK_TO_DELETE: String = "<gradient:#FFE259:#FFA751>Click to delete your message</gradient>"
         }
     }
 }
