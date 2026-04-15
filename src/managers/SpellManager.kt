@@ -58,7 +58,7 @@ internal object SpellManager {
     ) {
         player.sendActionBar(
             MM.deserialize(
-                "<gradient:#832466:#BF4299>Selected: <white><spell></white></gradient>",
+                "<gradient:#832466:#BF4299>Current Spell > <white><spell></white></gradient>",
                 Placeholder.unparsed("spell", spellName),
             ),
         )
