@@ -56,7 +56,9 @@ internal object BloodpactEnchantment : EnchantmentInterface {
      */
     fun onPlayerInteract(event: PlayerInteractEvent) {
         if (event.action != Action.LEFT_CLICK_AIR && event.action != Action.LEFT_CLICK_BLOCK) return
+
         val item = event.item ?: return
+
         if (item.type != Material.BLAZE_ROD) return
         if (!item.containsEnchantment(get())) return
 

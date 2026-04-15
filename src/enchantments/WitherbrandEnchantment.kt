@@ -9,10 +9,9 @@ import org.bukkit.Particle
 import org.bukkit.entity.WitherSkull
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlotGroup
-import org.bukkit.scheduler.BukkitTask
-import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 import org.xodium.vanillaplus.managers.ManaManager
+import org.xodium.vanillaplus.utils.ScheduleUtils
 import org.xodium.vanillaplus.utils.Utils.displayName
 
 /** Represents an object handling witherbrand enchantment implementation within the system. */
@@ -67,33 +66,19 @@ internal object WitherbrandEnchantment : EnchantmentInterface {
      * @param skull The [WitherSkull] to trail.
      */
     private fun spawnSkullTrail(skull: WitherSkull) {
-        var task: BukkitTask? = null
-
-        task =
-            instance.server.scheduler.runTaskTimer(
-                instance,
-                Runnable {
-                    if (!skull.isValid) {
-                        task?.cancel()
-                        return@Runnable
-                    }
-                    val loc = skull.location
-
-                    Particle.SOUL
-                        .builder()
-                        .location(loc)
-                        .count(3)
-                        .offset(0.05, 0.05, 0.05)
-                        .spawn()
-                    Particle.ASH
-                        .builder()
-                        .location(loc)
-                        .count(5)
-                        .offset(0.1, 0.1, 0.1)
-                        .spawn()
-                },
-                1L,
-                1L,
-            )
+        ScheduleUtils.spawnProjectileTrail(skull) {
+            Particle.SOUL
+                .builder()
+                .location(it)
+                .count(3)
+                .offset(0.05, 0.05, 0.05)
+                .spawn()
+            Particle.ASH
+                .builder()
+                .location(it)
+                .count(5)
+                .offset(0.1, 0.1, 0.1)
+                .spawn()
+        }
     }
 }

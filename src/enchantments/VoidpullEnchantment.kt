@@ -76,27 +76,6 @@ internal object VoidpullEnchantment : EnchantmentInterface {
     }
 
     /**
-     * Spawns a repeating PORTAL particle trail behind [pearl] every tick until the entity is no longer valid.
-     * @param pearl The [EnderPearl] to trail.
-     * @return The [BukkitTask] running the trail, so it can be cancelled early on hit.
-     */
-    private fun spawnPearlTrail(pearl: EnderPearl) =
-        ScheduleUtils.spawnProjectileTrail(pearl) {
-            Particle.PORTAL
-                .builder()
-                .location(it)
-                .count(8)
-                .offset(0.1, 0.1, 0.1)
-                .spawn()
-            Particle.REVERSE_PORTAL
-                .builder()
-                .location(it)
-                .count(3)
-                .offset(0.05, 0.05, 0.05)
-                .spawn()
-        }
-
-    /**
      * Handles a projectile hit event, teleporting the struck entity to the shooter if the projectile is a Voidpull pearl.
      * @param event The [ProjectileHitEvent] to handle.
      */
@@ -135,4 +114,25 @@ internal object VoidpullEnchantment : EnchantmentInterface {
 
         player.playSound(Config.PULL_SOUND)
     }
+
+    /**
+     * Spawns a repeating PORTAL particle trail behind [pearl] every tick until the entity is no longer valid.
+     * @param pearl The [EnderPearl] to trail.
+     * @return The [BukkitTask] running the trail, so it can be cancelled early on hit.
+     */
+    private fun spawnPearlTrail(pearl: EnderPearl) =
+        ScheduleUtils.spawnProjectileTrail(pearl) {
+            Particle.PORTAL
+                .builder()
+                .location(it)
+                .count(8)
+                .offset(0.1, 0.1, 0.1)
+                .spawn()
+            Particle.REVERSE_PORTAL
+                .builder()
+                .location(it)
+                .count(3)
+                .offset(0.05, 0.05, 0.05)
+                .spawn()
+        }
 }

@@ -70,26 +70,6 @@ internal object FrostbindEnchantment : EnchantmentInterface {
     }
 
     /**
-     * Spawns a repeating particle trail behind [snowball] every tick until the entity is no longer valid.
-     * @param snowball The [Snowball] to trail.
-     */
-    private fun spawnSnowballTrail(snowball: Snowball) =
-        ScheduleUtils.spawnProjectileTrail(snowball) {
-            Particle.SNOWFLAKE
-                .builder()
-                .location(it)
-                .count(5)
-                .offset(0.05, 0.05, 0.05)
-                .spawn()
-            Particle.ITEM_SNOWBALL
-                .builder()
-                .location(it)
-                .count(2)
-                .offset(0.05, 0.05, 0.05)
-                .spawn()
-        }
-
-    /**
      * Handles a projectile hit event, freezing the struck entity if the projectile is a Frostbind snowball.
      * Sets [Config.FREEZE_TICKS] on the hit entity, causing it to be fully frozen for several seconds.
      * @param event The [ProjectileHitEvent] to handle.
@@ -114,4 +94,24 @@ internal object FrostbindEnchantment : EnchantmentInterface {
             .filter { it.location.distance(entity.location) <= 16 }
             .forEach { it.playSound(Config.HIT_SOUND) }
     }
+
+    /**
+     * Spawns a repeating particle trail behind [snowball] every tick until the entity is no longer valid.
+     * @param snowball The [Snowball] to trail.
+     */
+    private fun spawnSnowballTrail(snowball: Snowball) =
+        ScheduleUtils.spawnProjectileTrail(snowball) {
+            Particle.SNOWFLAKE
+                .builder()
+                .location(it)
+                .count(5)
+                .offset(0.05, 0.05, 0.05)
+                .spawn()
+            Particle.ITEM_SNOWBALL
+                .builder()
+                .location(it)
+                .count(2)
+                .offset(0.05, 0.05, 0.05)
+                .spawn()
+        }
 }
