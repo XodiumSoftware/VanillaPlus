@@ -77,7 +77,7 @@ internal object InventoryModule : ModuleInterface {
         material: Material,
     ) {
         if (material == Material.AIR) {
-            player.sendActionBar(MM.deserialize(Config.I18n.noMaterialSpecified))
+            player.sendActionBar(MM.deserialize(Config.InventoryMessages.noMaterialSpecified))
             player.playSound(Config.searchFailedSound)
             return
         }
@@ -87,7 +87,7 @@ internal object InventoryModule : ModuleInterface {
         if (containers.isEmpty()) {
             player.sendActionBar(
                 MM.deserialize(
-                    Config.I18n.noMatchingItems,
+                    Config.InventoryMessages.noMatchingItems,
                     Placeholder.component("material", MM.deserialize(material.name)),
                 ),
             )
@@ -97,7 +97,7 @@ internal object InventoryModule : ModuleInterface {
 
         player.sendActionBar(
             MM.deserialize(
-                Config.I18n.foundItemsInChests,
+                Config.InventoryMessages.foundItemsInChests,
                 Placeholder.component("material", MM.deserialize(material.name)),
             ),
         )
@@ -137,7 +137,7 @@ internal object InventoryModule : ModuleInterface {
                 }
 
         if (containers.isEmpty()) {
-            player.sendActionBar(MM.deserialize(Config.I18n.noContainersFound))
+            player.sendActionBar(MM.deserialize(Config.InventoryMessages.noContainersFound))
             player.playSound(Config.unloadFailedSound)
             return
         }
@@ -206,8 +206,8 @@ internal object InventoryModule : ModuleInterface {
         var unloadFailedSound: Sound =
             Sound.sound(Key.key("block.anvil.land"), Sound.Source.PLAYER, 1.0f, 1.0f)
 
-        /** Represents the internationalization strings for the module. */
-        object I18n {
+        /** Represents the user-facing message strings for the module. */
+        object InventoryMessages {
             var noMaterialSpecified: String =
                 "<gradient:#CB2D3E:#EF473A>You must specify a valid material " +
                     "or hold something in your hand</gradient>"
