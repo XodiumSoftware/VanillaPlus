@@ -163,45 +163,7 @@ internal object PlayerModule : ModuleInterface {
         xpToBottle(event)
         FeatherFallingEnchantment.onPlayerInteract(event)
         handleEnderchest(event)
-        handleWandInteraction(event)
-    }
-
-    /**
-     * Handles wand interactions for multi-spell casting.
-     * Right-click cycles through spells, left-click casts the selected spell.
-     * @param event The PlayerInteractEvent to handle.
-     */
-    private fun handleWandInteraction(event: PlayerInteractEvent) {
-        val item = event.item ?: return
-        if (item.type != Material.BLAZE_ROD) return
-
-        val spells = SpellManager.getSpellsOnWand(item)
-        if (spells.isEmpty()) return
-
-        when (event.action) {
-            Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK -> {
-                event.isCancelled = true
-
-                val nextSpell = SpellManager.cycleSpell(item)
-
-                if (nextSpell != null) {
-                    event.player.sendActionBar(
-                        MM.deserialize(
-                            "<gradient:#832466:#BF4299>Selected: <white><spell></white></gradient>",
-                            Placeholder.unparsed("spell", nextSpell),
-                        ),
-                    )
-                }
-            }
-
-            Action.LEFT_CLICK_AIR, Action.LEFT_CLICK_BLOCK -> {
-                val firstSpell = spells.firstOrNull() ?: return
-
-                SpellManager.executeSpell(event, firstSpell)
-            }
-
-            else -> {}
-        }
+        SpellManager.handleWandInteraction(event)
     }
 
     @EventHandler

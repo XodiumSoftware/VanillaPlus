@@ -1,6 +1,9 @@
 package org.xodium.vanillaplus.managers
 
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
+import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
+import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.enchantments.BloodpactEnchantment
@@ -11,6 +14,8 @@ import org.xodium.vanillaplus.enchantments.SkysunderEnchantment
 import org.xodium.vanillaplus.enchantments.TempestEnchantment
 import org.xodium.vanillaplus.enchantments.VoidpullEnchantment
 import org.xodium.vanillaplus.enchantments.WitherbrandEnchantment
+import org.xodium.vanillaplus.pdcs.ItemPDC.selectedSpell
+import org.xodium.vanillaplus.utils.Utils.MM
 
 /** Manages spell execution and cycling for multi-spell wands. */
 internal object SpellManager {
@@ -41,11 +46,53 @@ internal object SpellManager {
             .removeSuffix("_enchantment")
             .replaceFirstChar { it.uppercase() }
 
-    /** Cycles to the next spell and returns its name. */
-    fun cycleSpell(item: ItemStack): String? = getSpellsOnWand(item).firstOrNull()?.let { getSpellName(it) }
+    /** Gets the spell key string for storage. */
+    private fun getSpellKey(spell: Enchantment): String = spell.key.toString()
 
-    /** Executes a spell. */
-    fun executeSpell(event: PlayerInteractEvent, spell: Enchantment) {
-        SPELL_MAP[spell]?.invoke(event)
+    /** Cycles to the next spell, updates the item's selected spell, and returns its name. */
+    fun cycleSpell(item: ItemStack): String? =
+        getSpellsOnWand(item).takeIf { it.isNotEmpty() }?.let { spells ->
+            val nextSpell = spells[(spells.indexOfFirst { getSpellKey(it) == item.selectedSpell } + 1) % spells.size]
+
+            item.selectedSpell = getSpellKey(nextSpell)
+            getSpellName(nextSpell)
+        }
+
+    /** Gets the currently selected spell for the item. */
+    fun getSelectedSpell(item: ItemStack): Enchantment? =
+        getSpellsOnWand(item).takeIf { it.isNotEmpty() }?.let { spells ->
+            spells.find { getSpellKey(it) == item.selectedSpell } ?: spells.first()
+        }
+
+    /**
+     * Handles wand interactions for multi-spell casting.
+     * Right-click cycles through spells, left-click casts the selected spell.
+     * @param event The PlayerInteractEvent to handle.
+     */
+    fun handleWandInteraction(event: PlayerInteractEvent) {
+        val item = event.item ?: return
+
+        if (item.type != Material.BLAZE_ROD) return
+        if (getSpellsOnWand(item).isEmpty()) return
+
+        when (event.action) {
+            Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK -> {
+                event.isCancelled = true
+                cycleSpell(item)?.let {
+                    event.player.sendActionBar(
+                        MM.deserialize(
+                            "<gradient:#832466:#BF4299>Selected: <white><spell></white></gradient>",
+                            Placeholder.unparsed("spell", it),
+                        ),
+                    )
+                }
+            }
+
+            Action.LEFT_CLICK_AIR, Action.LEFT_CLICK_BLOCK -> {
+                SPELL_MAP[getSelectedSpell(item) ?: return]?.invoke(event)
+            }
+
+            else -> {}
+        }
     }
 }
