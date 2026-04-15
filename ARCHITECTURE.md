@@ -26,7 +26,7 @@ There are no automated tests in this project.
 ### Entry Points
 
 - **`VanillaPlusBootstrap`** — `PluginBootstrap` implementation. Runs before plugin enable. Creates item tags (`vanillaplus:tools`, `vanillaplus:weapons`, `vanillaplus:tools_weapons`, `vanillaplus:blaze_rods`), registers twelve custom enchantments into Paper's registry via `RegistryEvents.ENCHANTMENT`, then tags all twelve as tradeable, non-treasure, and in-enchanting-table via `LifecycleEvents.TAGS.postFlatten`.
-- **`VanillaPlus`** — `JavaPlugin` main class. On enable: validates server version, registers all recipes, registers all modules, then calls `ManaManager.startRegenTask()` to begin the shared mana regeneration loop. All modules are active by default (`enabled` defaults to `true` on `ModuleInterface`); override `enabled` to `false` in a specific module to disable it at compile time.
+- **`VanillaPlus`** — `JavaPlugin` main class. On enable: validates server version, registers all recipes, registers all modules. All modules are active by default (`enabled` defaults to `true` on `ModuleInterface`); override `enabled` to `false` in a specific module to disable it at compile time.
 
 ### Module System
 

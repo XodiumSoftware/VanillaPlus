@@ -35,6 +35,7 @@ internal object ManaManager {
     private val ACTIVE_GAME_MODES = setOf(GameMode.SURVIVAL, GameMode.ADVENTURE)
     private val bossBars = WeakHashMap<Player, BossBar>()
     private val hideTasks = WeakHashMap<Player, BukkitTask>()
+    private val regenTasks = WeakHashMap<Player, BukkitTask>()
 
     /**
      * Validates a blaze-rod left-click interaction and consumes mana if all checks pass.
@@ -76,24 +77,36 @@ internal object ManaManager {
         event.isCancelled = true
         player.mana -= manaCost
         showManaBar(player)
+        startPlayerRegen(player)
 
         return player
     }
 
     /**
-     * Starts a repeating task that regenerates mana for all online players every
+     * Starts a repeating task that regenerates mana for [player] every
      * [Config.MANA_REGEN_PERIOD_TICKS] ticks, up to [Config.MAX_MANA].
-     * Should be called once from [org.xodium.vanillaplus.VanillaPlus.onEnable].
+     * The task auto-cancels when mana reaches max. If a regen task already
+     * exists for the player, it is cancelled and replaced.
+     * @param player The player whose mana should regenerate.
      */
-    fun startRegenTask() {
-        ScheduleUtils.schedule(period = Config.MANA_REGEN_PERIOD_TICKS) {
-            instance.server.onlinePlayers.forEach {
-                if (it.mana < Config.MAX_MANA) {
-                    it.mana = (it.mana + Config.MANA_REGEN_AMOUNT).coerceAtMost(Config.MAX_MANA)
-                    showManaBar(it)
-                }
+    fun startPlayerRegen(player: Player) {
+        regenTasks.remove(player)?.cancel()
+
+        val task = ScheduleUtils.schedule(period = Config.MANA_REGEN_PERIOD_TICKS) {
+            if (!player.isValid) {
+                regenTasks.remove(player)
+                return@schedule
+            }
+
+            if (player.mana < Config.MAX_MANA) {
+                player.mana = (player.mana + Config.MANA_REGEN_AMOUNT).coerceAtMost(Config.MAX_MANA)
+                showManaBar(player)
+            } else {
+                regenTasks.remove(player)?.cancel()
             }
         }
+
+        regenTasks[player] = task
     }
 
     /**
