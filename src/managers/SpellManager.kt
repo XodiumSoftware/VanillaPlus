@@ -5,6 +5,7 @@ import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.enchantments.BloodpactEnchantment
 import org.xodium.vanillaplus.enchantments.FrostbindEnchantment
@@ -93,6 +94,26 @@ internal object SpellManager {
             }
 
             else -> {}
+        }
+    }
+
+    /**
+     * Handles wand selection when player scrolls to it in hotbar.
+     * Shows the currently selected spell in the action bar.
+     * @param event The PlayerItemHeldEvent to handle.
+     */
+    fun handleWandSelection(event: PlayerItemHeldEvent) {
+        val item = event.player.inventory.getItem(event.newSlot) ?: return
+        if (item.type != Material.BLAZE_ROD) return
+        if (getSpellsOnWand(item).isEmpty()) return
+
+        getSelectedSpell(item)?.let {
+            event.player.sendActionBar(
+                MM.deserialize(
+                    "<gradient:#832466:#BF4299>Selected: <white><spell></white></gradient>",
+                    Placeholder.unparsed("spell", getSpellName(it)),
+                ),
+            )
         }
     }
 }

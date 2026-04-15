@@ -169,19 +169,7 @@ internal object PlayerModule : ModuleInterface {
 
     @EventHandler
     fun on(event: PlayerItemHeldEvent) {
-        val item = event.player.inventory.getItem(event.newSlot) ?: return
-        if (item.type != Material.BLAZE_ROD) return
-
-        val spells = SpellManager.getSpellsOnWand(item)
-        if (spells.isEmpty()) return
-
-        val selectedSpell = SpellManager.getSelectedSpell(item) ?: return
-        event.player.sendActionBar(
-            MM.deserialize(
-                "<gradient:#832466:#BF4299>Selected: <white><spell></white></gradient>",
-                Placeholder.unparsed("spell", SpellManager.getSpellName(selectedSpell)),
-            ),
-        )
+        SpellManager.handleWandSelection(event)
     }
 
     @EventHandler
