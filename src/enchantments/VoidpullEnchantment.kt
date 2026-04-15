@@ -28,7 +28,7 @@ internal object VoidpullEnchantment : EnchantmentInterface {
     object Config {
         const val MANA_COST = 20
         const val VELOCITY = 2.5
-        val LAUNCH_SOUND: Sound = Sound.sound(Key.key("entity.ender_pearl.throw"), Sound.Source.PLAYER, 1.0f, 1.0f)
+        val CAST_SOUND: Sound = Sound.sound(Key.key("entity.ender_pearl.throw"), Sound.Source.PLAYER, 1.0f, 1.0f)
         val PULL_SOUND: Sound = Sound.sound(Key.key("entity.enderman.teleport"), Sound.Source.HOSTILE, 1.0f, 0.8f)
     }
 
@@ -72,7 +72,7 @@ internal object VoidpullEnchantment : EnchantmentInterface {
         pearl.persistentDataContainer.set(PROJECTILE_KEY, PersistentDataType.STRING, player.uniqueId.toString())
 
         trailTasks[pearl.uniqueId] = spawnPearlTrail(pearl)
-        player.playSound(Config.LAUNCH_SOUND)
+        player.playSound(Config.CAST_SOUND)
     }
 
     /**

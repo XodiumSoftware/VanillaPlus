@@ -21,7 +21,7 @@ import kotlin.uuid.ExperimentalUuidApi
 internal object InfernoEnchantment : EnchantmentInterface {
     object Config {
         const val MANA_COST = 10
-        val LAUNCH_SOUND: Sound = Sound.sound(Key.key("entity.blaze.shoot"), Sound.Source.HOSTILE, 1.0f, 1.0f)
+        val CAST_SOUND: Sound = Sound.sound(Key.key("entity.blaze.shoot"), Sound.Source.HOSTILE, 1.0f, 1.0f)
     }
 
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
@@ -59,7 +59,7 @@ internal object InfernoEnchantment : EnchantmentInterface {
         fireball.direction = direction.clone().multiply(1.5)
         fireball.yield = 0.0f
         spawnFireballTrail(fireball)
-        player.playSound(Config.LAUNCH_SOUND)
+        player.playSound(Config.CAST_SOUND)
     }
 
     /**

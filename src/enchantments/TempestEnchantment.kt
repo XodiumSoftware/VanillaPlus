@@ -22,7 +22,7 @@ internal object TempestEnchantment : EnchantmentInterface {
         const val MANA_COST = 25
         const val SPREAD_COUNT = 3
         const val SPREAD_AMOUNT = 0.2
-        val LAUNCH_SOUND: Sound = Sound.sound(Key.key("entity.breeze.shoot"), Sound.Source.HOSTILE, 1.0f, 1.0f)
+        val CAST_SOUND: Sound = Sound.sound(Key.key("entity.breeze.shoot"), Sound.Source.HOSTILE, 1.0f, 1.0f)
     }
 
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
@@ -68,7 +68,7 @@ internal object TempestEnchantment : EnchantmentInterface {
             spawnWindChargeTrail(charge)
         }
 
-        player.playSound(Config.LAUNCH_SOUND)
+        player.playSound(Config.CAST_SOUND)
     }
 
     /**
