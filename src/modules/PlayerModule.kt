@@ -23,6 +23,7 @@ import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.event.player.PlayerAdvancementDoneEvent
 import org.bukkit.event.player.PlayerBedEnterEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerKickEvent
 import org.bukkit.event.player.PlayerQuitEvent
@@ -164,6 +165,23 @@ internal object PlayerModule : ModuleInterface {
         FeatherFallingEnchantment.onPlayerInteract(event)
         handleEnderchest(event)
         SpellManager.handleWandInteraction(event)
+    }
+
+    @EventHandler
+    fun on(event: PlayerItemHeldEvent) {
+        val item = event.player.inventory.getItem(event.newSlot) ?: return
+        if (item.type != Material.BLAZE_ROD) return
+
+        val spells = SpellManager.getSpellsOnWand(item)
+        if (spells.isEmpty()) return
+
+        val selectedSpell = SpellManager.getSelectedSpell(item) ?: return
+        event.player.sendActionBar(
+            MM.deserialize(
+                "<gradient:#832466:#BF4299>Selected: <white><spell></white></gradient>",
+                Placeholder.unparsed("spell", SpellManager.getSpellName(selectedSpell)),
+            ),
+        )
     }
 
     @EventHandler
