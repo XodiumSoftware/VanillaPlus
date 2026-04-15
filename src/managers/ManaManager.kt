@@ -89,22 +89,23 @@ internal object ManaManager {
      * exists for the player, it is cancelled and replaced.
      * @param player The player whose mana should regenerate.
      */
-    fun startPlayerRegen(player: Player) {
+    private fun startPlayerRegen(player: Player) {
         regenTasks.remove(player)?.cancel()
 
-        val task = ScheduleUtils.schedule(period = Config.MANA_REGEN_PERIOD_TICKS) {
-            if (!player.isValid) {
-                regenTasks.remove(player)
-                return@schedule
-            }
+        val task =
+            ScheduleUtils.schedule(period = Config.MANA_REGEN_PERIOD_TICKS) {
+                if (!player.isValid) {
+                    regenTasks.remove(player)
+                    return@schedule
+                }
 
-            if (player.mana < Config.MAX_MANA) {
-                player.mana = (player.mana + Config.MANA_REGEN_AMOUNT).coerceAtMost(Config.MAX_MANA)
-                showManaBar(player)
-            } else {
-                regenTasks.remove(player)?.cancel()
+                if (player.mana < Config.MAX_MANA) {
+                    player.mana = (player.mana + Config.MANA_REGEN_AMOUNT).coerceAtMost(Config.MAX_MANA)
+                    showManaBar(player)
+                } else {
+                    regenTasks.remove(player)?.cancel()
+                }
             }
-        }
 
         regenTasks[player] = task
     }
