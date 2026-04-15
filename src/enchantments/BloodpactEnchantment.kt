@@ -1,8 +1,6 @@
 package org.xodium.vanillaplus.enchantments
 
-import io.papermc.paper.registry.RegistryKey
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
-import io.papermc.paper.registry.set.RegistrySet
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import org.bukkit.GameMode
@@ -36,18 +34,6 @@ internal object BloodpactEnchantment : EnchantmentInterface {
             .minimumCost(EnchantmentRegistryEntry.EnchantmentCost.of(20, 5))
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(65, 5))
             .activeSlots(EquipmentSlotGroup.MAINHAND)
-            .exclusiveWith(
-                RegistrySet.keySet(
-                    RegistryKey.ENCHANTMENT,
-                    InfernoEnchantment.key,
-                    SkysunderEnchantment.key,
-                    WitherbrandEnchantment.key,
-                    FrostbindEnchantment.key,
-                    TempestEnchantment.key,
-                    VoidpullEnchantment.key,
-                    QuakeEnchantment.key,
-                ),
-            )
 
     /**
      * Handles a left-click interaction to sacrifice health for mana via Bloodpact.

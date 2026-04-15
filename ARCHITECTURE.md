@@ -44,7 +44,7 @@ Custom enchantments implement **`EnchantmentInterface`** and are registered in `
 - **`invoke(builder)`** — override to configure the enchantment's registry entry (description, anvil cost, level range, weight, slot group, etc.). The default implementation is a no-op pass-through.
 - **`get()`** — looks up and returns the live `Enchantment` instance from the registry after bootstrap.
 
-Event handling is done via ordinary `@EventHandler` methods in each enchantment object — there is no generic event type on the interface. Twelve enchantments are actively registered and tagged as tradeable, non-treasure, and in-enchanting-table:
+Event handling is done via ordinary `@EventHandler` methods in each enchantment object — there is no generic event type on the interface. Thirteen enchantments are actively registered and tagged as tradeable, non-treasure, and in-enchanting-table:
 
 | Enchantment | Slot Group | Supported Items                               |
 |-------------|------------|-----------------------------------------------|
@@ -59,11 +59,13 @@ Event handling is done via ordinary `@EventHandler` methods in each enchantment 
 | Frostbind   | `MAINHAND` | Blaze Rods (`vanillaplus:blaze_rods`)         |
 | Tempest     | `MAINHAND` | Blaze Rods (`vanillaplus:blaze_rods`)         |
 | Voidpull    | `MAINHAND` | Blaze Rods (`vanillaplus:blaze_rods`)         |
+| Quake       | `MAINHAND` | Blaze Rods (`vanillaplus:blaze_rods`)         |
 | Bloodpact   | `MAINHAND` | Blaze Rods (`vanillaplus:blaze_rods`)         |
 
 SilkTouch and FeatherFalling exist as implementations but are not currently registered in the bootstrap.
 
-**Mana system:** All seven Blaze Rod spell enchantments (Inferno, Skysunder, Witherbrand, Frostbind, Tempest, Voidpull, Bloodpact) share a single mana pool stored in `PlayerPDC.mana`. All seven are mutually exclusive with each other via `exclusiveWith`. `ManaManager` owns the bossbar display (`showManaBar`), regen scheduler (`startRegenTask`), and the no-mana sound (`NO_MANA_SOUND`). The bossbar uses the **Spellbite** gradient (`#832466 → #BF4299 → #832466`) with `NOTCHED_10` overlay. Unlike other spells, Bloodpact does not call `ManaManager.consumeMana` — it manually validates the left-click and trades player health for mana directly. Frostbind and Voidpull tag their projectiles with a `NamespacedKey` and resolve hits in `ProjectileHitEvent`. Projectile trail effects are created via `ScheduleUtils.spawnProjectileTrail`, which schedules a per-tick particle task that self-cancels when the entity is no longer valid.
+**Mana system:** Eight Blaze Rod spell enchantments (Inferno, Skysunder, Witherbrand, Frostbind, Tempest, Voidpull, Quake, Bloodpact) share a single mana pool stored in `PlayerPDC.mana`. All eight are **compatible** with each other and can be combined on a single wand. `PlayerModule.handleWandInteraction` manages the interaction: **left-click** casts the selected spell, **right-click** cycles through available spells (showing the selected spell name in the action bar). `SpellManager` handles spell registration, cycling logic, and execution dispatch. `ManaManager` owns the bossbar display (`showManaBar`), regen scheduler (`startRegenTask`), and the no-mana sound (`NO_MANA_SOUND`). The bossbar uses the **Spellbite** gradient (`#832466 → #BF4299 → #832466`) with `NOTCHED_10` overlay. Unlike other spells, Bloodpact does not call `ManaManager.consumeMana` — it manually validates the left-click and trades player health for mana directly. Frostbind and Voidpull tag their projectiles with a
+`NamespacedKey` and resolve hits in `ProjectileHitEvent`. Projectile trail effects are created via `ScheduleUtils.spawnProjectileTrail`, which schedules a per-tick particle task that self-cancels when the entity is no longer valid.
 
 ### PDCs (Persistent Data Containers)
 
@@ -75,16 +77,16 @@ Recipe objects implement **`RecipeInterface`** and are listed in `VanillaPlus.on
 
 ### Package Structure (`org.xodium.vanillaplus`)
 
-| Package         | Contents                                                                                                                                             |
-|-----------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `modules/`      | 14 feature module singletons                                                                                                                         |
-| `data/`         | `CommandData`, `BookData`, `AdjacentBlockData`                                                                                                       |
-| `enchantments/` | Verdance, Tether, Nimbus, Earthrend, Embertread, Inferno, Skysunder, Witherbrand, Frostbind, Tempest, Voidpull, Bloodpact, SilkTouch, FeatherFalling |
-| `interfaces/`   | `ModuleInterface`, `EnchantmentInterface`, `RecipeInterface`                                                                                         |
-| `managers/`     | `ManaManager`, `PlayerMessageManager`                                                                                                                |
-| `pdcs/`         | `PlayerPDC`                                                                                                                                          |
-| `recipes/`      | Chainmail, DiamondRecycle, Painting, RottenFlesh, WoodLog                                                                                            |
-| `utils/`        | `Utils`, `CommandUtils`, `BlockUtils`, `PlayerUtils`, `ScheduleUtils`                                                                                |
+| Package         | Contents                                                                                                                                                    |
+|-----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `modules/`      | 14 feature module singletons                                                                                                                                |
+| `data/`         | `CommandData`, `BookData`, `AdjacentBlockData`                                                                                                              |
+| `enchantments/` | Verdance, Tether, Nimbus, Earthrend, Embertread, Inferno, Skysunder, Witherbrand, Frostbind, Tempest, Voidpull, Quake, Bloodpact, SilkTouch, FeatherFalling |
+| `interfaces/`   | `ModuleInterface`, `EnchantmentInterface`, `RecipeInterface`                                                                                                |
+| `managers/`     | `ManaManager`, `PlayerMessageManager`, `SpellManager`                                                                                                       |
+| `pdcs/`         | `PlayerPDC`, `ItemPDC`                                                                                                                                      |
+| `recipes/`      | Chainmail, DiamondRecycle, Painting, RottenFlesh, WoodLog                                                                                                   |
+| `utils/`        | `Utils`, `CommandUtils`, `BlockUtils`, `PlayerUtils`, `ScheduleUtils`                                                                                       |
 
 ### Key Conventions
 

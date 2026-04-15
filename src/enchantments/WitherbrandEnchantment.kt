@@ -31,18 +31,6 @@ internal object WitherbrandEnchantment : EnchantmentInterface {
             .minimumCost(EnchantmentRegistryEntry.EnchantmentCost.of(20, 5))
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(65, 5))
             .activeSlots(EquipmentSlotGroup.MAINHAND)
-            .exclusiveWith(
-                RegistrySet.keySet(
-                    RegistryKey.ENCHANTMENT,
-                    InfernoEnchantment.key,
-                    SkysunderEnchantment.key,
-                    FrostbindEnchantment.key,
-                    TempestEnchantment.key,
-                    VoidpullEnchantment.key,
-                    QuakeEnchantment.key,
-                    BloodpactEnchantment.key,
-                ),
-            )
 
     /**
      * Handles a left-click interaction to launch a Witherbrand wither skull.

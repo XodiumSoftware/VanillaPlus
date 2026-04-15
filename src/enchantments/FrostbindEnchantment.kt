@@ -39,18 +39,6 @@ internal object FrostbindEnchantment : EnchantmentInterface {
             .minimumCost(EnchantmentRegistryEntry.EnchantmentCost.of(20, 5))
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(65, 5))
             .activeSlots(EquipmentSlotGroup.MAINHAND)
-            .exclusiveWith(
-                RegistrySet.keySet(
-                    RegistryKey.ENCHANTMENT,
-                    InfernoEnchantment.key,
-                    SkysunderEnchantment.key,
-                    WitherbrandEnchantment.key,
-                    TempestEnchantment.key,
-                    VoidpullEnchantment.key,
-                    QuakeEnchantment.key,
-                    BloodpactEnchantment.key,
-                ),
-            )
 
     /**
      * Handles a left-click interaction to launch a Frostbind snowball.

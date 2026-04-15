@@ -33,22 +33,17 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
-import org.xodium.vanillaplus.enchantments.BloodpactEnchantment
 import org.xodium.vanillaplus.enchantments.EarthrendEnchantment
-import org.xodium.vanillaplus.enchantments.QuakeEnchantment
 import org.xodium.vanillaplus.enchantments.EmbertreadEnchantment
 import org.xodium.vanillaplus.enchantments.FeatherFallingEnchantment
 import org.xodium.vanillaplus.enchantments.FrostbindEnchantment
-import org.xodium.vanillaplus.enchantments.InfernoEnchantment
 import org.xodium.vanillaplus.enchantments.SilkTouchEnchantment
-import org.xodium.vanillaplus.enchantments.SkysunderEnchantment
-import org.xodium.vanillaplus.enchantments.TempestEnchantment
 import org.xodium.vanillaplus.enchantments.TetherEnchantment
 import org.xodium.vanillaplus.enchantments.VerdanceEnchantment
 import org.xodium.vanillaplus.enchantments.VoidpullEnchantment
-import org.xodium.vanillaplus.enchantments.WitherbrandEnchantment
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.PlayerMessageManager
+import org.xodium.vanillaplus.managers.SpellManager
 import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import org.xodium.vanillaplus.utils.PlayerUtils.face
@@ -168,14 +163,45 @@ internal object PlayerModule : ModuleInterface {
         xpToBottle(event)
         FeatherFallingEnchantment.onPlayerInteract(event)
         handleEnderchest(event)
-        InfernoEnchantment.onPlayerInteract(event)
-        SkysunderEnchantment.onPlayerInteract(event)
-        WitherbrandEnchantment.onPlayerInteract(event)
-        FrostbindEnchantment.onPlayerInteract(event)
-        TempestEnchantment.onPlayerInteract(event)
-        VoidpullEnchantment.onPlayerInteract(event)
-        QuakeEnchantment.onPlayerInteract(event)
-        BloodpactEnchantment.onPlayerInteract(event)
+        handleWandInteraction(event)
+    }
+
+    /**
+     * Handles wand interactions for multi-spell casting.
+     * Right-click cycles through spells, left-click casts the selected spell.
+     * @param event The PlayerInteractEvent to handle.
+     */
+    private fun handleWandInteraction(event: PlayerInteractEvent) {
+        val item = event.item ?: return
+        if (item.type != Material.BLAZE_ROD) return
+
+        val spells = SpellManager.getSpellsOnWand(item)
+        if (spells.isEmpty()) return
+
+        when (event.action) {
+            Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK -> {
+                event.isCancelled = true
+
+                val nextSpell = SpellManager.cycleSpell(item)
+
+                if (nextSpell != null) {
+                    event.player.sendActionBar(
+                        MM.deserialize(
+                            "<gradient:#832466:#BF4299>Selected: <white><spell></white></gradient>",
+                            Placeholder.unparsed("spell", nextSpell),
+                        ),
+                    )
+                }
+            }
+
+            Action.LEFT_CLICK_AIR, Action.LEFT_CLICK_BLOCK -> {
+                val firstSpell = spells.firstOrNull() ?: return
+
+                SpellManager.executeSpell(event, firstSpell)
+            }
+
+            else -> {}
+        }
     }
 
     @EventHandler
