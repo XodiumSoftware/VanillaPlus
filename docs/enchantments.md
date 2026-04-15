@@ -1,6 +1,6 @@
 # Enchantments
 
-VanillaPlus adds **9 custom enchantments** and **extends 2 vanilla enchantments**. All are obtainable through the enchanting table, anvil and villager trades (tradeable, non-treasure).
+VanillaPlus adds **10 custom enchantments** and **extends 2 vanilla enchantments**. All are obtainable through the enchanting table, anvil and villager trades (tradeable, non-treasure).
 
 ---
 
@@ -79,14 +79,14 @@ When a fully grown crop is harvested with a Verdance hoe, the crop block is rese
 
 > Launches a fireball on left-click with a Blaze Rod.
 
-| Property           | Value                                                           |
-|--------------------|-----------------------------------------------------------------|
-| **Slot**           | Mainhand (Blaze Rods)                                           |
-| **Levels**         | I                                                               |
-| **Mana cost**      | 10                                                              |
-| **Exclusive with** | Skysunder, Witherbrand, Frostbind, Tempest, Voidpull, Bloodpact |
+| Property           | Value                                                                  |
+|--------------------|------------------------------------------------------------------------|
+| **Slot**           | Mainhand (Blaze Rods)                                                  |
+| **Levels**         | I                                                                      |
+| **Mana cost**      | 10                                                                     |
+| **Exclusive with** | Skysunder, Witherbrand, Frostbind, Tempest, Voidpull, Quake, Bloodpact |
 
-Left-clicking with an enchanted Blaze Rod fires a small fireball in the direction you are looking. Fireballs deal no block damage (`yield = 0`) and leave a trail of flame and lava particles. Requires mana; displays the shared **Spellbite** mana bar on cast. Only usable in Survival or Adventure mode.
+Left-clicking with an enchanted Blaze Rod fires a small fireball in the direction you are looking. Fireballs deal no block damage (`yield = 0`) and leave a trail of flame and lava particles. Requires mana; displays the shared **Spellbite** mana bar on-cast. Only usable in Survival or Adventure mode.
 
 ---
 
@@ -94,13 +94,13 @@ Left-clicking with an enchanted Blaze Rod fires a small fireball in the directio
 
 > Calls down a lightning bolt on left-click with a Blaze Rod.
 
-| Property           | Value                                                         |
-|--------------------|---------------------------------------------------------------|
-| **Slot**           | Mainhand (Blaze Rods)                                         |
-| **Levels**         | I                                                             |
-| **Mana cost**      | 20                                                            |
-| **Range**          | 30 blocks                                                     |
-| **Exclusive with** | Inferno, Witherbrand, Frostbind, Tempest, Voidpull, Bloodpact |
+| Property           | Value                                                                |
+|--------------------|----------------------------------------------------------------------|
+| **Slot**           | Mainhand (Blaze Rods)                                                |
+| **Levels**         | I                                                                    |
+| **Mana cost**      | 20                                                                   |
+| **Range**          | 30 blocks                                                            |
+| **Exclusive with** | Inferno, Witherbrand, Frostbind, Tempest, Voidpull, Quake, Bloodpact |
 
 Left-clicking with a Skysunder Blaze Rod ray-traces up to 30 blocks in the direction you are looking. A real lightning bolt (dealing damage) strikes the first block hit, or the maximum range point if no block is found. Bursts `ELECTRIC_SPARK` particles at the strike location. Draws from the shared **Spellbite** mana pool (costs twice as much as Inferno). Only usable in Survival or Adventure mode.
 
@@ -108,16 +108,34 @@ Left-clicking with a Skysunder Blaze Rod ray-traces up to 30 blocks in the direc
 
 ### Voidpull
 
-> Shoots an ender pearl that pulls the struck entity to you on left-click with a Blaze Rod.
+> Shoots an enderpearl that pulls the struck entity to you on left-click with a Blaze Rod.
 
-| Property           | Value                                                          |
-|--------------------|----------------------------------------------------------------|
-| **Slot**           | Mainhand (Blaze Rods)                                          |
-| **Levels**         | I                                                              |
-| **Mana cost**      | 20                                                             |
-| **Exclusive with** | Inferno, Skysunder, Witherbrand, Frostbind, Tempest, Bloodpact |
+| Property           | Value                                                                 |
+|--------------------|-----------------------------------------------------------------------|
+| **Slot**           | Mainhand (Blaze Rods)                                                 |
+| **Levels**         | I                                                                     |
+| **Mana cost**      | 20                                                                    |
+| **Exclusive with** | Inferno, Skysunder, Witherbrand, Frostbind, Tempest, Quake, Bloodpact |
 
 Left-clicking with a Voidpull Blaze Rod fires an ender pearl (no gravity) in the direction you are looking. While in flight the pearl trails portal and reverse-portal particles. When the pearl strikes an entity, that entity is teleported directly in front of the player. Portal particles burst at both the origin and arrival location. Requires mana; draws from the shared **Spellbite** mana pool. Only usable in Survival or Adventure mode.
+
+---
+
+### Quake
+
+> Creates a shockwave that damages and knocks back nearby entities on left-click with a Blaze Rod.
+
+| Property           | Value                                                                    |
+|--------------------|--------------------------------------------------------------------------|
+| **Slot**           | Mainhand (Blaze Rods)                                                    |
+| **Levels**         | I                                                                        |
+| **Mana cost**      | 20                                                                       |
+| **Radius**         | 4 blocks                                                                 |
+| **Damage**         | 3 hearts (6 HP)                                                          |
+| **Knockback**      | 1.2 strength                                                             |
+| **Exclusive with** | Inferno, Skysunder, Witherbrand, Frostbind, Tempest, Voidpull, Bloodpact |
+
+Left-clicking with a Quake Blaze Rod creates an expanding shockwave from the player's position. All living entities within 4 blocks take damage and are knocked back away from the player with a slight upward arc. The shockwave displays expanding rings of block crack particles (matching the ground material) and crit particles. Nearby players hear warden impact and anvil landing sounds. Requires mana; draws from the shared **Spellbite** mana pool. Only usable in Survival or Adventure mode.
 
 ---
 
@@ -125,12 +143,12 @@ Left-clicking with a Voidpull Blaze Rod fires an ender pearl (no gravity) in the
 
 > Launches a freezing snowball on left-click with a Blaze Rod.
 
-| Property           | Value                                                         |
-|--------------------|---------------------------------------------------------------|
-| **Slot**           | Mainhand (Blaze Rods)                                         |
-| **Levels**         | I                                                             |
-| **Mana cost**      | 15                                                            |
-| **Exclusive with** | Inferno, Skysunder, Witherbrand, Tempest, Voidpull, Bloodpact |
+| Property           | Value                                                                |
+|--------------------|----------------------------------------------------------------------|
+| **Slot**           | Mainhand (Blaze Rods)                                                |
+| **Levels**         | I                                                                    |
+| **Mana cost**      | 15                                                                   |
+| **Exclusive with** | Inferno, Skysunder, Witherbrand, Tempest, Voidpull, Quake, Bloodpact |
 
 Left-clicking with a Frostbind Blaze Rod fires a snowball (no gravity) in the direction you are looking. On hit, the struck entity is frozen solid for several seconds (set to full freeze ticks, decaying naturally outside powder snow). The snowball trails snowflake and snowball particles in flight. Bursts snowflake particles at the impact location. Requires mana; draws from the shared **Spellbite** mana pool. Only usable in Survival or Adventure mode.
 
@@ -140,14 +158,14 @@ Left-clicking with a Frostbind Blaze Rod fires a snowball (no gravity) in the di
 
 > Launches a burst of wind charges on left-click with a Blaze Rod.
 
-| Property           | Value                                                           |
-|--------------------|-----------------------------------------------------------------|
-| **Slot**           | Mainhand (Blaze Rods)                                           |
-| **Levels**         | I                                                               |
-| **Mana cost**      | 25                                                              |
-| **Exclusive with** | Inferno, Skysunder, Witherbrand, Frostbind, Voidpull, Bloodpact |
+| Property           | Value                                                                  |
+|--------------------|------------------------------------------------------------------------|
+| **Slot**           | Mainhand (Blaze Rods)                                                  |
+| **Levels**         | I                                                                      |
+| **Mana cost**      | 25                                                                     |
+| **Exclusive with** | Inferno, Skysunder, Witherbrand, Frostbind, Voidpull, Quake, Bloodpact |
 
-Left-clicking with a Tempest Blaze Rod fires three wind charges in a horizontal spread. Each charge trails gust and cloud particles and knocks back anything it hits on explosion. Requires mana; the highest mana cost of all Blaze Rod spells. Only usable in Survival or Adventure mode.
+Left-clicking with the Tempest Blaze Rod fires three wind charges in a horizontal spread. Each charge trails gust and cloud particles and knocks back anything it hits on-explosion. Requires mana; the highest mana cost of all Blaze Rod spells. Only usable in Survival or Adventure mode.
 
 ---
 
@@ -155,12 +173,12 @@ Left-clicking with a Tempest Blaze Rod fires three wind charges in a horizontal 
 
 > Launches a wither skull on left-click with a Blaze Rod.
 
-| Property           | Value                                                       |
-|--------------------|-------------------------------------------------------------|
-| **Slot**           | Mainhand (Blaze Rods)                                       |
-| **Levels**         | I                                                           |
-| **Mana cost**      | 15                                                          |
-| **Exclusive with** | Inferno, Skysunder, Frostbind, Tempest, Voidpull, Bloodpact |
+| Property           | Value                                                              |
+|--------------------|--------------------------------------------------------------------|
+| **Slot**           | Mainhand (Blaze Rods)                                              |
+| **Levels**         | I                                                                  |
+| **Mana cost**      | 15                                                                 |
+| **Exclusive with** | Inferno, Skysunder, Frostbind, Tempest, Voidpull, Quake, Bloodpact |
 
 Left-clicking with a Witherbrand Blaze Rod fires an uncharged wither skull in the direction you are looking. The skull applies the Wither effect on hit and leaves a trail of soul and ash particles. Requires mana; draws from the shared **Spellbite** mana pool. Only usable in Survival or Adventure mode.
 
@@ -170,13 +188,13 @@ Left-clicking with a Witherbrand Blaze Rod fires an uncharged wither skull in th
 
 > Sacrifice health to restore mana on left-click with a Blaze Rod.
 
-| Property           | Value                                                         |
-|--------------------|---------------------------------------------------------------|
-| **Slot**           | Mainhand (Blaze Rods)                                         |
-| **Levels**         | I                                                             |
-| **Health cost**    | 2 hearts (4 HP)                                               |
-| **Mana gain**      | 40                                                            |
-| **Exclusive with** | Inferno, Skysunder, Witherbrand, Frostbind, Tempest, Voidpull |
+| Property           | Value                                                                |
+|--------------------|----------------------------------------------------------------------|
+| **Slot**           | Mainhand (Blaze Rods)                                                |
+| **Levels**         | I                                                                    |
+| **Health cost**    | 2 hearts (4 HP)                                                      |
+| **Mana gain**      | 40                                                                   |
+| **Exclusive with** | Inferno, Skysunder, Witherbrand, Frostbind, Tempest, Voidpull, Quake |
 
 Left-clicking with a Bloodpact Blaze Rod drains 2 hearts and immediately restores 40 mana. Blocked if the player's health would drop to zero or below, or if mana is already full — both play the no-mana sound as feedback. Damage indicator and crimson spore particles burst from the player on a successful cast. Unlike other Blaze Rod spells, Bloodpact produces mana rather than consuming it, making it a dedicated mana recovery tool at the cost of survivability. Only usable in Survival or Adventure mode.
 

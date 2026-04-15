@@ -41,6 +41,7 @@ internal object InfernoEnchantment : EnchantmentInterface {
                     FrostbindEnchantment.key,
                     TempestEnchantment.key,
                     VoidpullEnchantment.key,
+                    QuakeEnchantment.key,
                     BloodpactEnchantment.key,
                 ),
             )

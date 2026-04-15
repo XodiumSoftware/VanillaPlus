@@ -35,6 +35,7 @@ internal object SkysunderEnchantment : EnchantmentInterface {
                     FrostbindEnchantment.key,
                     TempestEnchantment.key,
                     VoidpullEnchantment.key,
+                    QuakeEnchantment.key,
                     BloodpactEnchantment.key,
                 ),
             )

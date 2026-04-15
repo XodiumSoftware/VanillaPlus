@@ -35,6 +35,7 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import org.xodium.vanillaplus.enchantments.BloodpactEnchantment
 import org.xodium.vanillaplus.enchantments.EarthrendEnchantment
+import org.xodium.vanillaplus.enchantments.QuakeEnchantment
 import org.xodium.vanillaplus.enchantments.EmbertreadEnchantment
 import org.xodium.vanillaplus.enchantments.FeatherFallingEnchantment
 import org.xodium.vanillaplus.enchantments.FrostbindEnchantment
@@ -173,6 +174,7 @@ internal object PlayerModule : ModuleInterface {
         FrostbindEnchantment.onPlayerInteract(event)
         TempestEnchantment.onPlayerInteract(event)
         VoidpullEnchantment.onPlayerInteract(event)
+        QuakeEnchantment.onPlayerInteract(event)
         BloodpactEnchantment.onPlayerInteract(event)
     }
 

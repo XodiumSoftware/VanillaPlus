@@ -15,6 +15,7 @@ import io.papermc.paper.tag.TagEntry
 import net.kyori.adventure.key.Key
 import org.xodium.vanillaplus.enchantments.BloodpactEnchantment
 import org.xodium.vanillaplus.enchantments.EarthrendEnchantment
+import org.xodium.vanillaplus.enchantments.QuakeEnchantment
 import org.xodium.vanillaplus.enchantments.EmbertreadEnchantment
 import org.xodium.vanillaplus.enchantments.FrostbindEnchantment
 import org.xodium.vanillaplus.enchantments.InfernoEnchantment
@@ -138,6 +139,11 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                                 .invoke(it)
                                 .supportedItems(event.getOrCreateTag(BLAZE_RODS))
                         }
+                        register(QuakeEnchantment.key) {
+                            QuakeEnchantment
+                                .invoke(it)
+                                .supportedItems(event.getOrCreateTag(BLAZE_RODS))
+                        }
                         register(BloodpactEnchantment.key) {
                             BloodpactEnchantment
                                 .invoke(it)
@@ -161,6 +167,7 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                             FrostbindEnchantment.key,
                             TempestEnchantment.key,
                             VoidpullEnchantment.key,
+                            QuakeEnchantment.key,
                             BloodpactEnchantment.key,
                         )
 

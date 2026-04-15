@@ -42,6 +42,7 @@ internal object TempestEnchantment : EnchantmentInterface {
                     WitherbrandEnchantment.key,
                     FrostbindEnchantment.key,
                     VoidpullEnchantment.key,
+                    QuakeEnchantment.key,
                     BloodpactEnchantment.key,
                 ),
             )
