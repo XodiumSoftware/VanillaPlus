@@ -33,14 +33,20 @@ internal object EntityModule : ModuleInterface {
     }
 
     @EventHandler
-    fun on(event: EntityDeathEvent) {
+    fun on(event: EntityDeathEvent) = dropEntitySpawnEgg(event)
+
+    @EventHandler
+    fun on(event: EntityEquipmentChangedEvent) = NimbusEnchantment.onEntityEquipmentChanged(event)
+
+    /**
+     * Handles dropping a spawn egg when an entity dies, based on configured chance.
+     * @param event The death event of the entity.
+     */
+    private fun dropEntitySpawnEgg(event: EntityDeathEvent) {
         if (Random.nextDouble() <= Config.entityEggDropChance) {
             Material.matchMaterial("${event.entity.type.name}_SPAWN_EGG")?.let { event.drops.add(ItemStack.of(it)) }
         }
     }
-
-    @EventHandler
-    fun on(event: EntityEquipmentChangedEvent) = NimbusEnchantment.onEntityEquipmentChanged(event)
 
     /**
      * Determines whether an entity's griefing behaviour should be cancelled.
