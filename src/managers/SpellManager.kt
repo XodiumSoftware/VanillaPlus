@@ -17,6 +17,7 @@ import org.xodium.vanillaplus.enchantments.VoidpullEnchantment
 import org.xodium.vanillaplus.enchantments.WitherbrandEnchantment
 import org.xodium.vanillaplus.pdcs.ItemPDC.selectedSpell
 import org.xodium.vanillaplus.utils.Utils.MM
+import org.bukkit.entity.Player
 
 /** Manages spell execution and cycling for multi-spell wands. */
 internal object SpellManager {
@@ -50,6 +51,16 @@ internal object SpellManager {
     /** Gets the spell key string for storage. */
     private fun getSpellKey(spell: Enchantment): String = spell.key.toString()
 
+    /** Shows the selected spell name in the player's action bar. */
+    private fun showSelectedSpell(player: Player, spellName: String) {
+        player.sendActionBar(
+            MM.deserialize(
+                "<gradient:#832466:#BF4299>Selected: <white><spell></white></gradient>",
+                Placeholder.unparsed("spell", spellName),
+            ),
+        )
+    }
+
     /** Cycles to the next spell, updates the item's selected spell, and returns its name. */
     fun cycleSpell(item: ItemStack): String? =
         getSpellsOnWand(item).takeIf { it.isNotEmpty() }?.let { spells ->
@@ -79,14 +90,7 @@ internal object SpellManager {
         when (event.action) {
             Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK -> {
                 event.isCancelled = true
-                cycleSpell(item)?.let {
-                    event.player.sendActionBar(
-                        MM.deserialize(
-                            "<gradient:#832466:#BF4299>Selected: <white><spell></white></gradient>",
-                            Placeholder.unparsed("spell", it),
-                        ),
-                    )
-                }
+                cycleSpell(item)?.let { showSelectedSpell(event.player, it) }
             }
 
             Action.LEFT_CLICK_AIR, Action.LEFT_CLICK_BLOCK -> {
@@ -107,13 +111,6 @@ internal object SpellManager {
         if (item.type != Material.BLAZE_ROD) return
         if (getSpellsOnWand(item).isEmpty()) return
 
-        getSelectedSpell(item)?.let {
-            event.player.sendActionBar(
-                MM.deserialize(
-                    "<gradient:#832466:#BF4299>Selected: <white><spell></white></gradient>",
-                    Placeholder.unparsed("spell", getSpellName(it)),
-                ),
-            )
-        }
+        getSelectedSpell(item)?.let { showSelectedSpell(event.player, getSpellName(it)) }
     }
 }
