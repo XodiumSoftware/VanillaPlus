@@ -3,6 +3,7 @@ package org.xodium.vanillaplus.managers
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
+import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemHeldEvent
@@ -17,7 +18,6 @@ import org.xodium.vanillaplus.enchantments.VoidpullEnchantment
 import org.xodium.vanillaplus.enchantments.WitherbrandEnchantment
 import org.xodium.vanillaplus.pdcs.ItemPDC.selectedSpell
 import org.xodium.vanillaplus.utils.Utils.MM
-import org.bukkit.entity.Player
 
 /** Manages spell execution and cycling for multi-spell wands. */
 internal object SpellManager {
@@ -52,7 +52,10 @@ internal object SpellManager {
     private fun getSpellKey(spell: Enchantment): String = spell.key.toString()
 
     /** Shows the selected spell name in the player's action bar. */
-    private fun showSelectedSpell(player: Player, spellName: String) {
+    private fun showSelectedSpell(
+        player: Player,
+        spellName: String,
+    ) {
         player.sendActionBar(
             MM.deserialize(
                 "<gradient:#832466:#BF4299>Selected: <white><spell></white></gradient>",
@@ -108,6 +111,7 @@ internal object SpellManager {
      */
     fun handleWandSelection(event: PlayerItemHeldEvent) {
         val item = event.player.inventory.getItem(event.newSlot) ?: return
+
         if (item.type != Material.BLAZE_ROD) return
         if (getSpellsOnWand(item).isEmpty()) return
 

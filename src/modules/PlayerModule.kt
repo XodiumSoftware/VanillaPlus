@@ -168,9 +168,7 @@ internal object PlayerModule : ModuleInterface {
     }
 
     @EventHandler
-    fun on(event: PlayerItemHeldEvent) {
-        SpellManager.handleWandSelection(event)
-    }
+    fun on(event: PlayerItemHeldEvent) = SpellManager.handleWandSelection(event)
 
     @EventHandler
     fun on(event: ProjectileHitEvent) {
