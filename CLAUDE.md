@@ -11,18 +11,18 @@
 
 ## APIs & Tools
 
-| Category | Technology | Purpose |
-|----------|------------|---------|
-| **Core API** | [Paper API](https://papermc.io/) 1.21.11 | Minecraft server plugin API |
-| **Language** | Kotlin 2.3.20 | JVM language |
-| **Build Tool** | Gradle (Kotlin DSL) | Build automation |
-| **Gradle Plugins** | Shadow 9.4.1 | Fat JAR creation |
-| | run-paper 3.0.2 | Local test server |
-| | resource-factory 1.3.1 | `paper-plugin.yml` generation |
-| | foojay-resolver 1.0.0 | Auto-download JVM toolchains |
-| **Text Formatting** | MiniMessage | Adventure API component-based text |
-| **Docs** | MkDocs + Material theme | Static site generation |
-| **Code Style** | ktlint | Kotlin linting (IDE plugin) |
+| Category            | Technology                               | Purpose                            |
+|---------------------|------------------------------------------|------------------------------------|
+| **Core API**        | [Paper API](https://papermc.io/) 1.21.11 | Minecraft server plugin API        |
+| **Language**        | Kotlin 2.3.20                            | JVM language                       |
+| **Build Tool**      | Gradle (Kotlin DSL)                      | Build automation                   |
+| **Gradle Plugins**  | Shadow 9.4.1                             | Fat JAR creation                   |
+|                     | run-paper 3.0.2                          | Local test server                  |
+|                     | resource-factory 1.3.1                   | `paper-plugin.yml` generation      |
+|                     | foojay-resolver 1.0.0                    | Auto-download JVM toolchains       |
+| **Text Formatting** | MiniMessage                              | Adventure API component-based text |
+| **Docs**            | MkDocs + Material theme                  | Static site generation             |
+| **Code Style**      | ktlint                                   | Kotlin linting (IDE plugin)        |
 
 ### Paper API Resources
 
@@ -39,6 +39,7 @@
 ### MkDocs
 
 Documentation is built with MkDocs Material theme. Key files:
+
 - `mkdocs.yml` — Site configuration and navigation
 - `docs/` — Markdown source files
 - Run `mkdocs serve` locally to preview
@@ -71,6 +72,7 @@ Documentation is built with MkDocs Material theme. Key files:
 ### Enchantments
 
 Custom enchantments implement `EnchantmentInterface` with:
+
 - Auto-generated `TypedKey<Enchantment>` from class name (e.g., `VerdanceEnchantment` → `vanillaplus:verdance`)
 - `invoke(builder)` to configure registry entry (description, cost, levels, weight, slots)
 - `get()` to retrieve live `Enchantment` instance from registry
@@ -86,6 +88,7 @@ Custom enchantments implement `EnchantmentInterface` with:
 | Inferno, Skysunder, Witherbrand, Frostbind, Tempest, Voidpull, Quake | MAINHAND | Blaze Rods (spell wands) |
 
 **Mana System:**
+
 - 7 Blaze Rod spell enchantments share one mana pool stored in `PlayerPDC.mana`
 - All spells are **compatible** — can combine multiple on one wand
 - **Left-click:** Cast selected spell
@@ -119,10 +122,13 @@ src/
 - **Use `ItemStack.of()` instead of `ItemStack()` constructor** — Paper's modern API for creating item stacks
 - **Don't create intermediate `const val` for override properties** — assign directly to the override, e.g., `override val key: String = "vanillaplus:mana_potion"` instead of creating a `const val KEY` and then `override val key = KEY`
 - **Don't add KDoc to implemented overrides** — the base interface/class already has documentation; let it inherit naturally
+- **Use data class builders** — e.g., `potion(PotionData(color = X, displayName = Y))` instead of lambda receivers for simpler configuration
+- **Use explicit named factory functions** — prefer `potion()` and `splash()` over `invoke()` operator for clarity
 
 ### Code Structure (in interfaces, classes, objects)
 
 Order members from top to bottom:
+
 1. **`const val`** — compile-time constants
 2. **`val`** — read-only properties (overrides first)
 3. **`var`** — mutable properties (overrides first)
@@ -130,6 +136,7 @@ Order members from top to bottom:
 5. **`object Config`** — nested config object (at bottom for modules)
 
 Within each group:
+
 - **`override`** members go above regular members
 - **`@EventHandler`** functions go above regular `public` functions
 - **`public`** members go above **`private`** members
@@ -151,13 +158,16 @@ Within each group:
 ### Task Management
 
 **When creating tasks:**
+
 - Number tasks in the name (e.g., "1. Add Verdance enchantment", "2. Update mana system")
 - This makes it easy to reference specific tasks in conversation
 
 **After completing each task:**
+
 - Ask the user if they want to git commit the changes or adjust before committing
 
 **When all tasks in a worktree are complete:**
+
 - Ask the user if they want to git publish (push) the changes or adjust before publishing
 
 ### After Making Edits
@@ -165,17 +175,17 @@ Within each group:
 **Always update documentation when code changes:**
 
 1. **ARCHITECTURE.md** — Update if you:
-   - Add/remove enchantments, modules, recipes, or managers
-   - Change the module system or interfaces
-   - Modify the mana system or spell mechanics
-   - Change project structure or conventions
+    - Add/remove enchantments, modules, recipes, or managers
+    - Change the module system or interfaces
+    - Modify the mana system or spell mechanics
+    - Change project structure or conventions
 
 2. **docs/** — Update if you:
-   - Add/remove features that affect user-facing behavior
-   - Change enchantment functionality
-   - Modify command usage or module behavior
-   - MkDocs source files are in `docs/`; run `mkdocs serve` to preview locally
-   - **When adding/removing docs pages or changing the structure, also update `mkdocs.yml`** (nav section)
+    - Add/remove features that affect user-facing behavior
+    - Change enchantment functionality
+    - Modify command usage or module behavior
+    - MkDocs source files are in `docs/`; run `mkdocs serve` to preview locally
+    - **When adding/removing docs pages or changing the structure, also update `mkdocs.yml`** (nav section)
 
 **Rule of thumb:** If a code change would confuse someone reading the docs, update the docs.
 
@@ -195,14 +205,14 @@ To add a new enchantment, follow these steps:
 2. Implement `EnchantmentInterface` as an `object`
 3. In `invoke(builder)`, configure: `description()`, `supportedItems()`, `anvilCost()`, `maxLevel()`, `weight()`, `slotGroup()`
 4. In `VanillaPlusBootstrap.kt`:
-   - Add `YournameEnchantment` to the `ENCHANTMENTS` list
-   - Add it to the tags (tradeable, non-treasure, enchanting-table)
-   - Add supported items to appropriate `ItemTag` if needed
+    - Add `YournameEnchantment` to the `ENCHANTMENTS` list
+    - Add it to the tags (tradeable, non-treasure, enchanting-table)
+    - Add supported items to appropriate `ItemTag` if needed
 5. If it's a spell (Blaze Rod enchantment):
-   - Register in `SpellManager`
-   - Store cost in `PlayerPDC` constants
-   - Add to enchantment compatibility group
-   - Implement `@EventHandler` for `PlayerInteractEvent` or projectile logic
+    - Register in `SpellManager`
+    - Store cost in `PlayerPDC` constants
+    - Add to enchantment compatibility group
+    - Implement `@EventHandler` for `PlayerInteractEvent` or projectile logic
 6. Update `ARCHITECTURE.md` enchantment table
 7. Update `docs/enchantments.md` user documentation
 8. Update `mkdocs.yml` if needed
@@ -224,7 +234,7 @@ To add a new enchantment, follow these steps:
 
 1. Create new file in `src/recipes/YourRecipe.kt`
 2. Implement `RecipeInterface` as an `object`
-3. Define `recipes` list with recipe definitions
+3. Define `recipes` list for crafting/smelting recipes, or `potions` list for brewing recipes
 4. Use naming pattern `{descriptive_name}_{recipe_type}` for `NamespacedKey`
 5. In `VanillaPlus.kt`, add `YourRecipe` to the recipe list in `onEnable()`
 6. Update `docs/recipes.md` with the new recipe

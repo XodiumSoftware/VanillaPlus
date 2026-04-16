@@ -1,5 +1,6 @@
 package org.xodium.vanillaplus.interfaces
 
+import io.papermc.paper.potion.PotionMix
 import org.bukkit.inventory.Recipe
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import kotlin.time.measureTime
@@ -10,11 +11,21 @@ internal interface RecipeInterface {
      * Retrieves the set of recipes to be registered.
      * @return A [Collection] of [Recipe] instances.
      */
-    val recipes: Collection<Recipe>
+    val recipes: Collection<Recipe> get() = emptySet()
+
+    /**
+     * Retrieves the set of potion brewing recipes to be registered.
+     * @return A [Collection] of [PotionMix] instances.
+     */
+    val potions: Collection<PotionMix> get() = emptySet()
 
     /**
      * Registers all recipes returned by [recipes] with the server.
      * @return The time taken to register the recipes in milliseconds.
      */
-    fun register(): Long = measureTime { recipes.forEach { instance.server.addRecipe(it) } }.inWholeMilliseconds
+    fun register(): Long =
+        measureTime {
+            recipes.forEach { instance.server.addRecipe(it) }
+            potions.forEach { instance.server.potionBrewer.addPotionMix(it) }
+        }.inWholeMilliseconds
 }

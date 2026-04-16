@@ -184,23 +184,44 @@ Fires an uncharged wither skull that applies the Wither effect on hit. Leaves a 
 
 ---
 
-## Mana Potion
+## Mana Item
 
-To support extended spellcasting, VanillaPlus adds a **Mana Potion** that instantly restores your mana pool.
+To support extended spellcasting, VanillaPlus adds **Mana Items** that instantly restore your mana pool. Available in four variants:
 
 ### Potion of Arcane Restoration
 
 > Instantly refills your mana to maximum.
 
-| Property       | Value                         |
-|----------------|-------------------------------|
-| **Effect**     | Refills mana to 100         |
-| **Color**      | Purple (`#832466`)            |
-| **Brewing**    | Awkward Potion + Blaze Rod    |
+| Property       | Value                            |
+|----------------|----------------------------------|
+| **Effect**     | Refills mana to 100              |
+| **Color**      | Purple (`#832466`)               |
+| **Brewing**    | Awkward Potion + Blaze Rod       |
 
-When consumed, your mana bar is immediately filled to maximum and displayed. This allows you to continue casting spells without waiting for natural regeneration.
+### Splash Potion of Arcane Restoration
 
-> **Tip:** Carry multiple mana potions during extended combat or mining sessions with spell wands.
+| Property       | Value                            |
+|----------------|----------------------------------|
+| **Effect**     | Refills mana to 100 (area)       |
+| **Brewing**    | Splash Potion + Blaze Rod        |
+
+### Lingering Potion of Arcane Restoration
+
+| Property       | Value                            |
+|----------------|----------------------------------|
+| **Effect**     | Refills mana to 100 (area)       |
+| **Brewing**    | Lingering Potion + Blaze Rod     |
+
+### Arrow of Arcane Restoration
+
+| Property       | Value                                         |
+|----------------|-----------------------------------------------|
+| **Effect**     | Refills mana to 100 (on hit)                  |
+| **Crafting**   | 8 Arrows + 1 Lingering Potion = 8 Tipped Arrows |
+
+When consumed (or hit by a tipped arrow), your mana bar is immediately filled to maximum and displayed. This allows you to continue casting spells without waiting for natural regeneration.
+
+> **Tip:** Carry multiple mana items during extended combat or mining sessions with spell wands.
 
 ---
 

@@ -66,17 +66,18 @@ SilkTouch and FeatherFalling exist as implementations but are not currently regi
 **Mana system:** Seven Blaze Rod spell enchantments (Inferno, Skysunder, Witherbrand, Frostbind, Tempest, Voidpull, Quake) share a single mana pool stored in `PlayerPDC.mana`. All seven are **compatible** with each other and can be combined on a single wand. `PlayerModule.handleWandInteraction` manages the interaction: **left-click** casts the selected spell, **right-click** cycles through available spells (showing the selected spell name in the action bar). `SpellManager` handles spell registration, cycling logic, and execution dispatch. `ManaManager` owns the bossbar display (`showManaBar`), regen scheduler (`startRegenTask`), and the no-mana sound (`NO_MANA_SOUND`). The bossbar uses the **Spellbite** gradient (`#832466 → #BF4299 → #832466`) with `NOTCHED_10` overlay. Frostbind and Voidpull tag their projectiles with a
 `NamespacedKey` and resolve hits in `ProjectileHitEvent`. Projectile trail effects are created via `ScheduleUtils.spawnProjectileTrail`, which schedules a per-tick particle task that self-cancels when the entity is no longer valid.
 
-### Potions
+### Items
 
-Custom potions implement **`PotionInterface`** and are created as `object` singletons in `potions/`. Potions are consumable items with magical effects, primarily the **Mana Potion** which refills the player's mana pool for spell casting.
+Custom items implement **`ItemInterface`** and are created as `object` singletons in `potions/`. Items include potions and other consumables with magical effects, primarily the **Mana Item** which refills the player's mana pool for spell casting.
 
-**Mana Potion:**
+**Mana Item:**
 
 - **Effect:** Instantly refills `PlayerPDC.mana` to 100 (max)
 - **Visual:** Purple color from the Spellbite gradient (`#832466`)
 - **Name:** "Potion of Arcane Restoration" with gradient styling
 - **Marker:** Uses `ItemPDC.isManaPotion` PDC flag
-- **Brewing:** Awkward Potion + Blaze Rod in brewing stand
+- **Brewing:** Awkward Potion/Splash Potion/Lingering Potion + Blaze Rod in brewing stand
+- **Crafting:** 8 Arrows + 1 Lingering Potion = 8 Tipped Arrows
 - **Handler:** `PotionModule` listens for `PlayerItemConsumeEvent`
 
 ### PDCs (Persistent Data Containers)
@@ -91,14 +92,14 @@ Recipe objects implement **`RecipeInterface`** and are listed in `VanillaPlus.on
 
 | Package         | Contents                                                                                                                                         |
 |-----------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
-| `potions/`      | Custom potion implementations (Mana Potion)                                                                                                      |
+| `potions/`      | Custom item implementations (Mana Item)                                                                                                         |
 | `modules/`      | 15 feature module singletons                                                                                                                     |
 | `data/`         | `CommandData`, `BookData`, `AdjacentBlockData`                                                                                                   |
 | `enchantments/` | Verdance, Tether, Nimbus, Earthrend, Embertread, Inferno, Skysunder, Witherbrand, Frostbind, Tempest, Voidpull, Quake, SilkTouch, FeatherFalling |
-| `interfaces/`   | `ModuleInterface`, `EnchantmentInterface`, `RecipeInterface`, `PotionInterface`                                                                  |
+| `interfaces/`   | `ModuleInterface`, `EnchantmentInterface`, `RecipeInterface`, `ItemInterface`                                                                    |
 | `managers/`     | `ManaManager`, `PlayerMessageManager`, `SpellManager`                                                                                            |
 | `pdcs/`         | `PlayerPDC`, `ItemPDC`                                                                                                                           |
-| `recipes/`      | Chainmail, DiamondRecycle, ManaPotion, Painting, RottenFlesh, WoodLog                                                                            |
+| `recipes/`      | Chainmail, DiamondRecycle, ManaItem, Painting, RottenFlesh, WoodLog                                                                               |
 | `utils/`        | `Utils`, `CommandUtils`, `BlockUtils`, `PlayerUtils`, `ScheduleUtils`                                                                            |
 
 ### Key Conventions
