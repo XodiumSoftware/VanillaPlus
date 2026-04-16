@@ -119,11 +119,14 @@ src/
 
 Order members from top to bottom:
 1. **`const val`** — compile-time constants
-2. **`val`** — read-only properties
-3. **`var`** — mutable properties
-4. **`fun`** — functions
+2. **`val`** — read-only properties (overrides first)
+3. **`var`** — mutable properties (overrides first)
+4. **`fun`** — functions (overrides first)
+5. **`object Config`** — nested config object (at bottom for modules)
 
-Within each group, **public** members go above **private** members.
+Within each group:
+- **`override`** members go above regular members
+- **`public`** members go above **`private`** members
 
 ## Testing
 
