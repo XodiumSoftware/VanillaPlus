@@ -8,7 +8,6 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.inventory.ItemStack
-import org.xodium.vanillaplus.enchantments.BloodpactEnchantment
 import org.xodium.vanillaplus.enchantments.FrostbindEnchantment
 import org.xodium.vanillaplus.enchantments.InfernoEnchantment
 import org.xodium.vanillaplus.enchantments.QuakeEnchantment
@@ -30,7 +29,6 @@ internal object SpellManager {
             TempestEnchantment.get() to { TempestEnchantment.onPlayerInteract(it) },
             VoidpullEnchantment.get() to { VoidpullEnchantment.onPlayerInteract(it) },
             QuakeEnchantment.get() to { QuakeEnchantment.onPlayerInteract(it) },
-            BloodpactEnchantment.get() to { BloodpactEnchantment.onPlayerInteract(it) },
         )
     }
 

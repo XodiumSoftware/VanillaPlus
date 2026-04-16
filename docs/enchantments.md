@@ -1,6 +1,6 @@
 # Enchantments
 
-VanillaPlus adds **13 custom enchantments** and **extends 2 vanilla enchantments**. All are obtainable through the enchanting table, anvil and villager trades (tradeable, non-treasure).
+VanillaPlus adds **12 custom enchantments** and **extends 2 vanilla enchantments**. All are obtainable through the enchanting table, anvil and villager trades (tradeable, non-treasure).
 
 ---
 
@@ -181,20 +181,6 @@ Fires three wind charges in a horizontal spread. Each charge trails gust and clo
 | **Mana cost** | 15        |
 
 Fires an uncharged wither skull that applies the Wither effect on hit. Leaves a trail of soul and ash particles.
-
----
-
-#### Bloodpact
-
-> Sacrifice health to restore mana.
-
-| Property      | Value           |
-|---------------|-----------------|
-| **Slot**      | Blaze Rod       |
-| **Health**    | 4 HP (2 hearts) |
-| **Mana gain** | 40              |
-
-Drains health to restore mana. Blocked if health would drop to zero or mana is already full. Unlike other spells, Bloodpact produces mana rather than consuming it.
 
 ---
 

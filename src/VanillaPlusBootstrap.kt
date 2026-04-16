@@ -13,7 +13,6 @@ import io.papermc.paper.registry.keys.tags.ItemTypeTagKeys
 import io.papermc.paper.registry.tag.TagKey
 import io.papermc.paper.tag.TagEntry
 import net.kyori.adventure.key.Key
-import org.xodium.vanillaplus.enchantments.BloodpactEnchantment
 import org.xodium.vanillaplus.enchantments.EarthrendEnchantment
 import org.xodium.vanillaplus.enchantments.QuakeEnchantment
 import org.xodium.vanillaplus.enchantments.EmbertreadEnchantment
@@ -144,11 +143,6 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                                 .invoke(it)
                                 .supportedItems(event.getOrCreateTag(BLAZE_RODS))
                         }
-                        register(BloodpactEnchantment.key) {
-                            BloodpactEnchantment
-                                .invoke(it)
-                                .supportedItems(event.getOrCreateTag(BLAZE_RODS))
-                        }
                     }
                 },
             )
@@ -168,7 +162,6 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                             TempestEnchantment.key,
                             VoidpullEnchantment.key,
                             QuakeEnchantment.key,
-                            BloodpactEnchantment.key,
                         )
 
                     addToTag(EnchantmentTagKeys.TRADEABLE, enchants)
