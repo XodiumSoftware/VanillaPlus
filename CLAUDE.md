@@ -115,6 +115,16 @@ src/
 - ktlint is enforced; suppress wildcard imports per-file with `@file:Suppress("ktlint:standard:no-wildcard-imports")` if needed
 - Recipe `NamespacedKey` naming: `{descriptive_name}_{recipe_type}`
 
+### Code Structure (in interfaces, classes, objects)
+
+Order members from top to bottom:
+1. **`const val`** — compile-time constants
+2. **`val`** — read-only properties
+3. **`var`** — mutable properties
+4. **`fun`** — functions
+
+Within each group, **public** members go above **private** members.
+
 ## Testing
 
 - No automated tests in this project

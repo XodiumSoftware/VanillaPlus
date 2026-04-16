@@ -184,6 +184,26 @@ Fires an uncharged wither skull that applies the Wither effect on hit. Leaves a 
 
 ---
 
+## Mana Potion
+
+To support extended spellcasting, VanillaPlus adds a **Mana Potion** that instantly restores your mana pool.
+
+### Potion of Arcane Restoration
+
+> Instantly refills your mana to maximum.
+
+| Property       | Value                         |
+|----------------|-------------------------------|
+| **Effect**     | Refills mana to 100         |
+| **Color**      | Purple (`#832466`)            |
+| **Brewing**    | Awkward Potion + Blaze Rod    |
+
+When consumed, your mana bar is immediately filled to maximum and displayed. This allows you to continue casting spells without waiting for natural regeneration.
+
+> **Tip:** Carry multiple mana potions during extended combat or mining sessions with spell wands.
+
+---
+
 ## Extended vanilla enchantments
 
 These enchantments already exist in vanilla Minecraft. VanillaPlus adds extra behaviour on top of their normal effects. The extended behaviour is togglable in [PlayerModule config](modules/player.md).
