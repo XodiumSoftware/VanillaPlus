@@ -24,6 +24,11 @@
 | **Docs** | MkDocs + Material theme | Static site generation |
 | **Code Style** | ktlint | Kotlin linting (IDE plugin) |
 
+### Paper API Resources
+
+- **Documentation**: https://docs.papermc.io/paper/dev/
+- **JavaDoc**: https://jd.papermc.io/paper/1.21.11/ (matches project version)
+
 ### Paper API Notes
 
 - Uses modern lifecycle/registry APIs (experimental — requires `@Suppress("UnstableApiUsage")`)
