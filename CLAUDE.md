@@ -126,6 +126,7 @@ Order members from top to bottom:
 
 Within each group:
 - **`override`** members go above regular members
+- **`@EventHandler`** functions go above regular `public` functions
 - **`public`** members go above **`private`** members
 
 ## Testing
