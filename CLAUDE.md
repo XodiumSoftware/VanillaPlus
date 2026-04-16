@@ -116,6 +116,9 @@ src/
 - Recipe `NamespacedKey` naming: `{descriptive_name}_{recipe_type}`
 - **Import types instead of using fully qualified paths** — e.g., `import org.bukkit.inventory.meta.PotionMeta` instead of `org.bukkit.inventory.meta.PotionMeta`
 - **Use `it` for single-parameter lambdas** — e.g., `list.forEach { it.doSomething() }` instead of `list.forEach { item -> item.doSomething() }`
+- **Use `ItemStack.of()` instead of `ItemStack()` constructor** — Paper's modern API for creating item stacks
+- **Don't create intermediate `const val` for override properties** — assign directly to the override, e.g., `override val key: String = "vanillaplus:mana_potion"` instead of creating a `const val KEY` and then `override val key = KEY`
+- **Don't add KDoc to implemented overrides** — the base interface/class already has documentation; let it inherit naturally
 
 ### Code Structure (in interfaces, classes, objects)
 

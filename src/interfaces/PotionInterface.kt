@@ -1,5 +1,6 @@
 package org.xodium.vanillaplus.interfaces
 
+import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
 /**
@@ -19,5 +20,11 @@ internal interface PotionInterface {
      * Creates an instance of this potion as an [ItemStack].
      * @return The configured potion item ready for use or brewing.
      */
-    fun createPotion(): ItemStack
+    fun createPotion(): ItemStack = ItemStack.of(Material.POTION)
+
+    /**
+     * Creates a splash potion variant as an [ItemStack].
+     * @return The configured splash potion item.
+     */
+    fun createSplashPotion(): ItemStack = ItemStack.of(Material.SPLASH_POTION)
 }

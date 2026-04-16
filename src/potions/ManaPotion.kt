@@ -14,8 +14,7 @@ import org.xodium.vanillaplus.utils.Utils.MM
  * extended use of spell enchantments on Blaze Rods.
  */
 internal object ManaPotion : PotionInterface {
-    /** The namespaced key for this potion type. */
-    const val KEY = "vanillaplus:mana_potion"
+    override val key: String = "vanillaplus:mana_potion"
 
     /** The display name using the Spellbite gradient. */
     private const val DISPLAY_NAME = "<gradient:#832466:#BF4299:#832466>Potion of Arcane Restoration</gradient>"
@@ -23,16 +22,8 @@ internal object ManaPotion : PotionInterface {
     /** The potion color (Spellbite purple). */
     private val POTION_COLOR = Color.fromRGB(0x832466)
 
-    override val key: String = KEY
-
-    /**
-     * Creates a new mana potion [ItemStack].
-     * The potion has a custom purple color from the Spellbite gradient,
-     * a custom display name, and the [isManaPotion] PDC marker.
-     * @return A configured mana potion item.
-     */
     override fun createPotion(): ItemStack {
-        val potion = ItemStack(Material.POTION)
+        val potion = ItemStack.of(Material.POTION)
         potion.editMeta(PotionMeta::class.java) {
             it.color = POTION_COLOR
             it.displayName(MM.deserialize(DISPLAY_NAME))
@@ -41,15 +32,11 @@ internal object ManaPotion : PotionInterface {
         return potion
     }
 
-    /**
-     * Creates a splash mana potion [ItemStack] for ranged application.
-     * @return A configured splash mana potion item.
-     */
-    fun createSplashPotion(): ItemStack {
-        val potion = ItemStack(Material.SPLASH_POTION)
-        potion.editMeta(org.bukkit.inventory.meta.PotionMeta::class.java) { meta ->
-            meta.color = POTION_COLOR
-            meta.displayName(
+    override fun createSplashPotion(): ItemStack {
+        val potion = ItemStack.of(Material.SPLASH_POTION)
+        potion.editMeta(PotionMeta::class.java) {
+            it.color = POTION_COLOR
+            it.displayName(
                 MM.deserialize("<gradient:#832466:#BF4299:#832466>Splash Potion of Arcane Restoration</gradient>"),
             )
         }
