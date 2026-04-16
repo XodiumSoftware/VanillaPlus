@@ -9,6 +9,36 @@
 - **Build Tool:** Gradle with Kotlin DSL
 - **Output:** Shadow JAR to `build/libs/`
 
+## APIs & Tools
+
+| Category | Technology | Purpose |
+|----------|------------|---------|
+| **Core API** | [Paper API](https://papermc.io/) 1.21.11 | Minecraft server plugin API |
+| **Language** | Kotlin 2.3.20 | JVM language |
+| **Build Tool** | Gradle (Kotlin DSL) | Build automation |
+| **Gradle Plugins** | Shadow 9.4.1 | Fat JAR creation |
+| | run-paper 3.0.2 | Local test server |
+| | resource-factory 1.3.1 | `paper-plugin.yml` generation |
+| | foojay-resolver 1.0.0 | Auto-download JVM toolchains |
+| **Text Formatting** | MiniMessage | Adventure API component-based text |
+| **Docs** | MkDocs + Material theme | Static site generation |
+| **Code Style** | ktlint | Kotlin linting (IDE plugin) |
+
+### Paper API Notes
+
+- Uses modern lifecycle/registry APIs (experimental — requires `@Suppress("UnstableApiUsage")`)
+- Custom enchantments use `RegistryEvents.ENCHANTMENT`
+- Item tags created via `LifecycleEvents.TAGS.postFlatten`
+- Plugin bootstrapper pattern for early registry access
+
+### MkDocs
+
+Documentation is built with MkDocs Material theme. Key files:
+- `mkdocs.yml` — Site configuration and navigation
+- `docs/` — Markdown source files
+- Run `mkdocs serve` locally to preview
+- Deployed automatically via GitHub Actions on pushes to main
+
 ## Quick Commands
 
 ```bash
