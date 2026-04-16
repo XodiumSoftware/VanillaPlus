@@ -3,6 +3,7 @@ package org.xodium.vanillaplus.potions
 import org.bukkit.Color
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.PotionMeta
 import org.xodium.vanillaplus.interfaces.PotionInterface
 import org.xodium.vanillaplus.pdcs.ItemPDC.isManaPotion
 import org.xodium.vanillaplus.utils.Utils.MM
@@ -32,9 +33,9 @@ internal object ManaPotion : PotionInterface {
      */
     override fun createPotion(): ItemStack {
         val potion = ItemStack(Material.POTION)
-        potion.editMeta(org.bukkit.inventory.meta.PotionMeta::class.java) { meta ->
-            meta.color = POTION_COLOR
-            meta.displayName(MM.deserialize(DISPLAY_NAME))
+        potion.editMeta(PotionMeta::class.java) {
+            it.color = POTION_COLOR
+            it.displayName(MM.deserialize(DISPLAY_NAME))
         }
         potion.isManaPotion = true
         return potion
