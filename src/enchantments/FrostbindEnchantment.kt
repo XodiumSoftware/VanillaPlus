@@ -1,8 +1,6 @@
 package org.xodium.vanillaplus.enchantments
 
-import io.papermc.paper.registry.RegistryKey
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
-import io.papermc.paper.registry.set.RegistrySet
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import org.bukkit.NamespacedKey

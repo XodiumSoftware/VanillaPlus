@@ -1,8 +1,6 @@
 package org.xodium.vanillaplus.enchantments
 
-import io.papermc.paper.registry.RegistryKey
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
-import io.papermc.paper.registry.set.RegistrySet
 import org.bukkit.Particle
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlotGroup

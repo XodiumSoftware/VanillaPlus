@@ -1,7 +1,6 @@
 package org.xodium.vanillaplus.data
 
 import org.bukkit.Material
-import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.type.Door
 import org.bukkit.block.data.type.Door.Hinge
@@ -40,11 +39,4 @@ internal data class AdjacentBlockData(
             door.hinge != originalDoor.hinge &&
             door.isOpen == originalDoor.isOpen &&
             blockType == door.material
-
-    /**
-     * Gets the relative [Block] using the stored offsets.
-     * @param block The original [Block] to get relative from.
-     * @return The relative [Block].
-     */
-    fun getRelativeBlock(block: Block): Block = block.getRelative(offsetX, 0, offsetZ)
 }

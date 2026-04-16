@@ -21,35 +21,6 @@ internal object Utils {
                 "${this.javaClass.simpleName}" +
                 "</gradient><gradient:#FFE259:#FFA751>]</gradient>"
 
-    /** Extension function to convert a positive [Int] to its Roman numeral string representation. */
-    fun Int.toRoman(): String {
-        val numerals =
-            listOf(
-                1000 to "M",
-                900 to "CM",
-                500 to "D",
-                400 to "CD",
-                100 to "C",
-                90 to "XC",
-                50 to "L",
-                40 to "XL",
-                10 to "X",
-                9 to "IX",
-                5 to "V",
-                4 to "IV",
-                1 to "I",
-            )
-
-        var num = this
-
-        return buildString {
-            for ((value, symbol) in numerals) {
-                repeat(num / value) { append(symbol) }
-                num %= value
-            }
-        }
-    }
-
     /** Extension function to convert snake_case to Proper Case with spaces. */
     fun String.snakeToProperCase(): String =
         split('_').joinToString(" ") { word -> word.replaceFirstChar { it.uppercase() } }
