@@ -16,13 +16,6 @@ import org.xodium.vanillaplus.utils.Utils.displayName
 /** Represents an object handling tempest enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
 internal object TempestEnchantment : EnchantmentInterface {
-    object Config {
-        const val MANA_COST = 25
-        const val SPREAD_COUNT = 3
-        const val SPREAD_AMOUNT = 0.2
-        val CAST_SOUND: Sound = Sound.sound(Key.key("entity.breeze.shoot"), Sound.Source.HOSTILE, 1.0f, 1.0f)
-    }
-
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
             .description(key.displayName())
@@ -77,4 +70,19 @@ internal object TempestEnchantment : EnchantmentInterface {
                 .extra(0.02)
                 .spawn()
         }
+
+    /** Configuration for the Tempest enchantment. */
+    object Config {
+        /** The mana cost to cast Tempest. */
+        const val MANA_COST = 25
+
+        /** The number of wind charges to fire in the spread. */
+        const val SPREAD_COUNT = 3
+
+        /** The horizontal spread amount between wind charges. */
+        const val SPREAD_AMOUNT = 0.2
+
+        /** The sound played when casting Tempest. */
+        val CAST_SOUND: Sound = Sound.sound(Key.key("entity.breeze.shoot"), Sound.Source.HOSTILE, 1.0f, 1.0f)
+    }
 }

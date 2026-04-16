@@ -18,16 +18,6 @@ import kotlin.math.sin
 /** Represents an object handling quake enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
 internal object QuakeEnchantment : EnchantmentInterface {
-    object Config {
-        const val MANA_COST = 20
-        const val RADIUS = 4.0
-        const val DAMAGE = 6.0
-        const val KNOCKBACK_STRENGTH = 1.2
-        const val RING_COUNT = 3
-        val CAST_SOUND: Sound = Sound.sound(Key.key("entity.warden.attack_impact"), Sound.Source.BLOCK, 1.0f, 0.8f)
-        val HIT_SOUND: Sound = Sound.sound(Key.key("block.anvil.land"), Sound.Source.BLOCK, 0.6f, 0.5f)
-    }
-
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
             .description(key.displayName())
@@ -105,5 +95,29 @@ internal object QuakeEnchantment : EnchantmentInterface {
                 it.playSound(Config.CAST_SOUND)
                 it.playSound(Config.HIT_SOUND)
             }
+    }
+
+    /** Configuration for the Quake enchantment. */
+    object Config {
+        /** The mana cost to cast Quake. */
+        const val MANA_COST = 20
+
+        /** The radius in blocks for the shockwave effect. */
+        const val RADIUS = 4.0
+
+        /** The damage dealt to entities hit by the shockwave. */
+        const val DAMAGE = 6.0
+
+        /** The knockback strength applied to hit entities. */
+        const val KNOCKBACK_STRENGTH = 1.2
+
+        /** The number of particle rings to spawn. */
+        const val RING_COUNT = 3
+
+        /** The sound played when casting Quake. */
+        val CAST_SOUND: Sound = Sound.sound(Key.key("entity.warden.attack_impact"), Sound.Source.BLOCK, 1.0f, 0.8f)
+
+        /** The sound played when entities are hit by Quake. */
+        val HIT_SOUND: Sound = Sound.sound(Key.key("block.anvil.land"), Sound.Source.BLOCK, 0.6f, 0.5f)
     }
 }

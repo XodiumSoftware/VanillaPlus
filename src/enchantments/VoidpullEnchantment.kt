@@ -1,5 +1,3 @@
-@file:Suppress("ktlint:standard:no-wildcard-imports")
-
 package org.xodium.vanillaplus.enchantments
 
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
@@ -23,13 +21,6 @@ import java.util.*
 /** Represents an object handling voidpull enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
 internal object VoidpullEnchantment : EnchantmentInterface {
-    object Config {
-        const val MANA_COST = 20
-        const val VELOCITY = 2.5
-        val CAST_SOUND: Sound = Sound.sound(Key.key("entity.ender_pearl.throw"), Sound.Source.PLAYER, 1.0f, 1.0f)
-        val PULL_SOUND: Sound = Sound.sound(Key.key("entity.enderman.teleport"), Sound.Source.HOSTILE, 1.0f, 0.8f)
-    }
-
     private val PROJECTILE_KEY by lazy { NamespacedKey(instance, "voidpull_projectile") }
     private val trailTasks = mutableMapOf<UUID, BukkitTask>()
 
@@ -122,4 +113,19 @@ internal object VoidpullEnchantment : EnchantmentInterface {
                 .offset(0.05, 0.05, 0.05)
                 .spawn()
         }
+
+    /** Configuration for the Voidpull enchantment. */
+    object Config {
+        /** The mana cost to cast Voidpull. */
+        const val MANA_COST = 20
+
+        /** The velocity multiplier for the ender pearl projectile. */
+        const val VELOCITY = 2.5
+
+        /** The sound played when casting Voidpull. */
+        val CAST_SOUND: Sound = Sound.sound(Key.key("entity.ender_pearl.throw"), Sound.Source.PLAYER, 1.0f, 1.0f)
+
+        /** The sound played when pulling with Voidpull. */
+        val PULL_SOUND: Sound = Sound.sound(Key.key("entity.enderman.teleport"), Sound.Source.HOSTILE, 1.0f, 0.8f)
+    }
 }

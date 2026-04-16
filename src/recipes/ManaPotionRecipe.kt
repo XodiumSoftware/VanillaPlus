@@ -3,7 +3,6 @@ package org.xodium.vanillaplus.recipes
 import io.papermc.paper.potion.PotionMix
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
-import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.RecipeChoice
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.RecipeInterface
@@ -14,11 +13,7 @@ import kotlin.time.measureTime
  * Represents the brewing recipe for the mana potion.
  * Brewed by combining an awkward potion with a blaze rod in a brewing stand.
  */
-@Suppress("UnstableApiUsage")
 internal object ManaPotionRecipe : RecipeInterface {
-    /** The namespaced key for this brewing recipe. */
-    private val RECIPE_KEY = NamespacedKey(instance, "mana_potion_mix")
-
     override val recipes = emptySet<org.bukkit.inventory.Recipe>()
 
     /**
@@ -31,11 +26,17 @@ internal object ManaPotionRecipe : RecipeInterface {
         measureTime {
             val mix =
                 PotionMix(
-                    RECIPE_KEY,
+                    Config.RECIPE_KEY,
                     ManaPotion.createPotion(),
                     RecipeChoice.MaterialChoice(Material.POTION),
                     RecipeChoice.MaterialChoice(Material.BLAZE_ROD),
                 )
             instance.server.potionBrewer.addPotionMix(mix)
         }.inWholeMilliseconds
+
+    /** Configuration for the mana potion recipe. */
+    private object Config {
+        /** The namespaced key for this brewing recipe. */
+        val RECIPE_KEY = NamespacedKey(instance, "mana_potion_mix")
+    }
 }

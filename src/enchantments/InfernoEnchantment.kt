@@ -17,11 +17,6 @@ import kotlin.uuid.ExperimentalUuidApi
 @OptIn(ExperimentalUuidApi::class)
 @Suppress("UnstableApiUsage")
 internal object InfernoEnchantment : EnchantmentInterface {
-    object Config {
-        const val MANA_COST = 10
-        val CAST_SOUND: Sound = Sound.sound(Key.key("entity.blaze.shoot"), Sound.Source.HOSTILE, 1.0f, 1.0f)
-    }
-
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
             .description(key.displayName())
@@ -68,4 +63,13 @@ internal object InfernoEnchantment : EnchantmentInterface {
                 .count(1)
                 .spawn()
         }
+
+    /** Configuration for the Inferno enchantment. */
+    object Config {
+        /** The mana cost to cast Inferno. */
+        const val MANA_COST = 10
+
+        /** The sound played when casting Inferno. */
+        val CAST_SOUND: Sound = Sound.sound(Key.key("entity.blaze.shoot"), Sound.Source.HOSTILE, 1.0f, 1.0f)
+    }
 }

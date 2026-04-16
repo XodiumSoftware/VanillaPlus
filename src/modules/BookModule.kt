@@ -10,15 +10,13 @@ import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 
 /** Represents a module handling book mechanics within the system. */
 internal object BookModule : ModuleInterface {
-    private val permPrefix: String = "${instance.javaClass.simpleName}.book".lowercase()
-
     override val cmds
         get() =
             Config.BOOKS.map { book ->
                 CommandData(
                     Commands
                         .literal(book.cmd.lowercase())
-                        .requires { it.sender.hasPermission("$permPrefix.${book.cmd.lowercase()}") }
+                        .requires { it.sender.hasPermission("${Config.PERM_PREFIX}.${book.cmd.lowercase()}") }
                         .playerExecuted { player, _ -> player.openBook(book.toBook()) },
                     "Opens the predefined book '${book.cmd.lowercase()}'",
                 )
@@ -28,7 +26,7 @@ internal object BookModule : ModuleInterface {
         get() =
             Config.BOOKS.map {
                 Permission(
-                    "$permPrefix.${it.cmd.lowercase()}",
+                    "${Config.PERM_PREFIX}.${it.cmd.lowercase()}",
                     "Allows use of the book command: ${it.cmd}",
                     it.permission,
                 )
@@ -36,6 +34,10 @@ internal object BookModule : ModuleInterface {
 
     /** Represents the config of the module. */
     object Config {
+        /** The permission prefix for book commands. */
+        val PERM_PREFIX: String = "${instance.javaClass.simpleName}.book".lowercase()
+
+        /** The list of available books. */
         val BOOKS: List<BookData> =
             listOf(
                 BookData(

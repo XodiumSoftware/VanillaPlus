@@ -15,11 +15,6 @@ import org.xodium.vanillaplus.utils.Utils.displayName
 /** Represents an object handling witherbrand enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
 internal object WitherbrandEnchantment : EnchantmentInterface {
-    object Config {
-        const val MANA_COST = 15
-        val CAST_SOUND: Sound = Sound.sound(Key.key("entity.wither.shoot"), Sound.Source.HOSTILE, 1.0f, 1.0f)
-    }
-
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
             .description(key.displayName())
@@ -67,5 +62,14 @@ internal object WitherbrandEnchantment : EnchantmentInterface {
                 .offset(0.1, 0.1, 0.1)
                 .spawn()
         }
+    }
+
+    /** Configuration for the Witherbrand enchantment. */
+    object Config {
+        /** The mana cost to cast Witherbrand. */
+        const val MANA_COST = 15
+
+        /** The sound played when casting Witherbrand. */
+        val CAST_SOUND: Sound = Sound.sound(Key.key("entity.wither.shoot"), Sound.Source.HOSTILE, 1.0f, 1.0f)
     }
 }

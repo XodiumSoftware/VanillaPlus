@@ -12,7 +12,6 @@ import org.xodium.vanillaplus.utils.Utils.MM
  * Mana potions can be brewed or obtained through other means and are essential for
  * extended use of spell enchantments on Blaze Rods.
  */
-@Suppress("UnstableApiUsage")
 internal object ManaPotion : PotionInterface {
     /** The namespaced key for this potion type. */
     const val KEY = "vanillaplus:mana_potion"
@@ -34,7 +33,7 @@ internal object ManaPotion : PotionInterface {
     override fun createPotion(): ItemStack {
         val potion = ItemStack(Material.POTION)
         potion.editMeta(org.bukkit.inventory.meta.PotionMeta::class.java) { meta ->
-            meta.setColor(POTION_COLOR)
+            meta.color = POTION_COLOR
             meta.displayName(MM.deserialize(DISPLAY_NAME))
         }
         potion.isManaPotion = true
@@ -48,8 +47,10 @@ internal object ManaPotion : PotionInterface {
     fun createSplashPotion(): ItemStack {
         val potion = ItemStack(Material.SPLASH_POTION)
         potion.editMeta(org.bukkit.inventory.meta.PotionMeta::class.java) { meta ->
-            meta.setColor(POTION_COLOR)
-            meta.displayName(MM.deserialize("<gradient:#832466:#BF4299:#832466>Splash Potion of Arcane Restoration</gradient>"))
+            meta.color = POTION_COLOR
+            meta.displayName(
+                MM.deserialize("<gradient:#832466:#BF4299:#832466>Splash Potion of Arcane Restoration</gradient>"),
+            )
         }
         potion.isManaPotion = true
         return potion

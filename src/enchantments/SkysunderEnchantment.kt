@@ -11,11 +11,6 @@ import org.xodium.vanillaplus.utils.Utils.displayName
 /** Represents an object handling skysunder enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
 internal object SkysunderEnchantment : EnchantmentInterface {
-    object Config {
-        const val MANA_COST = 20
-        const val RANGE = 30.0
-    }
-
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
             .description(key.displayName())
@@ -64,5 +59,14 @@ internal object SkysunderEnchantment : EnchantmentInterface {
             .spawn()
 
         player.world.strikeLightning(target)
+    }
+
+    /** Configuration for the Skysunder enchantment. */
+    object Config {
+        /** The mana cost to cast Skysunder. */
+        const val MANA_COST = 20
+
+        /** The maximum range in blocks for the lightning strike. */
+        const val RANGE = 30.0
     }
 }

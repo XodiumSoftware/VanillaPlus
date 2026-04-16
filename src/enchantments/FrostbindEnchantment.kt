@@ -19,13 +19,6 @@ import org.xodium.vanillaplus.utils.Utils.displayName
 /** Represents an object handling frostbind enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
 internal object FrostbindEnchantment : EnchantmentInterface {
-    object Config {
-        const val MANA_COST = 15
-        const val FREEZE_TICKS = 500
-        val LAUNCH_SOUND: Sound = Sound.sound(Key.key("entity.snow_golem.shoot"), Sound.Source.NEUTRAL, 1.0f, 1.2f)
-        val HIT_SOUND: Sound = Sound.sound(Key.key("block.powder_snow.place"), Sound.Source.BLOCK, 1.0f, 0.8f)
-    }
-
     private val PROJECTILE_KEY by lazy { NamespacedKey(instance, "frostbind_projectile") }
 
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
@@ -101,4 +94,19 @@ internal object FrostbindEnchantment : EnchantmentInterface {
                 .offset(0.05, 0.05, 0.05)
                 .spawn()
         }
+
+    /** Configuration for the Frostbind enchantment. */
+    object Config {
+        /** The mana cost to cast Frostbind. */
+        const val MANA_COST = 15
+
+        /** The duration in ticks that entities remain frozen. */
+        const val FREEZE_TICKS = 500
+
+        /** The sound played when launching Frostbind. */
+        val LAUNCH_SOUND: Sound = Sound.sound(Key.key("entity.snow_golem.shoot"), Sound.Source.NEUTRAL, 1.0f, 1.2f)
+
+        /** The sound played when hitting with Frostbind. */
+        val HIT_SOUND: Sound = Sound.sound(Key.key("block.powder_snow.place"), Sound.Source.BLOCK, 1.0f, 0.8f)
+    }
 }
