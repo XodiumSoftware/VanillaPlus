@@ -68,7 +68,7 @@ SilkTouch and FeatherFalling exist as implementations but are not currently regi
 
 ### Items
 
-Custom items implement **`ItemInterface`** and are created as `object` singletons in `potions/`. Items include potions and other consumables with magical effects, primarily the **Mana Item** which refills the player's mana pool for spell casting.
+Custom items implement **`ItemInterface`** and are created as `object` singletons in `items/`. Items include items and other consumables with magical effects, primarily the **Mana Item** which refills the player's mana pool for spell casting.
 
 **Mana Item:**
 
@@ -82,7 +82,7 @@ Custom items implement **`ItemInterface`** and are created as `object` singleton
 
 ### PDCs (Persistent Data Containers)
 
-PDC helpers in `pdcs/` expose Kotlin property delegates on entity types. `ItemPDC` provides `isManaPotion` for identifying mana potions, and `selectedSpell` for wand spell selection.
+PDC helpers in `pdcs/` expose Kotlin property delegates on entity types. `ItemPDC` provides `isManaPotion` for identifying mana items, and `selectedSpell` for wand spell selection.
 
 ### Recipes
 
@@ -92,14 +92,14 @@ Recipe objects implement **`RecipeInterface`** and are listed in `VanillaPlus.on
 
 | Package         | Contents                                                                                                                                         |
 |-----------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
-| `potions/`      | Custom item implementations (Mana Item)                                                                                                         |
+| `items/`        | Custom item implementations (Mana Item)                                                                                                          |
 | `modules/`      | 15 feature module singletons                                                                                                                     |
 | `data/`         | `CommandData`, `BookData`, `AdjacentBlockData`                                                                                                   |
 | `enchantments/` | Verdance, Tether, Nimbus, Earthrend, Embertread, Inferno, Skysunder, Witherbrand, Frostbind, Tempest, Voidpull, Quake, SilkTouch, FeatherFalling |
 | `interfaces/`   | `ModuleInterface`, `EnchantmentInterface`, `RecipeInterface`, `ItemInterface`                                                                    |
 | `managers/`     | `ManaManager`, `PlayerMessageManager`, `SpellManager`                                                                                            |
 | `pdcs/`         | `PlayerPDC`, `ItemPDC`                                                                                                                           |
-| `recipes/`      | Chainmail, DiamondRecycle, ManaItem, Painting, RottenFlesh, WoodLog                                                                               |
+| `recipes/`      | Chainmail, DiamondRecycle, ManaItem, Painting, RottenFlesh, WoodLog                                                                              |
 | `utils/`        | `Utils`, `CommandUtils`, `BlockUtils`, `PlayerUtils`, `ScheduleUtils`                                                                            |
 
 ### Key Conventions
