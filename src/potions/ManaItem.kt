@@ -20,25 +20,25 @@ internal object ManaItem : ItemInterface {
     /** The display name using the Spellbite gradient. */
     private val POTION_DISPLAY_NAME: Component =
         MM.deserialize(
-            "<gradient:#832466:#BF4299:#832466>Potion of Arcane Restoration</gradient>",
+            "Potion of <gradient:#832466:#BF4299:#832466>Arcane Restoration</gradient>",
         )
 
     /** The display name for splash variant using the Spellbite gradient. */
     private val SPLASH_DISPLAY_NAME: Component =
         MM.deserialize(
-            "<gradient:#832466:#BF4299:#832466>Splash Potion of Arcane Restoration</gradient>",
+            "Splash Potion of <gradient:#832466:#BF4299:#832466>Arcane Restoration</gradient>",
         )
 
     /** The display name for lingering variant using the Spellbite gradient. */
     private val LINGERING_DISPLAY_NAME: Component =
         MM.deserialize(
-            "<gradient:#832466:#BF4299:#832466>Lingering Potion of Arcane Restoration</gradient>",
+            "Lingering Potion of <gradient:#832466:#BF4299:#832466>Arcane Restoration</gradient>",
         )
 
     /** The display name for tipped arrow variant using the Spellbite gradient. */
     private val TIPPED_ARROW_DISPLAY_NAME: Component =
         MM.deserialize(
-            "<gradient:#832466:#BF4299:#832466>Arrow of Arcane Restoration</gradient>",
+            "Arrow of <gradient:#832466:#BF4299:#832466>Arcane Restoration</gradient>",
         )
 
     /** The potion color (Spellbite purple). */
