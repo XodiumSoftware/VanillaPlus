@@ -1,8 +1,11 @@
 package org.xodium.vanillaplus.items
 
 import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.ItemLore
 import io.papermc.paper.datacomponent.item.PotionContents
+import io.papermc.paper.datacomponent.item.TooltipDisplay
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Color
 import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.interfaces.ItemInterface
@@ -44,10 +47,26 @@ internal object ManaItem : ItemInterface {
     /** The potion color (Spellbite purple). */
     private val POTION_COLOR: Color = Color.fromRGB(0x832466)
 
+    /** Custom lore describing the effect. */
+    private val POTION_LORE: List<Component> =
+        listOf(
+            MM
+                .deserialize("<blue>Instant Full Mana</blue>")
+                .decoration(TextDecoration.ITALIC, false),
+        )
+
     override fun potion(): ItemStack =
         super.potion().apply {
             setData(DataComponentTypes.CUSTOM_NAME, POTION_DISPLAY_NAME)
             setData(DataComponentTypes.POTION_CONTENTS, PotionContents.potionContents().customColor(POTION_COLOR))
+            setData(
+                DataComponentTypes.TOOLTIP_DISPLAY,
+                TooltipDisplay
+                    .tooltipDisplay()
+                    .addHiddenComponents(DataComponentTypes.POTION_CONTENTS)
+                    .build(),
+            )
+            setData(DataComponentTypes.LORE, ItemLore.lore(POTION_LORE))
             isManaPotion = true
         }
 
@@ -55,6 +74,14 @@ internal object ManaItem : ItemInterface {
         super.splashPotion().apply {
             setData(DataComponentTypes.CUSTOM_NAME, SPLASH_DISPLAY_NAME)
             setData(DataComponentTypes.POTION_CONTENTS, PotionContents.potionContents().customColor(POTION_COLOR))
+            setData(
+                DataComponentTypes.TOOLTIP_DISPLAY,
+                TooltipDisplay
+                    .tooltipDisplay()
+                    .addHiddenComponents(DataComponentTypes.POTION_CONTENTS)
+                    .build(),
+            )
+            setData(DataComponentTypes.LORE, ItemLore.lore(POTION_LORE))
             isManaPotion = true
         }
 
@@ -62,6 +89,14 @@ internal object ManaItem : ItemInterface {
         super.lingeringPotion().apply {
             setData(DataComponentTypes.CUSTOM_NAME, LINGERING_DISPLAY_NAME)
             setData(DataComponentTypes.POTION_CONTENTS, PotionContents.potionContents().customColor(POTION_COLOR))
+            setData(
+                DataComponentTypes.TOOLTIP_DISPLAY,
+                TooltipDisplay
+                    .tooltipDisplay()
+                    .addHiddenComponents(DataComponentTypes.POTION_CONTENTS)
+                    .build(),
+            )
+            setData(DataComponentTypes.LORE, ItemLore.lore(POTION_LORE))
             isManaPotion = true
         }
 
@@ -69,6 +104,14 @@ internal object ManaItem : ItemInterface {
         super.tippedArrow().apply {
             setData(DataComponentTypes.CUSTOM_NAME, TIPPED_ARROW_DISPLAY_NAME)
             setData(DataComponentTypes.POTION_CONTENTS, PotionContents.potionContents().customColor(POTION_COLOR))
+            setData(
+                DataComponentTypes.TOOLTIP_DISPLAY,
+                TooltipDisplay
+                    .tooltipDisplay()
+                    .addHiddenComponents(DataComponentTypes.POTION_CONTENTS)
+                    .build(),
+            )
+            setData(DataComponentTypes.LORE, ItemLore.lore(POTION_LORE))
             isManaPotion = true
         }
 }

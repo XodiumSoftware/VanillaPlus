@@ -139,6 +139,8 @@ Within each group:
 
 - **`override`** members go above regular members
 - **`@EventHandler`** functions go above regular `public` functions
+- **`@EventHandler`** functions should always be named `on(event: <EventType>)` — Kotlin allows multiple `@EventHandler fun on(...)` as long as parameter types differ
+- **`@EventHandler`** functions should not have KDoc comments (the event type is self-documenting)
 - **`public`** members go above **`private`** members
 
 ## Testing
