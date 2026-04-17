@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package org.xodium.vanillaplus.enchantments
 
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry

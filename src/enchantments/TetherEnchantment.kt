@@ -32,7 +32,7 @@ internal object TetherEnchantment : EnchantmentInterface {
         val player = event.player
         val itemInHand = player.inventory.itemInMainHand
 
-        if (!itemInHand.hasItemMeta() || !itemInHand.itemMeta.hasEnchant(get())) return
+        if (!itemInHand.containsEnchantment(get())) return
 
         transferItemEntitiesToInventory(player, event.items)
     }

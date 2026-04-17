@@ -52,19 +52,19 @@ internal object EarthrendEnchantment : EnchantmentInterface {
 
         val itemInHand = player.inventory.itemInMainHand
 
-        if (!itemInHand.hasItemMeta() || !itemInHand.itemMeta.hasEnchant(get())) return
+        if (!itemInHand.containsEnchantment(get())) return
 
         val block = event.block
 
         if (!MaterialTags.ORES.isTagged(block.type)) return
 
         val blockType = block.type
-        val enchantLevel = itemInHand.itemMeta.getEnchantLevel(get())
+        val enchantLevel = itemInHand.getEnchantmentLevel(get())
         val connectedBlocks = findConnectedBlocks(block, blockType, LEVEL_TO_MAX_BLOCKS[enchantLevel] ?: return)
 
         if (connectedBlocks.size <= 1) return
 
-        val hasTetherEnchant = itemInHand.itemMeta.hasEnchant(TetherEnchantment.get())
+        val hasTetherEnchant = itemInHand.containsEnchantment(TetherEnchantment.get())
         val damageableMeta = itemInHand.itemMeta as? Damageable ?: return
         var currentDamage = damageableMeta.damage
 

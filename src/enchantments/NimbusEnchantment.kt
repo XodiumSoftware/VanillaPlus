@@ -39,10 +39,8 @@ internal object NimbusEnchantment : EnchantmentInterface {
         val harness = entity.equipment.getItem(EquipmentSlot.BODY)
         val attribute = entity.getAttribute(Attribute.FLYING_SPEED)
 
-        if (harness.hasItemMeta() && harness.itemMeta.hasEnchant(get())) {
-            val enchantLevel = harness.itemMeta.getEnchantLevel(get())
-
-            attribute?.baseValue = DEFAULT_FLY_SPEED * (SPEED_MODIFIER[enchantLevel] ?: return)
+        if (harness.containsEnchantment(get())) {
+            attribute?.baseValue = DEFAULT_FLY_SPEED * (SPEED_MODIFIER[harness.getEnchantmentLevel(get())] ?: return)
         } else {
             attribute?.baseValue = DEFAULT_FLY_SPEED
         }

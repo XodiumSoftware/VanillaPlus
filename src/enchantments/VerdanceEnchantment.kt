@@ -34,7 +34,7 @@ internal object VerdanceEnchantment : EnchantmentInterface {
         val itemInHand = event.player.inventory.itemInMainHand
 
         if (ageable.age < ageable.maximumAge) return
-        if (!itemInHand.hasItemMeta() || !itemInHand.itemMeta.hasEnchant(get())) return
+        if (!itemInHand.containsEnchantment(get())) return
 
         instance.server.scheduler.runTaskLater(
             instance,
