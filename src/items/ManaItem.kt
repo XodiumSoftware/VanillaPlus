@@ -1,4 +1,4 @@
-package org.xodium.vanillaplus.potions
+package org.xodium.vanillaplus.items
 
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.PotionContents

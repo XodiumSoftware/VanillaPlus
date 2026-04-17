@@ -8,7 +8,7 @@ import org.bukkit.inventory.RecipeChoice
 import org.bukkit.inventory.ShapedRecipe
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.RecipeInterface
-import org.xodium.vanillaplus.potions.ManaItem
+import org.xodium.vanillaplus.items.ManaItem
 
 /**
  * Represents the recipes for mana items.
