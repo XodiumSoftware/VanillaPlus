@@ -6,9 +6,9 @@ import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
+import io.papermc.paper.datacomponent.DataComponentTypes
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.inventory.EquipmentSlotGroup
-import org.bukkit.inventory.meta.Damageable
 import org.xodium.vanillaplus.enchantments.EarthrendEnchantment.LEVEL_TO_MAX_BLOCKS
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 import org.xodium.vanillaplus.utils.Utils.displayName
@@ -65,8 +65,7 @@ internal object EarthrendEnchantment : EnchantmentInterface {
         if (connectedBlocks.size <= 1) return
 
         val hasTetherEnchant = itemInHand.containsEnchantment(TetherEnchantment.get())
-        val damageableMeta = itemInHand.itemMeta as? Damageable ?: return
-        var currentDamage = damageableMeta.damage
+        var currentDamage = itemInHand.getData(DataComponentTypes.DAMAGE) ?: 0
 
         for (connectedBlock in connectedBlocks) {
             if (connectedBlock == block) continue
@@ -95,9 +94,8 @@ internal object EarthrendEnchantment : EnchantmentInterface {
             if (currentDamage >= itemInHand.type.maxDurability.toInt()) break
         }
 
-        if (currentDamage > damageableMeta.damage) {
-            damageableMeta.damage = currentDamage
-            itemInHand.itemMeta = damageableMeta
+        if (currentDamage > (itemInHand.getData(DataComponentTypes.DAMAGE) ?: 0)) {
+            itemInHand.setData(DataComponentTypes.DAMAGE, currentDamage)
         }
     }
 

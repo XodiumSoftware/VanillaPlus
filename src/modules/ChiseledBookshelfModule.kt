@@ -1,5 +1,8 @@
 package org.xodium.vanillaplus.modules
 
+import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.ItemEnchantments
+import io.papermc.paper.datacomponent.item.WrittenBookContent
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
 import org.bukkit.GameMode
@@ -11,14 +14,13 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
-import org.bukkit.inventory.meta.BookMeta
-import org.bukkit.inventory.meta.EnchantmentStorageMeta
 import org.bukkit.util.Vector
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.Utils.MM
 import org.bukkit.block.data.type.ChiseledBookshelf as ChiseledBookshelfData
 
 /** Represents a module handling bookshelf mechanics within the system. */
+@Suppress("UnstableApiUsage")
 internal object ChiseledBookshelfModule : ModuleInterface {
     @EventHandler
     fun on(event: PlayerInteractEvent) {
@@ -46,10 +48,18 @@ internal object ChiseledBookshelfModule : ModuleInterface {
         if (item == null || item.type.isAir) return
 
         player.sendActionBar(
-            when (val meta = item.itemMeta) {
-                is BookMeta -> renderBook(meta, item.type.key.key)
-                is EnchantmentStorageMeta -> renderEnchantedBook(meta)
-                else -> MM.deserialize("<white><sprite:items:item/${item.type.key.key}></white>")
+            when {
+                item.hasData(DataComponentTypes.WRITTEN_BOOK_CONTENT) -> {
+                    renderBook(item.getData(DataComponentTypes.WRITTEN_BOOK_CONTENT)!!, item.type.key.key)
+                }
+
+                item.hasData(DataComponentTypes.STORED_ENCHANTMENTS) -> {
+                    renderEnchantedBook(item.getData(DataComponentTypes.STORED_ENCHANTMENTS)!!)
+                }
+
+                else -> {
+                    MM.deserialize("<white><sprite:items:item/${item.type.key.key}></white>")
+                }
             },
         )
     }
@@ -84,32 +94,33 @@ internal object ChiseledBookshelfModule : ModuleInterface {
 
     /**
      * Renders a written or writable book component.
-     * @param meta The book meta.
+     * @param content The book content data.
+     * @param itemKey The item key for the sprite.
      * @return The rendered component.
      */
     private fun renderBook(
-        meta: BookMeta,
+        content: WrittenBookContent,
         itemKey: String,
-    ): Component {
-        var message = MM.deserialize("<white><sprite:items:item/$itemKey></white>")
-
-        meta.title?.let { message = message.append(MM.deserialize(" <white>$it</white>")) }
-        meta.author?.let { message = message.append(MM.deserialize("<gray> by $it</gray>")) }
-
-        return message
-    }
+    ): Component =
+        MM
+            .deserialize("<white><sprite:items:item/$itemKey></white>")
+            .append(MM.deserialize(" <white>${content.title().raw()}</white>"))
+            .append(MM.deserialize("<gray> by ${content.author()}</gray>"))
 
     /**
      * Renders an enchanted book component.
-     * @param meta The enchantment storage meta.
+     * @param enchantmentsData The stored enchantments' data.
      * @return The rendered component.
      */
-    private fun renderEnchantedBook(meta: EnchantmentStorageMeta): Component {
-        val enchantments = meta.storedEnchants.entries.map { (enchantment, level) -> enchantment.displayName(level) }
-
-        return MM
+    private fun renderEnchantedBook(enchantmentsData: ItemEnchantments): Component =
+        MM
             .deserialize("<white><sprite:items:item/enchanted_book></white><gray> </gray>")
-            .append(Component.join(JoinConfiguration.separator(MM.deserialize("<gray>, </gray>")), enchantments))
-    }
-
+            .append(
+                Component.join(
+                    JoinConfiguration.separator(MM.deserialize("<gray>, </gray>")),
+                    enchantmentsData.enchantments().entries.map { (enchantment, level) ->
+                        enchantment.displayName(level)
+                    },
+                ),
+            )
 }
