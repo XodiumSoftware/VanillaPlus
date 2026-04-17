@@ -24,4 +24,6 @@ internal object PotionModule : ModuleInterface {
         player.mana = MAX_MANA
         ManaManager.showManaBar(player)
     }
+
+    // TODO: impl events for splash/lingering potions and tipped arrow.
 }
