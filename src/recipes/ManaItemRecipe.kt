@@ -3,6 +3,7 @@ package org.xodium.vanillaplus.recipes
 import io.papermc.paper.potion.PotionMix
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
+import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.RecipeChoice
 import org.bukkit.inventory.ShapedRecipe
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -31,20 +32,20 @@ internal object ManaItemRecipe : RecipeInterface {
             PotionMix(
                 NamespacedKey(instance, "mana_potion_mix"),
                 ManaItem.potion(),
-                RecipeChoice.MaterialChoice(Material.POTION),
-                RecipeChoice.MaterialChoice(Material.BLAZE_ROD),
+                RecipeChoice.ExactChoice(ItemStack.of(Material.POTION)),
+                RecipeChoice.ExactChoice(ItemStack.of(Material.BLAZE_ROD)),
             ),
             PotionMix(
                 NamespacedKey(instance, "mana_splash_potion_mix"),
                 ManaItem.splashPotion(),
-                RecipeChoice.MaterialChoice(Material.SPLASH_POTION),
-                RecipeChoice.MaterialChoice(Material.BLAZE_ROD),
+                RecipeChoice.ExactChoice(ItemStack.of(Material.SPLASH_POTION)),
+                RecipeChoice.ExactChoice(ItemStack.of(Material.BLAZE_ROD)),
             ),
             PotionMix(
                 NamespacedKey(instance, "mana_lingering_potion_mix"),
                 ManaItem.lingeringPotion(),
-                RecipeChoice.MaterialChoice(Material.LINGERING_POTION),
-                RecipeChoice.MaterialChoice(Material.BLAZE_ROD),
+                RecipeChoice.ExactChoice(ItemStack.of(Material.LINGERING_POTION)),
+                RecipeChoice.ExactChoice(ItemStack.of(Material.BLAZE_ROD)),
             ),
         )
 }
