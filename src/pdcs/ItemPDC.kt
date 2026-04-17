@@ -19,11 +19,9 @@ internal object ItemPDC {
      * @return The spell ID string, or empty string if none selected.
      */
     var ItemStack.selectedSpell: String
-        get() = itemMeta?.persistentDataContainer?.get(SELECTED_SPELL_KEY, PersistentDataType.STRING) ?: ""
+        get() = persistentDataContainer.get(SELECTED_SPELL_KEY, PersistentDataType.STRING) ?: ""
         set(value) {
-            itemMeta = itemMeta?.apply {
-                persistentDataContainer.set(SELECTED_SPELL_KEY, PersistentDataType.STRING, value)
-            } ?: return
+            editPersistentDataContainer { it.set(SELECTED_SPELL_KEY, PersistentDataType.STRING, value) }
         }
 
     /**
@@ -32,10 +30,8 @@ internal object ItemPDC {
      * @return `true` if this item is a mana potion, `false` otherwise.
      */
     var ItemStack.isManaPotion: Boolean
-        get() = itemMeta?.persistentDataContainer?.get(MANA_POTION_KEY, PersistentDataType.BOOLEAN) ?: false
+        get() = persistentDataContainer.get(MANA_POTION_KEY, PersistentDataType.BOOLEAN) ?: false
         set(value) {
-            itemMeta = itemMeta?.apply {
-                persistentDataContainer.set(MANA_POTION_KEY, PersistentDataType.BOOLEAN, value)
-            } ?: return
+            editPersistentDataContainer { it.set(MANA_POTION_KEY, PersistentDataType.BOOLEAN, value) }
         }
 }
