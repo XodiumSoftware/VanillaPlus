@@ -1,7 +1,17 @@
 package org.xodium.vanillaplus.modules
 
+import org.bukkit.NamespacedKey
+import org.bukkit.entity.AbstractArrow
+import org.bukkit.entity.AreaEffectCloud
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
+import org.bukkit.event.entity.AreaEffectCloudApplyEvent
+import org.bukkit.event.entity.LingeringPotionSplashEvent
+import org.bukkit.event.entity.PotionSplashEvent
+import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.event.player.PlayerItemConsumeEvent
+import org.bukkit.persistence.PersistentDataType
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.ManaManager
 import org.xodium.vanillaplus.managers.ManaManager.Config.MAX_MANA
@@ -17,13 +27,65 @@ internal object PotionModule : ModuleInterface {
     @EventHandler
     fun on(event: PlayerItemConsumeEvent) {
         val player = event.player
-        val item = event.item
 
-        if (!item.isManaPotion) return
+        if (!event.item.isManaPotion) return
 
         player.mana = MAX_MANA
         ManaManager.showManaBar(player)
     }
 
-    // TODO: impl events for splash/lingering potions and tipped arrow.
+    @EventHandler
+    fun on(event: PotionSplashEvent) {
+        if (!event.potion.item.isManaPotion) return
+
+        event.affectedEntities.filterIsInstance<Player>().forEach {
+            it.mana = MAX_MANA
+            ManaManager.showManaBar(it)
+        }
+    }
+
+    @EventHandler
+    fun on(event: LingeringPotionSplashEvent) {
+        if (!event.entity.item.isManaPotion) return
+
+        event.areaEffectCloud.persistentDataContainer.set(
+            NamespacedKey(instance, "mana_cloud"),
+            PersistentDataType.BOOLEAN,
+            true,
+        )
+    }
+
+    @EventHandler
+    fun on(event: AreaEffectCloudApplyEvent) {
+        val key = NamespacedKey(instance, "mana_cloud")
+
+        if (!event.entity.persistentDataContainer.has(key, PersistentDataType.BOOLEAN)) return
+
+        event.affectedEntities.filterIsInstance<Player>().forEach {
+            it.mana = MAX_MANA
+            ManaManager.showManaBar(it)
+        }
+    }
+
+    @EventHandler
+    fun on(event: ProjectileHitEvent) {
+        val arrow = event.entity as? AbstractArrow ?: return
+
+        if (!arrow.itemStack.isManaPotion) return
+
+        when (val hit = event.hitEntity) {
+            is Player -> {
+                hit.mana = MAX_MANA
+                ManaManager.showManaBar(hit)
+            }
+
+            is AreaEffectCloud -> {
+                hit.persistentDataContainer.set(
+                    NamespacedKey(instance, "mana_cloud"),
+                    PersistentDataType.BOOLEAN,
+                    true,
+                )
+            }
+        }
+    }
 }
