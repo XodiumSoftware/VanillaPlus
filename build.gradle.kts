@@ -66,6 +66,18 @@ tasks {
         moduleName.set("VanillaPlus")
         suppressObviousFunctions.set(true)
         suppressInheritedMembers.set(true)
+        dokkaSourceSets {
+            named("main") {
+                displayName.set("Kotlin")
+                documentedVisibilities.set(
+                    setOf(
+                        org.jetbrains.dokka.DokkaConfiguration.Visibility.PUBLIC,
+                        org.jetbrains.dokka.DokkaConfiguration.Visibility.INTERNAL,
+                    ),
+                )
+                sourceRoots.from("src")
+            }
+        }
     }
 }
 

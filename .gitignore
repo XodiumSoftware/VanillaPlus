@@ -18,7 +18,7 @@ Thumbs.db
 run/
 
 # Dokka generated documentation (committed for GitHub Pages)
-# docs/ is intentionally NOT ignored
+docs/
 
 # IDE specific files
 .idea/libraries/
