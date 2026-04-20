@@ -1,5 +1,3 @@
-import org.jetbrains.dokka.DokkaDefaults.documentedVisibilities
-import org.jetbrains.dokka.DokkaDefaults.moduleName
 import org.jetbrains.dokka.gradle.engine.parameters.VisibilityModifier
 import xyz.jpenilla.runtask.task.AbstractRun
 
@@ -50,8 +48,6 @@ java {
 }
 
 sourceSets { main { kotlin { srcDirs("src") } } }
-
-idea { module { excludeDirs.addAll(files("run", ".kotlin")) } }
 
 dokka {
     moduleName.set("VanillaPlus")
