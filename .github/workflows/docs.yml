@@ -38,7 +38,7 @@ jobs:
 
       - id: generate-docs
         name: Generate Dokka Documentation
-        run: ./gradlew dokkaHtml
+        run: ./gradlew dokkaGenerateHtml
 
       - id: upload-artifact
         name: Upload Pages artifact

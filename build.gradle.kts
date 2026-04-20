@@ -1,3 +1,6 @@
+import org.jetbrains.dokka.DokkaDefaults.documentedVisibilities
+import org.jetbrains.dokka.DokkaDefaults.moduleName
+import org.jetbrains.dokka.gradle.engine.parameters.VisibilityModifier
 import xyz.jpenilla.runtask.task.AbstractRun
 
 plugins {
@@ -50,6 +53,24 @@ sourceSets { main { kotlin { srcDirs("src") } } }
 
 idea { module { excludeDirs.addAll(files("run", ".kotlin")) } }
 
+dokka {
+    moduleName.set("VanillaPlus")
+
+    dokkaSourceSets.main {
+        documentedVisibilities.set(
+            setOf(
+                VisibilityModifier.Public,
+                VisibilityModifier.Internal,
+            ),
+        )
+        sourceRoots.from("src")
+    }
+
+    dokkaPublications.html {
+        outputDirectory.set(layout.projectDirectory.dir("docs"))
+    }
+}
+
 tasks {
     shadowJar {
         dependsOn(processResources)
@@ -61,24 +82,6 @@ tasks {
     runServer { minecraftVersion(mcVersion) }
     withType<JavaCompile> { options.encoding = "UTF-8" }
     withType(AbstractRun::class) { jvmArgs("-XX:+AllowEnhancedClassRedefinition") }
-    dokkaHtml {
-        outputDirectory.set(layout.projectDirectory.dir("docs"))
-        moduleName.set("VanillaPlus")
-        suppressObviousFunctions.set(true)
-        suppressInheritedMembers.set(true)
-        dokkaSourceSets {
-            named("main") {
-                displayName.set("Kotlin")
-                documentedVisibilities.set(
-                    setOf(
-                        org.jetbrains.dokka.DokkaConfiguration.Visibility.PUBLIC,
-                        org.jetbrains.dokka.DokkaConfiguration.Visibility.INTERNAL,
-                    ),
-                )
-                sourceRoots.from("src")
-            }
-        }
-    }
 }
 
 paperPluginYaml {
