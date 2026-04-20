@@ -17,8 +17,8 @@ Thumbs.db
 # Server files
 run/
 
-# MkDocs generated site
-site/
+# Dokka generated documentation (committed for GitHub Pages)
+# docs/ is intentionally NOT ignored
 
 # IDE specific files
 .idea/libraries/

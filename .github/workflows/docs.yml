@@ -4,9 +4,8 @@ on:
   push:
     branches: [ main ]
     paths:
-      - "docs/**"
-      - "mkdocs.yml"
-      - "requirements-docs.txt"
+      - "src/**"
+      - "build.gradle.kts"
   workflow_dispatch:
 
 concurrency:
@@ -26,25 +25,26 @@ jobs:
         name: Checkout
         uses: actions/checkout@v6.0.2
 
-      - id: setup-python
-        name: Setup Python
-        uses: actions/setup-python@v6
+      - id: setup-java
+        name: Setup Java
+        uses: actions/setup-java@v4
         with:
-          python-version: "3.x"
+          java-version: "21"
+          distribution: "jetbrains"
 
-      - id: install-deps
-        name: Install dependencies
-        run: pip install -r requirements-docs.txt
+      - id: setup-gradle
+        name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
 
-      - id: build
-        name: Build docs
-        run: mkdocs build
+      - id: generate-docs
+        name: Generate Dokka Documentation
+        run: ./gradlew dokkaHtml
 
       - id: upload-artifact
         name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v5
         with:
-          path: site/
+          path: docs/
 
   deploy:
     environment:

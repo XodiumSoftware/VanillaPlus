@@ -7,6 +7,7 @@ plugins {
     id("com.gradleup.shadow") version "9.4.1"
     id("xyz.jpenilla.run-paper") version "3.0.2"
     id("xyz.jpenilla.resource-factory-paper-convention") version "1.3.1"
+    id("org.jetbrains.dokka") version "1.9.20"
 }
 
 val mcVersion = "1.21.11"
@@ -60,6 +61,12 @@ tasks {
     runServer { minecraftVersion(mcVersion) }
     withType<JavaCompile> { options.encoding = "UTF-8" }
     withType(AbstractRun::class) { jvmArgs("-XX:+AllowEnhancedClassRedefinition") }
+    dokkaHtml {
+        outputDirectory.set(layout.projectDirectory.dir("docs"))
+        moduleName.set("VanillaPlus")
+        suppressObviousFunctions.set(true)
+        suppressInheritedMembers.set(true)
+    }
 }
 
 paperPluginYaml {

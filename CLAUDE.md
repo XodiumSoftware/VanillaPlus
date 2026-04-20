@@ -21,7 +21,7 @@
 |                     | resource-factory 1.3.1                   | `paper-plugin.yml` generation      |
 |                     | foojay-resolver 1.0.0                    | Auto-download JVM toolchains       |
 | **Text Formatting** | MiniMessage                              | Adventure API component-based text |
-| **Docs**            | MkDocs + Material theme                  | Static site generation             |
+| **Docs**            | Dokka                                    | Kotlin API documentation           |
 | **Code Style**      | ktlint                                   | Kotlin linting (IDE plugin)        |
 
 ### Paper API Resources
@@ -36,14 +36,15 @@
 - Item tags created via `LifecycleEvents.TAGS.postFlatten`
 - Plugin bootstrapper pattern for early registry access
 
-### MkDocs
+### Dokka
 
-Documentation is built with MkDocs Material theme. Key files:
+Documentation is generated with Dokka from KDoc comments in the source code.
 
-- `mkdocs.yml` — Site configuration and navigation
-- `docs/` — Markdown source files
-- Run `mkdocs serve` locally to preview
-- Deployed automatically via GitHub Actions on pushes to main
+- Run `./gradlew dokkaHtml` to generate documentation locally
+- Output goes to `docs/` directory (published to GitHub Pages automatically)
+- Auto-deployed via GitHub Actions on pushes to main
+- Key files to document: interfaces, managers, and public APIs
+- Use KDoc format: `/** ... */` with Markdown support
 
 ## Quick Commands
 
@@ -53,6 +54,9 @@ Documentation is built with MkDocs Material theme. Key files:
 
 # Run a local test server (auto-downloads Paper 1.21.11)
 ./gradlew runServer
+
+# Generate Dokka documentation
+./gradlew dokkaHtml
 ```
 
 ## Architecture Overview
@@ -183,12 +187,11 @@ Within each group:
     - Modify the mana system or spell mechanics
     - Change project structure or conventions
 
-2. **docs/** — Update if you:
-    - Add/remove features that affect user-facing behavior
-    - Change enchantment functionality
-    - Modify command usage or module behavior
-    - MkDocs source files are in `docs/`; run `mkdocs serve` to preview locally
-    - **When adding/removing docs pages or changing the structure, also update `mkdocs.yml`** (nav section)
+2. **KDoc comments** — Add/update if you:
+    - Add new public APIs (interfaces, managers, utils)
+    - Change existing function signatures or behavior
+    - Add complex logic that needs explanation
+    - **Run `./gradlew dokkaHtml`** to regenerate docs after changes
 
 **Rule of thumb:** If a code change would confuse someone reading the docs, update the docs.
 
@@ -197,7 +200,7 @@ Within each group:
 GitHub Actions workflows in `.github/workflows/`:
 
 - **build.yml** — Builds shadow JAR on push/PR, uploads artifact
-- **docs.yml** — Deploys MkDocs to GitHub Pages on pushes to main
+- **docs.yml** — Generates Dokka documentation and deploys to GitHub Pages on pushes to main
 - **enforce_pr_title.yml** — Validates PR titles follow conventional commits
 
 ## Adding a New Enchantment
@@ -217,8 +220,8 @@ To add a new enchantment, follow these steps:
     - Add to enchantment compatibility group
     - Implement `@EventHandler` for `PlayerInteractEvent` or projectile logic
 6. Update `ARCHITECTURE.md` enchantment table
-7. Update `docs/enchantments.md` user documentation
-8. Update `mkdocs.yml` if needed
+7. Add KDoc comments to explain the enchantment's behavior
+8. Run `./gradlew dokkaHtml` to regenerate documentation
 
 ## Adding Other Components
 
@@ -230,7 +233,7 @@ To add a new enchantment, follow these steps:
 4. Implement `@EventHandler` methods for events
 5. Register commands/permissions in `register()` if needed
 6. In `VanillaPlus.kt`, add `YourModule` to the module list in `onEnable()`
-7. Add docs page at `docs/modules/yourmodule.md` and update `mkdocs.yml` nav
+7. Add KDoc comments explaining the module's purpose and features
 8. Update `ARCHITECTURE.md` module count
 
 ### Adding a Recipe
@@ -240,7 +243,7 @@ To add a new enchantment, follow these steps:
 3. Define `recipes` list for crafting/smelting recipes, or `potions` list for brewing recipes
 4. Use naming pattern `{descriptive_name}_{recipe_type}` for `NamespacedKey`
 5. In `VanillaPlus.kt`, add `YourRecipe` to the recipe list in `onEnable()`
-6. Update `docs/recipes.md` with the new recipe
+6. Add KDoc comments describing the recipe
 
 ### Adding a PDC (Persistent Data Container)
 
