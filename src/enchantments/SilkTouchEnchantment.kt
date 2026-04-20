@@ -4,21 +4,15 @@ import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.block.CreatureSpawner
 import org.bukkit.enchantments.Enchantment
+import org.bukkit.event.EventHandler
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.inventory.ItemStack
-import org.xodium.vanillaplus.enchantments.SilkTouchEnchantment.handleBuddingAmethystBreak
-import org.xodium.vanillaplus.enchantments.SilkTouchEnchantment.handleSpawnerBreak
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 
 /** Represents an object handling silk touch enchantment implementation within the system. */
 internal object SilkTouchEnchantment : EnchantmentInterface {
-    /**
-     * Routes special block breaks for a Silk Touch pickaxe to the appropriate handler.
-     * Delegates [Material.SPAWNER] breaks to [handleSpawnerBreak] and
-     * [Material.BUDDING_AMETHYST] breaks to [handleBuddingAmethystBreak].
-     * @param event The [BlockBreakEvent] to handle.
-     */
-    fun onBlockBreak(event: BlockBreakEvent) {
+    @EventHandler
+    fun on(event: BlockBreakEvent) {
         if (!isValidTool(event.player.inventory.itemInMainHand)) return
 
         when (event.block.type) {

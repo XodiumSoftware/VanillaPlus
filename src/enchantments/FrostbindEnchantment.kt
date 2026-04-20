@@ -6,6 +6,7 @@ import net.kyori.adventure.sound.Sound
 import org.bukkit.NamespacedKey
 import org.bukkit.Particle
 import org.bukkit.entity.Snowball
+import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlotGroup
@@ -31,11 +32,8 @@ internal object FrostbindEnchantment : EnchantmentInterface {
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(65, 5))
             .activeSlots(EquipmentSlotGroup.MAINHAND)
 
-    /**
-     * Handles a left-click interaction to launch a Frostbind snowball.
-     * @param event The [PlayerInteractEvent] to handle.
-     */
-    fun onPlayerInteract(event: PlayerInteractEvent) {
+    @EventHandler
+    fun on(event: PlayerInteractEvent) {
         val player = ManaManager.consumeMana(event, get(), Config.MANA_COST) ?: return
         val direction = player.location.direction.normalize()
         val spawnLocation = player.eyeLocation.add(direction.clone().multiply(1.5))
@@ -49,12 +47,8 @@ internal object FrostbindEnchantment : EnchantmentInterface {
         player.playSound(Config.LAUNCH_SOUND)
     }
 
-    /**
-     * Handles a projectile hit event, freezing the struck entity if the projectile is a Frostbind snowball.
-     * Sets [Config.FREEZE_TICKS] on the hit entity, causing it to be fully frozen for several seconds.
-     * @param event The [ProjectileHitEvent] to handle.
-     */
-    fun onProjectileHit(event: ProjectileHitEvent) {
+    @EventHandler
+    fun on(event: ProjectileHitEvent) {
         val projectile = event.entity
 
         if (!projectile.persistentDataContainer.has(PROJECTILE_KEY)) return

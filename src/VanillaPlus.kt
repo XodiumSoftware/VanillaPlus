@@ -3,6 +3,14 @@
 package org.xodium.vanillaplus
 
 import org.bukkit.plugin.java.JavaPlugin
+import org.xodium.vanillaplus.enchantments.EarthrendEnchantment
+import org.xodium.vanillaplus.enchantments.EmbertreadEnchantment
+import org.xodium.vanillaplus.enchantments.FeatherFallingEnchantment
+import org.xodium.vanillaplus.enchantments.FrostbindEnchantment
+import org.xodium.vanillaplus.enchantments.SilkTouchEnchantment
+import org.xodium.vanillaplus.enchantments.TetherEnchantment
+import org.xodium.vanillaplus.enchantments.VerdanceEnchantment
+import org.xodium.vanillaplus.enchantments.VoidpullEnchantment
 import org.xodium.vanillaplus.modules.BookModule
 import org.xodium.vanillaplus.modules.ChatModule
 import org.xodium.vanillaplus.modules.ChiseledBookshelfModule
@@ -78,6 +86,22 @@ internal class VanillaPlus : JavaPlugin() {
         logger.info(
             "Registered: ${modules.size} module(s) | Took ${modules.sumOf { it.register() }}ms",
         )
+
+        val enchantments =
+            listOf(
+                FeatherFallingEnchantment,
+                FrostbindEnchantment,
+                VoidpullEnchantment,
+                EmbertreadEnchantment,
+                VerdanceEnchantment,
+                SilkTouchEnchantment,
+                EarthrendEnchantment,
+                TetherEnchantment,
+            )
+
+        enchantments.forEach { it.registerEvents() }
+
+        logger.info("Registered: ${enchantments.size} enchantment event listener(s)")
     }
 
     /**

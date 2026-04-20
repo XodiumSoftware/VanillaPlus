@@ -2,6 +2,7 @@ package org.xodium.vanillaplus.enchantments
 
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
 import org.bukkit.block.data.Ageable
+import org.bukkit.event.EventHandler
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
@@ -21,14 +22,8 @@ internal object VerdanceEnchantment : EnchantmentInterface {
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(75, 0))
             .activeSlots(EquipmentSlotGroup.MAINHAND)
 
-    /**
-     * Resets a fully-grown crop back to age 0 after it is broken with a Verdance-enchanted tool.
-     * Only activates when the broken block is an [Ageable] at its maximum age and the player
-     * holds a Verdance-enchanted item. The reset is scheduled 2 ticks later to allow the
-     * break event to complete first.
-     * @param event The [BlockBreakEvent] to handle.
-     */
-    fun onBlockBreak(event: BlockBreakEvent) {
+    @EventHandler
+    fun on(event: BlockBreakEvent) {
         val block = event.block
         val ageable = block.blockData as? Ageable ?: return
         val itemInHand = event.player.inventory.itemInMainHand

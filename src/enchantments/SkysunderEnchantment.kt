@@ -2,6 +2,7 @@ package org.xodium.vanillaplus.enchantments
 
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
 import org.bukkit.Particle
+import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
@@ -21,11 +22,8 @@ internal object SkysunderEnchantment : EnchantmentInterface {
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(65, 5))
             .activeSlots(EquipmentSlotGroup.MAINHAND)
 
-    /**
-     * Handles a left-click interaction to call down a lightning strike via Skysunder.
-     * @param event The [PlayerInteractEvent] to handle.
-     */
-    fun onPlayerInteract(event: PlayerInteractEvent) {
+    @EventHandler
+    fun on(event: PlayerInteractEvent) {
         val player = ManaManager.consumeMana(event, get(), Config.MANA_COST) ?: return
         val blockResult = player.rayTraceBlocks(Config.RANGE)
         val entityResult = player.rayTraceEntities(Config.RANGE.toInt())

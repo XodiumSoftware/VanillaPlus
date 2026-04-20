@@ -5,6 +5,7 @@ import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import org.bukkit.Particle
 import org.bukkit.entity.WindCharge
+import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.util.Vector
@@ -26,12 +27,8 @@ internal object TempestEnchantment : EnchantmentInterface {
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(65, 5))
             .activeSlots(EquipmentSlotGroup.MAINHAND)
 
-    /**
-     * Handles a left-click interaction to launch a burst of wind charges.
-     * Fires [Config.SPREAD_COUNT] wind charges in a horizontal spread.
-     * @param event The [PlayerInteractEvent] to handle.
-     */
-    fun onPlayerInteract(event: PlayerInteractEvent) {
+    @EventHandler
+    fun on(event: PlayerInteractEvent) {
         val player = ManaManager.consumeMana(event, get(), Config.MANA_COST) ?: return
         val baseDir = player.location.direction.normalize()
         val right = baseDir.clone().crossProduct(Vector(0, 1, 0)).normalize()
@@ -75,9 +72,6 @@ internal object TempestEnchantment : EnchantmentInterface {
     object Config {
         /** The mana cost to cast Tempest. */
         const val MANA_COST = 25
-
-        /** The number of wind charges to fire in the spread. */
-        const val SPREAD_COUNT = 3
 
         /** The horizontal spread amount between wind charges. */
         const val SPREAD_AMOUNT = 0.2

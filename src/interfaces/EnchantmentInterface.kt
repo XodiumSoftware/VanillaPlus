@@ -6,12 +6,14 @@ import io.papermc.paper.registry.TypedKey
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
 import net.kyori.adventure.key.Key
 import org.bukkit.enchantments.Enchantment
+import org.bukkit.event.Listener
+import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.VanillaPlusBootstrap.Companion.INSTANCE
 import org.xodium.vanillaplus.utils.Utils.toRegistryKeyFragment
 
 /** Represents a contract for enchantments within the system. */
 @Suppress("UnstableApiUsage")
-internal interface EnchantmentInterface {
+internal interface EnchantmentInterface : Listener {
     /**
      * The unique typed key identifies this enchantment in the registry.
      * @see TypedKey
@@ -34,4 +36,12 @@ internal interface EnchantmentInterface {
      * @throws NoSuchElementException if the enchantment is not found in the registry.
      */
     fun get(): Enchantment = RegistryAccess.registryAccess().getRegistry(RegistryKey.ENCHANTMENT).getOrThrow(key)
+
+    /**
+     * Registers this enchantment's event listeners with the plugin manager.
+     * Should be called during plugin enable.
+     */
+    fun registerEvents() {
+        instance.server.pluginManager.registerEvents(this, instance)
+    }
 }

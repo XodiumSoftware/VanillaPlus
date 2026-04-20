@@ -15,11 +15,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
-import org.bukkit.event.block.BlockBreakEvent
-import org.bukkit.event.block.BlockDropItemEvent
-import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.PlayerDeathEvent
-import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.event.player.PlayerAdvancementDoneEvent
 import org.bukkit.event.player.PlayerBedEnterEvent
 import org.bukkit.event.player.PlayerInteractEvent
@@ -34,14 +30,6 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
-import org.xodium.vanillaplus.enchantments.EarthrendEnchantment
-import org.xodium.vanillaplus.enchantments.EmbertreadEnchantment
-import org.xodium.vanillaplus.enchantments.FeatherFallingEnchantment
-import org.xodium.vanillaplus.enchantments.FrostbindEnchantment
-import org.xodium.vanillaplus.enchantments.SilkTouchEnchantment
-import org.xodium.vanillaplus.enchantments.TetherEnchantment
-import org.xodium.vanillaplus.enchantments.VerdanceEnchantment
-import org.xodium.vanillaplus.enchantments.VoidpullEnchantment
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.managers.PlayerMessageManager
 import org.xodium.vanillaplus.managers.SpellManager
@@ -162,32 +150,12 @@ internal object PlayerModule : ModuleInterface {
     @EventHandler
     fun on(event: PlayerInteractEvent) {
         xpToBottle(event)
-        FeatherFallingEnchantment.onPlayerInteract(event)
         handleEnderchest(event)
         SpellManager.handleWandInteraction(event)
     }
 
     @EventHandler
     fun on(event: PlayerItemHeldEvent) = SpellManager.handleWandSelection(event)
-
-    @EventHandler
-    fun on(event: ProjectileHitEvent) {
-        FrostbindEnchantment.onProjectileHit(event)
-        VoidpullEnchantment.onProjectileHit(event)
-    }
-
-    @EventHandler
-    fun on(event: EntityDamageEvent) = EmbertreadEnchantment.onEntityDamage(event)
-
-    @EventHandler
-    fun on(event: BlockBreakEvent) {
-        VerdanceEnchantment.onBlockBreak(event)
-        SilkTouchEnchantment.onBlockBreak(event)
-        EarthrendEnchantment.onBlockBreak(event)
-    }
-
-    @EventHandler
-    fun on(event: BlockDropItemEvent) = TetherEnchantment.onBlockDropItem(event)
 
     /**
      * Sends the welcome banner to the player on join.

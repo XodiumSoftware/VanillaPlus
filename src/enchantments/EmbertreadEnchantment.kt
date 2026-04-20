@@ -3,6 +3,7 @@ package org.xodium.vanillaplus.enchantments
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
 import org.bukkit.Tag
 import org.bukkit.entity.Player
+import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.inventory.ItemStack
@@ -22,12 +23,8 @@ internal object EmbertreadEnchantment : EnchantmentInterface {
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(60, 0))
             .activeSlots(EquipmentSlotGroup.FEET)
 
-    /**
-     * Cancels fire-related damage for a player wearing Embertread boots.
-     * Suppresses [EntityDamageEvent.DamageCause.HOT_FLOOR] and [EntityDamageEvent.DamageCause.FIRE] damage causes.
-     * @param event The [EntityDamageEvent] to handle.
-     */
-    fun onEntityDamage(event: EntityDamageEvent) {
+    @EventHandler
+    fun on(event: EntityDamageEvent) {
         val player = event.entity as? Player ?: return
 
         if (!isValidBoots(player.inventory.boots)) return

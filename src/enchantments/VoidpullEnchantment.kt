@@ -8,6 +8,7 @@ import net.kyori.adventure.sound.Sound
 import org.bukkit.NamespacedKey
 import org.bukkit.Particle
 import org.bukkit.entity.EnderPearl
+import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlotGroup
@@ -36,12 +37,8 @@ internal object VoidpullEnchantment : EnchantmentInterface {
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(65, 5))
             .activeSlots(EquipmentSlotGroup.MAINHAND)
 
-    /**
-     * Handles a left-click interaction to launch a Voidpull ender pearl.
-     * The pearl trails PORTAL particles in flight; on entity hit it teleports the target to the player.
-     * @param event The [PlayerInteractEvent] to handle.
-     */
-    fun onPlayerInteract(event: PlayerInteractEvent) {
+    @EventHandler
+    fun on(event: PlayerInteractEvent) {
         val player = ManaManager.consumeMana(event, get(), Config.MANA_COST) ?: return
         val direction = player.location.direction.normalize()
         val spawnLocation = player.eyeLocation.add(direction.clone().multiply(1.5))
@@ -55,11 +52,8 @@ internal object VoidpullEnchantment : EnchantmentInterface {
         player.playSound(Config.CAST_SOUND)
     }
 
-    /**
-     * Handles a projectile hit event, teleporting the struck entity to the shooter if the projectile is a Voidpull pearl.
-     * @param event The [ProjectileHitEvent] to handle.
-     */
-    fun onProjectileHit(event: ProjectileHitEvent) {
+    @EventHandler
+    fun on(event: ProjectileHitEvent) {
         val projectile = event.entity
         val playerUuidStr =
             projectile.persistentDataContainer.get(PROJECTILE_KEY, PersistentDataType.STRING) ?: return
