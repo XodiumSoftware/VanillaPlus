@@ -124,6 +124,7 @@ src/
 - **Don't add KDoc to implemented overrides** — the base interface/class already has documentation; let it inherit naturally
 - **Use data class builders** — e.g., `potion(PotionData(color = X, displayName = Y))` instead of lambda receivers for simpler configuration
 - **Use explicit named factory functions** — prefer `potion()` and `splash()` over `invoke()` operator for clarity
+- **Alphabetical order for static collections** — `SPELL_MAP` and similar static maps/lists should be sorted alphabetically by key
 
 ### Code Structure (in interfaces, classes, objects)
 
@@ -211,7 +212,7 @@ To add a new enchantment, follow these steps:
     - Add it to the tags (tradeable, non-treasure, enchanting-table)
     - Add supported items to appropriate `ItemTag` if needed
 5. If it's a spell (Blaze Rod enchantment):
-    - Register in `SpellManager`
+    - Register in `SpellManager.SPELL_MAP` (alphabetical order)
     - Store cost in `PlayerPDC` constants
     - Add to enchantment compatibility group
     - Implement `@EventHandler` for `PlayerInteractEvent` or projectile logic

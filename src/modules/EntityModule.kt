@@ -2,7 +2,6 @@
 
 package org.xodium.vanillaplus.modules
 
-import io.papermc.paper.event.entity.EntityEquipmentChangedEvent
 import org.bukkit.Material
 import org.bukkit.entity.Blaze
 import org.bukkit.entity.Creeper
@@ -16,7 +15,6 @@ import org.bukkit.event.entity.EntityChangeBlockEvent
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.entity.EntityExplodeEvent
 import org.bukkit.inventory.ItemStack
-import org.xodium.vanillaplus.enchantments.NimbusEnchantment
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 import kotlin.random.Random
 
@@ -34,9 +32,6 @@ internal object EntityModule : ModuleInterface {
 
     @EventHandler
     fun on(event: EntityDeathEvent) = dropEntitySpawnEgg(event)
-
-    @EventHandler
-    fun on(event: EntityEquipmentChangedEvent) = NimbusEnchantment.onEntityEquipmentChanged(event)
 
     /**
      * Handles dropping a spawn egg when an entity dies, based on configured chance.

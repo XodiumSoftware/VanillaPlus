@@ -7,10 +7,16 @@ import org.xodium.vanillaplus.enchantments.EarthrendEnchantment
 import org.xodium.vanillaplus.enchantments.EmbertreadEnchantment
 import org.xodium.vanillaplus.enchantments.FeatherFallingEnchantment
 import org.xodium.vanillaplus.enchantments.FrostbindEnchantment
+import org.xodium.vanillaplus.enchantments.InfernoEnchantment
+import org.xodium.vanillaplus.enchantments.NimbusEnchantment
+import org.xodium.vanillaplus.enchantments.QuakeEnchantment
 import org.xodium.vanillaplus.enchantments.SilkTouchEnchantment
+import org.xodium.vanillaplus.enchantments.SkysunderEnchantment
+import org.xodium.vanillaplus.enchantments.TempestEnchantment
 import org.xodium.vanillaplus.enchantments.TetherEnchantment
 import org.xodium.vanillaplus.enchantments.VerdanceEnchantment
 import org.xodium.vanillaplus.enchantments.VoidpullEnchantment
+import org.xodium.vanillaplus.enchantments.WitherbrandEnchantment
 import org.xodium.vanillaplus.modules.BookModule
 import org.xodium.vanillaplus.modules.ChatModule
 import org.xodium.vanillaplus.modules.ChiseledBookshelfModule
@@ -89,14 +95,20 @@ internal class VanillaPlus : JavaPlugin() {
 
         val enchantments =
             listOf(
+                EarthrendEnchantment,
+                EmbertreadEnchantment,
                 FeatherFallingEnchantment,
                 FrostbindEnchantment,
-                VoidpullEnchantment,
-                EmbertreadEnchantment,
-                VerdanceEnchantment,
+                InfernoEnchantment,
+                NimbusEnchantment,
+                QuakeEnchantment,
                 SilkTouchEnchantment,
-                EarthrendEnchantment,
+                SkysunderEnchantment,
+                TempestEnchantment,
                 TetherEnchantment,
+                VerdanceEnchantment,
+                VoidpullEnchantment,
+                WitherbrandEnchantment,
             )
 
         enchantments.forEach { it.registerEvents() }

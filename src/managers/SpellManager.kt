@@ -22,13 +22,13 @@ import org.xodium.vanillaplus.utils.Utils.MM
 internal object SpellManager {
     private val SPELL_MAP: Map<Enchantment, (PlayerInteractEvent) -> Unit> by lazy {
         mapOf(
-            InfernoEnchantment.get() to { InfernoEnchantment.onPlayerInteract(it) },
-            FrostbindEnchantment.get() to { FrostbindEnchantment.onPlayerInteract(it) },
-            WitherbrandEnchantment.get() to { WitherbrandEnchantment.onPlayerInteract(it) },
-            SkysunderEnchantment.get() to { SkysunderEnchantment.onPlayerInteract(it) },
-            TempestEnchantment.get() to { TempestEnchantment.onPlayerInteract(it) },
-            VoidpullEnchantment.get() to { VoidpullEnchantment.onPlayerInteract(it) },
-            QuakeEnchantment.get() to { QuakeEnchantment.onPlayerInteract(it) },
+            FrostbindEnchantment.get() to { FrostbindEnchantment.on(it) },
+            InfernoEnchantment.get() to { InfernoEnchantment.on(it) },
+            QuakeEnchantment.get() to { QuakeEnchantment.on(it) },
+            SkysunderEnchantment.get() to { SkysunderEnchantment.on(it) },
+            TempestEnchantment.get() to { TempestEnchantment.on(it) },
+            VoidpullEnchantment.get() to { VoidpullEnchantment.on(it) },
+            WitherbrandEnchantment.get() to { WitherbrandEnchantment.on(it) },
         )
     }
 
