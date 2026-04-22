@@ -1,0 +1,91 @@
+name: Xodium CI/CD
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  pull-requests: write
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    environment:
+      name: "${{ github.ref_name }}"
+    steps:
+      - id: checkout
+        name: Checkout
+        uses: actions/checkout@v6.0.2
+
+      - id: setup_java
+        name: Setup Java
+        uses: actions/setup-java@v5.2.0
+        with:
+          java-version: 21
+          distribution: temurin
+
+      - id: setup_gradle
+        name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6.1.0
+
+      - id: build_gradle
+        name: Build with Gradle
+        run: ./gradlew shadowJar
+
+      - id: upload_artifact
+        name: Upload Build Artifact
+        if: ${{ success() }}
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          path: build/libs/*.jar
+
+  docs:
+    name: Documentation
+    needs: [ build ]
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: "${{ steps.deployment.outputs.page_url }}"
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    steps:
+      - id: checkout
+        name: Checkout
+        uses: actions/checkout@v6.0.2
+
+      - id: setup_java
+        name: Setup Java
+        uses: actions/setup-java@v5.2.0
+        with:
+          java-version: 21
+          distribution: temurin
+
+      - id: setup_gradle
+        name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6.1.0
+
+      - id: generate_docs
+        name: Generate Dokka Documentation
+        run: ./gradlew dokkaGenerateHtml
+
+      - id: upload_artifact
+        name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: docs/
+
+      - id: deployment
+        name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v5
