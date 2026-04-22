@@ -24,10 +24,10 @@
 ## Table of Contents
 
 - [Architecture][architecture_url]
+- [Guide](GUIDE.md)
 - [Built With](#built-with)
 - [Code of Conduct][code_of_conduct_url]
 - [Contributing][contributing_url]
-- [Getting Started][getting_started_url]
 - [License][license_url]
 - [Requirements](#requirements)
 - [Security][security_url]
@@ -51,8 +51,6 @@
 [architecture_url]: https://github.com/XodiumSoftware/VanillaPlus/blob/main/ARCHITECTURE.md
 
 [enchantments_url]: https://vanillaplus.xodium.org/enchantments
-
-[getting_started_url]: https://vanillaplus.xodium.org/getting-started
 
 [modules_url]: https://vanillaplus.xodium.org/modules
 
