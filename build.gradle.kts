@@ -4,7 +4,7 @@ import xyz.jpenilla.runtask.task.AbstractRun
 plugins {
     id("java")
     id("idea")
-    kotlin("jvm") version "2.3.20"
+    kotlin("jvm") version "2.3.21"
     id("com.gradleup.shadow") version "9.4.1"
     id("xyz.jpenilla.run-paper") version "3.0.2"
     id("xyz.jpenilla.resource-factory-paper-convention") version "1.3.1"
