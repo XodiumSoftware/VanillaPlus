@@ -14,11 +14,11 @@ import io.papermc.paper.registry.tag.TagKey
 import io.papermc.paper.tag.TagEntry
 import net.kyori.adventure.key.Key
 import org.xodium.vanillaplus.enchantments.EarthrendEnchantment
-import org.xodium.vanillaplus.enchantments.QuakeEnchantment
 import org.xodium.vanillaplus.enchantments.EmbertreadEnchantment
 import org.xodium.vanillaplus.enchantments.FrostbindEnchantment
 import org.xodium.vanillaplus.enchantments.InfernoEnchantment
 import org.xodium.vanillaplus.enchantments.NimbusEnchantment
+import org.xodium.vanillaplus.enchantments.QuakeEnchantment
 import org.xodium.vanillaplus.enchantments.SkysunderEnchantment
 import org.xodium.vanillaplus.enchantments.TempestEnchantment
 import org.xodium.vanillaplus.enchantments.TetherEnchantment
@@ -34,8 +34,8 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
 
         val TOOLS = TagKey.create(RegistryKey.ITEM, Key.key(INSTANCE, "tools"))
         val WEAPONS = TagKey.create(RegistryKey.ITEM, Key.key(INSTANCE, "weapons"))
-        val TOOLS_WEAPONS = TagKey.create(RegistryKey.ITEM, Key.key(INSTANCE, "tools_weapons"))
         val BLAZE_RODS = TagKey.create(RegistryKey.ITEM, Key.key(INSTANCE, "blaze_rods"))
+        val TETHER_ITEMS = TagKey.create(RegistryKey.ITEM, Key.key(INSTANCE, "tether_items"))
     }
 
     override fun bootstrap(ctx: BootstrapContext) {
@@ -66,16 +66,17 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                         ),
                     )
                     setTag(
-                        TOOLS_WEAPONS,
-                        setOf(
-                            TagEntry.tagEntry(TOOLS),
-                            TagEntry.tagEntry(WEAPONS),
-                        ),
-                    )
-                    setTag(
                         BLAZE_RODS,
                         setOf(
                             TagEntry.valueEntry(ItemTypeKeys.BLAZE_ROD),
+                        ),
+                    )
+                    setTag(
+                        TETHER_ITEMS,
+                        setOf(
+                            TagEntry.tagEntry(TOOLS),
+                            TagEntry.tagEntry(WEAPONS),
+                            TagEntry.tagEntry(BLAZE_RODS),
                         ),
                     )
                 }
@@ -91,7 +92,7 @@ internal class VanillaPlusBootstrap : PluginBootstrap {
                         register(TetherEnchantment.key) {
                             TetherEnchantment
                                 .invoke(it)
-                                .supportedItems(event.getOrCreateTag(TOOLS_WEAPONS))
+                                .supportedItems(event.getOrCreateTag(TETHER_ITEMS))
                         }
                         register(NimbusEnchantment.key) {
                             NimbusEnchantment

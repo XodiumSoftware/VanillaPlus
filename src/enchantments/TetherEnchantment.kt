@@ -1,10 +1,12 @@
 package org.xodium.vanillaplus.enchantments
 
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
+import org.bukkit.Material
 import org.bukkit.entity.Item
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.block.BlockDropItemEvent
+import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 import org.xodium.vanillaplus.utils.Utils.displayName
@@ -27,9 +29,26 @@ internal object TetherEnchantment : EnchantmentInterface {
         val player = event.player
         val itemInHand = player.inventory.itemInMainHand
 
+        if (itemInHand.type == Material.BLAZE_ROD) return
         if (!itemInHand.containsEnchantment(get())) return
 
         transferItemEntitiesToInventory(player, event.items)
+    }
+
+    @EventHandler
+    fun on(event: EntityDeathEvent) {
+        val player = event.entity.killer ?: return
+        val itemInHand = player.inventory.itemInMainHand
+
+        if (itemInHand.type != Material.BLAZE_ROD) return
+        if (!itemInHand.containsEnchantment(get())) return
+
+        val xp = event.droppedExp
+
+        if (xp > 0) {
+            event.droppedExp = 0
+            player.giveExp(xp)
+        }
     }
 
     /**
