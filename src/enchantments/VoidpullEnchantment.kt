@@ -81,6 +81,7 @@ internal object VoidpullEnchantment : EnchantmentInterface {
             .spawn()
 
         target.teleport(destination)
+        projectile.remove()
 
         Particle.PORTAL
             .builder()
