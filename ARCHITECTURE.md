@@ -63,26 +63,11 @@ Event handling is done via ordinary `@EventHandler` methods in each enchantment 
 
 SilkTouch and FeatherFalling exist as implementations but are not currently registered in the bootstrap.
 
-**Mana system:** Seven Blaze Rod spell enchantments (Inferno, Skysunder, Witherbrand, Frostbind, Tempest, Voidpull, Quake) share a single mana pool stored in `PlayerPDC.mana`. All seven are **compatible** with each other and can be combined on a single wand. `PlayerModule.handleWandInteraction` manages the interaction: **left-click** casts the selected spell, **right-click** cycles through available spells (showing the selected spell name in the action bar). `SpellManager` handles spell registration, cycling logic, and execution dispatch. `ManaManager` owns the bossbar display (`showManaBar`), regen scheduler (`startRegenTask`), and the no-mana sound (`NO_MANA_SOUND`). The bossbar uses the **Spellbite** gradient (`#832466 → #BF4299 → #832466`) with `NOTCHED_10` overlay. Frostbind and Voidpull tag their projectiles with a
-`NamespacedKey` and resolve hits in `ProjectileHitEvent`. Projectile trail effects are created via `ScheduleUtils.spawnProjectileTrail`, which schedules a per-tick particle task that self-cancels when the entity is no longer valid.
-
-### Items
-
-Custom items implement **`ItemInterface`** and are created as `object` singletons in `items/`. Items include items and other consumables with magical effects, primarily the **Mana Item** which refills the player's mana pool for spell casting.
-
-**Mana Item:**
-
-- **Effect:** Instantly refills `PlayerPDC.mana` to 100 (max)
-- **Visual:** Purple color from the Spellbite gradient (`#832466`)
-- **Name:** "Potion of Arcane Restoration" with gradient styling
-- **Marker:** Uses `ItemPDC.isManaPotion` PDC flag
-- **Brewing:** Awkward Potion/Splash Potion/Lingering Potion + Blaze Rod in brewing stand
-- **Crafting:** 8 Arrows + 1 Lingering Potion = 8 Tipped Arrows
-- **Handler:** `PotionModule` listens for `PlayerItemConsumeEvent`
+**Spell system:** Seven Blaze Rod spell enchantments (Inferno, Skysunder, Witherbrand, Frostbind, Tempest, Voidpull, Quake) each cost XP to cast. All seven are **compatible** with each other and can be combined on a single wand. `SpellManager.handleWandInteraction` manages the interaction: **left-click** casts the selected spell (consuming XP), **right-click** cycles through available spells (showing the selected spell name in the action bar). `XpManager` handles XP cost validation and deduction, playing `NO_XP_SOUND` when the player has insufficient XP. Creative mode bypasses XP costs. Frostbind and Voidpull tag their projectiles with a `NamespacedKey` and resolve hits in `ProjectileHitEvent`. Projectile trail effects are created via `ScheduleUtils.spawnProjectileTrail`, which schedules a per-tick particle task that self-cancels when the entity is no longer valid.
 
 ### PDCs (Persistent Data Containers)
 
-PDC helpers in `pdcs/` expose Kotlin property delegates on entity types. `ItemPDC` provides `isManaPotion` for identifying mana items, and `selectedSpell` for wand spell selection.
+PDC helpers in `pdcs/` expose Kotlin property delegates on entity types. `ItemPDC` provides `selectedSpell` for wand spell selection.
 
 ### Recipes
 
@@ -92,14 +77,13 @@ Recipe objects implement **`RecipeInterface`** and are listed in `VanillaPlus.on
 
 | Package         | Contents                                                                                                                                         |
 |-----------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
-| `items/`        | Custom item implementations (Mana Item)                                                                                                          |
-| `modules/`      | 15 feature module singletons                                                                                                                     |
+| `modules/`      | 14 feature module singletons                                                                                                                     |
 | `data/`         | `CommandData`, `BookData`, `AdjacentBlockData`                                                                                                   |
 | `enchantments/` | Verdance, Tether, Nimbus, Earthrend, Embertread, Inferno, Skysunder, Witherbrand, Frostbind, Tempest, Voidpull, Quake, SilkTouch, FeatherFalling |
 | `interfaces/`   | `ModuleInterface`, `EnchantmentInterface`, `RecipeInterface`, `ItemInterface`                                                                    |
-| `managers/`     | `ManaManager`, `PlayerMessageManager`, `SpellManager`                                                                                            |
+| `managers/`     | `XpManager`, `PlayerMessageManager`, `SpellManager`                                                                                              |
 | `pdcs/`         | `PlayerPDC`, `ItemPDC`                                                                                                                           |
-| `recipes/`      | Chainmail, DiamondRecycle, ManaItem, Painting, RottenFlesh, WoodLog                                                                              |
+| `recipes/`      | Chainmail, DiamondRecycle, Painting, RottenFlesh, WoodLog                                                                                        |
 | `utils/`        | `Utils`, `CommandUtils`, `BlockUtils`, `PlayerUtils`, `ScheduleUtils`                                                                            |
 
 ### Key Conventions
