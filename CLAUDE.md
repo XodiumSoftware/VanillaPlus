@@ -91,13 +91,13 @@ Custom enchantments implement `EnchantmentInterface` with:
 | Embertread | FEET | Foot armor |
 | Inferno, Skysunder, Witherbrand, Frostbind, Tempest, Voidpull, Quake | MAINHAND | Blaze Rods (spell wands) |
 
-**Mana System:**
+**Spell System:**
 
-- 7 Blaze Rod spell enchantments share one mana pool stored in `PlayerPDC.mana`
+- 7 Blaze Rod spell enchantments (Inferno, Skysunder, Witherbrand, Frostbind, Tempest, Voidpull, Quake) cost XP to cast
 - All spells are **compatible** — can combine multiple on one wand
-- **Left-click:** Cast selected spell
+- **Left-click:** Cast selected spell (consumes XP, free in Creative)
 - **Right-click:** Cycle spells (shows in action bar)
-- Bossbar display uses Spellbite gradient (`#832466 → #BF4299`)
+- `XpManager` handles XP cost validation and plays `NO_XP_SOUND` on insufficient XP
 
 ### Project Structure
 
@@ -106,7 +106,7 @@ src/
 ├── modules/          # 14 feature modules (all `object` singletons)
 ├── enchantments/       # 14 enchantment implementations
 ├── interfaces/         # ModuleInterface, EnchantmentInterface, RecipeInterface
-├── managers/           # ManaManager, PlayerMessageManager, SpellManager
+├── managers/           # XpManager, PlayerMessageManager, SpellManager
 ├── pdcs/               # PlayerPDC, ItemPDC (Kotlin property delegates)
 ├── recipes/            # Recipe implementations
 ├── data/               # Data classes (CommandData, BookData, etc.)
@@ -157,7 +157,7 @@ Within each group:
 
 - No file-based configuration — all settings are compile-time constants in module `Config` objects
 - Enchantments must be registered in `VanillaPlusBootstrap` AND tagged as tradeable/non-treasure/enchanting-table
-- Spell enchantments use `PlayerPDC.mana` for shared mana pool
+- Spell enchantments use `XpManager` to consume XP on cast
 - Project uses Paper's modern lifecycle/registry APIs extensively
 
 ## Claude Code Workflow
