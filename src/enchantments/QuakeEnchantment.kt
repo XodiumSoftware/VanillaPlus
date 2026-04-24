@@ -12,6 +12,7 @@ import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.util.Vector
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 import org.xodium.vanillaplus.managers.XpManager
+import org.xodium.vanillaplus.utils.Utils
 import org.xodium.vanillaplus.utils.Utils.displayName
 import kotlin.math.cos
 import kotlin.math.sin
@@ -31,6 +32,8 @@ internal object QuakeEnchantment : EnchantmentInterface {
 
     @EventHandler
     fun on(event: PlayerInteractEvent) {
+        if (!Utils.isSelectedSpell(event.item, get())) return
+
         val player = XpManager.consumeXp(event, get(), Config.XP_COST) ?: return
         val location = player.location
         val world = player.world

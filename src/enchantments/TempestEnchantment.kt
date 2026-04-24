@@ -12,6 +12,7 @@ import org.bukkit.util.Vector
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 import org.xodium.vanillaplus.managers.XpManager
 import org.xodium.vanillaplus.utils.ScheduleUtils
+import org.xodium.vanillaplus.utils.Utils
 import org.xodium.vanillaplus.utils.Utils.displayName
 
 /** Represents an object handling tempest enchantment implementation within the system. */
@@ -29,6 +30,8 @@ internal object TempestEnchantment : EnchantmentInterface {
 
     @EventHandler
     fun on(event: PlayerInteractEvent) {
+        if (!Utils.isSelectedSpell(event.item, get())) return
+
         val player = XpManager.consumeXp(event, get(), Config.XP_COST) ?: return
         val baseDir = player.location.direction.normalize()
         val right = baseDir.clone().crossProduct(Vector(0, 1, 0)).normalize()

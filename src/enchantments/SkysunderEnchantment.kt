@@ -7,6 +7,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 import org.xodium.vanillaplus.managers.XpManager
+import org.xodium.vanillaplus.utils.Utils
 import org.xodium.vanillaplus.utils.Utils.displayName
 
 /** Represents an object handling skysunder enchantment implementation within the system. */
@@ -24,6 +25,8 @@ internal object SkysunderEnchantment : EnchantmentInterface {
 
     @EventHandler
     fun on(event: PlayerInteractEvent) {
+        if (!Utils.isSelectedSpell(event.item, get())) return
+
         val player = XpManager.consumeXp(event, get(), Config.XP_COST) ?: return
         val blockResult = player.rayTraceBlocks(Config.RANGE)
         val entityResult = player.rayTraceEntities(Config.RANGE.toInt())

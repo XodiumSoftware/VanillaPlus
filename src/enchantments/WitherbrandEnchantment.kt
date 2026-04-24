@@ -11,6 +11,7 @@ import org.bukkit.inventory.EquipmentSlotGroup
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
 import org.xodium.vanillaplus.managers.XpManager
 import org.xodium.vanillaplus.utils.ScheduleUtils
+import org.xodium.vanillaplus.utils.Utils
 import org.xodium.vanillaplus.utils.Utils.displayName
 
 /** Represents an object handling witherbrand enchantment implementation within the system. */
@@ -28,6 +29,8 @@ internal object WitherbrandEnchantment : EnchantmentInterface {
 
     @EventHandler
     fun on(event: PlayerInteractEvent) {
+        if (!Utils.isSelectedSpell(event.item, get())) return
+
         val player = XpManager.consumeXp(event, get(), Config.XP_COST) ?: return
         val direction = player.location.direction.normalize()
         val spawnLocation = player.eyeLocation.add(direction.clone().multiply(1.5))

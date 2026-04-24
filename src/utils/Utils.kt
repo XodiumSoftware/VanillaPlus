@@ -7,7 +7,9 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.World
 import org.bukkit.enchantments.Enchantment
+import org.bukkit.inventory.ItemStack
 import org.xodium.vanillaplus.VanillaPlus
+import org.xodium.vanillaplus.pdcs.ItemPDC.selectedSpell
 
 /** General utilities. */
 internal object Utils {
@@ -27,6 +29,15 @@ internal object Utils {
 
     /** Extension function specifically for enchantment keys */
     fun TypedKey<Enchantment>.displayName(): Component = MM.deserialize(value().snakeToProperCase())
+
+    /**
+     * Checks if the given [item] has the specified [spell] currently selected.
+     * Returns true if the item's selectedSpell matches the spell's key.
+     */
+    fun isSelectedSpell(
+        item: ItemStack?,
+        spell: Enchantment,
+    ): Boolean = item?.selectedSpell == spell.key.toString()
 
     /** Extension function to convert CamelCase to snake_case, removing a specified suffix. */
     inline fun <reified T> Class<*>.toRegistryKeyFragment(): String =
