@@ -40,8 +40,11 @@ internal interface EnchantmentInterface : Listener {
     /**
      * Registers this enchantment's event listeners with the plugin manager.
      * Should be called during plugin enable.
+     * @return Time taken to register in milliseconds.
      */
-    fun registerEvents() {
+    fun registerEvents(): Long {
+        val start = System.currentTimeMillis()
         instance.server.pluginManager.registerEvents(this, instance)
+        return System.currentTimeMillis() - start
     }
 }

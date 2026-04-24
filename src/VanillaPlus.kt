@@ -107,9 +107,9 @@ internal class VanillaPlus : JavaPlugin() {
                 WitherbrandEnchantment,
             )
 
-        enchantments.forEach { it.registerEvents() }
-
-        logger.info("Registered: ${enchantments.size} enchantment event listener(s)")
+        logger.info(
+            "Registered: ${enchantments.size} enchantment event listener(s) | Took ${enchantments.sumOf { it.registerEvents() }}ms",
+        )
     }
 
     /**
