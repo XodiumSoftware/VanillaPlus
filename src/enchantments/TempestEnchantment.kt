@@ -9,8 +9,9 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.util.Vector
+import org.bukkit.GameMode
+import org.bukkit.event.block.Action
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
-import org.xodium.vanillaplus.managers.ManaManager
 import org.xodium.vanillaplus.utils.ScheduleUtils
 import org.xodium.vanillaplus.utils.Utils.displayName
 
@@ -29,7 +30,22 @@ internal object TempestEnchantment : EnchantmentInterface {
 
     @EventHandler
     fun on(event: PlayerInteractEvent) {
-        val player = ManaManager.consumeMana(event, get(), Config.MANA_COST) ?: return
+        // TODO: Implement XP cost check instead of mana
+        // if (!hasEnoughXp(event.player, Config.XP_COST)) return
+        if (event.action != Action.LEFT_CLICK_AIR && event.action != Action.LEFT_CLICK_BLOCK) return
+        val item = event.item ?: return
+        if (item.type != org.bukkit.Material.BLAZE_ROD) return
+        if (!item.containsEnchantment(get())) return
+        val player = event.player
+        if (player.gameMode == GameMode.CREATIVE) {
+            event.isCancelled = true
+        } else if (player.gameMode != GameMode.SURVIVAL && player.gameMode != GameMode.ADVENTURE) {
+            return
+        } else {
+            event.isCancelled = true
+            // TODO: Deduct XP cost
+            // player.giveExp(-Config.XP_COST)
+        }
         val baseDir = player.location.direction.normalize()
         val right = baseDir.clone().crossProduct(Vector(0, 1, 0)).normalize()
         val spawnBase = player.eyeLocation.add(baseDir.clone().multiply(1.5))
@@ -70,8 +86,8 @@ internal object TempestEnchantment : EnchantmentInterface {
 
     /** Configuration for the Tempest enchantment. */
     object Config {
-        /** The mana cost to cast Tempest. */
-        const val MANA_COST = 25
+        /** The XP cost to cast Tempest. */
+        const val XP_COST = 25
 
         /** The horizontal spread amount between wind charges. */
         const val SPREAD_AMOUNT = 0.2

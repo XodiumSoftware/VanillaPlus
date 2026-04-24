@@ -27,14 +27,12 @@ import org.xodium.vanillaplus.modules.LocatorModule
 import org.xodium.vanillaplus.modules.MotdModule
 import org.xodium.vanillaplus.modules.OpenableModule
 import org.xodium.vanillaplus.modules.PlayerModule
-import org.xodium.vanillaplus.modules.PotionModule
 import org.xodium.vanillaplus.modules.ScoreBoardModule
 import org.xodium.vanillaplus.modules.ServerInfoModule
 import org.xodium.vanillaplus.modules.SitModule
 import org.xodium.vanillaplus.modules.TameableModule
 import org.xodium.vanillaplus.recipes.ChainmailRecipe
 import org.xodium.vanillaplus.recipes.DiamondRecycleRecipe
-import org.xodium.vanillaplus.recipes.ManaItemRecipe
 import org.xodium.vanillaplus.recipes.PaintingRecipe
 import org.xodium.vanillaplus.recipes.RottenFleshRecipe
 import org.xodium.vanillaplus.recipes.WoodLogRecipe
@@ -60,7 +58,6 @@ internal class VanillaPlus : JavaPlugin() {
             listOf(
                 ChainmailRecipe,
                 DiamondRecycleRecipe,
-                ManaItemRecipe,
                 PaintingRecipe,
                 RottenFleshRecipe,
                 WoodLogRecipe,
@@ -82,7 +79,6 @@ internal class VanillaPlus : JavaPlugin() {
                 MotdModule,
                 OpenableModule,
                 PlayerModule,
-                PotionModule,
                 ServerInfoModule,
                 ScoreBoardModule,
                 SitModule,

@@ -10,8 +10,9 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.util.Vector
+import org.bukkit.GameMode
+import org.bukkit.event.block.Action
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
-import org.xodium.vanillaplus.managers.ManaManager
 import org.xodium.vanillaplus.utils.Utils.displayName
 import kotlin.math.cos
 import kotlin.math.sin
@@ -31,7 +32,22 @@ internal object QuakeEnchantment : EnchantmentInterface {
 
     @EventHandler
     fun on(event: PlayerInteractEvent) {
-        val player = ManaManager.consumeMana(event, get(), Config.MANA_COST) ?: return
+        // TODO: Implement XP cost check instead of mana
+        // if (!hasEnoughXp(event.player, Config.XP_COST)) return
+        if (event.action != Action.LEFT_CLICK_AIR && event.action != Action.LEFT_CLICK_BLOCK) return
+        val item = event.item ?: return
+        if (item.type != org.bukkit.Material.BLAZE_ROD) return
+        if (!item.containsEnchantment(get())) return
+        val player = event.player
+        if (player.gameMode == GameMode.CREATIVE) {
+            event.isCancelled = true
+        } else if (player.gameMode != GameMode.SURVIVAL && player.gameMode != GameMode.ADVENTURE) {
+            return
+        } else {
+            event.isCancelled = true
+            // TODO: Deduct XP cost
+            // player.giveExp(-Config.XP_COST)
+        }
 
         val location = player.location
         val world = player.world
@@ -96,8 +112,8 @@ internal object QuakeEnchantment : EnchantmentInterface {
 
     /** Configuration for the Quake enchantment. */
     object Config {
-        /** The mana cost to cast Quake. */
-        const val MANA_COST = 20
+        /** The XP cost to cast Quake. */
+        const val XP_COST = 20
 
         /** The radius in blocks for the shockwave effect. */
         const val RADIUS = 4.0

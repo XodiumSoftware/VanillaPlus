@@ -5,8 +5,9 @@ import org.bukkit.Particle
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlotGroup
+import org.bukkit.GameMode
+import org.bukkit.event.block.Action
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
-import org.xodium.vanillaplus.managers.ManaManager
 import org.xodium.vanillaplus.utils.Utils.displayName
 
 /** Represents an object handling skysunder enchantment implementation within the system. */
@@ -24,7 +25,22 @@ internal object SkysunderEnchantment : EnchantmentInterface {
 
     @EventHandler
     fun on(event: PlayerInteractEvent) {
-        val player = ManaManager.consumeMana(event, get(), Config.MANA_COST) ?: return
+        // TODO: Implement XP cost check instead of mana
+        // if (!hasEnoughXp(event.player, Config.XP_COST)) return
+        if (event.action != Action.LEFT_CLICK_AIR && event.action != Action.LEFT_CLICK_BLOCK) return
+        val item = event.item ?: return
+        if (item.type != org.bukkit.Material.BLAZE_ROD) return
+        if (!item.containsEnchantment(get())) return
+        val player = event.player
+        if (player.gameMode == GameMode.CREATIVE) {
+            event.isCancelled = true
+        } else if (player.gameMode != GameMode.SURVIVAL && player.gameMode != GameMode.ADVENTURE) {
+            return
+        } else {
+            event.isCancelled = true
+            // TODO: Deduct XP cost
+            // player.giveExp(-Config.XP_COST)
+        }
         val blockResult = player.rayTraceBlocks(Config.RANGE)
         val entityResult = player.rayTraceEntities(Config.RANGE.toInt())
         val eyeLoc = player.eyeLocation
@@ -61,8 +77,8 @@ internal object SkysunderEnchantment : EnchantmentInterface {
 
     /** Configuration for the Skysunder enchantment. */
     object Config {
-        /** The mana cost to cast Skysunder. */
-        const val MANA_COST = 20
+        /** The XP cost to cast Skysunder. */
+        const val XP_COST = 20
 
         /** The maximum range in blocks for the lightning strike. */
         const val RANGE = 30.0

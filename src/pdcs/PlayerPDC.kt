@@ -14,9 +14,6 @@ internal object PlayerPDC {
     /** The [NamespacedKey] used for storing scoreboard visibility preferences. */
     private val SCOREBOARD_VISIBILITY_KEY = NamespacedKey(instance, "scoreboard_visibility")
 
-    /** The [NamespacedKey] used for storing mana (shared between Inferno and Glacial). */
-    val MANA_KEY = NamespacedKey(instance, "mana")
-
     /**
      * Gets or sets a [Player]'s nickname in their persistent data container.
      * @return The [Player]'s nickname, or their actual name if no nickname is set.
@@ -38,13 +35,4 @@ internal object PlayerPDC {
     var Player.scoreboardVisibility: Boolean
         get() = persistentDataContainer.getOrDefault(SCOREBOARD_VISIBILITY_KEY, PersistentDataType.BOOLEAN, false)
         set(value) = persistentDataContainer.set(SCOREBOARD_VISIBILITY_KEY, PersistentDataType.BOOLEAN, value)
-
-    /**
-     * Gets or sets the player's current mana stored in their persistent data container.
-     * This pool is shared between Inferno and Glacial enchantments.
-     * @return The player's current mana value, defaulting to 100 if unset.
-     */
-    var Player.mana: Int
-        get() = persistentDataContainer.getOrDefault(MANA_KEY, PersistentDataType.INTEGER, 100)
-        set(value) = persistentDataContainer.set(MANA_KEY, PersistentDataType.INTEGER, value)
 }
