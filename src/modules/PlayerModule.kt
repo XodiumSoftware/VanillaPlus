@@ -276,16 +276,29 @@ internal object PlayerModule : ModuleInterface {
         const val XP_COST_TO_BOTTLE: Int = 11
         val WELCOME_TEXT: List<String> =
             listOf(
-                "<gradient:#FFA751:#FFE259>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
+                "<gradient:#FFA751:#FFE259>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|" +
+                    "[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
                 "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
                 "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
-                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gradient:#CB2D3E:#EF473A>Welcome</gradient> <player> <click:suggest_command:'/nickname '><hover:show_text:'<gradient:#FFE259:#FFA751>Set your nickname!</gradient>'><white><sprite:items:item/name_tag></white></hover></click> <click:suggest_command:'/locator '><hover:show_text:'<gradient:#FFE259:#FFA751>Change your locator color!</gradient>'><white><sprite:items:item/compass_00></white></hover></click>",
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient> " +
+                    "<gradient:#CB2D3E:#EF473A>Welcome</gradient> <player> " +
+                    "<click:suggest_command:'/nickname '>" +
+                    "<hover:show_text:'<gradient:#FFE259:#FFA751>Set your nickname!</gradient>'>" +
+                    "<white><sprite:items:item/name_tag></white></hover></click> " +
+                    "<click:suggest_command:'/locator '>" +
+                    "<hover:show_text:'<gradient:#FFE259:#FFA751>Change your locator color!</gradient>'>" +
+                    "<white><sprite:items:item/compass_00></white></hover></click>",
                 "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
-                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gradient:#CB2D3E:#EF473A>Check out</gradient><gray>:</gray>",
-                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gray>✦</gray> <click:run_command:'/rules'><gradient:#13547a:#80d0c7>/rules</gradient></click:run_command>",
-                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gray>✦</gray> <click:open_url:'https://vanillaplus.xodium.org'><gradient:#13547a:#80d0c7>wiki</gradient></click:open_url>",
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient> " +
+                    "<gradient:#CB2D3E:#EF473A>Check out</gradient><gray>:</gray>",
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gray>✦</gray> " +
+                    "<click:run_command:'/rules'><gradient:#13547a:#80d0c7>/rules</gradient></click:run_command>",
+                "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gray>✦</gray> " +
+                    "<click:open_url:'https://vanillaplus.xodium.org'>" +
+                    "<gradient:#13547a:#80d0c7>wiki</gradient></click:open_url>",
                 "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
-                "<gradient:#FFA751:#FFE259>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
+                "<gradient:#FFA751:#FFE259>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|" +
+                    "[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
             )
 
         /** Tab list header, footer, and weather icon configuration. */
@@ -344,19 +357,23 @@ internal object PlayerModule : ModuleInterface {
         /** Login denial messages (server full, access denied). */
         object LoginMessages {
             const val FULL: String =
-                "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> The server is full."
+                "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> " +
+                    "The server is full."
             const val DENIED: String =
-                "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> You are not allowed to join this server."
+                "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> " +
+                    "You are not allowed to join this server."
         }
 
         /** Bed enter failure messages by reason. */
         object BedEnterMessages {
             const val TOO_FAR_AWAY: String =
-                "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> You are too far away from the bed."
+                "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> " +
+                    "You are too far away from the bed."
             const val OBSTRUCTED: String =
                 "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> Your bed is obstructed."
             const val NOT_SAFE: String =
-                "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> You cannot sleep while monsters are nearby."
+                "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> " +
+                    "You cannot sleep while monsters are nearby."
             const val EXPLOSION: String =
                 "<gradient:#CB2D3E:#EF473A>❗</gradient> <gradient:#FFE259:#FFA751>›</gradient> You cannot sleep here."
             const val OTHER: String = ""

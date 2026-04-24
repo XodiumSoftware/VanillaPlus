@@ -68,8 +68,10 @@ internal object BookModule : ModuleInterface {
                             listOf(
                                 "<b><u><dark_aqua>Mod/Admin Rules:<reset>",
                                 "",
-                                "<gold>▶ <dark_aqua>01 <dark_gray>| <red>Be Responsible with the power you are given as staff",
-                                "<gold>▶ <dark_aqua>02 <dark_gray>| <red>Do not spawn blocks or items for other players",
+                                "<gold>▶ <dark_aqua>01 <dark_gray>| " +
+                                    "<red>Be Responsible with the power you are given as staff",
+                                "<gold>▶ <dark_aqua>02 <dark_gray>| " +
+                                    "<red>Do not spawn blocks or items for other players",
                                 "<gold>▶ <dark_aqua>03 <dark_gray>| <red>When Trading, only buy and sell legit items",
                                 "<gold>▶ <dark_aqua>05 <dark_gray>| <red>No Power Abuse",
                             ),

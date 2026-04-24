@@ -157,9 +157,11 @@ internal object ChatModule : ModuleInterface {
     object Config {
         const val CHAT_FORMAT: String = "<player_head> <player> <reset><gradient:#FFE259:#FFA751>›</gradient> <message>"
         const val WHISPER_TO_FORMAT: String =
-            "<gradient:#1488CC:#2B32B2>You</gradient> <gradient:#FFE259:#FFA751>➛</gradient> <player> <reset><gradient:#FFE259:#FFA751>›</gradient> <message>"
+            "<gradient:#1488CC:#2B32B2>You</gradient> <gradient:#FFE259:#FFA751>➛</gradient> " +
+                "<player> <reset><gradient:#FFE259:#FFA751>›</gradient> <message>"
         const val WHISPER_FROM_FORMAT: String =
-            "<player> <reset><gradient:#FFE259:#FFA751>➛</gradient> <gradient:#1488CC:#2B32B2>You</gradient> <gradient:#FFE259:#FFA751>›</gradient> <message>"
+            "<player> <reset><gradient:#FFE259:#FFA751>➛</gradient> " +
+                "<gradient:#1488CC:#2B32B2>You</gradient> <gradient:#FFE259:#FFA751>›</gradient> <message>"
         const val DELETE_SYMBOL: String = "<dark_gray>[<dark_red><b>X</b></dark_red><dark_gray>]"
 
         /** Represents the chat message strings for the module. */
