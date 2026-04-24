@@ -14,10 +14,9 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.scheduler.BukkitTask
-import org.bukkit.GameMode
-import org.bukkit.event.block.Action
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
+import org.xodium.vanillaplus.managers.XpManager
 import org.xodium.vanillaplus.utils.ScheduleUtils
 import org.xodium.vanillaplus.utils.Utils.displayName
 import java.util.*
@@ -40,22 +39,7 @@ internal object VoidpullEnchantment : EnchantmentInterface {
 
     @EventHandler
     fun on(event: PlayerInteractEvent) {
-        // TODO: Implement XP cost check instead of mana
-        // if (!hasEnoughXp(event.player, Config.XP_COST)) return
-        if (event.action != Action.LEFT_CLICK_AIR && event.action != Action.LEFT_CLICK_BLOCK) return
-        val item = event.item ?: return
-        if (item.type != org.bukkit.Material.BLAZE_ROD) return
-        if (!item.containsEnchantment(get())) return
-        val player = event.player
-        if (player.gameMode == GameMode.CREATIVE) {
-            event.isCancelled = true
-        } else if (player.gameMode != GameMode.SURVIVAL && player.gameMode != GameMode.ADVENTURE) {
-            return
-        } else {
-            event.isCancelled = true
-            // TODO: Deduct XP cost
-            // player.giveExp(-Config.XP_COST)
-        }
+        val player = XpManager.consumeXp(event, get(), Config.XP_COST) ?: return
         val direction = player.location.direction.normalize()
         val spawnLocation = player.eyeLocation.add(direction.clone().multiply(1.5))
         val pearl = player.world.spawn(spawnLocation, EnderPearl::class.java)
@@ -129,7 +113,7 @@ internal object VoidpullEnchantment : EnchantmentInterface {
     /** Configuration for the Voidpull enchantment. */
     object Config {
         /** The XP cost to cast Voidpull. */
-        const val XP_COST = 20
+        const val XP_COST = 3
 
         /** The velocity multiplier for the ender pearl projectile. */
         const val VELOCITY = 2.5

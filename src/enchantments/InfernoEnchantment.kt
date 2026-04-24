@@ -8,9 +8,8 @@ import org.bukkit.entity.SmallFireball
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlotGroup
-import org.bukkit.GameMode
-import org.bukkit.event.block.Action
 import org.xodium.vanillaplus.interfaces.EnchantmentInterface
+import org.xodium.vanillaplus.managers.XpManager
 import org.xodium.vanillaplus.utils.ScheduleUtils
 import org.xodium.vanillaplus.utils.Utils.displayName
 import kotlin.uuid.ExperimentalUuidApi
@@ -31,22 +30,7 @@ internal object InfernoEnchantment : EnchantmentInterface {
 
     @EventHandler
     fun on(event: PlayerInteractEvent) {
-        // TODO: Implement XP cost check instead of mana
-        // if (!hasEnoughXp(event.player, Config.XP_COST)) return
-        if (event.action != Action.LEFT_CLICK_AIR && event.action != Action.LEFT_CLICK_BLOCK) return
-        val item = event.item ?: return
-        if (item.type != org.bukkit.Material.BLAZE_ROD) return
-        if (!item.containsEnchantment(get())) return
-        val player = event.player
-        if (player.gameMode == GameMode.CREATIVE) {
-            event.isCancelled = true
-        } else if (player.gameMode != GameMode.SURVIVAL && player.gameMode != GameMode.ADVENTURE) {
-            return
-        } else {
-            event.isCancelled = true
-            // TODO: Deduct XP cost
-            // player.giveExp(-Config.XP_COST)
-        }
+        val player = XpManager.consumeXp(event, get(), Config.XP_COST) ?: return
         val direction = player.location.direction.normalize()
         val spawnLocation = player.eyeLocation.add(direction.clone().multiply(1.5))
         val fireball = player.world.spawn(spawnLocation, SmallFireball::class.java)
@@ -81,7 +65,7 @@ internal object InfernoEnchantment : EnchantmentInterface {
     /** Configuration for the Inferno enchantment. */
     object Config {
         /** The XP cost to cast Inferno. */
-        const val XP_COST = 10
+        const val XP_COST = 1
 
         /** The sound played when casting Inferno. */
         val CAST_SOUND: Sound = Sound.sound(Key.key("entity.blaze.shoot"), Sound.Source.HOSTILE, 1.0f, 1.0f)
