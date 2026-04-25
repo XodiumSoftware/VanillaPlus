@@ -82,6 +82,7 @@ internal object VoidpullEnchantment : EnchantmentInterface {
 
         target.teleport(destination)
         projectile.remove()
+        // TODO: fix projectile not being removed after entity hit.
 
         Particle.PORTAL
             .builder()
