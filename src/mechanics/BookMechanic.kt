@@ -9,7 +9,7 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 
 /** Represents a module handling book mechanics within the system. */
-internal object BookModule : ModuleInterface {
+internal object BookMechanic : ModuleInterface {
     override val cmds
         get() =
             Config.BOOKS.map { book ->

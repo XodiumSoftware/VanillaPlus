@@ -26,7 +26,7 @@ import org.xodium.vanillaplus.utils.ScheduleUtils
 import org.xodium.vanillaplus.utils.Utils.MM
 
 /** Represents a module handling inventory mechanics within the system. */
-internal object InventoryModule : ModuleInterface {
+internal object InventoryMechanic : ModuleInterface {
     override val cmds =
         listOf(
             CommandData(

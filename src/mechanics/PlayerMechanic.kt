@@ -43,7 +43,7 @@ import org.xodium.vanillaplus.utils.Utils.weather
 import kotlin.random.Random
 
 /** Represents a module handling player mechanics within the system. */
-internal object PlayerModule : ModuleInterface {
+internal object PlayerMechanic : ModuleInterface {
     override val cmds =
         listOf(
             CommandData(

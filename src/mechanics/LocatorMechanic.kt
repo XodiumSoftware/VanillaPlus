@@ -15,7 +15,7 @@ import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import org.xodium.vanillaplus.utils.PlayerUtils.locator
 
 /** Represents a module handling locator mechanics within the system. */
-internal object LocatorModule : ModuleInterface {
+internal object LocatorMechanic : ModuleInterface {
     override val cmds =
         listOf(
             CommandData(

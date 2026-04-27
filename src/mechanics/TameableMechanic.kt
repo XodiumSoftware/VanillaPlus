@@ -8,7 +8,7 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.PlayerUtils.getLeashedEntity
 
 /** Represents a module handling tameable mechanics within the system. */
-internal object TameableModule : ModuleInterface {
+internal object TameableMechanic : ModuleInterface {
     @EventHandler
     fun on(event: PlayerInteractEntityEvent) {
         if (transferPetOwnership(event.player, event.rightClicked as? Player ?: return)) event.isCancelled = true

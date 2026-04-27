@@ -7,7 +7,7 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import org.xodium.vanillaplus.utils.Utils.MM
 
 /** Represents a module handling MOTD mechanics within the system. */
-internal object MotdModule : ModuleInterface {
+internal object MotdMechanic : ModuleInterface {
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: ServerListPingEvent) {
         event.motd(MM.deserialize(Config.MOTD.joinToString("\n")))

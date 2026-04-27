@@ -6,7 +6,7 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import java.net.URI
 
 /** Represents a module handling server info mechanics within the system. */
-internal object ServerInfoModule : ModuleInterface {
+internal object ServerInfoMechanic : ModuleInterface {
     init {
         serverLinks()
     }

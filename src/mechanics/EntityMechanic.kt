@@ -19,7 +19,7 @@ import org.xodium.vanillaplus.interfaces.ModuleInterface
 import kotlin.random.Random
 
 /** Represents a module handling entity mechanics within the system. */
-internal object EntityModule : ModuleInterface {
+internal object EntityMechanic : ModuleInterface {
     @EventHandler
     fun on(event: EntityChangeBlockEvent) {
         if (shouldCancelGrief(event.entity)) event.isCancelled = true

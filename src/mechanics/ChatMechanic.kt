@@ -24,7 +24,7 @@ import org.xodium.vanillaplus.utils.Utils.MM
 import org.xodium.vanillaplus.utils.Utils.prefix
 
 /** Represents a module handling chat mechanics within the system. */
-internal object ChatModule : ModuleInterface {
+internal object ChatMechanic : ModuleInterface {
     override val cmds =
         listOf(
             CommandData(

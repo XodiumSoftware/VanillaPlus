@@ -19,14 +19,14 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.util.Vector
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.modules.SitModule.occupiedBlocks
+import org.xodium.vanillaplus.modules.SitMechanic.occupiedBlocks
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 import kotlin.uuid.toKotlinUuid
 
 /** Represents a module handling sit mechanics within the system. */
 @OptIn(ExperimentalUuidApi::class)
-internal object SitModule : ModuleInterface {
+internal object SitMechanic : ModuleInterface {
     private val sittingPlayers = mutableMapOf<Uuid, ArmorStand>()
     private val occupiedBlocks = mutableMapOf<Location, Uuid>()
     private val blockCenterOffset = Vector(0.5, 0.5, 0.5)

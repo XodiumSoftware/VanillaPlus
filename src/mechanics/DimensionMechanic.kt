@@ -17,7 +17,7 @@ import org.xodium.vanillaplus.utils.Utils.MM
 import kotlin.math.hypot
 
 /** Represents a module handling dimension mechanics within the system. */
-internal object DimensionModule : ModuleInterface {
+internal object DimensionMechanic : ModuleInterface {
     private const val NETHER_TO_OVERWORLD_RATIO = 8
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)

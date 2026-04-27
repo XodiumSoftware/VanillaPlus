@@ -13,7 +13,7 @@ import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import org.xodium.vanillaplus.utils.PlayerUtils.applyScoreboard
 
 /** Represents a module handling scoreboard mechanics within the system. */
-internal object ScoreBoardModule : ModuleInterface {
+internal object ScoreBoardMechanic : ModuleInterface {
     override val cmds =
         listOf(
             CommandData(

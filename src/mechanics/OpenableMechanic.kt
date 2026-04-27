@@ -24,7 +24,7 @@ import org.xodium.vanillaplus.data.AdjacentBlockData
 import org.xodium.vanillaplus.interfaces.ModuleInterface
 
 /** Represents a module handling openable blocks mechanics within the system. */
-internal object OpenableModule : ModuleInterface {
+internal object OpenableMechanic : ModuleInterface {
     private val possibleNeighbours: Set<AdjacentBlockData> =
         setOf(
             AdjacentBlockData(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),

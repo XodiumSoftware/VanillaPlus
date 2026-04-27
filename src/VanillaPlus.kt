@@ -17,20 +17,20 @@ import org.xodium.vanillaplus.enchantments.TetherEnchantment
 import org.xodium.vanillaplus.enchantments.VerdanceEnchantment
 import org.xodium.vanillaplus.enchantments.VoidpullEnchantment
 import org.xodium.vanillaplus.enchantments.WitherbrandEnchantment
-import org.xodium.vanillaplus.modules.BookModule
-import org.xodium.vanillaplus.modules.ChatModule
-import org.xodium.vanillaplus.modules.ChiseledBookshelfModule
-import org.xodium.vanillaplus.modules.DimensionModule
-import org.xodium.vanillaplus.modules.EntityModule
-import org.xodium.vanillaplus.modules.InventoryModule
-import org.xodium.vanillaplus.modules.LocatorModule
-import org.xodium.vanillaplus.modules.MotdModule
-import org.xodium.vanillaplus.modules.OpenableModule
-import org.xodium.vanillaplus.modules.PlayerModule
-import org.xodium.vanillaplus.modules.ScoreBoardModule
-import org.xodium.vanillaplus.modules.ServerInfoModule
-import org.xodium.vanillaplus.modules.SitModule
-import org.xodium.vanillaplus.modules.TameableModule
+import org.xodium.vanillaplus.modules.BookMechanic
+import org.xodium.vanillaplus.modules.ChatMechanic
+import org.xodium.vanillaplus.modules.ChiseledBookshelfMechanic
+import org.xodium.vanillaplus.modules.DimensionMechanic
+import org.xodium.vanillaplus.modules.EntityMechanic
+import org.xodium.vanillaplus.modules.InventoryMechanic
+import org.xodium.vanillaplus.modules.LocatorMechanic
+import org.xodium.vanillaplus.modules.MotdMechanic
+import org.xodium.vanillaplus.modules.OpenableMechanic
+import org.xodium.vanillaplus.modules.PlayerMechanic
+import org.xodium.vanillaplus.modules.ScoreBoardMechanic
+import org.xodium.vanillaplus.modules.ServerInfoMechanic
+import org.xodium.vanillaplus.modules.SitMechanic
+import org.xodium.vanillaplus.modules.TameableMechanic
 import org.xodium.vanillaplus.recipes.ChainmailRecipe
 import org.xodium.vanillaplus.recipes.DiamondRecycleRecipe
 import org.xodium.vanillaplus.recipes.PaintingRecipe
@@ -69,20 +69,20 @@ internal class VanillaPlus : JavaPlugin() {
 
         val modules =
             listOf(
-                BookModule,
-                ChatModule,
-                ChiseledBookshelfModule,
-                DimensionModule,
-                EntityModule,
-                InventoryModule,
-                LocatorModule,
-                MotdModule,
-                OpenableModule,
-                PlayerModule,
-                ServerInfoModule,
-                ScoreBoardModule,
-                SitModule,
-                TameableModule,
+                BookMechanic,
+                ChatMechanic,
+                ChiseledBookshelfMechanic,
+                DimensionMechanic,
+                EntityMechanic,
+                InventoryMechanic,
+                LocatorMechanic,
+                MotdMechanic,
+                OpenableMechanic,
+                PlayerMechanic,
+                ServerInfoMechanic,
+                ScoreBoardMechanic,
+                SitMechanic,
+                TameableMechanic,
             )
 
         logger.info(

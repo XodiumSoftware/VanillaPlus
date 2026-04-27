@@ -21,7 +21,7 @@ import org.bukkit.block.data.type.ChiseledBookshelf as ChiseledBookshelfData
 
 /** Represents a module handling bookshelf mechanics within the system. */
 @Suppress("UnstableApiUsage")
-internal object ChiseledBookshelfModule : ModuleInterface {
+internal object ChiseledBookshelfMechanic : ModuleInterface {
     @EventHandler
     fun on(event: PlayerInteractEvent) {
         val player = event.player
