@@ -26,7 +26,7 @@ There are no automated tests in this project.
 ### Entry Points
 
 - **`VanillaPlusBootstrap`** — `PluginBootstrap` implementation. Runs before plugin enable. Creates item tags (`vanillaplus:tools`, `vanillaplus:weapons`, `vanillaplus:tools_weapons`, `vanillaplus:blaze_rods`), registers eleven custom enchantments into Paper's registry via `RegistryEvents.ENCHANTMENT`, then tags all eleven as tradeable, non-treasure, and in-enchanting-table via `LifecycleEvents.TAGS.postFlatten`.
-- **`VanillaPlus`** — `JavaPlugin` main class. On enable: validates server version, registers all recipes, registers all modules. All modules are active by default (`enabled` defaults to `true` on `ModuleInterface`); override `enabled` to `false` in a specific module to disable it at compile time.
+- **`VanillaPlus`** — `JavaPlugin` main class. On enable: validates server version, registers all recipes, registers all mechanics. All mechanics are active by default (`enabled` defaults to `true` on `ModuleInterface`); override `enabled` to `false` in a specific mechanic to disable it at compile time.
 
 ### Module System
 
@@ -34,7 +34,7 @@ Every feature is an `object` implementing **`ModuleInterface`** (which extends `
 
 Each module exposes a nested `object Config` with hardcoded default values. There is no file-based configuration — all settings are compile-time constants.
 
-All modules are instantiated as `object` singletons and listed explicitly in `VanillaPlus.onEnable()`.
+All mechanics are instantiated as `object` singletons and listed explicitly in `VanillaPlus.onEnable()`.
 
 ### Enchantments
 
@@ -77,7 +77,7 @@ Recipe objects implement **`RecipeInterface`** and are listed in `VanillaPlus.on
 
 | Package         | Contents                                                                                                                                         |
 |-----------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
-| `modules/`      | 14 feature module singletons                                                                                                                     |
+| `mechanics/`    | 14 feature mechanic singletons                                                                                                                   |
 | `data/`         | `CommandData`, `BookData`, `AdjacentBlockData`                                                                                                   |
 | `enchantments/` | Verdance, Tether, Nimbus, Earthrend, Embertread, Inferno, Skysunder, Witherbrand, Frostbind, Tempest, Voidpull, Quake, SilkTouch, FeatherFalling |
 | `interfaces/`   | `ModuleInterface`, `EnchantmentInterface`, `RecipeInterface`, `ItemInterface`                                                                    |
@@ -89,7 +89,7 @@ Recipe objects implement **`RecipeInterface`** and are listed in `VanillaPlus.on
 ### Key Conventions
 
 - All internal classes are `internal` visibility.
-- All modules are `object` singletons.
+- All mechanics are `object` singletons.
 - Each module defines a nested `object Config` (with nested `object` blocks for logical groupings) containing hardcoded default values. There is no file-based config system.
 - MiniMessage (`Utils.MM`) is used throughout for all text formatting.
 - The `@Suppress("UnstableApiUsage")` annotation is needed whenever using Paper's experimental APIs (registry events, dialogs, enchantment builders, menu types, etc.).

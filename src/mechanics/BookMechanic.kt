@@ -1,4 +1,4 @@
-package org.xodium.vanillaplus.modules
+package org.xodium.vanillaplus.mechanics
 
 import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.permissions.Permission

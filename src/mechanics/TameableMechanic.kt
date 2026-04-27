@@ -1,4 +1,4 @@
-package org.xodium.vanillaplus.modules
+package org.xodium.vanillaplus.mechanics
 
 import org.bukkit.Material
 import org.bukkit.entity.Player

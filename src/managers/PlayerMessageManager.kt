@@ -6,7 +6,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.advancement.Advancement
 import org.bukkit.entity.Player
-import org.xodium.vanillaplus.modules.PlayerMechanic
+import org.xodium.vanillaplus.mechanics.PlayerMechanic
 import org.xodium.vanillaplus.utils.Utils.MM
 
 /** Manages player messages and internationalization. */

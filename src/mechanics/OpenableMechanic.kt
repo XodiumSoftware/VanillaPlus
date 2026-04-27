@@ -1,6 +1,6 @@
 @file:Suppress("ktlint:standard:no-wildcard-imports")
 
-package org.xodium.vanillaplus.modules
+package org.xodium.vanillaplus.mechanics
 
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound

@@ -1,4 +1,4 @@
-package org.xodium.vanillaplus.modules
+package org.xodium.vanillaplus.mechanics
 
 import org.bukkit.GameMode
 import org.bukkit.Location
@@ -19,7 +19,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.util.Vector
 import org.xodium.vanillaplus.interfaces.ModuleInterface
-import org.xodium.vanillaplus.modules.SitMechanic.occupiedBlocks
+import org.xodium.vanillaplus.mechanics.SitMechanic.occupiedBlocks
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 import kotlin.uuid.toKotlinUuid

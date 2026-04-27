@@ -64,14 +64,14 @@ Documentation is generated with Dokka from KDoc comments in the source code.
 ### Entry Points
 
 1. **VanillaPlusBootstrap** (`PluginBootstrap`) — Runs before plugin enable. Registers 11 custom enchantments into Paper's registry and creates item tags.
-2. **VanillaPlus** (`JavaPlugin`) — Main class. Validates server version, registers recipes, and enables all modules.
+2. **VanillaPlus** (`JavaPlugin`) — Main class. Validates server version, registers recipes, and enables all mechanics.
 
 ### Module System
 
 - All features are Kotlin `object` singletons implementing `ModuleInterface` (extends Bukkit `Listener`)
-- Modules self-register in `VanillaPlus.onEnable()` via `register()`
-- Each module has a nested `object Config` with **hardcoded defaults** — no file-based config system
-- To disable a module at compile time, override `enabled` to `false` in the module object
+- Mechanics self-register in `VanillaPlus.onEnable()` via `register()`
+- Each mechanic has a nested `object Config` with **hardcoded defaults** — no file-based config system
+- To disable a mechanic at compile time, override `enabled` to `false` in the mechanic object
 
 ### Enchantments
 
@@ -103,7 +103,7 @@ Custom enchantments implement `EnchantmentInterface` with:
 
 ```
 src/
-├── modules/          # 14 feature modules (all `object` singletons)
+├── mechanics/        # 14 feature mechanics (all `object` singletons)
 ├── enchantments/       # 14 enchantment implementations
 ├── interfaces/         # ModuleInterface, EnchantmentInterface, RecipeInterface
 ├── managers/           # XpManager, PlayerMessageManager, SpellManager
@@ -116,7 +116,7 @@ src/
 ### Key Conventions
 
 - All internal classes use `internal` visibility
-- All modules are `object` singletons
+- All mechanics are `object` singletons
 - Use MiniMessage (`Utils.MM`) for all text formatting
 - Add `@Suppress("UnstableApiUsage")` when using Paper's experimental APIs
 - ktlint is enforced; suppress wildcard imports per-file with `@file:Suppress("ktlint:standard:no-wildcard-imports")` if needed
@@ -138,7 +138,7 @@ Order members from top to bottom:
 2. **`val`** — read-only properties (overrides first)
 3. **`var`** — mutable properties (overrides first)
 4. **`fun`** — functions (overrides first)
-5. **`object Config`** — nested config object (at bottom for modules)
+5. **`object Config`** — nested config object (at bottom for mechanics)
 
 Within each group:
 
@@ -155,7 +155,7 @@ Within each group:
 
 ## Important Notes
 
-- No file-based configuration — all settings are compile-time constants in module `Config` objects
+- No file-based configuration — all settings are compile-time constants in mechanic `Config` objects
 - Enchantments must be registered in `VanillaPlusBootstrap` AND tagged as tradeable/non-treasure/enchanting-table
 - Spell enchantments use `XpManager` to consume XP on cast
 - Project uses Paper's modern lifecycle/registry APIs extensively
@@ -182,8 +182,8 @@ Within each group:
 **Always update documentation when code changes:**
 
 1. **ARCHITECTURE.md** — Update if you:
-    - Add/remove enchantments, modules, recipes, or managers
-    - Change the module system or interfaces
+    - Add/remove enchantments, mechanics, recipes, or managers
+    - Change the mechanic system or interfaces
     - Modify the mana system or spell mechanics
     - Change project structure or conventions
 
@@ -225,16 +225,16 @@ To add a new enchantment, follow these steps:
 
 ## Adding Other Components
 
-### Adding a Module
+### Adding a Mechanic
 
-1. Create new file in `src/modules/YourModule.kt`
+1. Create new file in `src/mechanics/YourMechanic.kt`
 2. Implement `ModuleInterface` as an `object`
 3. Override `Config` object with settings as compile-time constants
 4. Implement `@EventHandler` methods for events
 5. Register commands/permissions in `register()` if needed
-6. In `VanillaPlus.kt`, add `YourModule` to the module list in `onEnable()`
-7. Add KDoc comments explaining the module's purpose and features
-8. Update `ARCHITECTURE.md` module count
+6. In `VanillaPlus.kt`, add `YourMechanic` to the mechanic list in `onEnable()`
+7. Add KDoc comments explaining the mechanic's purpose and features
+8. Update `ARCHITECTURE.md` mechanic count
 
 ### Adding a Recipe
 
@@ -267,7 +267,7 @@ To add a new enchantment, follow these steps:
 2. Define `data class` with properties for structured data
 3. Keep data classes immutable (`val` properties)
 4. Add appropriate helper methods or companion object factory functions
-5. Document if used across multiple modules
+5. Document if used across multiple mechanics
 
 ### Adding Utilities
 

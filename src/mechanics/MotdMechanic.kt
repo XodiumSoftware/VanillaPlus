@@ -1,4 +1,4 @@
-package org.xodium.vanillaplus.modules
+package org.xodium.vanillaplus.mechanics
 
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority

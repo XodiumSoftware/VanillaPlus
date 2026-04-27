@@ -17,20 +17,20 @@ import org.xodium.vanillaplus.enchantments.TetherEnchantment
 import org.xodium.vanillaplus.enchantments.VerdanceEnchantment
 import org.xodium.vanillaplus.enchantments.VoidpullEnchantment
 import org.xodium.vanillaplus.enchantments.WitherbrandEnchantment
-import org.xodium.vanillaplus.modules.BookMechanic
-import org.xodium.vanillaplus.modules.ChatMechanic
-import org.xodium.vanillaplus.modules.ChiseledBookshelfMechanic
-import org.xodium.vanillaplus.modules.DimensionMechanic
-import org.xodium.vanillaplus.modules.EntityMechanic
-import org.xodium.vanillaplus.modules.InventoryMechanic
-import org.xodium.vanillaplus.modules.LocatorMechanic
-import org.xodium.vanillaplus.modules.MotdMechanic
-import org.xodium.vanillaplus.modules.OpenableMechanic
-import org.xodium.vanillaplus.modules.PlayerMechanic
-import org.xodium.vanillaplus.modules.ScoreBoardMechanic
-import org.xodium.vanillaplus.modules.ServerInfoMechanic
-import org.xodium.vanillaplus.modules.SitMechanic
-import org.xodium.vanillaplus.modules.TameableMechanic
+import org.xodium.vanillaplus.mechanics.BookMechanic
+import org.xodium.vanillaplus.mechanics.ChatMechanic
+import org.xodium.vanillaplus.mechanics.ChiseledBookshelfMechanic
+import org.xodium.vanillaplus.mechanics.DimensionMechanic
+import org.xodium.vanillaplus.mechanics.EntityMechanic
+import org.xodium.vanillaplus.mechanics.InventoryMechanic
+import org.xodium.vanillaplus.mechanics.LocatorMechanic
+import org.xodium.vanillaplus.mechanics.MotdMechanic
+import org.xodium.vanillaplus.mechanics.OpenableMechanic
+import org.xodium.vanillaplus.mechanics.PlayerMechanic
+import org.xodium.vanillaplus.mechanics.ScoreBoardMechanic
+import org.xodium.vanillaplus.mechanics.ServerInfoMechanic
+import org.xodium.vanillaplus.mechanics.SitMechanic
+import org.xodium.vanillaplus.mechanics.TameableMechanic
 import org.xodium.vanillaplus.recipes.ChainmailRecipe
 import org.xodium.vanillaplus.recipes.DiamondRecycleRecipe
 import org.xodium.vanillaplus.recipes.PaintingRecipe
@@ -67,7 +67,7 @@ internal class VanillaPlus : JavaPlugin() {
             "Registered: ${recipes.sumOf { it.recipes.size }} recipes(s) | Took ${recipes.sumOf { it.register() }}ms",
         )
 
-        val modules =
+        val mechanics =
             listOf(
                 BookMechanic,
                 ChatMechanic,
@@ -86,7 +86,7 @@ internal class VanillaPlus : JavaPlugin() {
             )
 
         logger.info(
-            "Registered: ${modules.size} module(s) | Took ${modules.sumOf { it.register() }}ms",
+            "Registered: ${mechanics.size} module(s) | Took ${mechanics.sumOf { it.register() }}ms",
         )
 
         val enchantments =
@@ -108,6 +108,7 @@ internal class VanillaPlus : JavaPlugin() {
             )
 
         val sum = enchantments.sumOf { it.registerEvents() }
+
         logger.info(
             "Registered: ${enchantments.size} enchantment event listener(s) | Took ${sum}ms",
         )

@@ -80,15 +80,15 @@ VanillaPlus uses **compile-time configuration** — there are no config files to
 To customize the plugin, you must:
 
 1. Fork the repository
-2. Edit the `Config` objects in each module
+2. Edit the `Config` objects in each mechanic
 3. Rebuild the plugin
 
-### Module Configuration Location
+### Mechanic Configuration Location
 
-Each module has a nested `Config` object, for example:
+Each mechanic has a nested `Config` object, for example:
 
 ```kotlin
-// In src/main/kotlin/org/xodium/vanillaplus/modules/PlayerModule.kt
+// In src/main/kotlin/org/xodium/vanillaplus/mechanics/PlayerMechanic.kt
 object Config {
     const val ENABLED = true
     // ... other settings
@@ -103,21 +103,21 @@ VanillaPlus enhances base gameplay with custom enchantments, items, and mechanic
 
 Eleven custom enchantments are available:
 
-| Enchantment | Slot | Description |
-|-------------|------|-------------|
-| Verdance | Main Hand | Enhances hoe abilities |
-| Tether | Main Hand | Applies to tools and weapons |
-| Nimbus | Saddle | Happy Ghast harness enhancement |
-| Earthrend | Main Hand | Pickaxe special ability |
-| Embertread | Feet | Foot armor enhancement |
-| **Blaze Rod Spells** | | |
-| Inferno | Main Hand | Fire spell |
-| Skysunder | Main Hand | Lightning spell |
-| Witherbrand | Main Hand | Wither spell |
-| Frostbind | Main Hand | Ice spell |
-| Tempest | Main Hand | Wind spell |
-| Voidpull | Main Hand | Teleportation spell |
-| Quake | Main Hand | Earth spell |
+| Enchantment          | Slot      | Description                     |
+|----------------------|-----------|---------------------------------|
+| Verdance             | Main Hand | Enhances hoe abilities          |
+| Tether               | Main Hand | Applies to tools and weapons    |
+| Nimbus               | Saddle    | Happy Ghast harness enhancement |
+| Earthrend            | Main Hand | Pickaxe special ability         |
+| Embertread           | Feet      | Foot armor enhancement          |
+| **Blaze Rod Spells** |           |                                 |
+| Inferno              | Main Hand | Fire spell                      |
+| Skysunder            | Main Hand | Lightning spell                 |
+| Witherbrand          | Main Hand | Wither spell                    |
+| Frostbind            | Main Hand | Ice spell                       |
+| Tempest              | Main Hand | Wind spell                      |
+| Voidpull             | Main Hand | Teleportation spell             |
+| Quake                | Main Hand | Earth spell                     |
 
 ### Mana System
 
@@ -139,8 +139,8 @@ Blaze rods with spell enchantments function as wands:
 ### Custom Items
 
 - **Potion of Arcane Restoration**: Refills mana to maximum
-  - Brew: Awkward Potion + Blaze Rod
-  - Color: Purple (`#832466`)
+    - Brew: Awkward Potion + Blaze Rod
+    - Color: Purple (`#832466`)
 
 ### Recipes
 
