@@ -26,7 +26,7 @@ dependencies {
     implementation(kotlin("stdlib"))
 
     // Exposed ORM
-    implementation("org.jetbrains.exposed:exposed-core:0.60.0")
+    implementation("org.jetbrains.exposed:exposed-core:0.61.0")
     implementation("org.jetbrains.exposed:exposed-dao:0.60.0")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.60.0")
 
