@@ -39,15 +39,4 @@ internal object DatabaseManager {
             IllyriaKingdoms.instance.logger.info("Database connection closed")
         }
     }
-
-    /**
-     * Executes a database transaction.
-     * Automatically handles transaction scope and error handling.
-     *
-     * @param block The transaction block to execute
-     * @return The result of the transaction block
-     */
-    fun <T> transaction(block: () -> T): T =
-        org.jetbrains.exposed.sql.transactions
-            .transaction(database) { block() }
 }
