@@ -146,6 +146,23 @@ jobs:
         env:
           GH_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
+      - id: delete_old_release_assets
+        name: Delete Old Release Assets
+        run: |
+          # Get the release ID for the nightly tag
+          release_id=$(gh api repos/${{ github.repository }}/releases/tags/nightly --jq '.id' 2>/dev/null || echo "")
+          if [ -n "$release_id" ]; then
+            # Get all asset IDs for this release
+            asset_ids=$(gh api repos/${{ github.repository }}/releases/$release_id/assets --jq '.[].id' 2>/dev/null || echo "")
+            # Delete each asset
+            for asset_id in $asset_ids; do
+              echo "Deleting asset $asset_id"
+              gh api repos/${{ github.repository }}/releases/assets/$asset_id --method DELETE
+            done
+          fi
+        env:
+          GH_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
       - id: create_nightly_release
         name: Create Nightly Release
         uses: softprops/action-gh-release@153bb8e04406b158c6c84fc1615b65b24149a1fe

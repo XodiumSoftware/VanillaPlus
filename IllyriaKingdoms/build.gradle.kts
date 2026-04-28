@@ -24,6 +24,14 @@ description = "Minecraft kingdoms plugin for land claiming and factions"
 dependencies {
     compileOnly("io.papermc.paper:paper-api:$mcVersion-R0.1-SNAPSHOT")
     implementation(kotlin("stdlib"))
+
+    // Exposed ORM
+    implementation("org.jetbrains.exposed:exposed-core:0.60.0")
+    implementation("org.jetbrains.exposed:exposed-dao:0.60.0")
+    implementation("org.jetbrains.exposed:exposed-jdbc:0.60.0")
+
+    // SQLite driver
+    implementation("org.xerial:sqlite-jdbc:3.49.0.0")
 }
 
 java {

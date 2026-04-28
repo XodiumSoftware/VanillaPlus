@@ -1,6 +1,7 @@
 package org.xodium.illyriaplus
 
 import org.bukkit.plugin.java.JavaPlugin
+import org.xodium.illyriaplus.db.DatabaseManager
 
 /**
  * Main class for IllyriaKingdoms plugin.
@@ -19,6 +20,12 @@ internal class IllyriaKingdoms : JavaPlugin() {
             "This plugin requires a supported server version. Supported versions: ${pluginMeta.version}."
 
         if (!server.version.contains(pluginMeta.version.substringBefore("+"))) disablePlugin(unsupportedVersionMsg)
+
+        DatabaseManager.init()
+    }
+
+    override fun onDisable() {
+        DatabaseManager.close()
     }
 
     /**
