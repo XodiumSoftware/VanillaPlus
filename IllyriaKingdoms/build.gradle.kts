@@ -1,3 +1,5 @@
+// IllyriaKingdoms - Kingdoms/factions system
+
 import org.jetbrains.dokka.gradle.engine.parameters.VisibilityModifier
 import xyz.jpenilla.runtask.task.AbstractRun
 
@@ -12,20 +14,12 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "12.3.0"
 }
 
-val mcVersion = "1.21.11"
-val buildNumber =
-    rootProject.providers
-        .exec { commandLine("git", "rev-list", "--count", "HEAD") }
-        .standardOutput.asText
-        .map { it.trim() }
+val mcVersion = rootProject.extra["mcVersion"] as String
+val buildNumber = rootProject.extra["buildNumber"] as String
 
 group = "org.xodium.illyriaplus.IllyriaKingdoms"
-version = "$mcVersion+build.${buildNumber.get()}"
+version = "$mcVersion+build.$buildNumber"
 description = "Minecraft kingdoms plugin for land claiming and factions"
-repositories {
-    mavenCentral()
-    maven("https://repo.papermc.io/repository/maven-public/")
-}
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:$mcVersion-R0.1-SNAPSHOT")

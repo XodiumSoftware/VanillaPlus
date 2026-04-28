@@ -1,3 +1,5 @@
+// IllyriaCore - Core gameplay enhancements
+
 import org.jetbrains.dokka.gradle.engine.parameters.VisibilityModifier
 import xyz.jpenilla.runtask.task.AbstractRun
 
@@ -12,31 +14,15 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "12.3.0"
 }
 
-val mcVersion = "1.21.11"
-val buildNumber =
-    providers
-        .exec { commandLine("git", "rev-list", "--count", "HEAD") }
-        .standardOutput.asText
-        .map { it.trim() }
+val mcVersion = rootProject.extra["mcVersion"] as String
+val buildNumber = rootProject.extra["buildNumber"] as String
 
 group = "org.xodium.illyriaplus.IllyriaPlus"
-version = "$mcVersion+build.${buildNumber.get()}"
+version = "$mcVersion+build.$buildNumber"
 description = "Minecraft plugin that enhances the base gameplay"
-
-val deployJarPath: String =
-    layout.projectDirectory
-        .dir("build/libs")
-        .file("${rootProject.name}-${project.version}.jar")
-        .asFile.absolutePath
-
-repositories {
-    mavenCentral()
-    maven("https://repo.papermc.io/repository/maven-public/")
-}
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:$mcVersion-R0.1-SNAPSHOT")
-
     implementation(kotlin("stdlib"))
 }
 
@@ -51,7 +37,7 @@ java {
 sourceSets { main { kotlin { srcDirs("src") } } }
 
 dokka {
-    moduleName.set("IllyriaPlus")
+    moduleName.set("IllyriaCore")
 
     dokkaSourceSets.main {
         documentedVisibilities.set(
