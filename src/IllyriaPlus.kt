@@ -1,50 +1,50 @@
 @file:Suppress("ktlint:standard:no-wildcard-imports")
 
-package org.xodium.vanillaplus
+package org.xodium.illyriaplus
 
 import org.bukkit.plugin.java.JavaPlugin
-import org.xodium.vanillaplus.enchantments.EarthrendEnchantment
-import org.xodium.vanillaplus.enchantments.EmbertreadEnchantment
-import org.xodium.vanillaplus.enchantments.FeatherFallingEnchantment
-import org.xodium.vanillaplus.enchantments.FrostbindEnchantment
-import org.xodium.vanillaplus.enchantments.InfernoEnchantment
-import org.xodium.vanillaplus.enchantments.NimbusEnchantment
-import org.xodium.vanillaplus.enchantments.QuakeEnchantment
-import org.xodium.vanillaplus.enchantments.SilkTouchEnchantment
-import org.xodium.vanillaplus.enchantments.SkysunderEnchantment
-import org.xodium.vanillaplus.enchantments.TempestEnchantment
-import org.xodium.vanillaplus.enchantments.TetherEnchantment
-import org.xodium.vanillaplus.enchantments.VerdanceEnchantment
-import org.xodium.vanillaplus.enchantments.VoidpullEnchantment
-import org.xodium.vanillaplus.enchantments.WitherbrandEnchantment
-import org.xodium.vanillaplus.mechanics.BookMechanic
-import org.xodium.vanillaplus.mechanics.ChatMechanic
-import org.xodium.vanillaplus.mechanics.ChiseledBookshelfMechanic
-import org.xodium.vanillaplus.mechanics.DimensionMechanic
-import org.xodium.vanillaplus.mechanics.InventoryMechanic
-import org.xodium.vanillaplus.mechanics.LocatorMechanic
-import org.xodium.vanillaplus.mechanics.MotdMechanic
-import org.xodium.vanillaplus.mechanics.OpenableMechanic
-import org.xodium.vanillaplus.mechanics.PlayerMechanic
-import org.xodium.vanillaplus.mechanics.ScoreBoardMechanic
-import org.xodium.vanillaplus.mechanics.ServerInfoMechanic
-import org.xodium.vanillaplus.mechanics.SitMechanic
-import org.xodium.vanillaplus.mechanics.TameableMechanic
-import org.xodium.vanillaplus.mechanics.entity.BatMechanic
-import org.xodium.vanillaplus.mechanics.entity.DisableEntityMechanic
-import org.xodium.vanillaplus.mechanics.entity.GriefingMechanic
-import org.xodium.vanillaplus.mechanics.entity.HuskMechanic
-import org.xodium.vanillaplus.mechanics.entity.SpawnEggMechanic
-import org.xodium.vanillaplus.recipes.ChainmailRecipe
-import org.xodium.vanillaplus.recipes.DiamondRecycleRecipe
-import org.xodium.vanillaplus.recipes.PaintingRecipe
-import org.xodium.vanillaplus.recipes.RottenFleshRecipe
-import org.xodium.vanillaplus.recipes.WoodLogRecipe
+import org.xodium.illyriaplus.enchantments.EarthrendEnchantment
+import org.xodium.illyriaplus.enchantments.EmbertreadEnchantment
+import org.xodium.illyriaplus.enchantments.FeatherFallingEnchantment
+import org.xodium.illyriaplus.enchantments.FrostbindEnchantment
+import org.xodium.illyriaplus.enchantments.InfernoEnchantment
+import org.xodium.illyriaplus.enchantments.NimbusEnchantment
+import org.xodium.illyriaplus.enchantments.QuakeEnchantment
+import org.xodium.illyriaplus.enchantments.SilkTouchEnchantment
+import org.xodium.illyriaplus.enchantments.SkysunderEnchantment
+import org.xodium.illyriaplus.enchantments.TempestEnchantment
+import org.xodium.illyriaplus.enchantments.TetherEnchantment
+import org.xodium.illyriaplus.enchantments.VerdanceEnchantment
+import org.xodium.illyriaplus.enchantments.VoidpullEnchantment
+import org.xodium.illyriaplus.enchantments.WitherbrandEnchantment
+import org.xodium.illyriaplus.mechanics.BookMechanic
+import org.xodium.illyriaplus.mechanics.ChatMechanic
+import org.xodium.illyriaplus.mechanics.ChiseledBookshelfMechanic
+import org.xodium.illyriaplus.mechanics.DimensionMechanic
+import org.xodium.illyriaplus.mechanics.InventoryMechanic
+import org.xodium.illyriaplus.mechanics.LocatorMechanic
+import org.xodium.illyriaplus.mechanics.MotdMechanic
+import org.xodium.illyriaplus.mechanics.OpenableMechanic
+import org.xodium.illyriaplus.mechanics.PlayerMechanic
+import org.xodium.illyriaplus.mechanics.ScoreBoardMechanic
+import org.xodium.illyriaplus.mechanics.ServerInfoMechanic
+import org.xodium.illyriaplus.mechanics.SitMechanic
+import org.xodium.illyriaplus.mechanics.TameableMechanic
+import org.xodium.illyriaplus.mechanics.entity.BatMechanic
+import org.xodium.illyriaplus.mechanics.entity.DisableEntityMechanic
+import org.xodium.illyriaplus.mechanics.entity.GriefingMechanic
+import org.xodium.illyriaplus.mechanics.entity.HuskMechanic
+import org.xodium.illyriaplus.mechanics.entity.SpawnEggMechanic
+import org.xodium.illyriaplus.recipes.ChainmailRecipe
+import org.xodium.illyriaplus.recipes.DiamondRecycleRecipe
+import org.xodium.illyriaplus.recipes.PaintingRecipe
+import org.xodium.illyriaplus.recipes.RottenFleshRecipe
+import org.xodium.illyriaplus.recipes.WoodLogRecipe
 
 /** Main class of the plugin. */
-internal class VanillaPlus : JavaPlugin() {
+internal class IllyriaPlus : JavaPlugin() {
     companion object {
-        lateinit var instance: VanillaPlus
+        lateinit var instance: IllyriaPlus
             private set
     }
 

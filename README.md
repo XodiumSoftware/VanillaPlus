@@ -6,7 +6,7 @@
       <img src="https://gist.githubusercontent.com/illyrius666/a38f03b4fbe9b43faa2c5623137c1250/raw/3a1410e77807097bcfbcf963822b41fadd495d9f/xodium.svg" alt="Xodium Logo" width="200">
     </a>
   <br /><br />
-  VanillaPlus
+  IllyriaPlus
   <br />
   <br />
 </h1>
@@ -48,7 +48,7 @@
 
 <p align="right"><a href="#readme-top">▲</a></p>
 
-[architecture_url]: https://github.com/XodiumSoftware/VanillaPlus/blob/main/ARCHITECTURE.md
+[architecture_url]: https://github.com/XodiumSoftware/IllyriaPlus/blob/main/ARCHITECTURE.md
 
 [enchantments_url]: https://vanillaplus.xodium.org/enchantments
 
@@ -62,22 +62,22 @@
 
 [built_with_url]: https://skillicons.dev
 
-[code_of_conduct_url]: https://github.com/XodiumSoftware/VanillaPlus?tab=coc-ov-file
+[code_of_conduct_url]: https://github.com/XodiumSoftware/IllyriaPlus?tab=coc-ov-file
 
-[contributing_url]: https://github.com/XodiumSoftware/VanillaPlus/blob/main/CONTRIBUTING.md
+[contributing_url]: https://github.com/XodiumSoftware/IllyriaPlus/blob/main/CONTRIBUTING.md
 
-[contributors_shield_url]: https://img.shields.io/github/contributors/XodiumSoftware/VanillaPlus?style=for-the-badge&color=blue
+[contributors_shield_url]: https://img.shields.io/github/contributors/XodiumSoftware/IllyriaPlus?style=for-the-badge&color=blue
 
-[contributors_url]: https://github.com/XodiumSoftware/VanillaPlus/graphs/contributors
+[contributors_url]: https://github.com/XodiumSoftware/IllyriaPlus/graphs/contributors
 
-[issues_shield_url]: https://img.shields.io/github/issues/XodiumSoftware/VanillaPlus?style=for-the-badge&color=yellow
+[issues_shield_url]: https://img.shields.io/github/issues/XodiumSoftware/IllyriaPlus?style=for-the-badge&color=yellow
 
-[issues_url]: https://github.com/XodiumSoftware/VanillaPlus/issues
+[issues_url]: https://github.com/XodiumSoftware/IllyriaPlus/issues
 
-[license_url]: https://github.com/XodiumSoftware/VanillaPlus?tab=AGPL-3.0-1-ov-file
+[license_url]: https://github.com/XodiumSoftware/IllyriaPlus?tab=AGPL-3.0-1-ov-file
 
 [roadmap_shield_url]: https://img.shields.io/badge/Roadmap-Click%20Me!-purple.svg?style=for-the-badge
 
 [roadmap_url]: https://github.com/orgs/XodiumSoftware/projects/4
 
-[security_url]: https://github.com/XodiumSoftware/VanillaPlus?tab=security-ov-file
+[security_url]: https://github.com/XodiumSoftware/IllyriaPlus?tab=security-ov-file

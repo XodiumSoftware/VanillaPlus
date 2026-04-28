@@ -1,4 +1,4 @@
-package org.xodium.vanillaplus.utils
+package org.xodium.illyriaplus.utils
 
 import org.bukkit.Location
 import org.bukkit.block.Block

@@ -1,12 +1,12 @@
-package org.xodium.vanillaplus.recipes
+package org.xodium.illyriaplus.recipes
 
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.BlastingRecipe
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.RecipeChoice
-import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.interfaces.RecipeInterface
+import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
+import org.xodium.illyriaplus.interfaces.RecipeInterface
 
 /** Represents an object handling diamond armor/tool recycling via blast furnace. */
 internal object DiamondRecycleRecipe : RecipeInterface {

@@ -1,10 +1,10 @@
-package org.xodium.vanillaplus.interfaces
+package org.xodium.illyriaplus.interfaces
 
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import org.bukkit.event.Listener
 import org.bukkit.permissions.Permission
-import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.data.CommandData
+import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
+import org.xodium.illyriaplus.data.CommandData
 import kotlin.time.measureTime
 
 /** Represents a contract for a mechanic within the system. */

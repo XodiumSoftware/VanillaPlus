@@ -1,6 +1,6 @@
 @file:Suppress("ktlint:standard:no-wildcard-imports")
 
-package org.xodium.vanillaplus.utils
+package org.xodium.illyriaplus.utils
 
 import com.google.gson.JsonParser
 import io.papermc.paper.datacomponent.DataComponentTypes
@@ -14,10 +14,10 @@ import org.bukkit.block.Container
 import org.bukkit.entity.Player
 import org.bukkit.entity.Tameable
 import org.bukkit.inventory.ItemStack
-import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
-import org.xodium.vanillaplus.pdcs.PlayerPDC.scoreboardVisibility
-import org.xodium.vanillaplus.utils.Utils.MM
+import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
+import org.xodium.illyriaplus.pdcs.PlayerPDC.nickname
+import org.xodium.illyriaplus.pdcs.PlayerPDC.scoreboardVisibility
+import org.xodium.illyriaplus.utils.Utils.MM
 import java.net.URI
 import javax.imageio.ImageIO
 import kotlin.io.encoding.Base64

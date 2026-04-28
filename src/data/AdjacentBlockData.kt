@@ -1,4 +1,4 @@
-package org.xodium.vanillaplus.data
+package org.xodium.illyriaplus.data
 
 import org.bukkit.Material
 import org.bukkit.block.BlockFace

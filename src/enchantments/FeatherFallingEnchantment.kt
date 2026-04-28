@@ -1,4 +1,4 @@
-package org.xodium.vanillaplus.enchantments
+package org.xodium.illyriaplus.enchantments
 
 import org.bukkit.Material
 import org.bukkit.Tag
@@ -7,7 +7,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
-import org.xodium.vanillaplus.interfaces.EnchantmentInterface
+import org.xodium.illyriaplus.interfaces.EnchantmentInterface
 
 /** Represents an object handling feather falling enchantment implementation within the system. */
 internal object FeatherFallingEnchantment : EnchantmentInterface {

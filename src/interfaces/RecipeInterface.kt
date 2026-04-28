@@ -1,8 +1,8 @@
-package org.xodium.vanillaplus.interfaces
+package org.xodium.illyriaplus.interfaces
 
 import io.papermc.paper.potion.PotionMix
 import org.bukkit.inventory.Recipe
-import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
 import kotlin.time.measureTime
 
 /** Represents a contract for recipes within the system. */

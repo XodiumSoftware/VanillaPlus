@@ -1,4 +1,4 @@
-package org.xodium.vanillaplus.enchantments
+package org.xodium.illyriaplus.enchantments
 
 import com.destroystokyo.paper.MaterialTags
 import io.papermc.paper.datacomponent.DataComponentTypes
@@ -10,8 +10,8 @@ import org.bukkit.block.BlockFace
 import org.bukkit.event.EventHandler
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.inventory.EquipmentSlotGroup
-import org.xodium.vanillaplus.interfaces.EnchantmentInterface
-import org.xodium.vanillaplus.utils.Utils.displayName
+import org.xodium.illyriaplus.interfaces.EnchantmentInterface
+import org.xodium.illyriaplus.utils.Utils.displayName
 
 /** Represents an object handling earthrend enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")

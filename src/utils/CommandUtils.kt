@@ -1,13 +1,13 @@
-package org.xodium.vanillaplus.utils
+package org.xodium.illyriaplus.utils
 
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import org.bukkit.entity.Player
-import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.utils.Utils.MM
-import org.xodium.vanillaplus.utils.Utils.prefix
+import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
+import org.xodium.illyriaplus.utils.Utils.MM
+import org.xodium.illyriaplus.utils.Utils.prefix
 
 /** Utility functions for command handling. */
 internal object CommandUtils {

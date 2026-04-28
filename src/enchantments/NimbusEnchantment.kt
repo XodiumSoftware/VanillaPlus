@@ -1,4 +1,4 @@
-package org.xodium.vanillaplus.enchantments
+package org.xodium.illyriaplus.enchantments
 
 import io.papermc.paper.event.entity.EntityEquipmentChangedEvent
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
@@ -7,13 +7,14 @@ import org.bukkit.entity.HappyGhast
 import org.bukkit.event.EventHandler
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.EquipmentSlotGroup
-import org.xodium.vanillaplus.interfaces.EnchantmentInterface
-import org.xodium.vanillaplus.utils.Utils.displayName
+import org.xodium.illyriaplus.interfaces.EnchantmentInterface
+import org.xodium.illyriaplus.utils.Utils.displayName
 
 /** Represents an object handling nimbus enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
 internal object NimbusEnchantment : EnchantmentInterface {
     private const val DEFAULT_FLY_SPEED = 0.05
+
     private val SPEED_MODIFIER = mapOf(1 to 1.5, 2 to 2.0, 3 to 2.5, 4 to 3.0, 5 to 3.5)
 
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =

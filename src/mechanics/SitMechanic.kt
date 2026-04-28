@@ -1,4 +1,4 @@
-package org.xodium.vanillaplus.mechanics
+package org.xodium.illyriaplus.mechanics
 
 import org.bukkit.GameMode
 import org.bukkit.Location
@@ -18,8 +18,8 @@ import org.bukkit.event.entity.EntityDismountEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.util.Vector
-import org.xodium.vanillaplus.interfaces.MechanicInterface
-import org.xodium.vanillaplus.mechanics.SitMechanic.occupiedBlocks
+import org.xodium.illyriaplus.interfaces.MechanicInterface
+import org.xodium.illyriaplus.mechanics.SitMechanic.occupiedBlocks
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 import kotlin.uuid.toKotlinUuid

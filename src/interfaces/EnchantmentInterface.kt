@@ -1,4 +1,4 @@
-package org.xodium.vanillaplus.interfaces
+package org.xodium.illyriaplus.interfaces
 
 import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
@@ -7,9 +7,9 @@ import io.papermc.paper.registry.data.EnchantmentRegistryEntry
 import net.kyori.adventure.key.Key
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.event.Listener
-import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.VanillaPlusBootstrap.Companion.INSTANCE
-import org.xodium.vanillaplus.utils.Utils.toRegistryKeyFragment
+import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
+import org.xodium.illyriaplus.IllyriaPlusBootstrap.Companion.INSTANCE
+import org.xodium.illyriaplus.utils.Utils.toRegistryKeyFragment
 
 /** Represents a contract for enchantments within the system. */
 @Suppress("UnstableApiUsage")

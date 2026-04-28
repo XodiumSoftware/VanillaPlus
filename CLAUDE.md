@@ -1,8 +1,8 @@
-# VanillaPlus — Claude Code Context
+# IllyriaPlus — Claude Code Context
 
 ## Project at a Glance
 
-- **Name:** VanillaPlus
+- **Name:** IllyriaPlus
 - **Type:** Minecraft Paper plugin (server-side only)
 - **MC Version:** 1.21.11
 - **Language:** Kotlin (JVM 21)
@@ -63,13 +63,13 @@ Documentation is generated with Dokka from KDoc comments in the source code.
 
 ### Entry Points
 
-1. **VanillaPlusBootstrap** (`PluginBootstrap`) — Runs before plugin enable. Registers 11 custom enchantments into Paper's registry and creates item tags.
-2. **VanillaPlus** (`JavaPlugin`) — Main class. Validates server version, registers recipes, and enables all mechanics.
+1. **IllyriaPlusBootstrap** (`PluginBootstrap`) — Runs before plugin enable. Registers 11 custom enchantments into Paper's registry and creates item tags.
+2. **IllyriaPlus** (`JavaPlugin`) — Main class. Validates server version, registers recipes, and enables all mechanics.
 
 ### Module System
 
 - All features are Kotlin `object` singletons implementing `ModuleInterface` (extends Bukkit `Listener`)
-- Mechanics self-register in `VanillaPlus.onEnable()` via `register()`
+- Mechanics self-register in `IllyriaPlus.onEnable()` via `register()`
 - Each mechanic has a nested `object Config` with **hardcoded defaults** — no file-based config system
 - To disable a mechanic at compile time, override `enabled` to `false` in the mechanic object
 
@@ -156,7 +156,7 @@ Within each group:
 ## Important Notes
 
 - No file-based configuration — all settings are compile-time constants in mechanic `Config` objects
-- Enchantments must be registered in `VanillaPlusBootstrap` AND tagged as tradeable/non-treasure/enchanting-table
+- Enchantments must be registered in `IllyriaPlusBootstrap` AND tagged as tradeable/non-treasure/enchanting-table
 - Spell enchantments use `XpManager` to consume XP on cast
 - Project uses Paper's modern lifecycle/registry APIs extensively
 
@@ -210,7 +210,7 @@ To add a new enchantment, follow these steps:
 1. Create new file in `src/enchantments/YournameEnchantment.kt`
 2. Implement `EnchantmentInterface` as an `object`
 3. In `invoke(builder)`, configure: `description()`, `supportedItems()`, `anvilCost()`, `maxLevel()`, `weight()`, `slotGroup()`
-4. In `VanillaPlusBootstrap.kt`:
+4. In `IllyriaPlusBootstrap.kt`:
     - Add `YournameEnchantment` to the `ENCHANTMENTS` list
     - Add it to the tags (tradeable, non-treasure, enchanting-table)
     - Add supported items to appropriate `ItemTag` if needed
@@ -232,7 +232,7 @@ To add a new enchantment, follow these steps:
 3. Override `Config` object with settings as compile-time constants
 4. Implement `@EventHandler` methods for events
 5. Register commands/permissions in `register()` if needed
-6. In `VanillaPlus.kt`, add `YourMechanic` to the mechanic list in `onEnable()`
+6. In `IllyriaPlus.kt`, add `YourMechanic` to the mechanic list in `onEnable()`
 7. Add KDoc comments explaining the mechanic's purpose and features
 8. Update `ARCHITECTURE.md` mechanic count
 
@@ -242,7 +242,7 @@ To add a new enchantment, follow these steps:
 2. Implement `RecipeInterface` as an `object`
 3. Define `recipes` list for crafting/smelting recipes, or `potions` list for brewing recipes
 4. Use naming pattern `{descriptive_name}_{recipe_type}` for `NamespacedKey`
-5. In `VanillaPlus.kt`, add `YourRecipe` to the recipe list in `onEnable()`
+5. In `IllyriaPlus.kt`, add `YourRecipe` to the recipe list in `onEnable()`
 6. Add KDoc comments describing the recipe
 
 ### Adding a PDC (Persistent Data Container)

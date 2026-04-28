@@ -1,10 +1,10 @@
-package org.xodium.vanillaplus.mechanics.entity
+package org.xodium.illyriaplus.mechanics.entity
 
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.inventory.ItemStack
-import org.xodium.vanillaplus.interfaces.MechanicInterface
+import org.xodium.illyriaplus.interfaces.MechanicInterface
 import kotlin.random.Random
 
 /** Handles spawn egg drops when entities die. */

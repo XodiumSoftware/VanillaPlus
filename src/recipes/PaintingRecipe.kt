@@ -1,4 +1,4 @@
-package org.xodium.vanillaplus.recipes
+package org.xodium.illyriaplus.recipes
 
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.registry.RegistryAccess
@@ -7,8 +7,8 @@ import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.StonecuttingRecipe
-import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.interfaces.RecipeInterface
+import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
+import org.xodium.illyriaplus.interfaces.RecipeInterface
 
 /** Represents an object handling painting recipe implementation within the system. */
 internal object PaintingRecipe : RecipeInterface {

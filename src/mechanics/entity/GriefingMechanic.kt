@@ -1,10 +1,10 @@
-package org.xodium.vanillaplus.mechanics.entity
+package org.xodium.illyriaplus.mechanics.entity
 
 import org.bukkit.entity.EntityType
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.EntityChangeBlockEvent
 import org.bukkit.event.entity.EntityExplodeEvent
-import org.xodium.vanillaplus.interfaces.MechanicInterface
+import org.xodium.illyriaplus.interfaces.MechanicInterface
 
 /** Prevents mob griefing (Creepers, Endermen, etc.). */
 internal object GriefingMechanic : MechanicInterface {

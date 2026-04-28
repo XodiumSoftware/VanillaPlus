@@ -19,7 +19,7 @@ val buildNumber =
         .standardOutput.asText
         .map { it.trim() }
 
-group = "org.xodium.vanillaplus.VanillaPlus"
+group = "org.xodium.illyriaplus.IllyriaPlus"
 version = "$mcVersion+build.${buildNumber.get()}"
 description = "Minecraft plugin that enhances the base gameplay"
 
@@ -51,7 +51,7 @@ java {
 sourceSets { main { kotlin { srcDirs("src") } } }
 
 dokka {
-    moduleName.set("VanillaPlus")
+    moduleName.set("IllyriaPlus")
 
     dokkaSourceSets.main {
         documentedVisibilities.set(
@@ -83,8 +83,8 @@ tasks {
 
 paperPluginYaml {
     main.set(group.toString())
-    website.set("https://github.com/XodiumSoftware/VanillaPlus")
+    website.set("https://github.com/XodiumSoftware/IllyriaPlus")
     authors.add("Xodium")
     apiVersion.set(mcVersion)
-    bootstrapper.set("org.xodium.vanillaplus.VanillaPlusBootstrap")
+    bootstrapper.set("org.xodium.illyriaplus.IllyriaPlusBootstrap")
 }

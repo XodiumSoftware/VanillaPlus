@@ -1,9 +1,9 @@
-package org.xodium.vanillaplus.utils
+package org.xodium.illyriaplus.utils
 
 import org.bukkit.Location
 import org.bukkit.entity.Entity
 import org.bukkit.scheduler.BukkitTask
-import org.xodium.vanillaplus.VanillaPlus.Companion.instance
+import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
 
 /** Schedule utilities. */
 internal object ScheduleUtils {

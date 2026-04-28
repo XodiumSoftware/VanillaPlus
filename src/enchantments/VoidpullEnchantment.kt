@@ -1,6 +1,6 @@
 @file:Suppress("ktlint:standard:no-wildcard-imports")
 
-package org.xodium.vanillaplus.enchantments
+package org.xodium.illyriaplus.enchantments
 
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
 import net.kyori.adventure.key.Key
@@ -14,12 +14,12 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.scheduler.BukkitTask
-import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.interfaces.EnchantmentInterface
-import org.xodium.vanillaplus.managers.XpManager
-import org.xodium.vanillaplus.utils.ScheduleUtils
-import org.xodium.vanillaplus.utils.Utils
-import org.xodium.vanillaplus.utils.Utils.displayName
+import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
+import org.xodium.illyriaplus.interfaces.EnchantmentInterface
+import org.xodium.illyriaplus.managers.XpManager
+import org.xodium.illyriaplus.utils.ScheduleUtils
+import org.xodium.illyriaplus.utils.Utils
+import org.xodium.illyriaplus.utils.Utils.displayName
 import java.util.*
 
 /** Represents an object handling voidpull enchantment implementation within the system. */

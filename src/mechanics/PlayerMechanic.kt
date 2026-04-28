@@ -1,6 +1,6 @@
 @file:Suppress("ktlint:standard:no-wildcard-imports")
 
-package org.xodium.vanillaplus.mechanics
+package org.xodium.illyriaplus.mechanics
 
 import com.destroystokyo.paper.event.player.PlayerSetSpawnEvent
 import com.mojang.brigadier.arguments.StringArgumentType
@@ -28,18 +28,18 @@ import org.bukkit.event.weather.WeatherChangeEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
-import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.data.CommandData
-import org.xodium.vanillaplus.interfaces.MechanicInterface
-import org.xodium.vanillaplus.managers.PlayerMessageManager
-import org.xodium.vanillaplus.managers.SpellManager
-import org.xodium.vanillaplus.pdcs.PlayerPDC.nickname
-import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
-import org.xodium.vanillaplus.utils.PlayerUtils.face
-import org.xodium.vanillaplus.utils.PlayerUtils.head
-import org.xodium.vanillaplus.utils.PlayerUtils.setNickname
-import org.xodium.vanillaplus.utils.Utils.MM
-import org.xodium.vanillaplus.utils.Utils.weather
+import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
+import org.xodium.illyriaplus.data.CommandData
+import org.xodium.illyriaplus.interfaces.MechanicInterface
+import org.xodium.illyriaplus.managers.PlayerMessageManager
+import org.xodium.illyriaplus.managers.SpellManager
+import org.xodium.illyriaplus.pdcs.PlayerPDC.nickname
+import org.xodium.illyriaplus.utils.CommandUtils.playerExecuted
+import org.xodium.illyriaplus.utils.PlayerUtils.face
+import org.xodium.illyriaplus.utils.PlayerUtils.head
+import org.xodium.illyriaplus.utils.PlayerUtils.setNickname
+import org.xodium.illyriaplus.utils.Utils.MM
+import org.xodium.illyriaplus.utils.Utils.weather
 import kotlin.random.Random
 
 /** Represents a module handling player mechanics within the system. */

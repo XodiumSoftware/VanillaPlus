@@ -1,6 +1,6 @@
 @file:Suppress("ktlint:standard:no-wildcard-imports")
 
-package org.xodium.vanillaplus.utils
+package org.xodium.illyriaplus.utils
 
 import io.papermc.paper.registry.TypedKey
 import net.kyori.adventure.text.Component
@@ -8,16 +8,16 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.World
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemStack
-import org.xodium.vanillaplus.VanillaPlus
-import org.xodium.vanillaplus.pdcs.ItemPDC.selectedSpell
+import org.xodium.illyriaplus.IllyriaPlus
+import org.xodium.illyriaplus.pdcs.ItemPDC.selectedSpell
 
 /** General utilities. */
 internal object Utils {
     /** MiniMessage instance for parsing formatted strings. */
     val MM: MiniMessage = MiniMessage.miniMessage()
 
-    /** The standardized prefix for [VanillaPlus] messages. */
-    val VanillaPlus.prefix: String
+    /** The standardized prefix for [IllyriaPlus] messages. */
+    val IllyriaPlus.prefix: String
         get() =
             "<gradient:#FFA751:#FFE259>[</gradient><gradient:#CB2D3E:#EF473A>" +
                 "${this.javaClass.simpleName}" +

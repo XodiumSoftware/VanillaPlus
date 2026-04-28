@@ -1,6 +1,6 @@
 @file:Suppress("ktlint:standard:no-wildcard-imports")
 
-package org.xodium.vanillaplus
+package org.xodium.illyriaplus
 
 import io.papermc.paper.plugin.bootstrap.BootstrapContext
 import io.papermc.paper.plugin.bootstrap.PluginBootstrap
@@ -13,24 +13,24 @@ import io.papermc.paper.registry.keys.tags.ItemTypeTagKeys
 import io.papermc.paper.registry.tag.TagKey
 import io.papermc.paper.tag.TagEntry
 import net.kyori.adventure.key.Key
-import org.xodium.vanillaplus.enchantments.EarthrendEnchantment
-import org.xodium.vanillaplus.enchantments.EmbertreadEnchantment
-import org.xodium.vanillaplus.enchantments.FrostbindEnchantment
-import org.xodium.vanillaplus.enchantments.InfernoEnchantment
-import org.xodium.vanillaplus.enchantments.NimbusEnchantment
-import org.xodium.vanillaplus.enchantments.QuakeEnchantment
-import org.xodium.vanillaplus.enchantments.SkysunderEnchantment
-import org.xodium.vanillaplus.enchantments.TempestEnchantment
-import org.xodium.vanillaplus.enchantments.TetherEnchantment
-import org.xodium.vanillaplus.enchantments.VerdanceEnchantment
-import org.xodium.vanillaplus.enchantments.VoidpullEnchantment
-import org.xodium.vanillaplus.enchantments.WitherbrandEnchantment
+import org.xodium.illyriaplus.enchantments.EarthrendEnchantment
+import org.xodium.illyriaplus.enchantments.EmbertreadEnchantment
+import org.xodium.illyriaplus.enchantments.FrostbindEnchantment
+import org.xodium.illyriaplus.enchantments.InfernoEnchantment
+import org.xodium.illyriaplus.enchantments.NimbusEnchantment
+import org.xodium.illyriaplus.enchantments.QuakeEnchantment
+import org.xodium.illyriaplus.enchantments.SkysunderEnchantment
+import org.xodium.illyriaplus.enchantments.TempestEnchantment
+import org.xodium.illyriaplus.enchantments.TetherEnchantment
+import org.xodium.illyriaplus.enchantments.VerdanceEnchantment
+import org.xodium.illyriaplus.enchantments.VoidpullEnchantment
+import org.xodium.illyriaplus.enchantments.WitherbrandEnchantment
 
 /** Main bootstrap class of the plugin. */
 @Suppress("UnstableApiUsage", "Unused")
-internal class VanillaPlusBootstrap : PluginBootstrap {
+internal class IllyriaPlusBootstrap : PluginBootstrap {
     companion object {
-        const val INSTANCE = "vanillaplus"
+        const val INSTANCE = "illyriaplus"
 
         val TOOLS = TagKey.create(RegistryKey.ITEM, Key.key(INSTANCE, "tools"))
         val WEAPONS = TagKey.create(RegistryKey.ITEM, Key.key(INSTANCE, "weapons"))

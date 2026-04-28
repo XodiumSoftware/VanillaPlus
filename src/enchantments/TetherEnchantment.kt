@@ -1,4 +1,4 @@
-package org.xodium.vanillaplus.enchantments
+package org.xodium.illyriaplus.enchantments
 
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
 import org.bukkit.Material
@@ -8,8 +8,8 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.block.BlockDropItemEvent
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.inventory.EquipmentSlotGroup
-import org.xodium.vanillaplus.interfaces.EnchantmentInterface
-import org.xodium.vanillaplus.utils.Utils.displayName
+import org.xodium.illyriaplus.interfaces.EnchantmentInterface
+import org.xodium.illyriaplus.utils.Utils.displayName
 
 /** Represents an object handling tether enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")

@@ -1,6 +1,6 @@
 @file:Suppress("ktlint:standard:no-wildcard-imports")
 
-package org.xodium.vanillaplus.mechanics
+package org.xodium.illyriaplus.mechanics
 
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes
@@ -16,14 +16,14 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
-import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.data.CommandData
-import org.xodium.vanillaplus.interfaces.MechanicInterface
-import org.xodium.vanillaplus.utils.BlockUtils.center
-import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
-import org.xodium.vanillaplus.utils.PlayerUtils.getContainersAround
-import org.xodium.vanillaplus.utils.ScheduleUtils
-import org.xodium.vanillaplus.utils.Utils.MM
+import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
+import org.xodium.illyriaplus.data.CommandData
+import org.xodium.illyriaplus.interfaces.MechanicInterface
+import org.xodium.illyriaplus.utils.BlockUtils.center
+import org.xodium.illyriaplus.utils.CommandUtils.playerExecuted
+import org.xodium.illyriaplus.utils.PlayerUtils.getContainersAround
+import org.xodium.illyriaplus.utils.ScheduleUtils
+import org.xodium.illyriaplus.utils.Utils.MM
 
 /** Represents a module handling inventory mechanics within the system. */
 internal object InventoryMechanic : MechanicInterface {

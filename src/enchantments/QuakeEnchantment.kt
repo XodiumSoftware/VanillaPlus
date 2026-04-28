@@ -1,4 +1,4 @@
-package org.xodium.vanillaplus.enchantments
+package org.xodium.illyriaplus.enchantments
 
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
 import net.kyori.adventure.key.Key
@@ -10,10 +10,10 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.util.Vector
-import org.xodium.vanillaplus.interfaces.EnchantmentInterface
-import org.xodium.vanillaplus.managers.XpManager
-import org.xodium.vanillaplus.utils.Utils
-import org.xodium.vanillaplus.utils.Utils.displayName
+import org.xodium.illyriaplus.interfaces.EnchantmentInterface
+import org.xodium.illyriaplus.managers.XpManager
+import org.xodium.illyriaplus.utils.Utils
+import org.xodium.illyriaplus.utils.Utils.displayName
 import kotlin.math.cos
 import kotlin.math.sin
 

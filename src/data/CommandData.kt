@@ -1,4 +1,4 @@
-package org.xodium.vanillaplus.data
+package org.xodium.illyriaplus.data
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack

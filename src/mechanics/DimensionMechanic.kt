@@ -1,4 +1,4 @@
-package org.xodium.vanillaplus.mechanics
+package org.xodium.illyriaplus.mechanics
 
 import org.bukkit.Location
 import org.bukkit.Material
@@ -11,9 +11,9 @@ import org.bukkit.event.entity.EntityPortalEvent
 import org.bukkit.event.player.PlayerPortalEvent
 import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.event.world.PortalCreateEvent
-import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.interfaces.MechanicInterface
-import org.xodium.vanillaplus.utils.Utils.MM
+import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
+import org.xodium.illyriaplus.interfaces.MechanicInterface
+import org.xodium.illyriaplus.utils.Utils.MM
 import kotlin.math.hypot
 
 /** Represents a module handling dimension mechanics within the system. */

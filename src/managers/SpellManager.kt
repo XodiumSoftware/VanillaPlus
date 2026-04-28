@@ -1,4 +1,4 @@
-package org.xodium.vanillaplus.managers
+package org.xodium.illyriaplus.managers
 
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Material
@@ -8,15 +8,15 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.inventory.ItemStack
-import org.xodium.vanillaplus.enchantments.FrostbindEnchantment
-import org.xodium.vanillaplus.enchantments.InfernoEnchantment
-import org.xodium.vanillaplus.enchantments.QuakeEnchantment
-import org.xodium.vanillaplus.enchantments.SkysunderEnchantment
-import org.xodium.vanillaplus.enchantments.TempestEnchantment
-import org.xodium.vanillaplus.enchantments.VoidpullEnchantment
-import org.xodium.vanillaplus.enchantments.WitherbrandEnchantment
-import org.xodium.vanillaplus.pdcs.ItemPDC.selectedSpell
-import org.xodium.vanillaplus.utils.Utils.MM
+import org.xodium.illyriaplus.enchantments.FrostbindEnchantment
+import org.xodium.illyriaplus.enchantments.InfernoEnchantment
+import org.xodium.illyriaplus.enchantments.QuakeEnchantment
+import org.xodium.illyriaplus.enchantments.SkysunderEnchantment
+import org.xodium.illyriaplus.enchantments.TempestEnchantment
+import org.xodium.illyriaplus.enchantments.VoidpullEnchantment
+import org.xodium.illyriaplus.enchantments.WitherbrandEnchantment
+import org.xodium.illyriaplus.pdcs.ItemPDC.selectedSpell
+import org.xodium.illyriaplus.utils.Utils.MM
 
 /** Manages spell execution and cycling for multi-spell wands. */
 internal object SpellManager {

@@ -1,8 +1,8 @@
-package org.xodium.vanillaplus.mechanics
+package org.xodium.illyriaplus.mechanics
 
 import org.bukkit.ServerLinks
-import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.interfaces.MechanicInterface
+import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
+import org.xodium.illyriaplus.interfaces.MechanicInterface
 import java.net.URI
 import kotlin.time.measureTime
 

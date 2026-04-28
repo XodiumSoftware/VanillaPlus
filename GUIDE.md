@@ -25,7 +25,7 @@ Download pre-built JARs from GitHub releases.
 
 1. Download the latest release:
    ```bash
-   curl -L -o VanillaPlus.jar https://github.com/XodiumSoftware/VanillaPlus/releases/download/nightly/VanillaPlus.jar
+   curl -L -o IllyriaPlus.jar https://github.com/XodiumSoftware/IllyriaPlus/releases/download/nightly/IllyriaPlus.jar
    ```
 
 2. Place the JAR in your server's `plugins/` directory
@@ -43,8 +43,8 @@ Build the plugin using Gradle.
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/XodiumSoftware/VanillaPlus.git
-   cd VanillaPlus
+   git clone https://github.com/XodiumSoftware/IllyriaPlus.git
+   cd IllyriaPlus
    ```
 
 2. Build the plugin:
@@ -54,7 +54,7 @@ Build the plugin using Gradle.
 
 3. The output JAR is at:
    ```
-   build/libs/VanillaPlus-*.jar
+   build/libs/IllyriaPlus-*.jar
    ```
 
 ### Run a Test Server
@@ -69,13 +69,13 @@ This automatically downloads Paper 1.21.11 and starts a local test server with t
 
 ## Installation
 
-1. Place `VanillaPlus.jar` in your server's `plugins/` directory
+1. Place `IllyriaPlus.jar` in your server's `plugins/` directory
 2. Start or restart the server
 3. The plugin will enable automatically
 
 ## Configuration
 
-VanillaPlus uses **compile-time configuration** — there are no config files to edit. All settings are hardcoded in the source code.
+IllyriaPlus uses **compile-time configuration** — there are no config files to edit. All settings are hardcoded in the source code.
 
 To customize the plugin, you must:
 
@@ -97,7 +97,7 @@ object Config {
 
 ## Features
 
-VanillaPlus enhances base gameplay with custom enchantments, items, and mechanics.
+IllyriaPlus enhances base gameplay with custom enchantments, items, and mechanics.
 
 ### Enchantments
 

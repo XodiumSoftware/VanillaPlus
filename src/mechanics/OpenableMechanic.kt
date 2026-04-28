@@ -1,6 +1,6 @@
 @file:Suppress("ktlint:standard:no-wildcard-imports")
 
-package org.xodium.vanillaplus.mechanics
+package org.xodium.illyriaplus.mechanics
 
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
@@ -19,9 +19,9 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
-import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.data.AdjacentBlockData
-import org.xodium.vanillaplus.interfaces.MechanicInterface
+import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
+import org.xodium.illyriaplus.data.AdjacentBlockData
+import org.xodium.illyriaplus.interfaces.MechanicInterface
 
 /** Represents a module handling openable blocks mechanics within the system. */
 internal object OpenableMechanic : MechanicInterface {
