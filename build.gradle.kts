@@ -13,8 +13,8 @@ val buildNumber =
         .map { it.trim() }
 
 ext {
-    set("mcVersion", "1.21.11")
-    set("kotlinVersion", "2.3.21")
+    set("mcVersion", "26.1.2")
+    set("javaVersion", "25")
     set("buildNumber", buildNumber.get())
 }
 

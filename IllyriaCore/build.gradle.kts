@@ -16,19 +16,20 @@ plugins {
 
 val mcVersion = rootProject.extra["mcVersion"] as String
 val buildNumber = rootProject.extra["buildNumber"] as String
+val javaVersion = rootProject.extra["javaVersion"] as String
 
 group = "org.xodium.illyriaplus.IllyriaPlus"
 version = "$mcVersion+build.$buildNumber"
 description = "Minecraft plugin that enhances the base gameplay"
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:$mcVersion-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:$mcVersion.build.+")
     implementation(kotlin("stdlib"))
 }
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(javaVersion)
         @Suppress("UnstableApiUsage")
         vendor = JvmVendorSpec.JETBRAINS
     }

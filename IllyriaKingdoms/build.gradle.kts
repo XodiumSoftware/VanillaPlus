@@ -16,13 +16,18 @@ plugins {
 
 val mcVersion = rootProject.extra["mcVersion"] as String
 val buildNumber = rootProject.extra["buildNumber"] as String
+val javaVersion = rootProject.extra["javaVersion"] as String
 
 group = "org.xodium.illyriaplus.IllyriaKingdoms"
 version = "$mcVersion+build.$buildNumber"
 description = "Minecraft kingdoms plugin for land claiming and factions"
 
+repositories {
+    maven("https://repo.xenondevs.xyz/releases")
+}
+
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:$mcVersion-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:$mcVersion.build.+")
     implementation(kotlin("stdlib"))
 
     // Exposed ORM
@@ -32,11 +37,15 @@ dependencies {
 
     // SQLite driver
     implementation("org.xerial:sqlite-jdbc:3.49.0.0")
+
+    // InvUI - Inventory GUI library
+    implementation("xyz.xenondevs.invui:invui:2.0.0")
+    implementation("xyz.xenondevs.invui:invui-kotlin:2.0.0")
 }
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(javaVersion)
         @Suppress("UnstableApiUsage")
         vendor = JvmVendorSpec.JETBRAINS
     }
