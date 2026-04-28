@@ -50,13 +50,9 @@
 
 [architecture_url]: https://github.com/XodiumSoftware/IllyriaPlus/blob/main/ARCHITECTURE.md
 
-[enchantments_url]: https://vanillaplus.xodium.org/enchantments
-
-[modules_url]: https://vanillaplus.xodium.org/modules
-
 [docs_shield_url]: https://img.shields.io/badge/Docs-Click%20Me!-blue.svg?style=for-the-badge
 
-[docs_url]: https://vanillaplus.xodium.org
+[docs_url]: https://illyriaplus.xodium.org
 
 [built_with_shield_url]: https://skillicons.dev/icons?i=kotlin,gradle,github,githubactions
 
