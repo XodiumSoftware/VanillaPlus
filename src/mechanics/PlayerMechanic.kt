@@ -44,6 +44,9 @@ import kotlin.random.Random
 
 /** Represents a module handling player mechanics within the system. */
 internal object PlayerMechanic : MechanicInterface {
+    const val SKULL_DROP_CHANCE: Double = 0.01
+    const val XP_COST_TO_BOTTLE: Int = 11
+
     override val cmds =
         listOf(
             CommandData(
@@ -182,7 +185,7 @@ internal object PlayerMechanic : MechanicInterface {
      * @param player The player whose head may be dropped.
      */
     private fun dropPlayerHead(player: Player) {
-        if (Random.nextDouble() > Config.SKULL_DROP_CHANCE) return
+        if (Random.nextDouble() > SKULL_DROP_CHANCE) return
 
         player.world.dropItemNaturally(player.location, player.head())
     }
@@ -218,9 +221,9 @@ internal object PlayerMechanic : MechanicInterface {
 
         val player = event.player
 
-        if (player.calculateTotalExperiencePoints() < Config.XP_COST_TO_BOTTLE) return
+        if (player.calculateTotalExperiencePoints() < XP_COST_TO_BOTTLE) return
 
-        player.giveExp(-Config.XP_COST_TO_BOTTLE)
+        player.giveExp(-XP_COST_TO_BOTTLE)
         event.item?.subtract(1)
         player.inventory
             .addItem(ItemStack.of(Material.EXPERIENCE_BOTTLE, 1))
@@ -272,8 +275,6 @@ internal object PlayerMechanic : MechanicInterface {
 
     /** Configuration for the PlayerModule. */
     object Config {
-        const val SKULL_DROP_CHANCE: Double = 0.01
-        const val XP_COST_TO_BOTTLE: Int = 11
         val WELCOME_TEXT: List<String> =
             listOf(
                 "<gradient:#FFA751:#FFE259>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|" +
