@@ -21,10 +21,13 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.AdjacentBlockData
-import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.interfaces.MechanicInterface
 
 /** Represents a module handling openable blocks mechanics within the system. */
-internal object OpenableMechanic : ModuleInterface {
+internal object OpenableMechanic : MechanicInterface {
+    private const val KNOCK_SOUND_RADIUS: Double = 10.0
+    private const val DOUBLE_DOOR_DELAY_TICKS: Long = 1
+
     private val possibleNeighbours: Set<AdjacentBlockData> =
         setOf(
             AdjacentBlockData(0, -1, Door.Hinge.RIGHT, BlockFace.EAST),
@@ -35,6 +38,14 @@ internal object OpenableMechanic : ModuleInterface {
             AdjacentBlockData(0, -1, Door.Hinge.LEFT, BlockFace.WEST),
             AdjacentBlockData(-1, 0, Door.Hinge.RIGHT, BlockFace.NORTH),
             AdjacentBlockData(1, 0, Door.Hinge.LEFT, BlockFace.NORTH),
+        )
+    private val BLOCKED_KNOCKING_GAME_MODES: Set<GameMode> = setOf(GameMode.SURVIVAL, GameMode.ADVENTURE)
+    private val KNOCK_SOUND: Sound =
+        Sound.sound(
+            Key.key("entity.zombie.attack_wooden_door"),
+            Sound.Source.HOSTILE,
+            1.0f,
+            1.0f,
         )
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -98,7 +109,7 @@ internal object OpenableMechanic : ModuleInterface {
      * @return `true` if the player can knock, `false` otherwise.
      */
     private fun canKnock(player: Player): Boolean {
-        if (player.gameMode in Config.BLOCKED_KNOCKING_GAME_MODES) return false
+        if (player.gameMode in BLOCKED_KNOCKING_GAME_MODES) return false
         if (!player.isSneaking) return false
         if (player.inventory.itemInMainHand.type != Material.AIR) return false
 
@@ -118,8 +129,8 @@ internal object OpenableMechanic : ModuleInterface {
      */
     private fun playKnockSound(block: Block) {
         block.world
-            .getNearbyPlayers(block.location, Config.KNOCK_SOUND_RADIUS)
-            .forEach { it.playSound(Config.KNOCK_SOUND) }
+            .getNearbyPlayers(block.location, KNOCK_SOUND_RADIUS)
+            .forEach { it.playSound(KNOCK_SOUND) }
     }
 
     /**
@@ -139,13 +150,13 @@ internal object OpenableMechanic : ModuleInterface {
      * @param sourceBlock The [Block] representing the source door.
      * @param targetBlock The [Block] representing the target door to sync.
      * @param open The desired open state for the target door.
-     * @param delay The delay in ticks before syncing (defaults to Config.doubleDoorDelayTicks).
+     * @param delay The delay in ticks before syncing (defaults to DOUBLE_DOOR_DELAY_TICKS).
      */
     private fun syncDoorState(
         sourceBlock: Block,
         targetBlock: Block,
         open: Boolean,
-        delay: Long = Config.DOUBLE_DOOR_DELAY_TICKS,
+        delay: Long = DOUBLE_DOOR_DELAY_TICKS,
     ) {
         instance.server.scheduler.runTaskLater(
             instance,
@@ -194,19 +205,5 @@ internal object OpenableMechanic : ModuleInterface {
             .firstOrNull { (neighbour, otherDoor) ->
                 otherDoor?.let { neighbour.matchesDoorPair(it, door, originalBlock.type) } == true
             }?.let { (neighbour, _) -> doorBlock.getRelative(neighbour.offsetX, 0, neighbour.offsetZ) }
-    }
-
-    /** Configuration for the OpenableModule. */
-    object Config {
-        val BLOCKED_KNOCKING_GAME_MODES: Set<GameMode> = setOf(GameMode.SURVIVAL, GameMode.ADVENTURE)
-        const val DOUBLE_DOOR_DELAY_TICKS: Long = 1
-        val KNOCK_SOUND: Sound =
-            Sound.sound(
-                Key.key("entity.zombie.attack_wooden_door"),
-                Sound.Source.HOSTILE,
-                1.0f,
-                1.0f,
-            )
-        const val KNOCK_SOUND_RADIUS: Double = 10.0
     }
 }

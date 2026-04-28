@@ -18,7 +18,7 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
-import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.interfaces.MechanicInterface
 import org.xodium.vanillaplus.utils.BlockUtils.center
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import org.xodium.vanillaplus.utils.PlayerUtils.getContainersAround
@@ -26,7 +26,28 @@ import org.xodium.vanillaplus.utils.ScheduleUtils
 import org.xodium.vanillaplus.utils.Utils.MM
 
 /** Represents a module handling inventory mechanics within the system. */
-internal object InventoryMechanic : ModuleInterface {
+internal object InventoryMechanic : MechanicInterface {
+    private const val NO_MATERIAL_SPECIFIED_MSG: String =
+        "<gradient:#CB2D3E:#EF473A>You must specify a valid material " +
+            "or hold something in your hand</gradient>"
+    private const val NO_MATCHING_ITEMS_MSG: String =
+        "<gradient:#CB2D3E:#EF473A>No containers contain " +
+            "<gradient:#F4C4F3:#FC67FA><b><material></b></gradient></gradient>"
+    private const val FOUND_ITEMS_IN_CHESTS_MSG: String =
+        "<gradient:#FFE259:#FFA751>Found <gradient:#F4C4F3:#FC67FA><b><material></b></gradient> " +
+            "in container(s), follow trail(s)</gradient>"
+    private const val NO_CONTAINERS_FOUND_MSG: String =
+        "<gradient:#CB2D3E:#EF473A>No containers found nearby</gradient>"
+
+    private val SEARCH_SUCCESSFUL_SOUND: Sound =
+        Sound.sound(Key.key("entity.player.levelup"), Sound.Source.PLAYER, 1.0f, 1.0f)
+    private val SEARCH_FAILED_SOUND: Sound =
+        Sound.sound(Key.key("block.anvil.land"), Sound.Source.PLAYER, 1.0f, 1.0f)
+    private val UNLOAD_SUCCESSFUL_SOUND: Sound =
+        Sound.sound(Key.key("entity.player.levelup"), Sound.Source.PLAYER, 1.0f, 1.0f)
+    private val UNLOAD_FAILED_SOUND: Sound =
+        Sound.sound(Key.key("block.anvil.land"), Sound.Source.PLAYER, 1.0f, 1.0f)
+
     override val cmds =
         listOf(
             CommandData(
@@ -77,8 +98,8 @@ internal object InventoryMechanic : ModuleInterface {
         material: Material,
     ) {
         if (material == Material.AIR) {
-            player.sendActionBar(MM.deserialize(Config.InventoryMessages.NO_MATERIAL_SPECIFIED))
-            player.playSound(Config.SEARCH_FAILED_SOUND)
+            player.sendActionBar(MM.deserialize(NO_MATERIAL_SPECIFIED_MSG))
+            player.playSound(SEARCH_FAILED_SOUND)
             return
         }
 
@@ -87,22 +108,22 @@ internal object InventoryMechanic : ModuleInterface {
         if (containers.isEmpty()) {
             player.sendActionBar(
                 MM.deserialize(
-                    Config.InventoryMessages.NO_MATCHING_ITEMS,
+                    NO_MATCHING_ITEMS_MSG,
                     Placeholder.component("material", MM.deserialize(material.name)),
                 ),
             )
-            player.playSound(Config.SEARCH_FAILED_SOUND)
+            player.playSound(SEARCH_FAILED_SOUND)
             return
         }
 
         player.sendActionBar(
             MM.deserialize(
-                Config.InventoryMessages.FOUND_ITEMS_IN_CHESTS,
+                FOUND_ITEMS_IN_CHESTS_MSG,
                 Placeholder.component("material", MM.deserialize(material.name)),
             ),
         )
 
-        player.playSound(Config.SEARCH_SUCCESSFUL_SOUND)
+        player.playSound(SEARCH_SUCCESSFUL_SOUND)
 
         ScheduleUtils.schedule(duration = 200L) {
             containers.forEach {
@@ -137,8 +158,8 @@ internal object InventoryMechanic : ModuleInterface {
                 }
 
         if (containers.isEmpty()) {
-            player.sendActionBar(MM.deserialize(Config.InventoryMessages.NO_CONTAINERS_FOUND))
-            player.playSound(Config.UNLOAD_FAILED_SOUND)
+            player.sendActionBar(MM.deserialize(NO_CONTAINERS_FOUND_MSG))
+            player.playSound(UNLOAD_FAILED_SOUND)
             return
         }
 
@@ -179,7 +200,7 @@ internal object InventoryMechanic : ModuleInterface {
             }
         }
 
-        player.playSound(if (usedContainers.isEmpty()) Config.UNLOAD_FAILED_SOUND else Config.UNLOAD_SUCCESSFUL_SOUND)
+        player.playSound(if (usedContainers.isEmpty()) UNLOAD_FAILED_SOUND else UNLOAD_SUCCESSFUL_SOUND)
 
         if (usedContainers.isEmpty()) return
 
@@ -192,32 +213,6 @@ internal object InventoryMechanic : ModuleInterface {
                     .receivers(player)
                     .spawn()
             }
-        }
-    }
-
-    /** Represents the config of the module. */
-    object Config {
-        val SEARCH_SUCCESSFUL_SOUND: Sound =
-            Sound.sound(Key.key("entity.player.levelup"), Sound.Source.PLAYER, 1.0f, 1.0f)
-        val SEARCH_FAILED_SOUND: Sound =
-            Sound.sound(Key.key("block.anvil.land"), Sound.Source.PLAYER, 1.0f, 1.0f)
-        val UNLOAD_SUCCESSFUL_SOUND: Sound =
-            Sound.sound(Key.key("entity.player.levelup"), Sound.Source.PLAYER, 1.0f, 1.0f)
-        val UNLOAD_FAILED_SOUND: Sound =
-            Sound.sound(Key.key("block.anvil.land"), Sound.Source.PLAYER, 1.0f, 1.0f)
-
-        /** Represents the user-facing message strings for the module. */
-        object InventoryMessages {
-            const val NO_MATERIAL_SPECIFIED: String =
-                "<gradient:#CB2D3E:#EF473A>You must specify a valid material " +
-                    "or hold something in your hand</gradient>"
-            const val NO_MATCHING_ITEMS: String =
-                "<gradient:#CB2D3E:#EF473A>No containers contain " +
-                    "<gradient:#F4C4F3:#FC67FA><b><material></b></gradient></gradient>"
-            const val FOUND_ITEMS_IN_CHESTS: String =
-                "<gradient:#FFE259:#FFA751>Found <gradient:#F4C4F3:#FC67FA><b><material></b></gradient> " +
-                    "in container(s), follow trail(s)</gradient>"
-            const val NO_CONTAINERS_FOUND: String = "<gradient:#CB2D3E:#EF473A>No containers found nearby</gradient>"
         }
     }
 }

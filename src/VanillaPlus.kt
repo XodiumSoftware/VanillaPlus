@@ -21,7 +21,6 @@ import org.xodium.vanillaplus.mechanics.BookMechanic
 import org.xodium.vanillaplus.mechanics.ChatMechanic
 import org.xodium.vanillaplus.mechanics.ChiseledBookshelfMechanic
 import org.xodium.vanillaplus.mechanics.DimensionMechanic
-import org.xodium.vanillaplus.mechanics.EntityMechanic
 import org.xodium.vanillaplus.mechanics.InventoryMechanic
 import org.xodium.vanillaplus.mechanics.LocatorMechanic
 import org.xodium.vanillaplus.mechanics.MotdMechanic
@@ -31,6 +30,11 @@ import org.xodium.vanillaplus.mechanics.ScoreBoardMechanic
 import org.xodium.vanillaplus.mechanics.ServerInfoMechanic
 import org.xodium.vanillaplus.mechanics.SitMechanic
 import org.xodium.vanillaplus.mechanics.TameableMechanic
+import org.xodium.vanillaplus.mechanics.entity.BatMechanic
+import org.xodium.vanillaplus.mechanics.entity.DisableEntityMechanic
+import org.xodium.vanillaplus.mechanics.entity.GriefingMechanic
+import org.xodium.vanillaplus.mechanics.entity.HuskMechanic
+import org.xodium.vanillaplus.mechanics.entity.SpawnEggMechanic
 import org.xodium.vanillaplus.recipes.ChainmailRecipe
 import org.xodium.vanillaplus.recipes.DiamondRecycleRecipe
 import org.xodium.vanillaplus.recipes.PaintingRecipe
@@ -69,19 +73,23 @@ internal class VanillaPlus : JavaPlugin() {
 
         val mechanics =
             listOf(
+                BatMechanic,
                 BookMechanic,
                 ChatMechanic,
                 ChiseledBookshelfMechanic,
                 DimensionMechanic,
-                EntityMechanic,
+                DisableEntityMechanic,
+                GriefingMechanic,
+                HuskMechanic,
                 InventoryMechanic,
                 LocatorMechanic,
                 MotdMechanic,
                 OpenableMechanic,
                 PlayerMechanic,
-                ServerInfoMechanic,
                 ScoreBoardMechanic,
+                ServerInfoMechanic,
                 SitMechanic,
+                SpawnEggMechanic,
                 TameableMechanic,
             )
 

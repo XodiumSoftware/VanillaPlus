@@ -15,13 +15,13 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.util.Vector
-import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.interfaces.MechanicInterface
 import org.xodium.vanillaplus.utils.Utils.MM
 import org.bukkit.block.data.type.ChiseledBookshelf as ChiseledBookshelfData
 
 /** Represents a module handling bookshelf mechanics within the system. */
 @Suppress("UnstableApiUsage")
-internal object ChiseledBookshelfMechanic : ModuleInterface {
+internal object ChiseledBookshelfMechanic : MechanicInterface {
     @EventHandler
     fun on(event: PlayerInteractEvent) {
         val player = event.player

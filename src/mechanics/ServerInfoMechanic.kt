@@ -2,32 +2,25 @@ package org.xodium.vanillaplus.mechanics
 
 import org.bukkit.ServerLinks
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.interfaces.MechanicInterface
 import java.net.URI
+import kotlin.time.measureTime
 
 /** Represents a module handling server info mechanics within the system. */
-internal object ServerInfoMechanic : ModuleInterface {
-    init {
-        serverLinks()
-    }
+@Suppress("UnstableApiUsage")
+internal object ServerInfoMechanic : MechanicInterface {
+    private val SERVER_LINKS: Map<ServerLinks.Type, String> =
+        mapOf(
+            ServerLinks.Type.WEBSITE to "https://xodium.org/",
+            ServerLinks.Type.REPORT_BUG to "https://discord.gg/jusYH9aYUh",
+            ServerLinks.Type.STATUS to "https://modrinth.com/server/illyria",
+            ServerLinks.Type.COMMUNITY to "https://discord.gg/jusYH9aYUh",
+            ServerLinks.Type.COMMUNITY_GUIDELINES to "https://vanillaplus.xodium.org/",
+        )
+
+    override fun register(): Long = super.register() + measureTime { serverLinks() }.inWholeMilliseconds
 
     /** Configures server links based on the module's configuration. */
-    @Suppress("UnstableApiUsage")
     private fun serverLinks() =
-        Config.SERVER_LINKS.forEach { (type, url) ->
-            runCatching { instance.server.serverLinks.setLink(type, URI.create(url)) }
-        }
-
-    /** Represents the config of the module. */
-    object Config {
-        @Suppress("UnstableApiUsage")
-        val SERVER_LINKS: Map<ServerLinks.Type, String> =
-            mapOf(
-                ServerLinks.Type.WEBSITE to "https://xodium.org/",
-                ServerLinks.Type.REPORT_BUG to "https://discord.gg/jusYH9aYUh",
-                ServerLinks.Type.STATUS to "https://modrinth.com/server/illyria",
-                ServerLinks.Type.COMMUNITY to "https://discord.gg/jusYH9aYUh",
-                ServerLinks.Type.COMMUNITY_GUIDELINES to "https://vanillaplus.xodium.org/",
-            )
-    }
+        SERVER_LINKS.forEach { (type, url) -> instance.server.serverLinks.setLink(type, URI.create(url)) }
 }

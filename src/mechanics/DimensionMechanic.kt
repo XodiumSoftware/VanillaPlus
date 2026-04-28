@@ -12,13 +12,16 @@ import org.bukkit.event.player.PlayerPortalEvent
 import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.event.world.PortalCreateEvent
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
-import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.interfaces.MechanicInterface
 import org.xodium.vanillaplus.utils.Utils.MM
 import kotlin.math.hypot
 
 /** Represents a module handling dimension mechanics within the system. */
-internal object DimensionMechanic : ModuleInterface {
+internal object DimensionMechanic : MechanicInterface {
     private const val NETHER_TO_OVERWORLD_RATIO = 8
+    private const val PORTAL_SEARCH_RADIUS: Int = 128
+    private const val CREATION_DENIED_MSG: String =
+        "<gradient:#CB2D3E:#EF473A>No corresponding active portal found in the Overworld!</gradient>"
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerPortalEvent) = playerPortal(event)
@@ -63,7 +66,7 @@ internal object DimensionMechanic : ModuleInterface {
                 val player = event.entity as? Player ?: return
                 val destination = player.respawnLocation?.takeIf { it.world == overworld } ?: overworld.spawnLocation
 
-                player.sendActionBar(MM.deserialize(Config.PortalMessages.CREATION_DENIED))
+                player.sendActionBar(MM.deserialize(CREATION_DENIED_MSG))
                 player.teleport(destination, PlayerTeleportEvent.TeleportCause.PLUGIN)
             }
         }
@@ -79,7 +82,7 @@ internal object DimensionMechanic : ModuleInterface {
     private fun findCorrespondingPortal(
         netherPortal: Location,
         overworld: World,
-        searchRadius: Int = Config.PORTAL_SEARCH_RADIUS,
+        searchRadius: Int = PORTAL_SEARCH_RADIUS,
     ): Location? {
         val targetX = netherPortal.x * NETHER_TO_OVERWORLD_RATIO
         val targetZ = netherPortal.z * NETHER_TO_OVERWORLD_RATIO
@@ -128,15 +131,4 @@ internal object DimensionMechanic : ModuleInterface {
      * @throws IllegalStateException if the Overworld is not loaded.
      */
     private fun getOverworld(): World = instance.server.getWorld("world") ?: error("Overworld (world) is not loaded.")
-
-    /** Represents the config of the module. */
-    object Config {
-        const val PORTAL_SEARCH_RADIUS: Int = 128
-
-        /** Represents the internationalization strings for the module. */
-        object PortalMessages {
-            const val CREATION_DENIED: String =
-                "<gradient:#CB2D3E:#EF473A>No corresponding active portal found in the Overworld!</gradient>"
-        }
-    }
 }

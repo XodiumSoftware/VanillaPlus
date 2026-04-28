@@ -7,23 +7,23 @@ import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
 import kotlin.time.measureTime
 
-/** Represents a contract for a module within the system. */
-internal interface ModuleInterface : Listener {
+/** Represents a contract for a mechanic within the system. */
+internal interface MechanicInterface : Listener {
     /**
-     * Retrieves a list of command data associated with the module.
-     * @return A [Collection] of [CommandData] objects representing the commands for the module.
+     * Retrieves a list of command data associated with the mechanic.
+     * @return A [Collection] of [CommandData] objects representing the commands for the mechanic.
      */
     val cmds: Collection<CommandData> get() = emptyList()
 
     /**
-     * Retrieves a list of permissions associated with this module.
-     * @return A [List] of [Permission] objects representing the permissions for this module.
+     * Retrieves a list of permissions associated with this mechanic.
+     * @return A [List] of [Permission] objects representing the permissions for this mechanic.
      */
     val perms: List<Permission> get() = emptyList()
 
     /**
      * Registers this feature as an event listener with the server.
-     * @return The time taken to register the feature in milliseconds, or null if the feature is disabled.
+     * @return The time taken to register the feature in milliseconds.
      */
     @Suppress("UnstableApiUsage")
     fun register(): Long =

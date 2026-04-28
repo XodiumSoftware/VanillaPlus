@@ -4,14 +4,14 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractEntityEvent
-import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.interfaces.MechanicInterface
 import org.xodium.vanillaplus.utils.PlayerUtils.getLeashedEntity
 
 /** Represents a module handling tameable mechanics within the system. */
-internal object TameableMechanic : ModuleInterface {
+internal object TameableMechanic : MechanicInterface {
     @EventHandler
     fun on(event: PlayerInteractEntityEvent) {
-        if (transferPetOwnership(event.player, event.rightClicked as? Player ?: return)) event.isCancelled = true
+        if (transferOwnership(event.player, event.rightClicked as? Player ?: return)) event.isCancelled = true
     }
 
     /**
@@ -21,7 +21,7 @@ internal object TameableMechanic : ModuleInterface {
      * @param target The player receiving ownership.
      * @return `true` if ownership was successfully transferred; `false` otherwise.
      */
-    private fun transferPetOwnership(
+    private fun transferOwnership(
         source: Player,
         target: Player,
     ): Boolean {

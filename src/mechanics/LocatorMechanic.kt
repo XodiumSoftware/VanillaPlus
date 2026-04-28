@@ -10,12 +10,12 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
-import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.interfaces.MechanicInterface
 import org.xodium.vanillaplus.utils.CommandUtils.playerExecuted
 import org.xodium.vanillaplus.utils.PlayerUtils.locator
 
 /** Represents a module handling locator mechanics within the system. */
-internal object LocatorMechanic : ModuleInterface {
+internal object LocatorMechanic : MechanicInterface {
     override val cmds =
         listOf(
             CommandData(

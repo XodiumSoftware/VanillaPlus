@@ -18,13 +18,28 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.vanillaplus.VanillaPlus.Companion.instance
 import org.xodium.vanillaplus.data.CommandData
-import org.xodium.vanillaplus.interfaces.ModuleInterface
+import org.xodium.vanillaplus.interfaces.MechanicInterface
 import org.xodium.vanillaplus.utils.CommandUtils.executesCatching
 import org.xodium.vanillaplus.utils.Utils.MM
 import org.xodium.vanillaplus.utils.Utils.prefix
 
 /** Represents a module handling chat mechanics within the system. */
-internal object ChatMechanic : ModuleInterface {
+internal object ChatMechanic : MechanicInterface {
+    private const val CHAT_FORMAT: String =
+        "<player_head> <player> <reset><gradient:#FFE259:#FFA751>›</gradient> <message>"
+    private const val WHISPER_TO_FORMAT: String =
+        "<gradient:#1488CC:#2B32B2>You</gradient> <gradient:#FFE259:#FFA751>➛</gradient> " +
+            "<player> <reset><gradient:#FFE259:#FFA751>›</gradient> <message>"
+    private const val WHISPER_FROM_FORMAT: String =
+        "<player> <reset><gradient:#FFE259:#FFA751>➛</gradient> " +
+            "<gradient:#1488CC:#2B32B2>You</gradient> <gradient:#FFE259:#FFA751>›</gradient> <message>"
+    private const val DELETE_SYMBOL: String = "<dark_gray>[<dark_red><b>X</b></dark_red><dark_gray>]"
+    private const val CLICK_TO_WHISPER_MSG: String = "<gradient:#FFE259:#FFA751>Click to Whisper</gradient>"
+    private const val CLICK_TO_DELETE_MSG: String = "<gradient:#FFE259:#FFA751>Click to delete your message</gradient>"
+
+    private val PLAYER_IS_NOT_ONLINE_MSG: String =
+        "${instance.prefix} <gradient:#CB2D3E:#EF473A>Player is not Online!</gradient>"
+
     override val cmds =
         listOf(
             CommandData(
@@ -50,7 +65,7 @@ internal object ChatMechanic : ModuleInterface {
                                         val target =
                                             targetResolver.resolve(it.source).singleOrNull()
                                                 ?: return@executesCatching sender.sendMessage(
-                                                    MM.deserialize(Config.ChatMessages.playerIsNotOnline),
+                                                    MM.deserialize(PLAYER_IS_NOT_ONLINE_MSG),
                                                 )
                                         val message = it.getArgument("message", String().javaClass)
 
@@ -84,14 +99,14 @@ internal object ChatMechanic : ModuleInterface {
         event.renderer { player, displayName, message, audience ->
             var base =
                 MM.deserialize(
-                    Config.CHAT_FORMAT,
+                    CHAT_FORMAT,
                     Placeholder.component("player_head", MM.deserialize("<head:${player.uniqueId}>")),
                     Placeholder.component(
                         "player",
                         displayName
                             .clickEvent(ClickEvent.suggestCommand("/w ${player.name} "))
                             .hoverEvent(
-                                HoverEvent.showText(MM.deserialize(Config.ChatMessages.CLICK_TO_WHISPER)),
+                                HoverEvent.showText(MM.deserialize(CLICK_TO_WHISPER_MSG)),
                             ),
                     ),
                     Placeholder.component("message", message),
@@ -115,13 +130,13 @@ internal object ChatMechanic : ModuleInterface {
     ) {
         sender.sendMessage(
             MM.deserialize(
-                Config.WHISPER_TO_FORMAT,
+                WHISPER_TO_FORMAT,
                 Placeholder.component(
                     "player",
                     target
                         .displayName()
                         .clickEvent(ClickEvent.suggestCommand("/w ${target.name} "))
-                        .hoverEvent(HoverEvent.showText(MM.deserialize(Config.ChatMessages.CLICK_TO_WHISPER))),
+                        .hoverEvent(HoverEvent.showText(MM.deserialize(CLICK_TO_WHISPER_MSG))),
                 ),
                 Placeholder.component("message", MM.deserialize(message)),
             ),
@@ -129,13 +144,13 @@ internal object ChatMechanic : ModuleInterface {
 
         target.sendMessage(
             MM.deserialize(
-                Config.WHISPER_FROM_FORMAT,
+                WHISPER_FROM_FORMAT,
                 Placeholder.component(
                     "player",
                     sender
                         .displayName()
                         .clickEvent(ClickEvent.suggestCommand("/w ${sender.name} "))
-                        .hoverEvent(HoverEvent.showText(MM.deserialize(Config.ChatMessages.CLICK_TO_WHISPER))),
+                        .hoverEvent(HoverEvent.showText(MM.deserialize(CLICK_TO_WHISPER_MSG))),
                 ),
                 Placeholder.component("message", MM.deserialize(message)),
             ),
@@ -149,27 +164,7 @@ internal object ChatMechanic : ModuleInterface {
      */
     private fun createDeleteCross(signedMessage: SignedMessage): Component =
         MM
-            .deserialize(Config.DELETE_SYMBOL)
-            .hoverEvent(MM.deserialize(Config.ChatMessages.CLICK_TO_DELETE))
+            .deserialize(DELETE_SYMBOL)
+            .hoverEvent(MM.deserialize(CLICK_TO_DELETE_MSG))
             .clickEvent(ClickEvent.callback { instance.server.deleteMessage(signedMessage) })
-
-    /** Represents the config of the module. */
-    object Config {
-        const val CHAT_FORMAT: String = "<player_head> <player> <reset><gradient:#FFE259:#FFA751>›</gradient> <message>"
-        const val WHISPER_TO_FORMAT: String =
-            "<gradient:#1488CC:#2B32B2>You</gradient> <gradient:#FFE259:#FFA751>➛</gradient> " +
-                "<player> <reset><gradient:#FFE259:#FFA751>›</gradient> <message>"
-        const val WHISPER_FROM_FORMAT: String =
-            "<player> <reset><gradient:#FFE259:#FFA751>➛</gradient> " +
-                "<gradient:#1488CC:#2B32B2>You</gradient> <gradient:#FFE259:#FFA751>›</gradient> <message>"
-        const val DELETE_SYMBOL: String = "<dark_gray>[<dark_red><b>X</b></dark_red><dark_gray>]"
-
-        /** Represents the chat message strings for the module. */
-        object ChatMessages {
-            const val CLICK_TO_WHISPER: String = "<gradient:#FFE259:#FFA751>Click to Whisper</gradient>"
-            val playerIsNotOnline: String =
-                "${instance.prefix} <gradient:#CB2D3E:#EF473A>Player is not Online!</gradient>"
-            const val CLICK_TO_DELETE: String = "<gradient:#FFE259:#FFA751>Click to delete your message</gradient>"
-        }
-    }
 }

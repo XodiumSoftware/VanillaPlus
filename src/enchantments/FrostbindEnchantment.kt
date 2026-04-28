@@ -22,6 +22,10 @@ import org.xodium.vanillaplus.utils.Utils.displayName
 @Suppress("UnstableApiUsage")
 internal object FrostbindEnchantment : EnchantmentInterface {
     private val PROJECTILE_KEY by lazy { NamespacedKey(instance, "frostbind_projectile") }
+    private val LAUNCH_SOUND: Sound = Sound.sound(Key.key("entity.snow_golem.shoot"), Sound.Source.NEUTRAL, 1.0f, 1.2f)
+    private val HIT_SOUND: Sound = Sound.sound(Key.key("block.powder_snow.place"), Sound.Source.BLOCK, 1.0f, 0.8f)
+    private const val XP_COST = 2
+    private const val FREEZE_TICKS = 500
 
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
@@ -37,7 +41,7 @@ internal object FrostbindEnchantment : EnchantmentInterface {
     fun on(event: PlayerInteractEvent) {
         if (!Utils.isSelectedSpell(event.item, get())) return
 
-        val player = XpManager.consumeXp(event, get(), Config.XP_COST) ?: return
+        val player = XpManager.consumeXp(event, get(), XP_COST) ?: return
         val direction = player.location.direction.normalize()
         val spawnLocation = player.eyeLocation.add(direction.clone().multiply(1.5))
         val snowball = player.world.spawn(spawnLocation, Snowball::class.java)
@@ -47,7 +51,7 @@ internal object FrostbindEnchantment : EnchantmentInterface {
         snowball.velocity = direction.multiply(2.0)
         snowball.persistentDataContainer.set(PROJECTILE_KEY, PersistentDataType.BOOLEAN, true)
         spawnSnowballTrail(snowball)
-        player.playSound(Config.LAUNCH_SOUND)
+        player.playSound(LAUNCH_SOUND)
     }
 
     @EventHandler
@@ -58,7 +62,7 @@ internal object FrostbindEnchantment : EnchantmentInterface {
 
         val entity = event.hitEntity ?: return
 
-        entity.freezeTicks = Config.FREEZE_TICKS
+        entity.freezeTicks = FREEZE_TICKS
 
         Particle.SNOWFLAKE
             .builder()
@@ -69,7 +73,7 @@ internal object FrostbindEnchantment : EnchantmentInterface {
 
         entity.world.players
             .filter { it.location.distance(entity.location) <= 16 }
-            .forEach { it.playSound(Config.HIT_SOUND) }
+            .forEach { it.playSound(HIT_SOUND) }
     }
 
     /**
@@ -91,19 +95,4 @@ internal object FrostbindEnchantment : EnchantmentInterface {
                 .offset(0.05, 0.05, 0.05)
                 .spawn()
         }
-
-    /** Configuration for the Frostbind enchantment. */
-    object Config {
-        /** The XP cost to cast Frostbind. */
-        const val XP_COST = 2
-
-        /** The duration in ticks that entities remain frozen. */
-        const val FREEZE_TICKS = 500
-
-        /** The sound played when launching Frostbind. */
-        val LAUNCH_SOUND: Sound = Sound.sound(Key.key("entity.snow_golem.shoot"), Sound.Source.NEUTRAL, 1.0f, 1.2f)
-
-        /** The sound played when hitting with Frostbind. */
-        val HIT_SOUND: Sound = Sound.sound(Key.key("block.powder_snow.place"), Sound.Source.BLOCK, 1.0f, 0.8f)
-    }
 }
