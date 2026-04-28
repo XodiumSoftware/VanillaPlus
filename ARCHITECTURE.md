@@ -4,24 +4,52 @@ This file provides guidance when working with code in this repository.
 
 ## Project Overview
 
-IllyriaPlus is a Paper Minecraft plugin (1.21.11) that enhances base gameplay. Built with Kotlin + Gradle, targeting Java 21. Uses the Paper API's modern lifecycle/registry APIs extensively.
+IllyriaPlus is a multi-module Paper Minecraft plugin project (1.21.11) containing two plugins:
+
+- **IllyriaCore** — Enhances base gameplay with custom enchantments, recipes, and mechanics
+- **IllyriaKingdoms** — Kingdoms/factions system for land claiming and territory management
+
+Built with Kotlin + Gradle, targeting Java 21. Uses the Paper API's modern lifecycle/registry APIs extensively.
+
+## Module Structure
+
+```
+IllyriaPlus/
+├── settings.gradle.kts      # Defines IllyriaCore and IllyriaKingdoms subprojects
+├── IllyriaCore/             # Core gameplay enhancement plugin
+│   ├── build.gradle.kts
+│   └── src/
+└── IllyriaKingdoms/         # Kingdoms/factions plugin
+    ├── build.gradle.kts
+    └── src/
+```
 
 ## Build & Run Commands
 
 ```bash
-# Build the shadow JAR (output: build/libs/)
+# Build all subprojects
 ./gradlew shadowJar
 
-# Run a local Paper test server (auto-downloads MC 1.21.11)
-./gradlew runServer
+# Build specific subproject
+./gradlew :IllyriaCore:shadowJar
+./gradlew :IllyriaKingdoms:shadowJar
+
+# Run test server for specific subproject
+./gradlew :IllyriaCore:runServer
+./gradlew :IllyriaKingdoms:runServer
 
 # Build only (no shadow)
 ./gradlew build
 ```
 
+Output JARs:
+
+- `IllyriaCore/build/libs/IllyriaCore-*.jar`
+- `IllyriaKingdoms/build/libs/IllyriaKingdoms-*.jar`
+
 There are no automated tests in this project.
 
-## Architecture
+## IllyriaCore Architecture
 
 ### Entry Points
 
@@ -73,7 +101,7 @@ PDC helpers in `pdcs/` expose Kotlin property delegates on entity types. `ItemPD
 
 Recipe objects implement **`RecipeInterface`** and are listed in `IllyriaPlus.onEnable()`. They expose a `recipes` list and a `register()` function that returns elapsed time in ms.
 
-### Package Structure (`org.xodium.illyriaplus`)
+### Package Structure (`org.xodium.illyriaplus` in IllyriaCore)
 
 | Package         | Contents                                                                                                                                         |
 |-----------------|--------------------------------------------------------------------------------------------------------------------------------------------------|

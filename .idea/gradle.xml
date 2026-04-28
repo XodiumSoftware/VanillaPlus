@@ -8,6 +8,8 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/IllyriaCore" />
+            <option value="$PROJECT_DIR$/IllyriaKingdoms" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="true" />

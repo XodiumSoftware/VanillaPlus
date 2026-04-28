@@ -23,16 +23,20 @@ Download pre-built JARs from GitHub releases.
 
 ### Setup
 
-1. Download the latest release:
+1. Download the latest releases:
    ```bash
-   curl -L -o IllyriaPlus.jar https://github.com/XodiumSoftware/IllyriaPlus/releases/download/nightly/IllyriaPlus.jar
+   # IllyriaCore (core gameplay enhancements)
+   curl -L -o IllyriaCore.jar https://github.com/XodiumSoftware/IllyriaPlus/releases/download/nightly/IllyriaCore.jar
+
+   # IllyriaKingdoms (kingdoms/factions system)
+   curl -L -o IllyriaKingdoms.jar https://github.com/XodiumSoftware/IllyriaPlus/releases/download/nightly/IllyriaKingdoms.jar
    ```
 
-2. Place the JAR in your server's `plugins/` directory
+2. Place the JARs in your server's `plugins/` directory
 
 ## Build from Source
 
-Build the plugin using Gradle.
+Build the plugins using Gradle.
 
 ### Prerequisites
 
@@ -47,37 +51,51 @@ Build the plugin using Gradle.
    cd IllyriaPlus
    ```
 
-2. Build the plugin:
+2. Build all plugins:
    ```bash
    ./gradlew shadowJar
    ```
 
-3. The output JAR is at:
+   Or build specific plugins:
+   ```bash
+   ./gradlew :IllyriaCore:shadowJar
+   ./gradlew :IllyriaKingdoms:shadowJar
    ```
-   build/libs/IllyriaPlus-*.jar
+
+3. The output JARs are at:
+   ```
+   IllyriaCore/build/libs/IllyriaCore-*.jar
+   IllyriaKingdoms/build/libs/IllyriaKingdoms-*.jar
    ```
 
 ### Run a Test Server
 
-To quickly test the plugin:
+To quickly test a plugin:
 
 ```bash
-./gradlew runServer
+# Test IllyriaCore
+./gradlew :IllyriaCore:runServer
+
+# Test IllyriaKingdoms
+./gradlew :IllyriaKingdoms:runServer
 ```
 
 This automatically downloads Paper 1.21.11 and starts a local test server with the plugin.
 
 ## Installation
 
-1. Place `IllyriaPlus.jar` in your server's `plugins/` directory
+1. Place the desired JAR(s) in your server's `plugins/` directory:
+    - `IllyriaCore.jar` — Core gameplay enhancements
+    - `IllyriaKingdoms.jar` — Kingdoms/factions system (optional)
+
 2. Start or restart the server
-3. The plugin will enable automatically
+3. The plugins will enable automatically
 
 ## Configuration
 
-IllyriaPlus uses **compile-time configuration** — there are no config files to edit. All settings are hardcoded in the source code.
+IllyriaPlus plugins use **compile-time configuration** — there are no config files to edit. All settings are hardcoded in the source code.
 
-To customize the plugin, you must:
+To customize a plugin, you must:
 
 1. Fork the repository
 2. Edit the `Config` objects in each mechanic
@@ -88,7 +106,7 @@ To customize the plugin, you must:
 Each mechanic has a nested `Config` object, for example:
 
 ```kotlin
-// In src/main/kotlin/org/xodium/vanillaplus/mechanics/PlayerMechanic.kt
+// In IllyriaCore/src/org/xodium/illyriaplus/mechanics/PlayerMechanic.kt
 object Config {
     const val ENABLED = true
     // ... other settings
@@ -97,9 +115,11 @@ object Config {
 
 ## Features
 
-IllyriaPlus enhances base gameplay with custom enchantments, items, and mechanics.
+### IllyriaCore
 
-### Enchantments
+Enhances base gameplay with custom enchantments, items, and mechanics.
+
+#### Enchantments
 
 Eleven custom enchantments are available:
 
@@ -119,7 +139,7 @@ Eleven custom enchantments are available:
 | Voidpull             | Main Hand | Teleportation spell             |
 | Quake                | Main Hand | Earth spell                     |
 
-### Mana System
+#### Mana System
 
 Blaze Rod spells share a single mana pool:
 
@@ -128,7 +148,7 @@ Blaze Rod spells share a single mana pool:
 - **Display**: Boss bar shows current mana
 - **Refill**: Use "Potion of Arcane Restoration"
 
-### Wand Mechanics
+#### Wand Mechanics
 
 Blaze rods with spell enchantments function as wands:
 
@@ -136,13 +156,13 @@ Blaze rods with spell enchantments function as wands:
 - **Right-click**: Cycle through available spells
 - **Compatible**: All seven spells can be on one wand
 
-### Custom Items
+#### Custom Items
 
 - **Potion of Arcane Restoration**: Refills mana to maximum
     - Brew: Awkward Potion + Blaze Rod
     - Color: Purple (`#832466`)
 
-### Recipes
+#### Recipes
 
 Custom crafting and brewing recipes:
 
@@ -152,6 +172,12 @@ Custom crafting and brewing recipes:
 - Custom paintings
 - Rotten flesh to leather
 - Log crafting improvements
+
+### IllyriaKingdoms
+
+A kingdoms/factions system for land claiming and territory management.
+
+*(Documentation forthcoming as the plugin develops)*
 
 ## Troubleshooting
 

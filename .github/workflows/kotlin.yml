@@ -73,21 +73,34 @@ jobs:
         name: Clean Build Directory
         run: ./gradlew clean
 
-      - id: build_gradle
-        name: Build with Gradle
-        run: ./gradlew shadowJar
+      - id: build_illyria_core
+        name: Build IllyriaCore
+        run: ./gradlew :IllyriaCore:shadowJar
+
+      - id: build_illyria_kingdoms
+        name: Build IllyriaKingdoms
+        run: ./gradlew :IllyriaKingdoms:shadowJar
 
       - id: get_version
         name: Get Version
         run: echo "VERSION=$(./gradlew properties --quiet --console=plain -q version 2>/dev/null | cut -d' ' -f2)" >> $GITHUB_OUTPUT
         shell: bash
 
-      - id: upload_artifact
-        name: Upload Build Artifact
+      - id: upload_core_artifact
+        name: Upload IllyriaCore Artifact
         if: ${{ success() }}
         uses: actions/upload-artifact@v7.0.1
         with:
-          path: build/libs/*.jar
+          name: IllyriaCore
+          path: IllyriaCore/build/libs/*.jar
+
+      - id: upload_kingdoms_artifact
+        name: Upload IllyriaKingdoms Artifact
+        if: ${{ success() }}
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: IllyriaKingdoms
+          path: IllyriaKingdoms/build/libs/*.jar
 
   nightly_release:
     name: Nightly Release
@@ -105,13 +118,19 @@ jobs:
         with:
           fetch-depth: 0
 
-      - id: download_artifacts
-        name: Download Artefacts
+      - id: download_core_artifact
+        name: Download IllyriaCore Artifact
         uses: actions/download-artifact@v8.0.1
         with:
-          pattern: "artifact"
+          name: IllyriaCore
           path: dist/
-          merge-multiple: true
+
+      - id: download_kingdoms_artifact
+        name: Download IllyriaKingdoms Artifact
+        uses: actions/download-artifact@v8.0.1
+        with:
+          name: IllyriaKingdoms
+          path: dist/
 
       - id: update_nightly_tag
         name: Update Nightly Tag
@@ -167,15 +186,27 @@ jobs:
         name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6.1.0
 
-      - id: generate_docs
-        name: Generate Dokka Documentation
-        run: ./gradlew dokkaGenerateHtml
+      - id: generate_core_docs
+        name: Generate IllyriaCore Documentation
+        run: ./gradlew :IllyriaCore:dokkaGenerateHtml
+
+      - id: generate_kingdoms_docs
+        name: Generate IllyriaKingdoms Documentation
+        run: ./gradlew :IllyriaKingdoms:dokkaGenerateHtml
+
+      - id: merge_docs
+        name: Merge Documentation
+        run: |
+          mkdir -p combined-docs
+          cp -r IllyriaCore/docs/* combined-docs/ 2>/dev/null || true
+          mkdir -p combined-docs/IllyriaKingdoms
+          cp -r IllyriaKingdoms/docs/* combined-docs/IllyriaKingdoms/ 2>/dev/null || true
 
       - id: upload_artifact
         name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v5
         with:
-          path: docs/
+          path: combined-docs/
 
       - id: deployment
         name: Deploy to GitHub Pages

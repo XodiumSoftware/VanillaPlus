@@ -2,9 +2,13 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Projects.VanillaPlus.iml" filepath="$PROJECT_DIR$/.idea/modules/Projects.VanillaPlus.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Projects.VanillaPlus.main.iml" filepath="$PROJECT_DIR$/.idea/modules/Projects.VanillaPlus.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Projects.VanillaPlus.test.iml" filepath="$PROJECT_DIR$/.idea/modules/Projects.VanillaPlus.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/IllyriaPlus.iml" filepath="$PROJECT_DIR$/.idea/modules/IllyriaPlus.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/IllyriaCore/IllyriaPlus.IllyriaCore.iml" filepath="$PROJECT_DIR$/.idea/modules/IllyriaCore/IllyriaPlus.IllyriaCore.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/IllyriaCore/IllyriaPlus.IllyriaCore.main.iml" filepath="$PROJECT_DIR$/.idea/modules/IllyriaCore/IllyriaPlus.IllyriaCore.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/IllyriaCore/IllyriaPlus.IllyriaCore.test.iml" filepath="$PROJECT_DIR$/.idea/modules/IllyriaCore/IllyriaPlus.IllyriaCore.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/IllyriaKingdoms/IllyriaPlus.IllyriaKingdoms.iml" filepath="$PROJECT_DIR$/.idea/modules/IllyriaKingdoms/IllyriaPlus.IllyriaKingdoms.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/IllyriaKingdoms/IllyriaPlus.IllyriaKingdoms.main.iml" filepath="$PROJECT_DIR$/.idea/modules/IllyriaKingdoms/IllyriaPlus.IllyriaKingdoms.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/IllyriaKingdoms/IllyriaPlus.IllyriaKingdoms.test.iml" filepath="$PROJECT_DIR$/.idea/modules/IllyriaKingdoms/IllyriaPlus.IllyriaKingdoms.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/VanillaPlus.iml" filepath="$PROJECT_DIR$/.idea/modules/VanillaPlus.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/VanillaPlus.main.iml" filepath="$PROJECT_DIR$/.idea/modules/VanillaPlus.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/VanillaPlus.test.iml" filepath="$PROJECT_DIR$/.idea/modules/VanillaPlus.test.iml" />
