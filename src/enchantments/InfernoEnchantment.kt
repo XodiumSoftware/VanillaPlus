@@ -19,6 +19,10 @@ import kotlin.uuid.ExperimentalUuidApi
 @OptIn(ExperimentalUuidApi::class)
 @Suppress("UnstableApiUsage")
 internal object InfernoEnchantment : EnchantmentInterface {
+    private const val XP_COST = 1
+
+    private val CAST_SOUND: Sound = Sound.sound(Key.key("entity.blaze.shoot"), Sound.Source.HOSTILE, 1.0f, 1.0f)
+
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
             .description(key.displayName())
@@ -33,7 +37,7 @@ internal object InfernoEnchantment : EnchantmentInterface {
     fun on(event: PlayerInteractEvent) {
         if (!Utils.isSelectedSpell(event.item, get())) return
 
-        val player = XpManager.consumeXp(event, get(), Config.XP_COST) ?: return
+        val player = XpManager.consumeXp(event, get(), XP_COST) ?: return
         val direction = player.location.direction.normalize()
         val spawnLocation = player.eyeLocation.add(direction.clone().multiply(1.5))
         val fireball = player.world.spawn(spawnLocation, SmallFireball::class.java)
@@ -42,7 +46,7 @@ internal object InfernoEnchantment : EnchantmentInterface {
         fireball.direction = direction.clone().multiply(1.5)
         fireball.yield = 0.0f
         spawnFireballTrail(fireball)
-        player.playSound(Config.CAST_SOUND)
+        player.playSound(CAST_SOUND)
     }
 
     /**
@@ -64,13 +68,4 @@ internal object InfernoEnchantment : EnchantmentInterface {
                 .count(1)
                 .spawn()
         }
-
-    /** Configuration for the Inferno enchantment. */
-    object Config {
-        /** The XP cost to cast Inferno. */
-        const val XP_COST = 1
-
-        /** The sound played when casting Inferno. */
-        val CAST_SOUND: Sound = Sound.sound(Key.key("entity.blaze.shoot"), Sound.Source.HOSTILE, 1.0f, 1.0f)
-    }
 }

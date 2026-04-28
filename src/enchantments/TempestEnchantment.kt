@@ -18,6 +18,11 @@ import org.xodium.illyriaplus.utils.Utils.displayName
 /** Represents an object handling tempest enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
 internal object TempestEnchantment : EnchantmentInterface {
+    private const val XP_COST = 4
+    private const val SPREAD_AMOUNT = 0.2
+
+    private val CAST_SOUND: Sound = Sound.sound(Key.key("entity.breeze.shoot"), Sound.Source.HOSTILE, 1.0f, 1.0f)
+
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
             .description(key.displayName())
@@ -32,11 +37,11 @@ internal object TempestEnchantment : EnchantmentInterface {
     fun on(event: PlayerInteractEvent) {
         if (!Utils.isSelectedSpell(event.item, get())) return
 
-        val player = XpManager.consumeXp(event, get(), Config.XP_COST) ?: return
+        val player = XpManager.consumeXp(event, get(), XP_COST) ?: return
         val baseDir = player.location.direction.normalize()
         val right = baseDir.clone().crossProduct(Vector(0, 1, 0)).normalize()
         val spawnBase = player.eyeLocation.add(baseDir.clone().multiply(1.5))
-        val offsets = listOf(-Config.SPREAD_AMOUNT, 0.0, Config.SPREAD_AMOUNT)
+        val offsets = listOf(-SPREAD_AMOUNT, 0.0, SPREAD_AMOUNT)
 
         offsets.forEach {
             val dir = baseDir.clone().add(right.clone().multiply(it)).normalize()
@@ -48,7 +53,7 @@ internal object TempestEnchantment : EnchantmentInterface {
             spawnWindChargeTrail(charge)
         }
 
-        player.playSound(Config.CAST_SOUND)
+        player.playSound(CAST_SOUND)
     }
 
     /**
@@ -70,16 +75,4 @@ internal object TempestEnchantment : EnchantmentInterface {
                 .extra(0.02)
                 .spawn()
         }
-
-    /** Configuration for the Tempest enchantment. */
-    object Config {
-        /** The XP cost to cast Tempest. */
-        const val XP_COST = 4
-
-        /** The horizontal spread amount between wind charges. */
-        const val SPREAD_AMOUNT = 0.2
-
-        /** The sound played when casting Tempest. */
-        val CAST_SOUND: Sound = Sound.sound(Key.key("entity.breeze.shoot"), Sound.Source.HOSTILE, 1.0f, 1.0f)
-    }
 }

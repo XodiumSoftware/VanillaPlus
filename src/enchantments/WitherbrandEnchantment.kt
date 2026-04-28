@@ -17,6 +17,10 @@ import org.xodium.illyriaplus.utils.Utils.displayName
 /** Represents an object handling witherbrand enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
 internal object WitherbrandEnchantment : EnchantmentInterface {
+    private const val XP_COST = 2
+
+    private val CAST_SOUND: Sound = Sound.sound(Key.key("entity.wither.shoot"), Sound.Source.HOSTILE, 1.0f, 1.0f)
+
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
             .description(key.displayName())
@@ -31,7 +35,7 @@ internal object WitherbrandEnchantment : EnchantmentInterface {
     fun on(event: PlayerInteractEvent) {
         if (!Utils.isSelectedSpell(event.item, get())) return
 
-        val player = XpManager.consumeXp(event, get(), Config.XP_COST) ?: return
+        val player = XpManager.consumeXp(event, get(), XP_COST) ?: return
         val direction = player.location.direction.normalize()
         val spawnLocation = player.eyeLocation.add(direction.clone().multiply(1.5))
         val skull = player.world.spawn(spawnLocation, WitherSkull::class.java)
@@ -40,7 +44,7 @@ internal object WitherbrandEnchantment : EnchantmentInterface {
         skull.direction = direction.clone().multiply(1.5)
         skull.isCharged = false
         spawnSkullTrail(skull)
-        player.playSound(Config.CAST_SOUND)
+        player.playSound(CAST_SOUND)
     }
 
     /**
@@ -63,14 +67,5 @@ internal object WitherbrandEnchantment : EnchantmentInterface {
                 .offset(0.1, 0.1, 0.1)
                 .spawn()
         }
-    }
-
-    /** Configuration for the Witherbrand enchantment. */
-    object Config {
-        /** The XP cost to cast Witherbrand. */
-        const val XP_COST = 2
-
-        /** The sound played when casting Witherbrand. */
-        val CAST_SOUND: Sound = Sound.sound(Key.key("entity.wither.shoot"), Sound.Source.HOSTILE, 1.0f, 1.0f)
     }
 }

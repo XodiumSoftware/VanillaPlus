@@ -13,6 +13,9 @@ import org.xodium.illyriaplus.utils.Utils.displayName
 /** Represents an object handling skysunder enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
 internal object SkysunderEnchantment : EnchantmentInterface {
+    private const val XP_COST = 3
+    private const val RANGE = 30.0
+
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
             .description(key.displayName())
@@ -27,9 +30,9 @@ internal object SkysunderEnchantment : EnchantmentInterface {
     fun on(event: PlayerInteractEvent) {
         if (!Utils.isSelectedSpell(event.item, get())) return
 
-        val player = XpManager.consumeXp(event, get(), Config.XP_COST) ?: return
-        val blockResult = player.rayTraceBlocks(Config.RANGE)
-        val entityResult = player.rayTraceEntities(Config.RANGE.toInt())
+        val player = XpManager.consumeXp(event, get(), XP_COST) ?: return
+        val blockResult = player.rayTraceBlocks(RANGE)
+        val entityResult = player.rayTraceEntities(RANGE.toInt())
         val eyeLoc = player.eyeLocation
         val blockDist = blockResult?.hitPosition?.distance(eyeLoc.toVector())
         val entityDist = entityResult?.hitPosition?.distance(eyeLoc.toVector())
@@ -47,7 +50,7 @@ internal object SkysunderEnchantment : EnchantmentInterface {
                     eyeLoc.add(
                         player.location.direction
                             .normalize()
-                            .multiply(Config.RANGE),
+                            .multiply(RANGE),
                     )
                 }
             }
@@ -60,14 +63,5 @@ internal object SkysunderEnchantment : EnchantmentInterface {
             .spawn()
 
         player.world.strikeLightning(target)
-    }
-
-    /** Configuration for the Skysunder enchantment. */
-    object Config {
-        /** The XP cost to cast Skysunder. */
-        const val XP_COST = 3
-
-        /** The maximum range in blocks for the lightning strike. */
-        const val RANGE = 30.0
     }
 }

@@ -25,8 +25,13 @@ import java.util.*
 /** Represents an object handling voidpull enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
 internal object VoidpullEnchantment : EnchantmentInterface {
+    private const val XP_COST = 3
+    private const val VELOCITY = 2.5
+
     private val PROJECTILE_KEY by lazy { NamespacedKey(instance, "voidpull_projectile") }
     private val trailTasks = mutableMapOf<UUID, BukkitTask>()
+    private val CAST_SOUND: Sound = Sound.sound(Key.key("entity.ender_pearl.throw"), Sound.Source.PLAYER, 1.0f, 1.0f)
+    private val PULL_SOUND: Sound = Sound.sound(Key.key("entity.enderman.teleport"), Sound.Source.HOSTILE, 1.0f, 0.8f)
 
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
@@ -42,17 +47,17 @@ internal object VoidpullEnchantment : EnchantmentInterface {
     fun on(event: PlayerInteractEvent) {
         if (!Utils.isSelectedSpell(event.item, get())) return
 
-        val player = XpManager.consumeXp(event, get(), Config.XP_COST) ?: return
+        val player = XpManager.consumeXp(event, get(), XP_COST) ?: return
         val direction = player.location.direction.normalize()
         val spawnLocation = player.eyeLocation.add(direction.clone().multiply(1.5))
         val pearl = player.world.spawn(spawnLocation, EnderPearl::class.java)
 
         pearl.setGravity(false)
-        pearl.velocity = direction.multiply(Config.VELOCITY)
+        pearl.velocity = direction.multiply(VELOCITY)
         pearl.persistentDataContainer.set(PROJECTILE_KEY, PersistentDataType.STRING, player.uniqueId.toString())
 
         trailTasks[pearl.uniqueId] = spawnPearlTrail(pearl)
-        player.playSound(Config.CAST_SOUND)
+        player.playSound(CAST_SOUND)
     }
 
     @EventHandler
@@ -91,7 +96,7 @@ internal object VoidpullEnchantment : EnchantmentInterface {
             .offset(0.3, 0.5, 0.3)
             .spawn()
 
-        player.playSound(Config.PULL_SOUND)
+        player.playSound(PULL_SOUND)
     }
 
     /**
@@ -114,19 +119,4 @@ internal object VoidpullEnchantment : EnchantmentInterface {
                 .offset(0.05, 0.05, 0.05)
                 .spawn()
         }
-
-    /** Configuration for the Voidpull enchantment. */
-    object Config {
-        /** The XP cost to cast Voidpull. */
-        const val XP_COST = 3
-
-        /** The velocity multiplier for the ender pearl projectile. */
-        const val VELOCITY = 2.5
-
-        /** The sound played when casting Voidpull. */
-        val CAST_SOUND: Sound = Sound.sound(Key.key("entity.ender_pearl.throw"), Sound.Source.PLAYER, 1.0f, 1.0f)
-
-        /** The sound played when pulling with Voidpull. */
-        val PULL_SOUND: Sound = Sound.sound(Key.key("entity.enderman.teleport"), Sound.Source.HOSTILE, 1.0f, 0.8f)
-    }
 }

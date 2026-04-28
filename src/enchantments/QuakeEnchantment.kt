@@ -20,6 +20,15 @@ import kotlin.math.sin
 /** Represents an object handling quake enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
 internal object QuakeEnchantment : EnchantmentInterface {
+    private const val XP_COST = 3
+    private const val RADIUS = 4.0
+    private const val DAMAGE = 6.0
+    private const val KNOCKBACK_STRENGTH = 1.2
+    private const val RING_COUNT = 3
+
+    private val CAST_SOUND: Sound = Sound.sound(Key.key("entity.warden.attack_impact"), Sound.Source.BLOCK, 1.0f, 0.8f)
+    private val HIT_SOUND: Sound = Sound.sound(Key.key("block.anvil.land"), Sound.Source.BLOCK, 0.6f, 0.5f)
+
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
             .description(key.displayName())
@@ -34,12 +43,12 @@ internal object QuakeEnchantment : EnchantmentInterface {
     fun on(event: PlayerInteractEvent) {
         if (!Utils.isSelectedSpell(event.item, get())) return
 
-        val player = XpManager.consumeXp(event, get(), Config.XP_COST) ?: return
+        val player = XpManager.consumeXp(event, get(), XP_COST) ?: return
         val location = player.location
         val world = player.world
 
-        for (ring in 1..Config.RING_COUNT) {
-            val ringRadius = Config.RADIUS * ring / Config.RING_COUNT
+        for (ring in 1..RING_COUNT) {
+            val ringRadius = RADIUS * ring / RING_COUNT
             val particleCount = (ringRadius * 16).toInt()
 
             for (i in 0 until particleCount) {
@@ -55,7 +64,7 @@ internal object QuakeEnchantment : EnchantmentInterface {
         }
 
         world
-            .getNearbyEntities(location, Config.RADIUS, Config.RADIUS / 2, Config.RADIUS)
+            .getNearbyEntities(location, RADIUS, RADIUS / 2, RADIUS)
             .filterIsInstance<LivingEntity>()
             .filter { it != player }
             .forEach {
@@ -65,10 +74,10 @@ internal object QuakeEnchantment : EnchantmentInterface {
                         .subtract(location.toVector())
                         .normalize()
                 val upward = Vector(0.0, 0.4, 0.0)
-                val knockback = direction.multiply(Config.KNOCKBACK_STRENGTH).add(upward)
+                val knockback = direction.multiply(KNOCKBACK_STRENGTH).add(upward)
 
                 it.velocity = knockback
-                it.damage(Config.DAMAGE, player)
+                it.damage(DAMAGE, player)
 
                 Particle.CRIT
                     .builder()
@@ -82,41 +91,17 @@ internal object QuakeEnchantment : EnchantmentInterface {
             Particle.CAMPFIRE_COSY_SMOKE,
             location.clone().add(0.0, 0.1, 0.0),
             20,
-            Config.RADIUS / 2,
+            RADIUS / 2,
             0.1,
-            Config.RADIUS / 2,
+            RADIUS / 2,
             0.05,
         )
 
         world.players
             .filter { it.location.distance(location) <= 32 }
             .forEach {
-                it.playSound(Config.CAST_SOUND)
-                it.playSound(Config.HIT_SOUND)
+                it.playSound(CAST_SOUND)
+                it.playSound(HIT_SOUND)
             }
-    }
-
-    /** Configuration for the Quake enchantment. */
-    object Config {
-        /** The XP cost to cast Quake. */
-        const val XP_COST = 3
-
-        /** The radius in blocks for the shockwave effect. */
-        const val RADIUS = 4.0
-
-        /** The damage dealt to entities hit by the shockwave. */
-        const val DAMAGE = 6.0
-
-        /** The knockback strength applied to hit entities. */
-        const val KNOCKBACK_STRENGTH = 1.2
-
-        /** The number of particle rings to spawn. */
-        const val RING_COUNT = 3
-
-        /** The sound played when casting Quake. */
-        val CAST_SOUND: Sound = Sound.sound(Key.key("entity.warden.attack_impact"), Sound.Source.BLOCK, 1.0f, 0.8f)
-
-        /** The sound played when entities are hit by Quake. */
-        val HIT_SOUND: Sound = Sound.sound(Key.key("block.anvil.land"), Sound.Source.BLOCK, 0.6f, 0.5f)
     }
 }
