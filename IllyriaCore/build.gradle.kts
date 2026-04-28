@@ -1,5 +1,3 @@
-// IllyriaCore - Core gameplay enhancements
-
 import org.jetbrains.dokka.gradle.engine.parameters.VisibilityModifier
 import xyz.jpenilla.runtask.task.AbstractRun
 

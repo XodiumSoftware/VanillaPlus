@@ -1,5 +1,3 @@
-// IllyriaKingdoms - Kingdoms/factions system
-
 import org.jetbrains.dokka.gradle.engine.parameters.VisibilityModifier
 import xyz.jpenilla.runtask.task.AbstractRun
 

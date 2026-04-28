@@ -11,9 +11,18 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/IllyriaKingdoms/IllyriaPlus.IllyriaKingdoms.test.iml" filepath="$PROJECT_DIR$/.idea/modules/IllyriaKingdoms/IllyriaPlus.IllyriaKingdoms.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/IllyriaPlus.main.iml" filepath="$PROJECT_DIR$/.idea/modules/IllyriaPlus.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/IllyriaPlus.test.iml" filepath="$PROJECT_DIR$/.idea/modules/IllyriaPlus.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Projects.IllyriaPlus.iml" filepath="$PROJECT_DIR$/.idea/modules/Projects.IllyriaPlus.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Projects.IllyriaPlus.main.iml" filepath="$PROJECT_DIR$/.idea/modules/Projects.IllyriaPlus.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Projects.IllyriaPlus.test.iml" filepath="$PROJECT_DIR$/.idea/modules/Projects.IllyriaPlus.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/VanillaPlus.iml" filepath="$PROJECT_DIR$/.idea/modules/VanillaPlus.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/VanillaPlus.main.iml" filepath="$PROJECT_DIR$/.idea/modules/VanillaPlus.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/VanillaPlus.test.iml" filepath="$PROJECT_DIR$/.idea/modules/VanillaPlus.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/IllyriaKingdoms/org.xodium.illyriaplus.IllyriaKingdoms.IllyriaPlus.IllyriaKingdoms.iml" filepath="$PROJECT_DIR$/.idea/modules/IllyriaKingdoms/org.xodium.illyriaplus.IllyriaKingdoms.IllyriaPlus.IllyriaKingdoms.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/IllyriaKingdoms/org.xodium.illyriaplus.IllyriaKingdoms.IllyriaPlus.IllyriaKingdoms.main.iml" filepath="$PROJECT_DIR$/.idea/modules/IllyriaKingdoms/org.xodium.illyriaplus.IllyriaKingdoms.IllyriaPlus.IllyriaKingdoms.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/IllyriaKingdoms/org.xodium.illyriaplus.IllyriaKingdoms.IllyriaPlus.IllyriaKingdoms.test.iml" filepath="$PROJECT_DIR$/.idea/modules/IllyriaKingdoms/org.xodium.illyriaplus.IllyriaKingdoms.IllyriaPlus.IllyriaKingdoms.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/IllyriaCore/org.xodium.illyriaplus.IllyriaPlus.IllyriaPlus.IllyriaCore.iml" filepath="$PROJECT_DIR$/.idea/modules/IllyriaCore/org.xodium.illyriaplus.IllyriaPlus.IllyriaPlus.IllyriaCore.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/IllyriaCore/org.xodium.illyriaplus.IllyriaPlus.IllyriaPlus.IllyriaCore.main.iml" filepath="$PROJECT_DIR$/.idea/modules/IllyriaCore/org.xodium.illyriaplus.IllyriaPlus.IllyriaPlus.IllyriaCore.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/IllyriaCore/org.xodium.illyriaplus.IllyriaPlus.IllyriaPlus.IllyriaCore.test.iml" filepath="$PROJECT_DIR$/.idea/modules/IllyriaCore/org.xodium.illyriaplus.IllyriaPlus.IllyriaPlus.IllyriaCore.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/org.xodium.vanillaplus.VanillaPlus.VanillaPlus.iml" filepath="$PROJECT_DIR$/.idea/modules/org.xodium.vanillaplus.VanillaPlus.VanillaPlus.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/org.xodium.vanillaplus.VanillaPlus.VanillaPlus.main.iml" filepath="$PROJECT_DIR$/.idea/modules/org.xodium.vanillaplus.VanillaPlus.VanillaPlus.main.iml" />
     </modules>
