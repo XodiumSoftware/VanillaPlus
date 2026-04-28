@@ -35,6 +35,6 @@ internal object MainGui : GuiInterface {
     override val window =
         Window
             .builder()
-            .setTitle("TODO: get from database?")
+            .setTitle("Kingdom Menu")
             .setUpperGui(gui)
 }

@@ -30,14 +30,6 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:$mcVersion.build.+")
     implementation(kotlin("stdlib"))
 
-    // Exposed ORM
-    implementation("org.jetbrains.exposed:exposed-core:0.61.0")
-    implementation("org.jetbrains.exposed:exposed-dao:0.60.0")
-    implementation("org.jetbrains.exposed:exposed-jdbc:0.60.0")
-
-    // SQLite driver
-    implementation("org.xerial:sqlite-jdbc:3.49.0.0")
-
     // InvUI - Inventory GUI library
     implementation("xyz.xenondevs.invui:invui:2.0.0")
     implementation("xyz.xenondevs.invui:invui-kotlin:2.0.0")
