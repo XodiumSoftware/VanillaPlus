@@ -2,12 +2,15 @@ package org.xodium.illyriaplus.items
 
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
+import net.kyori.adventure.key.Key
+import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
+import org.xodium.illyriaplus.IllyriaKingdoms.Companion.instance
 import org.xodium.illyriaplus.guis.MainGui
 import org.xodium.illyriaplus.interfaces.ItemInterface
 import org.xodium.illyriaplus.pdcs.ItemPDC.isSceptre
@@ -20,16 +23,21 @@ internal object SceptreItem : ItemInterface {
         ItemStack.of(Material.STICK).apply {
             setData(
                 DataComponentTypes.ITEM_NAME,
-                mm.deserialize("<gradient:#FFA751:#FFE259>Kingdom Tool</gradient>"),
+                mm.deserialize("<gradient:#FFA751:#FFE259>Kingdom Sceptre</gradient>"),
             )
             setData(
                 DataComponentTypes.LORE,
                 ItemLore.lore(
                     listOf(
+                        Component.empty(),
                         mm.deserialize("<gray>Right-click to open your kingdom menu.</gray>"),
-                        mm.deserialize("<yellow>Manage your territory and claims!</yellow>"),
                     ),
                 ),
+            )
+            setData(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true)
+            setData(
+                DataComponentTypes.ITEM_MODEL,
+                Key.key(instance, TODO("set key to link with custom texture in resourcepack")),
             )
             isSceptre = true
         }
