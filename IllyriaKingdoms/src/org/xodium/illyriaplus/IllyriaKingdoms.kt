@@ -14,10 +14,20 @@ internal class IllyriaKingdoms : JavaPlugin() {
 
     override fun onEnable() {
         instance = this
-        logger.info("IllyriaKingdoms enabled!")
+
+        val unsupportedVersionMsg =
+            "This plugin requires a supported server version. Supported versions: ${pluginMeta.version}."
+
+        if (!server.version.contains(pluginMeta.version.substringBefore("+"))) disablePlugin(unsupportedVersionMsg)
     }
 
-    override fun onDisable() {
-        logger.info("IllyriaKingdoms disabled!")
+    /**
+     * Disable the plugin and log the message.
+     * @param msg The message to log.
+     */
+    private fun disablePlugin(msg: String): Nothing {
+        logger.severe(msg)
+        server.pluginManager.disablePlugin(instance)
+        throw IllegalStateException(msg)
     }
 }

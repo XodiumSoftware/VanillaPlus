@@ -48,11 +48,9 @@ internal class IllyriaCore : JavaPlugin() {
             private set
     }
 
-    init {
-        instance = this
-    }
-
     override fun onEnable() {
+        instance = this
+
         val unsupportedVersionMsg =
             "This plugin requires a supported server version. Supported versions: ${pluginMeta.version}."
 
