@@ -69,6 +69,10 @@ jobs:
         name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6.1.0
 
+      - id: clean_gradle
+        name: Clean Build Directory
+        run: ./gradlew clean
+
       - id: build_gradle
         name: Build with Gradle
         run: ./gradlew shadowJar
