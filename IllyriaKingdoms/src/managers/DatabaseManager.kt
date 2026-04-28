@@ -1,9 +1,8 @@
-package org.xodium.illyriaplus.db
+package org.xodium.illyriaplus.managers
 
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.transactions.TransactionManager
-import org.jetbrains.exposed.sql.transactions.transaction
-import org.xodium.illyriaplus.IllyriaKingdoms.Companion.instance
+import org.xodium.illyriaplus.IllyriaKingdoms
 import java.io.File
 
 /** Manages the SQLite database connection and schema for IllyriaKingdoms. */
@@ -15,7 +14,7 @@ internal object DatabaseManager {
      * Must be called from the main thread during plugin enable.
      */
     fun init() {
-        val dbFile = File(instance.dataFolder, "illyriakingdoms.db")
+        val dbFile = File(IllyriaKingdoms.instance.dataFolder, "illyriakingdoms.db")
 
         if (!dbFile.parentFile.exists()) dbFile.parentFile.mkdirs()
 
@@ -27,7 +26,7 @@ internal object DatabaseManager {
 
         TransactionManager.defaultDatabase = database
 
-        instance.logger.info("Database initialized at: ${dbFile.absolutePath}")
+        IllyriaKingdoms.instance.logger.info("Database initialized at: ${dbFile.absolutePath}")
     }
 
     /**
@@ -37,7 +36,7 @@ internal object DatabaseManager {
     fun close() {
         if (::database.isInitialized) {
             TransactionManager.closeAndUnregister(database)
-            instance.logger.info("Database connection closed")
+            IllyriaKingdoms.instance.logger.info("Database connection closed")
         }
     }
 
@@ -48,5 +47,7 @@ internal object DatabaseManager {
      * @param block The transaction block to execute
      * @return The result of the transaction block
      */
-    fun <T> transaction(block: () -> T): T = transaction(database) { block() }
+    fun <T> transaction(block: () -> T): T =
+        org.jetbrains.exposed.sql.transactions
+            .transaction(database) { block() }
 }

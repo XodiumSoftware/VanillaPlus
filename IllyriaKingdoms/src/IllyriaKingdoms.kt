@@ -1,7 +1,7 @@
 package org.xodium.illyriaplus
 
 import org.bukkit.plugin.java.JavaPlugin
-import org.xodium.illyriaplus.db.DatabaseManager
+import org.xodium.illyriaplus.managers.DatabaseManager
 
 /**
  * Main class for IllyriaKingdoms plugin.
