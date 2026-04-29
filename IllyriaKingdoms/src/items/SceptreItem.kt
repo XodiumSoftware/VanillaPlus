@@ -9,7 +9,7 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
-import org.xodium.illyriaplus.guis.MainGui
+import org.xodium.illyriaplus.guis.KingdomGui
 import org.xodium.illyriaplus.interfaces.ItemInterface
 import org.xodium.illyriaplus.managers.KingdomManager
 import org.xodium.illyriaplus.pdcs.ItemPDC.isSceptre
@@ -56,6 +56,6 @@ internal object SceptreItem : ItemInterface {
 
         if (event.action != Action.RIGHT_CLICK_AIR && event.action != Action.RIGHT_CLICK_BLOCK) return
 
-        MainGui.window(event.player, KingdomManager.getOrCreate(item.kingdomId)).open()
+        KingdomGui.window(event.player, KingdomManager.getOrCreate(item.kingdomId)).open()
     }
 }

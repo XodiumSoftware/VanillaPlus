@@ -60,6 +60,16 @@ internal object KingdomManager {
     fun getAll(): List<KingdomData> = kingdoms.values.toList()
 
     /**
+     * Updates a kingdom's data and saves to disk.
+     *
+     * @param kingdom The [KingdomData] to update.
+     */
+    fun update(kingdom: KingdomData) {
+        kingdoms[kingdom.id] = kingdom
+        save()
+    }
+
+    /**
      * Removes a kingdom by ID and saves to disk.
      *
      * @param id The UUID of the kingdom to remove.
