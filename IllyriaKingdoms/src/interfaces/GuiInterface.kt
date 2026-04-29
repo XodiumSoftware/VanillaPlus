@@ -7,9 +7,9 @@ import xyz.xenondevs.invui.window.Window
 /** Represents a contract for a gui within the system. */
 internal interface GuiInterface {
     /**
-     * Creates a window for the given player.
-     * @param player The player to create the window for.
-     * @return The window builder configured for this player.
+     * Creates a window for the given kingdom.
+     * @param kingdom The kingdom to create the window for.
+     * @return The window configured for this kingdom.
      */
     fun window(kingdom: KingdomData): Window
 
