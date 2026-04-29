@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack
 import org.xodium.illyriaplus.data.KingdomData
 import org.xodium.illyriaplus.items.SceptreItem
 import org.xodium.illyriaplus.managers.KingdomManager
+import org.xodium.illyriaplus.pdcs.PlayerPDC.kingdomData
 import org.xodium.illyriaplus.utils.Utils
 import org.xodium.illyriaplus.utils.Utils.MM
 import xyz.xenondevs.invui.gui.Markers
@@ -16,6 +17,7 @@ import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.item.Item
 import xyz.xenondevs.invui.window.Window
 import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.toKotlinUuid
 
 /** Admin GUI for managing kingdoms with paginated list view. */
 @Suppress("UnstableApiUsage")
@@ -69,9 +71,10 @@ internal object AdminGui {
             ).addClickHandler { _, click ->
                 PlayerSelectGui
                     .window(click.player) {
+                        it.kingdomData = KingdomData(owner = it.uniqueId.toKotlinUuid())
                         it.inventory.addItem(SceptreItem.item)
-                        it.sendMessage(MM.deserialize("<green>You have received a Kingdom Sceptre!"))
-                        click.player.sendMessage(MM.deserialize("<green>Gave a Kingdom Sceptre to ${it.name}."))
+                        it.sendMessage(MM.deserialize("<green>You are now the ruler of a new kingdom!"))
+                        click.player.sendMessage(MM.deserialize("<green>Created kingdom for ${it.name}."))
                         window(click.player).open()
                     }.open()
             }.build()
