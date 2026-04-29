@@ -80,7 +80,8 @@ internal object Utils {
                         )
                         (ctx.source.sender as? Player)?.sendMessage(
                             MM.deserialize(
-                                "${IllyriaKingdoms.instance.prefix} <red>An error has occurred. Check server logs for details.",
+                                "${IllyriaKingdoms.instance.prefix} " +
+                                    "<red>An error has occurred. Check server logs for details.",
                             ),
                         )
                     }
