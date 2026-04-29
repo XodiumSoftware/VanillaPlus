@@ -65,6 +65,35 @@ internal object KingdomMembersGui {
     }
 
     /**
+     * Returns an item representing the kingdom owner.
+     * @param kingdom The kingdom whose owner to display
+     * @return An InvUI item with the owner's head and info
+     */
+    private fun ownerItem(kingdom: KingdomData): Item {
+        val offlinePlayer = instance.server.getOfflinePlayer(kingdom.owner.toJavaUuid())
+        val playerName = offlinePlayer.name ?: "Unknown"
+
+        return Item
+            .builder()
+            .setItemProvider(
+                ItemStack.of(Material.PLAYER_HEAD).apply {
+                    setData(DataComponentTypes.ITEM_NAME, MM.deserialize("<gold><b>$playerName</b>"))
+                    setData(
+                        DataComponentTypes.LORE,
+                        ItemLore.lore(
+                            listOf(
+                                Component.empty(),
+                                MM.deserialize("<gray>Role: <gold>Owner"),
+                                MM.deserialize("<gray>UUID: <white>${kingdom.owner}"),
+                            ),
+                        ),
+                    )
+                    setData(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true)
+                },
+            ).build()
+    }
+
+    /**
      * Returns a back button item that returns to the main kingdom GUI.
      * @param kingdom The kingdom to display in the main GUI
      * @return An InvUI item that navigates back to the main kingdom GUI
@@ -97,13 +126,14 @@ internal object KingdomMembersGui {
                     .itemsBuilder()
                     .setStructure(
                         "# # # # # # # # #",
-                        "# x x x x x x x #",
+                        "# O x x x x x x #",
                         "# x x x x x x x #",
                         "# x x x x x x x #",
                         "# x x x x x x x #",
                         "# # # < # > # B #",
                     ).addIngredient('#', Utils.GUI.FILLER_ITEM)
                     .addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
+                    .addIngredient('O', ownerItem(kingdom))
                     .addIngredient('B', backToMainItem(kingdom))
                     .addIngredient('<', Utils.GUI.PREVIOUS_PAGE_ITEM)
                     .addIngredient('>', Utils.GUI.NEXT_PAGE_ITEM)
