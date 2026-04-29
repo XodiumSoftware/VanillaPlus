@@ -2,6 +2,7 @@ package org.xodium.illyriaplus.guis
 
 // import org.xodium.illyriaplus.pdcs.PlayerPDC.kingdom
 import org.bukkit.Material
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.xodium.illyriaplus.data.KingdomData
 import org.xodium.illyriaplus.interfaces.GuiInterface
@@ -45,7 +46,10 @@ internal object MainGui : GuiInterface {
             .build()
 
     /** Creates a window for the given player with their kingdom name as the title. */
-    override fun window(kingdom: KingdomData): Window {
+    override fun window(
+        player: Player,
+        kingdom: KingdomData,
+    ): Window {
         val gui =
             Gui
                 .builder()
@@ -58,6 +62,7 @@ internal object MainGui : GuiInterface {
             .builder()
             .setTitle(kingdom.displayName())
             .setUpperGui(gui)
+            .setViewer(player)
             .build()
     }
 }
