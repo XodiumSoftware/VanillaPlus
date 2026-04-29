@@ -22,7 +22,7 @@ internal interface MechanicInterface : Listener {
     val perms: List<Permission> get() = emptyList()
 
     /**
-     * Registers this feature as an event listener with the server.
+     * Registers this feature with the server.
      * @return The time taken to register the feature in milliseconds.
      */
     @Suppress("UnstableApiUsage")

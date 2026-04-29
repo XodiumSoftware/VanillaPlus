@@ -1,9 +1,7 @@
-// Root project - aggregates IllyriaCore and IllyriaKingdoms
-// Defines common versions and settings for all subprojects
-
 plugins {
     id("java")
     id("idea")
+    id("xyz.jpenilla.run-paper") version "3.0.2" apply false
 }
 
 val buildNumber =
