@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack
 import org.xodium.illyriaplus.Utils
 import org.xodium.illyriaplus.Utils.MM
 import org.xodium.illyriaplus.data.KingdomData
+import org.xodium.illyriaplus.pdcs.PlayerPDC.kingdomData
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.item.Item
 import xyz.xenondevs.invui.window.AnvilWindow
@@ -18,6 +19,7 @@ import kotlin.uuid.ExperimentalUuidApi
 @Suppress("UnstableApiUsage")
 internal object KingdomGui {
     private const val RENAME_ITEM_TITLE = "Rename Kingdom"
+    private const val RENAME_INPUT_TITLE = "Dynamically Saved"
     private const val MEMBERS_ITEM_TITLE = "View Members"
 
     /**
@@ -33,28 +35,12 @@ internal object KingdomGui {
                     setData(DataComponentTypes.ITEM_NAME, MM.deserialize(RENAME_ITEM_TITLE))
                 },
             ).addClickHandler { _, click ->
-                // TODO: fix renaming
-                val gui =
-                    Gui
-                        .builder()
-                        .setStructure("# # #")
-                        .build()
-
                 AnvilWindow
                     .builder()
+                    .setTitle(MM.deserialize(RENAME_INPUT_TITLE))
                     .setTextFieldAlwaysEnabled(true)
                     .setResultAlwaysValid(true)
-                    .addRenameHandler {
-                        gui.setItem(
-                            2,
-                            Item.simple(
-                                ItemStack.of(Material.PAPER).apply {
-                                    setData(DataComponentTypes.ITEM_NAME, MM.deserialize(it))
-                                },
-                            ),
-                        )
-                        kingdom.displayName(MM.deserialize(it))
-                    }.setUpperGui(gui)
+                    .addRenameHandler { click.player.kingdomData = kingdom.displayName(MM.deserialize(it)) }
                     .open(click.player)
             }.build()
 
