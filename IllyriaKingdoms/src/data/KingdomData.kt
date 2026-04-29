@@ -30,10 +30,10 @@ internal data class KingdomData(
     fun displayName(): Component = MM.deserialize(name)
 
     /**
-     * Serializes a [Component] into a string format.
+     * Returns a copy of this [KingdomData] with the name set from a [Component].
      *
-     * @param name The [Component] to serialize.
-     * @return The serialized string representation of the component.
+     * @param name The [Component] to serialize and set as the kingdom name.
+     * @return A new [KingdomData] instance with the updated name.
      */
-    fun displayName(name: Component) = MM.serialize(name)
+    fun displayName(name: Component): KingdomData = copy(name = MM.serialize(name))
 }
