@@ -51,4 +51,21 @@ internal object KingdomManager {
      * @return The [KingdomData] if found, null otherwise.
      */
     fun get(id: Uuid): KingdomData? = kingdoms[id]
+
+    /**
+     * Gets all kingdoms.
+     *
+     * @return A list of all [KingdomData].
+     */
+    fun getAll(): List<KingdomData> = kingdoms.values.toList()
+
+    /**
+     * Removes a kingdom by ID and saves to disk.
+     *
+     * @param id The UUID of the kingdom to remove.
+     */
+    fun remove(id: Uuid) {
+        kingdoms.remove(id)
+        save()
+    }
 }
