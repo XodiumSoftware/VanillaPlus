@@ -34,7 +34,11 @@ internal object KingdomGui {
                 },
             ).addClickHandler { _, click ->
                 // TODO: fix renaming
-                val gui = Gui.builder().build()
+                val gui =
+                    Gui
+                        .builder()
+                        .setStructure("# # #")
+                        .build()
 
                 AnvilWindow
                     .builder()
@@ -45,7 +49,7 @@ internal object KingdomGui {
                             2,
                             Item.simple(
                                 ItemStack.of(Material.PAPER).apply {
-                                    setData(DataComponentTypes.ITEM_NAME, MM.deserialize(""))
+                                    setData(DataComponentTypes.ITEM_NAME, MM.deserialize(it))
                                 },
                             ),
                         )
