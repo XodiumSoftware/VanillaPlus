@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack
 import org.xodium.illyriaplus.IllyriaKingdoms.Companion.instance
 import org.xodium.illyriaplus.guis.MainGui
 import org.xodium.illyriaplus.interfaces.ItemInterface
+import org.xodium.illyriaplus.managers.KingdomManager
 import org.xodium.illyriaplus.pdcs.ItemPDC.isSceptre
 import org.xodium.illyriaplus.pdcs.ItemPDC.kingdomId
 import org.xodium.illyriaplus.utils.Utils.MM
@@ -59,8 +60,6 @@ internal object SceptreItem : ItemInterface {
 
         if (event.action != Action.RIGHT_CLICK_AIR && event.action != Action.RIGHT_CLICK_BLOCK) return
 
-        val kingdom = item.kingdomId
-
-        if (kingdom != null) MainGui.window(kingdom).open()
+        MainGui.window(KingdomManager.getOrCreate(item.kingdomId)).open()
     }
 }

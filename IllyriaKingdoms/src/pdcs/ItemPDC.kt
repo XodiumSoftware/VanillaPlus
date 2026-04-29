@@ -4,8 +4,6 @@ import org.bukkit.NamespacedKey
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import org.xodium.illyriaplus.IllyriaKingdoms.Companion.instance
-import org.xodium.illyriaplus.data.KingdomData
-import org.xodium.illyriaplus.managers.KingdomManager
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -15,8 +13,8 @@ internal object ItemPDC {
     /** The key used for identifying an item. */
     private val SCEPTRE_KEY = NamespacedKey(instance, "sceptre")
 
-    /** The key used for storing the kingdom UUID on a sceptre. */
-    private val KINGDOM_ID_KEY = NamespacedKey(instance, "kingdom_id")
+    /** The key used for storing the kingdom ID. */
+    private val KINGDOM_KEY = NamespacedKey(instance, "kingdom")
 
     /**
      * Gets or sets whether this item is a sceptre.
@@ -31,21 +29,13 @@ internal object ItemPDC {
         }
 
     /**
-     * Gets or sets the kingdom ID associated with this sceptre.
-     * @return The [KingdomData] this sceptre belongs to, or null if not set.
+     * Gets or sets the kingdom ID associated with this item.
+     * @return The kingdom UUID, or a new random UUID if none is set.
      */
-    var ItemStack.kingdomId: KingdomData?
+    var ItemStack.kingdomId: Uuid
         get() =
-            persistentDataContainer
-                .get(KINGDOM_ID_KEY, PersistentDataType.STRING)
-                ?.let { KingdomManager[Uuid.parse(it)] }
+            persistentDataContainer.get(KINGDOM_KEY, PersistentDataType.STRING)?.let { Uuid.parse(it) } ?: Uuid.random()
         set(value) {
-            editPersistentDataContainer {
-                if (value == null) {
-                    it.remove(KINGDOM_ID_KEY)
-                } else {
-                    it.set(KINGDOM_ID_KEY, PersistentDataType.STRING, value.id.toString())
-                }
-            }
+            editPersistentDataContainer { it.set(KINGDOM_KEY, PersistentDataType.STRING, value.toString()) }
         }
 }

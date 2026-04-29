@@ -4,7 +4,6 @@ import org.bukkit.plugin.java.JavaPlugin
 import org.xodium.illyriaplus.commands.KingdomCmd
 import org.xodium.illyriaplus.items.SceptreItem
 import org.xodium.illyriaplus.managers.ConfigManager
-import org.xodium.illyriaplus.managers.KingdomManager
 
 /**
  * Main class for IllyriaKingdoms plugin.
@@ -24,8 +23,7 @@ internal class IllyriaKingdoms : JavaPlugin() {
 
         if (!server.version.contains(pluginMeta.version.substringBefore("+"))) disablePlugin(unsupportedVersionMsg)
 
-        val configManager = ConfigManager()
-        KingdomManager.init(configManager)
+        ConfigManager()
 
         SceptreItem.register()
         KingdomCmd.register()
