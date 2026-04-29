@@ -13,7 +13,7 @@ import org.xodium.illyriaplus.guis.KingdomGui
 import org.xodium.illyriaplus.interfaces.ItemInterface
 import org.xodium.illyriaplus.managers.KingdomManager
 import org.xodium.illyriaplus.pdcs.ItemPDC.isSceptre
-import org.xodium.illyriaplus.pdcs.ItemPDC.kingdomId
+import org.xodium.illyriaplus.pdcs.PlayerPDC.kingdomId
 import org.xodium.illyriaplus.utils.Utils.MM
 import kotlin.uuid.ExperimentalUuidApi
 
@@ -43,6 +43,7 @@ internal object SceptreItem : ItemInterface {
             )
             setData(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true)
             // setData(DataComponentTypes.ITEM_MODEL, Key.key(instance, "sceptre"))
+            setData(DataComponentTypes.MAX_STACK_SIZE, 1)
             isSceptre = true
         }
 
@@ -56,6 +57,16 @@ internal object SceptreItem : ItemInterface {
 
         if (event.action != Action.RIGHT_CLICK_AIR && event.action != Action.RIGHT_CLICK_BLOCK) return
 
-        KingdomGui.window(event.player, KingdomManager.getOrCreate(item.kingdomId)).open()
+        val playerKingdomId = event.player.kingdomId
+        if (playerKingdomId != null) {
+            val kingdom = KingdomManager.get(playerKingdomId)
+            if (kingdom != null) {
+                KingdomGui.window(event.player, kingdom).open()
+            } else {
+                event.player.sendActionBar(MM.deserialize("<red>Your kingdom no longer exists."))
+            }
+        } else {
+            event.player.sendActionBar(MM.deserialize("<red>You are not in a kingdom."))
+        }
     }
 }

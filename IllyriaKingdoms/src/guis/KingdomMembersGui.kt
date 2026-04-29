@@ -3,10 +3,10 @@ package org.xodium.illyriaplus.guis
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
 import net.kyori.adventure.text.Component
-import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.xodium.illyriaplus.IllyriaKingdoms.Companion.instance
 import org.xodium.illyriaplus.data.KingdomData
 import org.xodium.illyriaplus.managers.KingdomManager
 import org.xodium.illyriaplus.utils.Utils
@@ -17,6 +17,7 @@ import xyz.xenondevs.invui.item.Item
 import xyz.xenondevs.invui.window.Window
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
+import kotlin.uuid.toJavaUuid
 
 /** GUI for viewing and managing kingdom members with paginated list view. */
 @OptIn(ExperimentalUuidApi::class)
@@ -32,8 +33,7 @@ internal object KingdomMembersGui {
         kingdom: KingdomData,
         memberUuid: Uuid,
     ): Item {
-        val javaUuid = java.util.UUID.fromString(memberUuid.toString())
-        val offlinePlayer = Bukkit.getOfflinePlayer(javaUuid)
+        val offlinePlayer = instance.server.getOfflinePlayer(memberUuid.toJavaUuid())
         val playerName = offlinePlayer.name ?: "Unknown"
 
         return Item
@@ -57,7 +57,7 @@ internal object KingdomMembersGui {
                 if (click.clickType.isShiftClick) {
                     val updatedMembers = kingdom.members.filter { it != memberUuid }
                     val updatedKingdom = kingdom.copy(members = updatedMembers)
-                    KingdomManager.update(updatedKingdom)
+                    KingdomManager.add(updatedKingdom)
                     click.player.sendMessage(MM.deserialize("<green>Removed '$playerName' from the kingdom."))
                     window(click.player, updatedKingdom).open()
                 }

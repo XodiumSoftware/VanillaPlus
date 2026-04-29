@@ -1,14 +1,14 @@
 package org.xodium.illyriaplus.data
 
-import kotlinx.serialization.Serializable
 import net.kyori.adventure.text.Component
+import org.bukkit.entity.Player
+import org.xodium.illyriaplus.pdcs.PlayerPDC.kingdomId
 import org.xodium.illyriaplus.utils.Utils.MM
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 /**
  * Represents a kingdom in the IllyriaKingdoms plugin.
- * Ownership is dynamic - whoever holds the kingdom's sceptre is the owner.
  *
  * @property id Unique identifier for the kingdom.
  * @property name Display name of the kingdom (MiniMessage format supported).
@@ -16,9 +16,9 @@ import kotlin.uuid.Uuid
  * @property npcs List of npc UUID's belonging to the kingdom.
  */
 @OptIn(ExperimentalUuidApi::class)
-@Serializable
 internal data class KingdomData(
     val id: Uuid = Uuid.random(),
+    val owner: Uuid,
     val name: String = "<gradient:#FFA751:#FFE259>Kingdom</gradient>",
     val members: List<Uuid> = emptyList(),
     val npcs: List<Uuid> = emptyList(),
@@ -37,4 +37,20 @@ internal data class KingdomData(
      * @return A new [KingdomData] instance with the updated name.
      */
     fun displayName(name: Component): KingdomData = copy(name = MM.serialize(name))
+
+    /**
+     * Gets the kingdom ID from a player using PlayerPDC.
+     * @param player The player to get the kingdom ID from.
+     * @return The kingdom ID, or null if the player has no kingdom.
+     */
+    fun get(player: Player): Uuid? = player.kingdomId
+
+    /**
+     * Sets the kingdom ID on a player using PlayerPDC.
+     * @param player The player to set the kingdom ID on.
+     * @param kingdomId The kingdom ID to set, or null to remove.
+     */
+    fun set(player: Player, kingdomId: Uuid?) {
+        player.kingdomId = kingdomId
+    }
 }

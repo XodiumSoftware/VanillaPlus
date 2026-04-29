@@ -58,8 +58,8 @@ internal object AdminGui {
                 }
             }.build()
 
-    /** Item for creating a new kingdom (gives the player a Sceptre). */
-    private val create: Item =
+    /** Item for creating a new kingdom (opens player selection GUI). */
+    private val CREATE_KINGDOM_ITEM: Item =
         Item
             .builder()
             .setItemProvider(
@@ -67,8 +67,13 @@ internal object AdminGui {
                     setData(DataComponentTypes.ITEM_NAME, MM.deserialize("<green>Create Kingdom"))
                 },
             ).addClickHandler { _, click ->
-                click.player.inventory.addItem(SceptreItem.item)
-                click.player.sendMessage(MM.deserialize("<green>Received a Kingdom Sceptre."))
+                PlayerSelectGui
+                    .window(click.player) {
+                        it.inventory.addItem(SceptreItem.item)
+                        it.sendMessage(MM.deserialize("<green>You have received a Kingdom Sceptre!"))
+                        click.player.sendMessage(MM.deserialize("<green>Gave a Kingdom Sceptre to ${it.name}."))
+                        window(click.player).open()
+                    }.open()
             }.build()
 
     /**
@@ -91,7 +96,7 @@ internal object AdminGui {
                         "# # # < C > # # #",
                     ).addIngredient('#', Utils.GUI.FILLER_ITEM)
                     .addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
-                    .addIngredient('C', create)
+                    .addIngredient('C', CREATE_KINGDOM_ITEM)
                     .addIngredient('<', Utils.GUI.PREVIOUS_PAGE_ITEM)
                     .addIngredient('>', Utils.GUI.NEXT_PAGE_ITEM)
                     .setContent(KingdomManager.getAll().map { kingdomItem(it) })
