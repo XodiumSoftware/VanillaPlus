@@ -45,11 +45,8 @@ internal object PlayerSelectGui {
     fun window(
         viewer: Player,
         onSelect: (Player) -> Unit,
-    ): Window {
-        val onlinePlayers = instance.server.onlinePlayers.filter { it.uniqueId != viewer.uniqueId }
-        val playerItems = onlinePlayers.map { playerItem(it, onSelect) }
-
-        return Window
+    ): Window =
+        Window
             .builder()
             .setTitle(MM.deserialize(GUI_TITLE))
             .setUpperGui(
@@ -66,9 +63,8 @@ internal object PlayerSelectGui {
                     .addIngredient('-', Utils.GUI.FILLER_ITEM)
                     .addIngredient('<', Utils.GUI.PREVIOUS_PAGE_ITEM)
                     .addIngredient('>', Utils.GUI.NEXT_PAGE_ITEM)
-                    .setContent(playerItems)
+                    .setContent(instance.server.onlinePlayers.map { playerItem(it, onSelect) })
                     .build(),
             ).setViewer(viewer)
             .build()
-    }
 }
