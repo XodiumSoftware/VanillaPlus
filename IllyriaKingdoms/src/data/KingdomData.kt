@@ -1,8 +1,6 @@
 package org.xodium.illyriaplus.data
 
 import net.kyori.adventure.text.Component
-import org.bukkit.entity.Player
-import org.xodium.illyriaplus.pdcs.PlayerPDC.kingdomId
 import org.xodium.illyriaplus.utils.Utils.MM
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -37,20 +35,4 @@ internal data class KingdomData(
      * @return A new [KingdomData] instance with the updated name.
      */
     fun displayName(name: Component): KingdomData = copy(name = MM.serialize(name))
-
-    /**
-     * Gets the kingdom ID from a player using PlayerPDC.
-     * @param player The player to get the kingdom ID from.
-     * @return The kingdom ID, or null if the player has no kingdom.
-     */
-    fun get(player: Player): Uuid? = player.kingdomId
-
-    /**
-     * Sets the kingdom ID on a player using PlayerPDC.
-     * @param player The player to set the kingdom ID on.
-     * @param kingdomId The kingdom ID to set, or null to remove.
-     */
-    fun set(player: Player, kingdomId: Uuid?) {
-        player.kingdomId = kingdomId
-    }
 }

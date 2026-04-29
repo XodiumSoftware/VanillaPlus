@@ -55,11 +55,11 @@ internal object KingdomMembersGui {
                 },
             ).addClickHandler { _, click ->
                 if (click.clickType.isShiftClick) {
-                    val updatedMembers = kingdom.members.filter { it != memberUuid }
-                    val updatedKingdom = kingdom.copy(members = updatedMembers)
-                    KingdomManager.add(updatedKingdom)
-                    click.player.sendMessage(MM.deserialize("<green>Removed '$playerName' from the kingdom."))
-                    window(click.player, updatedKingdom).open()
+                    val updatedKingdom = KingdomManager.removeMember(kingdom.id, memberUuid)
+                    if (updatedKingdom != null) {
+                        click.player.sendMessage(MM.deserialize("<green>Removed '$playerName' from the kingdom."))
+                        window(click.player, updatedKingdom).open()
+                    }
                 }
             }.build()
     }
