@@ -15,16 +15,9 @@ import org.xodium.illyriaplus.Utils.MM
 import org.xodium.illyriaplus.guis.MainGui
 import org.xodium.illyriaplus.interfaces.ItemInterface
 import org.xodium.illyriaplus.pdcs.ItemPDC.isSceptre
-import org.xodium.illyriaplus.pdcs.ItemPDC.sceptreMode
 
 /** Kingdom Tool item (Sceptre) used for accessing kingdom management GUI. */
 internal object SceptreItem : ItemInterface {
-    /** The operating modes for the Kingdom Sceptre. */
-    enum class SceptreMode {
-        GUI,
-        TRIGGERS,
-    }
-
     /** The kingdom tool item stack with custom name, lore, and PDC flag. */
     @Suppress("UnstableApiUsage")
     override val item =
@@ -43,12 +36,8 @@ internal object SceptreItem : ItemInterface {
                 ),
             )
             setData(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true)
-            setData(
-                DataComponentTypes.ITEM_MODEL,
-                Key.key(instance, TODO("set key to link with custom texture in resourcepack")),
-            )
+            setData(DataComponentTypes.ITEM_MODEL, Key.key(instance, "sceptre"))
             isSceptre = true
-            sceptreMode = SceptreMode.GUI
         }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -60,37 +49,8 @@ internal object SceptreItem : ItemInterface {
         event.isCancelled = true
 
         when (event.action) {
-            Action.LEFT_CLICK_AIR, Action.LEFT_CLICK_BLOCK -> handleLeftClick(event, item)
-            Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK -> handleRightClick(event, item)
+            Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK -> MainGui.window(event.player).open()
             else -> return
         }
-    }
-
-    private fun handleLeftClick(
-        event: PlayerInteractEvent,
-        item: ItemStack,
-    ) {
-        when (item.sceptreMode) {
-            SceptreMode.GUI -> {
-                MainGui.window.open(event.player)
-            }
-
-            SceptreMode.TRIGGERS -> {
-                // TODO: Triggers mode - boundary wand logic here
-            }
-        }
-    }
-
-    private fun handleRightClick(
-        event: PlayerInteractEvent,
-        item: ItemStack,
-    ) {
-        item.sceptreMode =
-            when (item.sceptreMode) {
-                SceptreMode.GUI -> SceptreMode.TRIGGERS
-                SceptreMode.TRIGGERS -> SceptreMode.GUI
-            }
-
-        event.player.sendActionBar(MM.deserialize("<gray>Mode:</gray> <yellow>${item.sceptreMode}</yellow>"))
     }
 }

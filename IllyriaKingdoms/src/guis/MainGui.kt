@@ -1,6 +1,7 @@
 package org.xodium.illyriaplus.guis
 
 import org.bukkit.Material
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.xodium.illyriaplus.Utils.MM
 import org.xodium.illyriaplus.interfaces.GuiInterface
@@ -43,9 +44,11 @@ internal object MainGui : GuiInterface {
             .addIngredient('R', RENAME_ITEM)
             .build()
 
-    override val window =
+    /** Creates a window for the given player with their kingdom name as the title. */
+    override fun window(player: Player): Window =
         Window
             .builder()
-            .setTitle("")
+            .setTitle(player.kingdom?.displayName() ?: MM.deserialize("${player.displayName()}'s Kingdom"))
             .setUpperGui(gui)
+            .build()
 }
