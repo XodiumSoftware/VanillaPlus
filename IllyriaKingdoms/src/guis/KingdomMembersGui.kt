@@ -2,15 +2,16 @@ package org.xodium.illyriaplus.guis
 
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
+import io.papermc.paper.datacomponent.item.ResolvableProfile
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.xodium.illyriaplus.IllyriaKingdoms.Companion.instance
+import org.xodium.illyriaplus.Utils
+import org.xodium.illyriaplus.Utils.MM
 import org.xodium.illyriaplus.data.KingdomData
 import org.xodium.illyriaplus.managers.KingdomManager
-import org.xodium.illyriaplus.utils.Utils
-import org.xodium.illyriaplus.utils.Utils.MM
 import xyz.xenondevs.invui.gui.Markers
 import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.item.Item
@@ -40,6 +41,10 @@ internal object KingdomMembersGui {
             .builder()
             .setItemProvider(
                 ItemStack.of(Material.PLAYER_HEAD).apply {
+                    setData(
+                        DataComponentTypes.PROFILE,
+                        ResolvableProfile.resolvableProfile(offlinePlayer.playerProfile),
+                    )
                     setData(DataComponentTypes.ITEM_NAME, MM.deserialize("<white>$playerName"))
                     setData(
                         DataComponentTypes.LORE,
@@ -77,7 +82,11 @@ internal object KingdomMembersGui {
             .builder()
             .setItemProvider(
                 ItemStack.of(Material.PLAYER_HEAD).apply {
-                    setData(DataComponentTypes.ITEM_NAME, MM.deserialize("<gold><b>$playerName</b>"))
+                    setData(
+                        DataComponentTypes.PROFILE,
+                        ResolvableProfile.resolvableProfile(offlinePlayer.playerProfile),
+                    )
+                    setData(DataComponentTypes.ITEM_NAME, MM.deserialize("<white>$playerName"))
                     setData(
                         DataComponentTypes.LORE,
                         ItemLore.lore(

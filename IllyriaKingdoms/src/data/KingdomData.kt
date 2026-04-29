@@ -1,7 +1,7 @@
 package org.xodium.illyriaplus.data
 
 import net.kyori.adventure.text.Component
-import org.xodium.illyriaplus.utils.Utils.MM
+import org.xodium.illyriaplus.Utils.MM
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 

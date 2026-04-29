@@ -4,9 +4,9 @@ import io.papermc.paper.datacomponent.DataComponentTypes
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.xodium.illyriaplus.Utils
+import org.xodium.illyriaplus.Utils.MM
 import org.xodium.illyriaplus.data.KingdomData
-import org.xodium.illyriaplus.utils.Utils
-import org.xodium.illyriaplus.utils.Utils.MM
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.item.Item
 import xyz.xenondevs.invui.window.AnvilWindow

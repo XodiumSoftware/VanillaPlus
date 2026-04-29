@@ -6,12 +6,12 @@ import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.xodium.illyriaplus.Utils
+import org.xodium.illyriaplus.Utils.MM
 import org.xodium.illyriaplus.data.KingdomData
 import org.xodium.illyriaplus.items.SceptreItem
 import org.xodium.illyriaplus.managers.KingdomManager
 import org.xodium.illyriaplus.pdcs.PlayerPDC.kingdomData
-import org.xodium.illyriaplus.utils.Utils
-import org.xodium.illyriaplus.utils.Utils.MM
 import xyz.xenondevs.invui.gui.Markers
 import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.item.Item

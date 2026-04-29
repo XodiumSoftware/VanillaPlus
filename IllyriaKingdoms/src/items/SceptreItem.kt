@@ -9,12 +9,12 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
+import org.xodium.illyriaplus.Utils.MM
 import org.xodium.illyriaplus.guis.KingdomGui
 import org.xodium.illyriaplus.interfaces.ItemInterface
 import org.xodium.illyriaplus.managers.KingdomManager
 import org.xodium.illyriaplus.pdcs.ItemPDC.isSceptre
 import org.xodium.illyriaplus.pdcs.PlayerPDC.kingdomId
-import org.xodium.illyriaplus.utils.Utils.MM
 import kotlin.uuid.ExperimentalUuidApi
 
 /**
