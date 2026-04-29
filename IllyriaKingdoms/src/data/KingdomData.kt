@@ -18,8 +18,8 @@ import kotlin.uuid.Uuid
 @Serializable
 internal data class KingdomData(
     val id: Uuid = Uuid.random(),
-    val name: String,
-    val members: List<Uuid>,
+    val name: String = "<gradient:#FFA751:#FFE259>Kingdom</gradient>",
+    val members: List<Uuid> = emptyList(),
 ) {
     /**
      * Deserializes the kingdom name into a [Component] for display.

@@ -42,14 +42,7 @@ internal object KingdomManager {
      * @param id The UUID of the kingdom to get or create.
      * @return The existing or newly created [KingdomData].
      */
-    fun getOrCreate(id: Uuid): KingdomData =
-        kingdoms.getOrPut(id) {
-            KingdomData(
-                id = id,
-                name = "<gradient:#FFA751:#FFE259>Kingdom</gradient>",
-                members = emptyList(),
-            ).also { save() }
-        }
+    fun getOrCreate(id: Uuid): KingdomData = kingdoms.getOrPut(id) { KingdomData(id).also { save() } }
 
     /**
      * Gets an existing kingdom by ID, or null if it doesn't exist.
