@@ -139,7 +139,7 @@ internal object KingdomMembersGui {
                         "# x x x x x x x #",
                         "# x x x x x x x #",
                         "# x x x x x x x #",
-                        "# # # < # > # B #",
+                        "# # # < # > # # B",
                     ).addIngredient('#', Utils.GUI.FILLER_ITEM)
                     .addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
                     .addIngredient('O', ownerItem(kingdom))

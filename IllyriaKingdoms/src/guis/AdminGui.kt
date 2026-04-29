@@ -2,10 +2,12 @@ package org.xodium.illyriaplus.guis
 
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
+import io.papermc.paper.datacomponent.item.ResolvableProfile
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.xodium.illyriaplus.IllyriaKingdoms.Companion.instance
 import org.xodium.illyriaplus.Utils
 import org.xodium.illyriaplus.Utils.MM
 import org.xodium.illyriaplus.data.KingdomData
@@ -17,6 +19,7 @@ import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.item.Item
 import xyz.xenondevs.invui.window.Window
 import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.toJavaUuid
 import kotlin.uuid.toKotlinUuid
 
 /** Admin GUI for managing kingdoms with paginated list view. */
@@ -35,6 +38,12 @@ internal object AdminGui {
             .builder()
             .setItemProvider(
                 ItemStack.of(Material.PLAYER_HEAD).apply {
+                    setData(
+                        DataComponentTypes.PROFILE,
+                        ResolvableProfile.resolvableProfile(
+                            instance.server.getOfflinePlayer(kingdom.owner.toJavaUuid()).playerProfile,
+                        ),
+                    )
                     setData(DataComponentTypes.ITEM_NAME, kingdom.displayName())
                     setData(
                         DataComponentTypes.LORE,
