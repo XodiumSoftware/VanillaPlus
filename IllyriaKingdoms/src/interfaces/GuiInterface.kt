@@ -1,6 +1,6 @@
 package org.xodium.illyriaplus.interfaces
 
-import org.bukkit.entity.Player
+import org.xodium.illyriaplus.data.KingdomData
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.window.Window
 
@@ -11,7 +11,7 @@ internal interface GuiInterface {
      * @param player The player to create the window for.
      * @return The window builder configured for this player.
      */
-    fun window(player: Player): Window
+    fun window(kingdom: KingdomData): Window
 
     /** The GUI instance containing the structure and items. */
     val gui: Gui

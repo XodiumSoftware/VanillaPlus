@@ -11,14 +11,21 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.xodium.illyriaplus.IllyriaKingdoms.Companion.instance
-import org.xodium.illyriaplus.Utils.MM
 import org.xodium.illyriaplus.guis.MainGui
 import org.xodium.illyriaplus.interfaces.ItemInterface
 import org.xodium.illyriaplus.pdcs.ItemPDC.isSceptre
+import org.xodium.illyriaplus.pdcs.ItemPDC.kingdomId
+import org.xodium.illyriaplus.utils.Utils.MM
+import kotlin.uuid.ExperimentalUuidApi
 
-/** Kingdom Tool item (Sceptre) used for accessing kingdom management GUI. */
+/**
+ * Kingdom Sceptre item.
+ * Whoever holds the sceptre is the kingdom owner.
+ * Each sceptre is bound to a specific kingdom via PDC.
+ */
+@OptIn(ExperimentalUuidApi::class)
 internal object SceptreItem : ItemInterface {
-    /** The kingdom tool item stack with custom name, lore, and PDC flag. */
+    /** The default kingdom tool item stack (not bound to any kingdom). */
     @Suppress("UnstableApiUsage")
     override val item =
         ItemStack.of(Material.STICK).apply {
@@ -31,7 +38,9 @@ internal object SceptreItem : ItemInterface {
                 ItemLore.lore(
                     listOf(
                         Component.empty(),
-                        MM.deserialize("<gray>Right-click to open your kingdom menu.</gray>"),
+                        MM.deserialize("<gray>The holder of this sceptre rules the kingdom.</gray>"),
+                        Component.empty(),
+                        MM.deserialize("<red>Not bound to any kingdom.</red>"),
                     ),
                 ),
             )
@@ -48,9 +57,10 @@ internal object SceptreItem : ItemInterface {
 
         event.isCancelled = true
 
-        when (event.action) {
-            Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK -> MainGui.window(event.player).open()
-            else -> return
-        }
+        if (event.action != Action.RIGHT_CLICK_AIR && event.action != Action.RIGHT_CLICK_BLOCK) return
+
+        val kingdom = item.kingdomId
+
+        if (kingdom != null) MainGui.window(kingdom).open()
     }
 }

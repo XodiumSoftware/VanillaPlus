@@ -2,16 +2,16 @@ package org.xodium.illyriaplus.data
 
 import kotlinx.serialization.Serializable
 import net.kyori.adventure.text.Component
-import org.xodium.illyriaplus.Utils.MM
+import org.xodium.illyriaplus.utils.Utils.MM
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 /**
  * Represents a kingdom in the IllyriaKingdoms plugin.
+ * Ownership is dynamic - whoever holds the kingdom's sceptre is the owner.
  *
  * @property id Unique identifier for the kingdom.
  * @property name Display name of the kingdom (MiniMessage format supported).
- * @property owner UUID of the kingdom owner.
  * @property members List of member UUIDs belonging to the kingdom.
  */
 @OptIn(ExperimentalUuidApi::class)
@@ -19,7 +19,6 @@ import kotlin.uuid.Uuid
 internal data class KingdomData(
     val id: Uuid = Uuid.random(),
     val name: String,
-    val owner: Uuid,
     val members: List<Uuid>,
 ) {
     /**

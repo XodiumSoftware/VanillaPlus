@@ -2,7 +2,7 @@ package org.xodium.illyriaplus.managers
 
 import kotlinx.serialization.json.Json
 import org.xodium.illyriaplus.IllyriaKingdoms.Companion.instance
-import org.xodium.illyriaplus.Utils.prefix
+import org.xodium.illyriaplus.utils.Utils.prefix
 import java.io.File
 
 /** Manages JSON configuration files using kotlinx.serialization. */

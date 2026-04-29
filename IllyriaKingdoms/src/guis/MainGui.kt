@@ -1,11 +1,11 @@
 package org.xodium.illyriaplus.guis
 
+// import org.xodium.illyriaplus.pdcs.PlayerPDC.kingdom
 import org.bukkit.Material
-import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import org.xodium.illyriaplus.Utils.MM
+import org.xodium.illyriaplus.data.KingdomData
 import org.xodium.illyriaplus.interfaces.GuiInterface
-import org.xodium.illyriaplus.pdcs.PlayerPDC.kingdom
+import org.xodium.illyriaplus.utils.Utils.MM
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.item.Item
 import xyz.xenondevs.invui.window.AnvilWindow
@@ -23,7 +23,7 @@ internal object MainGui : GuiInterface {
             .build()
 
     /** The item that triggers rename functionality when clicked in the GUI. */
-    private val RENAME_ITEM =
+    private fun createRenameItem(kingdom: KingdomData) =
         Item
             .builder()
             .setItemProvider(ItemStack.of(Material.NAME_TAG))
@@ -32,23 +32,32 @@ internal object MainGui : GuiInterface {
                     .builder()
                     .setTitle(MM.deserialize("Enter New Kingdom Name"))
                     .setTextFieldAlwaysEnabled(true)
-                    .addRenameHandler { click.player.kingdom?.displayName(MM.deserialize(it)) }
+                    .addRenameHandler { kingdom.displayName(MM.deserialize(it)) }
                     .open(click.player)
             }.build()
 
-    override val gui =
+    /** Placeholder GUI - actual GUI is built dynamically in window(). */
+    override val gui: Gui =
         Gui
             .builder()
-            .setStructure("# # # # # # R # #")
+            .setStructure("# # # # # # # # #")
             .addIngredient('#', FILLER_ITEM)
-            .addIngredient('R', RENAME_ITEM)
             .build()
 
     /** Creates a window for the given player with their kingdom name as the title. */
-    override fun window(player: Player): Window =
-        Window
+    override fun window(kingdom: KingdomData): Window {
+        val gui =
+            Gui
+                .builder()
+                .setStructure("# # # # # # R # #")
+                .addIngredient('#', FILLER_ITEM)
+                .addIngredient('R', createRenameItem(kingdom))
+                .build()
+
+        return Window
             .builder()
-            .setTitle(player.kingdom?.displayName() ?: MM.deserialize("${player.displayName()}'s Kingdom"))
+            .setTitle(kingdom.displayName())
             .setUpperGui(gui)
             .build()
+    }
 }
