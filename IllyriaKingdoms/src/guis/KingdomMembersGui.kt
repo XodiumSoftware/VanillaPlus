@@ -41,11 +41,11 @@ internal object KingdomMembersGui {
             .builder()
             .setItemProvider(
                 ItemStack.of(Material.PLAYER_HEAD).apply {
+                    // TODO: set name via profile.
                     setData(
                         DataComponentTypes.PROFILE,
                         ResolvableProfile.resolvableProfile(offlinePlayer.playerProfile),
                     )
-                    setData(DataComponentTypes.ITEM_NAME, MM.deserialize("<white>$playerName"))
                     setData(
                         DataComponentTypes.LORE,
                         ItemLore.lore(
@@ -82,11 +82,11 @@ internal object KingdomMembersGui {
             .builder()
             .setItemProvider(
                 ItemStack.of(Material.PLAYER_HEAD).apply {
+                    // TODO: set name via profile.
                     setData(
                         DataComponentTypes.PROFILE,
                         ResolvableProfile.resolvableProfile(offlinePlayer.playerProfile),
                     )
-                    setData(DataComponentTypes.ITEM_NAME, MM.deserialize("<white>$playerName"))
                     setData(
                         DataComponentTypes.LORE,
                         ItemLore.lore(

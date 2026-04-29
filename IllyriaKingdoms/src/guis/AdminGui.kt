@@ -38,13 +38,13 @@ internal object AdminGui {
             .builder()
             .setItemProvider(
                 ItemStack.of(Material.PLAYER_HEAD).apply {
+                    // TODO: set name via profile.
                     setData(
                         DataComponentTypes.PROFILE,
                         ResolvableProfile.resolvableProfile(
                             instance.server.getOfflinePlayer(kingdom.owner.toJavaUuid()).playerProfile,
                         ),
                     )
-                    setData(DataComponentTypes.ITEM_NAME, kingdom.displayName())
                     setData(
                         DataComponentTypes.LORE,
                         ItemLore.lore(
