@@ -18,7 +18,7 @@ import kotlin.uuid.ExperimentalUuidApi
 @Suppress("UnstableApiUsage")
 internal object KingdomGui {
     private const val RENAME_ITEM_TITLE = "Rename Kingdom"
-    private const val RENAME_INPUT_TITLE = "Enter New Kingdom Name"
+    private const val RENAME_INPUT_TITLE = "Enter New Name"
 
     private const val MEMBERS_ITEM_TITLE = "View Members"
 
@@ -35,12 +35,15 @@ internal object KingdomGui {
                     setData(DataComponentTypes.ITEM_NAME, MM.deserialize(RENAME_ITEM_TITLE))
                 },
             ).addClickHandler { _, click ->
+                // TODO: fix renaming
+                var kingdomDisplayName = kingdom.displayName()
                 AnvilWindow
                     .builder()
                     .setTitle(MM.deserialize(RENAME_INPUT_TITLE))
                     .setTextFieldAlwaysEnabled(true)
                     .setResultAlwaysValid(true)
-                    .addRenameHandler { kingdom.displayName(MM.deserialize(it)) }
+                    .addRenameHandler { kingdomDisplayName = MM.deserialize(it) }
+                    .addCloseHandler { kingdom.displayName(kingdomDisplayName) }
                     .open(click.player)
             }.build()
 

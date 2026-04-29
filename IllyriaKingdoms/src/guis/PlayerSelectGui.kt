@@ -1,6 +1,7 @@
 package org.xodium.illyriaplus.guis
 
 import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.ResolvableProfile
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -31,7 +32,11 @@ internal object PlayerSelectGui {
             .builder()
             .setItemProvider(
                 ItemStack.of(Material.PLAYER_HEAD).apply {
-                    setData(DataComponentTypes.ITEM_NAME, MM.deserialize("<green>${player.name}"))
+                    // TODO: set name via profile.
+                    setData(
+                        DataComponentTypes.PROFILE,
+                        ResolvableProfile.resolvableProfile(player.playerProfile),
+                    )
                 },
             ).addClickHandler { onSelect(player) }
             .build()
