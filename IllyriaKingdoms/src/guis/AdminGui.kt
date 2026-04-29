@@ -88,12 +88,12 @@ internal object AdminGui {
                         "# x x x x x x x #",
                         "# x x x x x x x #",
                         "# x x x x x x x #",
-                        "# # # P C N # # #",
+                        "# # # < C > # # #",
                     ).addIngredient('#', Utils.GUI.FILLER_ITEM)
                     .addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
                     .addIngredient('C', create)
-                    .addIngredient('P', Utils.GUI.PREVIOUS_PAGE_ITEM)
-                    .addIngredient('N', Utils.GUI.NEXT_PAGE_ITEM)
+                    .addIngredient('<', Utils.GUI.PREVIOUS_PAGE_ITEM)
+                    .addIngredient('>', Utils.GUI.NEXT_PAGE_ITEM)
                     .setContent(KingdomManager.getAll().map { kingdomItem(it) })
                     .build(),
             ).setViewer(player)

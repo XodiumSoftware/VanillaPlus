@@ -101,12 +101,12 @@ internal object KingdomMembersGui {
                         "# x x x x x x x #",
                         "# x x x x x x x #",
                         "# x x x x x x x #",
-                        "# # # P # N # B #",
+                        "# # # < # > # B #",
                     ).addIngredient('#', Utils.GUI.FILLER_ITEM)
                     .addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
                     .addIngredient('B', backToMainItem(kingdom))
-                    .addIngredient('P', Utils.GUI.PREVIOUS_PAGE_ITEM)
-                    .addIngredient('N', Utils.GUI.NEXT_PAGE_ITEM)
+                    .addIngredient('<', Utils.GUI.PREVIOUS_PAGE_ITEM)
+                    .addIngredient('>', Utils.GUI.NEXT_PAGE_ITEM)
                     .setContent(kingdom.members.map { memberItem(kingdom, it) })
                     .build(),
             ).setViewer(player)
