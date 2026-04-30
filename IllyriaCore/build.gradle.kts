@@ -16,7 +16,7 @@ val mcVersion = rootProject.extra["mcVersion"] as String
 val buildNumber = rootProject.extra["buildNumber"] as String
 val javaVersion = rootProject.extra["javaVersion"] as String
 
-group = "org.xodium.illyriaplus.IllyriaPlus"
+group = "org.xodium.illyriaplus.IllyriaCore"
 version = "$mcVersion+build.$buildNumber"
 description = "Minecraft plugin that enhances the base gameplay"
 
