@@ -6,39 +6,36 @@ import org.xodium.illyriaplus.IllyriaKingdoms.Companion.instance
 import org.xodium.illyriaplus.data.CommandData
 import kotlin.time.measureTime
 
-/** Represents a contract for a cmd within the system. */
+/** Represents a contract for a command within the system. */
 internal interface CmdInterface {
     /**
-     * Retrieves a list of command data associated with the mechanic.
+     * The command data associated with this command.
      *
-     * @return A [Collection] of [CommandData] objects representing the commands for the mechanic.
+     * @return A [CommandData] instance describing the command.
      */
-    val cmds: Collection<CommandData>
+    val cmd: CommandData
 
     /**
-     * Retrieves a list of permissions associated with this mechanic.
+     * The permission required for this command.
      *
-     * @return A [List] of [Permission] objects representing the permissions for this mechanic.
+     * @return A [Permission] instance representing the command permission.
      */
-    val perms: List<Permission>
+    val perm: Permission
 
     /**
-     * Registers this feature with the server.
+     * Registers the command and its permission with the server.
      *
-     * @return The time taken to register the feature in milliseconds.
+     * @return The time taken to complete the registration in milliseconds.
      */
-    @Suppress("UnstableApiUsage")
     fun register(): Long =
         measureTime {
-            instance.server.pluginManager.addPermissions(perms)
+            instance.server.pluginManager.addPermission(perm)
             instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) {
-                cmds.forEach { cmd ->
-                    it.registrar().register(
-                        cmd.builder.build(),
-                        cmd.description,
-                        cmd.aliases,
-                    )
-                }
+                it.registrar().register(
+                    cmd.builder.build(),
+                    cmd.description,
+                    cmd.aliases,
+                )
             }
         }.inWholeMilliseconds
 }
