@@ -71,5 +71,5 @@ paperPluginYaml {
     website.set("https://github.com/XodiumSoftware/IllyriaPlus")
     authors.add("Xodium")
     apiVersion.set(mcVersion)
-    bootstrapper.set("org.xodium.illyriaplus.IllyriaPlusBootstrap")
+    bootstrapper.set("org.xodium.illyriaplus.IllyriaCoreBootstrap")
 }
