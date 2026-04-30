@@ -14,6 +14,7 @@ import org.xodium.illyriaplus.interfaces.EnchantmentInterface
 import org.xodium.illyriaplus.managers.XpManager
 import org.xodium.illyriaplus.utils.Utils
 import org.xodium.illyriaplus.utils.Utils.displayName
+import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -52,7 +53,7 @@ internal object QuakeEnchantment : EnchantmentInterface {
             val particleCount = (ringRadius * 16).toInt()
 
             for (i in 0 until particleCount) {
-                val angle = 2 * Math.PI * i / particleCount
+                val angle = 2 * PI * i / particleCount
                 val x = location.x + ringRadius * cos(angle)
                 val z = location.z + ringRadius * sin(angle)
                 val y = location.y + 0.1
