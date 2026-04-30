@@ -9,6 +9,7 @@ import kotlin.uuid.Uuid
  * Represents a kingdom in the IllyriaKingdoms plugin.
  *
  * @property id Unique identifier for the kingdom.
+ * @property owner UUID of the kingdom owner.
  * @property name Display name of the kingdom (MiniMessage format supported).
  * @property members List of member UUIDs belonging to the kingdom.
  * @property npcs List of npc UUID's belonging to the kingdom.
