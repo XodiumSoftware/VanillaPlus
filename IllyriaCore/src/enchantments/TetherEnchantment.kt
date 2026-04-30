@@ -53,6 +53,7 @@ internal object TetherEnchantment : EnchantmentInterface {
 
     /**
      * Transfers item entities to a player's inventory using the same removeIf pattern.
+     *
      * @param player The player whose inventory to transfer to
      * @param items The mutable collection of item entities to transfer
      */

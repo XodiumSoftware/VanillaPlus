@@ -20,6 +20,7 @@ internal data class BookData(
 ) {
     /**
      * Converts this [BookData] instance to a [Book] instance.
+     *
      * @return A [Book] instance with the properties of this [BookData].
      */
     fun toBook(): Book =

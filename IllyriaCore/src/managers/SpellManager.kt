@@ -80,6 +80,7 @@ internal object SpellManager {
     /**
      * Handles wand interactions for multi-spell casting.
      * Right-click cycles through spells, left-click casts the selected spell.
+     *
      * @param event The PlayerInteractEvent to handle.
      */
     fun handleWandInteraction(event: PlayerInteractEvent) {
@@ -105,6 +106,7 @@ internal object SpellManager {
     /**
      * Handles wand selection when player scrolls to it in hotbar.
      * Shows the currently selected spell in the action bar.
+     *
      * @param event The PlayerItemHeldEvent to handle.
      */
     fun handleWandSelection(event: PlayerItemHeldEvent) {

@@ -28,6 +28,7 @@ internal class IllyriaKingdoms : JavaPlugin() {
 
     /**
      * Disable the plugin and log the message.
+     *
      * @param msg The message to log.
      */
     private fun disablePlugin(msg: String): Nothing {

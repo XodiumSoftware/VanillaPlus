@@ -162,6 +162,7 @@ internal object PlayerMechanic : MechanicInterface {
 
     /**
      * Sends the welcome banner to the player on join.
+     *
      * @param player The player who joined.
      */
     private fun joinBanner(player: Player) {
@@ -182,6 +183,7 @@ internal object PlayerMechanic : MechanicInterface {
 
     /**
      * Attempts to drop the specified player's head at their current location.
+     *
      * @param player The player whose head may be dropped.
      */
     private fun dropPlayerHead(player: Player) {
@@ -192,6 +194,7 @@ internal object PlayerMechanic : MechanicInterface {
 
     /**
      * Opens the player's ender chest when an ender chest is in the offhand and the player right-clicks in the air.
+     *
      * @param event The PlayerInteractEvent triggered by the interaction.
      */
     private fun handleEnderchest(event: PlayerInteractEvent) {
@@ -209,6 +212,7 @@ internal object PlayerMechanic : MechanicInterface {
     /**
      * Handles the interaction event where a player can convert their experience points into an experience bottle
      * if specific conditions are met.
+     *
      * @param event The PlayerInteractEvent triggered when a player interacts with the world or an object.
      */
     private fun xpToBottle(event: PlayerInteractEvent) {
@@ -233,6 +237,7 @@ internal object PlayerMechanic : MechanicInterface {
 
     /**
      * Sets the nickname of the player to the given name.
+     *
      * @param player The player whose nickname is to be set.
      * @param name The new nickname for the player.
      */
@@ -252,6 +257,7 @@ internal object PlayerMechanic : MechanicInterface {
 
     /**
      * Updates the tab list header and footer for the given audience.
+     *
      * @param audience The audience to update the tab list for.
      */
     private fun tablist(audience: Audience) {

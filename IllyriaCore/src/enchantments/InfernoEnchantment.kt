@@ -52,6 +52,7 @@ internal object InfernoEnchantment : EnchantmentInterface {
     /**
      * Spawns a repeating particle trail behind [fireball] every tick until the entity is no longer valid.
      * Emits [Particle.FLAME] and [Particle.LAVA] at the fireball's current location.
+     *
      * @param fireball The [SmallFireball] to trail.
      */
     private fun spawnFireballTrail(fireball: SmallFireball) =

@@ -90,6 +90,7 @@ internal object InventoryMechanic : MechanicInterface {
 
     /**
      * Searches for chests within the specified radius of the player that contain the specified material.
+     *
      * @param player The player who initiated the search.
      * @param material The material to search for in the chests.
      */
@@ -146,6 +147,7 @@ internal object InventoryMechanic : MechanicInterface {
 
     /**
      * Moves items from the player's inventory into nearby containers.
+     *
      * @param player The player whose inventory items are to be unloaded into nearby containers.
      */
     private fun unloadInventory(player: Player) {

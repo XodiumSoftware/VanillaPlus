@@ -11,18 +11,21 @@ import kotlin.time.measureTime
 internal interface MechanicInterface : Listener {
     /**
      * Retrieves a list of command data associated with the mechanic.
+     *
      * @return A [Collection] of [CommandData] objects representing the commands for the mechanic.
      */
     val cmds: Collection<CommandData> get() = emptyList()
 
     /**
      * Retrieves a list of permissions associated with this mechanic.
+     *
      * @return A [List] of [Permission] objects representing the permissions for this mechanic.
      */
     val perms: List<Permission> get() = emptyList()
 
     /**
      * Registers this feature with the server.
+     *
      * @return The time taken to register the feature in milliseconds.
      */
     @Suppress("UnstableApiUsage")

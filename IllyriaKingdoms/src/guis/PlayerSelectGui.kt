@@ -20,6 +20,7 @@ internal object PlayerSelectGui {
 
     /**
      * Returns an item representing the given player.
+     *
      * @param player The player to display.
      * @param onSelect Callback when this player is selected.
      * @return An InvUI item with click handler for selecting the player.
@@ -43,6 +44,7 @@ internal object PlayerSelectGui {
 
     /**
      * Builds and returns the player selection GUI window.
+     *
      * @param viewer The player viewing the GUI.
      * @param onSelect Callback when a player is selected.
      * @return The configured Window instance.

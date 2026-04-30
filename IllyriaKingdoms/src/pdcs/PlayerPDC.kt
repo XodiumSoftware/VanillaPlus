@@ -26,6 +26,7 @@ internal object PlayerPDC {
 
     /**
      * Gets or sets the player's kingdom ID.
+     *
      * @return The kingdom ID UUID, or null if the player is not in a kingdom.
      */
     var Player.kingdomId: Uuid?
@@ -42,6 +43,7 @@ internal object PlayerPDC {
 
     /**
      * Gets or sets the player's kingdom data.
+     *
      * @return The kingdom data, or null if the player has no kingdom.
      */
     var Player.kingdomData: KingdomData?

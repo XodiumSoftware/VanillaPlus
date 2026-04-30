@@ -58,6 +58,7 @@ internal object TempestEnchantment : EnchantmentInterface {
 
     /**
      * Spawns a repeating particle trail behind [charge] every tick until the entity is no longer valid.
+     *
      * @param charge The [WindCharge] to trail.
      */
     private fun spawnWindChargeTrail(charge: WindCharge) =

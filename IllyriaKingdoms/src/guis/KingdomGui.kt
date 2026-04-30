@@ -24,6 +24,7 @@ internal object KingdomGui {
 
     /**
      * Returns an item that opens an anvil window for renaming the kingdom.
+     *
      * @param kingdom The kingdom to rename
      * @return An InvUI item that opens the rename anvil on click
      */
@@ -46,6 +47,7 @@ internal object KingdomGui {
 
     /**
      * Returns an item that opens the members GUI when clicked.
+     *
      * @param kingdom The kingdom whose members to display
      * @return An InvUI item that opens the members GUI on click
      */
@@ -61,6 +63,7 @@ internal object KingdomGui {
 
     /**
      * Builds and returns a GUI window for viewing a specific kingdom.
+     *
      * @param player The player viewing the GUI
      * @param kingdom The kingdom to display
      * @return The configured Window instance

@@ -78,6 +78,7 @@ internal object FrostbindEnchantment : EnchantmentInterface {
 
     /**
      * Spawns a repeating particle trail behind [snowball] every tick until the entity is no longer valid.
+     *
      * @param snowball The [Snowball] to trail.
      */
     private fun spawnSnowballTrail(snowball: Snowball) =

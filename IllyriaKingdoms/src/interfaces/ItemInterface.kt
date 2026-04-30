@@ -12,6 +12,7 @@ internal interface ItemInterface : Listener {
 
     /**
      * Registers this feature with the server.
+     *
      * @return The time taken to register the feature in milliseconds.
      */
     fun register(): Long =

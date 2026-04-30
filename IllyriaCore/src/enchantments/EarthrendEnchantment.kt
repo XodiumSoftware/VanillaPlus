@@ -94,6 +94,7 @@ internal object EarthrendEnchantment : EnchantmentInterface {
 
     /**
      * Finds all connected [Block]s of the same type starting from the given [Block].
+     *
      * @param startBlock The starting [Block].
      * @param targetType The [Material] type of block to search for.
      * @param maxBlocks The maximum number of blocks to find.

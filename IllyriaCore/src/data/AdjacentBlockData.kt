@@ -25,6 +25,7 @@ internal data class AdjacentBlockData(
 ) {
     /**
      * Checks if this adjacent block data matches the given door's properties.
+     *
      * @param door The door to check against
      * @param originalDoor The original door to compare with
      * @param blockType The material type to match

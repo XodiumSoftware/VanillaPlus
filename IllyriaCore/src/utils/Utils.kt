@@ -49,6 +49,7 @@ internal object Utils {
 
     /**
      * Returns the i18n string matching the current weather state of this world.
+     *
      * @param thundering The string to return when it is thundering.
      * @param storm The string to return when there is a storm.
      * @param clear The string to return when the weather is clear.

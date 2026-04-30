@@ -17,6 +17,7 @@ internal object TameableMechanic : MechanicInterface {
     /**
      * Transfers ownership of a tamed, leashed entity from [source] to [target].
      * Requires [source] to hold a lead in their main hand and be the current owner of the pet.
+     *
      * @param source The player initiating the transfer.
      * @param target The player receiving ownership.
      * @return `true` if ownership was successfully transferred; `false` otherwise.

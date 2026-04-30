@@ -53,6 +53,7 @@ internal object OpenableMechanic : MechanicInterface {
 
     /**
      * Handles block interactions and delegates to the correct click handler.
+     *
      * @param event The [PlayerInteractEvent] triggered by the player.
      */
     private fun handlePlayerInteract(event: PlayerInteractEvent) {
@@ -68,6 +69,7 @@ internal object OpenableMechanic : MechanicInterface {
 
     /**
      * Checks if the interaction event is valid for processing.
+     *
      * @param event The [PlayerInteractEvent] to validate.
      * @return `true` if the interaction is valid, `false` otherwise.
      */
@@ -78,6 +80,7 @@ internal object OpenableMechanic : MechanicInterface {
 
     /**
      * Handles the left-click interaction with doors and gates, playing a knock sound if applicable.
+     *
      * @param event The [PlayerInteractEvent] triggering the interaction.
      * @param block The [Block] representing the door or gate being interacted with.
      */
@@ -90,6 +93,7 @@ internal object OpenableMechanic : MechanicInterface {
 
     /**
      * Handles the right-click interaction with doors, toggling double door state.
+     *
      * @param event The [PlayerInteractEvent] triggering the interaction.
      * @param block The [Block] representing the door being interacted with.
      */
@@ -105,6 +109,7 @@ internal object OpenableMechanic : MechanicInterface {
 
     /**
      * Checks if the [Player] can knock on the block based on their game mode and interaction conditions.
+     *
      * @param player The [Player] attempting to knock.
      * @return `true` if the player can knock, `false` otherwise.
      */
@@ -118,6 +123,7 @@ internal object OpenableMechanic : MechanicInterface {
 
     /**
      * Checks if the [BlockData] is of a type that can be knocked on.
+     *
      * @param data The [BlockData] to check.
      * @return `true` if the block can be knocked on, `false` otherwise.
      */
@@ -125,6 +131,7 @@ internal object OpenableMechanic : MechanicInterface {
 
     /**
      * Plays the knocking sound to all nearby players around the specified [Block].
+     *
      * @param block The [Block] where the knock sound originates.
      */
     private fun playKnockSound(block: Block) {
@@ -135,6 +142,7 @@ internal object OpenableMechanic : MechanicInterface {
 
     /**
      * Processes the interaction with double doors, syncing their open/closed state.
+     *
      * @param block The [Block] representing the door being interacted with.
      */
     private fun processDoubleDoorInteraction(block: Block) {
@@ -147,6 +155,7 @@ internal object OpenableMechanic : MechanicInterface {
 
     /**
      * Synchronizes the open/closed state of two adjacent doors.
+     *
      * @param sourceBlock The [Block] representing the source door.
      * @param targetBlock The [Block] representing the target door to sync.
      * @param open The desired open state for the target door.
@@ -175,6 +184,7 @@ internal object OpenableMechanic : MechanicInterface {
 
     /**
      * Gets the bottom block of a door.
+     *
      * @param block The [Block] to get the bottom half from.
      * @return The bottom [Block] of the door, or `null` if not a door.
      */
@@ -190,6 +200,7 @@ internal object OpenableMechanic : MechanicInterface {
 
     /**
      * Finds an adjacent door that forms a double door pair with the given door.
+     *
      * @param doorBlock The [Block] containing the door to check from.
      * @param originalBlock The original [Block] clicked (for material check).
      * @return The adjacent [Block] containing the paired door, or `null` if none found.

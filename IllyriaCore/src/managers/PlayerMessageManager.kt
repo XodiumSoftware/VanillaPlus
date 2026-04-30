@@ -13,6 +13,7 @@ import org.xodium.illyriaplus.utils.Utils.MM
 internal object PlayerMessageManager {
     /**
      * Handles the player join message.
+     *
      * @param player The player who joined.
      * @return The formatted join message component, or null if no message is set.
      */
@@ -25,6 +26,7 @@ internal object PlayerMessageManager {
 
     /**
      * Handles the player leave message.
+     *
      * @param player The player who left.
      * @return The formatted leave message component, or null if no message is set.
      */
@@ -37,6 +39,7 @@ internal object PlayerMessageManager {
 
     /**
      * Handles the player death message.
+     *
      * @param player The player who died.
      * @param killer The player who killed them.
      * @return The formatted death message component, or null if no message is set.
@@ -54,6 +57,7 @@ internal object PlayerMessageManager {
 
     /**
      * Handles the non-PvP death message (fall, fire, drowning, etc.).
+     *
      * @param player The player who died.
      * @param cause The vanilla death message component.
      * @return The formatted death message component, or null if no message is set.
@@ -71,6 +75,7 @@ internal object PlayerMessageManager {
 
     /**
      * Handles the player death screen message.
+     *
      * @return The formatted death screen message component, or null if no message is set.
      */
     fun handleDeathScreen(): Component? =
@@ -81,6 +86,7 @@ internal object PlayerMessageManager {
 
     /**
      * Handles the player advancement completion message, with different formats per advancement type.
+     *
      * @param player The player who completed the advancement.
      * @param advancement The advancement that was completed.
      * @return The formatted advancement completion message component, or null if no message is set or the advancement has no display.
@@ -104,6 +110,7 @@ internal object PlayerMessageManager {
 
     /**
      * Handles the kick message shown when the server is full.
+     *
      * @return The formatted kick message component, or null if no message is set.
      */
     fun handleServerFull(): Component? =
@@ -114,6 +121,7 @@ internal object PlayerMessageManager {
 
     /**
      * Handles the kick message shown when a player is denied login (ban, IP ban, whitelist).
+     *
      * @return The formatted kick message component, or null if no message is set.
      */
     fun handleLoginDenied(): Component? =
@@ -124,6 +132,7 @@ internal object PlayerMessageManager {
 
     /**
      * Handles the player kick message.
+     *
      * @param reason The reason for the kick.
      * @return The formatted kick message component, or null if no message is set.
      */
@@ -136,6 +145,7 @@ internal object PlayerMessageManager {
 
     /**
      * Handles the bed enter failure message.
+     *
      * @param problem The problem preventing the player from sleeping.
      * @return The formatted bed enter message component, or null if no message is set for this problem.
      */
@@ -153,6 +163,7 @@ internal object PlayerMessageManager {
 
     /**
      * Handles the player set spawn notification.
+     *
      * @param notification The original notification component.
      * @return The formatted set spawn notification component.
      */

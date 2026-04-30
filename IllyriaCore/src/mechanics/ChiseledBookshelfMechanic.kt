@@ -68,6 +68,7 @@ internal object ChiseledBookshelfMechanic : MechanicInterface {
      * Maps this hit [Vector] to a chiseled bookshelf slot index (0–5).
      * Slots are laid out in a 3×2 grid on the front face:
      * [0][1][2] (top row) / [3][4][5] (bottom row).
+     *
      * @param block The clicked block.
      * @return The slot index, or null if the facing direction is unsupported.
      */
@@ -94,6 +95,7 @@ internal object ChiseledBookshelfMechanic : MechanicInterface {
 
     /**
      * Renders a written or writable book component.
+     *
      * @param content The book content data.
      * @param itemKey The item key for the sprite.
      * @return The rendered component.
@@ -109,6 +111,7 @@ internal object ChiseledBookshelfMechanic : MechanicInterface {
 
     /**
      * Renders an enchanted book component.
+     *
      * @param enchantmentsData The stored enchantments' data.
      * @return The rendered component.
      */

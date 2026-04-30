@@ -26,6 +26,7 @@ import kotlin.uuid.toJavaUuid
 internal object KingdomMembersGui {
     /**
      * Returns an item representing a member with their head and info.
+     *
      * @param kingdom The kingdom this member belongs to
      * @param memberUuid The UUID of the member to display
      * @return An InvUI item with the member's head and click handler
@@ -71,6 +72,7 @@ internal object KingdomMembersGui {
 
     /**
      * Returns an item representing the kingdom owner.
+     *
      * @param kingdom The kingdom whose owner to display
      * @return An InvUI item with the owner's head and info
      */
@@ -104,6 +106,7 @@ internal object KingdomMembersGui {
 
     /**
      * Returns a back button item that returns to the main kingdom GUI.
+     *
      * @param kingdom The kingdom to display in the main GUI
      * @return An InvUI item that navigates back to the main kingdom GUI
      */
@@ -119,6 +122,7 @@ internal object KingdomMembersGui {
 
     /**
      * Builds and returns the members GUI window for the given player.
+     *
      * @param player The player viewing the GUI
      * @param kingdom The kingdom whose members to display
      * @return The configured Window instance

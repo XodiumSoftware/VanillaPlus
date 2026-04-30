@@ -13,6 +13,7 @@ import org.xodium.illyriaplus.utils.Utils.prefix
 internal object CommandUtils {
     /**
      * Registers a command execution handler on an [ArgumentBuilder] with automatic try/catch handling.
+     *
      * @param action The action executed when the command runs.
      * @return The same [ArgumentBuilder] for further configuration.
      */
@@ -39,6 +40,7 @@ internal object CommandUtils {
 
     /**
      * Registers a command execution handler on an [ArgumentBuilder] specifically for [Player] senders with automatic try/catch handling.
+     *
      * @param action The action executed when the command runs, receiving the [Player] and [CommandContext].
      * @return The same [ArgumentBuilder] for further configuration.
      * @throws IllegalStateException if the command is executed by a non-[Player] sender.

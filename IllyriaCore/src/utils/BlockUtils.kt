@@ -9,6 +9,7 @@ import org.bukkit.block.DoubleChest
 internal object BlockUtils {
     /**
      * Get the centre of a [Block], handling [DoubleChest]s properly.
+     *
      * @return The centre [Location] of the block.
      */
     fun Block.center(): Location {

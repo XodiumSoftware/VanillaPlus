@@ -14,6 +14,7 @@ internal object ItemPDC {
 
     /**
      * Gets or sets whether this item is a sceptre.
+     *
      * @return True if this item is a sceptre, false otherwise.
      */
     var ItemStack.isSceptre: Boolean

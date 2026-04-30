@@ -16,6 +16,7 @@ internal object PlayerPDC {
 
     /**
      * Gets or sets a [Player]'s nickname in their persistent data container.
+     *
      * @return The [Player]'s nickname, or their actual name if no nickname is set.
      */
     var Player.nickname: String
@@ -30,6 +31,7 @@ internal object PlayerPDC {
 
     /**
      * Gets or sets a [Player]'s scoreboard visibility preference in their persistent data container.
+     *
      * @return `true` if the scoreboard is visible, `false` otherwise.
      */
     var Player.scoreboardVisibility: Boolean

@@ -23,6 +23,7 @@ internal object FeatherFallingEnchantment : EnchantmentInterface {
 
     /**
      * Checks if the item is foot armor with the Feather Falling enchantment.
+     *
      * @param item The item to check.
      * @return `true` if the item is foot armor with Feather Falling, otherwise `false`.
      */

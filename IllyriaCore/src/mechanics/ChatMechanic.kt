@@ -92,6 +92,7 @@ internal object ChatMechanic : MechanicInterface {
 
     /**
      * Handles asynchronous chat events.
+     *
      * @param event The [AsyncChatEvent] to be processed.
      */
     private fun asyncChat(event: AsyncChatEvent) {
@@ -119,6 +120,7 @@ internal object ChatMechanic : MechanicInterface {
 
     /**
      * Handles the whisper command.
+     *
      * @param sender The player who sent the command.
      * @param target The player to whom the message is being sent.
      * @param message The message to be sent.
@@ -159,6 +161,7 @@ internal object ChatMechanic : MechanicInterface {
 
     /**
      * Creates to delete cross-component for message deletion.
+     *
      * @param signedMessage The signed message to be deleted.
      * @return A [net.kyori.adventure.text.Component] representing the delete cross with hover text and click action.
      */

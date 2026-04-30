@@ -13,6 +13,7 @@ internal object ItemPDC {
 
     /**
      * Gets or sets the selected spell ID on an item.
+     *
      * @return The spell ID string, or empty string if none selected.
      */
     var ItemStack.selectedSpell: String

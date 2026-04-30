@@ -30,6 +30,7 @@ internal object AdminGui {
 
     /**
      * Returns an item representing the given kingdom with lore and click handlers.
+     *
      * @param kingdom The kingdom data to display
      * @return An InvUI item with click handlers for viewing/deleting the kingdom
      */
@@ -90,6 +91,7 @@ internal object AdminGui {
 
     /**
      * Builds and returns the admin GUI window for the given player.
+     *
      * @param player The player viewing the GUI
      * @return The configured Window instance
      */

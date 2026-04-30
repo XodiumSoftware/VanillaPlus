@@ -34,6 +34,7 @@ internal object DimensionMechanic : MechanicInterface {
 
     /**
      * Handles the PlayerPortalEvent to prevent portal creation in the Nether.
+     *
      * @param event The PlayerPortalEvent to handle.
      */
     private fun playerPortal(event: PlayerPortalEvent) {
@@ -44,6 +45,7 @@ internal object DimensionMechanic : MechanicInterface {
 
     /**
      * Handles the EntityPortalEvent to prevent portal creation in the Nether.
+     *
      * @param event The EntityPortalEvent to handle.
      */
     private fun entityPortal(event: EntityPortalEvent) {
@@ -52,6 +54,7 @@ internal object DimensionMechanic : MechanicInterface {
 
     /**
      * Handles the PortalCreateEvent to prevent portal creation in the Nether if no corresponding Overworld portal exists.
+     *
      * @param event The PortalCreateEvent to handle.
      */
     private fun portalCreate(event: PortalCreateEvent) {
@@ -74,6 +77,7 @@ internal object DimensionMechanic : MechanicInterface {
 
     /**
      * Searches for an existing Nether portal in the target world near the corresponding scaled location.
+     *
      * @param netherPortal The location of the portal in the Nether.
      * @param overworld The world to search in (should be the Overworld).
      * @param searchRadius The radius in blocks to search for portal blocks.
@@ -116,6 +120,7 @@ internal object DimensionMechanic : MechanicInterface {
 
     /**
      * Calculates the centre point of a portal structure by averaging the positions of its constituent blocks.
+     *
      * @param blockStates The list of [org.bukkit.block.BlockState]s representing the portal frame and portal blocks.
      * @return The [Location] representing the geometric centre of the portal.
      */
@@ -127,6 +132,7 @@ internal object DimensionMechanic : MechanicInterface {
 
     /**
      * Retrieves the Overworld instance or throws if not found.
+     *
      * @return The Overworld [World] object.
      * @throws IllegalStateException if the Overworld is not loaded.
      */

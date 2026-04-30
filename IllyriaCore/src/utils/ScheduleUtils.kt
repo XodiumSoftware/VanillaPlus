@@ -9,6 +9,7 @@ import org.xodium.illyriaplus.IllyriaCore.Companion.instance
 internal object ScheduleUtils {
     /**
      * Schedules a repeating task.
+     *
      * @param delay The initial delay before the first execution in ticks.
      * @param period The interval between executions in ticks.
      * @param duration The total duration for which the task should run in ticks. If `null`, the task runs indefinitely.
@@ -27,6 +28,7 @@ internal object ScheduleUtils {
 
     /**
      * Spawns a repeating particle trail on [entity] every tick until it is no longer valid.
+     *
      * @param entity The entity to follow.
      * @param particles Called each tick with the entity's current [Location] to spawn particles.
      * @return The [BukkitTask] running the trail.

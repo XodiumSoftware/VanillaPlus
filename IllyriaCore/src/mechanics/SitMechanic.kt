@@ -49,6 +49,7 @@ internal object SitMechanic : MechanicInterface {
 
     /**
      * Handles player interaction to initiate sitting.
+     *
      * @param event The [PlayerInteractEvent] triggered by the player.
      */
     private fun playerInteract(event: PlayerInteractEvent) {
@@ -74,6 +75,7 @@ internal object SitMechanic : MechanicInterface {
 
     /**
      * Handles dismounting from the sitting ArmorStand.
+     *
      * @param event The [EntityDismountEvent] triggered when the player dismounts.
      */
     private fun entityDismount(event: EntityDismountEvent) {
@@ -92,6 +94,7 @@ internal object SitMechanic : MechanicInterface {
 
     /**
      * Handles clean-up when a player quits.
+     *
      * @param event The [PlayerQuitEvent] triggered when the player leaves the server.
      */
     private fun playerQuit(event: PlayerQuitEvent) {
@@ -100,6 +103,7 @@ internal object SitMechanic : MechanicInterface {
 
     /**
      * Handles player damage while sitting.
+     *
      * @param event The [EntityDamageEvent] triggered when the player takes damage.
      */
     private fun entityDamage(event: EntityDamageEvent) {
@@ -113,6 +117,7 @@ internal object SitMechanic : MechanicInterface {
 
     /**
      * Handles block break events to remove sitting ArmorStands on broken blocks.
+     *
      * @param event The [BlockBreakEvent] triggered when a block is broken.
      */
     private fun blockBreak(event: BlockBreakEvent) {
@@ -130,6 +135,7 @@ internal object SitMechanic : MechanicInterface {
 
     /**
      * Spawns an invisible, marker ArmorStand at the given location and makes the player sit on it.
+     *
      * @param player The [Player] who will be made to sit.
      * @param location The [Location] where the player should sit.
      */

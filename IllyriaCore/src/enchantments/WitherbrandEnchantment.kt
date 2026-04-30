@@ -50,6 +50,7 @@ internal object WitherbrandEnchantment : EnchantmentInterface {
     /**
      * Spawns a repeating particle trail behind [skull] every tick until the entity is no longer valid.
      * Emits [Particle.SOUL] and [Particle.ASH] at the skull's current location.
+     *
      * @param skull The [WitherSkull] to trail.
      */
     private fun spawnSkullTrail(skull: WitherSkull) {

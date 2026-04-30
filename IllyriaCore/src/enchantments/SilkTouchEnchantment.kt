@@ -24,6 +24,7 @@ internal object SilkTouchEnchantment : EnchantmentInterface {
 
     /**
      * Handles breaking a spawner with Silk Touch.
+     *
      * @param event The block break event.
      */
     private fun handleSpawnerBreak(event: BlockBreakEvent) {
@@ -43,6 +44,7 @@ internal object SilkTouchEnchantment : EnchantmentInterface {
 
     /**
      * Handles breaking a budding amethyst with Silk Touch.
+     *
      * @param event The block break event.
      */
     private fun handleBuddingAmethystBreak(event: BlockBreakEvent) {
@@ -52,6 +54,7 @@ internal object SilkTouchEnchantment : EnchantmentInterface {
 
     /**
      * Checks if the item is a pickaxe with Silk Touch.
+     *
      * @param item The item to check.
      * @return `true` if the item is a pickaxe with Silk Touch, otherwise `false`.
      */

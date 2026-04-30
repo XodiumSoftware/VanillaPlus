@@ -16,6 +16,7 @@ internal object KingdomManager {
 
     /**
      * Gets a kingdom by its ID from all online players.
+     *
      * @param id The kingdom ID.
      * @return The kingdom data, or null if not found.
      */
@@ -26,6 +27,7 @@ internal object KingdomManager {
 
     /**
      * Adds or updates a kingdom on its owner player.
+     *
      * @param kingdom The kingdom to add/update.
      */
     fun add(kingdom: KingdomData) {
@@ -37,6 +39,7 @@ internal object KingdomManager {
 
     /**
      * Removes a kingdom by its ID from its owner player.
+     *
      * @param id The kingdom ID to remove.
      * @return True if removed, false if not found.
      */
@@ -50,6 +53,7 @@ internal object KingdomManager {
 
     /**
      * Removes a member from a kingdom.
+     *
      * @param id The kingdom ID.
      * @param member The member UUID to remove.
      * @return The updated kingdom data, or null if kingdom not found.

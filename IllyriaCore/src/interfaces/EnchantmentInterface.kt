@@ -16,6 +16,7 @@ import org.xodium.illyriaplus.utils.Utils.toRegistryKeyFragment
 internal interface EnchantmentInterface : Listener {
     /**
      * The unique typed key identifies this enchantment in the registry.
+     *
      * @see TypedKey
      * @see RegistryKey.ENCHANTMENT
      */
@@ -25,6 +26,7 @@ internal interface EnchantmentInterface : Listener {
 
     /**
      * Configures the properties of the enchantment using the provided builder.
+     *
      * @param builder The builder used to define the enchantment properties.
      * @return The builder for method chaining.
      */
@@ -32,6 +34,7 @@ internal interface EnchantmentInterface : Listener {
 
     /**
      * Retrieves the enchantment from the registry.
+     *
      * @return The [Enchantment] instance corresponding to the key.
      * @throws NoSuchElementException if the enchantment is not found in the registry.
      */
@@ -40,6 +43,7 @@ internal interface EnchantmentInterface : Listener {
     /**
      * Registers this enchantment's event listeners with the plugin manager.
      * Should be called during plugin enable.
+     *
      * @return Time taken to register in milliseconds.
      */
     fun registerEvents(): Long {

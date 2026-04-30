@@ -38,6 +38,7 @@ internal object PlayerUtils {
 
     /**
      * Retrieves a [Player]'s face as a [String].
+     *
      * @param size The size of the face in pixels (default is 8).
      * @return A [String] representing the player's face.
      */
@@ -86,6 +87,7 @@ internal object PlayerUtils {
 
     /**
      * Get [Container]s around a [Player] (3x3 [Chunk] area).
+     *
      * @return [Set] of [Container]s around the player.
      */
     fun Player.getContainersAround(): Set<Container> =
@@ -99,6 +101,7 @@ internal object PlayerUtils {
 
     /**
      * Get [Chunk]s around a [Player] (3x3 [Chunk] area).
+     *
      * @param range The [Chunk] radius around the player (1 = 3x3 area).
      * @return [Set] of [Chunk]s around the player.
      */
@@ -116,6 +119,7 @@ internal object PlayerUtils {
 
     /**
      * Gets the first leashed [Tameable] entity owned by a [Player] within the config radius.
+     *
      * @param radius The radius within which to search for leashed entities.
      * @return The found [Tameable] entity or `null` if none exists.
      */
@@ -138,6 +142,7 @@ internal object PlayerUtils {
 
     /**
      * Modifies the colour of a [Player]'s waypoint based on the specified parameters.
+     *
      * @param color The optional [TextColor] to apply to the waypoint.
      */
     fun Player.locator(color: TextColor? = null) {

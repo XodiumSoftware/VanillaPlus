@@ -101,6 +101,7 @@ internal object VoidpullEnchantment : EnchantmentInterface {
 
     /**
      * Spawns a repeating PORTAL particle trail behind [pearl] every tick until the entity is no longer valid.
+     *
      * @param pearl The [EnderPearl] to trail.
      * @return The [BukkitTask] running the trail, so it can be cancelled early on hit.
      */
