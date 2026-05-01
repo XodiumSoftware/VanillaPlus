@@ -31,5 +31,4 @@ internal object KingdomCmd : CmdInterface {
             "${instance.javaClass.simpleName}.kingdom".lowercase(),
             PermissionDefault.OP,
         )
-
 }
