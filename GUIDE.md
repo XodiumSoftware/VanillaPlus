@@ -23,16 +23,12 @@ Download pre-built JARs from GitHub releases.
 
 ### Setup
 
-1. Download the latest releases:
+1. Download the latest release:
    ```bash
-   # IllyriaCore (core gameplay enhancements)
-   curl -L -o IllyriaCore.jar https://github.com/XodiumSoftware/IllyriaPlus/releases/download/nightly/IllyriaCore.jar
-
-   # IllyriaKingdoms (kingdoms/factions system)
-   curl -L -o IllyriaKingdoms.jar https://github.com/XodiumSoftware/IllyriaPlus/releases/download/nightly/IllyriaKingdoms.jar
+   curl -L -o IllyriaPlus.jar https://github.com/XodiumSoftware/IllyriaPlus/releases/download/nightly/IllyriaPlus.jar
    ```
 
-2. Place the JARs in your server's `plugins/` directory
+2. Place the JAR in your server's `plugins/` directory
 
 ## Build from Source
 
@@ -51,45 +47,31 @@ Build the plugins using Gradle.
    cd IllyriaPlus
    ```
 
-2. Build all plugins:
+2. Build the plugin:
    ```bash
    ./gradlew shadowJar
    ```
 
-   Or build specific plugins:
-   ```bash
-   ./gradlew :IllyriaCore:shadowJar
-   ./gradlew :IllyriaKingdoms:shadowJar
+3. The output JAR is at:
    ```
-
-3. The output JARs are at:
-   ```
-   IllyriaCore/build/libs/IllyriaCore-*.jar
-   IllyriaKingdoms/build/libs/IllyriaKingdoms-*.jar
+   build/libs/IllyriaPlus-*.jar
    ```
 
 ### Run a Test Server
 
-To quickly test a plugin:
+To quickly test the plugin:
 
 ```bash
-# Test IllyriaCore
-./gradlew :IllyriaCore:runServer
-
-# Test IllyriaKingdoms
-./gradlew :IllyriaKingdoms:runServer
+./gradlew runServer
 ```
 
 This automatically downloads Paper 1.21.11 and starts a local test server with the plugin.
 
 ## Installation
 
-1. Place the desired JAR(s) in your server's `plugins/` directory:
-    - `IllyriaCore.jar` — Core gameplay enhancements
-    - `IllyriaKingdoms.jar` — Kingdoms/factions system (optional)
-
+1. Place the JAR in your server's `plugins/` directory
 2. Start or restart the server
-3. The plugins will enable automatically
+3. The plugin will enable automatically
 
 ## Configuration
 
@@ -106,7 +88,7 @@ To customize a plugin, you must:
 Each mechanic has a nested `Config` object, for example:
 
 ```kotlin
-// In IllyriaCore/src/org/xodium/illyriaplus/mechanics/PlayerMechanic.kt
+// In src/mechanics/PlayerMechanic.kt
 object Config {
     const val ENABLED = true
     // ... other settings
@@ -115,11 +97,9 @@ object Config {
 
 ## Features
 
-### IllyriaCore
-
 Enhances base gameplay with custom enchantments, items, and mechanics.
 
-#### Enchantments
+### Enchantments
 
 Eleven custom enchantments are available:
 
@@ -172,12 +152,6 @@ Custom crafting and brewing recipes:
 - Custom paintings
 - Rotten flesh to leather
 - Log crafting improvements
-
-### IllyriaKingdoms
-
-A kingdoms/factions system for land claiming and territory management.
-
-*(Documentation forthcoming as the plugin develops)*
 
 ## Troubleshooting
 

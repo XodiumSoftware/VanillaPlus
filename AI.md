@@ -3,20 +3,17 @@
 ## Project at a Glance
 
 - **Name:** IllyriaPlus
-- **Type:** Multi-module Minecraft Paper plugin project (server-side only)
+- **Type:** Single-module Minecraft Paper plugin project (server-side only)
 - **MC Version:** 1.21.11
-- **Language:** Kotlin (JVM 21)
+- **Language:** Kotlin (JVM 25)
 - **Build Tool:** Gradle with Kotlin DSL
-- **Modules:**
-    - **IllyriaCore** — Core gameplay enhancements (enchantments, recipes, mechanics)
-    - **IllyriaKingdoms** — Kingdoms/factions system for land claiming
 
 ## APIs & Tools
 
 | Category            | Technology                               | Purpose                            |
 |---------------------|------------------------------------------|------------------------------------|
 | **Core API**        | [Paper API](https://papermc.io/) 1.21.11 | Minecraft server plugin API        |
-| **Language**        | Kotlin 2.3.20                            | JVM language                       |
+| **Language**        | Kotlin 2.3.21                            | JVM language                       |
 | **Build Tool**      | Gradle (Kotlin DSL)                      | Build automation                   |
 | **Gradle Plugins**  | Shadow 9.4.1                             | Fat JAR creation                   |
 |                     | run-paper 3.0.2                          | Local test server                  |
@@ -42,9 +39,8 @@
 
 Documentation is generated with Dokka from KDoc comments in the source code.
 
-- Run `./gradlew :IllyriaCore:dokkaGenerateHtml` to generate IllyriaCore documentation
-- Run `./gradlew :IllyriaKingdoms:dokkaGenerateHtml` to generate IllyriaKingdoms documentation
-- Output goes to `{module}/docs/` directory (published to GitHub Pages automatically)
+- Run `./gradlew dokkaGenerateHtml` to generate documentation
+- Output goes to `docs/` directory (published to GitHub Pages automatically)
 - Auto-deployed via GitHub Actions on pushes to main
 - Key files to document: interfaces, managers, and public APIs
 - Use KDoc format: `/** ... */` with Markdown support
@@ -52,20 +48,14 @@ Documentation is generated with Dokka from KDoc comments in the source code.
 ## Quick Commands
 
 ```bash
-# Build all plugins
+# Build the plugin
 ./gradlew shadowJar
 
-# Build specific plugin
-./gradlew :IllyriaCore:shadowJar
-./gradlew :IllyriaKingdoms:shadowJar
-
 # Run local test server (auto-downloads Paper 1.21.11)
-./gradlew :IllyriaCore:runServer
-./gradlew :IllyriaKingdoms:runServer
+./gradlew runServer
 
-# Generate Dokka documentation for specific module
-./gradlew :IllyriaCore:dokkaGenerateHtml
-./gradlew :IllyriaKingdoms:dokkaGenerateHtml
+# Generate Dokka documentation
+./gradlew dokkaGenerateHtml
 
 # Run linting
 ./gradlew ktlintCheck
@@ -74,36 +64,31 @@ Documentation is generated with Dokka from KDoc comments in the source code.
 ./gradlew ktlintFormat
 ```
 
-## Module Structure
+## Project Structure
 
 ```
 IllyriaPlus/
-├── settings.gradle.kts       # Subproject definitions
-├── IllyriaCore/              # Core gameplay plugin
-│   ├── build.gradle.kts
-│   └── src/
-│       ├── IllyriaPlus.kt
-│       ├── IllyriaPlusBootstrap.kt
-│       ├── mechanics/        # 14 feature mechanics
-│       ├── enchantments/     # 14 enchantment implementations
-│       ├── interfaces/       # ModuleInterface, EnchantmentInterface, RecipeInterface
-│       ├── managers/         # XpManager, PlayerMessageManager, SpellManager
-│       ├── pdcs/             # PlayerPDC, ItemPDC
-│       ├── recipes/          # Recipe implementations
-│       ├── data/             # Data classes
-│       └── utils/            # Utility functions
-└── IllyriaKingdoms/          # Kingdoms/factions plugin
-    ├── build.gradle.kts
-    └── src/
-        └── org/xodium/illyriaplus/
-            └── IllyriaKingdoms.kt
+├── build.gradle.kts          # Build configuration
+├── settings.gradle.kts         # Project settings
+├── src/                        # Source directory
+│   ├── IllyriaPlus.kt          # Main plugin class
+│   ├── IllyriaPlusBootstrap.kt # Bootstrap class
+│   ├── mechanics/              # Feature mechanics
+│   ├── enchantments/           # Enchantment implementations
+│   ├── interfaces/             # ModuleInterface, EnchantmentInterface, RecipeInterface
+│   ├── managers/               # XpManager, PlayerMessageManager, SpellManager
+│   ├── pdcs/                   # PlayerPDC, ItemPDC
+│   ├── recipes/                # Recipe implementations
+│   ├── data/                   # Data classes
+│   └── utils/                  # Utility functions
+└── docs/                       # Generated documentation
 ```
 
-## IllyriaCore Architecture
+## Architecture
 
 ### Entry Points
 
-1. **IllyriaPlusBootstrap** (`PluginBootstrap`) — Runs before plugin enable. Registers 11 custom enchantments into Paper's registry and creates item tags.
+1. **IllyriaPlusBootstrap** (`PluginBootstrap`) — Runs before plugin enable. Registers custom enchantments into Paper's registry and creates item tags.
 2. **IllyriaPlus** (`JavaPlugin`) — Main class. Validates server version, registers recipes, and enables all mechanics.
 
 ### Module System
@@ -121,19 +106,9 @@ Custom enchantments implement `EnchantmentInterface` with:
 - `invoke(builder)` to configure registry entry (description, cost, levels, weight, slots)
 - `get()` to retrieve live `Enchantment` instance from registry
 
-**Active Enchantments (11):**
-| Name | Slot | Items |
-|------|------|-------|
-| Verdance | MAINHAND | Hoes |
-| Tether | MAINHAND | Tools + Weapons |
-| Nimbus | SADDLE | Happy Ghast harnesses |
-| Earthrend | MAINHAND | Pickaxes |
-| Embertread | FEET | Foot armor |
-| Inferno, Skysunder, Witherbrand, Frostbind, Tempest, Voidpull, Quake | MAINHAND | Blaze Rods (spell wands) |
-
 **Spell System:**
 
-- 7 Blaze Rod spell enchantments (Inferno, Skysunder, Witherbrand, Frostbind, Tempest, Voidpull, Quake) cost XP to cast
+- Blaze Rod spell enchantments cost XP to cast
 - All spells are **compatible** — can combine multiple on one wand
 - **Left-click:** Cast selected spell (consumes XP, free in Creative)
 - **Right-click:** Cycle spells (shows in action bar)
@@ -177,7 +152,7 @@ Within each group:
 ## Testing
 
 - No automated tests in this project
-- Test by running `./gradlew :IllyriaCore:runServer` or `./gradlew :IllyriaKingdoms:runServer` and manually verifying in-game
+- Test by running `./gradlew runServer` and manually verifying in-game
 
 ## Important Notes
 
@@ -214,7 +189,6 @@ Within each group:
     - Change project structure or conventions
 
 2. **GUIDE.md** — Update if you:
-    - Add new plugins or modules
     - Change build commands or installation steps
     - Add/remove major features
 
@@ -222,7 +196,7 @@ Within each group:
     - Add new public APIs (interfaces, managers, utils)
     - Change existing function signatures or behavior
     - Add complex logic that needs explanation
-    - **Run `./gradlew :IllyriaCore:dokkaGenerateHtml`** or `./gradlew :IllyriaKingdoms:dokkaGenerateHtml` to regenerate docs after changes
+    - **Run `./gradlew dokkaGenerateHtml`** to regenerate docs after changes
 
 **Rule of thumb:** If a code change would confuse someone reading the docs, update the docs.
 
@@ -230,24 +204,14 @@ Within each group:
 
 GitHub Actions workflows in `.github/workflows/`:
 
-- **kotlin.yml** — Builds shadow JARs for both IllyriaCore and IllyriaKingdoms on push/PR, uploads artifacts, creates nightly release
+- **kotlin.yml** — Builds shadow JAR on push/PR, uploads artifacts, creates nightly release
 - **enforce_pr_title.yml** — Validates PR titles follow conventional commits
 
-## Adding a New Module (Subproject)
-
-To create a new plugin module (e.g., `IllyriaCustom`):
-
-1. Add to `settings.gradle.kts`: `include("IllyriaCustom")`
-2. Create directory `IllyriaCustom/`
-3. Create `IllyriaCustom/build.gradle.kts` (copy from IllyriaCore and adjust names)
-4. Create `IllyriaCustom/src/` source directory
-5. Update CI workflow to build and upload the new module
-
-## Adding Components to IllyriaCore
+## Adding Components
 
 ### Adding an Enchantment
 
-1. Create new file in `IllyriaCore/src/enchantments/YournameEnchantment.kt`
+1. Create new file in `src/enchantments/YournameEnchantment.kt`
 2. Implement `EnchantmentInterface` as an `object`
 3. In `invoke(builder)`, configure: `description()`, `supportedItems()`, `anvilCost()`, `maxLevel()`, `weight()`, `slotGroup()`
 4. In `IllyriaPlusBootstrap.kt`:
@@ -261,11 +225,11 @@ To create a new plugin module (e.g., `IllyriaCustom`):
     - Implement `@EventHandler` for `PlayerInteractEvent` or projectile logic
 6. Update `ARCHITECTURE.md` enchantment table
 7. Add KDoc comments to explain the enchantment's behavior
-8. Run `./gradlew dokkaHtmlMultiModule` to regenerate documentation
+8. Run `./gradlew dokkaGenerateHtml` to regenerate documentation
 
 ### Adding a Mechanic
 
-1. Create new file in `IllyriaCore/src/mechanics/YourMechanic.kt`
+1. Create new file in `src/mechanics/YourMechanic.kt`
 2. Implement `ModuleInterface` as an `object`
 3. Override `Config` object with settings as compile-time constants
 4. Implement `@EventHandler` methods for events
@@ -276,7 +240,7 @@ To create a new plugin module (e.g., `IllyriaCustom`):
 
 ### Adding a Recipe
 
-1. Create new file in `IllyriaCore/src/recipes/YourRecipe.kt`
+1. Create new file in `src/recipes/YourRecipe.kt`
 2. Implement `RecipeInterface` as an `object`
 3. Define `recipes` list for crafting/smelting recipes, or `potions` list for brewing recipes
 4. Use naming pattern `{descriptive_name}_{recipe_type}` for `NamespacedKey`
@@ -285,8 +249,8 @@ To create a new plugin module (e.g., `IllyriaCustom`):
 
 ### Adding a PDC (Persistent Data Container)
 
-1. For player data: edit `IllyriaCore/src/pdcs/PlayerPDC.kt`
-2. For item data: edit `IllyriaCore/src/pdcs/ItemPDC.kt`
+1. For player data: edit `src/pdcs/PlayerPDC.kt`
+2. For item data: edit `src/pdcs/ItemPDC.kt`
 3. Add a new property delegate using `by` with `namespacedKey()`
 4. Use primitive types or custom serializers for complex data
 5. Access via `player.mana`, `item.customData`, etc. directly in code
@@ -294,14 +258,14 @@ To create a new plugin module (e.g., `IllyriaCustom`):
 
 ### Adding an Interface
 
-1. Create new file in `IllyriaCore/src/interfaces/YourInterface.kt`
+1. Create new file in `src/interfaces/YourInterface.kt`
 2. Design interface with common methods for the feature category
 3. Keep interfaces minimal and focused on one responsibility
 4. Document the interface purpose in `ARCHITECTURE.md`
 
 ### Adding Data Classes
 
-1. Create new file in `IllyriaCore/src/data/YourData.kt`
+1. Create new file in `src/data/YourData.kt`
 2. Define `data class` with properties for structured data
 3. Keep data classes immutable (`val` properties)
 4. Add appropriate helper methods or companion object factory functions
@@ -309,7 +273,7 @@ To create a new plugin module (e.g., `IllyriaCustom`):
 
 ### Adding Utilities
 
-1. For general: edit `IllyriaCore/src/utils/Utils.kt` or create `IllyriaCore/src/utils/YourUtils.kt`
+1. For general: edit `src/utils/Utils.kt` or create `src/utils/YourUtils.kt`
 2. Keep utility functions `internal` visibility
 3. Prefer extension functions on existing types
 4. Use `Utils.MM` for MiniMessage formatting

@@ -4,52 +4,53 @@ This file provides guidance when working with code in this repository.
 
 ## Project Overview
 
-IllyriaPlus is a multi-module Paper Minecraft plugin project (1.21.11) containing two plugins:
+IllyriaPlus is a single-module Paper Minecraft plugin project (1.21.11) that enhances base gameplay with custom enchantments, recipes, and mechanics.
 
-- **IllyriaCore** — Enhances base gameplay with custom enchantments, recipes, and mechanics
-- **IllyriaKingdoms** — Kingdoms/factions system for land claiming and territory management
+Built with Kotlin + Gradle, targeting Java 25. Uses the Paper API's modern lifecycle/registry APIs extensively.
 
-Built with Kotlin + Gradle, targeting Java 21. Uses the Paper API's modern lifecycle/registry APIs extensively.
-
-## Module Structure
+## Project Structure
 
 ```
 IllyriaPlus/
-├── settings.gradle.kts      # Defines IllyriaCore and IllyriaKingdoms subprojects
-├── IllyriaCore/             # Core gameplay enhancement plugin
-│   ├── build.gradle.kts
-│   └── src/
-└── IllyriaKingdoms/         # Kingdoms/factions plugin
-    ├── build.gradle.kts
-    └── src/
+├── settings.gradle.kts      # Project settings
+├── build.gradle.kts         # Build configuration
+├── src/                     # Source directory
+│   ├── IllyriaPlus.kt       # Main plugin class
+│   ├── IllyriaPlusBootstrap.kt  # Bootstrap class
+│   ├── mechanics/           # Feature mechanics
+│   ├── enchantments/        # Enchantment implementations
+│   ├── interfaces/          # ModuleInterface, EnchantmentInterface, RecipeInterface
+│   ├── managers/            # XpManager, PlayerMessageManager, SpellManager
+│   ├── pdcs/                # PlayerPDC, ItemPDC
+│   ├── recipes/             # Recipe implementations
+│   ├── data/                # Data classes
+│   └── utils/               # Utility functions
+└── docs/                    # Generated documentation
 ```
 
 ## Build & Run Commands
 
 ```bash
-# Build all subprojects
+# Build the plugin
 ./gradlew shadowJar
 
-# Build specific subproject
-./gradlew :IllyriaCore:shadowJar
-./gradlew :IllyriaKingdoms:shadowJar
-
-# Run test server for specific subproject
-./gradlew :IllyriaCore:runServer
-./gradlew :IllyriaKingdoms:runServer
+# Run test server
+./gradlew runServer
 
 # Build only (no shadow)
 ./gradlew build
+
+# Generate documentation
+./gradlew dokkaGenerateHtml
 ```
 
-Output JARs:
+Output JAR:
 
-- `IllyriaCore/build/libs/IllyriaCore-*.jar`
-- `IllyriaKingdoms/build/libs/IllyriaKingdoms-*.jar`
+- `build/libs/IllyriaPlus-*.jar`
 
 There are no automated tests in this project.
 
-## IllyriaCore Architecture
+## Architecture
 
 ### Entry Points
 
