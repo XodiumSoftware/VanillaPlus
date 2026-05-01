@@ -1,6 +1,7 @@
 package org.xodium.illyriaplus.bosses.overworld
 
 import net.kyori.adventure.bossbar.BossBar
+import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
@@ -17,14 +18,15 @@ import org.xodium.illyriaplus.utils.Utils.MM
  * A leviathan that rules the ocean depths.
  */
 internal object OceanBoss : BossInterface {
-    override val name: String = "Leviathan, the Abyssal Tyrant"
+    override val bossName: Component =
+        MM.deserialize("<bold><gradient:#1E90FF:#00008B>Leviathan, the Abyssal Tyrant</gradient></bold>")
     override val entityType: EntityType = EntityType.GUARDIAN
     override val bossMaxHealth: Double = 400.0
     override val drops: List<ItemStack> get() = emptyList()
 
     override val bossBar: BossBar =
         BossBar.bossBar(
-            MM.deserialize("<bold><gradient:#1E90FF:#00008B>$name</gradient></bold>"),
+            bossName,
             1.0f,
             BossBar.Color.BLUE,
             BossBar.Overlay.PROGRESS,
@@ -32,7 +34,7 @@ internal object OceanBoss : BossInterface {
 
     override fun spawn(location: Location): LivingEntity =
         (location.world.spawnEntity(location, entityType) as LivingEntity).apply {
-            customName(MM.deserialize("<bold><gradient:#1E90FF:#00008B>$name</gradient></bold>"))
+            customName(bossName)
             isCustomNameVisible = true
             health = bossMaxHealth
             getAttribute(Attribute.MAX_HEALTH)?.baseValue = bossMaxHealth

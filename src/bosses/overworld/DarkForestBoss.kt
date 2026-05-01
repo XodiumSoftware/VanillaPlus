@@ -1,6 +1,7 @@
 package org.xodium.illyriaplus.bosses.overworld
 
 import net.kyori.adventure.bossbar.BossBar
+import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
@@ -17,14 +18,15 @@ import org.xodium.illyriaplus.utils.Utils.MM
  * A cursed entity that haunts the dark forest.
  */
 internal object DarkForestBoss : BossInterface {
-    override val name: String = "Nocturne, the Shadow Lurker"
+    override val bossName: Component =
+        MM.deserialize("<bold><gradient:#4B0082:#000000>Nocturne, the Shadow Lurker</gradient></bold>")
     override val entityType: EntityType = EntityType.VEX
     override val bossMaxHealth: Double = 120.0
     override val drops: List<ItemStack> get() = emptyList()
 
     override val bossBar: BossBar =
         BossBar.bossBar(
-            MM.deserialize("<bold><gradient:#4B0082:#000000>$name</gradient></bold>"),
+            bossName,
             1.0f,
             BossBar.Color.PURPLE,
             BossBar.Overlay.PROGRESS,
@@ -32,7 +34,7 @@ internal object DarkForestBoss : BossInterface {
 
     override fun spawn(location: Location): LivingEntity =
         (location.world.spawnEntity(location, entityType) as LivingEntity).apply {
-            customName(MM.deserialize("<bold><gradient:#4B0082:#000000>$name</gradient></bold>"))
+            customName(bossName)
             isCustomNameVisible = true
             health = bossMaxHealth
             getAttribute(Attribute.MAX_HEALTH)?.baseValue = bossMaxHealth

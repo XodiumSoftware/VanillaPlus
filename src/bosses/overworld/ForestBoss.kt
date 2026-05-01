@@ -1,6 +1,7 @@
 package org.xodium.illyriaplus.bosses.overworld
 
 import net.kyori.adventure.bossbar.BossBar
+import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
@@ -17,14 +18,15 @@ import org.xodium.illyriaplus.utils.Utils.MM
  * A boss that lurks within the dense forest canopy.
  */
 internal object ForestBoss : BossInterface {
-    override val name: String = "Thornheart, the Canopy Stalker"
+    override val bossName: Component =
+        MM.deserialize("<bold><gradient:#228B22:#006400>Thornheart, the Canopy Stalker</gradient></bold>")
     override val entityType: EntityType = EntityType.SKELETON
     override val bossMaxHealth: Double = 180.0
     override val drops: List<ItemStack> get() = emptyList()
 
     override val bossBar: BossBar =
         BossBar.bossBar(
-            MM.deserialize("<bold><gradient:#228B22:#006400>$name</gradient></bold>"),
+            bossName,
             1.0f,
             BossBar.Color.GREEN,
             BossBar.Overlay.PROGRESS,
@@ -32,7 +34,7 @@ internal object ForestBoss : BossInterface {
 
     override fun spawn(location: Location): LivingEntity =
         (location.world.spawnEntity(location, entityType) as LivingEntity).apply {
-            customName(MM.deserialize("<bold><gradient:#228B22:#006400>$name</gradient></bold>"))
+            customName(bossName)
             isCustomNameVisible = true
             health = bossMaxHealth
             getAttribute(Attribute.MAX_HEALTH)?.baseValue = bossMaxHealth

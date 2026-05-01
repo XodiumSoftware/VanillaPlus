@@ -1,6 +1,7 @@
 package org.xodium.illyriaplus.bosses.overworld
 
 import net.kyori.adventure.bossbar.BossBar
+import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
@@ -17,14 +18,15 @@ import org.xodium.illyriaplus.utils.Utils.MM
  * A stone giant that dwells in the mountain peaks.
  */
 internal object MountainBoss : BossInterface {
-    override val name: String = "Titan, the Peak Colossus"
+    override val bossName: Component =
+        MM.deserialize("<bold><gradient:#D3D3D3:#696969>Titan, the Peak Colossus</gradient></bold>")
     override val entityType: EntityType = EntityType.IRON_GOLEM
     override val bossMaxHealth: Double = 500.0
     override val drops: List<ItemStack> get() = emptyList()
 
     override val bossBar: BossBar =
         BossBar.bossBar(
-            MM.deserialize("<bold><gradient:#D3D3D3:#696969>$name</gradient></bold>"),
+            bossName,
             1.0f,
             BossBar.Color.WHITE,
             BossBar.Overlay.PROGRESS,
@@ -32,7 +34,7 @@ internal object MountainBoss : BossInterface {
 
     override fun spawn(location: Location): LivingEntity =
         (location.world.spawnEntity(location, entityType) as LivingEntity).apply {
-            customName(MM.deserialize("<bold><gradient:#D3D3D3:#696969>$name</gradient></bold>"))
+            customName(bossName)
             isCustomNameVisible = true
             health = bossMaxHealth
             getAttribute(Attribute.MAX_HEALTH)?.baseValue = bossMaxHealth

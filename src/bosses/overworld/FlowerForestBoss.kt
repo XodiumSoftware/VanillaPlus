@@ -1,6 +1,7 @@
 package org.xodium.illyriaplus.bosses.overworld
 
 import net.kyori.adventure.bossbar.BossBar
+import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
@@ -17,14 +18,15 @@ import org.xodium.illyriaplus.utils.Utils.MM
  * A pollen spirit that thrives among the flowers.
  */
 internal object FlowerForestBoss : BossInterface {
-    override val name: String = "Flora, the Pollen Sprite"
+    override val bossName: Component =
+        MM.deserialize("<bold><gradient:#FFB6C1:#FFD700:#FFF0F5>Flora, the Pollen Sprite</gradient></bold>")
     override val entityType: EntityType = EntityType.BEE
     override val bossMaxHealth: Double = 80.0
     override val drops: List<ItemStack> get() = emptyList()
 
     override val bossBar: BossBar =
         BossBar.bossBar(
-            MM.deserialize("<bold><gradient:#FFB6C1:#FFD700:#FFF0F5>$name</gradient></bold>"),
+            bossName,
             1.0f,
             BossBar.Color.PINK,
             BossBar.Overlay.PROGRESS,
@@ -32,7 +34,7 @@ internal object FlowerForestBoss : BossInterface {
 
     override fun spawn(location: Location): LivingEntity =
         (location.world.spawnEntity(location, entityType) as LivingEntity).apply {
-            customName(MM.deserialize("<bold><gradient:#FFB6C1:#FFD700:#FFF0F5>$name</gradient></bold>"))
+            customName(bossName)
             isCustomNameVisible = true
             health = bossMaxHealth
             getAttribute(Attribute.MAX_HEALTH)?.baseValue = bossMaxHealth

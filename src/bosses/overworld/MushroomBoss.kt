@@ -1,6 +1,7 @@
 package org.xodium.illyriaplus.bosses.overworld
 
 import net.kyori.adventure.bossbar.BossBar
+import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
@@ -17,14 +18,15 @@ import org.xodium.illyriaplus.utils.Utils.MM
  * A fungal entity that spreads spores across the mushroom island.
  */
 internal object MushroomBoss : BossInterface {
-    override val name: String = "Mycelia, the Spore Queen"
+    override val bossName: Component =
+        MM.deserialize("<bold><gradient:#FF69B4:#DC143C>Mycelia, the Spore Queen</gradient></bold>")
     override val entityType: EntityType = EntityType.MOOSHROOM
     override val bossMaxHealth: Double = 250.0
     override val drops: List<ItemStack> get() = emptyList()
 
     override val bossBar: BossBar =
         BossBar.bossBar(
-            MM.deserialize("<bold><gradient:#FF69B4:#DC143C>$name</gradient></bold>"),
+            bossName,
             1.0f,
             BossBar.Color.PINK,
             BossBar.Overlay.PROGRESS,
@@ -32,7 +34,7 @@ internal object MushroomBoss : BossInterface {
 
     override fun spawn(location: Location): LivingEntity =
         (location.world.spawnEntity(location, entityType) as LivingEntity).apply {
-            customName(MM.deserialize("<bold><gradient:#FF69B4:#DC143C>$name</gradient></bold>"))
+            customName(bossName)
             isCustomNameVisible = true
             health = bossMaxHealth
             getAttribute(Attribute.MAX_HEALTH)?.baseValue = bossMaxHealth

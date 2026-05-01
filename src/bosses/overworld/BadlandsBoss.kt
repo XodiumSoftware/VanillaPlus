@@ -1,6 +1,7 @@
 package org.xodium.illyriaplus.bosses.overworld
 
 import net.kyori.adventure.bossbar.BossBar
+import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
@@ -17,22 +18,18 @@ import org.xodium.illyriaplus.utils.Utils.MM
  * A bandit king that controls the badlands territory.
  */
 internal object BadlandsBoss : BossInterface {
-    override val name: String = "Rattlesnake, the Mesa Marauder"
+    override val bossName: Component =
+        MM.deserialize("<bold><gradient:#CD5C5C:#8B4513>Rattlesnake, the Mesa Marauder</gradient></bold>")
     override val entityType: EntityType = EntityType.PILLAGER
     override val bossMaxHealth: Double = 180.0
     override val drops: List<ItemStack> get() = emptyList()
 
     override val bossBar: BossBar =
-        BossBar.bossBar(
-            MM.deserialize("<bold><gradient:#CD5C5C:#8B4513>$name</gradient></bold>"),
-            1.0f,
-            BossBar.Color.RED,
-            BossBar.Overlay.PROGRESS,
-        )
+        BossBar.bossBar(bossName,1.0f,BossBar.Color.RED,BossBar.Overlay.PROGRESS)
 
     override fun spawn(location: Location): LivingEntity =
         (location.world.spawnEntity(location, entityType) as LivingEntity).apply {
-            customName(MM.deserialize("<bold><gradient:#CD5C5C:#8B4513>$name</gradient></bold>"))
+            customName(bossName)
             isCustomNameVisible = true
             health = bossMaxHealth
             getAttribute(Attribute.MAX_HEALTH)?.baseValue = bossMaxHealth

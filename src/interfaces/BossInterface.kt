@@ -1,6 +1,7 @@
 package org.xodium.illyriaplus.interfaces
 
 import net.kyori.adventure.bossbar.BossBar
+import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
@@ -12,7 +13,7 @@ import org.bukkit.inventory.ItemStack
  */
 internal interface BossInterface {
     /** The display name of the boss (shown in boss bar and above entity). */
-    val name: String
+    val bossName: Component
 
     /** The base entity type for this boss. */
     val entityType: EntityType

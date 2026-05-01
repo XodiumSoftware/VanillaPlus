@@ -1,6 +1,7 @@
 package org.xodium.illyriaplus.bosses.overworld
 
 import net.kyori.adventure.bossbar.BossBar
+import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
@@ -17,14 +18,15 @@ import org.xodium.illyriaplus.utils.Utils.MM
  * A crab-like creature that guards the beach shores.
  */
 internal object BeachBoss : BossInterface {
-    override val name: String = "Crustar, the Shore Guardian"
+    override val bossName: Component =
+        MM.deserialize("<bold><gradient:#00CED1:#F4A460>Crustar, the Shore Guardian</gradient></bold>")
     override val entityType: EntityType = EntityType.TURTLE
     override val bossMaxHealth: Double = 150.0
     override val drops: List<ItemStack> get() = emptyList()
 
     override val bossBar: BossBar =
         BossBar.bossBar(
-            MM.deserialize("<bold><gradient:#00CED1:#F4A460>$name</gradient></bold>"),
+            bossName,
             1.0f,
             BossBar.Color.BLUE,
             BossBar.Overlay.PROGRESS,
@@ -32,7 +34,7 @@ internal object BeachBoss : BossInterface {
 
     override fun spawn(location: Location): LivingEntity =
         (location.world.spawnEntity(location, entityType) as LivingEntity).apply {
-            customName(MM.deserialize("<bold><gradient:#00CED1:#F4A460>$name</gradient></bold>"))
+            customName(bossName)
             isCustomNameVisible = true
             health = bossMaxHealth
             getAttribute(Attribute.MAX_HEALTH)?.baseValue = bossMaxHealth
