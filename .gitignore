@@ -21,9 +21,9 @@ run/
 docs/
 
 # IDE specific files
-.idea/libraries/
-.idea/shelf/
-.idea/modules/
+.idea
+.vscode
+.zed
 copilot.*.xml
 workspace.xml
 modules.xml
