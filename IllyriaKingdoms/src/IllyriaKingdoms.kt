@@ -1,7 +1,7 @@
 package org.xodium.illyriaplus
 
 import org.bukkit.plugin.java.JavaPlugin
-import org.xodium.illyriaplus.commands.KingdomCmd
+import org.xodium.illyriaplus.cmds.KingdomCmd
 import org.xodium.illyriaplus.items.SceptreItem
 
 /**
