@@ -1,3 +1,4 @@
+import org.gradle.internal.execution.caching.CachingState.enabled
 import xyz.jpenilla.runtask.task.AbstractRun
 
 plugins {
@@ -19,7 +20,7 @@ val buildNumber =
         .map { it.trim() }
 
 group = "org.xodium.illyriaplus"
-version = "$mcVersion+build.$buildNumber"
+version = "$mcVersion+build.${buildNumber.get()}"
 description = "Minecraft plugin that enhances the base gameplay"
 
 repositories {
