@@ -1,43 +1,15 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package org.xodium.illyriaplus
 
 import org.bukkit.plugin.java.JavaPlugin
-import org.xodium.illyriaplus.enchantments.EarthrendEnchantment
-import org.xodium.illyriaplus.enchantments.EmbertreadEnchantment
-import org.xodium.illyriaplus.enchantments.FeatherFallingEnchantment
-import org.xodium.illyriaplus.enchantments.FrostbindEnchantment
-import org.xodium.illyriaplus.enchantments.InfernoEnchantment
-import org.xodium.illyriaplus.enchantments.NimbusEnchantment
-import org.xodium.illyriaplus.enchantments.QuakeEnchantment
-import org.xodium.illyriaplus.enchantments.SilkTouchEnchantment
-import org.xodium.illyriaplus.enchantments.SkysunderEnchantment
-import org.xodium.illyriaplus.enchantments.TempestEnchantment
-import org.xodium.illyriaplus.enchantments.TetherEnchantment
-import org.xodium.illyriaplus.enchantments.VerdanceEnchantment
-import org.xodium.illyriaplus.enchantments.VoidpullEnchantment
-import org.xodium.illyriaplus.enchantments.WitherbrandEnchantment
-import org.xodium.illyriaplus.mechanics.BookMechanic
-import org.xodium.illyriaplus.mechanics.ChatMechanic
-import org.xodium.illyriaplus.mechanics.ChiseledBookshelfMechanic
-import org.xodium.illyriaplus.mechanics.DimensionMechanic
-import org.xodium.illyriaplus.mechanics.InventoryMechanic
-import org.xodium.illyriaplus.mechanics.LocatorMechanic
-import org.xodium.illyriaplus.mechanics.MotdMechanic
-import org.xodium.illyriaplus.mechanics.OpenableMechanic
-import org.xodium.illyriaplus.mechanics.PlayerMechanic
-import org.xodium.illyriaplus.mechanics.ScoreBoardMechanic
-import org.xodium.illyriaplus.mechanics.ServerInfoMechanic
-import org.xodium.illyriaplus.mechanics.SitMechanic
-import org.xodium.illyriaplus.mechanics.TameableMechanic
+import org.xodium.illyriaplus.enchantments.*
+import org.xodium.illyriaplus.mechanics.*
 import org.xodium.illyriaplus.mechanics.entity.BatMechanic
-import org.xodium.illyriaplus.mechanics.entity.DisableEntityMechanic
 import org.xodium.illyriaplus.mechanics.entity.GriefingMechanic
 import org.xodium.illyriaplus.mechanics.entity.HuskMechanic
 import org.xodium.illyriaplus.mechanics.entity.SpawnEggMechanic
-import org.xodium.illyriaplus.recipes.ChainmailRecipe
-import org.xodium.illyriaplus.recipes.DiamondRecycleRecipe
-import org.xodium.illyriaplus.recipes.PaintingRecipe
-import org.xodium.illyriaplus.recipes.RottenFleshRecipe
-import org.xodium.illyriaplus.recipes.WoodLogRecipe
+import org.xodium.illyriaplus.recipes.*
 
 /** Main class of the plugin. */
 internal class IllyriaCore : JavaPlugin() {
@@ -74,7 +46,6 @@ internal class IllyriaCore : JavaPlugin() {
                 ChatMechanic,
                 ChiseledBookshelfMechanic,
                 DimensionMechanic,
-                DisableEntityMechanic,
                 GriefingMechanic,
                 HuskMechanic,
                 InventoryMechanic,
