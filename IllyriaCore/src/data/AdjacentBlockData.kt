@@ -40,7 +40,7 @@ internal data class AdjacentBlockData(
         blockType: Material,
     ): Boolean =
         door.facing == originalDoor.facing &&
-                door.hinge != originalDoor.hinge &&
-                door.isOpen == originalDoor.isOpen &&
-                blockType == door.material
+            door.hinge != originalDoor.hinge &&
+            door.isOpen == originalDoor.isOpen &&
+            blockType == door.material
 }
