@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package org.xodium.illyriaplus.managers
 
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
