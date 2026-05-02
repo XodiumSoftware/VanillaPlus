@@ -38,7 +38,6 @@ internal object JungleBoss : BossInterface {
             isCustomNameVisible = true
             health = bossMaxHealth
             getAttribute(Attribute.MAX_HEALTH)?.baseValue = bossMaxHealth
-            addPotionEffect(PotionEffect(PotionEffectType.JUMP, Int.MAX_VALUE, 3, false, false))
             addPotionEffect(PotionEffect(PotionEffectType.SPEED, Int.MAX_VALUE, 2, false, false))
         }
 

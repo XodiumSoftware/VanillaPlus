@@ -25,7 +25,7 @@ internal object BadlandsBoss : BossInterface {
     override val drops: List<ItemStack> get() = emptyList()
 
     override val bossBar: BossBar =
-        BossBar.bossBar(bossName,1.0f,BossBar.Color.RED,BossBar.Overlay.PROGRESS)
+        BossBar.bossBar(bossName, 1.0f, BossBar.Color.RED, BossBar.Overlay.PROGRESS)
 
     override fun spawn(location: Location): LivingEntity =
         (location.world.spawnEntity(location, entityType) as LivingEntity).apply {
