@@ -12,11 +12,11 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.persistence.PersistentDataType
 import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
+import org.xodium.illyriaplus.Utils
+import org.xodium.illyriaplus.Utils.EnchantmentUtils.displayName
+import org.xodium.illyriaplus.Utils.EnchantmentUtils.isSelectedSpell
 import org.xodium.illyriaplus.interfaces.EnchantmentInterface
 import org.xodium.illyriaplus.managers.XpManager
-import org.xodium.illyriaplus.utils.ScheduleUtils
-import org.xodium.illyriaplus.utils.Utils
-import org.xodium.illyriaplus.utils.Utils.displayName
 
 /** Represents an object handling frostbind enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
@@ -39,7 +39,7 @@ internal object FrostbindEnchantment : EnchantmentInterface {
 
     @EventHandler
     fun on(event: PlayerInteractEvent) {
-        if (!Utils.isSelectedSpell(event.item, get())) return
+        if (!isSelectedSpell(event.item, get())) return
 
         val player = XpManager.consumeXp(event, get(), XP_COST) ?: return
         val direction = player.location.direction.normalize()
@@ -82,7 +82,7 @@ internal object FrostbindEnchantment : EnchantmentInterface {
      * @param snowball The [Snowball] to trail.
      */
     private fun spawnSnowballTrail(snowball: Snowball) =
-        ScheduleUtils.spawnProjectileTrail(snowball) {
+        Utils.ScheduleUtils.spawnProjectileTrail(snowball) {
             Particle.SNOWFLAKE
                 .builder()
                 .location(it)

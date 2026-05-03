@@ -3,7 +3,7 @@ package org.xodium.illyriaplus.data
 import net.kyori.adventure.inventory.Book
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
-import org.xodium.illyriaplus.utils.Utils.MM
+import org.xodium.illyriaplus.Utils.MM
 
 /**
  * Represents the data structure for a book in the game.

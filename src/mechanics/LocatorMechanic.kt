@@ -9,10 +9,10 @@ import net.kyori.adventure.text.format.TextColor
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
+import org.xodium.illyriaplus.Utils.CommandUtils.playerExecuted
+import org.xodium.illyriaplus.Utils.PlayerUtils.locator
 import org.xodium.illyriaplus.data.CommandData
 import org.xodium.illyriaplus.interfaces.MechanicInterface
-import org.xodium.illyriaplus.utils.CommandUtils.playerExecuted
-import org.xodium.illyriaplus.utils.PlayerUtils.locator
 
 /** Represents a module handling locator mechanics within the system. */
 internal object LocatorMechanic : MechanicInterface {

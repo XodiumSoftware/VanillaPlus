@@ -9,11 +9,11 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.util.Vector
+import org.xodium.illyriaplus.Utils
+import org.xodium.illyriaplus.Utils.EnchantmentUtils.displayName
+import org.xodium.illyriaplus.Utils.EnchantmentUtils.isSelectedSpell
 import org.xodium.illyriaplus.interfaces.EnchantmentInterface
 import org.xodium.illyriaplus.managers.XpManager
-import org.xodium.illyriaplus.utils.ScheduleUtils
-import org.xodium.illyriaplus.utils.Utils
-import org.xodium.illyriaplus.utils.Utils.displayName
 
 /** Represents an object handling tempest enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")
@@ -35,7 +35,7 @@ internal object TempestEnchantment : EnchantmentInterface {
 
     @EventHandler
     fun on(event: PlayerInteractEvent) {
-        if (!Utils.isSelectedSpell(event.item, get())) return
+        if (!isSelectedSpell(event.item, get())) return
 
         val player = XpManager.consumeXp(event, get(), XP_COST) ?: return
         val baseDir = player.location.direction.normalize()
@@ -62,7 +62,7 @@ internal object TempestEnchantment : EnchantmentInterface {
      * @param charge The [WindCharge] to trail.
      */
     private fun spawnWindChargeTrail(charge: WindCharge) =
-        ScheduleUtils.spawnProjectileTrail(charge) {
+        Utils.ScheduleUtils.spawnProjectileTrail(charge) {
             Particle.GUST
                 .builder()
                 .location(it)

@@ -12,8 +12,8 @@ import org.bukkit.event.player.PlayerPortalEvent
 import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.event.world.PortalCreateEvent
 import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
+import org.xodium.illyriaplus.Utils.MM
 import org.xodium.illyriaplus.interfaces.MechanicInterface
-import org.xodium.illyriaplus.utils.Utils.MM
 import kotlin.math.hypot
 
 /** Represents a module handling dimension mechanics within the system. */

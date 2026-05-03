@@ -3,10 +3,10 @@ package org.xodium.illyriaplus.mechanics
 import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.permissions.Permission
 import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
+import org.xodium.illyriaplus.Utils.CommandUtils.playerExecuted
 import org.xodium.illyriaplus.data.BookData
 import org.xodium.illyriaplus.data.CommandData
 import org.xodium.illyriaplus.interfaces.MechanicInterface
-import org.xodium.illyriaplus.utils.CommandUtils.playerExecuted
 
 /** Represents a module handling book mechanics within the system. */
 internal object BookMechanic : MechanicInterface {

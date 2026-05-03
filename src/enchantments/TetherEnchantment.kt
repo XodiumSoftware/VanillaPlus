@@ -8,8 +8,8 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.block.BlockDropItemEvent
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.inventory.EquipmentSlotGroup
+import org.xodium.illyriaplus.Utils.EnchantmentUtils.displayName
 import org.xodium.illyriaplus.interfaces.EnchantmentInterface
-import org.xodium.illyriaplus.utils.Utils.displayName
 
 /** Represents an object handling tether enchantment implementation within the system. */
 @Suppress("UnstableApiUsage")

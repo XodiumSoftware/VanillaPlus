@@ -17,13 +17,13 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
+import org.xodium.illyriaplus.Utils
+import org.xodium.illyriaplus.Utils.BlockUtils.center
+import org.xodium.illyriaplus.Utils.CommandUtils.playerExecuted
+import org.xodium.illyriaplus.Utils.MM
+import org.xodium.illyriaplus.Utils.PlayerUtils.getContainersAround
 import org.xodium.illyriaplus.data.CommandData
 import org.xodium.illyriaplus.interfaces.MechanicInterface
-import org.xodium.illyriaplus.utils.BlockUtils.center
-import org.xodium.illyriaplus.utils.CommandUtils.playerExecuted
-import org.xodium.illyriaplus.utils.PlayerUtils.getContainersAround
-import org.xodium.illyriaplus.utils.ScheduleUtils
-import org.xodium.illyriaplus.utils.Utils.MM
 
 /** Represents a module handling inventory mechanics within the system. */
 internal object InventoryMechanic : MechanicInterface {
@@ -126,7 +126,7 @@ internal object InventoryMechanic : MechanicInterface {
 
         player.playSound(SEARCH_SUCCESSFUL_SOUND)
 
-        ScheduleUtils.schedule(duration = 200L) {
+        Utils.ScheduleUtils.schedule(duration = 200L) {
             containers.forEach {
                 Particle.TRAIL
                     .builder()
@@ -206,7 +206,7 @@ internal object InventoryMechanic : MechanicInterface {
 
         if (usedContainers.isEmpty()) return
 
-        ScheduleUtils.schedule(duration = 40L) {
+        Utils.ScheduleUtils.schedule(duration = 40L) {
             usedContainers.forEach {
                 Particle.CRIT
                     .builder()

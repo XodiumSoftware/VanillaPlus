@@ -8,8 +8,8 @@ import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
+import org.xodium.illyriaplus.Utils.MM
 import org.xodium.illyriaplus.managers.XpManager.NO_XP_SOUND
-import org.xodium.illyriaplus.utils.Utils.MM
 
 /**
  * Manages XP cost validation and deduction for spell enchantments.

@@ -3,8 +3,8 @@ package org.xodium.illyriaplus.mechanics
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.server.ServerListPingEvent
+import org.xodium.illyriaplus.Utils.MM
 import org.xodium.illyriaplus.interfaces.MechanicInterface
-import org.xodium.illyriaplus.utils.Utils.MM
 
 /** Represents a module handling MOTD mechanics within the system. */
 internal object MotdMechanic : MechanicInterface {
