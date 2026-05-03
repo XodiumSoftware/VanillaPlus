@@ -20,10 +20,18 @@ import org.xodium.illyriaplus.items.TeleportScrollItem
 
 internal object TeleportMechanic : MechanicInterface {
     private const val CIRCLE_RADIUS = 2
-    private const val RITUAL_HEIGHT = 1
+
     private val activeRituals = mutableMapOf<Location, RitualCircle>()
     private val ritualCenters = mutableMapOf<Location, Location>()
 
+    /**
+     * Represents a ritual circle for teleportation.
+     *
+     * @property center The center location of the ritual circle.
+     * @property candles Set of candle locations belonging to this ritual.
+     * @property isActive Whether the ritual is currently active (fire lit).
+     * @property fireLocation The location of the fire block if active.
+     */
     private data class RitualCircle(
         val center: Location,
         val candles: MutableSet<Location> = mutableSetOf(),
@@ -46,16 +54,20 @@ internal object TeleportMechanic : MechanicInterface {
     /** Handles candle placement to detect ritual circles. */
     private fun blockPlace(event: BlockPlaceEvent) {
         val block = event.block
+
         if (!Tag.CANDLES.isTagged(block.type)) return
 
-        findRitualCenter(block.location)?.let {
-            activeRituals.getOrPut(it) { RitualCircle(it) }.candles.add(block.location)
+        findRitualCenter(block.location)?.let { center ->
+            if (block.location.blockY != center.blockY) return@let
+
+            activeRituals.getOrPut(center) { RitualCircle(center) }.candles.add(block.location)
         }
     }
 
     /** Handles candle breaks to update ritual circles. */
     private fun blockBreak(event: BlockBreakEvent) {
         val block = event.block
+
         if (!Tag.CANDLES.isTagged(block.type)) {
             if (block.type == Material.FIRE) {
                 ritualCenters[block.location]?.let { location ->
@@ -71,6 +83,7 @@ internal object TeleportMechanic : MechanicInterface {
 
         activeRituals.values.find { block.location in it.candles }?.let { circle ->
             circle.candles.remove(block.location)
+
             if (circle.candles.isEmpty()) {
                 activeRituals.remove(circle.center)
             } else if (circle.isActive) {
@@ -136,7 +149,7 @@ internal object TeleportMechanic : MechanicInterface {
         world
             .getNearbyEntities(fireLoc, 10.0, 10.0, 10.0)
             .filterIsInstance<Player>()
-            .forEach { it.sendMessage(MM.deserialize("<yellow>A teleportation portal opens...</yellow>")) }
+            .forEach { it.sendActionBar(MM.deserialize("<yellow>A teleportation portal opens...</yellow>")) }
     }
 
     /** Checks for teleport scroll items in the fire and teleports the player. */
@@ -162,7 +175,7 @@ internal object TeleportMechanic : MechanicInterface {
         player: Player,
         circle: RitualCircle,
     ) {
-        player.sendMessage(MM.deserialize("<green>You have been teleported!</green>"))
+        player.sendActionBar(MM.deserialize("<green>You have been teleported!</green>"))
 
         circle.fireLocation?.let {
             it.block.type = Material.AIR
@@ -235,8 +248,11 @@ internal object TeleportMechanic : MechanicInterface {
                 Location(world, cx.toDouble(), cy.toDouble(), cz + 2.0),
                 Location(world, cx.toDouble(), cy.toDouble(), cz - 2.0),
             )
+        val candles = expectedPositions.filter { Tag.CANDLES.isTagged(it.block.type) }
 
-        return expectedPositions.count { Tag.CANDLES.isTagged(it.block.type) } >= 2
+        if (candles.size < 2) return false
+
+        return candles.all { it.blockY == cy }
     }
 
     /** Checks if the item can light candles. */
