@@ -6,6 +6,7 @@ import org.bukkit.Location
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
+import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 
 /**
@@ -30,6 +31,9 @@ internal interface BossInterface {
      */
     val attributes: Map<Attribute, Double>
 
+    /** The equipment the boss spawns with (armor, weapons). */
+    val equipment: Map<EquipmentSlot, ItemStack> get() = emptyMap()
+
     /**
      * Spawns the boss at the specified location.
      *
@@ -43,6 +47,17 @@ internal interface BossInterface {
             showBossBar(bossBar)
             attributes.forEach { (attr, value) -> getAttribute(attr)?.baseValue = value }
             health = getAttribute(Attribute.MAX_HEALTH)?.value ?: 20.0
+            this@BossInterface.equipment.forEach { (slot, item) ->
+                when (slot) {
+                    EquipmentSlot.HAND -> this@apply.equipment?.setItemInMainHand(item)
+                    EquipmentSlot.OFF_HAND -> this@apply.equipment?.setItemInOffHand(item)
+                    EquipmentSlot.HEAD -> this@apply.equipment?.setHelmet(item)
+                    EquipmentSlot.CHEST -> this@apply.equipment?.setChestplate(item)
+                    EquipmentSlot.LEGS -> this@apply.equipment?.setLeggings(item)
+                    EquipmentSlot.FEET -> this@apply.equipment?.setBoots(item)
+                    else -> return@apply
+                }
+            }
         }
 
     /**

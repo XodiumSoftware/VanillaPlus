@@ -7,6 +7,7 @@ import org.bukkit.Particle
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
+import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
@@ -18,7 +19,7 @@ import org.xodium.illyriaplus.interfaces.BossInterface
  */
 internal object AnubisBoss : BossInterface {
     override val bossName: Component =
-        MM.deserialize("<b><gradient:#FFD700:#FF8C00>Anubis</gradient></b>")
+        MM.deserialize("<b><gradient:#FF8C00:#FFD700>Anubis</gradient></b>")
     override val bossType: EntityType = EntityType.HUSK
     override val bossBar: BossBar =
         BossBar.bossBar(bossName, 1.0f, BossBar.Color.YELLOW, BossBar.Overlay.PROGRESS)
@@ -29,6 +30,15 @@ internal object AnubisBoss : BossInterface {
             Attribute.ATTACK_DAMAGE to 10.0,
             Attribute.KNOCKBACK_RESISTANCE to 0.5,
             Attribute.SCALE to 1.8,
+        )
+    override val equipment: Map<EquipmentSlot, ItemStack> =
+        mapOf(
+            EquipmentSlot.HAND to ItemStack.of(Material.NETHERITE_SWORD),
+            EquipmentSlot.OFF_HAND to ItemStack.of(Material.LEAD),
+            EquipmentSlot.HEAD to ItemStack.of(Material.NETHERITE_HELMET),
+            EquipmentSlot.CHEST to ItemStack.of(Material.NETHERITE_CHESTPLATE),
+            EquipmentSlot.LEGS to ItemStack.of(Material.NETHERITE_LEGGINGS),
+            EquipmentSlot.FEET to ItemStack.of(Material.NETHERITE_BOOTS),
         )
 
     override fun onTick(entity: LivingEntity) {
