@@ -82,10 +82,8 @@ internal class IllyriaPlus : JavaPlugin() {
                 WitherbrandEnchantment,
             )
 
-        val sum = enchantments.sumOf { it.registerEvents() }
-
         logger.info(
-            "Registered: ${enchantments.size} enchantment event listener(s) | Took ${sum}ms",
+            "Registered: ${enchantments.size} enchantment events | Took ${enchantments.sumOf { it.register() }}ms",
         )
     }
 
