@@ -2,19 +2,14 @@
 
 package org.xodium.illyriaplus.utils
 
-import io.papermc.paper.datacomponent.DataComponentTypes
-import io.papermc.paper.datacomponent.item.TooltipDisplay
 import io.papermc.paper.registry.TypedKey
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
-import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemStack
 import org.xodium.illyriaplus.IllyriaPlus
 import org.xodium.illyriaplus.pdcs.ItemPDC.selectedSpell
-import xyz.xenondevs.invui.item.BoundItem
-import xyz.xenondevs.invui.item.Item
 
 /** General utilities. */
 internal object Utils {
@@ -69,40 +64,4 @@ internal object Utils {
             hasStorm() -> storm
             else -> clear
         }
-
-    /** GUI-related utilities and pre-built items for InvUI. */
-    @Suppress("UnstableApiUsage")
-    object GUI {
-        /** The default GUI filler item using black stained glass panes with hidden tooltips. */
-        val FILLER_ITEM: Item =
-            Item
-                .builder()
-                .setItemProvider(
-                    ItemStack.of(Material.BLACK_STAINED_GLASS_PANE).apply {
-                        setData(DataComponentTypes.TOOLTIP_DISPLAY, TooltipDisplay.tooltipDisplay().hideTooltip(true))
-                    },
-                ).build()
-
-        /** Bound item for navigating to the previous page in the paginated GUI. */
-        val PREVIOUS_PAGE_ITEM: BoundItem =
-            BoundItem
-                .pagedBuilder()
-                .setItemProvider(
-                    ItemStack.of(Material.ARROW).apply {
-                        setData(DataComponentTypes.ITEM_NAME, MM.deserialize("<gray>Previous Page"))
-                    },
-                ).addClickHandler { _, gui, _ -> gui.page-- }
-                .build()
-
-        /** Bound item for navigating to the next page in the paginated GUI. */
-        val NEXT_PAGE_ITEM: BoundItem =
-            BoundItem
-                .pagedBuilder()
-                .setItemProvider(
-                    ItemStack.of(Material.ARROW).apply {
-                        setData(DataComponentTypes.ITEM_NAME, MM.deserialize("<gray>Next Page"))
-                    },
-                ).addClickHandler { _, gui, _ -> gui.page++ }
-                .build()
-    }
 }
