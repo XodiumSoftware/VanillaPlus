@@ -7,8 +7,8 @@ import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
+import org.xodium.illyriaplus.Utils.MM
 import org.xodium.illyriaplus.interfaces.BossInterface
-import org.xodium.illyriaplus.utils.Utils.MM
 
 /**
  * A magma golem forged in the volcanic basalt deltas.

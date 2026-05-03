@@ -9,8 +9,8 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
+import org.xodium.illyriaplus.Utils.MM
 import org.xodium.illyriaplus.interfaces.BossInterface
-import org.xodium.illyriaplus.utils.Utils.MM
 
 /**
  * A corrupted phantom that haunts the desolate end barrens.

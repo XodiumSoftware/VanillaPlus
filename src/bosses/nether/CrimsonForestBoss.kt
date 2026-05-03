@@ -8,8 +8,8 @@ import org.bukkit.entity.EntityType
 import org.bukkit.entity.Hoglin
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
+import org.xodium.illyriaplus.Utils.MM
 import org.xodium.illyriaplus.interfaces.BossInterface
-import org.xodium.illyriaplus.utils.Utils.MM
 import kotlin.random.Random
 
 /**

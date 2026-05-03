@@ -10,8 +10,8 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
+import org.xodium.illyriaplus.Utils.MM
 import org.xodium.illyriaplus.interfaces.BossInterface
-import org.xodium.illyriaplus.utils.Utils.MM
 
 /**
  * A swift warrior of the savanna grasslands.

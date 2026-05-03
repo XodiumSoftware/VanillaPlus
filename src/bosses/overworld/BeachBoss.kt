@@ -8,8 +8,8 @@ import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Turtle
 import org.bukkit.inventory.ItemStack
+import org.xodium.illyriaplus.Utils.MM
 import org.xodium.illyriaplus.interfaces.BossInterface
-import org.xodium.illyriaplus.utils.Utils.MM
 
 /**
  * A crab-like creature that guards the beach shores.
