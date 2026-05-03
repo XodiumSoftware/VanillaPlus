@@ -4,6 +4,7 @@ import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
 import org.bukkit.Particle
 import org.bukkit.attribute.Attribute
+import org.bukkit.block.Biome
 import org.bukkit.entity.Endermite
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
@@ -19,6 +20,7 @@ internal object EndMidlandsBoss : BossInterface {
     override val bossName: Component =
         MM.deserialize("<bold><gradient:#9932CC:#8A2BE2>Voidwalker, the Rift Mage</gradient></bold>")
     override val bossType: EntityType = EntityType.ENDERMITE
+    override val biome: Biome = Biome.END_MIDLANDS
     override val bossBar: BossBar =
         BossBar.bossBar(bossName, 1.0f, BossBar.Color.PURPLE, BossBar.Overlay.PROGRESS)
     override val drops: List<ItemStack> get() = emptyList()

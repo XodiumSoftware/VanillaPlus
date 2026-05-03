@@ -5,6 +5,7 @@ import net.kyori.adventure.text.Component
 import org.bukkit.Particle
 import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
+import org.bukkit.block.Biome
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
@@ -18,6 +19,7 @@ internal object MountainBoss : BossInterface {
     override val bossName: Component =
         MM.deserialize("<bold><gradient:#D3D3D3:#696969>Titan, the Peak Colossus</gradient></bold>")
     override val bossType: EntityType = EntityType.IRON_GOLEM
+    override val biome: Biome = Biome.WINDSWEPT_HILLS
     override val bossBar: BossBar =
         BossBar.bossBar(bossName, 1.0f, BossBar.Color.WHITE, BossBar.Overlay.PROGRESS)
     override val drops: List<ItemStack> get() = emptyList()

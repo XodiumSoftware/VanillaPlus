@@ -4,6 +4,7 @@ import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
 import org.bukkit.Particle
 import org.bukkit.attribute.Attribute
+import org.bukkit.block.Biome
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
@@ -20,6 +21,7 @@ internal object WarpedForestBoss : BossInterface {
     override val bossName: Component =
         MM.deserialize("<bold><gradient:#00CED1:#191970>Vexis, the Warped Seer</gradient></bold>")
     override val bossType: EntityType = EntityType.ENDERMAN
+    override val biome: Biome = Biome.WARPED_FOREST
     override val bossBar: BossBar =
         BossBar.bossBar(bossName, 1.0f, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS)
     override val drops: List<ItemStack> get() = emptyList()

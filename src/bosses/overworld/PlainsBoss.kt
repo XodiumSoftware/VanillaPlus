@@ -4,6 +4,7 @@ import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
 import org.bukkit.Particle
 import org.bukkit.attribute.Attribute
+import org.bukkit.block.Biome
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Zombie
@@ -19,6 +20,7 @@ internal object PlainsBoss : BossInterface {
     override val bossName: Component =
         MM.deserialize("<bold><gradient:#FFD700:#FFA500>Zephyr, the Tempest Walker</gradient></bold>")
     override val bossType: EntityType = EntityType.ZOMBIE
+    override val biome: Biome = Biome.PLAINS
     override val bossBar: BossBar =
         BossBar.bossBar(bossName, 1.0f, BossBar.Color.YELLOW, BossBar.Overlay.PROGRESS)
     override val drops: List<ItemStack> get() = emptyList()

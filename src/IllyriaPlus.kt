@@ -129,6 +129,14 @@ internal class IllyriaPlus : JavaPlugin() {
             "Registered: ${bosses.size} boss(es) | Took ${bosses.sumOf { it.register() }}ms",
         )
 
+        // Register biome mappings for natural spawning
+        bosses.forEach { BossManager.registerBiomeBoss(it.biome, it) }
+        logger.info("Registered: ${bosses.size} biome boss mapping(s).")
+
+        // Register BossManager events for chunk spawn checking
+        server.pluginManager.registerEvents(BossManager, instance)
+        logger.info("BossManager events registered.")
+
         BossManager.startTickScheduler()
         logger.info("Boss tick scheduler started.")
     }

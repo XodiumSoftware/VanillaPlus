@@ -4,6 +4,7 @@ import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
 import org.bukkit.Particle
 import org.bukkit.attribute.Attribute
+import org.bukkit.block.Biome
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Fireball
 import org.bukkit.entity.LivingEntity
@@ -18,6 +19,7 @@ internal object NetherWastesBoss : BossInterface {
     override val bossName: Component =
         MM.deserialize("<bold><gradient:#FF4500:#8B0000>Blight, the Ashen Horror</gradient></bold>")
     override val bossType: EntityType = EntityType.GHAST
+    override val biome: Biome = Biome.NETHER_WASTES
     override val bossBar: BossBar =
         BossBar.bossBar(bossName, 1.0f, BossBar.Color.RED, BossBar.Overlay.PROGRESS)
     override val drops: List<ItemStack> get() = emptyList()

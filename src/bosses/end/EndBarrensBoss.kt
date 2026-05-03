@@ -4,6 +4,7 @@ import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
 import org.bukkit.Particle
 import org.bukkit.attribute.Attribute
+import org.bukkit.block.Biome
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
@@ -19,6 +20,7 @@ internal object EndBarrensBoss : BossInterface {
     override val bossName: Component =
         MM.deserialize("<bold><gradient:#2F4F4F:#000000>Umbrath, the Void Stalker</gradient></bold>")
     override val bossType: EntityType = EntityType.PHANTOM
+    override val biome: Biome = Biome.END_BARRENS
     override val bossBar: BossBar =
         BossBar.bossBar(bossName, 1.0f, BossBar.Color.WHITE, BossBar.Overlay.PROGRESS)
     override val drops: List<ItemStack> get() = emptyList()

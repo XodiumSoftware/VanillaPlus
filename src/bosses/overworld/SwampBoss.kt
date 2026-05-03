@@ -4,6 +4,7 @@ import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
 import org.bukkit.Particle
 import org.bukkit.attribute.Attribute
+import org.bukkit.block.Biome
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
@@ -19,6 +20,7 @@ internal object SwampBoss : BossInterface {
     override val bossName: Component =
         MM.deserialize("<bold><gradient:#556B2F:#8B4513>Morgath, the Bog Wraith</gradient></bold>")
     override val bossType: EntityType = EntityType.WITCH
+    override val biome: Biome = Biome.SWAMP
     override val bossBar: BossBar =
         BossBar.bossBar(bossName, 1.0f, BossBar.Color.GREEN, BossBar.Overlay.PROGRESS)
     override val drops: List<ItemStack> get() = emptyList()

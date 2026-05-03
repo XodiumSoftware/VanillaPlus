@@ -4,6 +4,7 @@ import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
 import org.bukkit.Particle
 import org.bukkit.attribute.Attribute
+import org.bukkit.block.Biome
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
@@ -17,6 +18,7 @@ internal object BasaltDeltasBoss : BossInterface {
     override val bossName: Component =
         MM.deserialize("<bold><gradient:#FF6347:#2F4F4F>Magmatus, the Basalt Colossus</gradient></bold>")
     override val bossType: EntityType = EntityType.MAGMA_CUBE
+    override val biome: Biome = Biome.BASALT_DELTAS
     override val bossBar: BossBar =
         BossBar.bossBar(bossName, 1.0f, BossBar.Color.YELLOW, BossBar.Overlay.PROGRESS)
     override val drops: List<ItemStack> get() = emptyList()

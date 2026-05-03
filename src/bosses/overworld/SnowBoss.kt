@@ -5,6 +5,7 @@ import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.attribute.Attribute
+import org.bukkit.block.Biome
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
@@ -18,6 +19,7 @@ internal object SnowBoss : BossInterface {
     override val bossName: Component =
         MM.deserialize("<bold><gradient:#E0FFFF:#00BFFF>Aurora, the Frostbinder</gradient></bold>")
     override val bossType: EntityType = EntityType.STRAY
+    override val biome: Biome = Biome.SNOWY_PLAINS
     override val bossBar: BossBar =
         BossBar.bossBar(bossName, 1.0f, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS)
     override val drops: List<ItemStack> get() = emptyList()

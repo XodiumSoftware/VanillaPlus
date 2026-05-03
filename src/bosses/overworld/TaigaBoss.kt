@@ -5,6 +5,7 @@ import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.attribute.Attribute
+import org.bukkit.block.Biome
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
@@ -20,6 +21,7 @@ internal object TaigaBoss : BossInterface {
     override val bossName: Component =
         MM.deserialize("<bold><gradient:#00CED1:#4682B4>Bjorn, the Frost Sentinel</gradient></bold>")
     override val bossType: EntityType = EntityType.POLAR_BEAR
+    override val biome: Biome = Biome.TAIGA
     override val bossBar: BossBar =
         BossBar.bossBar(bossName, 1.0f, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS)
     override val drops: List<ItemStack> get() = emptyList()

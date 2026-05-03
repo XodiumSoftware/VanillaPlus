@@ -4,6 +4,7 @@ import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
 import org.bukkit.Particle
 import org.bukkit.attribute.Attribute
+import org.bukkit.block.Biome
 import org.bukkit.entity.Bee
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
@@ -19,6 +20,7 @@ internal object FlowerForestBoss : BossInterface {
     override val bossName: Component =
         MM.deserialize("<bold><gradient:#FFB6C1:#FFD700:#FFF0F5>Flora, the Pollen Sprite</gradient></bold>")
     override val bossType: EntityType = EntityType.BEE
+    override val biome: Biome = Biome.FLOWER_FOREST
     override val bossBar: BossBar =
         BossBar.bossBar(bossName, 1.0f, BossBar.Color.PINK, BossBar.Overlay.PROGRESS)
     override val drops: List<ItemStack> get() = emptyList()

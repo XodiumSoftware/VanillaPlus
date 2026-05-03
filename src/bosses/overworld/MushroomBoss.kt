@@ -4,6 +4,7 @@ import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
 import org.bukkit.Particle
 import org.bukkit.attribute.Attribute
+import org.bukkit.block.Biome
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
@@ -19,6 +20,7 @@ internal object MushroomBoss : BossInterface {
     override val bossName: Component =
         MM.deserialize("<bold><gradient:#FF69B4:#DC143C>Mycelia, the Spore Queen</gradient></bold>")
     override val bossType: EntityType = EntityType.MOOSHROOM
+    override val biome: Biome = Biome.MUSHROOM_FIELDS
     override val bossBar: BossBar =
         BossBar.bossBar(bossName, 1.0f, BossBar.Color.PINK, BossBar.Overlay.PROGRESS)
     override val drops: List<ItemStack> get() = emptyList()

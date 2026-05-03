@@ -4,6 +4,7 @@ import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.attribute.Attribute
+import org.bukkit.block.Biome
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventHandler
@@ -25,6 +26,9 @@ internal interface BossInterface : Listener {
 
     /** The base entity type for this boss. */
     val bossType: EntityType
+
+    /** The biome where this boss spawns. */
+    val biome: Biome
 
     /** The boss bar displayed for this boss. */
     val bossBar: BossBar
@@ -51,7 +55,7 @@ internal interface BossInterface : Listener {
             showBossBar(bossBar)
             attributes.forEach { (attr, value) -> getAttribute(attr)?.baseValue = value }
             health = getAttribute(Attribute.MAX_HEALTH)?.value ?: 20.0
-            BossManager.registerBoss(this, this@BossInterface)
+            BossManager.registerBoss(this, this@BossInterface, biome)
         }
 
     /**

@@ -4,6 +4,7 @@ import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
 import org.bukkit.Particle
 import org.bukkit.attribute.Attribute
+import org.bukkit.block.Biome
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
@@ -17,6 +18,7 @@ internal object SmallEndIslandsBoss : BossInterface {
     override val bossName: Component =
         MM.deserialize("<bold><gradient:#00CED1:#5F9EA0>Aetherion, the Star Warden</gradient></bold>")
     override val bossType: EntityType = EntityType.ALLAY
+    override val biome: Biome = Biome.SMALL_END_ISLANDS
     override val bossBar: BossBar =
         BossBar.bossBar(bossName, 1.0f, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS)
     override val drops: List<ItemStack> get() = emptyList()

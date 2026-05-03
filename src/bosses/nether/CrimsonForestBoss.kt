@@ -4,6 +4,7 @@ import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
 import org.bukkit.Particle
 import org.bukkit.attribute.Attribute
+import org.bukkit.block.Biome
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Hoglin
 import org.bukkit.entity.LivingEntity
@@ -19,6 +20,7 @@ internal object CrimsonForestBoss : BossInterface {
     override val bossName: Component =
         MM.deserialize("<bold><gradient:#DC143C:#8B0000>Tuskarr, the Crimson Warlord</gradient></bold>")
     override val bossType: EntityType = EntityType.HOGLIN
+    override val biome: Biome = Biome.CRIMSON_FOREST
     override val bossBar: BossBar =
         BossBar.bossBar(bossName, 1.0f, BossBar.Color.RED, BossBar.Overlay.PROGRESS)
     override val drops: List<ItemStack> get() = emptyList()

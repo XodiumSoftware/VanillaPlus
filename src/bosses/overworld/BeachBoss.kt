@@ -4,6 +4,7 @@ import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
 import org.bukkit.Particle
 import org.bukkit.attribute.Attribute
+import org.bukkit.block.Biome
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Turtle
@@ -18,6 +19,7 @@ internal object BeachBoss : BossInterface {
     override val bossName: Component =
         MM.deserialize("<bold><gradient:#00CED1:#F4A460>Crustar, the Shore Guardian</gradient></bold>")
     override val bossType: EntityType = EntityType.TURTLE
+    override val biome: Biome = Biome.BEACH
     override val bossBar: BossBar =
         BossBar.bossBar(bossName, 1.0f, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS)
     override val drops: List<ItemStack> get() = emptyList()

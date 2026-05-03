@@ -4,6 +4,7 @@ import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
 import org.bukkit.Particle
 import org.bukkit.attribute.Attribute
+import org.bukkit.block.Biome
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
@@ -20,6 +21,7 @@ internal object SoulSandValleyBoss : BossInterface {
     override val bossName: Component =
         MM.deserialize("<bold><gradient:#F5F5DC:#696969>Osseus, the Soul Reaper</gradient></bold>")
     override val bossType: EntityType = EntityType.WITHER_SKELETON
+    override val biome: Biome = Biome.SOUL_SAND_VALLEY
     override val bossBar: BossBar =
         BossBar.bossBar(bossName, 1.0f, BossBar.Color.WHITE, BossBar.Overlay.PROGRESS)
     override val drops: List<ItemStack> get() = emptyList()

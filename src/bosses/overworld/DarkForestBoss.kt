@@ -4,6 +4,7 @@ import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
 import org.bukkit.Particle
 import org.bukkit.attribute.Attribute
+import org.bukkit.block.Biome
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
@@ -19,6 +20,7 @@ internal object DarkForestBoss : BossInterface {
     override val bossName: Component =
         MM.deserialize("<bold><gradient:#4B0082:#000000>Nocturne, the Shadow Lurker</gradient></bold>")
     override val bossType: EntityType = EntityType.VEX
+    override val biome: Biome = Biome.DARK_FOREST
     override val bossBar: BossBar =
         BossBar.bossBar(bossName, 1.0f, BossBar.Color.PURPLE, BossBar.Overlay.PROGRESS)
     override val drops: List<ItemStack> get() = emptyList()
