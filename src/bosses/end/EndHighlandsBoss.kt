@@ -1,4 +1,4 @@
-package org.xodium.illyriaplus.bosses.overworld
+package org.xodium.illyriaplus.bosses.end
 
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
@@ -12,26 +12,26 @@ import org.xodium.illyriaplus.interfaces.BossInterface
 import org.xodium.illyriaplus.utils.Utils.MM
 
 /**
- * A leviathan that rules the ocean depths.
+ * A crystalline golem that guards the towering end highlands pillars.
  */
-internal object OceanBoss : BossInterface {
+internal object EndHighlandsBoss : BossInterface {
     override val bossName: Component =
-        MM.deserialize("<bold><gradient:#1E90FF:#00008B>Leviathan, the Abyssal Tyrant</gradient></bold>")
-    override val bossType: EntityType = EntityType.GUARDIAN
+        MM.deserialize("<bold><gradient:#9400D3:#4B0082>Prismar, the Crystal Sentinel</gradient></bold>")
+    override val bossType: EntityType = EntityType.SHULKER
     override val bossBar: BossBar =
-        BossBar.bossBar(bossName, 1.0f, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS)
+        BossBar.bossBar(bossName, 1.0f, BossBar.Color.PURPLE, BossBar.Overlay.PROGRESS)
     override val drops: List<ItemStack> get() = emptyList()
     override val attributes: Map<Attribute, Double> =
         mapOf(
-            Attribute.MAX_HEALTH to 400.0,
+            Attribute.MAX_HEALTH to 280.0,
         )
 
     override fun onTick(entity: LivingEntity) {
-        // Mining fatigue aura, summon drowned
+        // Levitation field around the pillar
     }
 
     @EventHandler
     fun on(event: EntityDamageEvent) {
-        // Reduced damage when in water
+        // Shell closes when health is low, granting immunity
     }
 }

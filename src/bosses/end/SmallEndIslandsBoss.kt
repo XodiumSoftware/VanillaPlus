@@ -1,4 +1,4 @@
-package org.xodium.illyriaplus.bosses.overworld
+package org.xodium.illyriaplus.bosses.end
 
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
@@ -12,26 +12,26 @@ import org.xodium.illyriaplus.interfaces.BossInterface
 import org.xodium.illyriaplus.utils.Utils.MM
 
 /**
- * A leviathan that rules the ocean depths.
+ * A spectral guardian that protects the small floating end islands.
  */
-internal object OceanBoss : BossInterface {
+internal object SmallEndIslandsBoss : BossInterface {
     override val bossName: Component =
-        MM.deserialize("<bold><gradient:#1E90FF:#00008B>Leviathan, the Abyssal Tyrant</gradient></bold>")
-    override val bossType: EntityType = EntityType.GUARDIAN
+        MM.deserialize("<bold><gradient:#00CED1:#5F9EA0>Aetherion, the Star Warden</gradient></bold>")
+    override val bossType: EntityType = EntityType.ALLAY
     override val bossBar: BossBar =
         BossBar.bossBar(bossName, 1.0f, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS)
     override val drops: List<ItemStack> get() = emptyList()
     override val attributes: Map<Attribute, Double> =
         mapOf(
-            Attribute.MAX_HEALTH to 400.0,
+            Attribute.MAX_HEALTH to 180.0,
         )
 
     override fun onTick(entity: LivingEntity) {
-        // Mining fatigue aura, summon drowned
+        // Gravity manipulation, push/pull players
     }
 
     @EventHandler
     fun on(event: EntityDamageEvent) {
-        // Reduced damage when in water
+        // Levitate attackers when hit
     }
 }

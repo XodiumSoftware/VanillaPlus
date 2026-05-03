@@ -1,4 +1,4 @@
-package org.xodium.illyriaplus.bosses.overworld
+package org.xodium.illyriaplus.bosses.nether
 
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
@@ -12,26 +12,26 @@ import org.xodium.illyriaplus.interfaces.BossInterface
 import org.xodium.illyriaplus.utils.Utils.MM
 
 /**
- * A leviathan that rules the ocean depths.
+ * A magma golem forged in the volcanic basalt deltas.
  */
-internal object OceanBoss : BossInterface {
+internal object BasaltDeltasBoss : BossInterface {
     override val bossName: Component =
-        MM.deserialize("<bold><gradient:#1E90FF:#00008B>Leviathan, the Abyssal Tyrant</gradient></bold>")
-    override val bossType: EntityType = EntityType.GUARDIAN
+        MM.deserialize("<bold><gradient:#FF6347:#2F4F4F>Magmatus, the Basalt Colossus</gradient></bold>")
+    override val bossType: EntityType = EntityType.MAGMA_CUBE
     override val bossBar: BossBar =
-        BossBar.bossBar(bossName, 1.0f, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS)
+        BossBar.bossBar(bossName, 1.0f, BossBar.Color.YELLOW, BossBar.Overlay.PROGRESS)
     override val drops: List<ItemStack> get() = emptyList()
     override val attributes: Map<Attribute, Double> =
         mapOf(
-            Attribute.MAX_HEALTH to 400.0,
+            Attribute.MAX_HEALTH to 450.0,
         )
 
     override fun onTick(entity: LivingEntity) {
-        // Mining fatigue aura, summon drowned
+        // Earthquake stomp, summon magma cubes
     }
 
     @EventHandler
     fun on(event: EntityDamageEvent) {
-        // Reduced damage when in water
+        // Immune to fire damage, heals in lava
     }
 }

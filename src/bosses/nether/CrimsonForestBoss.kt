@@ -1,4 +1,4 @@
-package org.xodium.illyriaplus.bosses.overworld
+package org.xodium.illyriaplus.bosses.nether
 
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
@@ -12,14 +12,14 @@ import org.xodium.illyriaplus.interfaces.BossInterface
 import org.xodium.illyriaplus.utils.Utils.MM
 
 /**
- * A leviathan that rules the ocean depths.
+ * A massive hoglin warlord that rules the crimson forests.
  */
-internal object OceanBoss : BossInterface {
+internal object CrimsonForestBoss : BossInterface {
     override val bossName: Component =
-        MM.deserialize("<bold><gradient:#1E90FF:#00008B>Leviathan, the Abyssal Tyrant</gradient></bold>")
-    override val bossType: EntityType = EntityType.GUARDIAN
+        MM.deserialize("<bold><gradient:#DC143C:#8B0000>Tuskarr, the Crimson Warlord</gradient></bold>")
+    override val bossType: EntityType = EntityType.HOGLIN
     override val bossBar: BossBar =
-        BossBar.bossBar(bossName, 1.0f, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS)
+        BossBar.bossBar(bossName, 1.0f, BossBar.Color.RED, BossBar.Overlay.PROGRESS)
     override val drops: List<ItemStack> get() = emptyList()
     override val attributes: Map<Attribute, Double> =
         mapOf(
@@ -27,11 +27,11 @@ internal object OceanBoss : BossInterface {
         )
 
     override fun onTick(entity: LivingEntity) {
-        // Mining fatigue aura, summon drowned
+        // Summon hoglin reinforcements
     }
 
     @EventHandler
     fun on(event: EntityDamageEvent) {
-        // Reduced damage when in water
+        // Enraged when near crimson nylium
     }
 }

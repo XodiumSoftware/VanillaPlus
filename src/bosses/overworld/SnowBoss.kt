@@ -2,15 +2,12 @@ package org.xodium.illyriaplus.bosses.overworld
 
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
-import org.bukkit.Location
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.inventory.ItemStack
-import org.bukkit.potion.PotionEffect
-import org.bukkit.potion.PotionEffectType
 import org.xodium.illyriaplus.interfaces.BossInterface
 import org.xodium.illyriaplus.utils.Utils.MM
 
@@ -20,41 +17,14 @@ import org.xodium.illyriaplus.utils.Utils.MM
 internal object SnowBoss : BossInterface {
     override val bossName: Component =
         MM.deserialize("<bold><gradient:#E0FFFF:#00BFFF>Aurora, the Frostbinder</gradient></bold>")
-    override val entityType: EntityType = EntityType.STRAY
-    override val bossMaxHealth: Double = 200.0
-    override val drops: List<ItemStack> get() = emptyList()
-
+    override val bossType: EntityType = EntityType.STRAY
     override val bossBar: BossBar =
-        BossBar.bossBar(
-            bossName,
-            1.0f,
-            BossBar.Color.BLUE,
-            BossBar.Overlay.PROGRESS,
+        BossBar.bossBar(bossName, 1.0f, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS)
+    override val drops: List<ItemStack> get() = emptyList()
+    override val attributes: Map<Attribute, Double> =
+        mapOf(
+            Attribute.MAX_HEALTH to 200.0,
         )
-
-    override fun spawn(location: Location): LivingEntity =
-        (location.world.spawnEntity(location, entityType) as LivingEntity).apply {
-            customName(bossName)
-            isCustomNameVisible = true
-            health = bossMaxHealth
-            getAttribute(Attribute.MAX_HEALTH)?.baseValue = bossMaxHealth
-            addPotionEffect(PotionEffect(PotionEffectType.SLOWNESS, Int.MAX_VALUE, 0, false, false))
-        }
-
-    override fun despawn(entity: LivingEntity) {
-        entity.remove()
-    }
-
-    override fun onDeath(entity: LivingEntity) {
-        // Ice-related drops, tipped arrows
-    }
-
-    override fun onDamage(
-        entity: LivingEntity,
-        damage: Double,
-    ) {
-        // Slowness arrows with freezing effect
-    }
 
     override fun onTick(entity: LivingEntity) {
         // Snow particle aura, freeze nearby water
