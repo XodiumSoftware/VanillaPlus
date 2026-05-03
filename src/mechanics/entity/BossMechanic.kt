@@ -5,6 +5,7 @@ package org.xodium.illyriaplus.mechanics.entity
 import com.mojang.brigadier.arguments.StringArgumentType
 import io.papermc.paper.command.brigadier.Commands
 import net.kyori.adventure.audience.Audience
+import org.bukkit.Location
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -40,8 +41,17 @@ internal object BossMechanic : MechanicInterface {
     /** Map of active boss entities to their boss interface. */
     private val activeBosses = mutableMapOf<LivingEntity, BossInterface>()
 
+    /** Map of active boss entities to their anchor location. */
+    private val bossAnchors = mutableMapOf<LivingEntity, Location>()
+
     /** Set of chunk keys that have spawned anchored bosses (world:chunkX:chunkZ). */
     private val anchoredBossChunks = mutableSetOf<String>()
+
+    /** Maximum distance a boss can wander from its anchor before being pulled back. */
+    private const val ANCHOR_LEASH_RANGE = 48.0
+
+    /** Distance at which the boss starts walking back to anchor. */
+    private const val ANCHOR_RETURN_THRESHOLD = 32.0
 
     /** Random ability trigger chance (1 in 200 ticks = ~10 seconds on average). */
     private const val ABILITY_CHANCE = 0.005
@@ -68,14 +78,16 @@ internal object BossMechanic : MechanicInterface {
                                         val bossName = ctx.getArgument("name", String::class.java)
                                         val boss = bossByName[bossName]
                                         if (boss != null) {
-                                            boss.spawn(player.location)
+                                            val spawnLoc = player.location.clone()
+                                            val entity = boss.spawn(spawnLoc)
 
-                                            player.world.addAnchoredBoss(bossName, player.location)
+                                            player.world.addAnchoredBoss(bossName, spawnLoc)
                                             player.sendMessage("Anchored $bossName at your location!")
 
-                                            val chunk = player.location.chunk
+                                            val chunk = spawnLoc.chunk
 
                                             anchoredBossChunks.add(getChunkKey(player.world.name, chunk.x, chunk.z))
+                                            bossAnchors[entity] = spawnLoc
                                         } else {
                                             player.sendMessage("Unknown boss: $bossName")
                                         }
@@ -144,6 +156,7 @@ internal object BossMechanic : MechanicInterface {
         if (boss != null) {
             boss.onDeath(event.entity)
             activeBosses.remove(event.entity)
+            bossAnchors.remove(event.entity)
         } else {
             bosses.forEach { it.onDeath(event.entity) }
         }
@@ -171,7 +184,11 @@ internal object BossMechanic : MechanicInterface {
                 val boss = bossByName[it.bossClassName]
                 val location = it.getLocation()
 
-                if (boss != null && location != null) boss.spawn(location)
+                if (boss != null && location != null) {
+                    val entity = boss.spawn(location)
+
+                    bossAnchors[entity] = location.clone()
+                }
             }
         }
     }
@@ -186,7 +203,10 @@ internal object BossMechanic : MechanicInterface {
                 val entityChunk = entity.location.chunk
                 val shouldRemove = entityChunk == chunk
 
-                if (shouldRemove) entity.remove()
+                if (shouldRemove) {
+                    entity.remove()
+                    bossAnchors.remove(entity)
+                }
 
                 shouldRemove
             }
@@ -217,7 +237,7 @@ internal object BossMechanic : MechanicInterface {
     }
 
     /**
-     * Starts the scheduler that handles boss abilities and boss bar visibility.
+     * Starts the scheduler that handles boss abilities, boss bar visibility, and anchor leash.
      */
     private fun startScheduler() {
         schedule(period = 1) {
@@ -228,15 +248,38 @@ internal object BossMechanic : MechanicInterface {
                     if (Random.nextDouble() < ABILITY_CHANCE) boss.ability(entity)
 
                     updateBossBarViewers(entity, boss)
+                    checkAnchorLeash(entity)
                 } else {
                     boss.bossBar
                         .viewers()
                         .filterIsInstance<Audience>()
                         .forEach { boss.bossBar.removeViewer(it) }
+                    bossAnchors.remove(entity)
                 }
 
                 shouldRemove
             }
+        }
+    }
+
+    /**
+     * Checks if the boss has wandered too far from its anchor and walks it back if necessary.
+     *
+     * @param entity The boss entity.
+     */
+    private fun checkAnchorLeash(entity: LivingEntity) {
+        val anchor = bossAnchors[entity] ?: return
+
+        if (entity.world != anchor.world) return
+
+        val distance = entity.location.distance(anchor)
+
+        if (distance > ANCHOR_LEASH_RANGE) {
+            entity.teleport(anchor)
+        } else if (distance > ANCHOR_RETURN_THRESHOLD) {
+            val direction = anchor.toVector().subtract(entity.location.toVector()).normalize()
+
+            entity.velocity = direction.multiply(0.3)
         }
     }
 
