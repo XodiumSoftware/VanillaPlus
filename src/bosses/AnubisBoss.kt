@@ -22,7 +22,13 @@ internal object AnubisBoss : BossInterface {
         MM.deserialize("<b><gradient:#FF8C00:#FFD700>Anubis</gradient></b>")
     override val bossType: EntityType = EntityType.HUSK
     override val bossBar: BossBar =
-        BossBar.bossBar(bossName, 1.0f, BossBar.Color.YELLOW, BossBar.Overlay.PROGRESS)
+        BossBar.bossBar(
+            bossName,
+            1.0f,
+            BossBar.Color.YELLOW,
+            BossBar.Overlay.PROGRESS,
+            setOf(BossBar.Flag.PLAY_BOSS_MUSIC, BossBar.Flag.CREATE_WORLD_FOG),
+        )
     override val drops: List<ItemStack> get() = emptyList()
     override val attributes: Map<Attribute, Double> =
         mapOf(
