@@ -27,6 +27,7 @@ internal object FlowerForestBoss : BossInterface {
             Attribute.MAX_HEALTH to 80.0,
             Attribute.FLYING_SPEED to 0.6,
             Attribute.MOVEMENT_SPEED to 0.35,
+            Attribute.SCALE to 0.8,
         )
 
     override fun onTick(entity: LivingEntity) {

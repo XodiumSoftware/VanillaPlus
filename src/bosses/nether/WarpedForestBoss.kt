@@ -28,6 +28,7 @@ internal object WarpedForestBoss : BossInterface {
             Attribute.MAX_HEALTH to 250.0,
             Attribute.MOVEMENT_SPEED to 0.35,
             Attribute.ATTACK_DAMAGE to 10.0,
+            Attribute.SCALE to 1.5,
         )
 
     override fun onTick(entity: LivingEntity) {

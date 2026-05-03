@@ -28,6 +28,7 @@ internal object DesertBoss : BossInterface {
             Attribute.MAX_HEALTH to 250.0,
             Attribute.ATTACK_DAMAGE to 10.0,
             Attribute.KNOCKBACK_RESISTANCE to 0.5,
+            Attribute.SCALE to 1.8,
         )
 
     override fun onTick(entity: LivingEntity) {

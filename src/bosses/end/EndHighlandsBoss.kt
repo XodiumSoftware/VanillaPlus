@@ -27,6 +27,7 @@ internal object EndHighlandsBoss : BossInterface {
             Attribute.MAX_HEALTH to 280.0,
             Attribute.KNOCKBACK_RESISTANCE to 0.9,
             Attribute.ARMOR to 10.0,
+            Attribute.SCALE to 1.4,
         )
 
     override fun onTick(entity: LivingEntity) {

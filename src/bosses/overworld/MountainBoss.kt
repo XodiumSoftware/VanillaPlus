@@ -27,6 +27,7 @@ internal object MountainBoss : BossInterface {
             Attribute.KNOCKBACK_RESISTANCE to 1.0,
             Attribute.ATTACK_DAMAGE to 15.0,
             Attribute.ARMOR to 15.0,
+            Attribute.SCALE to 2.5,
         )
 
     override fun onTick(entity: LivingEntity) {

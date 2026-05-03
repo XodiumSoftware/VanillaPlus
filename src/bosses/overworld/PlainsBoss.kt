@@ -27,6 +27,7 @@ internal object PlainsBoss : BossInterface {
             Attribute.MAX_HEALTH to 200.0,
             Attribute.ATTACK_DAMAGE to 8.0,
             Attribute.MOVEMENT_SPEED to 0.3,
+            Attribute.SCALE to 1.5,
         )
 
     override fun onTick(entity: LivingEntity) {

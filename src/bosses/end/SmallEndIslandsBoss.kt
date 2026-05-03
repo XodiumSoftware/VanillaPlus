@@ -24,6 +24,7 @@ internal object SmallEndIslandsBoss : BossInterface {
         mapOf(
             Attribute.MAX_HEALTH to 180.0,
             Attribute.FLYING_SPEED to 0.6,
+            Attribute.SCALE to 1.5,
         )
 
     override fun onTick(entity: LivingEntity) {

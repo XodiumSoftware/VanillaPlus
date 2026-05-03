@@ -27,6 +27,7 @@ internal object CrimsonForestBoss : BossInterface {
             Attribute.MAX_HEALTH to 400.0,
             Attribute.ATTACK_DAMAGE to 12.0,
             Attribute.KNOCKBACK_RESISTANCE to 0.6,
+            Attribute.SCALE to 1.9,
         )
 
     override fun onTick(entity: LivingEntity) {

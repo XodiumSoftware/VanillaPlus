@@ -26,6 +26,7 @@ internal object BeachBoss : BossInterface {
             Attribute.MAX_HEALTH to 150.0,
             Attribute.KNOCKBACK_RESISTANCE to 0.8,
             Attribute.ARMOR to 10.0,
+            Attribute.SCALE to 1.6,
         )
 
     override fun onTick(entity: LivingEntity) {

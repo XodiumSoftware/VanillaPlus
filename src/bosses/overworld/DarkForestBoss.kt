@@ -27,6 +27,7 @@ internal object DarkForestBoss : BossInterface {
             Attribute.MAX_HEALTH to 120.0,
             Attribute.MOVEMENT_SPEED to 0.45,
             Attribute.ATTACK_DAMAGE to 7.0,
+            Attribute.SCALE to 1.3,
         )
 
     override fun onTick(entity: LivingEntity) {

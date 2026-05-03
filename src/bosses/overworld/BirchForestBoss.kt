@@ -26,6 +26,7 @@ internal object BirchForestBoss : BossInterface {
             Attribute.MAX_HEALTH to 140.0,
             Attribute.MOVEMENT_SPEED to 0.4,
             Attribute.ATTACK_DAMAGE to 6.0,
+            Attribute.SCALE to 1.2,
         )
 
     override fun onTick(entity: LivingEntity) {

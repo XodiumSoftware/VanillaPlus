@@ -25,6 +25,7 @@ internal object BasaltDeltasBoss : BossInterface {
             Attribute.MAX_HEALTH to 450.0,
             Attribute.KNOCKBACK_RESISTANCE to 0.8,
             Attribute.ARMOR to 12.0,
+            Attribute.SCALE to 2.2,
         )
 
     override fun onTick(entity: LivingEntity) {

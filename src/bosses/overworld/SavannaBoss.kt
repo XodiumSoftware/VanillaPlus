@@ -28,6 +28,7 @@ internal object SavannaBoss : BossInterface {
             Attribute.MAX_HEALTH to 220.0,
             Attribute.MOVEMENT_SPEED to 0.4,
             Attribute.ATTACK_DAMAGE to 9.0,
+            Attribute.SCALE to 1.5,
         )
 
     override fun onTick(entity: LivingEntity) {

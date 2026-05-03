@@ -25,6 +25,7 @@ internal object SnowBoss : BossInterface {
         mapOf(
             Attribute.MAX_HEALTH to 200.0,
             Attribute.ATTACK_DAMAGE to 7.0,
+            Attribute.SCALE to 1.4,
         )
 
     override fun onTick(entity: LivingEntity) {

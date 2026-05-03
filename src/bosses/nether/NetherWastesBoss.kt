@@ -25,6 +25,7 @@ internal object NetherWastesBoss : BossInterface {
         mapOf(
             Attribute.MAX_HEALTH to 300.0,
             Attribute.FLYING_SPEED to 0.5,
+            Attribute.SCALE to 1.6,
         )
 
     override fun onTick(entity: LivingEntity) {

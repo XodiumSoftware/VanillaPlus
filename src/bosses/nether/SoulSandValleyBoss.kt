@@ -28,6 +28,7 @@ internal object SoulSandValleyBoss : BossInterface {
             Attribute.MAX_HEALTH to 350.0,
             Attribute.ATTACK_DAMAGE to 11.0,
             Attribute.KNOCKBACK_RESISTANCE to 0.5,
+            Attribute.SCALE to 1.7,
         )
 
     override fun onTick(entity: LivingEntity) {

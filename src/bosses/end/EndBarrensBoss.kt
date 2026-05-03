@@ -27,6 +27,7 @@ internal object EndBarrensBoss : BossInterface {
             Attribute.MAX_HEALTH to 220.0,
             Attribute.FLYING_SPEED to 0.5,
             Attribute.MOVEMENT_SPEED to 0.35,
+            Attribute.SCALE to 1.7,
         )
 
     override fun onTick(entity: LivingEntity) {

@@ -25,6 +25,7 @@ internal object ForestBoss : BossInterface {
         mapOf(
             Attribute.MAX_HEALTH to 180.0,
             Attribute.ATTACK_DAMAGE to 7.0,
+            Attribute.SCALE to 1.3,
         )
 
     override fun onTick(entity: LivingEntity) {

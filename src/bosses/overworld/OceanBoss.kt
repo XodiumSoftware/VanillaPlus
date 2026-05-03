@@ -27,6 +27,7 @@ internal object OceanBoss : BossInterface {
             Attribute.MAX_HEALTH to 400.0,
             Attribute.ATTACK_DAMAGE to 12.0,
             Attribute.MOVEMENT_SPEED to 0.3,
+            Attribute.SCALE to 2.0,
         )
 
     override fun onTick(entity: LivingEntity) {
