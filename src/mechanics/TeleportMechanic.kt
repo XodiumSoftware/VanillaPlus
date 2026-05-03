@@ -1,7 +1,10 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package org.xodium.illyriaplus.mechanics
 
 import org.bukkit.*
 import org.bukkit.block.data.Lightable
+import org.bukkit.block.data.type.Candle
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Item
 import org.bukkit.entity.Player
@@ -14,14 +17,21 @@ import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.xodium.illyriaplus.Utils.MM
+import org.xodium.illyriaplus.data.RitualData
 import org.xodium.illyriaplus.interfaces.MechanicInterface
 import org.xodium.illyriaplus.items.TeleportScrollItem
+import org.xodium.illyriaplus.managers.RitualStorageManager
 
 internal object TeleportMechanic : MechanicInterface {
     private const val CIRCLE_RADIUS = 3
 
     private val activeRituals = mutableMapOf<Location, RitualCircle>()
     private val ritualCenters = mutableMapOf<Location, Location>()
+
+    override fun register(): Long {
+        RitualStorageManager.load()
+        return super.register()
+    }
 
     /**
      * Represents a ritual circle for teleportation.
@@ -109,6 +119,7 @@ internal object TeleportMechanic : MechanicInterface {
 
             if (circle.candles.isEmpty()) {
                 activeRituals.remove(circle.center)
+                RitualStorageManager.removeRitual(circle.center)
             } else if (circle.isActive) {
                 circle.fireLocation?.let { location ->
                     location.block.type = Material.AIR
@@ -149,18 +160,26 @@ internal object TeleportMechanic : MechanicInterface {
         if (circle.isActive) return
 
         val world = circle.center.world ?: return
+        val candleConfigs = mutableMapOf<Location, Pair<Int, Material>>()
         val allLit =
-            circle.candles.all {
-                val block = it.block
+            circle.candles.all { loc ->
+                val block = loc.block
 
                 if (!Tag.CANDLES.isTagged(block.type)) return@all false
 
-                val lightable = block.blockData as? Lightable ?: return@all false
+                val candleData = block.blockData as? Candle ?: return@all false
 
-                lightable.isLit
+                if (!candleData.isLit) return@all false
+
+                candleConfigs[loc] = candleData.candles to block.type
+                true
             }
 
         if (!allLit) return
+
+        val ritualData = RitualData.fromLocation(circle.center, candleConfigs)
+
+        RitualStorageManager.addRitual(ritualData)
 
         spawnParticleTrails(circle)
 
@@ -231,7 +250,37 @@ internal object TeleportMechanic : MechanicInterface {
         player: Player,
         circle: RitualCircle,
     ) {
-        player.sendActionBar(MM.deserialize("<green>You have been teleported!</green>"))
+        val candleConfigs =
+            buildMap {
+                circle.candles.forEach { loc ->
+                    val block = loc.block
+                    if (!Tag.CANDLES.isTagged(block.type)) return@forEach
+
+                    val candleData = block.blockData as? Candle ?: return@forEach
+
+                    put(loc, candleData.candles to block.type)
+                }
+            }
+
+        val currentRitual = RitualData.fromLocation(circle.center, candleConfigs)
+        val targetRitual =
+            RitualStorageManager
+                .findMatchingRitual(currentRitual.candles)
+                ?.takeIf {
+                    it.world != circle.center.world?.name ||
+                        it.x != circle.center.blockX ||
+                        it.y != circle.center.blockY ||
+                        it.z != circle.center.blockZ
+                }
+
+        if (targetRitual != null) {
+            targetRitual.getCenter().let {
+                player.teleport(it.clone().add(0.5, 0.0, 0.5))
+                player.sendActionBar(MM.deserialize("<green>You have been teleported!</green>"))
+            }
+        } else {
+            player.sendActionBar(MM.deserialize("<red>No matching ritual found!</red>"))
+        }
 
         circle.fireLocation?.let {
             it.block.type = Material.AIR
