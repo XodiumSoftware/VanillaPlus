@@ -32,6 +32,7 @@ internal class IllyriaPlus : JavaPlugin() {
                 DiamondRecycleRecipe,
                 PaintingRecipe,
                 RottenFleshRecipe,
+                TeleportScrollRecipe,
                 WoodLogRecipe,
             )
 
@@ -58,6 +59,7 @@ internal class IllyriaPlus : JavaPlugin() {
                 SitMechanic,
                 SpawnEggMechanic,
                 TameableMechanic,
+                TeleportMechanic,
             )
 
         logger.info(
