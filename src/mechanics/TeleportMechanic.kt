@@ -339,6 +339,14 @@ internal object TeleportMechanic : MechanicInterface {
         return null
     }
 
+//    ..CCC..
+//    .C...C.
+//    C.....C
+//    C..X..C
+//    C.....C
+//    .C...C.
+//    ..CCC..
+
     /** Checks if the given location is a valid center for a ritual circle. */
     private fun isValidRitualCenter(center: Location): Boolean {
         val world = center.world ?: return false
