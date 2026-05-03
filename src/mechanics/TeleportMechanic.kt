@@ -1,10 +1,245 @@
 package org.xodium.illyriaplus.mechanics
 
+import org.bukkit.Location
+import org.bukkit.Material
+import org.bukkit.Tag
+import org.bukkit.block.data.Lightable
+import org.bukkit.entity.Item
+import org.bukkit.entity.Player
+import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
+import org.bukkit.event.block.Action
+import org.bukkit.event.block.BlockBreakEvent
+import org.bukkit.event.block.BlockPlaceEvent
+import org.bukkit.event.entity.EntityDamageEvent
+import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.inventory.ItemStack
+import org.xodium.illyriaplus.Utils.MM
 import org.xodium.illyriaplus.interfaces.MechanicInterface
 import org.xodium.illyriaplus.items.TeleportScrollItem
 
-/** Handles teleportation mechanics within the system. */
 internal object TeleportMechanic : MechanicInterface {
-    /** Reference to the Teleport Scroll item. */
-    val item = TeleportScrollItem.item
+    private const val CIRCLE_RADIUS = 2
+    private const val RITUAL_HEIGHT = 1
+    private val activeRituals = mutableMapOf<Location, RitualCircle>()
+    private val ritualCenters = mutableMapOf<Location, Location>()
+
+    private data class RitualCircle(
+        val center: Location,
+        val candles: MutableSet<Location> = mutableSetOf(),
+        var isActive: Boolean = false,
+        var fireLocation: Location? = null,
+    )
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun on(event: BlockPlaceEvent) = blockPlace(event)
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun on(event: BlockBreakEvent) = blockBreak(event)
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun on(event: PlayerInteractEvent) = playerInteract(event)
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun on(event: EntityDamageEvent) = entityDamage(event)
+
+    /** Handles candle placement to detect ritual circles. */
+    private fun blockPlace(event: BlockPlaceEvent) {
+        val block = event.block
+        if (!Tag.CANDLES.isTagged(block.type)) return
+
+        findRitualCenter(block.location)?.let {
+            activeRituals.getOrPut(it) { RitualCircle(it) }.candles.add(block.location)
+        }
+    }
+
+    /** Handles candle breaks to update ritual circles. */
+    private fun blockBreak(event: BlockBreakEvent) {
+        val block = event.block
+        if (!Tag.CANDLES.isTagged(block.type)) {
+            if (block.type == Material.FIRE) {
+                ritualCenters[block.location]?.let { location ->
+                    activeRituals[location]?.let {
+                        it.isActive = false
+                        it.fireLocation = null
+                    }
+                    ritualCenters.remove(block.location)
+                }
+            }
+            return
+        }
+
+        activeRituals.values.find { block.location in it.candles }?.let { circle ->
+            circle.candles.remove(block.location)
+            if (circle.candles.isEmpty()) {
+                activeRituals.remove(circle.center)
+            } else if (circle.isActive) {
+                circle.fireLocation?.let { location ->
+                    location.block.type = Material.AIR
+                    circle.isActive = false
+                    circle.fireLocation = null
+                    ritualCenters.remove(location)
+                }
+            }
+        }
+    }
+
+    /** Handles candle lighting with flint and steel or fire charge. */
+    private fun playerInteract(event: PlayerInteractEvent) {
+        if (event.action != Action.RIGHT_CLICK_BLOCK) return
+
+        val block = event.clickedBlock ?: return
+        val player = event.player
+        val item = event.item ?: return
+
+        if (block.type == Material.FIRE) {
+            ritualCenters[block.location]?.let { location ->
+                activeRituals[location]?.let { checkForScrollInFire(it, player) }
+            }
+            return
+        }
+        if (!Tag.CANDLES.isTagged(block.type)) return
+        if (!isIgnitionItem(item)) return
+
+        val candleData = block.blockData as? Lightable ?: return
+
+        if (candleData.isLit) return
+
+        findRitualCenter(block.location)?.let { location -> activeRituals[location]?.let { checkAllCandlesLit(it) } }
+    }
+
+    /** Checks if all candles in a circle are lit and activates the ritual. */
+    private fun checkAllCandlesLit(circle: RitualCircle) {
+        if (circle.isActive) return
+
+        val world = circle.center.world ?: return
+        val allLit =
+            circle.candles.all {
+                val block = it.block
+
+                if (!Tag.CANDLES.isTagged(block.type)) return@all false
+
+                val lightable = block.blockData as? Lightable ?: return@all false
+
+                lightable.isLit
+            }
+
+        if (!allLit) return
+
+        val fireLoc = circle.center.clone().add(0.0, 1.0, 0.0)
+
+        fireLoc.block.type = Material.FIRE
+        circle.isActive = true
+        circle.fireLocation = fireLoc
+        ritualCenters[fireLoc] = circle.center
+
+        world
+            .getNearbyEntities(fireLoc, 10.0, 10.0, 10.0)
+            .filterIsInstance<Player>()
+            .forEach { it.sendMessage(MM.deserialize("<yellow>A teleportation portal opens...</yellow>")) }
+    }
+
+    /** Checks for teleport scroll items in the fire and teleports the player. */
+    private fun checkForScrollInFire(
+        circle: RitualCircle,
+        player: Player,
+    ) {
+        val fireLoc = circle.fireLocation ?: return
+        val world = fireLoc.world ?: return
+
+        world
+            .getNearbyEntities(fireLoc, 1.5, 1.5, 1.5)
+            .filterIsInstance<Item>()
+            .filter { it.itemStack.isSimilar(TeleportScrollItem.item) }
+            .forEach {
+                it.remove()
+                performTeleport(player, circle)
+            }
+    }
+
+    /** Performs the teleportation. */
+    private fun performTeleport(
+        player: Player,
+        circle: RitualCircle,
+    ) {
+        player.sendMessage(MM.deserialize("<green>You have been teleported!</green>"))
+
+        circle.fireLocation?.let {
+            it.block.type = Material.AIR
+            ritualCenters.remove(it)
+        }
+        circle.isActive = false
+        circle.fireLocation = null
+        circle.candles.forEach {
+            val block = it.block
+
+            if (Tag.CANDLES.isTagged(block.type)) {
+                val lightable = block.blockData as? Lightable ?: return@forEach
+
+                lightable.isLit = false
+                block.blockData = lightable
+            }
+        }
+    }
+
+    /** Prevents fire damage to players near ritual fires. */
+    private fun entityDamage(event: EntityDamageEvent) {
+        if (event.cause != EntityDamageEvent.DamageCause.FIRE &&
+            event.cause != EntityDamageEvent.DamageCause.FIRE_TICK
+        ) {
+            return
+        }
+
+        val player = event.entity as? Player ?: return
+
+        ritualCenters.keys.forEach {
+            if (player.location.distanceSquared(it) < 4.0) {
+                event.isCancelled = true
+                return
+            }
+        }
+    }
+
+    /** Finds the center of a potential ritual circle for the given candle location. */
+    private fun findRitualCenter(candleLoc: Location): Location? {
+        val world = candleLoc.world ?: return null
+        val cx = candleLoc.blockX
+        val cy = candleLoc.blockY
+        val cz = candleLoc.blockZ
+
+        for (dx in -CIRCLE_RADIUS..CIRCLE_RADIUS) {
+            for (dz in -CIRCLE_RADIUS..CIRCLE_RADIUS) {
+                if (dx == 0 && dz == 0) continue
+
+                val centerX = cx - dx
+                val centerZ = cz - dz
+                val centerLoc = Location(world, centerX.toDouble(), cy.toDouble(), centerZ.toDouble())
+
+                if (isValidRitualCenter(centerLoc)) return centerLoc
+            }
+        }
+        return null
+    }
+
+    /** Checks if the given location is a valid center for a ritual circle. */
+    private fun isValidRitualCenter(center: Location): Boolean {
+        val world = center.world ?: return false
+        val cx = center.blockX
+        val cy = center.blockY
+        val cz = center.blockZ
+
+        val expectedPositions =
+            listOf(
+                Location(world, cx + 2.0, cy.toDouble(), cz.toDouble()),
+                Location(world, cx - 2.0, cy.toDouble(), cz.toDouble()),
+                Location(world, cx.toDouble(), cy.toDouble(), cz + 2.0),
+                Location(world, cx.toDouble(), cy.toDouble(), cz - 2.0),
+            )
+
+        return expectedPositions.count { Tag.CANDLES.isTagged(it.block.type) } >= 2
+    }
+
+    /** Checks if the item can light candles. */
+    private fun isIgnitionItem(item: ItemStack): Boolean =
+        item.type == Material.FLINT_AND_STEEL || item.type == Material.FIRE_CHARGE
 }
