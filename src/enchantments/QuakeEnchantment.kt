@@ -10,10 +10,10 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.util.Vector
+import org.xodium.illyriaplus.Utils.EnchantmentUtils.displayName
+import org.xodium.illyriaplus.Utils.EnchantmentUtils.isSelectedSpell
 import org.xodium.illyriaplus.interfaces.EnchantmentInterface
 import org.xodium.illyriaplus.managers.XpManager
-import org.xodium.illyriaplus.utils.Utils
-import org.xodium.illyriaplus.utils.Utils.displayName
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
@@ -42,7 +42,7 @@ internal object QuakeEnchantment : EnchantmentInterface {
 
     @EventHandler
     fun on(event: PlayerInteractEvent) {
-        if (!Utils.isSelectedSpell(event.item, get())) return
+        if (!isSelectedSpell(event.item, get())) return
 
         val player = XpManager.consumeXp(event, get(), XP_COST) ?: return
         val location = player.location

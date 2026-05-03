@@ -15,11 +15,11 @@ import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.scheduler.BukkitTask
 import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
+import org.xodium.illyriaplus.Utils
+import org.xodium.illyriaplus.Utils.EnchantmentUtils.displayName
+import org.xodium.illyriaplus.Utils.EnchantmentUtils.isSelectedSpell
 import org.xodium.illyriaplus.interfaces.EnchantmentInterface
 import org.xodium.illyriaplus.managers.XpManager
-import org.xodium.illyriaplus.utils.ScheduleUtils
-import org.xodium.illyriaplus.utils.Utils
-import org.xodium.illyriaplus.utils.Utils.displayName
 import java.util.*
 
 /** Represents an object handling voidpull enchantment implementation within the system. */
@@ -45,7 +45,7 @@ internal object VoidpullEnchantment : EnchantmentInterface {
 
     @EventHandler
     fun on(event: PlayerInteractEvent) {
-        if (!Utils.isSelectedSpell(event.item, get())) return
+        if (!isSelectedSpell(event.item, get())) return
 
         val player = XpManager.consumeXp(event, get(), XP_COST) ?: return
         val direction = player.location.direction.normalize()
@@ -106,7 +106,7 @@ internal object VoidpullEnchantment : EnchantmentInterface {
      * @return The [BukkitTask] running the trail, so it can be cancelled early on hit.
      */
     private fun spawnPearlTrail(pearl: EnderPearl) =
-        ScheduleUtils.spawnProjectileTrail(pearl) {
+        Utils.ScheduleUtils.spawnProjectileTrail(pearl) {
             Particle.PORTAL
                 .builder()
                 .location(it)

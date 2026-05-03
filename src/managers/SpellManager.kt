@@ -10,9 +10,9 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.inventory.ItemStack
+import org.xodium.illyriaplus.Utils.MM
 import org.xodium.illyriaplus.enchantments.*
 import org.xodium.illyriaplus.pdcs.ItemPDC.selectedSpell
-import org.xodium.illyriaplus.utils.Utils.MM
 
 /** Manages spell execution and cycling for multi-spell wands. */
 internal object SpellManager {

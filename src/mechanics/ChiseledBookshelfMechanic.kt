@@ -15,8 +15,8 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.util.Vector
+import org.xodium.illyriaplus.Utils.MM
 import org.xodium.illyriaplus.interfaces.MechanicInterface
-import org.xodium.illyriaplus.utils.Utils.MM
 import org.bukkit.block.data.type.ChiseledBookshelf as ChiseledBookshelfData
 
 /** Represents a module handling bookshelf mechanics within the system. */
