@@ -12,6 +12,7 @@ import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.inventory.ItemStack
 import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
+import org.xodium.illyriaplus.managers.BossManager
 import kotlin.time.measureTime
 
 /**
@@ -50,6 +51,7 @@ internal interface BossInterface : Listener {
             showBossBar(bossBar)
             attributes.forEach { (attr, value) -> getAttribute(attr)?.baseValue = value }
             health = getAttribute(Attribute.MAX_HEALTH)?.value ?: 20.0
+            BossManager.registerBoss(this, this@BossInterface)
         }
 
     /**
@@ -69,6 +71,7 @@ internal interface BossInterface : Listener {
      */
     fun onDeath(entity: LivingEntity) {
         drops.forEach { entity.world.dropItemNaturally(entity.location, it) }
+        BossManager.unregisterBoss(entity)
     }
 
     /**

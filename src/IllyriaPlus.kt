@@ -10,6 +10,7 @@ import org.xodium.illyriaplus.bosses.end.SmallEndIslandsBoss
 import org.xodium.illyriaplus.bosses.nether.*
 import org.xodium.illyriaplus.bosses.overworld.*
 import org.xodium.illyriaplus.enchantments.*
+import org.xodium.illyriaplus.managers.BossManager
 import org.xodium.illyriaplus.mechanics.*
 import org.xodium.illyriaplus.mechanics.entity.BatMechanic
 import org.xodium.illyriaplus.mechanics.entity.GriefingMechanic
@@ -127,6 +128,9 @@ internal class IllyriaPlus : JavaPlugin() {
         logger.info(
             "Registered: ${bosses.size} boss(es) | Took ${bosses.sumOf { it.register() }}ms",
         )
+
+        BossManager.startTickScheduler()
+        logger.info("Boss tick scheduler started.")
     }
 
     /**
