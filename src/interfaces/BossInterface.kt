@@ -8,6 +8,7 @@ import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
+import org.xodium.illyriaplus.mechanics.entity.BossMechanic
 
 /**
  * Represents a contract for custom bosses within the system.
@@ -44,7 +45,6 @@ internal interface BossInterface {
         (location.world.spawnEntity(location, bossType) as LivingEntity).apply {
             customName(bossName)
             isCustomNameVisible = true
-            showBossBar(bossBar)
             attributes.forEach { (attr, value) -> getAttribute(attr)?.baseValue = value }
             health = getAttribute(Attribute.MAX_HEALTH)?.value ?: 20.0
             this@BossInterface.equipment.forEach { (slot, item) ->
@@ -58,6 +58,7 @@ internal interface BossInterface {
                     else -> return@apply
                 }
             }
+            BossMechanic.registerBoss(this@apply, this@BossInterface)
         }
 
     /**
@@ -89,9 +90,9 @@ internal interface BossInterface {
     }
 
     /**
-     * Called each tick to update boss behavior/abilities.
+     * Triggers the boss's unique ability.
      *
      * @param entity The boss entity.
      */
-    fun onTick(entity: LivingEntity)
+    fun ability(entity: LivingEntity)
 }

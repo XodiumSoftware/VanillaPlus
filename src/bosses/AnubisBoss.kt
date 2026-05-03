@@ -33,7 +33,7 @@ internal object AnubisBoss : BossInterface {
         )
     override val equipment: Map<EquipmentSlot, ItemStack> =
         mapOf(
-            EquipmentSlot.HAND to ItemStack.of(Material.NETHERITE_SWORD),
+            EquipmentSlot.HAND to ItemStack.of(Material.NETHERITE_SPEAR),
             EquipmentSlot.OFF_HAND to ItemStack.of(Material.LEAD),
             EquipmentSlot.HEAD to ItemStack.of(Material.NETHERITE_HELMET),
             EquipmentSlot.CHEST to ItemStack.of(Material.NETHERITE_CHESTPLATE),
@@ -41,9 +41,7 @@ internal object AnubisBoss : BossInterface {
             EquipmentSlot.FEET to ItemStack.of(Material.NETHERITE_BOOTS),
         )
 
-    override fun onTick(entity: LivingEntity) {
-        if (entity.ticksLived % 80 != 0) return
-
+    override fun ability(entity: LivingEntity) {
         entity.world.spawnParticle(
             Particle.FALLING_DUST,
             entity.location,
