@@ -1,5 +1,6 @@
 package org.xodium.illyriaplus.interfaces
 
+import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
@@ -58,6 +59,14 @@ internal interface BossInterface {
                     else -> return@apply
                 }
             }
+            this@apply.equipment?.let {
+                it.helmetDropChance = 0.0f
+                it.chestplateDropChance = 0.0f
+                it.leggingsDropChance = 0.0f
+                it.bootsDropChance = 0.0f
+                it.itemInMainHandDropChance = 0.0f
+                it.itemInOffHandDropChance = 0.0f
+            }
             BossMechanic.registerBoss(this@apply, this@BossInterface)
         }
 
@@ -78,6 +87,7 @@ internal interface BossInterface {
      */
     fun onDeath(entity: LivingEntity) {
         drops.forEach { entity.world.dropItemNaturally(entity.location, it) }
+        bossBar.viewers().filterIsInstance<Audience>().forEach { bossBar.removeViewer(it) }
     }
 
     /**

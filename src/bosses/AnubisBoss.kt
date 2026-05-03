@@ -39,7 +39,7 @@ internal object AnubisBoss : BossInterface {
         )
     override val equipment: Map<EquipmentSlot, ItemStack> =
         mapOf(
-            EquipmentSlot.HAND to ItemStack.of(Material.NETHERITE_SPEAR),
+            EquipmentSlot.HAND to ItemStack.of(Material.NETHERITE_SWORD),
             EquipmentSlot.OFF_HAND to ItemStack.of(Material.LEAD),
             EquipmentSlot.HEAD to ItemStack.of(Material.NETHERITE_HELMET),
             EquipmentSlot.CHEST to ItemStack.of(Material.NETHERITE_CHESTPLATE),
@@ -48,18 +48,25 @@ internal object AnubisBoss : BossInterface {
         )
 
     override fun ability(entity: LivingEntity) {
-        entity.world.spawnParticle(
-            Particle.FALLING_DUST,
-            entity.location,
-            30,
-            3.0,
-            2.0,
-            3.0,
-            0.0,
-            Material.SAND.createBlockData(),
-        )
-        entity.world.getNearbyPlayers(entity.location, 10.0).forEach {
-            it.addPotionEffect(PotionEffect(PotionEffectType.SLOWNESS, 60, 1))
+        val target = entity.world.getNearbyPlayers(entity.location, 20.0).randomOrNull() ?: return
+        val direction =
+            entity.location
+                .toVector()
+                .subtract(target.location.toVector())
+                .normalize()
+        val distance = target.location.distance(entity.location)
+        val steps = (distance * 2).toInt().coerceAtLeast(5)
+
+        for (i in 0..steps) {
+            val progress = i / steps.toDouble()
+            val point = target.location.clone().add(direction.clone().multiply(distance * progress))
+
+            entity.world.spawnParticle(Particle.WITCH, point, 2, 0.1, 0.1, 0.1, 0.0)
         }
+
+        val pullDirection = direction.clone().multiply(0.8)
+
+        target.velocity = target.velocity.add(pullDirection)
+        target.addPotionEffect(PotionEffect(PotionEffectType.SLOWNESS, 40, 2))
     }
 }
