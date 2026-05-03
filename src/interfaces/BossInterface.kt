@@ -4,31 +4,19 @@ import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.attribute.Attribute
-import org.bukkit.block.Biome
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
-import org.bukkit.event.EventHandler
-import org.bukkit.event.Listener
-import org.bukkit.event.entity.EntityDamageEvent
-import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.inventory.ItemStack
-import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
-import org.xodium.illyriaplus.managers.BossManager
-import kotlin.time.measureTime
 
 /**
  * Represents a contract for custom bosses within the system.
- * Extends MechanicInterface for automatic event registration.
  */
-internal interface BossInterface : Listener {
+internal interface BossInterface {
     /** The display name of the boss (shown in boss bar and above entity). */
     val bossName: Component
 
     /** The base entity type for this boss. */
     val bossType: EntityType
-
-    /** The biome where this boss spawns. */
-    val biome: Biome
 
     /** The boss bar displayed for this boss. */
     val bossBar: BossBar
@@ -55,7 +43,6 @@ internal interface BossInterface : Listener {
             showBossBar(bossBar)
             attributes.forEach { (attr, value) -> getAttribute(attr)?.baseValue = value }
             health = getAttribute(Attribute.MAX_HEALTH)?.value ?: 20.0
-            BossManager.registerBoss(this, this@BossInterface, biome)
         }
 
     /**
@@ -75,7 +62,6 @@ internal interface BossInterface : Listener {
      */
     fun onDeath(entity: LivingEntity) {
         drops.forEach { entity.world.dropItemNaturally(entity.location, it) }
-        BossManager.unregisterBoss(entity)
     }
 
     /**
@@ -93,22 +79,4 @@ internal interface BossInterface : Listener {
      * @param entity The boss entity.
      */
     fun onTick(entity: LivingEntity)
-
-    /**
-     * Registers the events with the server.
-     *
-     * @return The time taken to register the feature in milliseconds.
-     */
-    fun register(): Long =
-        measureTime { instance.server.pluginManager.registerEvents(this, instance) }.inWholeMilliseconds
-
-    @EventHandler
-    fun on(event: EntityDeathEvent) {
-        onDeath(event.entity)
-    }
-
-    @EventHandler
-    fun on(event: EntityDamageEvent) {
-        onDamage(event.entity as? LivingEntity ?: return)
-    }
 }
