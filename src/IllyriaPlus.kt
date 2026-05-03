@@ -3,6 +3,12 @@
 package org.xodium.illyriaplus
 
 import org.bukkit.plugin.java.JavaPlugin
+import org.xodium.illyriaplus.bosses.end.EndBarrensBoss
+import org.xodium.illyriaplus.bosses.end.EndHighlandsBoss
+import org.xodium.illyriaplus.bosses.end.EndMidlandsBoss
+import org.xodium.illyriaplus.bosses.end.SmallEndIslandsBoss
+import org.xodium.illyriaplus.bosses.nether.*
+import org.xodium.illyriaplus.bosses.overworld.*
 import org.xodium.illyriaplus.enchantments.*
 import org.xodium.illyriaplus.mechanics.*
 import org.xodium.illyriaplus.mechanics.entity.BatMechanic
@@ -82,10 +88,44 @@ internal class IllyriaPlus : JavaPlugin() {
                 WitherbrandEnchantment,
             )
 
-        val sum = enchantments.sumOf { it.registerEvents() }
+        logger.info(
+            "Registered: ${enchantments.size} enchantment events | Took ${enchantments.sumOf { it.register() }}ms",
+        )
+
+        val bosses =
+            listOf(
+                // Overworld
+                BadlandsBoss,
+                BeachBoss,
+                BirchForestBoss,
+                DarkForestBoss,
+                DesertBoss,
+                FlowerForestBoss,
+                ForestBoss,
+                JungleBoss,
+                MountainBoss,
+                MushroomBoss,
+                OceanBoss,
+                PlainsBoss,
+                SavannaBoss,
+                SnowBoss,
+                SwampBoss,
+                TaigaBoss,
+                // Nether
+                BasaltDeltasBoss,
+                CrimsonForestBoss,
+                NetherWastesBoss,
+                SoulSandValleyBoss,
+                WarpedForestBoss,
+                // End
+                EndBarrensBoss,
+                EndHighlandsBoss,
+                EndMidlandsBoss,
+                SmallEndIslandsBoss,
+            )
 
         logger.info(
-            "Registered: ${enchantments.size} enchantment event listener(s) | Took ${sum}ms",
+            "Registered: ${bosses.size} boss(es) | Took ${bosses.sumOf { it.register() }}ms",
         )
     }
 

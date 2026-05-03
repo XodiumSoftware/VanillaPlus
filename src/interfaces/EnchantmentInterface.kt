@@ -10,6 +10,7 @@ import org.bukkit.event.Listener
 import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
 import org.xodium.illyriaplus.IllyriaPlusBootstrap.Companion.INSTANCE
 import org.xodium.illyriaplus.utils.Utils.toRegistryKeyFragment
+import kotlin.time.measureTime
 
 /** Represents a contract for enchantments within the system. */
 @Suppress("UnstableApiUsage")
@@ -46,9 +47,6 @@ internal interface EnchantmentInterface : Listener {
      *
      * @return Time taken to register in milliseconds.
      */
-    fun registerEvents(): Long {
-        val start = System.currentTimeMillis()
-        instance.server.pluginManager.registerEvents(this, instance)
-        return System.currentTimeMillis() - start
-    }
+    fun register(): Long =
+        measureTime { instance.server.pluginManager.registerEvents(this, instance) }.inWholeMilliseconds
 }

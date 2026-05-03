@@ -5,8 +5,6 @@ import net.kyori.adventure.text.Component
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
-import org.bukkit.event.EventHandler
-import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.inventory.ItemStack
 import org.xodium.illyriaplus.interfaces.BossInterface
 import org.xodium.illyriaplus.utils.Utils.MM
@@ -31,10 +29,5 @@ internal object MountainBoss : BossInterface {
 
     override fun onTick(entity: LivingEntity) {
         // Stomp creates shockwaves, throw boulders
-    }
-
-    @EventHandler
-    fun on(event: EntityDamageEvent) {
-        // Huge fall damage resistance
     }
 }
