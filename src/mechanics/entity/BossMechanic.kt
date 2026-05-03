@@ -12,7 +12,7 @@ import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
 import org.xodium.illyriaplus.Utils.CommandUtils.playerExecuted
-import org.xodium.illyriaplus.bosses.DesertBoss
+import org.xodium.illyriaplus.bosses.AnubisBoss
 import org.xodium.illyriaplus.data.CommandData
 import org.xodium.illyriaplus.interfaces.BossInterface
 import org.xodium.illyriaplus.interfaces.MechanicInterface
@@ -22,7 +22,7 @@ internal object BossMechanic : MechanicInterface {
     /** List of all boss implementations. */
     private val bosses =
         listOf<BossInterface>(
-            DesertBoss,
+            AnubisBoss,
         )
 
     /** Map of boss class names to boss implementations for quick lookup. */

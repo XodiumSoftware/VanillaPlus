@@ -16,9 +16,9 @@ import org.xodium.illyriaplus.interfaces.BossInterface
 /**
  * A pharaoh-like boss that rules the scorching desert sands.
  */
-internal object DesertBoss : BossInterface {
+internal object AnubisBoss : BossInterface {
     override val bossName: Component =
-        MM.deserialize("<bold><gradient:#FFD700:#FF8C00>Anubis, the Sand Pharaoh</gradient></bold>")
+        MM.deserialize("<b><gradient:#FFD700:#FF8C00>Anubis</gradient></b>")
     override val bossType: EntityType = EntityType.HUSK
     override val bossBar: BossBar =
         BossBar.bossBar(bossName, 1.0f, BossBar.Color.YELLOW, BossBar.Overlay.PROGRESS)
