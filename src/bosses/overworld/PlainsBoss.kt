@@ -2,12 +2,15 @@ package org.xodium.illyriaplus.bosses.overworld
 
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
+import org.bukkit.Particle
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.Zombie
 import org.bukkit.inventory.ItemStack
 import org.xodium.illyriaplus.interfaces.BossInterface
 import org.xodium.illyriaplus.utils.Utils.MM
+import kotlin.random.Random
 
 /**
  * A boss that roams the plains, commanding the wind and grass.
@@ -27,6 +30,23 @@ internal object PlainsBoss : BossInterface {
         )
 
     override fun onTick(entity: LivingEntity) {
-        // Passive wind aura that pushes nearby players
+        // Summon zombie reinforcements every 8 seconds (160 ticks) if health < 50%
+        if (entity.ticksLived % 160 != 0) return
+        if (entity.health / (entity.getAttribute(Attribute.MAX_HEALTH)?.value ?: 200.0) > 0.5) return
+
+        repeat(2) {
+            val zombie =
+                entity.world.spawnEntity(
+                    entity.location.add(
+                        (Random.nextDouble() - 0.5) * 6,
+                        0.0,
+                        (Random.nextDouble() - 0.5) * 6,
+                    ),
+                    EntityType.ZOMBIE,
+                ) as Zombie
+
+            zombie.target = entity.world.getNearbyPlayers(entity.location, 20.0).randomOrNull()
+        }
+        entity.world.spawnParticle(Particle.SCULK_SOUL, entity.location, 20, 2.0, 1.0, 2.0, 0.0)
     }
 }

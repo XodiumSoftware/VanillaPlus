@@ -2,6 +2,7 @@ package org.xodium.illyriaplus.bosses.nether
 
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
+import org.bukkit.Particle
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
@@ -27,6 +28,13 @@ internal object BasaltDeltasBoss : BossInterface {
         )
 
     override fun onTick(entity: LivingEntity) {
-        // Earthquake stomp, summon magma cubes
+        // Lava particles + fire to nearby every 3 seconds (60 ticks)
+        if (entity.ticksLived % 60 != 0) return
+
+        entity.world.spawnParticle(Particle.LAVA, entity.location, 20, 2.0, 1.0, 2.0, 0.0)
+        entity.world.getNearbyLivingEntities(entity.location, 6.0).filter { it != entity }.forEach {
+            it.fireTicks = 60
+            it.damage(3.0, entity)
+        }
     }
 }

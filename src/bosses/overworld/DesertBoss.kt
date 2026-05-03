@@ -2,10 +2,14 @@ package org.xodium.illyriaplus.bosses.overworld
 
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
+import org.bukkit.Material
+import org.bukkit.Particle
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 import org.xodium.illyriaplus.interfaces.BossInterface
 import org.xodium.illyriaplus.utils.Utils.MM
 
@@ -27,6 +31,21 @@ internal object DesertBoss : BossInterface {
         )
 
     override fun onTick(entity: LivingEntity) {
-        // Apply hunger effect to nearby players
+        // Sandstorm particles + slowness to nearby every 4 seconds (80 ticks)
+        if (entity.ticksLived % 80 != 0) return
+
+        entity.world.spawnParticle(
+            Particle.FALLING_DUST,
+            entity.location,
+            30,
+            3.0,
+            2.0,
+            3.0,
+            0.0,
+            Material.SAND.createBlockData(),
+        )
+        entity.world.getNearbyPlayers(entity.location, 10.0).forEach {
+            it.addPotionEffect(PotionEffect(PotionEffectType.SLOWNESS, 60, 1))
+        }
     }
 }

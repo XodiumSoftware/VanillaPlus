@@ -2,8 +2,10 @@ package org.xodium.illyriaplus.bosses.nether
 
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
+import org.bukkit.Particle
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
+import org.bukkit.entity.Fireball
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
 import org.xodium.illyriaplus.interfaces.BossInterface
@@ -26,6 +28,17 @@ internal object NetherWastesBoss : BossInterface {
         )
 
     override fun onTick(entity: LivingEntity) {
-        // Explosive fireball barrage
+        // Fireball every 4 seconds (80 ticks) at nearby players
+        if (entity.ticksLived % 80 != 0) return
+
+        val target = entity.world.getNearbyPlayers(entity.location, 30.0).randomOrNull() ?: return
+        val fireball = entity.launchProjectile(Fireball::class.java)
+        fireball.velocity =
+            target.location
+                .subtract(entity.location)
+                .toVector()
+                .normalize()
+                .multiply(1.5)
+        entity.world.spawnParticle(Particle.FLAME, entity.location, 20, 0.5, 0.5, 0.5, 0.1)
     }
 }

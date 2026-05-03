@@ -2,7 +2,9 @@ package org.xodium.illyriaplus.bosses.overworld
 
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
+import org.bukkit.Particle
 import org.bukkit.attribute.Attribute
+import org.bukkit.entity.Arrow
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
@@ -27,6 +29,18 @@ internal object BirchForestBoss : BossInterface {
         )
 
     override fun onTick(entity: LivingEntity) {
-        // Cloaked in birch leaves, rapid fire
+        // Arrow barrage every 3 seconds (60 ticks)
+        if (entity.ticksLived % 60 != 0) return
+
+        val target = entity.world.getNearbyPlayers(entity.location, 20.0).randomOrNull() ?: return
+        val arrow = entity.launchProjectile(Arrow::class.java)
+
+        arrow.velocity =
+            target.location
+                .subtract(entity.location)
+                .toVector()
+                .normalize()
+                .multiply(2.5)
+        entity.world.spawnParticle(Particle.CRIT, entity.location, 15, 0.5, 0.5, 0.5, 0.1)
     }
 }

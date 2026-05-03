@@ -2,10 +2,13 @@ package org.xodium.illyriaplus.bosses.overworld
 
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
+import org.bukkit.Particle
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 import org.xodium.illyriaplus.interfaces.BossInterface
 import org.xodium.illyriaplus.utils.Utils.MM
 
@@ -26,6 +29,19 @@ internal object SwampBoss : BossInterface {
         )
 
     override fun onTick(entity: LivingEntity) {
-        // Spawn slimes, apply poison to nearby players
+        // Throw random potion every 6 seconds (120 ticks)
+        if (entity.ticksLived % 120 != 0) return
+
+        val target = entity.world.getNearbyPlayers(entity.location, 15.0).randomOrNull() ?: return
+        val effects =
+            listOf(
+                PotionEffectType.POISON,
+                PotionEffectType.SLOWNESS,
+                PotionEffectType.WEAKNESS,
+                PotionEffectType.BLINDNESS,
+            )
+
+        target.addPotionEffect(PotionEffect(effects.random(), 100, 0))
+        entity.world.spawnParticle(Particle.WITCH, target.location, 20, 0.5, 1.0, 0.5, 0.0)
     }
 }

@@ -2,10 +2,13 @@ package org.xodium.illyriaplus.bosses.end
 
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
+import org.bukkit.Particle
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 import org.xodium.illyriaplus.interfaces.BossInterface
 import org.xodium.illyriaplus.utils.Utils.MM
 
@@ -27,6 +30,11 @@ internal object EndHighlandsBoss : BossInterface {
         )
 
     override fun onTick(entity: LivingEntity) {
-        // Levitation field around the pillar
+        // Levitation bullets every 4 seconds (80 ticks)
+        if (entity.ticksLived % 80 != 0) return
+
+        val target = entity.world.getNearbyPlayers(entity.location, 20.0).randomOrNull() ?: return
+        target.addPotionEffect(PotionEffect(PotionEffectType.LEVITATION, 60, 0))
+        entity.world.spawnParticle(Particle.END_ROD, target.location, 20, 0.5, 1.0, 0.5, 0.0)
     }
 }

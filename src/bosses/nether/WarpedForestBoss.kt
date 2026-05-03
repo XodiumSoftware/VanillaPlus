@@ -2,12 +2,16 @@ package org.xodium.illyriaplus.bosses.nether
 
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
+import org.bukkit.Particle
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 import org.xodium.illyriaplus.interfaces.BossInterface
 import org.xodium.illyriaplus.utils.Utils.MM
+import kotlin.random.Random
 
 /**
  * An enderman shaman that channels the warped energy of the forest.
@@ -27,6 +31,15 @@ internal object WarpedForestBoss : BossInterface {
         )
 
     override fun onTick(entity: LivingEntity) {
-        // Teleport behind players, apply blindness
+        // Teleport and blindness every 5 seconds (100 ticks)
+        if (entity.ticksLived % 100 != 0) return
+
+        val target = entity.world.getNearbyPlayers(entity.location, 20.0).randomOrNull() ?: return
+        val randomLoc = entity.location.add((Random.nextDouble() - 0.5) * 10, 0.0, (Random.nextDouble() - 0.5) * 10)
+        randomLoc.y = entity.world.getHighestBlockYAt(randomLoc).toDouble() + 1
+
+        entity.teleport(randomLoc)
+        target.addPotionEffect(PotionEffect(PotionEffectType.BLINDNESS, 60, 0))
+        entity.world.spawnParticle(Particle.PORTAL, entity.location, 25, 0.5, 0.5, 0.5, 0.1)
     }
 }

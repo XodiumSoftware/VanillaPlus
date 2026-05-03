@@ -2,12 +2,15 @@ package org.xodium.illyriaplus.bosses.nether
 
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
+import org.bukkit.Particle
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
+import org.bukkit.entity.Hoglin
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
 import org.xodium.illyriaplus.interfaces.BossInterface
 import org.xodium.illyriaplus.utils.Utils.MM
+import kotlin.random.Random
 
 /**
  * A massive hoglin warlord that rules the crimson forests.
@@ -27,6 +30,22 @@ internal object CrimsonForestBoss : BossInterface {
         )
 
     override fun onTick(entity: LivingEntity) {
-        // Summon hoglin reinforcements
+        // Summon 2 hoglins every 10 seconds (200 ticks) if health < 60%
+        if (entity.ticksLived % 200 != 0) return
+        if (entity.health / (entity.getAttribute(Attribute.MAX_HEALTH)?.value ?: 400.0) > 0.6) return
+
+        repeat(2) {
+            val hoglin =
+                entity.world.spawnEntity(
+                    entity.location.add(
+                        (Random.nextDouble() - 0.5) * 4,
+                        0.0,
+                        (Random.nextDouble() - 0.5) * 4,
+                    ),
+                    EntityType.HOGLIN,
+                ) as Hoglin
+            hoglin.target = entity.world.getNearbyPlayers(entity.location, 25.0).randomOrNull()
+        }
+        entity.world.spawnParticle(Particle.CRIMSON_SPORE, entity.location, 30, 2.0, 1.0, 2.0, 0.0)
     }
 }

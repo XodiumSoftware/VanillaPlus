@@ -2,10 +2,14 @@ package org.xodium.illyriaplus.bosses.overworld
 
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
+import org.bukkit.Material
+import org.bukkit.Particle
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 import org.xodium.illyriaplus.interfaces.BossInterface
 import org.xodium.illyriaplus.utils.Utils.MM
 
@@ -27,6 +31,18 @@ internal object TaigaBoss : BossInterface {
         )
 
     override fun onTick(entity: LivingEntity) {
-        // Leaves frosted trail, slow nearby enemies
+        // Frost trail that slows enemies every 3 seconds (60 ticks)
+        if (entity.ticksLived % 60 != 0) return
+
+        val block = entity.location.subtract(0.0, 1.0, 0.0).block
+
+        if (block.type == Material.GRASS_BLOCK || block.type == Material.DIRT || block.type == Material.PODZOL) {
+            block.type = Material.SNOW
+        }
+
+        entity.world.getNearbyLivingEntities(entity.location, 5.0).filter { it != entity }.forEach {
+            it.addPotionEffect(PotionEffect(PotionEffectType.SLOWNESS, 40, 1))
+        }
+        entity.world.spawnParticle(Particle.SNOWFLAKE, entity.location, 15, 1.0, 0.5, 1.0, 0.0)
     }
 }

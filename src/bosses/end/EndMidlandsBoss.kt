@@ -2,12 +2,15 @@ package org.xodium.illyriaplus.bosses.end
 
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
+import org.bukkit.Particle
 import org.bukkit.attribute.Attribute
+import org.bukkit.entity.Endermite
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
 import org.xodium.illyriaplus.interfaces.BossInterface
 import org.xodium.illyriaplus.utils.Utils.MM
+import kotlin.random.Random
 
 /**
  * An enderman archmage that roams the midland slopes of the end islands.
@@ -27,6 +30,21 @@ internal object EndMidlandsBoss : BossInterface {
         )
 
     override fun onTick(entity: LivingEntity) {
-        // Create void rifts that pull players
+        // Summon endermites every 8 seconds (160 ticks)
+        if (entity.ticksLived % 160 != 0) return
+
+        repeat(3) {
+            val endermite =
+                entity.world.spawnEntity(
+                    entity.location.add(
+                        (Random.nextDouble() - 0.5) * 4,
+                        0.0,
+                        (Random.nextDouble() - 0.5) * 4,
+                    ),
+                    EntityType.ENDERMITE,
+                ) as Endermite
+            endermite.target = entity.world.getNearbyPlayers(entity.location, 20.0).randomOrNull()
+        }
+        entity.world.spawnParticle(Particle.PORTAL, entity.location, 25, 2.0, 1.0, 2.0, 0.1)
     }
 }

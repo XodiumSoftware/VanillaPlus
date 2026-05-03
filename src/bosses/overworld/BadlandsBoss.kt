@@ -27,6 +27,24 @@ internal object BadlandsBoss : BossInterface {
         )
 
     override fun onTick(entity: LivingEntity) {
-        // Rapid fire crossbow attacks
+        // Rapid fire crossbow attacks at nearby players
+        if (entity.ticksLived % 40 != 0) return
+
+        entity.world.getNearbyPlayers(entity.location, 20.0).randomOrNull()?.let { target ->
+            entity.world
+                .spawnArrow(
+                    entity.eyeLocation,
+                    target.eyeLocation
+                        .subtract(entity.eyeLocation)
+                        .toVector()
+                        .normalize()
+                        .multiply(2.0),
+                    1.5f,
+                    5f,
+                ).apply {
+                    shooter = entity
+                    damage = 6.0
+                }
+        }
     }
 }

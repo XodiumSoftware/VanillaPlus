@@ -2,10 +2,13 @@ package org.xodium.illyriaplus.bosses.overworld
 
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
+import org.bukkit.Particle
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 import org.xodium.illyriaplus.interfaces.BossInterface
 import org.xodium.illyriaplus.utils.Utils.MM
 
@@ -27,6 +30,15 @@ internal object DarkForestBoss : BossInterface {
         )
 
     override fun onTick(entity: LivingEntity) {
-        // Shadow clone ability, darkness effect
+        // Teleport behind players every 5 seconds (100 ticks)
+        if (entity.ticksLived % 100 != 0) return
+
+        val target = entity.world.getNearbyPlayers(entity.location, 15.0).randomOrNull() ?: return
+        val behind = target.location.subtract(target.location.direction.multiply(2))
+
+        behind.y = target.location.y
+        entity.teleport(behind)
+        target.addPotionEffect(PotionEffect(PotionEffectType.DARKNESS, 100, 0))
+        entity.world.spawnParticle(Particle.PORTAL, entity.location, 20, 0.3, 0.3, 0.3, 0.1)
     }
 }

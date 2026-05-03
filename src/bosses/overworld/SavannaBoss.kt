@@ -2,10 +2,14 @@ package org.xodium.illyriaplus.bosses.overworld
 
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
+import org.bukkit.Particle
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 import org.xodium.illyriaplus.interfaces.BossInterface
 import org.xodium.illyriaplus.utils.Utils.MM
 
@@ -27,6 +31,26 @@ internal object SavannaBoss : BossInterface {
         )
 
     override fun onTick(entity: LivingEntity) {
-        // Rapid movement, trampling attack
+        // Charge attack that deals extra damage every 5 seconds (100 ticks)
+        if (entity.ticksLived % 100 != 0) return
+
+        val target = entity.world.getNearbyPlayers(entity.location, 20.0).randomOrNull() ?: return
+
+        entity.addPotionEffect(PotionEffect(PotionEffectType.SPEED, 40, 2))
+
+        // Charge toward target
+        val direction =
+            target.location
+                .subtract(entity.location)
+                .toVector()
+                .normalize()
+
+        entity.velocity = direction.multiply(2.0)
+        // Damage nearby entities after charge
+        entity.world
+            .getNearbyLivingEntities(entity.location, 3.0)
+            .filter { it != entity && it is Player }
+            .forEach { it.damage(10.0, entity) }
+        entity.world.spawnParticle(Particle.CLOUD, entity.location, 20, 1.0, 0.5, 1.0, 0.1)
     }
 }

@@ -2,10 +2,14 @@ package org.xodium.illyriaplus.bosses.nether
 
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
+import org.bukkit.Particle
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 import org.xodium.illyriaplus.interfaces.BossInterface
 import org.xodium.illyriaplus.utils.Utils.MM
 
@@ -27,6 +31,13 @@ internal object SoulSandValleyBoss : BossInterface {
         )
 
     override fun onTick(entity: LivingEntity) {
-        // Summon skeleton reinforcements
+        // Wither effect to nearby every 4 seconds (80 ticks)
+        if (entity.ticksLived % 80 != 0) return
+
+        entity.world.spawnParticle(Particle.SOUL, entity.location, 30, 4.0, 2.0, 4.0, 0.0)
+        entity.world
+            .getNearbyLivingEntities(entity.location, 10.0)
+            .filter { it != entity && it is Player }
+            .forEach { it.addPotionEffect(PotionEffect(PotionEffectType.WITHER, 60, 1)) }
     }
 }

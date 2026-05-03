@@ -2,6 +2,8 @@ package org.xodium.illyriaplus.bosses.overworld
 
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
+import org.bukkit.Material
+import org.bukkit.Particle
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
@@ -26,6 +28,62 @@ internal object ForestBoss : BossInterface {
         )
 
     override fun onTick(entity: LivingEntity) {
-        // Regenerate health when near leaves/wood
+        // Heal when near leaves/logs every 2 seconds (40 ticks)
+        if (entity.ticksLived % 40 != 0) return
+
+        val nearbyBlocks =
+            listOf(
+                entity.location
+                    .add(1.0, 0.0, 0.0)
+                    .block.type,
+                entity.location
+                    .add(-1.0, 0.0, 0.0)
+                    .block.type,
+                entity.location
+                    .add(0.0, 1.0, 0.0)
+                    .block.type,
+                entity.location
+                    .add(0.0, -1.0, 0.0)
+                    .block.type,
+                entity.location
+                    .add(0.0, 0.0, 1.0)
+                    .block.type,
+                entity.location
+                    .add(0.0, 0.0, -1.0)
+                    .block.type,
+            )
+
+        val woodTypes =
+            listOf(
+                Material.OAK_LOG,
+                Material.OAK_LEAVES,
+                Material.BIRCH_LOG,
+                Material.BIRCH_LEAVES,
+                Material.SPRUCE_LOG,
+                Material.SPRUCE_LEAVES,
+                Material.JUNGLE_LOG,
+                Material.JUNGLE_LEAVES,
+                Material.ACACIA_LOG,
+                Material.ACACIA_LEAVES,
+                Material.DARK_OAK_LOG,
+                Material.DARK_OAK_LEAVES,
+                Material.MANGROVE_LOG,
+                Material.MANGROVE_LEAVES,
+                Material.CHERRY_LOG,
+                Material.CHERRY_LEAVES,
+            )
+
+        if (nearbyBlocks.any { it in woodTypes }) {
+            entity.heal(4.0)
+            entity.world.spawnParticle(
+                Particle.HAPPY_VILLAGER,
+                entity.location.add(0.0, 1.0, 0.0),
+                10,
+                0.5,
+                0.5,
+                0.5,
+                0.0,
+            )
+        }
     }
 }

@@ -2,10 +2,13 @@ package org.xodium.illyriaplus.bosses.overworld
 
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
+import org.bukkit.Particle
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 import org.xodium.illyriaplus.interfaces.BossInterface
 import org.xodium.illyriaplus.utils.Utils.MM
 
@@ -26,6 +29,12 @@ internal object MushroomBoss : BossInterface {
         )
 
     override fun onTick(entity: LivingEntity) {
-        // Spreads mycelium, spawns mini mooshrooms
+        // Spore particles + nausea to nearby every 4 seconds (80 ticks)
+        if (entity.ticksLived % 80 != 0) return
+
+        entity.world.spawnParticle(Particle.SPORE_BLOSSOM_AIR, entity.location, 30, 3.0, 2.0, 3.0, 0.0)
+        entity.world.getNearbyPlayers(entity.location, 8.0).forEach {
+            it.addPotionEffect(PotionEffect(PotionEffectType.NAUSEA, 100, 0))
+        }
     }
 }

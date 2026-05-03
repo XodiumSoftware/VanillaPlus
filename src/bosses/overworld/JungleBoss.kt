@@ -2,10 +2,13 @@ package org.xodium.illyriaplus.bosses.overworld
 
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
+import org.bukkit.Particle
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 import org.xodium.illyriaplus.interfaces.BossInterface
 import org.xodium.illyriaplus.utils.Utils.MM
 
@@ -27,6 +30,20 @@ internal object JungleBoss : BossInterface {
         )
 
     override fun onTick(entity: LivingEntity) {
-        // Climbs vines and leaves automatically
+        // Speed boost and pounce to nearby players every 4 seconds (80 ticks)
+        if (entity.ticksLived % 80 != 0) return
+
+        entity.addPotionEffect(PotionEffect(PotionEffectType.SPEED, 60, 1))
+
+        val target = entity.world.getNearbyPlayers(entity.location, 15.0).randomOrNull() ?: return
+        // Pounce toward target
+        val direction =
+            target.location
+                .subtract(entity.location)
+                .toVector()
+                .normalize()
+
+        entity.velocity = direction.multiply(1.5).setY(0.5)
+        entity.world.spawnParticle(Particle.CLOUD, entity.location, 15, 0.3, 0.1, 0.3, 0.05)
     }
 }

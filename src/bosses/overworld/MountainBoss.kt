@@ -2,6 +2,8 @@ package org.xodium.illyriaplus.bosses.overworld
 
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
+import org.bukkit.Particle
+import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
@@ -28,6 +30,20 @@ internal object MountainBoss : BossInterface {
         )
 
     override fun onTick(entity: LivingEntity) {
-        // Stomp creates shockwaves, throw boulders
+        // Shockwave knockback every 5 seconds (100 ticks)
+        if (entity.ticksLived % 100 != 0) return
+
+        entity.world.spawnParticle(Particle.EXPLOSION, entity.location, 5, 2.0, 0.5, 2.0, 0.0)
+        entity.world.getNearbyLivingEntities(entity.location, 8.0).filter { it != entity }.forEach {
+            val direction =
+                it.location
+                    .subtract(entity.location)
+                    .toVector()
+                    .normalize()
+
+            it.velocity = direction.multiply(1.5).setY(0.8)
+            it.damage(6.0, entity)
+        }
+        entity.world.playSound(entity.location, Sound.ENTITY_GENERIC_EXPLODE, 1.0f, 0.8f)
     }
 }

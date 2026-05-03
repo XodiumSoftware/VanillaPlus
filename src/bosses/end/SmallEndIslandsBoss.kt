@@ -2,6 +2,7 @@ package org.xodium.illyriaplus.bosses.end
 
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
+import org.bukkit.Particle
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
@@ -26,6 +27,18 @@ internal object SmallEndIslandsBoss : BossInterface {
         )
 
     override fun onTick(entity: LivingEntity) {
-        // Gravity manipulation, push/pull players
+        // Pull nearby players toward boss every 4 seconds (80 ticks)
+        if (entity.ticksLived % 80 != 0) return
+
+        entity.world.getNearbyPlayers(entity.location, 12.0).forEach {
+            it.velocity =
+                entity.location
+                    .subtract(it.location)
+                    .toVector()
+                    .normalize()
+                    .multiply(0.8)
+                    .setY(0.3)
+        }
+        entity.world.spawnParticle(Particle.REVERSE_PORTAL, entity.location, 30, 4.0, 2.0, 4.0, 0.05)
     }
 }

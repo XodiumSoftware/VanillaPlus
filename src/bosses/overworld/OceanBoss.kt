@@ -2,10 +2,13 @@ package org.xodium.illyriaplus.bosses.overworld
 
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
+import org.bukkit.Particle
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 import org.xodium.illyriaplus.interfaces.BossInterface
 import org.xodium.illyriaplus.utils.Utils.MM
 
@@ -27,6 +30,14 @@ internal object OceanBoss : BossInterface {
         )
 
     override fun onTick(entity: LivingEntity) {
-        // Mining fatigue aura, summon drowned
+        // Beam targeting random player every 3 seconds (60 ticks)
+        if (entity.ticksLived % 60 != 0) return
+
+        val target = entity.world.getNearbyPlayers(entity.location, 25.0).randomOrNull() ?: return
+
+        target.addPotionEffect(PotionEffect(PotionEffectType.SLOWNESS, 40, 0))
+        target.damage(4.0, entity)
+
+        entity.world.spawnParticle(Particle.BUBBLE, target.location, 20, 0.5, 1.0, 0.5, 0.0)
     }
 }
