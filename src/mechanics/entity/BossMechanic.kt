@@ -6,9 +6,12 @@ import com.mojang.brigadier.arguments.StringArgumentType
 import io.papermc.paper.command.brigadier.Commands
 import net.kyori.adventure.audience.Audience
 import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityDeathEvent
+import org.bukkit.event.world.ChunkLoadEvent
+import org.bukkit.event.world.ChunkUnloadEvent
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
@@ -18,6 +21,9 @@ import org.xodium.illyriaplus.bosses.AnubisBoss
 import org.xodium.illyriaplus.data.CommandData
 import org.xodium.illyriaplus.interfaces.BossInterface
 import org.xodium.illyriaplus.interfaces.MechanicInterface
+import org.xodium.illyriaplus.pdcs.WorldPDC.addAnchoredBoss
+import org.xodium.illyriaplus.pdcs.WorldPDC.anchoredBosses
+import org.xodium.illyriaplus.pdcs.WorldPDC.removeAnchoredBoss
 import kotlin.random.Random
 
 /** Handles boss spawning and mechanics. */
@@ -34,6 +40,9 @@ internal object BossMechanic : MechanicInterface {
     /** Map of active boss entities to their boss interface. */
     private val activeBosses = mutableMapOf<LivingEntity, BossInterface>()
 
+    /** Set of chunk keys that have spawned anchored bosses (world:chunkX:chunkZ). */
+    private val anchoredBossChunks = mutableSetOf<String>()
+
     /** Random ability trigger chance (1 in 200 ticks = ~10 seconds on average). */
     private const val ABILITY_CHANCE = 0.005
 
@@ -48,15 +57,72 @@ internal object BossMechanic : MechanicInterface {
                     .requires { it.sender.hasPermission(perms[0]) }
                     .then(
                         Commands
-                            .argument("name", StringArgumentType.word())
-                            .suggests { _, builder ->
-                                bossByName.keys.forEach { builder.suggest(it) }
-                                builder.buildFuture()
-                            }.playerExecuted { player, ctx ->
-                                bossByName[ctx.getArgument("name", String::class.java)]?.spawn(player.location)
-                            },
+                            .literal("spawn")
+                            .then(
+                                Commands
+                                    .argument("name", StringArgumentType.word())
+                                    .suggests { _, builder ->
+                                        bossByName.keys.forEach { builder.suggest(it) }
+                                        builder.buildFuture()
+                                    }.playerExecuted { player, ctx ->
+                                        val bossName = ctx.getArgument("name", String::class.java)
+                                        val boss = bossByName[bossName]
+                                        if (boss != null) {
+                                            boss.spawn(player.location)
+
+                                            player.world.addAnchoredBoss(bossName, player.location)
+                                            player.sendMessage("Anchored $bossName at your location!")
+
+                                            val chunk = player.location.chunk
+
+                                            anchoredBossChunks.add(getChunkKey(player.world.name, chunk.x, chunk.z))
+                                        } else {
+                                            player.sendMessage("Unknown boss: $bossName")
+                                        }
+                                    },
+                            ),
+                    ).then(
+                        Commands
+                            .literal("remove")
+                            .then(
+                                Commands
+                                    .argument("boss", StringArgumentType.greedyString())
+                                    .suggests { ctx, builder ->
+                                        val sender = ctx.source.sender
+                                        val world =
+                                            if (sender is Player) sender.world else instance.server.worlds.firstOrNull()
+
+                                        world?.anchoredBosses?.forEach { builder.suggest(it.toString()) }
+
+                                        builder.buildFuture()
+                                    }.executes { ctx ->
+                                        val sender = ctx.source.sender
+                                        val world =
+                                            if (sender is Player) sender.world else instance.server.worlds.firstOrNull()
+
+                                        if (world == null) {
+                                            sender.sendMessage("No world available")
+                                            return@executes 0
+                                        }
+
+                                        val bossString = ctx.getArgument("boss", String::class.java)
+                                        val anchored = world.anchoredBosses
+                                        val index = anchored.indexOfFirst { it.toString() == bossString }
+
+                                        if (index == -1) {
+                                            sender.sendMessage("Boss not found: $bossString")
+                                            return@executes 0
+                                        }
+
+                                        val removed = anchored[index]
+
+                                        world.removeAnchoredBoss(index)
+                                        sender.sendMessage("Removed anchored boss: $removed")
+                                        1
+                                    },
+                            ),
                     ),
-                "Spawns a boss at the player's location",
+                "Manages anchored bosses: /boss spawn <name>, /boss remove [index]",
             ),
         )
 
@@ -90,6 +156,52 @@ internal object BossMechanic : MechanicInterface {
 
         if (boss != null) boss.onDamage(entity) else bosses.forEach { it.onDamage(entity) }
     }
+
+    @EventHandler
+    fun on(event: ChunkLoadEvent) {
+        val chunk = event.chunk
+        val world = chunk.world
+        val chunkKey = getChunkKey(world.name, chunk.x, chunk.z)
+        val anchored = world.anchoredBosses
+        val bossesInChunk = anchored.filter { it.getLocation()?.chunk == chunk }
+
+        if (bossesInChunk.isNotEmpty()) {
+            anchoredBossChunks.add(chunkKey)
+            bossesInChunk.forEach {
+                val boss = bossByName[it.bossClassName]
+                val location = it.getLocation()
+
+                if (boss != null && location != null) boss.spawn(location)
+            }
+        }
+    }
+
+    @EventHandler
+    fun on(event: ChunkUnloadEvent) {
+        val chunk = event.chunk
+        val chunkKey = getChunkKey(chunk.world.name, chunk.x, chunk.z)
+
+        if (chunkKey in anchoredBossChunks) {
+            activeBosses.entries.removeAll { (entity, _) ->
+                val entityChunk = entity.location.chunk
+                val shouldRemove = entityChunk == chunk
+
+                if (shouldRemove) entity.remove()
+
+                shouldRemove
+            }
+            anchoredBossChunks.remove(chunkKey)
+        }
+    }
+
+    /**
+     * Generates a unique key for a chunk.
+     */
+    private fun getChunkKey(
+        worldName: String,
+        chunkX: Int,
+        chunkZ: Int,
+    ): String = "$worldName:$chunkX:$chunkZ"
 
     /**
      * Registers a boss entity as active.
