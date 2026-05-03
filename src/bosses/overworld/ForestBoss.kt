@@ -24,6 +24,7 @@ internal object ForestBoss : BossInterface {
     override val attributes: Map<Attribute, Double> =
         mapOf(
             Attribute.MAX_HEALTH to 180.0,
+            Attribute.ATTACK_DAMAGE to 7.0,
         )
 
     override fun onTick(entity: LivingEntity) {

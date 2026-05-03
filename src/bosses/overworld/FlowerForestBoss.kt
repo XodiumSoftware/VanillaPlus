@@ -24,6 +24,8 @@ internal object FlowerForestBoss : BossInterface {
     override val attributes: Map<Attribute, Double> =
         mapOf(
             Attribute.MAX_HEALTH to 80.0,
+            Attribute.FLYING_SPEED to 0.6,
+            Attribute.MOVEMENT_SPEED to 0.35,
         )
 
     override fun onTick(entity: LivingEntity) {

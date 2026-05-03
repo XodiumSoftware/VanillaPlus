@@ -24,6 +24,8 @@ internal object BeachBoss : BossInterface {
     override val attributes: Map<Attribute, Double> =
         mapOf(
             Attribute.MAX_HEALTH to 150.0,
+            Attribute.KNOCKBACK_RESISTANCE to 0.8,
+            Attribute.ARMOR to 10.0,
         )
 
     override fun onTick(entity: LivingEntity) {

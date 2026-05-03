@@ -24,6 +24,7 @@ internal object SwampBoss : BossInterface {
     override val attributes: Map<Attribute, Double> =
         mapOf(
             Attribute.MAX_HEALTH to 160.0,
+            Attribute.KNOCKBACK_RESISTANCE to 0.4,
         )
 
     override fun onTick(entity: LivingEntity) {

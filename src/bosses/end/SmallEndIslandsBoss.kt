@@ -24,6 +24,7 @@ internal object SmallEndIslandsBoss : BossInterface {
     override val attributes: Map<Attribute, Double> =
         mapOf(
             Attribute.MAX_HEALTH to 180.0,
+            Attribute.FLYING_SPEED to 0.6,
         )
 
     override fun onTick(entity: LivingEntity) {

@@ -24,6 +24,9 @@ internal object MountainBoss : BossInterface {
     override val attributes: Map<Attribute, Double> =
         mapOf(
             Attribute.MAX_HEALTH to 500.0,
+            Attribute.KNOCKBACK_RESISTANCE to 1.0,
+            Attribute.ATTACK_DAMAGE to 15.0,
+            Attribute.ARMOR to 15.0,
         )
 
     override fun onTick(entity: LivingEntity) {

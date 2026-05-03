@@ -24,6 +24,8 @@ internal object SoulSandValleyBoss : BossInterface {
     override val attributes: Map<Attribute, Double> =
         mapOf(
             Attribute.MAX_HEALTH to 350.0,
+            Attribute.ATTACK_DAMAGE to 11.0,
+            Attribute.KNOCKBACK_RESISTANCE to 0.5,
         )
 
     override fun onTick(entity: LivingEntity) {

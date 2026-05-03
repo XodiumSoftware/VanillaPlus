@@ -24,6 +24,8 @@ internal object WarpedForestBoss : BossInterface {
     override val attributes: Map<Attribute, Double> =
         mapOf(
             Attribute.MAX_HEALTH to 250.0,
+            Attribute.MOVEMENT_SPEED to 0.35,
+            Attribute.ATTACK_DAMAGE to 10.0,
         )
 
     override fun onTick(entity: LivingEntity) {

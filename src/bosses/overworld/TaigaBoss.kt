@@ -24,6 +24,8 @@ internal object TaigaBoss : BossInterface {
     override val attributes: Map<Attribute, Double> =
         mapOf(
             Attribute.MAX_HEALTH to 300.0,
+            Attribute.ATTACK_DAMAGE to 12.0,
+            Attribute.KNOCKBACK_RESISTANCE to 0.7,
         )
 
     override fun onTick(entity: LivingEntity) {

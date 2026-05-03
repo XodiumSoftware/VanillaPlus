@@ -24,6 +24,8 @@ internal object DesertBoss : BossInterface {
     override val attributes: Map<Attribute, Double> =
         mapOf(
             Attribute.MAX_HEALTH to 250.0,
+            Attribute.ATTACK_DAMAGE to 10.0,
+            Attribute.KNOCKBACK_RESISTANCE to 0.5,
         )
 
     override fun onTick(entity: LivingEntity) {

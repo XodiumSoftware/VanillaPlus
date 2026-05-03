@@ -24,6 +24,8 @@ internal object EndMidlandsBoss : BossInterface {
     override val attributes: Map<Attribute, Double> =
         mapOf(
             Attribute.MAX_HEALTH to 200.0,
+            Attribute.MOVEMENT_SPEED to 0.35,
+            Attribute.ATTACK_DAMAGE to 8.0,
         )
 
     override fun onTick(entity: LivingEntity) {

@@ -24,6 +24,7 @@ internal object MushroomBoss : BossInterface {
     override val attributes: Map<Attribute, Double> =
         mapOf(
             Attribute.MAX_HEALTH to 250.0,
+            Attribute.KNOCKBACK_RESISTANCE to 0.6,
         )
 
     override fun onTick(entity: LivingEntity) {

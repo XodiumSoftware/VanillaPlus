@@ -24,6 +24,8 @@ internal object DarkForestBoss : BossInterface {
     override val attributes: Map<Attribute, Double> =
         mapOf(
             Attribute.MAX_HEALTH to 120.0,
+            Attribute.MOVEMENT_SPEED to 0.45,
+            Attribute.ATTACK_DAMAGE to 7.0,
         )
 
     override fun onTick(entity: LivingEntity) {
