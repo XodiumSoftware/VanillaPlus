@@ -1,9 +1,8 @@
 package org.xodium.illyriaplus.mechanics
 
-import org.bukkit.Location
-import org.bukkit.Material
-import org.bukkit.Tag
+import org.bukkit.*
 import org.bukkit.block.data.Lightable
+import org.bukkit.entity.EntityType
 import org.bukkit.entity.Item
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -19,7 +18,7 @@ import org.xodium.illyriaplus.interfaces.MechanicInterface
 import org.xodium.illyriaplus.items.TeleportScrollItem
 
 internal object TeleportMechanic : MechanicInterface {
-    private const val CIRCLE_RADIUS = 2
+    private const val CIRCLE_RADIUS = 3
 
     private val activeRituals = mutableMapOf<Location, RitualCircle>()
     private val ritualCenters = mutableMapOf<Location, Location>()
@@ -59,8 +58,32 @@ internal object TeleportMechanic : MechanicInterface {
 
         findRitualCenter(block.location)?.let { center ->
             if (block.location.blockY != center.blockY) return@let
+            if (!isValidCandlePosition(block.location, center)) return@let
 
             activeRituals.getOrPut(center) { RitualCircle(center) }.candles.add(block.location)
+        }
+    }
+
+    /**
+     * Checks if a candle is at a valid position relative to the ritual center.
+     * Valid positions are the 16 positions forming the circle pattern.
+     */
+    private fun isValidCandlePosition(
+        candleLoc: Location,
+        center: Location,
+    ): Boolean {
+        val dx = candleLoc.blockX - center.blockX
+        val dz = candleLoc.blockZ - center.blockZ
+
+        return when (dz) {
+            -3 -> dx == -2 || dx == 0 || dx == 2
+            -2 -> dx == -2 || dx == 2
+            -1 -> dx == -3 || dx == 3
+            0 -> dx == -3 || dx == 3
+            1 -> dx == -3 || dx == 3
+            2 -> dx == -2 || dx == 2
+            3 -> dx == -2 || dx == 0 || dx == 2
+            else -> false
         }
     }
 
@@ -139,8 +162,11 @@ internal object TeleportMechanic : MechanicInterface {
 
         if (!allLit) return
 
+        spawnParticleTrails(circle)
+
         val fireLoc = circle.center.clone().add(0.0, 1.0, 0.0)
 
+        world.spawnEntity(fireLoc, EntityType.LIGHTNING_BOLT)
         fireLoc.block.type = Material.FIRE
         circle.isActive = true
         circle.fireLocation = fireLoc
@@ -152,6 +178,19 @@ internal object TeleportMechanic : MechanicInterface {
             .forEach { it.sendActionBar(MM.deserialize("<yellow>A teleportation portal opens...</yellow>")) }
     }
 
+    /** Spawns particle trails from each candle to the center. */
+    private fun spawnParticleTrails(circle: RitualCircle) {
+        val center = circle.center.clone().add(0.0, 1.0, 0.0)
+
+        circle.candles.forEach {
+            Particle.TRAIL
+                .builder()
+                .location(center)
+                .data(Particle.Trail(it.clone().add(0.0, 1.0, 0.0), Color.PURPLE, 20))
+                .spawn()
+        }
+    }
+
     /** Checks for teleport scroll items in the fire and teleports the player. */
     private fun checkForScrollInFire(
         circle: RitualCircle,
@@ -160,14 +199,31 @@ internal object TeleportMechanic : MechanicInterface {
         val fireLoc = circle.fireLocation ?: return
         val world = fireLoc.world ?: return
 
+        if (!isPlayerInsideCircle(player, circle.center)) return
+
         world
             .getNearbyEntities(fireLoc, 1.5, 1.5, 1.5)
             .filterIsInstance<Item>()
-            .filter { it.itemStack.isSimilar(TeleportScrollItem.item) }
+            .filter { TeleportScrollItem.isTeleportScroll(it.itemStack) }
             .forEach {
                 it.remove()
                 performTeleport(player, circle)
             }
+    }
+
+    /**
+     * Checks if the player is inside the ritual circle (not on candles).
+     * The circle has radius 3, so inside means distance < 3 from center.
+     */
+    private fun isPlayerInsideCircle(
+        player: Player,
+        center: Location,
+    ): Boolean {
+        val dx = player.location.blockX - center.blockX
+        val dz = player.location.blockZ - center.blockZ
+        val distanceSquared = dx * dx + dz * dz
+
+        return distanceSquared < CIRCLE_RADIUS * CIRCLE_RADIUS
     }
 
     /** Performs the teleportation. */
@@ -243,16 +299,32 @@ internal object TeleportMechanic : MechanicInterface {
 
         val expectedPositions =
             listOf(
-                Location(world, cx + 2.0, cy.toDouble(), cz.toDouble()),
-                Location(world, cx - 2.0, cy.toDouble(), cz.toDouble()),
-                Location(world, cx.toDouble(), cy.toDouble(), cz + 2.0),
-                Location(world, cx.toDouble(), cy.toDouble(), cz - 2.0),
+                // z = -3 row: 3 candles at x = -2, 0, +2
+                Location(world, cx - 2.0, cy.toDouble(), cz - 3.0),
+                Location(world, cx.toDouble(), cy.toDouble(), cz - 3.0),
+                Location(world, cx + 2.0, cy.toDouble(), cz - 3.0),
+                // z = -2 row: 2 candles at x = -2, +2
+                Location(world, cx - 2.0, cy.toDouble(), cz - 2.0),
+                Location(world, cx + 2.0, cy.toDouble(), cz - 2.0),
+                // z = -1 row: 2 candles at x = -3, +3
+                Location(world, cx - 3.0, cy.toDouble(), cz - 1.0),
+                Location(world, cx + 3.0, cy.toDouble(), cz - 1.0),
+                // z = 0 row: 2 candles at x = -3, +3
+                Location(world, cx - 3.0, cy.toDouble(), cz.toDouble()),
+                Location(world, cx + 3.0, cy.toDouble(), cz.toDouble()),
+                // z = 1 row: 2 candles at x = -3, +3
+                Location(world, cx - 3.0, cy.toDouble(), cz + 1.0),
+                Location(world, cx + 3.0, cy.toDouble(), cz + 1.0),
+                // z = 2 row: 2 candles at x = -2, +2
+                Location(world, cx - 2.0, cy.toDouble(), cz + 2.0),
+                Location(world, cx + 2.0, cy.toDouble(), cz + 2.0),
+                // z = 3 row: 3 candles at x = -2, 0, +2
+                Location(world, cx - 2.0, cy.toDouble(), cz + 3.0),
+                Location(world, cx.toDouble(), cy.toDouble(), cz + 3.0),
+                Location(world, cx + 2.0, cy.toDouble(), cz + 3.0),
             )
-        val candles = expectedPositions.filter { Tag.CANDLES.isTagged(it.block.type) }
 
-        if (candles.size < 2) return false
-
-        return candles.all { it.blockY == cy }
+        return expectedPositions.all { Tag.CANDLES.isTagged(it.block.type) }
     }
 
     /** Checks if the item can light candles. */
