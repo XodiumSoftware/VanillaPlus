@@ -4,36 +4,43 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import org.bukkit.Location
+import org.bukkit.NamespacedKey
+import org.bukkit.persistence.PersistentDataType
 import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
 import org.xodium.illyriaplus.data.RitualData
-import java.io.File
 
-/** Manages persistent storage of ritual configurations. */
+/** Manages persistent storage of ritual configurations via World PDC. */
 internal object RitualStorageManager {
     private val gson: Gson = GsonBuilder().setPrettyPrinting().create()
-    private val dataFile = File(instance.dataFolder, "rituals.json")
+    private val key = NamespacedKey(instance, "illyriaplus_rituals")
     private val rituals = mutableListOf<RitualData>()
 
-    /** Loads all saved rituals from disk. */
+    /** Loads all saved rituals from World PDC. */
     fun load() {
-        if (!dataFile.exists()) {
-            dataFile.parentFile.mkdirs()
-            dataFile.writeText("[]")
-            return
-        }
-
-        val json = dataFile.readText()
-        val type = object : TypeToken<List<RitualData>>() {}.type
-        val loaded: List<RitualData> = gson.fromJson(json, type) ?: emptyList()
-
         rituals.clear()
-        rituals.addAll(loaded)
+        instance.server.worlds.forEach { world ->
+            world.persistentDataContainer.get(key, PersistentDataType.STRING)?.let {
+                val type = object : TypeToken<List<RitualData>>() {}.type
+                val loaded: List<RitualData> = gson.fromJson(it, type) ?: emptyList()
+
+                rituals.addAll(loaded)
+            }
+        }
     }
 
-    /** Saves all rituals to disk. */
+    /** Saves all rituals to their respective worlds' PDC. */
     fun save() {
-        dataFile.parentFile.mkdirs()
-        dataFile.writeText(gson.toJson(rituals))
+        val byWorld = rituals.groupBy { it.world }
+
+        instance.server.worlds.forEach {
+            val worldRituals = byWorld[it.name]
+
+            if (worldRituals.isNullOrEmpty()) {
+                it.persistentDataContainer.remove(key)
+            } else {
+                it.persistentDataContainer.set(key, PersistentDataType.STRING, gson.toJson(worldRituals))
+            }
+        }
     }
 
     /**
