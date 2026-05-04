@@ -90,6 +90,51 @@ jobs:
           name: IllyriaPlus
           path: build/libs/*.jar
 
+  pr_comment:
+    name: PR Comment
+    needs: [ build ]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Post Artifact Link
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const botMarker = '<!-- IllyriaPlus Artifact Bot -->';
+            const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const body = `${botMarker}
+            Build completed for commit \`${context.sha.substring(0, 7)}\`.
+
+            [View Artifacts](${runUrl})
+            [View Workflow Run](${runUrl})
+            `;
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const existing = comments.find(c => c.body && c.body.includes(botMarker));
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body: body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: body,
+              });
+            }
+
   nightly_release:
     name: Nightly Release
     needs: [ build ]

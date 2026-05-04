@@ -22,14 +22,9 @@ import org.xodium.illyriaplus.interfaces.MechanicInterface
 import org.xodium.illyriaplus.managers.RitualStorageManager
 
 internal object TeleportMechanic : MechanicInterface {
-    private val logger = instance.logger
-
     private val activeRituals = mutableMapOf<Location, RitualCircle>()
 
-    override fun register(): Long {
-        RitualStorageManager.load()
-        return super.register()
-    }
+    override fun register(): Long = super.register().apply { RitualStorageManager.load() }
 
     /**
      * Represents a ritual circle for teleportation.
@@ -65,23 +60,13 @@ internal object TeleportMechanic : MechanicInterface {
         if (block.type == Material.SKELETON_SKULL || block.type == Material.SKELETON_WALL_SKULL) {
             val center = block.location
 
-            logger.info("[DEBUG] Skull placed at ${center.blockX}, ${center.blockY}, ${center.blockZ}")
-
             if (center.world?.environment != World.Environment.NORMAL) {
-                logger.info("[DEBUG] Skull placement rejected: not in overworld")
                 event.isCancelled = true
                 event.player.sendActionBar(MM.deserialize("<red>Rituals can only be created in the overworld!</red>"))
                 return
             }
 
-            if (!isValidRitualPattern(center)) {
-                logger.info("[DEBUG] Invalid ritual pattern at ${center.blockX}, ${center.blockY}, ${center.blockZ}")
-                return
-            }
-
-            logger.info(
-                "[DEBUG] Valid ritual pattern recognized at ${center.blockX}, ${center.blockY}, ${center.blockZ}",
-            )
+            if (!isValidRitualPattern(center)) return
 
             val candleConfigs = getCandleConfigs(center)
             val circle = RitualCircle(center, candleConfigs.toMutableMap())
@@ -154,47 +139,9 @@ internal object TeleportMechanic : MechanicInterface {
         val cx = center.blockX
         val cy = center.blockY
         val cz = center.blockZ
-        val grid = StringBuilder()
 
-        grid.appendLine("[DEBUG] Pattern check at $cx, $cy, $cz (skull Y-level):")
-
-        for (dz in -3..3) {
-            val row = StringBuilder()
-            for (dx in -3..3) {
-                when {
-                    dx == 0 && dz == 0 -> {
-                        row.append("X")
-                    }
-
-                    isValidCandlePosition(dx, dz) -> {
-                        val checkX = cx + dx
-                        val checkZ = cz + dz
-                        val loc = Location(world, checkX.toDouble(), cy.toDouble(), checkZ.toDouble())
-                        val block = loc.block
-                        val hasCandle = Tag.CANDLES.isTagged(block.type)
-                        if (hasCandle) {
-                            row.append("C")
-                        } else {
-                            row.append("?")
-                            grid.appendLine("[DEBUG]   Missing candle at ($checkX, $cy, $checkZ): found ${block.type}")
-                        }
-                    }
-
-                    else -> {
-                        row.append(".")
-                    }
-                }
-            }
-            grid.appendLine("[DEBUG] $row")
-        }
-        logger.info(grid.toString().trimEnd())
-
-        val expectedPositions = getRitualPositions(cx, cz)
-
-        return expectedPositions.all { (x, z) ->
-            val loc = Location(world, x.toDouble(), cy.toDouble(), z.toDouble())
-
-            Tag.CANDLES.isTagged(loc.block.type)
+        return getRitualPositions(cx, cz).all { (x, z) ->
+            Tag.CANDLES.isTagged(Location(world, x.toDouble(), cy.toDouble(), z.toDouble()).block.type)
         }
     }
 
@@ -516,9 +463,7 @@ internal object TeleportMechanic : MechanicInterface {
 
                         instance.server.scheduler.runTaskLater(
                             plugin,
-                            Runnable {
-                                tasks.forEach { instance.server.scheduler.cancelTask(it) }
-                            },
+                            Runnable { tasks.forEach { instance.server.scheduler.cancelTask(it) } },
                             40L,
                         )
                     },
