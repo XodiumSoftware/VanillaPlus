@@ -1,4 +1,4 @@
-package org.xodium.illyriaplus.mechanics
+package org.xodium.illyriaplus.mechanics.entity
 
 import org.bukkit.Material
 import org.bukkit.entity.Player

@@ -1,6 +1,6 @@
 @file:Suppress("ktlint:standard:no-wildcard-imports")
 
-package org.xodium.illyriaplus.mechanics
+package org.xodium.illyriaplus.mechanics.player
 
 import com.destroystokyo.paper.event.player.PlayerSetSpawnEvent
 import com.mojang.brigadier.arguments.StringArgumentType
@@ -54,6 +54,7 @@ internal object PlayerMechanic : MechanicInterface {
                             .playerExecuted { player, ctx ->
                                 nickname(player, StringArgumentType.getString(ctx, "name"))
                                 player.playerListName(player.displayName())
+                                tablist(player)
                             },
                     ),
                 "Allows players to set or remove their nickname",

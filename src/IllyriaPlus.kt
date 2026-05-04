@@ -4,11 +4,15 @@ package org.xodium.illyriaplus
 
 import org.bukkit.plugin.java.JavaPlugin
 import org.xodium.illyriaplus.enchantments.*
-import org.xodium.illyriaplus.mechanics.*
-import org.xodium.illyriaplus.mechanics.entity.BatMechanic
-import org.xodium.illyriaplus.mechanics.entity.GriefingMechanic
-import org.xodium.illyriaplus.mechanics.entity.HuskMechanic
-import org.xodium.illyriaplus.mechanics.entity.SpawnEggMechanic
+import org.xodium.illyriaplus.mechanics.entity.*
+import org.xodium.illyriaplus.mechanics.player.LocatorMechanic
+import org.xodium.illyriaplus.mechanics.player.PlayerMechanic
+import org.xodium.illyriaplus.mechanics.player.SitMechanic
+import org.xodium.illyriaplus.mechanics.server.*
+import org.xodium.illyriaplus.mechanics.world.ChiseledBookshelfMechanic
+import org.xodium.illyriaplus.mechanics.world.DimensionMechanic
+import org.xodium.illyriaplus.mechanics.world.InventoryMechanic
+import org.xodium.illyriaplus.mechanics.world.OpenableMechanic
 import org.xodium.illyriaplus.recipes.*
 
 /** Main class of the plugin. */

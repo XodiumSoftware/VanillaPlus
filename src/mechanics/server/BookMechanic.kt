@@ -1,8 +1,8 @@
-package org.xodium.illyriaplus.mechanics
+package org.xodium.illyriaplus.mechanics.server
 
 import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.permissions.Permission
-import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
+import org.xodium.illyriaplus.IllyriaPlus
 import org.xodium.illyriaplus.Utils.CommandUtils.playerExecuted
 import org.xodium.illyriaplus.data.BookData
 import org.xodium.illyriaplus.data.CommandData
@@ -10,7 +10,7 @@ import org.xodium.illyriaplus.interfaces.MechanicInterface
 
 /** Represents a module handling book mechanics within the system. */
 internal object BookMechanic : MechanicInterface {
-    private val PERM_PREFIX: String = "${instance.javaClass.simpleName}.book".lowercase()
+    private val PERM_PREFIX: String = "${IllyriaPlus.instance.javaClass.simpleName}.book".lowercase()
     private val BOOKS: List<BookData> =
         listOf(
             BookData(

@@ -1,4 +1,4 @@
-package org.xodium.illyriaplus.mechanics
+package org.xodium.illyriaplus.mechanics.server
 
 import com.mojang.brigadier.arguments.StringArgumentType
 import io.papermc.paper.chat.ChatRenderer
@@ -16,9 +16,9 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
-import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
+import org.xodium.illyriaplus.IllyriaPlus
+import org.xodium.illyriaplus.Utils
 import org.xodium.illyriaplus.Utils.CommandUtils.executesCatching
-import org.xodium.illyriaplus.Utils.MM
 import org.xodium.illyriaplus.Utils.prefix
 import org.xodium.illyriaplus.data.CommandData
 import org.xodium.illyriaplus.interfaces.MechanicInterface
@@ -38,7 +38,7 @@ internal object ChatMechanic : MechanicInterface {
     private const val CLICK_TO_DELETE_MSG: String = "<gradient:#FFE259:#FFA751>Click to delete your message</gradient>"
 
     private val PLAYER_IS_NOT_ONLINE_MSG: String =
-        "${instance.prefix} <gradient:#CB2D3E:#EF473A>Player is not Online!</gradient>"
+        "${IllyriaPlus.instance.prefix} <gradient:#CB2D3E:#EF473A>Player is not Online!</gradient>"
 
     override val cmds =
         listOf(
@@ -54,7 +54,7 @@ internal object ChatMechanic : MechanicInterface {
                                     .argument("message", StringArgumentType.greedyString())
                                     .executesCatching {
                                         if (it.source.sender !is Player) {
-                                            instance.logger.warning(
+                                            IllyriaPlus.instance.logger.warning(
                                                 "Command can only be executed by a Player!",
                                             )
                                         }
@@ -65,7 +65,7 @@ internal object ChatMechanic : MechanicInterface {
                                         val target =
                                             targetResolver.resolve(it.source).singleOrNull()
                                                 ?: return@executesCatching sender.sendMessage(
-                                                    MM.deserialize(PLAYER_IS_NOT_ONLINE_MSG),
+                                                    Utils.MM.deserialize(PLAYER_IS_NOT_ONLINE_MSG),
                                                 )
                                         val message = it.getArgument("message", String().javaClass)
 
@@ -81,7 +81,7 @@ internal object ChatMechanic : MechanicInterface {
     override val perms =
         listOf(
             Permission(
-                "${instance.javaClass.simpleName}.whisper".lowercase(),
+                "${IllyriaPlus.instance.javaClass.simpleName}.whisper".lowercase(),
                 "Allows use of the whisper command",
                 PermissionDefault.TRUE,
             ),
@@ -99,15 +99,15 @@ internal object ChatMechanic : MechanicInterface {
         event.renderer(ChatRenderer.defaultRenderer())
         event.renderer { player, displayName, message, audience ->
             var base =
-                MM.deserialize(
+                Utils.MM.deserialize(
                     CHAT_FORMAT,
-                    Placeholder.component("player_head", MM.deserialize("<head:${player.uniqueId}>")),
+                    Placeholder.component("player_head", Utils.MM.deserialize("<head:${player.uniqueId}>")),
                     Placeholder.component(
                         "player",
                         displayName
                             .clickEvent(ClickEvent.suggestCommand("/w ${player.name} "))
                             .hoverEvent(
-                                HoverEvent.showText(MM.deserialize(CLICK_TO_WHISPER_MSG)),
+                                HoverEvent.showText(Utils.MM.deserialize(CLICK_TO_WHISPER_MSG)),
                             ),
                     ),
                     Placeholder.component("message", message),
@@ -131,30 +131,30 @@ internal object ChatMechanic : MechanicInterface {
         message: String,
     ) {
         sender.sendMessage(
-            MM.deserialize(
+            Utils.MM.deserialize(
                 WHISPER_TO_FORMAT,
                 Placeholder.component(
                     "player",
                     target
                         .displayName()
                         .clickEvent(ClickEvent.suggestCommand("/w ${target.name} "))
-                        .hoverEvent(HoverEvent.showText(MM.deserialize(CLICK_TO_WHISPER_MSG))),
+                        .hoverEvent(HoverEvent.showText(Utils.MM.deserialize(CLICK_TO_WHISPER_MSG))),
                 ),
-                Placeholder.component("message", MM.deserialize(message)),
+                Placeholder.component("message", Utils.MM.deserialize(message)),
             ),
         )
 
         target.sendMessage(
-            MM.deserialize(
+            Utils.MM.deserialize(
                 WHISPER_FROM_FORMAT,
                 Placeholder.component(
                     "player",
                     sender
                         .displayName()
                         .clickEvent(ClickEvent.suggestCommand("/w ${sender.name} "))
-                        .hoverEvent(HoverEvent.showText(MM.deserialize(CLICK_TO_WHISPER_MSG))),
+                        .hoverEvent(HoverEvent.showText(Utils.MM.deserialize(CLICK_TO_WHISPER_MSG))),
                 ),
-                Placeholder.component("message", MM.deserialize(message)),
+                Placeholder.component("message", Utils.MM.deserialize(message)),
             ),
         )
     }
@@ -166,8 +166,8 @@ internal object ChatMechanic : MechanicInterface {
      * @return A [net.kyori.adventure.text.Component] representing the delete cross with hover text and click action.
      */
     private fun createDeleteCross(signedMessage: SignedMessage): Component =
-        MM
+        Utils.MM
             .deserialize(DELETE_SYMBOL)
-            .hoverEvent(MM.deserialize(CLICK_TO_DELETE_MSG))
-            .clickEvent(ClickEvent.callback { instance.server.deleteMessage(signedMessage) })
+            .hoverEvent(Utils.MM.deserialize(CLICK_TO_DELETE_MSG))
+            .clickEvent(ClickEvent.callback { IllyriaPlus.instance.server.deleteMessage(signedMessage) })
 }

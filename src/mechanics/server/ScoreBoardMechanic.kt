@@ -1,11 +1,11 @@
-package org.xodium.illyriaplus.mechanics
+package org.xodium.illyriaplus.mechanics.server
 
 import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
-import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
+import org.xodium.illyriaplus.IllyriaPlus
 import org.xodium.illyriaplus.Utils.CommandUtils.playerExecuted
 import org.xodium.illyriaplus.Utils.PlayerUtils.applyScoreboard
 import org.xodium.illyriaplus.data.CommandData
@@ -31,7 +31,7 @@ internal object ScoreBoardMechanic : MechanicInterface {
     override val perms =
         listOf(
             Permission(
-                "${instance.javaClass.simpleName}.leaderboard".lowercase(),
+                "${IllyriaPlus.instance.javaClass.simpleName}.leaderboard".lowercase(),
                 "Allows use of the leaderboard command",
                 PermissionDefault.TRUE,
             ),

@@ -7,7 +7,7 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.advancement.Advancement
 import org.bukkit.entity.Player
 import org.xodium.illyriaplus.Utils.MM
-import org.xodium.illyriaplus.mechanics.PlayerMechanic
+import org.xodium.illyriaplus.mechanics.player.PlayerMechanic
 
 /** Manages player messages and internationalization. */
 internal object PlayerMessageManager {
