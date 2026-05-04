@@ -24,7 +24,20 @@ import org.xodium.illyriaplus.managers.RitualStorageManager
 internal object TeleportMechanic : MechanicInterface {
     private val activeRituals = mutableMapOf<Location, RitualCircle>()
 
-    override fun register(): Long = super.register().apply { RitualStorageManager.load() }
+    override fun register(): Long =
+        super.register().apply {
+            RitualStorageManager.load()
+            instance.server.scheduler.scheduleSyncRepeatingTask(
+                instance,
+                Runnable {
+                    activeRituals.values.filter { !it.isActive }.forEach { circle ->
+                        if (areAllCandlesLit(circle)) activateRitual(circle)
+                    }
+                },
+                0L,
+                10L,
+            )
+        }
 
     /**
      * Represents a ritual circle for teleportation.
@@ -246,10 +259,7 @@ internal object TeleportMechanic : MechanicInterface {
      */
     private fun spawnParticleTrails(circle: RitualCircle) {
         val plugin = instance
-        val center =
-            circle.center.block
-                .center()
-                .add(0.0, 1.0, 0.0)
+        val center = circle.center.block.center()
         val candles = circle.candles.keys.toList()
         val activeTasks = mutableListOf<Int>()
 
@@ -265,12 +275,20 @@ internal object TeleportMechanic : MechanicInterface {
                             Runnable {
                                 if (!circle.isActive) return@Runnable
 
-                                val from = loc.clone().add(0.5, 1.0, 0.5)
+                                val from = loc.block.center()
                                 val to = center.clone()
                                 val direction = to.toVector().subtract(from.toVector())
                                 val distance = direction.length()
                                 val step = direction.normalize().multiply(0.3)
                                 val current = from.clone()
+
+                                from.world.playSound(
+                                    from,
+                                    Sound.BLOCK_AMETHYST_BLOCK_CHIME,
+                                    SoundCategory.AMBIENT,
+                                    0.5f,
+                                    1.5f,
+                                )
 
                                 var traveled = 0.0
 
