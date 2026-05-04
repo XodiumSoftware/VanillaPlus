@@ -70,4 +70,7 @@ internal object RitualStorageManager {
      */
     fun findMatchingRitual(candles: Map<String, Pair<Int, String>>): RitualData? =
         rituals.find { it.candles == candles }
+
+    /** Returns a snapshot of all stored rituals. */
+    fun getAllRituals(): List<RitualData> = rituals.toList()
 }

@@ -17,6 +17,7 @@ import org.xodium.illyriaplus.Utils.MM
 import org.xodium.illyriaplus.data.RitualData
 import org.xodium.illyriaplus.interfaces.MechanicInterface
 import org.xodium.illyriaplus.managers.RitualStorageManager
+import org.xodium.illyriaplus.mechanics.world.TeleportMechanic.activeRituals
 import org.xodium.illyriaplus.mechanics.world.TeleportMechanic.closePortal
 import org.xodium.illyriaplus.mechanics.world.TeleportMechanic.deactivateRitual
 import org.xodium.illyriaplus.mechanics.world.TeleportMechanic.performTeleport
@@ -35,19 +36,44 @@ internal object TeleportMechanic : MechanicInterface {
     /**
      * Registers the mechanic and starts the background check task.
      *
-     * The repeating task (every 10 ticks) handles three things:
-     * 1. Detects inactive rituals whose candles are all lit → activates them.
-     * 2. Detects active rituals with any unlit candle → deactivates them.
-     * 3. Detects players inside active rituals → triggers teleport sequence.
+     * On startup all rituals saved in [RitualStorageManager] are loaded into
+     * [activeRituals] as inactive circles so destinations work without a skull.
+     * Invalid or unlit rituals are removed from storage immediately.
+     *
+     * The repeating task (every 10 ticks) handles four things:
+     * 1. Detects inactive rituals with invalid patterns → removes them.
+     * 2. Detects inactive rituals whose candles are all lit → activates them.
+     * 3. Detects active rituals with any unlit candle → deactivates them.
+     * 4. Detects players inside active rituals that have a skull → triggers teleport.
      */
     override fun register(): Long =
         super.register().apply {
             RitualStorageManager.load()
+
+            RitualStorageManager.getAllRituals().forEach { ritual ->
+                val center = ritual.getCenter()
+                if (!isValidRitualPattern(center)) {
+                    RitualStorageManager.removeRitual(center)
+                    return@forEach
+                }
+                val configs = getCandleConfigs(center)
+                if (configs.size != 16) {
+                    RitualStorageManager.removeRitual(center)
+                    return@forEach
+                }
+                activeRituals[center] = RitualCircle(center, configs.toMutableMap())
+            }
+
             instance.server.scheduler.scheduleSyncRepeatingTask(
                 instance,
                 {
-                    activeRituals.values.filter { !it.isActive }.forEach {
-                        if (areAllCandlesLit(it)) activateRitual(it)
+                    activeRituals.values.filter { !it.isActive }.toList().forEach { circle ->
+                        if (!isValidRitualPattern(circle.center) || !areAllCandlesLit(circle)) {
+                            activeRituals.remove(circle.center)
+                            RitualStorageManager.removeRitual(circle.center)
+                        } else {
+                            activateRitual(circle)
+                        }
                     }
                     activeRituals.values.filter { it.isActive }.forEach {
                         if (!areAllCandlesLit(it)) {
@@ -57,13 +83,17 @@ internal object TeleportMechanic : MechanicInterface {
                         }
                     }
                     val now = System.currentTimeMillis()
-                    activeRituals.values.filter { it.isActive }.toList().forEach { circle ->
-                        findPlayerInsideCircle(circle)?.let { player ->
-                            if (teleportCooldown.getOrDefault(player.uniqueId, 0) > now) return@let
-                            startTeleportSequence(player, circle)
-                            teleportCooldown[player.uniqueId] = now + 5000
+
+                    activeRituals.values
+                        .filter { it.isActive && isSkullPresent(it.center) }
+                        .toList()
+                        .forEach { circle ->
+                            findPlayerInsideCircle(circle)?.let {
+                                if (teleportCooldown.getOrDefault(it.uniqueId, 0) > now) return@let
+                                startTeleportSequence(it, circle)
+                                teleportCooldown[it.uniqueId] = now + 5000
+                            }
                         }
-                    }
                 },
                 0L,
                 10L,
@@ -124,8 +154,14 @@ internal object TeleportMechanic : MechanicInterface {
             if (!isValidRitualPattern(center)) return
 
             val candleConfigs = getCandleConfigs(center)
-            val circle = RitualCircle(center, candleConfigs.toMutableMap())
 
+            activeRituals[center]?.let { existing ->
+                existing.candles.clear()
+                existing.candles.putAll(candleConfigs)
+                return
+            }
+
+            val circle = RitualCircle(center, candleConfigs.toMutableMap())
             activeRituals[center] = circle
             return
         }
@@ -292,6 +328,10 @@ internal object TeleportMechanic : MechanicInterface {
         spawnParticleTrails(circle)
         RitualStorageManager.addRitual(RitualData.fromLocation(circle.center, circle.candles))
     }
+
+    /** Returns `true` if the block at [center] is a skeleton skull. */
+    private fun isSkullPresent(center: Location): Boolean =
+        center.block.type == Material.SKELETON_SKULL || center.block.type == Material.SKELETON_WALL_SKULL
 
     /** Returns `true` if every candle in [circle] is currently lit. */
     private fun areAllCandlesLit(circle: RitualCircle): Boolean =
@@ -660,7 +700,9 @@ internal object TeleportMechanic : MechanicInterface {
 
         if (block.type == Material.SKELETON_SKULL || block.type == Material.SKELETON_WALL_SKULL) {
             activeRituals[loc]?.let { circle ->
-                deactivateRitual(circle)
+                circle.isActive = false
+                circle.activeTaskIds.forEach { instance.server.scheduler.cancelTask(it) }
+                circle.activeTaskIds.clear()
                 activeRituals.remove(loc)
                 RitualStorageManager.removeRitual(loc)
             }
