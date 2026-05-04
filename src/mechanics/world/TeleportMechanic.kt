@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package org.xodium.illyriaplus.mechanics.world
 
 import org.bukkit.*
@@ -74,7 +76,19 @@ internal object TeleportMechanic : MechanicInterface {
 
     /**
      * Checks if a candle is at a valid position relative to the ritual center.
-     * Valid positions are the 16 positions forming the circle pattern.
+     *
+     * The ritual circle pattern consists of 16 candles arranged as follows:
+     * ```
+     * ..CCC..
+     * .C...C.
+     * C.....C
+     * C..X..C    (X = center block, C = candle position)
+     * C.....C
+     * .C...C.
+     * ..CCC..
+     * ```
+     *
+     * Valid positions are the 16 'C' positions forming the circle pattern.
      */
     private fun isValidCandlePosition(
         candleLoc: Location,
@@ -337,21 +351,28 @@ internal object TeleportMechanic : MechanicInterface {
         return null
     }
 
-//    ..CCC..
-//    .C...C.
-//    C.....C
-//    C..X..C
-//    C.....C
-//    .C...C.
-//    ..CCC..
-
-    /** Checks if the given location is a valid center for a ritual circle. */
+    /**
+     * Checks if the given location is a valid center for a ritual circle.
+     *
+     * The ritual circle requires 16 candles arranged in this pattern:
+     * ```
+     * ..CCC..
+     * .C...C.
+     * C.....C
+     * C..X..C    (X = center block, C = candle)
+     * C.....C
+     * .C...C.
+     * ..CCC..
+     * ```
+     *
+     * The center block can be any block type. All 16 candle positions must
+     * have candles placed for the ritual to be considered valid.
+     */
     private fun isValidRitualCenter(center: Location): Boolean {
         val world = center.world ?: return false
         val cx = center.blockX
         val cy = center.blockY
         val cz = center.blockZ
-
         val expectedPositions =
             listOf(
                 // z = -3 row: 3 candles at x = -2, 0, +2
