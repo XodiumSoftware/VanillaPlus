@@ -20,7 +20,6 @@ import org.xodium.illyriaplus.managers.RitualStorageManager
 import org.xodium.illyriaplus.mechanics.world.TeleportMechanic.closePortal
 import org.xodium.illyriaplus.mechanics.world.TeleportMechanic.deactivateRitual
 import org.xodium.illyriaplus.mechanics.world.TeleportMechanic.performTeleport
-import org.xodium.illyriaplus.mechanics.world.TeleportMechanic.spawnTeleportBeam
 import org.xodium.illyriaplus.mechanics.world.TeleportMechanic.triggerRitualFinish
 import java.util.*
 import kotlin.math.PI
@@ -444,6 +443,8 @@ internal object TeleportMechanic : MechanicInterface {
                                 )
                             }
                         }
+
+                        spawnPurpleCandleTrail(circle)
                     },
                     20L,
                 )
@@ -477,12 +478,15 @@ internal object TeleportMechanic : MechanicInterface {
     }
 
     /**
-     * Starts a 40-tick charge-up sequence before teleporting [player].
+     * Starts a 60-tick charge-up sequence before teleporting [player].
      *
      * While charging, a rotating spiral of [Particle.END_ROD] and [Particle.PORTAL]
-     * particles spawn around the player. If the player leaves the circle, the portal
-     * closes, or the player disconnects, the teleport is cancelled. After the delay,
-     * [spawnTeleportBeam] flashes and [performTeleport] executes.
+     * particles spawn around the player. A 3..2..1.. countdown is shown in the action bar.
+     * At "1" a beacon beam spawns at the player's location. After the delay,
+     * [performTeleport] executes and a matching beam spawns at the destination.
+     *
+     * If the player leaves the circle, the portal closes, or the player disconnects,
+     * the teleport is cancelled.
      */
     private fun startTeleportSequence(
         player: Player,
@@ -491,9 +495,6 @@ internal object TeleportMechanic : MechanicInterface {
         if (player.uniqueId in pendingTeleports) return
         pendingTeleports.add(player.uniqueId)
 
-        player.sendActionBar(MM.deserialize("<aqua>Teleportation commencing...</aqua>"))
-        player.playSound(player.location, Sound.BLOCK_BEACON_POWER_SELECT, SoundCategory.PLAYERS, 1.0f, 1.0f)
-
         val chargeTaskId =
             instance.server.scheduler.scheduleSyncRepeatingTask(
                 instance,
@@ -501,6 +502,34 @@ internal object TeleportMechanic : MechanicInterface {
                 0L,
                 2L,
             )
+
+        instance.server.scheduler.runTaskLater(
+            instance,
+            Runnable {
+                player.sendActionBar(MM.deserialize("<aqua>3..</aqua>"))
+                player.playSound(player.location, Sound.BLOCK_NOTE_BLOCK_PLING, SoundCategory.PLAYERS, 1.0f, 0.8f)
+            },
+            0L,
+        )
+
+        instance.server.scheduler.runTaskLater(
+            instance,
+            Runnable {
+                player.sendActionBar(MM.deserialize("<aqua>2..</aqua>"))
+                player.playSound(player.location, Sound.BLOCK_NOTE_BLOCK_PLING, SoundCategory.PLAYERS, 1.0f, 1.0f)
+            },
+            20L,
+        )
+
+        instance.server.scheduler.runTaskLater(
+            instance,
+            Runnable {
+                player.sendActionBar(MM.deserialize("<aqua>1..</aqua>"))
+                player.playSound(player.location, Sound.BLOCK_NOTE_BLOCK_PLING, SoundCategory.PLAYERS, 1.0f, 1.2f)
+                spawnBeaconBeam(player.location)
+            },
+            40L,
+        )
 
         instance.server.scheduler.runTaskLater(
             instance,
@@ -518,10 +547,9 @@ internal object TeleportMechanic : MechanicInterface {
                     return@Runnable
                 }
 
-                spawnTeleportBeam(player)
                 performTeleport(player, circle)
             },
-            40L,
+            60L,
         )
     }
 
@@ -548,20 +576,76 @@ internal object TeleportMechanic : MechanicInterface {
         world.spawnParticle(Particle.PORTAL, center.x, center.y - 0.5, center.z, 3, 0.3, 0.1, 0.3, 0.3)
     }
 
-    /**
-     * Visual effect played on a player immediately before teleport.
-     *
-     * Spawns a vertical column of 20 [Particle.END_ROD] particles rising from
-     * the player's feet and plays [Sound.ENTITY_ENDERMAN_TELEPORT].
-     */
-    private fun spawnTeleportBeam(player: Player) {
-        val loc = player.location.clone().add(0.0, 0.5, 0.0)
+    /** Draws a purple [Particle.WITCH] line from [from] to [to] in 0.3-block steps. */
+    private fun drawPurpleLine(
+        from: Location,
+        to: Location,
+    ) {
+        val direction = to.toVector().subtract(from.toVector())
+        val distance = direction.length()
+        val step = direction.normalize().multiply(0.3)
+        val current = from.clone()
+        var traveled = 0.0
 
-        repeat(20) {
-            loc.add(0.0, 0.3, 0.0)
-            loc.world.spawnParticle(Particle.END_ROD, loc, 1, 0.0, 0.0, 0.0, 0.0)
+        while (traveled < distance) {
+            current.add(step)
+            current.world.spawnParticle(Particle.WITCH, current, 1, 0.0, 0.0, 0.0, 0.0)
+            traveled += step.length()
         }
-        player.playSound(player.location, Sound.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1.0f, 1.0f)
+    }
+
+    /**
+     * Spawns a repeating purple particle trail connecting all candles in a loop.
+     *
+     * The candles are sorted by angle around the center so the trail follows
+     * the diamond perimeter. Started after the cloud effect in [triggerRitualFinish]
+     * and cancelled when the ritual closes or deactivates.
+     */
+    private fun spawnPurpleCandleTrail(circle: RitualCircle) {
+        val candles = circle.candles.keys.toList()
+        if (candles.size < 2) return
+
+        val center = circle.center
+        val sorted =
+            candles.sortedBy {
+                val dx = it.blockX - center.blockX
+                val dz = it.blockZ - center.blockZ
+                kotlin.math.atan2(dz.toDouble(), dx.toDouble())
+            }
+
+        val taskId =
+            instance.server.scheduler.scheduleSyncRepeatingTask(
+                instance,
+                Runnable {
+                    if (!circle.isActive) return@Runnable
+
+                    for (i in sorted.indices) {
+                        val from = sorted[i].block.center()
+                        val to = sorted[(i + 1) % sorted.size].block.center()
+                        drawPurpleLine(from, to)
+                    }
+                },
+                0L,
+                5L,
+            )
+
+        circle.activeTaskIds.add(taskId)
+    }
+
+    /**
+     * Spawns a tall vertical beacon beam at [location].
+     *
+     * Uses [Particle.END_ROD] in a column from 2 blocks below up to 30 blocks above.
+     */
+    private fun spawnBeaconBeam(location: Location) {
+        val world = location.world ?: return
+        val base = location.clone()
+
+        for (y in -2..30) {
+            val loc = base.clone().add(0.0, y.toDouble(), 0.0)
+            world.spawnParticle(Particle.END_ROD, loc, 1, 0.0, 0.0, 0.0, 0.0)
+        }
+        world.playSound(location, Sound.BLOCK_BEACON_POWER_SELECT, SoundCategory.PLAYERS, 1.0f, 1.0f)
     }
 
     /**
@@ -640,7 +724,9 @@ internal object TeleportMechanic : MechanicInterface {
 
         if (targetRitual != null) {
             targetRitual.getCenter().let {
+                spawnBeaconBeam(it.clone().add(0.5, 0.0, 0.5))
                 player.teleport(it.clone().add(0.5, 0.0, 0.5))
+                player.playSound(player.location, Sound.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1.0f, 1.0f)
                 player.sendActionBar(MM.deserialize("<green>You have been teleported!</green>"))
             }
         } else {
