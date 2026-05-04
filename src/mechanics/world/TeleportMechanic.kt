@@ -9,11 +9,8 @@ import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
-import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
-import org.bukkit.event.entity.EntityDamageEvent
-import org.bukkit.event.player.PlayerInteractEvent
 import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
 import org.xodium.illyriaplus.Utils.BlockUtils.center
 import org.xodium.illyriaplus.Utils.MM
@@ -29,9 +26,22 @@ internal object TeleportMechanic : MechanicInterface {
             RitualStorageManager.load()
             instance.server.scheduler.scheduleSyncRepeatingTask(
                 instance,
-                Runnable {
-                    activeRituals.values.filter { !it.isActive }.forEach { circle ->
-                        if (areAllCandlesLit(circle)) activateRitual(circle)
+                {
+                    activeRituals.values.filter { !it.isActive }.forEach {
+                        if (areAllCandlesLit(it)) activateRitual(it)
+                    }
+                    activeRituals.values.filter { it.isActive }.forEach {
+                        if (!areAllCandlesLit(it)) {
+                            deactivateRitual(it)
+                            activeRituals.remove(it.center)
+                            RitualStorageManager.removeRitual(it.center)
+                        }
+                    }
+                    activeRituals.values.filter { it.isActive }.toList().forEach { circle ->
+                        findPlayerInsideCircle(circle)?.let {
+                            spawnTeleportBeam(it)
+                            performTeleport(it, circle)
+                        }
                     }
                 },
                 0L,
@@ -45,13 +55,13 @@ internal object TeleportMechanic : MechanicInterface {
      * @property center The center location of the ritual circle (skull location).
      * @property candles Map of candle locations to their configurations.
      * @property isActive Whether the ritual is currently active.
-     * @property fireLocation The location of the fire block if active.
+     * @property activeTaskIds Scheduler task IDs for particle trails.
      */
     private data class RitualCircle(
         val center: Location,
         val candles: MutableMap<Location, Pair<Int, Material>> = mutableMapOf(),
         var isActive: Boolean = false,
-        var fireLocation: Location? = null,
+        val activeTaskIds: MutableList<Int> = mutableListOf(),
     )
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -59,12 +69,6 @@ internal object TeleportMechanic : MechanicInterface {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: BlockBreakEvent) = blockBreak(event)
-
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    fun on(event: PlayerInteractEvent) = playerInteract(event)
-
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    fun on(event: EntityDamageEvent) = entityDamage(event)
 
     /** Handles skull placement to activate ritual circles. */
     private fun blockPlace(event: BlockPlaceEvent) {
@@ -85,8 +89,6 @@ internal object TeleportMechanic : MechanicInterface {
             val circle = RitualCircle(center, candleConfigs.toMutableMap())
 
             activeRituals[center] = circle
-
-            activateRitual(circle)
             return
         }
 
@@ -220,7 +222,16 @@ internal object TeleportMechanic : MechanicInterface {
 
         lightAllCandles(circle)
         spawnParticleTrails(circle)
+        RitualStorageManager.addRitual(RitualData.fromLocation(circle.center, circle.candles))
     }
+
+    /** Checks if all candles in the ritual are lit. */
+    private fun areAllCandlesLit(circle: RitualCircle): Boolean =
+        circle.candles.keys.all {
+            val lightable = it.block.blockData as? Lightable
+
+            lightable?.isLit == true
+        }
 
     /** Lights all candles in the ritual. */
     private fun lightAllCandles(circle: RitualCircle) {
@@ -258,20 +269,18 @@ internal object TeleportMechanic : MechanicInterface {
      * @param circle The ritual circle.
      */
     private fun spawnParticleTrails(circle: RitualCircle) {
-        val plugin = instance
         val center = circle.center.block.center()
         val candles = circle.candles.keys.toList()
-        val activeTasks = mutableListOf<Int>()
 
         candles.forEachIndexed { index, loc ->
             val delay = index * 10L
 
             instance.server.scheduler.runTaskLater(
-                plugin,
+                instance,
                 Runnable {
                     val taskId =
                         instance.server.scheduler.scheduleSyncRepeatingTask(
-                            plugin,
+                            instance,
                             Runnable {
                                 if (!circle.isActive) return@Runnable
 
@@ -310,16 +319,67 @@ internal object TeleportMechanic : MechanicInterface {
                             5L,
                         )
 
-                    activeTasks.add(taskId)
+                    circle.activeTaskIds.add(taskId)
 
-                    if (index == candles.lastIndex) triggerRitualFinish(circle, activeTasks)
+                    if (index == candles.lastIndex) triggerRitualFinish(circle)
                 },
                 delay,
             )
         }
     }
 
-    /** Handles skull/candle/fire breaks to deactivate ritual circles. */
+    /**
+     * Handles final ritual sequence: lightning strike at center and consumes the skull.
+     *
+     * @param circle The ritual circle.
+     */
+    private fun triggerRitualFinish(circle: RitualCircle) {
+        val world = circle.center.world ?: return
+
+        instance.server.scheduler.runTaskLater(
+            instance,
+            Runnable {
+                world.spawnEntity(circle.center.clone(), EntityType.LIGHTNING_BOLT)
+                circle.center.block.type = Material.AIR
+            },
+            40L,
+        )
+    }
+
+    /** Finds the first player inside the ritual circle. */
+    private fun findPlayerInsideCircle(circle: RitualCircle): Player? =
+        circle.center.world
+            ?.getNearbyEntities(circle.center, 3.0, 3.0, 3.0)
+            ?.filterIsInstance<Player>()
+            ?.find { isPlayerInsideCircle(it, circle.center) }
+
+    /**
+     * Checks if the player is inside the ritual circle.
+     * Inside means distance < 3 from center (not on candles).
+     */
+    private fun isPlayerInsideCircle(
+        player: Player,
+        center: Location,
+    ): Boolean {
+        val dx = player.location.blockX - center.blockX
+        val dz = player.location.blockZ - center.blockZ
+        val distanceSquared = dx * dx + dz * dz
+
+        return distanceSquared < 9
+    }
+
+    /** Spawns a vertical beam on the player before teleport. */
+    private fun spawnTeleportBeam(player: Player) {
+        val loc = player.location.clone().add(0.0, 0.5, 0.0)
+
+        repeat(20) {
+            loc.add(0.0, 0.3, 0.0)
+            loc.world.spawnParticle(Particle.END_ROD, loc, 1, 0.0, 0.0, 0.0, 0.0)
+        }
+        player.playSound(player.location, Sound.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1.0f, 1.0f)
+    }
+
+    /** Handles skull/candle breaks to deactivate ritual circles. */
     private fun blockBreak(event: BlockBreakEvent) {
         val block = event.block
         val loc = block.location
@@ -329,15 +389,6 @@ internal object TeleportMechanic : MechanicInterface {
                 deactivateRitual(circle)
                 activeRituals.remove(loc)
                 RitualStorageManager.removeRitual(loc)
-            }
-            return
-        }
-
-        if (block.type == Material.FIRE) {
-            activeRituals.values.find { it.fireLocation == loc }?.let { circle ->
-                deactivateRitual(circle)
-                activeRituals.remove(circle.center)
-                RitualStorageManager.removeRitual(circle.center)
             }
             return
         }
@@ -353,48 +404,14 @@ internal object TeleportMechanic : MechanicInterface {
 
     /** Deactivates a ritual circle. */
     private fun deactivateRitual(circle: RitualCircle) {
-        circle.fireLocation?.let { it.block.type = Material.AIR }
         circle.isActive = false
+        circle.activeTaskIds.forEach { instance.server.scheduler.cancelTask(it) }
+        circle.activeTaskIds.clear()
         extinguishAllCandles(circle)
         circle.center.world
             ?.getNearbyEntities(circle.center, 10.0, 10.0, 10.0)
             ?.filterIsInstance<Player>()
             ?.forEach { it.sendActionBar(MM.deserialize("<gray>The portal closes...</gray>")) }
-    }
-
-    /** Handles player interaction with the ritual fire. */
-    private fun playerInteract(event: PlayerInteractEvent) {
-        if (event.action != Action.RIGHT_CLICK_BLOCK) return
-
-        val block = event.clickedBlock ?: return
-        val player = event.player
-
-        if (block.type == Material.FIRE) {
-            activeRituals.values.find { it.fireLocation == block.location }?.let {
-                if (!isPlayerInsideCircle(player, it.center)) {
-                    player.sendActionBar(MM.deserialize("<red>Step inside the circle to use the portal!</red>"))
-                    return
-                }
-
-                performTeleport(player, it)
-                event.isCancelled = true
-            }
-        }
-    }
-
-    /**
-     * Checks if the player is inside the ritual circle.
-     * Inside means distance < 3 from center (not on candles).
-     */
-    private fun isPlayerInsideCircle(
-        player: Player,
-        center: Location,
-    ): Boolean {
-        val dx = player.location.blockX - center.blockX
-        val dz = player.location.blockZ - center.blockZ
-        val distanceSquared = dx * dx + dz * dz
-
-        return distanceSquared < 9
     }
 
     /** Performs the teleportation. */
@@ -425,70 +442,5 @@ internal object TeleportMechanic : MechanicInterface {
         deactivateRitual(circle)
         activeRituals.remove(circle.center)
         RitualStorageManager.removeRitual(circle.center)
-    }
-
-    /** Prevents fire damage to players near ritual fires. */
-    private fun entityDamage(event: EntityDamageEvent) {
-        if (event.cause != EntityDamageEvent.DamageCause.FIRE &&
-            event.cause != EntityDamageEvent.DamageCause.FIRE_TICK
-        ) {
-            return
-        }
-
-        val player = event.entity as? Player ?: return
-
-        activeRituals.values.forEach { circle ->
-            circle.fireLocation?.let {
-                if (player.location.distanceSquared(it) < 4.0) {
-                    event.isCancelled = true
-                    return
-                }
-            }
-        }
-    }
-
-    /**
-     * Handles final ritual sequence:
-     * - Lightning strike
-     * - Remove skull
-     * - Place fire
-     * - Trails continue briefly
-     * - Then stop everything
-     *
-     * @param circle The ritual circle.
-     * @param tasks Active particle task IDs.
-     */
-    private fun triggerRitualFinish(
-        circle: RitualCircle,
-        tasks: List<Int>,
-    ) {
-        val plugin = instance
-        val world = circle.center.world ?: return
-
-        instance.server.scheduler.runTaskLater(
-            plugin,
-            Runnable {
-                val centerAbove = circle.center.clone()
-
-                world.spawnEntity(centerAbove, EntityType.LIGHTNING_BOLT)
-
-                instance.server.scheduler.runTaskLater(
-                    plugin,
-                    Runnable {
-                        circle.center.block.type = Material.AIR
-                        circle.center.block.type = Material.FIRE
-                        circle.fireLocation = circle.center.clone()
-
-                        instance.server.scheduler.runTaskLater(
-                            plugin,
-                            Runnable { tasks.forEach { instance.server.scheduler.cancelTask(it) } },
-                            40L,
-                        )
-                    },
-                    20L,
-                )
-            },
-            40L,
-        )
     }
 }
