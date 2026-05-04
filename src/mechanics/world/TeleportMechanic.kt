@@ -14,7 +14,7 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.player.PlayerInteractEvent
-import org.xodium.illyriaplus.IllyriaPlus
+import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
 import org.xodium.illyriaplus.Utils.BlockUtils.center
 import org.xodium.illyriaplus.Utils.MM
 import org.xodium.illyriaplus.data.RitualData
@@ -22,7 +22,7 @@ import org.xodium.illyriaplus.interfaces.MechanicInterface
 import org.xodium.illyriaplus.managers.RitualStorageManager
 
 internal object TeleportMechanic : MechanicInterface {
-    private val logger = IllyriaPlus.instance.logger
+    private val logger = instance.logger
 
     private val activeRituals = mutableMapOf<Location, RitualCircle>()
 
@@ -64,6 +64,7 @@ internal object TeleportMechanic : MechanicInterface {
 
         if (block.type == Material.SKELETON_SKULL || block.type == Material.SKELETON_WALL_SKULL) {
             val center = block.location
+
             logger.info("[DEBUG] Skull placed at ${center.blockX}, ${center.blockY}, ${center.blockZ}")
 
             if (center.world?.environment != World.Environment.NORMAL) {
@@ -81,8 +82,10 @@ internal object TeleportMechanic : MechanicInterface {
             logger.info(
                 "[DEBUG] Valid ritual pattern recognized at ${center.blockX}, ${center.blockY}, ${center.blockZ}",
             )
+
             val candleConfigs = getCandleConfigs(center)
             val circle = RitualCircle(center, candleConfigs.toMutableMap())
+
             activeRituals[center] = circle
 
             activateRitual(circle)
@@ -107,8 +110,10 @@ internal object TeleportMechanic : MechanicInterface {
         center: Location,
     ): Boolean {
         if (loc.blockY != center.blockY) return false
+
         val dx = loc.blockX - center.blockX
         val dz = loc.blockZ - center.blockZ
+
         return isValidCandlePosition(dx, dz)
     }
 
@@ -149,9 +154,8 @@ internal object TeleportMechanic : MechanicInterface {
         val cx = center.blockX
         val cy = center.blockY
         val cz = center.blockZ
-
-        // Build visual debug grid
         val grid = StringBuilder()
+
         grid.appendLine("[DEBUG] Pattern check at $cx, $cy, $cz (skull Y-level):")
 
         for (dz in -3..3) {
@@ -162,7 +166,6 @@ internal object TeleportMechanic : MechanicInterface {
                         row.append("X")
                     }
 
-                    // Skull/center
                     isValidCandlePosition(dx, dz) -> {
                         val checkX = cx + dx
                         val checkZ = cz + dz
@@ -170,16 +173,16 @@ internal object TeleportMechanic : MechanicInterface {
                         val block = loc.block
                         val hasCandle = Tag.CANDLES.isTagged(block.type)
                         if (hasCandle) {
-                            row.append("C") // Candle found
+                            row.append("C")
                         } else {
-                            row.append("?") // Expected candle but missing
+                            row.append("?")
                             grid.appendLine("[DEBUG]   Missing candle at ($checkX, $cy, $checkZ): found ${block.type}")
                         }
                     }
 
                     else -> {
                         row.append(".")
-                    } // Empty space
+                    }
                 }
             }
             grid.appendLine("[DEBUG] $row")
@@ -190,6 +193,7 @@ internal object TeleportMechanic : MechanicInterface {
 
         return expectedPositions.all { (x, z) ->
             val loc = Location(world, x.toDouble(), cy.toDouble(), z.toDouble())
+
             Tag.CANDLES.isTagged(loc.block.type)
         }
     }
@@ -235,18 +239,16 @@ internal object TeleportMechanic : MechanicInterface {
         val cx = center.blockX
         val cy = center.blockY
         val cz = center.blockZ
-
         val configs = mutableMapOf<Location, Pair<Int, Material>>()
         val expectedPositions = getRitualPositions(cx, cz)
 
         expectedPositions.forEach { (x, z) ->
             val loc = Location(world, x.toDouble(), cy.toDouble(), z.toDouble())
             val block = loc.block
+
             if (Tag.CANDLES.isTagged(block.type)) {
                 val candleData = block.blockData as? Candle
-                if (candleData != null) {
-                    configs[loc] = candleData.candles to block.type
-                }
+                if (candleData != null) configs[loc] = candleData.candles to block.type
             }
         }
 
@@ -262,28 +264,28 @@ internal object TeleportMechanic : MechanicInterface {
 
     /** Lights all candles in the ritual. */
     private fun lightAllCandles(circle: RitualCircle) {
-        circle.candles.keys.forEach { loc ->
-            val block = loc.block
-            if (!Tag.CANDLES.isTagged(block.type)) return@forEach
+        circle.candles.keys.forEach {
+            if (!Tag.CANDLES.isTagged(it.block.type)) return@forEach
 
-            val lightable = block.blockData as? Lightable ?: return@forEach
+            val lightable = it.block.blockData as? Lightable ?: return@forEach
+
             if (!lightable.isLit) {
                 lightable.isLit = true
-                block.blockData = lightable
+                it.block.blockData = lightable
             }
         }
     }
 
     /** Extinguishes all candles in the ritual. */
     private fun extinguishAllCandles(circle: RitualCircle) {
-        circle.candles.keys.forEach { loc ->
-            val block = loc.block
-            if (!Tag.CANDLES.isTagged(block.type)) return@forEach
+        circle.candles.keys.forEach {
+            if (!Tag.CANDLES.isTagged(it.block.type)) return@forEach
 
-            val lightable = block.blockData as? Lightable ?: return@forEach
+            val lightable = it.block.blockData as? Lightable ?: return@forEach
+
             if (lightable.isLit) {
                 lightable.isLit = false
-                block.blockData = lightable
+                it.block.blockData = lightable
             }
         }
     }
@@ -296,43 +298,39 @@ internal object TeleportMechanic : MechanicInterface {
      * @param circle The ritual circle.
      */
     private fun spawnParticleTrails(circle: RitualCircle) {
-        val plugin = IllyriaPlus.instance
+        val plugin = instance
         val center =
             circle.center.block
                 .center()
                 .add(0.0, 1.0, 0.0)
         val candles = circle.candles.keys.toList()
-
         val activeTasks = mutableListOf<Int>()
 
         candles.forEachIndexed { index, loc ->
-            val delay = index * 10L // spacing between each candle starting
+            val delay = index * 10L
 
-            Bukkit.getScheduler().runTaskLater(
+            instance.server.scheduler.runTaskLater(
                 plugin,
                 Runnable {
                     val taskId =
-                        Bukkit.getScheduler().scheduleSyncRepeatingTask(
+                        instance.server.scheduler.scheduleSyncRepeatingTask(
                             plugin,
                             Runnable {
                                 if (!circle.isActive) return@Runnable
 
                                 val from = loc.clone().add(0.5, 1.0, 0.5)
                                 val to = center.clone()
-
                                 val direction = to.toVector().subtract(from.toVector())
                                 val distance = direction.length()
-
-                                val step = direction.normalize().multiply(0.3) // smoothness
+                                val step = direction.normalize().multiply(0.3)
                                 val current = from.clone()
 
                                 var traveled = 0.0
 
                                 while (traveled < distance) {
                                     current.add(step)
-
                                     current.world.spawnParticle(
-                                        Particle.CRIT, // ✔ natural looking
+                                        Particle.CRIT,
                                         current,
                                         1,
                                         0.0,
@@ -340,7 +338,6 @@ internal object TeleportMechanic : MechanicInterface {
                                         0.0,
                                         0.0,
                                     )
-
                                     traveled += step.length()
                                 }
                             },
@@ -350,10 +347,7 @@ internal object TeleportMechanic : MechanicInterface {
 
                     activeTasks.add(taskId)
 
-                    // When last candle starts → trigger lightning sequence
-                    if (index == candles.lastIndex) {
-                        triggerRitualFinish(circle, activeTasks)
-                    }
+                    if (index == candles.lastIndex) triggerRitualFinish(circle, activeTasks)
                 },
                 delay,
             )
@@ -394,12 +388,9 @@ internal object TeleportMechanic : MechanicInterface {
 
     /** Deactivates a ritual circle. */
     private fun deactivateRitual(circle: RitualCircle) {
-        circle.fireLocation?.let {
-            it.block.type = Material.AIR
-        }
+        circle.fireLocation?.let { it.block.type = Material.AIR }
         circle.isActive = false
         extinguishAllCandles(circle)
-
         circle.center.world
             ?.getNearbyEntities(circle.center, 10.0, 10.0, 10.0)
             ?.filterIsInstance<Player>()
@@ -414,13 +405,13 @@ internal object TeleportMechanic : MechanicInterface {
         val player = event.player
 
         if (block.type == Material.FIRE) {
-            activeRituals.values.find { it.fireLocation == block.location }?.let { circle ->
-                if (!isPlayerInsideCircle(player, circle.center)) {
+            activeRituals.values.find { it.fireLocation == block.location }?.let {
+                if (!isPlayerInsideCircle(player, it.center)) {
                     player.sendActionBar(MM.deserialize("<red>Step inside the circle to use the portal!</red>"))
                     return
                 }
 
-                performTeleport(player, circle)
+                performTeleport(player, it)
                 event.isCancelled = true
             }
         }
@@ -438,7 +429,7 @@ internal object TeleportMechanic : MechanicInterface {
         val dz = player.location.blockZ - center.blockZ
         val distanceSquared = dx * dx + dz * dz
 
-        return distanceSquared < 9 // radius 3 squared
+        return distanceSquared < 9
     }
 
     /** Performs the teleportation. */
@@ -482,8 +473,8 @@ internal object TeleportMechanic : MechanicInterface {
         val player = event.entity as? Player ?: return
 
         activeRituals.values.forEach { circle ->
-            circle.fireLocation?.let { fireLoc ->
-                if (player.location.distanceSquared(fireLoc) < 4.0) {
+            circle.fireLocation?.let {
+                if (player.location.distanceSquared(it) < 4.0) {
                     event.isCancelled = true
                     return
                 }
@@ -506,40 +497,35 @@ internal object TeleportMechanic : MechanicInterface {
         circle: RitualCircle,
         tasks: List<Int>,
     ) {
-        val plugin = IllyriaPlus.instance
+        val plugin = instance
         val world = circle.center.world ?: return
 
-        Bukkit.getScheduler().runTaskLater(
+        instance.server.scheduler.runTaskLater(
             plugin,
             Runnable {
-                val centerAbove = circle.center.clone().add(0.0, 1.0, 0.0)
+                val centerAbove = circle.center.clone()
 
-                // ⚡ Lightning
                 world.spawnEntity(centerAbove, EntityType.LIGHTNING_BOLT)
 
-                Bukkit.getScheduler().runTaskLater(
+                instance.server.scheduler.runTaskLater(
                     plugin,
                     Runnable {
-                        // 🧠 Remove skull
                         circle.center.block.type = Material.AIR
-
-                        // 🔥 Place fire
                         circle.center.block.type = Material.FIRE
                         circle.fireLocation = circle.center.clone()
 
-                        // ⏳ KEEP trails running a bit longer
-                        Bukkit.getScheduler().runTaskLater(
+                        instance.server.scheduler.runTaskLater(
                             plugin,
                             Runnable {
-                                tasks.forEach { Bukkit.getScheduler().cancelTask(it) }
+                                tasks.forEach { instance.server.scheduler.cancelTask(it) }
                             },
                             40L,
-                        ) // trails continue after fire
+                        )
                     },
                     20L,
-                ) // delay after lightning
+                )
             },
             40L,
-        ) // after last candle activation
+        )
     }
 }
