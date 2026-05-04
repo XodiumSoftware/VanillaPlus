@@ -17,14 +17,42 @@ import org.bukkit.event.EventPriority
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.xodium.illyriaplus.IllyriaPlus
-import org.xodium.illyriaplus.Utils
 import org.xodium.illyriaplus.Utils.CommandUtils.executesCatching
+import org.xodium.illyriaplus.Utils.MM
+import org.xodium.illyriaplus.Utils.PlayerUtils.face
 import org.xodium.illyriaplus.Utils.prefix
 import org.xodium.illyriaplus.data.CommandData
 import org.xodium.illyriaplus.interfaces.MechanicInterface
 
 /** Represents a module handling chat mechanics within the system. */
 internal object ChatMechanic : MechanicInterface {
+    private val JOIN_BANNER_TEXT: List<String> =
+        listOf(
+            "<gradient:#FFA751:#FFE259>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|" +
+                "[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
+            "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
+            "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
+            "<image><gradient:#FFE259:#FFA751>⯈</gradient> " +
+                "<gradient:#CB2D3E:#EF473A>Welcome</gradient> <player> " +
+                "<click:suggest_command:'/nickname '>" +
+                "<hover:show_text:'<gradient:#FFE259:#FFA751>Set your nickname!</gradient>'>" +
+                "<white><sprite:items:item/name_tag></white></hover></click> " +
+                "<click:suggest_command:'/locator '>" +
+                "<hover:show_text:'<gradient:#FFE259:#FFA751>Change your locator color!</gradient>'>" +
+                "<white><sprite:items:item/compass_00></white></hover></click>",
+            "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
+            "<image><gradient:#FFE259:#FFA751>⯈</gradient> " +
+                "<gradient:#CB2D3E:#EF473A>Check out</gradient><gray>:</gray>",
+            "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gray>✦</gray> " +
+                "<click:run_command:'/rules'><gradient:#13547a:#80d0c7>/rules</gradient></click:run_command>",
+            "<image><gradient:#FFE259:#FFA751>⯈</gradient> <gray>✦</gray> " +
+                "<click:open_url:'https://vanillaplus.xodium.org'>" +
+                "<gradient:#13547a:#80d0c7>wiki</gradient></click:open_url>",
+            "<image><gradient:#FFE259:#FFA751>⯈</gradient>",
+            "<gradient:#FFA751:#FFE259>]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|" +
+                "[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[=]|[</gradient>",
+        )
+
     private const val CHAT_FORMAT: String =
         "<player_head> <player> <reset><gradient:#FFE259:#FFA751>›</gradient> <message>"
     private const val WHISPER_TO_FORMAT: String =
@@ -65,7 +93,7 @@ internal object ChatMechanic : MechanicInterface {
                                         val target =
                                             targetResolver.resolve(it.source).singleOrNull()
                                                 ?: return@executesCatching sender.sendMessage(
-                                                    Utils.MM.deserialize(PLAYER_IS_NOT_ONLINE_MSG),
+                                                    MM.deserialize(PLAYER_IS_NOT_ONLINE_MSG),
                                                 )
                                         val message = it.getArgument("message", String().javaClass)
 
@@ -90,6 +118,9 @@ internal object ChatMechanic : MechanicInterface {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: AsyncChatEvent) = asyncChat(event)
 
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    fun on(event: org.bukkit.event.player.PlayerJoinEvent) = joinBanner(event.player)
+
     /**
      * Handles asynchronous chat events.
      *
@@ -99,15 +130,15 @@ internal object ChatMechanic : MechanicInterface {
         event.renderer(ChatRenderer.defaultRenderer())
         event.renderer { player, displayName, message, audience ->
             var base =
-                Utils.MM.deserialize(
+                MM.deserialize(
                     CHAT_FORMAT,
-                    Placeholder.component("player_head", Utils.MM.deserialize("<head:${player.uniqueId}>")),
+                    Placeholder.component("player_head", MM.deserialize("<head:${player.uniqueId}>")),
                     Placeholder.component(
                         "player",
                         displayName
                             .clickEvent(ClickEvent.suggestCommand("/w ${player.name} "))
                             .hoverEvent(
-                                HoverEvent.showText(Utils.MM.deserialize(CLICK_TO_WHISPER_MSG)),
+                                HoverEvent.showText(MM.deserialize(CLICK_TO_WHISPER_MSG)),
                             ),
                     ),
                     Placeholder.component("message", message),
@@ -131,30 +162,51 @@ internal object ChatMechanic : MechanicInterface {
         message: String,
     ) {
         sender.sendMessage(
-            Utils.MM.deserialize(
+            MM.deserialize(
                 WHISPER_TO_FORMAT,
                 Placeholder.component(
                     "player",
                     target
                         .displayName()
                         .clickEvent(ClickEvent.suggestCommand("/w ${target.name} "))
-                        .hoverEvent(HoverEvent.showText(Utils.MM.deserialize(CLICK_TO_WHISPER_MSG))),
+                        .hoverEvent(HoverEvent.showText(MM.deserialize(CLICK_TO_WHISPER_MSG))),
                 ),
-                Placeholder.component("message", Utils.MM.deserialize(message)),
+                Placeholder.component("message", MM.deserialize(message)),
             ),
         )
 
         target.sendMessage(
-            Utils.MM.deserialize(
+            MM.deserialize(
                 WHISPER_FROM_FORMAT,
                 Placeholder.component(
                     "player",
                     sender
                         .displayName()
                         .clickEvent(ClickEvent.suggestCommand("/w ${sender.name} "))
-                        .hoverEvent(HoverEvent.showText(Utils.MM.deserialize(CLICK_TO_WHISPER_MSG))),
+                        .hoverEvent(HoverEvent.showText(MM.deserialize(CLICK_TO_WHISPER_MSG))),
                 ),
-                Placeholder.component("message", Utils.MM.deserialize(message)),
+                Placeholder.component("message", MM.deserialize(message)),
+            ),
+        )
+    }
+
+    /**
+     * Sends the welcome banner to the player on join.
+     *
+     * @param player The player who joined.
+     */
+    private fun joinBanner(player: Player) {
+        var imageIndex = 0
+
+        player.sendMessage(
+            MM.deserialize(
+                Regex("<image>").replace(JOIN_BANNER_TEXT.joinToString("\n")) { "<image${++imageIndex}>" },
+                Placeholder.component("player", player.displayName()),
+                *player
+                    .face()
+                    .lines()
+                    .mapIndexed { i, line -> Placeholder.component("image${i + 1}", MM.deserialize(line)) }
+                    .toTypedArray(),
             ),
         )
     }
@@ -166,8 +218,8 @@ internal object ChatMechanic : MechanicInterface {
      * @return A [net.kyori.adventure.text.Component] representing the delete cross with hover text and click action.
      */
     private fun createDeleteCross(signedMessage: SignedMessage): Component =
-        Utils.MM
+        MM
             .deserialize(DELETE_SYMBOL)
-            .hoverEvent(Utils.MM.deserialize(CLICK_TO_DELETE_MSG))
+            .hoverEvent(MM.deserialize(CLICK_TO_DELETE_MSG))
             .clickEvent(ClickEvent.callback { IllyriaPlus.instance.server.deleteMessage(signedMessage) })
 }

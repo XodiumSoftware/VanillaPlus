@@ -88,7 +88,7 @@ To customize a plugin, you must:
 Each mechanic has a nested `Config` object, for example:
 
 ```kotlin
-// In src/mechanics/PlayerMechanic.kt
+// In src/mechanics/player/MessagesMechanic.kt
 object Config {
     const val ENABLED = true
     // ... other settings

@@ -7,7 +7,7 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.advancement.Advancement
 import org.bukkit.entity.Player
 import org.xodium.illyriaplus.Utils.MM
-import org.xodium.illyriaplus.mechanics.player.PlayerMechanic
+import org.xodium.illyriaplus.mechanics.player.MessagesMechanic
 
 /** Manages player messages and internationalization. */
 internal object PlayerMessageManager {
@@ -19,7 +19,7 @@ internal object PlayerMessageManager {
      */
     fun handleJoin(player: Player): Component? =
         MM.deserialize(
-            PlayerMechanic.Config.PlayerMessages.JOIN
+            MessagesMechanic.PlayerMessages.JOIN
                 .takeIf { it.isNotEmpty() } ?: return null,
             Placeholder.component("player", player.displayName()),
         )
@@ -32,7 +32,7 @@ internal object PlayerMessageManager {
      */
     fun handleQuit(player: Player): Component? =
         MM.deserialize(
-            PlayerMechanic.Config.PlayerMessages.QUIT
+            MessagesMechanic.PlayerMessages.QUIT
                 .takeIf { it.isNotEmpty() } ?: return null,
             Placeholder.component("player", player.displayName()),
         )
@@ -49,7 +49,7 @@ internal object PlayerMessageManager {
         killer: Player?,
     ): Component? =
         MM.deserialize(
-            PlayerMechanic.Config.PlayerMessages.DEATH_BY_PLAYER
+            MessagesMechanic.PlayerMessages.DEATH_BY_PLAYER
                 .takeIf { it.isNotEmpty() } ?: return null,
             Placeholder.component("player", player.displayName()),
             Placeholder.component("killer", (killer ?: return null).displayName()),
@@ -67,7 +67,7 @@ internal object PlayerMessageManager {
         cause: Component?,
     ): Component? =
         MM.deserialize(
-            PlayerMechanic.Config.PlayerMessages.DEATH
+            MessagesMechanic.PlayerMessages.DEATH
                 .takeIf { it.isNotEmpty() } ?: return null,
             Placeholder.component("player", player.displayName()),
             Placeholder.component("cause", cause ?: return null),
@@ -80,7 +80,7 @@ internal object PlayerMessageManager {
      */
     fun handleDeathScreen(): Component? =
         MM.deserialize(
-            PlayerMechanic.Config.PlayerMessages.DEATH_SCREEN
+            MessagesMechanic.PlayerMessages.DEATH_SCREEN
                 .takeIf { it.isNotEmpty() } ?: return null,
         )
 
@@ -99,9 +99,9 @@ internal object PlayerMessageManager {
 
         return MM.deserialize(
             when (display.frame()) {
-                AdvancementDisplay.Frame.TASK -> PlayerMechanic.Config.AdvancementMessages.TASK
-                AdvancementDisplay.Frame.GOAL -> PlayerMechanic.Config.AdvancementMessages.GOAL
-                AdvancementDisplay.Frame.CHALLENGE -> PlayerMechanic.Config.AdvancementMessages.CHALLENGE
+                AdvancementDisplay.Frame.TASK -> MessagesMechanic.AdvancementMessages.TASK
+                AdvancementDisplay.Frame.GOAL -> MessagesMechanic.AdvancementMessages.GOAL
+                AdvancementDisplay.Frame.CHALLENGE -> MessagesMechanic.AdvancementMessages.CHALLENGE
             }.takeIf { it.isNotEmpty() } ?: return null,
             Placeholder.component("player", player.displayName()),
             Placeholder.component("advancement", display.title()),
@@ -115,7 +115,7 @@ internal object PlayerMessageManager {
      */
     fun handleServerFull(): Component? =
         MM.deserialize(
-            PlayerMechanic.Config.LoginMessages.FULL
+            MessagesMechanic.LoginMessages.FULL
                 .takeIf { it.isNotEmpty() } ?: return null,
         )
 
@@ -126,7 +126,7 @@ internal object PlayerMessageManager {
      */
     fun handleLoginDenied(): Component? =
         MM.deserialize(
-            PlayerMechanic.Config.LoginMessages.DENIED
+            MessagesMechanic.LoginMessages.DENIED
                 .takeIf { it.isNotEmpty() } ?: return null,
         )
 
@@ -138,7 +138,7 @@ internal object PlayerMessageManager {
      */
     fun handleKick(reason: Component): Component? =
         MM.deserialize(
-            PlayerMechanic.Config.PlayerMessages.KICK
+            MessagesMechanic.PlayerMessages.KICK
                 .takeIf { it.isNotEmpty() } ?: return null,
             Placeholder.component("reason", reason),
         )
@@ -153,11 +153,11 @@ internal object PlayerMessageManager {
     fun handleBedEnter(problem: BedEnterProblem): Component? =
         MM.deserialize(
             when (problem) {
-                BedEnterProblem.TOO_FAR_AWAY -> PlayerMechanic.Config.BedEnterMessages.TOO_FAR_AWAY
-                BedEnterProblem.OBSTRUCTED -> PlayerMechanic.Config.BedEnterMessages.OBSTRUCTED
-                BedEnterProblem.NOT_SAFE -> PlayerMechanic.Config.BedEnterMessages.NOT_SAFE
-                BedEnterProblem.EXPLOSION -> PlayerMechanic.Config.BedEnterMessages.EXPLOSION
-                else -> PlayerMechanic.Config.BedEnterMessages.OTHER
+                BedEnterProblem.TOO_FAR_AWAY -> MessagesMechanic.BedEnterMessages.TOO_FAR_AWAY
+                BedEnterProblem.OBSTRUCTED -> MessagesMechanic.BedEnterMessages.OBSTRUCTED
+                BedEnterProblem.NOT_SAFE -> MessagesMechanic.BedEnterMessages.NOT_SAFE
+                BedEnterProblem.EXPLOSION -> MessagesMechanic.BedEnterMessages.EXPLOSION
+                else -> MessagesMechanic.BedEnterMessages.OTHER
             }.takeIf { it.isNotEmpty() } ?: return null,
         )
 
@@ -169,7 +169,7 @@ internal object PlayerMessageManager {
      */
     fun handleSetSpawn(notification: Component): Component? =
         MM.deserialize(
-            PlayerMechanic.Config.PlayerMessages.SET_SPAWN
+            MessagesMechanic.PlayerMessages.SET_SPAWN
                 .takeIf { it.isNotEmpty() } ?: return null,
             Placeholder.component("notification", notification),
         )

@@ -5,9 +5,7 @@ package org.xodium.illyriaplus
 import org.bukkit.plugin.java.JavaPlugin
 import org.xodium.illyriaplus.enchantments.*
 import org.xodium.illyriaplus.mechanics.entity.*
-import org.xodium.illyriaplus.mechanics.player.LocatorMechanic
-import org.xodium.illyriaplus.mechanics.player.PlayerMechanic
-import org.xodium.illyriaplus.mechanics.player.SitMechanic
+import org.xodium.illyriaplus.mechanics.player.*
 import org.xodium.illyriaplus.mechanics.server.*
 import org.xodium.illyriaplus.mechanics.world.ChiseledBookshelfMechanic
 import org.xodium.illyriaplus.mechanics.world.DimensionMechanic
@@ -50,18 +48,24 @@ internal class IllyriaPlus : JavaPlugin() {
                 ChatMechanic,
                 ChiseledBookshelfMechanic,
                 DimensionMechanic,
+                EnderchestMechanic,
                 GriefingMechanic,
+                HeadMechanic,
                 HuskMechanic,
                 InventoryMechanic,
                 LocatorMechanic,
                 MotdMechanic,
+                MessagesMechanic,
+                NicknameMechanic,
                 OpenableMechanic,
-                PlayerMechanic,
                 ScoreBoardMechanic,
                 ServerInfoMechanic,
                 SitMechanic,
                 SpawnEggMechanic,
+                SpellMechanic,
+                TabListMechanic,
                 TameableMechanic,
+                XPMechanic,
             )
 
         logger.info(
