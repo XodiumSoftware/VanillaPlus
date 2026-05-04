@@ -1,4 +1,4 @@
-package org.xodium.illyriaplus.mechanics
+package org.xodium.illyriaplus.mechanics.world
 
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemEnchantments

@@ -1,6 +1,6 @@
 @file:Suppress("ktlint:standard:no-wildcard-imports")
 
-package org.xodium.illyriaplus.mechanics
+package org.xodium.illyriaplus.mechanics.world
 
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes

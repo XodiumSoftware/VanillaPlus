@@ -73,7 +73,7 @@ IllyriaPlus/
 ├── src/                        # Source directory
 │   ├── IllyriaPlus.kt          # Main plugin class
 │   ├── IllyriaPlusBootstrap.kt # Bootstrap class
-│   ├── mechanics/              # Feature mechanics
+│   ├── mechanics/              # Feature mechanics (entity, player, server, world subfolders)
 │   ├── enchantments/           # Enchantment implementations
 │   ├── interfaces/             # ModuleInterface, EnchantmentInterface, RecipeInterface
 │   ├── managers/               # XpManager, PlayerMessageManager, SpellManager
@@ -229,7 +229,7 @@ GitHub Actions workflows in `.github/workflows/`:
 
 ### Adding a Mechanic
 
-1. Create new file in `src/mechanics/YourMechanic.kt`
+1. Create new file in `src/mechanics/{category}/YourMechanic.kt` (e.g., `src/mechanics/player/YourMechanic.kt`)
 2. Implement `ModuleInterface` as an `object`
 3. Override `Config` object with settings as compile-time constants
 4. Implement `@EventHandler` methods for events

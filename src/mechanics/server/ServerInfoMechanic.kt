@@ -1,7 +1,7 @@
-package org.xodium.illyriaplus.mechanics
+package org.xodium.illyriaplus.mechanics.server
 
 import org.bukkit.ServerLinks
-import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
+import org.xodium.illyriaplus.IllyriaPlus
 import org.xodium.illyriaplus.interfaces.MechanicInterface
 import java.net.URI
 import kotlin.time.measureTime
@@ -22,5 +22,8 @@ internal object ServerInfoMechanic : MechanicInterface {
 
     /** Configures server links based on the module's configuration. */
     private fun serverLinks() =
-        SERVER_LINKS.forEach { (type, url) -> instance.server.serverLinks.setLink(type, URI.create(url)) }
+        SERVER_LINKS.forEach { (type, url) ->
+            IllyriaPlus.instance.server.serverLinks
+                .setLink(type, URI.create(url))
+        }
 }

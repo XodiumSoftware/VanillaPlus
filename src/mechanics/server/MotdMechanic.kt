@@ -1,9 +1,9 @@
-package org.xodium.illyriaplus.mechanics
+package org.xodium.illyriaplus.mechanics.server
 
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.server.ServerListPingEvent
-import org.xodium.illyriaplus.Utils.MM
+import org.xodium.illyriaplus.Utils
 import org.xodium.illyriaplus.interfaces.MechanicInterface
 
 /** Represents a module handling MOTD mechanics within the system. */
@@ -16,6 +16,6 @@ internal object MotdMechanic : MechanicInterface {
 
     @EventHandler(priority = EventPriority.MONITOR)
     fun on(event: ServerListPingEvent) {
-        event.motd(MM.deserialize(MOTD.joinToString("\n")))
+        event.motd(Utils.MM.deserialize(MOTD.joinToString("\n")))
     }
 }

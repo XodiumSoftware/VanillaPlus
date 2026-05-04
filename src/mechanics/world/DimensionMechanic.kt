@@ -1,4 +1,4 @@
-package org.xodium.illyriaplus.mechanics
+package org.xodium.illyriaplus.mechanics.world
 
 import org.bukkit.Location
 import org.bukkit.Material
@@ -121,7 +121,7 @@ internal object DimensionMechanic : MechanicInterface {
     /**
      * Calculates the centre point of a portal structure by averaging the positions of its constituent blocks.
      *
-     * @param blockStates The list of [org.bukkit.block.BlockState]s representing the portal frame and portal blocks.
+     * @param blockStates The list of [BlockState]s representing the portal frame and portal blocks.
      * @return The [Location] representing the geometric centre of the portal.
      */
     private fun calcPortalCentre(blockStates: List<BlockState>): Location =

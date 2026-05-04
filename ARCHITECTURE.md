@@ -17,7 +17,7 @@ IllyriaPlus/
 ├── src/                     # Source directory
 │   ├── IllyriaPlus.kt       # Main plugin class
 │   ├── IllyriaPlusBootstrap.kt  # Bootstrap class
-│   ├── mechanics/           # Feature mechanics
+│   ├── mechanics/           # Feature mechanics (organized in subfolders: entity, player, server, world)
 │   ├── enchantments/        # Enchantment implementations
 │   ├── interfaces/          # ModuleInterface, EnchantmentInterface, RecipeInterface
 │   ├── managers/            # XpManager, PlayerMessageManager, SpellManager
@@ -106,7 +106,7 @@ Recipe objects implement **`RecipeInterface`** and are listed in `IllyriaPlus.on
 
 | Package         | Contents                                                                                                                                         |
 |-----------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
-| `mechanics/`    | 14 feature mechanic singletons                                                                                                                   |
+| `mechanics/`    | 23 feature mechanic singletons (organized by category: entity, player, server, world)                                                            |
 | `data/`         | `CommandData`, `BookData`, `AdjacentBlockData`                                                                                                   |
 | `enchantments/` | Verdance, Tether, Nimbus, Earthrend, Embertread, Inferno, Skysunder, Witherbrand, Frostbind, Tempest, Voidpull, Quake, SilkTouch, FeatherFalling |
 | `interfaces/`   | `ModuleInterface`, `EnchantmentInterface`, `RecipeInterface`, `ItemInterface`                                                                    |

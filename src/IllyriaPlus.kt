@@ -4,11 +4,13 @@ package org.xodium.illyriaplus
 
 import org.bukkit.plugin.java.JavaPlugin
 import org.xodium.illyriaplus.enchantments.*
-import org.xodium.illyriaplus.mechanics.*
-import org.xodium.illyriaplus.mechanics.entity.BatMechanic
-import org.xodium.illyriaplus.mechanics.entity.GriefingMechanic
-import org.xodium.illyriaplus.mechanics.entity.HuskMechanic
-import org.xodium.illyriaplus.mechanics.entity.SpawnEggMechanic
+import org.xodium.illyriaplus.mechanics.entity.*
+import org.xodium.illyriaplus.mechanics.player.*
+import org.xodium.illyriaplus.mechanics.server.*
+import org.xodium.illyriaplus.mechanics.world.ChiseledBookshelfMechanic
+import org.xodium.illyriaplus.mechanics.world.DimensionMechanic
+import org.xodium.illyriaplus.mechanics.world.InventoryMechanic
+import org.xodium.illyriaplus.mechanics.world.OpenableMechanic
 import org.xodium.illyriaplus.recipes.*
 
 /** Main class of the plugin. */
@@ -32,7 +34,6 @@ internal class IllyriaPlus : JavaPlugin() {
                 DiamondRecycleRecipe,
                 PaintingRecipe,
                 RottenFleshRecipe,
-                TeleportScrollRecipe,
                 WoodLogRecipe,
             )
 
@@ -47,19 +48,24 @@ internal class IllyriaPlus : JavaPlugin() {
                 ChatMechanic,
                 ChiseledBookshelfMechanic,
                 DimensionMechanic,
+                EnderchestMechanic,
                 GriefingMechanic,
+                HeadMechanic,
                 HuskMechanic,
                 InventoryMechanic,
                 LocatorMechanic,
                 MotdMechanic,
+                MessagesMechanic,
+                NicknameMechanic,
                 OpenableMechanic,
-                PlayerMechanic,
                 ScoreBoardMechanic,
                 ServerInfoMechanic,
                 SitMechanic,
                 SpawnEggMechanic,
+                SpellMechanic,
+                TabListMechanic,
                 TameableMechanic,
-                TeleportMechanic,
+                XPMechanic,
             )
 
         logger.info(
