@@ -34,8 +34,8 @@
 
 ## Requirements
 
-- [Paper](https://papermc.io/) 1.21.11
-- Java 21
+- [Paper](https://papermc.io/) 26.1
+- Java 25
 
 <p align="right"><a href="#readme-top">▲</a></p>
 
