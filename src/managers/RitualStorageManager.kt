@@ -70,21 +70,4 @@ internal object RitualStorageManager {
      */
     fun findMatchingRitual(candles: Map<String, Pair<Int, String>>): RitualData? =
         rituals.find { it.candles == candles }
-
-    /** Returns all stored rituals. */
-    fun getAllRituals(): List<RitualData> = rituals.toList()
-
-    /**
-     * Checks if a ritual exists at the given location.
-     *
-     * @param center The center location to check.
-     * @return True if a ritual exists at this location.
-     */
-    fun hasRitualAt(center: Location): Boolean =
-        rituals.any {
-            it.x == center.blockX &&
-                it.y == center.blockY &&
-                it.z == center.blockZ &&
-                it.world == center.world?.name
-        }
 }
