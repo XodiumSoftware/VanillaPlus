@@ -2,6 +2,8 @@
 
 package org.xodium.illyriaplus.mechanics.world
 
+import com.mojang.brigadier.arguments.StringArgumentType
+import io.papermc.paper.command.brigadier.Commands
 import org.bukkit.*
 import org.bukkit.block.data.Lightable
 import org.bukkit.block.data.type.Candle
@@ -11,9 +13,13 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
+import org.bukkit.permissions.Permission
+import org.bukkit.permissions.PermissionDefault
 import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
 import org.xodium.illyriaplus.Utils.BlockUtils.center
+import org.xodium.illyriaplus.Utils.CommandUtils.playerExecuted
 import org.xodium.illyriaplus.Utils.MM
+import org.xodium.illyriaplus.data.CommandData
 import org.xodium.illyriaplus.data.RitualData
 import org.xodium.illyriaplus.interfaces.MechanicInterface
 import org.xodium.illyriaplus.managers.RitualStorageManager
@@ -32,6 +38,88 @@ internal object TeleportMechanic : MechanicInterface {
     private val activeRituals = mutableMapOf<Location, RitualCircle>()
     private val teleportCooldown = mutableMapOf<UUID, Long>()
     private val pendingTeleports = mutableSetOf<UUID>()
+
+    override val cmds =
+        listOf(
+            CommandData(
+                Commands
+                    .literal("teleportritual")
+                    .requires { it.sender.hasPermission(perms[0]) }
+                    .then(
+                        Commands
+                            .literal("remove")
+                            .then(
+                                Commands
+                                    .argument("ritual", StringArgumentType.greedyString())
+                                    .suggests { _, builder ->
+                                        RitualStorageManager
+                                            .getAllRituals()
+                                            .map { "${it.world},${it.x},${it.y},${it.z}" }
+                                            .forEach { builder.suggest(it) }
+                                        builder.buildFuture()
+                                    }.playerExecuted { player, ctx ->
+                                        val arg = StringArgumentType.getString(ctx, "ritual")
+                                        val parts = arg.split(",")
+
+                                        if (parts.size != 4) {
+                                            player.sendActionBar(
+                                                MM.deserialize("<red>Invalid format. Use world,x,y,z</red>"),
+                                            )
+                                            return@playerExecuted
+                                        }
+
+                                        val (worldName, xStr, yStr, zStr) = parts
+                                        val world = instance.server.getWorld(worldName)
+
+                                        if (world == null) {
+                                            player.sendActionBar(MM.deserialize("<red>World not found.</red>"))
+                                            return@playerExecuted
+                                        }
+
+                                        val center =
+                                            Location(
+                                                world,
+                                                xStr.toDoubleOrNull() ?: 0.0,
+                                                yStr.toDoubleOrNull() ?: 0.0,
+                                                zStr.toDoubleOrNull() ?: 0.0,
+                                            )
+                                        val ritual =
+                                            RitualStorageManager.getAllRituals().find {
+                                                it.world == worldName &&
+                                                    it.x == center.blockX &&
+                                                    it.y == center.blockY &&
+                                                    it.z == center.blockZ
+                                            }
+
+                                        if (ritual == null) {
+                                            player.sendActionBar(MM.deserialize("<red>Ritual not found.</red>"))
+                                            return@playerExecuted
+                                        }
+
+                                        RitualStorageManager.removeRitual(center)
+                                        activeRituals[center]?.let {
+                                            it.isActive = false
+                                            it.activeTaskIds.forEach { id -> instance.server.scheduler.cancelTask(id) }
+                                            it.activeTaskIds.clear()
+                                            activeRituals.remove(center)
+                                        }
+                                        player.sendActionBar(MM.deserialize("<green>Ritual link removed.</green>"))
+                                    },
+                            ),
+                    ),
+                "Allows admins to remove ritual links from PDC",
+                listOf("tr"),
+            ),
+        )
+
+    override val perms =
+        listOf(
+            Permission(
+                "${instance.javaClass.simpleName}.teleportritual".lowercase(),
+                "Allows use of the teleport ritual admin command",
+                PermissionDefault.OP,
+            ),
+        )
 
     /**
      * Registers the mechanic and starts the background check task.
