@@ -19,38 +19,19 @@ import org.xodium.illyriaplus.interfaces.MechanicInterface
 import org.xodium.illyriaplus.managers.RitualStorageManager
 import org.xodium.illyriaplus.mechanics.world.TeleportMechanic.closePortal
 import org.xodium.illyriaplus.mechanics.world.TeleportMechanic.deactivateRitual
+import org.xodium.illyriaplus.mechanics.world.TeleportMechanic.performTeleport
+import org.xodium.illyriaplus.mechanics.world.TeleportMechanic.spawnTeleportBeam
 import org.xodium.illyriaplus.mechanics.world.TeleportMechanic.triggerRitualFinish
 import java.util.*
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
 
-/**
- * Teleportation mechanic using ritual circles.
- *
- * Players create teleportation portals by placing a skeleton skull at the center
- * of a specific 16-candle pattern. Once all candles are lit, the portal activates
- * with particle trails, ambient chimes, and a visual lightning strike that
- * consumes the skull. A player stepping inside the circle is teleported to the
- *
- * **Portal Lifecycle:**
- * 1. Place skeleton skull at center of a valid 16-candle pattern.
- * 2. Light all 16 candles manually (any order, any tool).
- * 3. Portal activates: trails, chimes, lightning consumes skull.
- * 4. Player walks into the circle → beam + teleport to matching portal.
- * 5. Source portal closes; candles remain lit. Re-place skull to reuse.
- * 6. Break any candle or skull to manually extinguish and deactivate.
- *
- * **Design:**
- * - Candles act as the persistent link between two portals.
- * - Skull is a consumable activation cost per teleport.
- * - Matching is based on identical candle configurations (material + count).
- * - A 5-second cooldown per player prevents instant re-teleport loops.
- * - Lightning strikes the skull block, preventing fire, then the skull is consumed.
- *
- * @see RitualData
- * @see RitualStorageManager
- */
+/** Represents a mechanic handling teleportation within the system. */
 internal object TeleportMechanic : MechanicInterface {
     private val activeRituals = mutableMapOf<Location, RitualCircle>()
     private val teleportCooldown = mutableMapOf<UUID, Long>()
+    private val pendingTeleports = mutableSetOf<UUID>()
 
     /**
      * Registers the mechanic and starts the background check task.
@@ -58,7 +39,7 @@ internal object TeleportMechanic : MechanicInterface {
      * The repeating task (every 10 ticks) handles three things:
      * 1. Detects inactive rituals whose candles are all lit → activates them.
      * 2. Detects active rituals with any unlit candle → deactivates them.
-     * 3. Detects players inside active rituals → triggers teleport with cooldown.
+     * 3. Detects players inside active rituals → triggers teleport sequence.
      */
     override fun register(): Long =
         super.register().apply {
@@ -80,8 +61,7 @@ internal object TeleportMechanic : MechanicInterface {
                     activeRituals.values.filter { it.isActive }.toList().forEach { circle ->
                         findPlayerInsideCircle(circle)?.let { player ->
                             if (teleportCooldown.getOrDefault(player.uniqueId, 0) > now) return@let
-                            spawnTeleportBeam(player)
-                            performTeleport(player, circle)
+                            startTeleportSequence(player, circle)
                             teleportCooldown[player.uniqueId] = now + 5000
                         }
                     }
@@ -357,7 +337,7 @@ internal object TeleportMechanic : MechanicInterface {
      * While the ritual is active, every 5 ticks a trail particle moves from the
      * candle to the center in 0.3-block steps, accompanied by an amethyst chime.
      *
-     * The last candle to start its trail schedules the lightning finish via
+     * The last candle to start its trail schedules the finish sequence via
      * [triggerRitualFinish].
      */
     private fun spawnParticleTrails(circle: RitualCircle) {
@@ -421,30 +401,58 @@ internal object TeleportMechanic : MechanicInterface {
     }
 
     /**
-     * Finishes the activation sequence with a lightning strike that consumes the skull.
+     * Finishes the activation sequence with a lightning strike followed by cloud rings.
      *
      * Scheduled 40 ticks after the last candle trail begins.
-     * The lightning strikes the skull block (preventing fire), then the skull is removed.
-     * All particle trail tasks are stopped so they do not loop indefinitely.
+     * 1. Lightning strikes the skull (no fire since it hits the block).
+     * 2. Particle trail tasks are cancelled.
+     * 3. 20 ticks later, expanding cloud rings appear to signal readiness.
      */
     private fun triggerRitualFinish(circle: RitualCircle) {
         val world = circle.center.world ?: return
+        val center = circle.center.clone().add(0.5, 0.5, 0.5)
 
         instance.server.scheduler.runTaskLater(
             instance,
             Runnable {
                 world.spawnEntity(circle.center.clone(), EntityType.LIGHTNING_BOLT)
-                circle.center.block.type = Material.AIR
                 circle.activeTaskIds.forEach { instance.server.scheduler.cancelTask(it) }
                 circle.activeTaskIds.clear()
+
+                instance.server.scheduler.runTaskLater(
+                    instance,
+                    Runnable {
+                        repeat(2) { ring ->
+                            val radius = 2.0 + ring
+                            val count = (radius * 12).toInt()
+
+                            for (i in 0 until count) {
+                                val angle = 2 * PI * i / count
+                                val x = center.x + radius * cos(angle)
+                                val z = center.z + radius * sin(angle)
+                                val loc = Location(world, x, center.y, z)
+
+                                world.spawnParticle(Particle.CLOUD, loc, 1, 0.05, 0.0, 0.05, 0.01)
+                                world.spawnParticle(
+                                    Particle.CRIT,
+                                    loc.clone().add(0.0, 0.2, 0.0),
+                                    1,
+                                    0.05,
+                                    0.05,
+                                    0.05,
+                                    0.0,
+                                )
+                            }
+                        }
+                    },
+                    20L,
+                )
             },
             40L,
         )
     }
 
-    /**
-     * Returns the first player standing inside [circle], or `null` if none.
-     */
+    /** Returns the first player standing inside [circle], or `null` if none. */
     private fun findPlayerInsideCircle(circle: RitualCircle): Player? =
         circle.center.world
             ?.getNearbyEntities(circle.center, 3.0, 3.0, 3.0)
@@ -466,6 +474,78 @@ internal object TeleportMechanic : MechanicInterface {
         val distanceSquared = dx * dx + dz * dz
 
         return distanceSquared < 9
+    }
+
+    /**
+     * Starts a 40-tick charge-up sequence before teleporting [player].
+     *
+     * While charging, a rotating spiral of [Particle.END_ROD] and [Particle.PORTAL]
+     * particles spawn around the player. If the player leaves the circle, the portal
+     * closes, or the player disconnects, the teleport is cancelled. After the delay,
+     * [spawnTeleportBeam] flashes and [performTeleport] executes.
+     */
+    private fun startTeleportSequence(
+        player: Player,
+        circle: RitualCircle,
+    ) {
+        if (player.uniqueId in pendingTeleports) return
+        pendingTeleports.add(player.uniqueId)
+
+        player.sendActionBar(MM.deserialize("<aqua>Teleportation commencing...</aqua>"))
+        player.playSound(player.location, Sound.BLOCK_BEACON_POWER_SELECT, SoundCategory.PLAYERS, 1.0f, 1.0f)
+
+        val chargeTaskId =
+            instance.server.scheduler.scheduleSyncRepeatingTask(
+                instance,
+                { spawnChargeUpParticles(player) },
+                0L,
+                2L,
+            )
+
+        instance.server.scheduler.runTaskLater(
+            instance,
+            Runnable {
+                instance.server.scheduler.cancelTask(chargeTaskId)
+                pendingTeleports.remove(player.uniqueId)
+
+                if (!player.isOnline) return@Runnable
+                if (!circle.isActive) {
+                    player.sendActionBar(MM.deserialize("<red>The portal closed before you could teleport!</red>"))
+                    return@Runnable
+                }
+                if (!isPlayerInsideCircle(player, circle.center)) {
+                    player.sendActionBar(MM.deserialize("<red>Teleport cancelled - you left the circle!</red>"))
+                    return@Runnable
+                }
+
+                spawnTeleportBeam(player)
+                performTeleport(player, circle)
+            },
+            40L,
+        )
+    }
+
+    /**
+     * Spawns rotating spiral particles around [player] during the charge-up.
+     *
+     * Every call places 6 [Particle.END_ROD] particles in a short vertical spiral
+     * and 3 [Particle.PORTAL] particles at the player's feet.
+     */
+    private fun spawnChargeUpParticles(player: Player) {
+        val center = player.location.clone().add(0.0, 0.5, 0.0)
+        val world = player.world
+        val time = System.currentTimeMillis() / 150.0
+
+        for (i in 0 until 6) {
+            val angle = 2 * PI * i / 6 + time
+            val radius = 0.6
+            val x = center.x + radius * cos(angle)
+            val z = center.z + radius * sin(angle)
+            val y = center.y + (i % 3) * 0.4
+            world.spawnParticle(Particle.END_ROD, x, y, z, 1, 0.0, 0.0, 0.0, 0.0)
+        }
+
+        world.spawnParticle(Particle.PORTAL, center.x, center.y - 0.5, center.z, 3, 0.3, 0.1, 0.3, 0.3)
     }
 
     /**
@@ -571,16 +651,18 @@ internal object TeleportMechanic : MechanicInterface {
     }
 
     /**
-     * Removes the source portal from tracking **without** extinguishing candles.
+     * Removes the source portal from tracking and consumes the skull.
      *
-     * Called after a successful (or failed) teleport so the candle circle
-     * remains intact and can be re-activated later by placing another skull.
+     * Called after a successful (or failed) teleport. The skull block is replaced
+     * with [Material.AIR] and the candle circle remains intact so it can be
+     * re-activated later by placing another skull.
      *
      * Contrasts with [deactivateRitual], which fully shuts everything down.
      */
     private fun closePortal(circle: RitualCircle) {
         circle.activeTaskIds.forEach { instance.server.scheduler.cancelTask(it) }
         circle.activeTaskIds.clear()
+        circle.center.block.type = Material.AIR
         activeRituals.remove(circle.center)
         RitualStorageManager.removeRitual(circle.center)
     }
