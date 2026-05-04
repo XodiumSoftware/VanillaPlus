@@ -1,6 +1,4 @@
-@file:Suppress("ktlint:standard:no-wildcard-imports")
-
-package org.xodium.illyriaplus.mechanics
+package org.xodium.illyriaplus.mechanics.world
 
 import org.bukkit.*
 import org.bukkit.block.data.Lightable
@@ -16,7 +14,7 @@ import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
-import org.xodium.illyriaplus.Utils.MM
+import org.xodium.illyriaplus.Utils
 import org.xodium.illyriaplus.data.RitualData
 import org.xodium.illyriaplus.interfaces.MechanicInterface
 import org.xodium.illyriaplus.items.TeleportScrollItem
@@ -194,7 +192,7 @@ internal object TeleportMechanic : MechanicInterface {
         world
             .getNearbyEntities(fireLoc, 10.0, 10.0, 10.0)
             .filterIsInstance<Player>()
-            .forEach { it.sendActionBar(MM.deserialize("<yellow>A teleportation portal opens...</yellow>")) }
+            .forEach { it.sendActionBar(Utils.MM.deserialize("<yellow>A teleportation portal opens...</yellow>")) }
     }
 
     /** Spawns particle trails from each candle to the center. */
@@ -276,10 +274,10 @@ internal object TeleportMechanic : MechanicInterface {
         if (targetRitual != null) {
             targetRitual.getCenter().let {
                 player.teleport(it.clone().add(0.5, 0.0, 0.5))
-                player.sendActionBar(MM.deserialize("<green>You have been teleported!</green>"))
+                player.sendActionBar(Utils.MM.deserialize("<green>You have been teleported!</green>"))
             }
         } else {
-            player.sendActionBar(MM.deserialize("<red>No matching ritual found!</red>"))
+            player.sendActionBar(Utils.MM.deserialize("<red>No matching ritual found!</red>"))
         }
 
         circle.fireLocation?.let {
