@@ -53,6 +53,7 @@ internal object PlayerMechanic : MechanicInterface {
                             .argument("name", StringArgumentType.greedyString())
                             .playerExecuted { player, ctx ->
                                 nickname(player, StringArgumentType.getString(ctx, "name"))
+                                player.playerListName(player.displayName())
                             },
                     ),
                 "Allows players to set or remove their nickname",
