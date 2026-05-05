@@ -302,7 +302,7 @@ internal object TeleportMechanic : MechanicInterface {
         anchor: TeleportAnchorData,
         cost: Int,
     ) {
-        if (player.totalExperience < cost) {
+        if (player.gameMode != GameMode.CREATIVE && player.totalExperience < cost) {
             player.sendActionBar(MM.deserialize(Messages.INSUFFICIENT_XP.replace("<cost>", cost.toString())))
             return
         }
@@ -361,7 +361,7 @@ internal object TeleportMechanic : MechanicInterface {
 
                     leashedEntities.forEach { it.setLeashHolder(player) }
 
-                    player.giveExp(-cost)
+                    if (player.gameMode != GameMode.CREATIVE) player.giveExp(-cost)
                     player.addPotionEffect(PotionEffect(PotionEffectType.BLINDNESS, 40, 0, false, false, false))
 
                     playTeleportEffects(player, anchor.location)
