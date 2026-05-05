@@ -1,46 +1,25 @@
 package org.xodium.illyriaplus.managers
 
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.reflect.TypeToken
 import org.bukkit.Location
-import org.bukkit.NamespacedKey
-import org.bukkit.persistence.PersistentDataType
 import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
-import org.xodium.illyriaplus.data.RitualLocation
-import org.xodium.illyriaplus.data.RitualPair
+import org.xodium.illyriaplus.data.RitualLocationData
+import org.xodium.illyriaplus.data.RitualPairData
+import org.xodium.illyriaplus.pdcs.WorldPDC.ritualPairs
 
 /** Manages persistent storage of ritual pairs via World PDC. */
 internal object RitualStorageManager {
-    private val gson: Gson = GsonBuilder().setPrettyPrinting().create()
-    private val key = NamespacedKey(instance, "illyriaplus_ritual_pairs")
-    private val pairs = mutableListOf<RitualPair>()
+    private val pairs = mutableListOf<RitualPairData>()
 
     /** Loads all saved ritual pairs from World PDC. */
     fun load() {
         pairs.clear()
-        instance.server.worlds.forEach { world ->
-            world.persistentDataContainer.get(key, PersistentDataType.STRING)?.let {
-                val type = object : TypeToken<List<RitualPair>>() {}.type
-                val loaded: List<RitualPair> = gson.fromJson(it, type) ?: emptyList()
-
-                pairs.addAll(loaded)
-            }
-        }
+        instance.server.worlds.forEach { pairs.addAll(it.ritualPairs) }
     }
 
     /** Saves all ritual pairs to their respective worlds' PDC. */
     fun save() {
-        val byWorld = pairs.groupBy { it.source.world }
-
-        instance.server.worlds.forEach {
-            val worldPairs = byWorld[it.name]
-
-            if (worldPairs.isNullOrEmpty()) {
-                it.persistentDataContainer.remove(key)
-            } else {
-                it.persistentDataContainer.set(key, PersistentDataType.STRING, gson.toJson(worldPairs))
-            }
+        instance.server.worlds.forEach { world ->
+            world.ritualPairs = pairs.groupBy { it.source.world }[world.name] ?: emptyList()
         }
     }
 
@@ -51,9 +30,9 @@ internal object RitualStorageManager {
      * paired with this location), creates a pair linking them.
      *
      * @param location The ritual location to add.
-     * @return The created [RitualPair] if a match was found and paired, null otherwise.
+     * @return The created [RitualPairData] if a match was found and paired, null otherwise.
      */
-    fun tryCreatePair(location: RitualLocation): RitualPair? {
+    fun tryCreatePair(location: RitualLocationData): RitualPairData? {
         if (isInPair(location)) return null
 
         val existing = findUnpairedRitual(location.candles)
@@ -67,7 +46,7 @@ internal object RitualStorageManager {
                 return null
             }
 
-            val pair = RitualPair(existing, location)
+            val pair = RitualPairData(existing, location)
 
             pairs.add(pair)
             save()
@@ -100,9 +79,9 @@ internal object RitualStorageManager {
      * Finds the paired ritual location for a given ritual.
      *
      * @param location The ritual location to find the pair for.
-     * @return The paired [RitualLocation], or null if not found.
+     * @return The paired [RitualLocationData], or null if not found.
      */
-    fun findPair(location: RitualLocation): RitualLocation? =
+    fun findPair(location: RitualLocationData): RitualLocationData? =
         pairs
             .find {
                 it.source.x == location.x && it.source.y == location.y &&
@@ -120,7 +99,7 @@ internal object RitualStorageManager {
      * @param location The ritual location to check.
      * @return True if the location is already paired.
      */
-    fun isInPair(location: RitualLocation): Boolean =
+    fun isInPair(location: RitualLocationData): Boolean =
         pairs.any {
             (
                 it.source.x == location.x && it.source.y == location.y &&
@@ -136,20 +115,22 @@ internal object RitualStorageManager {
      * Finds an unpaired ritual with matching candle configuration.
      *
      * @param candles The candle configuration to match.
-     * @return An unpaired [RitualLocation] with matching candles, or null.
+     * @return An unpaired [RitualLocationData] with matching candles, or null.
      */
-    private fun findUnpairedRitual(candles: Map<String, Pair<Int, String>>): RitualLocation? {
-        val allPairedLocations = pairs.flatMap { listOf(it.source, it.destination) }
-        val allLocations = getAllRitualLocations()
-
-        return allLocations
+    private fun findUnpairedRitual(candles: Map<String, Pair<Int, String>>): RitualLocationData? =
+        getAllRitualLocations()
             .filter { it.candles == candles }
-            .find { loc -> allPairedLocations.none { it.matches(loc) } }
-    }
+            .find { loc -> pairs.flatMap { listOf(it.source, it.destination) }.none { it.matches(loc) } }
 
     /** Returns all ritual locations from all pairs. */
-    fun getAllRitualLocations(): List<RitualLocation> = pairs.flatMap { listOf(it.source, it.destination) }
+    fun getAllRitualLocations(): List<RitualLocationData> = pairs.flatMap { listOf(it.source, it.destination) }
 
-    private fun RitualLocation.matches(other: RitualLocation): Boolean =
+    /**
+     * Checks whether this ritual location shares the same center coordinates and world as another.
+     *
+     * @param other The ritual location to compare against.
+     * @return True if the coordinates and world match.
+     */
+    private fun RitualLocationData.matches(other: RitualLocationData): Boolean =
         x == other.x && y == other.y && z == other.z && world == other.world
 }

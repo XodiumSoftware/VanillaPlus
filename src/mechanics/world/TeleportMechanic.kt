@@ -20,7 +20,7 @@ import org.xodium.illyriaplus.Utils.BlockUtils.center
 import org.xodium.illyriaplus.Utils.CommandUtils.playerExecuted
 import org.xodium.illyriaplus.Utils.MM
 import org.xodium.illyriaplus.data.CommandData
-import org.xodium.illyriaplus.data.RitualLocation
+import org.xodium.illyriaplus.data.RitualLocationData
 import org.xodium.illyriaplus.interfaces.MechanicInterface
 import org.xodium.illyriaplus.managers.RitualStorageManager
 import java.util.*
@@ -237,7 +237,7 @@ internal object TeleportMechanic : MechanicInterface {
             if (!isValidRitualPattern(center)) return
 
             val candleConfigs = getCandleConfigs(center)
-            val ritualLocation = RitualLocation.fromLocation(center, toAbsoluteMap(center, candleConfigs))
+            val ritualLocation = RitualLocationData.fromLocation(center, toAbsoluteMap(center, candleConfigs))
 
             if (RitualStorageManager.isInPair(ritualLocation)) {
                 activeRituals[center]?.let { existing ->
@@ -848,7 +848,7 @@ internal object TeleportMechanic : MechanicInterface {
         player: Player,
         circle: RitualCircle,
     ) {
-        val currentRitual = RitualLocation.fromLocation(circle.center, toAbsoluteMap(circle.center, circle.candles))
+        val currentRitual = RitualLocationData.fromLocation(circle.center, toAbsoluteMap(circle.center, circle.candles))
         val targetRitual = RitualStorageManager.findPair(currentRitual)
 
         if (targetRitual != null) {

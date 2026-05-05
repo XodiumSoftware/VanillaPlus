@@ -13,7 +13,7 @@ import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
  * @property z Z coordinate of center.
  * @property candles Map of relative positions to candle config (count to material).
  */
-data class RitualLocation(
+internal data class RitualLocationData(
     val world: String,
     val x: Int,
     val y: Int,
@@ -28,8 +28,8 @@ data class RitualLocation(
         fun fromLocation(
             center: Location,
             candles: Map<Location, Pair<Int, Material>>,
-        ): RitualLocation =
-            RitualLocation(
+        ): RitualLocationData =
+            RitualLocationData(
                 center.world?.name ?: "",
                 center.blockX,
                 center.blockY,
@@ -39,19 +39,9 @@ data class RitualLocation(
                         val dx = loc.blockX - center.blockX
                         val dy = loc.blockY - center.blockY
                         val dz = loc.blockZ - center.blockZ
+
                         "$dx,$dy,$dz"
                     }.mapValues { (_, pair) -> pair.first to pair.second.name },
             )
     }
 }
-
-/**
- * Represents a pair of linked rituals (source and destination).
- *
- * @property source The source ritual location.
- * @property destination The destination ritual location.
- */
-data class RitualPair(
-    val source: RitualLocation,
-    val destination: RitualLocation,
-)
