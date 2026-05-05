@@ -5,7 +5,7 @@ import org.bukkit.Material
 import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
 
 /**
- * Represents a saved ritual with its location and candle configuration.
+ * Represents a ritual location with its candle configuration.
  *
  * @property world World name.
  * @property x X coordinate of center.
@@ -13,7 +13,7 @@ import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
  * @property z Z coordinate of center.
  * @property candles Map of relative positions to candle config (count to material).
  */
-data class RitualData(
+data class RitualLocation(
     val world: String,
     val x: Int,
     val y: Int,
@@ -24,12 +24,12 @@ data class RitualData(
     fun getCenter(): Location = Location(instance.server.getWorld(world), x.toDouble(), y.toDouble(), z.toDouble())
 
     companion object {
-        /** Creates a RitualData from a location and candle configuration. */
+        /** Creates a RitualLocation from a location and candle configuration. */
         fun fromLocation(
             center: Location,
             candles: Map<Location, Pair<Int, Material>>,
-        ): RitualData =
-            RitualData(
+        ): RitualLocation =
+            RitualLocation(
                 center.world?.name ?: "",
                 center.blockX,
                 center.blockY,
@@ -39,9 +39,19 @@ data class RitualData(
                         val dx = loc.blockX - center.blockX
                         val dy = loc.blockY - center.blockY
                         val dz = loc.blockZ - center.blockZ
-
                         "$dx,$dy,$dz"
                     }.mapValues { (_, pair) -> pair.first to pair.second.name },
             )
     }
 }
+
+/**
+ * Represents a pair of linked rituals (source and destination).
+ *
+ * @property source The source ritual location.
+ * @property destination The destination ritual location.
+ */
+data class RitualPair(
+    val source: RitualLocation,
+    val destination: RitualLocation,
+)

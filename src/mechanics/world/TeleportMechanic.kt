@@ -20,7 +20,7 @@ import org.xodium.illyriaplus.Utils.BlockUtils.center
 import org.xodium.illyriaplus.Utils.CommandUtils.playerExecuted
 import org.xodium.illyriaplus.Utils.MM
 import org.xodium.illyriaplus.data.CommandData
-import org.xodium.illyriaplus.data.RitualData
+import org.xodium.illyriaplus.data.RitualLocation
 import org.xodium.illyriaplus.interfaces.MechanicInterface
 import org.xodium.illyriaplus.managers.RitualStorageManager
 import java.util.*
@@ -40,7 +40,7 @@ internal object TeleportMechanic : MechanicInterface {
         const val INVALID_FORMAT = "<red>Invalid format. Use world,x,y,z</red>"
         const val WORLD_NOT_FOUND = "<red>World not found.</red>"
         const val RITUAL_NOT_FOUND = "<red>Ritual not found.</red>"
-        const val RITUAL_LINK_REMOVED = "<green>Ritual link removed.</green>"
+        const val RITUAL_PAIR_REMOVED = "<green>Ritual pair removed.</green>"
         const val RITUAL_OVERWORLD_ONLY = "<red>Rituals can only be created in the overworld!</red>"
         const val CANDLE_MODIFY_ACTIVE = "<red>Cannot modify candles while ritual is active!</red>"
         const val TELEPORT_COUNTDOWN_3 = "<aqua>3..</aqua>"
@@ -50,7 +50,10 @@ internal object TeleportMechanic : MechanicInterface {
         const val TELEPORT_CANCELLED_LEFT_CIRCLE = "<red>Teleport cancelled - you left the circle!</red>"
         const val PORTAL_CLOSES = "<gray>The portal closes...</gray>"
         const val TELEPORT_SUCCESS = "<green>You have been teleported!</green>"
-        const val NO_MATCHING_RITUAL = "<red>No matching ritual found!</red>"
+        const val NO_PAIRED_RITUAL = "<red>No paired ritual found!</red>"
+        const val RITUAL_LINKED = "<green>Ritual linked! The portal is now active.</green>"
+        const val RITUAL_WAITING =
+            "<yellow>Ritual created. Place another with the same candle pattern to link.</yellow>"
     }
 
     override val cmds =
@@ -67,7 +70,7 @@ internal object TeleportMechanic : MechanicInterface {
                                     .argument("ritual", StringArgumentType.greedyString())
                                     .suggests { _, builder ->
                                         RitualStorageManager
-                                            .getAllRituals()
+                                            .getAllRitualLocations()
                                             .map { "${it.world},${it.x},${it.y},${it.z}" }
                                             .forEach { builder.suggest(it) }
                                         builder.buildFuture()
@@ -96,7 +99,7 @@ internal object TeleportMechanic : MechanicInterface {
                                                 zStr.toDoubleOrNull() ?: 0.0,
                                             )
                                         val ritual =
-                                            RitualStorageManager.getAllRituals().find {
+                                            RitualStorageManager.getAllRitualLocations().find {
                                                 it.world == worldName &&
                                                     it.x == center.blockX &&
                                                     it.y == center.blockY &&
@@ -108,14 +111,12 @@ internal object TeleportMechanic : MechanicInterface {
                                             return@playerExecuted
                                         }
 
-                                        RitualStorageManager.removeRitual(center)
+                                        RitualStorageManager.removePair(center)
                                         activeRituals[center]?.let {
-                                            it.isActive = false
-                                            it.activeTaskIds.forEach { id -> instance.server.scheduler.cancelTask(id) }
-                                            it.activeTaskIds.clear()
+                                            deactivateRitual(it)
                                             activeRituals.remove(center)
                                         }
-                                        player.sendActionBar(MM.deserialize(Messages.RITUAL_LINK_REMOVED))
+                                        player.sendActionBar(MM.deserialize(Messages.RITUAL_PAIR_REMOVED))
                                     },
                             ),
                     ),
@@ -141,18 +142,21 @@ internal object TeleportMechanic : MechanicInterface {
     override fun register(): Long =
         super.register().apply {
             RitualStorageManager.load()
+            RitualStorageManager.getAllRitualLocations().forEach {
+                val center = it.getCenter()
 
-            RitualStorageManager.getAllRituals().forEach { ritual ->
-                val center = ritual.getCenter()
                 if (!isValidRitualPattern(center)) {
-                    RitualStorageManager.removeRitual(center)
+                    RitualStorageManager.removePair(center)
                     return@forEach
                 }
+
                 val configs = getCandleConfigs(center)
+
                 if (configs.size != 16) {
-                    RitualStorageManager.removeRitual(center)
+                    RitualStorageManager.removePair(center)
                     return@forEach
                 }
+
                 activeRituals[center] = RitualCircle(center, configs.toMutableMap())
             }
 
@@ -162,7 +166,7 @@ internal object TeleportMechanic : MechanicInterface {
                     activeRituals.values.filter { !it.isActive }.toList().forEach { circle ->
                         if (!isValidRitualPattern(circle.center) || !areAllCandlesLit(circle)) {
                             activeRituals.remove(circle.center)
-                            RitualStorageManager.removeRitual(circle.center)
+                            RitualStorageManager.removePair(circle.center)
                         } else {
                             activateRitual(circle)
                         }
@@ -171,7 +175,7 @@ internal object TeleportMechanic : MechanicInterface {
                         if (!areAllCandlesLit(it)) {
                             deactivateRitual(it)
                             activeRituals.remove(it.center)
-                            RitualStorageManager.removeRitual(it.center)
+                            RitualStorageManager.removePair(it.center)
                         }
                     }
                     val now = System.currentTimeMillis()
@@ -233,15 +237,35 @@ internal object TeleportMechanic : MechanicInterface {
             if (!isValidRitualPattern(center)) return
 
             val candleConfigs = getCandleConfigs(center)
+            val ritualLocation = RitualLocation.fromLocation(center, candleConfigs)
 
-            activeRituals[center]?.let { existing ->
-                existing.candles.clear()
-                existing.candles.putAll(candleConfigs)
+            if (RitualStorageManager.isInPair(ritualLocation)) {
+                activeRituals[center]?.let { existing ->
+                    existing.candles.clear()
+                    existing.candles.putAll(candleConfigs)
+                } ?: run {
+                    activeRituals[center] = RitualCircle(center, candleConfigs.toMutableMap())
+                }
                 return
             }
 
-            val circle = RitualCircle(center, candleConfigs.toMutableMap())
-            activeRituals[center] = circle
+            val pair = RitualStorageManager.tryCreatePair(ritualLocation)
+
+            if (pair != null) {
+                activeRituals[center] = RitualCircle(center, candleConfigs.toMutableMap())
+
+                val otherCenter =
+                    pair.source.getCenter().takeIf {
+                        it.x != center.x || it.y != center.y || it.z != center.z
+                    } ?: pair.destination.getCenter()
+
+                activeRituals[otherCenter]?.let { activateRitual(it) }
+                activeRituals[center]?.let { activateRitual(it) }
+                event.player.sendActionBar(MM.deserialize(Messages.RITUAL_LINKED))
+            } else {
+                activeRituals[center] = RitualCircle(center, candleConfigs.toMutableMap())
+                event.player.sendActionBar(MM.deserialize(Messages.RITUAL_WAITING))
+            }
             return
         }
 
@@ -383,7 +407,6 @@ internal object TeleportMechanic : MechanicInterface {
         circle.isActive = true
         lightAllCandles(circle)
         spawnParticleTrails(circle)
-        RitualStorageManager.addRitual(RitualData.fromLocation(circle.center, circle.candles))
     }
 
     /**
@@ -775,20 +798,10 @@ internal object TeleportMechanic : MechanicInterface {
         val block = event.block
         val loc = block.location
 
-        if (block.type == Material.SKELETON_SKULL || block.type == Material.SKELETON_WALL_SKULL) {
-            activeRituals[loc]?.let { circle ->
-                circle.isActive = false
-                circle.activeTaskIds.forEach { instance.server.scheduler.cancelTask(it) }
-                circle.activeTaskIds.clear()
-            }
-            return
-        }
-
         if (Tag.CANDLES.isTagged(block.type)) {
             activeRituals.values.find { loc in it.candles }?.let {
                 deactivateRitual(it)
                 activeRituals.remove(it.center)
-                RitualStorageManager.removeRitual(it.center)
             }
         }
     }
@@ -819,16 +832,8 @@ internal object TeleportMechanic : MechanicInterface {
         player: Player,
         circle: RitualCircle,
     ) {
-        val currentRitual = RitualData.fromLocation(circle.center, circle.candles)
-        val targetRitual =
-            RitualStorageManager
-                .findMatchingRitual(currentRitual.candles)
-                ?.takeIf {
-                    it.world != circle.center.world?.name ||
-                        it.x != circle.center.blockX ||
-                        it.y != circle.center.blockY ||
-                        it.z != circle.center.blockZ
-                }
+        val currentRitual = RitualLocation.fromLocation(circle.center, circle.candles)
+        val targetRitual = RitualStorageManager.findPair(currentRitual)
 
         if (targetRitual != null) {
             targetRitual.getCenter().let {
@@ -839,7 +844,7 @@ internal object TeleportMechanic : MechanicInterface {
                 circle.center.block.type = Material.AIR
             }
         } else {
-            player.sendActionBar(MM.deserialize(Messages.NO_MATCHING_RITUAL))
+            player.sendActionBar(MM.deserialize(Messages.NO_PAIRED_RITUAL))
         }
     }
 }
