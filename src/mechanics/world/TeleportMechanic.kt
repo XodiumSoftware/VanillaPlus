@@ -17,6 +17,8 @@ import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 import org.bukkit.scheduler.BukkitTask
 import org.xodium.illyriaplus.Utils.BlockUtils.center
 import org.xodium.illyriaplus.Utils.ItemUtils.getCustomName
@@ -129,7 +131,7 @@ internal object TeleportMechanic : MechanicInterface {
 
             else -> {
                 playAnchorFlame(anchor, scale = 1.0f)
-                window(block.location, anchor.name, event.player).open(event.player)
+                window(anchor, event.player).open(event.player)
             }
         }
     }
@@ -166,14 +168,14 @@ internal object TeleportMechanic : MechanicInterface {
     private fun save() = ConfigManager.save(CONFIG_FILE, state)
 
     /**
-     * Builds a paginated GUI showing all teleport anchors except the one at [exclude].
+     * Builds a paginated GUI showing all teleport anchors except the one at [source].
      *
-     * @param exclude The [Location] of the anchor currently being interacted with; it is omitted from the list.
+     * @param source The [TeleportAnchorData] of the anchor currently being interacted with; it is omitted from the list.
      * @param player The [Player] opening the GUI, used to calculate per-player teleport costs.
      * @return The configured [PagedGui] for anchor selection.
      */
     private fun gui(
-        exclude: Location,
+        source: TeleportAnchorData,
         player: Player,
     ) = PagedGui
         .itemsBuilder()
@@ -190,38 +192,36 @@ internal object TeleportMechanic : MechanicInterface {
         .addIngredient('>', FORWARD_BUTTON)
         .setContent(
             state.anchors
-                .filterNot { it.matches(exclude) }
-                .map { anchorItem(exclude, it, player) },
+                .filterNot { it.matches(source.location) }
+                .map { anchorItem(source, it, player) },
         ).build()
 
     /**
      * Creates a window for the teleport destination selector GUI.
      *
-     * @param exclude The [Location] of the anchor being interacted with.
-     * @param title The title to display on the window (typically the clicked anchor's name).
+     * @param source The [TeleportAnchorData] of the anchor being interacted with.
      * @param player The [Player] opening the GUI, used to calculate per-player teleport costs.
      * @return The configured [Window] builder.
      */
     private fun window(
-        exclude: Location,
-        title: String,
+        source: TeleportAnchorData,
         player: Player,
     ) = Window
         .builder()
-        .setTitle(MM.deserialize(title))
-        .setUpperGui(gui(exclude, player))
+        .setTitle(MM.deserialize(source.name))
+        .setUpperGui(gui(source, player))
 
     /**
      * Creates a GUI item representing a teleport anchor.
      *
-     * @param source The [Location] of the anchor the player is teleporting from.
+     * @param source The [TeleportAnchorData] the player is teleporting from.
      * @param anchor The [TeleportAnchorData] to represent.
      * @param player The [Player] opening the GUI, used to calculate and display teleport cost.
      * @return The constructed [Item] for the GUI.
      */
     @Suppress("UnstableApiUsage")
     private fun anchorItem(
-        source: Location,
+        source: TeleportAnchorData,
         anchor: TeleportAnchorData,
         player: Player,
     ): Item =
@@ -250,7 +250,7 @@ internal object TeleportMechanic : MechanicInterface {
                     },
             ).addClickHandler { _, click ->
                 val cost = calculateCost(source, anchor, click.player)
-                handleTeleport(click.player, anchor, cost)
+                handleTeleport(click.player, source, anchor, cost)
             }
             .build()
 
@@ -262,17 +262,17 @@ internal object TeleportMechanic : MechanicInterface {
      * - Mount: +50%
      * - Each leashed entity: +25%
      *
-     * @param source The [Location] of the source anchor.
+     * @param source The [TeleportAnchorData] of the source anchor.
      * @param anchor The [TeleportAnchorData] destination.
      * @param player The [Player] to check for mount and leashed entities.
      * @return The total XP cost.
      */
     private fun calculateCost(
-        source: Location,
+        source: TeleportAnchorData,
         anchor: TeleportAnchorData,
         player: Player,
     ): Int {
-        val distance = source.distance(anchor.location)
+        val distance = source.location.distance(anchor.location)
         var cost = distance.toInt().coerceAtLeast(1)
 
         if (player.vehicle != null) cost = (cost * 1.5).toInt()
@@ -292,11 +292,13 @@ internal object TeleportMechanic : MechanicInterface {
      * Handles teleporting a player to an anchor after a 3-second countdown.
      *
      * @param player The [Player] to teleport.
+     * @param source The [TeleportAnchorData] the player is teleporting from.
      * @param anchor The [TeleportAnchorData] destination.
      * @param cost The XP cost to deduct on teleport.
      */
     private fun handleTeleport(
         player: Player,
+        source: TeleportAnchorData,
         anchor: TeleportAnchorData,
         cost: Int,
     ) {
@@ -312,12 +314,20 @@ internal object TeleportMechanic : MechanicInterface {
 
         lateinit var task: BukkitTask
         var remaining = 3
+        val distance = source.location.distance(anchor.location)
 
         task =
             schedule(period = 20L) {
                 if (remaining > 0) {
-                    playAnchorFlame(anchor, scale = 1.0f + (3 - remaining) * 0.5f)
-                    playExpansionEffect(player, anchor, (3 - remaining) / 3.0f)
+                    val progress = (3 - remaining) / 3.0f
+                    val scale = 1.0f + (3 - remaining) * 0.5f
+
+                    playAnchorFlame(source, scale)
+                    playAnchorFlame(anchor, scale)
+                    playExpansionEffect(source, distance, progress)
+                    playExpansionEffect(anchor, distance, progress)
+                    playCloudEffect(source.location, progress)
+                    playCloudEffect(anchor.location, progress)
                     player.showTitle(
                         Title.title(
                             MM.deserialize(Messages.TELEPORT_TITLE),
@@ -352,6 +362,7 @@ internal object TeleportMechanic : MechanicInterface {
                     leashedEntities.forEach { it.setLeashHolder(player) }
 
                     player.giveExp(-cost)
+                    player.addPotionEffect(PotionEffect(PotionEffectType.BLINDNESS, 40, 0, false, false, false))
 
                     playTeleportEffects(player, anchor.location)
                     playLightningEffect(anchor.location)
@@ -406,20 +417,19 @@ internal object TeleportMechanic : MechanicInterface {
     }
 
     /**
-     * Spawns an expanding horizontal ring of purple particles from the anchor toward the player.
+     * Spawns an expanding horizontal ring of purple particles from the anchor outward.
      *
-     * @param player The [Player] the effect is expanding toward.
      * @param anchor The [TeleportAnchorData] center of the expansion.
+     * @param maxDistance The maximum distance the ring should expand to.
      * @param progress A float from 0.0 to 1.0 representing how far the ring has expanded.
      */
     private fun playExpansionEffect(
-        player: Player,
         anchor: TeleportAnchorData,
+        maxDistance: Double,
         progress: Float,
     ) {
         val center = anchor.location.clone().add(0.5, 1.0, 0.5)
-        val distance = center.distance(player.location.clone().add(0.0, 1.0, 0.0))
-        val radius = (distance * progress).coerceAtLeast(0.1)
+        val radius = (maxDistance * progress).coerceAtLeast(0.1)
         val points = (20 + 20 * progress).toInt()
 
         for (i in 0 until points) {
@@ -438,6 +448,35 @@ internal object TeleportMechanic : MechanicInterface {
                 0.0,
                 Particle.DustOptions(Color.fromRGB(147, 51, 255), 0.8f),
             )
+        }
+    }
+
+    /**
+     * Spawns an expanding ring of cloud and crit particles at the given location.
+     *
+     * @param location The [Location] to center the effect on.
+     * @param progress A float from 0.0 to 1.0 representing how far the ring has expanded.
+     */
+    private fun playCloudEffect(
+        location: Location,
+        progress: Float,
+    ) {
+        val maxRadius = 4.0
+        val radius = maxRadius * progress
+        if (radius < 0.1) return
+
+        val world = location.world
+        val particleCount = (radius * 16).toInt().coerceAtLeast(8)
+
+        for (i in 0 until particleCount) {
+            val angle = 2 * Math.PI * i / particleCount
+            val x = location.x + radius * cos(angle)
+            val z = location.z + radius * sin(angle)
+            val y = location.y + 0.1
+            val particleLoc = Location(world, x, y, z)
+
+            world.spawnParticle(Particle.CLOUD, particleLoc, 1, 0.05, 0.0, 0.05, 0.01)
+            world.spawnParticle(Particle.CRIT, particleLoc.add(0.0, 0.2, 0.0), 1, 0.05, 0.05, 0.05, 0.0)
         }
     }
 
