@@ -1,25 +1,42 @@
 package org.xodium.illyriaplus.managers
 
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import org.bukkit.Location
 import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
 import org.xodium.illyriaplus.data.RitualLocationData
 import org.xodium.illyriaplus.data.RitualPairData
-import org.xodium.illyriaplus.pdcs.WorldPDC.ritualPairs
+import java.io.File
 
-/** Manages persistent storage of ritual pairs via World PDC. */
+/** Manages persistent storage of ritual pairs via a JSON file in the plugin data folder. */
 internal object RitualStorageManager {
+    private val gson = GsonBuilder().setPrettyPrinting().create()
+    private val file = File(instance.dataFolder, "rituals.json")
     private val pairs = mutableListOf<RitualPairData>()
 
-    /** Loads all saved ritual pairs from World PDC. */
+    /** Loads all saved ritual pairs from the rituals JSON file. */
     fun load() {
         pairs.clear()
-        instance.server.worlds.forEach { pairs.addAll(it.ritualPairs) }
+        if (!file.exists()) return
+
+        runCatching {
+            val json = file.readText()
+            val type = object : TypeToken<List<RitualPairData>>() {}.type
+            val loaded: List<RitualPairData>? = gson.fromJson(json, type)
+
+            if (loaded != null) pairs.addAll(loaded)
+        }.onFailure {
+            instance.logger.warning("Failed to load rituals from ${file.name}: ${it.message}")
+        }
     }
 
-    /** Saves all ritual pairs to their respective worlds' PDC. */
+    /** Saves all ritual pairs to the rituals JSON file. */
     fun save() {
-        instance.server.worlds.forEach { world ->
-            world.ritualPairs = pairs.groupBy { it.source.world }[world.name] ?: emptyList()
+        runCatching {
+            if (!instance.dataFolder.exists()) instance.dataFolder.mkdirs()
+            file.writeText(gson.toJson(pairs))
+        }.onFailure {
+            instance.logger.warning("Failed to save rituals to ${file.name}: ${it.message}")
         }
     }
 

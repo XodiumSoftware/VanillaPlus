@@ -20,6 +20,7 @@ import org.xodium.illyriaplus.Utils.BlockUtils.center
 import org.xodium.illyriaplus.Utils.CommandUtils.playerExecuted
 import org.xodium.illyriaplus.Utils.MM
 import org.xodium.illyriaplus.data.CommandData
+import org.xodium.illyriaplus.data.RitualCircleData
 import org.xodium.illyriaplus.data.RitualLocationData
 import org.xodium.illyriaplus.interfaces.MechanicInterface
 import org.xodium.illyriaplus.managers.RitualStorageManager
@@ -31,7 +32,7 @@ import kotlin.math.sin
 
 /** Handles teleportation rituals using candle patterns and skulls. */
 internal object TeleportMechanic : MechanicInterface {
-    private val activeRituals = mutableMapOf<Location, RitualCircle>()
+    private val activeRituals = mutableMapOf<Location, RitualCircleData>()
     private val teleportCooldown = mutableMapOf<UUID, Long>()
     private val pendingTeleports = mutableSetOf<UUID>()
 
@@ -157,7 +158,7 @@ internal object TeleportMechanic : MechanicInterface {
                     return@forEach
                 }
 
-                activeRituals[center] = RitualCircle(center, configs.toMutableMap())
+                activeRituals[center] = RitualCircleData(center, configs.toMutableMap())
             }
 
             instance.server.scheduler.scheduleSyncRepeatingTask(
@@ -196,21 +197,6 @@ internal object TeleportMechanic : MechanicInterface {
             )
         }
 
-    /**
-     * Internal state of a ritual circle.
-     *
-     * @property center The skull location at the center of the candle pattern.
-     * @property candles Map of each candle [Location] to its (count, [Material]) pair.
-     * @property isActive Whether trails are running and teleport is enabled.
-     * @property activeTaskIds Bukkit scheduler task IDs for particle trail tasks.
-     */
-    private data class RitualCircle(
-        val center: Location,
-        val candles: MutableMap<Pair<Int, Int>, Pair<Int, Material>> = mutableMapOf(),
-        var isActive: Boolean = false,
-        val activeTaskIds: MutableList<Int> = mutableListOf(),
-    )
-
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun on(event: BlockPlaceEvent) = blockPlace(event)
 
@@ -244,7 +230,7 @@ internal object TeleportMechanic : MechanicInterface {
                     existing.candles.clear()
                     existing.candles.putAll(candleConfigs)
                 } ?: run {
-                    activeRituals[center] = RitualCircle(center, candleConfigs.toMutableMap())
+                    activeRituals[center] = RitualCircleData(center, candleConfigs.toMutableMap())
                 }
                 return
             }
@@ -252,7 +238,7 @@ internal object TeleportMechanic : MechanicInterface {
             val pair = RitualStorageManager.tryCreatePair(ritualLocation)
 
             if (pair != null) {
-                activeRituals[center] = RitualCircle(center, candleConfigs.toMutableMap())
+                activeRituals[center] = RitualCircleData(center, candleConfigs.toMutableMap())
 
                 val otherCenter =
                     pair.source.getCenter().takeIf {
@@ -263,7 +249,7 @@ internal object TeleportMechanic : MechanicInterface {
                 activeRituals[center]?.let { activateRitual(it) }
                 event.player.sendActionBar(MM.deserialize(Messages.RITUAL_LINKED))
             } else {
-                activeRituals[center] = RitualCircle(center, candleConfigs.toMutableMap())
+                activeRituals[center] = RitualCircleData(center, candleConfigs.toMutableMap())
                 event.player.sendActionBar(MM.deserialize(Messages.RITUAL_WAITING))
             }
             return
@@ -406,7 +392,7 @@ internal object TeleportMechanic : MechanicInterface {
      *
      * @param circle The ritual circle to activate.
      */
-    private fun activateRitual(circle: RitualCircle) {
+    private fun activateRitual(circle: RitualCircleData) {
         circle.isActive = true
         lightAllCandles(circle)
         spawnParticleTrails(circle)
@@ -427,7 +413,7 @@ internal object TeleportMechanic : MechanicInterface {
      * @param circle The ritual circle to check.
      * @return True if all candles are lit.
      */
-    private fun areAllCandlesLit(circle: RitualCircle): Boolean =
+    private fun areAllCandlesLit(circle: RitualCircleData): Boolean =
         circle.candles.keys.all { (dx, dz) ->
             val loc = circle.center.clone().add(dx.toDouble(), 0.0, dz.toDouble())
             val lightable = loc.block.blockData as? Lightable
@@ -440,7 +426,7 @@ internal object TeleportMechanic : MechanicInterface {
      *
      * @param circle The ritual circle to light.
      */
-    private fun lightAllCandles(circle: RitualCircle) {
+    private fun lightAllCandles(circle: RitualCircleData) {
         circle.candles.keys.forEach { (dx, dz) ->
             val block = resolveCandleLocation(circle.center, dx, dz).block
 
@@ -460,7 +446,7 @@ internal object TeleportMechanic : MechanicInterface {
      *
      * @param circle The ritual circle to extinguish.
      */
-    private fun extinguishAllCandles(circle: RitualCircle) {
+    private fun extinguishAllCandles(circle: RitualCircleData) {
         circle.candles.keys.forEach { (dx, dz) ->
             val block = resolveCandleLocation(circle.center, dx, dz).block
 
@@ -480,7 +466,7 @@ internal object TeleportMechanic : MechanicInterface {
      *
      * @param circle The ritual circle to spawn trails for.
      */
-    private fun spawnParticleTrails(circle: RitualCircle) {
+    private fun spawnParticleTrails(circle: RitualCircleData) {
         val center = circle.center.block.center()
         val candles =
             circle.candles.keys.map { (dx, dz) -> resolveCandleLocation(circle.center, dx, dz) }
@@ -546,7 +532,7 @@ internal object TeleportMechanic : MechanicInterface {
      *
      * @param circle The ritual circle to finish activating.
      */
-    private fun triggerRitualFinish(circle: RitualCircle) {
+    private fun triggerRitualFinish(circle: RitualCircleData) {
         val world = circle.center.world ?: return
         val center = circle.center.clone().add(0.5, 0.5, 0.5)
 
@@ -598,7 +584,7 @@ internal object TeleportMechanic : MechanicInterface {
      * @param circle The ritual circle to check.
      * @return The first player found inside, or null if none.
      */
-    private fun findPlayerInsideCircle(circle: RitualCircle): Player? =
+    private fun findPlayerInsideCircle(circle: RitualCircleData): Player? =
         circle.center.world
             ?.getNearbyEntities(circle.center, 3.0, 3.0, 3.0)
             ?.filterIsInstance<Player>()
@@ -630,7 +616,7 @@ internal object TeleportMechanic : MechanicInterface {
      */
     private fun startTeleportSequence(
         player: Player,
-        circle: RitualCircle,
+        circle: RitualCircleData,
     ) {
         if (player.uniqueId in pendingTeleports) return
 
@@ -746,7 +732,7 @@ internal object TeleportMechanic : MechanicInterface {
      *
      * @param circle The ritual circle to spawn the trail for.
      */
-    private fun spawnPurpleCandleTrail(circle: RitualCircle) {
+    private fun spawnPurpleCandleTrail(circle: RitualCircleData) {
         val candles =
             circle.candles.keys.map { (dx, dz) -> resolveCandleLocation(circle.center, dx, dz) }
 
@@ -827,7 +813,7 @@ internal object TeleportMechanic : MechanicInterface {
      *
      * @param circle The ritual circle to deactivate.
      */
-    private fun deactivateRitual(circle: RitualCircle) {
+    private fun deactivateRitual(circle: RitualCircleData) {
         circle.isActive = false
         circle.activeTaskIds.forEach { instance.server.scheduler.cancelTask(it) }
         circle.activeTaskIds.clear()
@@ -846,7 +832,7 @@ internal object TeleportMechanic : MechanicInterface {
      */
     private fun performTeleport(
         player: Player,
-        circle: RitualCircle,
+        circle: RitualCircleData,
     ) {
         val currentRitual = RitualLocationData.fromLocation(circle.center, toAbsoluteMap(circle.center, circle.candles))
         val targetRitual = RitualStorageManager.findPair(currentRitual)
