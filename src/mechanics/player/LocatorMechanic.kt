@@ -14,7 +14,7 @@ import org.xodium.illyriaplus.Utils.PlayerUtils.locator
 import org.xodium.illyriaplus.data.CommandData
 import org.xodium.illyriaplus.interfaces.MechanicInterface
 
-/** Represents a module handling locator mechanics within the system. */
+/** Represents a mechanic handling locator functionality within the system. */
 internal object LocatorMechanic : MechanicInterface {
     override val cmds =
         listOf(

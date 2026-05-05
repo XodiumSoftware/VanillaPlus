@@ -6,7 +6,7 @@ import org.bukkit.event.server.ServerListPingEvent
 import org.xodium.illyriaplus.Utils
 import org.xodium.illyriaplus.interfaces.MechanicInterface
 
-/** Represents a module handling MOTD mechanics within the system. */
+/** Represents a mechanic handling server MOTD within the system. */
 internal object MotdMechanic : MechanicInterface {
     private val MOTD: List<String> =
         listOf(

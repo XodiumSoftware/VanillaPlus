@@ -12,7 +12,7 @@ import org.xodium.illyriaplus.data.CommandData
 import org.xodium.illyriaplus.interfaces.MechanicInterface
 import org.xodium.illyriaplus.pdcs.PlayerPDC.scoreboardVisibility
 
-/** Represents a module handling scoreboard mechanics within the system. */
+/** Represents a mechanic handling scoreboard display within the system. */
 internal object ScoreBoardMechanic : MechanicInterface {
     override val cmds =
         listOf(

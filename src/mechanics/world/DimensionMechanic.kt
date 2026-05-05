@@ -16,7 +16,7 @@ import org.xodium.illyriaplus.Utils.MM
 import org.xodium.illyriaplus.interfaces.MechanicInterface
 import kotlin.math.hypot
 
-/** Represents a module handling dimension mechanics within the system. */
+/** Represents a mechanic handling dimension effects within the system. */
 internal object DimensionMechanic : MechanicInterface {
     private const val NETHER_TO_OVERWORLD_RATIO = 8
     private const val PORTAL_SEARCH_RADIUS: Int = 128

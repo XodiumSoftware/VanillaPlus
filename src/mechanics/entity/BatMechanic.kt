@@ -9,7 +9,7 @@ import org.bukkit.inventory.ItemStack
 import org.xodium.illyriaplus.interfaces.MechanicInterface
 import kotlin.random.Random
 
-/** Handles phantom membrane drops when bats are killed by players. */
+/** Represents a mechanic handling bat drops within the system. */
 internal object BatMechanic : MechanicInterface {
     private const val BAT_MEMBRANE_DROP_CHANCE: Double = 1.0
     private const val BAT_MEMBRANE_BASE_MIN: Int = 0

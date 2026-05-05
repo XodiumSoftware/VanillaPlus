@@ -6,7 +6,7 @@ import org.bukkit.event.entity.EntityChangeBlockEvent
 import org.bukkit.event.entity.EntityExplodeEvent
 import org.xodium.illyriaplus.interfaces.MechanicInterface
 
-/** Prevents mob griefing (Creepers, Endermen, etc.). */
+/** Represents a mechanic handling mob griefing prevention within the system. */
 internal object GriefingMechanic : MechanicInterface {
     private val GRIEF_CANCELLED_ENTITIES =
         setOf(

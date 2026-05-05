@@ -16,7 +16,7 @@ import org.xodium.illyriaplus.enchantments.*
 import org.xodium.illyriaplus.interfaces.MechanicInterface
 import org.xodium.illyriaplus.pdcs.ItemPDC.selectedSpell
 
-/** Handles spell wand interactions, cycling, and casting. */
+/** Represents a mechanic handling spell casting within the system. */
 internal object SpellMechanic : MechanicInterface {
     private val SPELL_MAP: Map<Enchantment, (PlayerInteractEvent) -> Unit> by lazy {
         mapOf(

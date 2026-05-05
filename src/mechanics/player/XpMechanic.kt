@@ -8,7 +8,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.xodium.illyriaplus.interfaces.MechanicInterface
 
-/** Allows players to convert XP into experience bottles at enchanting tables. */
+/** Represents a mechanic handling XP conversion within the system. */
 internal object XpMechanic : MechanicInterface {
     const val XP_COST_TO_BOTTLE: Int = 11
 

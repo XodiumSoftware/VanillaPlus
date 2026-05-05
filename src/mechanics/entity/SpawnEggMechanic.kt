@@ -7,7 +7,7 @@ import org.bukkit.inventory.ItemStack
 import org.xodium.illyriaplus.interfaces.MechanicInterface
 import kotlin.random.Random
 
-/** Handles spawn egg drops when entities die. */
+/** Represents a mechanic handling spawn egg drops within the system. */
 internal object SpawnEggMechanic : MechanicInterface {
     private const val SPAWN_EGG_DROP_CHANCE: Double = 0.001
 

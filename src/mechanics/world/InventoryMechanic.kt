@@ -25,7 +25,7 @@ import org.xodium.illyriaplus.Utils.PlayerUtils.getContainersAround
 import org.xodium.illyriaplus.data.CommandData
 import org.xodium.illyriaplus.interfaces.MechanicInterface
 
-/** Represents a module handling inventory mechanics within the system. */
+/** Represents a mechanic handling inventory interactions within the system. */
 internal object InventoryMechanic : MechanicInterface {
     private const val NO_MATERIAL_SPECIFIED_MSG: String =
         "<gradient:#CB2D3E:#EF473A>You must specify a valid material " +
