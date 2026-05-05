@@ -8,17 +8,17 @@ import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
 /**
  * Represents the data structure for a teleport destination.
  *
+ * @property name The display name of this teleport anchor.
  * @property x The X coordinate of the teleport location.
  * @property y The Y coordinate of the teleport location.
  * @property z The Z coordinate of the teleport location.
- * @property name The display name of this teleport anchor.
  */
 @Serializable
 internal data class TeleportAnchorData(
+    val name: String,
     private val x: Double,
     private val y: Double,
     private val z: Double,
-    val name: String,
 ) {
     /** The [World] this anchor resides in. */
     val world: World get() = instance.server.getWorld("world") ?: error("Overworld not found")

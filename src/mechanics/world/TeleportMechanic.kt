@@ -14,6 +14,7 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitTask
 import org.xodium.illyriaplus.Utils.BlockUtils.center
@@ -97,6 +98,7 @@ internal object TeleportMechanic : MechanicInterface {
 
     @EventHandler
     fun on(event: PlayerInteractEvent) {
+        if (event.hand != EquipmentSlot.HAND) return
         val block = event.clickedBlock ?: return
         if (block.world.environment != World.Environment.NORMAL) return
         val anchor = state.anchors.firstOrNull { it.matches(block.location) } ?: return
@@ -255,6 +257,7 @@ internal object TeleportMechanic : MechanicInterface {
                             ),
                         ),
                     )
+                    player.playSound(player.location, Sound.UI_BUTTON_CLICK, 1.0f, 1.0f)
                     remaining--
                 } else {
                     playLightningEffect(player.location)
