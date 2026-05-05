@@ -16,6 +16,7 @@ import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitTask
+import org.xodium.illyriaplus.Utils.BlockUtils.center
 import org.xodium.illyriaplus.Utils.ItemUtils.getCustomName
 import org.xodium.illyriaplus.Utils.MM
 import org.xodium.illyriaplus.Utils.ScheduleUtils.schedule
@@ -97,6 +98,7 @@ internal object TeleportMechanic : MechanicInterface {
     @EventHandler
     fun on(event: PlayerInteractEvent) {
         val block = event.clickedBlock ?: return
+        if (block.world.environment != World.Environment.NORMAL) return
         val anchor = state.anchors.firstOrNull { it.matches(block.location) } ?: return
 
         when {
@@ -128,6 +130,7 @@ internal object TeleportMechanic : MechanicInterface {
     fun on(event: BlockPlaceEvent) {
         val block = event.blockPlaced
 
+        if (block.world.environment != World.Environment.NORMAL) return
         if (block.type != Material.LODESTONE) return
 
         val location = block.location
@@ -143,6 +146,7 @@ internal object TeleportMechanic : MechanicInterface {
     fun on(event: BlockBreakEvent) {
         val block = event.block
 
+        if (block.world.environment != World.Environment.NORMAL) return
         if (block.type != Material.LODESTONE) return
         if (!state.anchors.removeIf { it.matches(block.location) }) return
 
@@ -211,7 +215,6 @@ internal object TeleportMechanic : MechanicInterface {
                             ItemLore.lore(
                                 listOf(
                                     Component.empty(),
-                                    MM.deserialize("World: ${anchor.world.name}"),
                                     MM.deserialize(
                                         "Location: ${anchor.location.x}, ${anchor.location.y}, ${anchor.location.z}",
                                     ),
@@ -346,7 +349,7 @@ internal object TeleportMechanic : MechanicInterface {
      * @param location The [Location] to strike lightning at.
      */
     private fun playLightningEffect(location: Location) {
-        location.world.strikeLightningEffect(location)
+        location.world.strikeLightningEffect(location.block.center())
     }
 
     /**
