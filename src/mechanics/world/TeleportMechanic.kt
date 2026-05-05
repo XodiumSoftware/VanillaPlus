@@ -4,7 +4,6 @@ import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
-import org.bukkit.block.Block
 import org.bukkit.event.EventHandler
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
@@ -14,6 +13,7 @@ import org.bukkit.inventory.ItemStack
 import org.xodium.illyriaplus.Utils.MM
 import org.xodium.illyriaplus.data.TeleportAnchorData
 import org.xodium.illyriaplus.interfaces.MechanicInterface
+import xyz.xenondevs.invui.gui.Animation
 import xyz.xenondevs.invui.gui.Markers
 import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.item.BoundItem
@@ -32,42 +32,58 @@ internal object TeleportMechanic : MechanicInterface {
         val anchors: MutableList<TeleportAnchorData> = mutableListOf(),
     )
 
-    private const val UI_TITLE = "<b><gradient:#FFE259:#FFA751>Select Teleport Destination</gradient></b>"
+    private const val UI_TITLE = "<b><gradient:#FFE259:#FFA751>Select TP Destination</gradient></b>"
+    private const val ANCHOR_CREATION_MSG = "<green>You have created an Teleportation Anchor!</green>"
+    private const val ANCHOR_REMOVAL_MSG = "<red>You have removed an Teleportation Anchor!</red>"
+    private const val ANCHOR_NAME_UPDATE_MSG = "<gold>You have successfully changed the Anchor's name!</gold>"
 
     private val ANCHORS = Anchors()
+    private val PAGE_CHANGE_ANIMATION =
+        Animation
+            .builder()
+            .setSlotSelector(Animation::horizontalSnakeSlotSelector)
+            .filterTaggedSlots('x')
+            .setFreezing(false)
+            .build()
     private val BACK_BUTTON =
         BoundItem
             .pagedBuilder()
             .setItemProvider(ItemBuilder(Material.ARROW).hideTooltip(true))
-            .addClickHandler { _, gui, _ -> gui.page-- }
-            .build()
+            .addClickHandler { _, gui, _ ->
+                gui.cancelAnimation()
+                gui.page--
+                gui.playAnimation(PAGE_CHANGE_ANIMATION)
+            }.build()
     private val FORWARD_BUTTON =
         BoundItem
             .pagedBuilder()
             .setItemProvider(ItemBuilder(Material.ARROW).hideTooltip(true))
-            .addClickHandler { _, gui, _ -> gui.page++ }
+            .addClickHandler { _, gui, _ ->
+                gui.cancelAnimation()
+                gui.page++
+                gui.playAnimation(PAGE_CHANGE_ANIMATION)
+            }.build()
+    private val GUI =
+        PagedGui
+            .itemsBuilder()
+            .setStructure(
+                "# # # # # # # # #",
+                "# x x x x x x x #",
+                "# x x x x x x x #",
+                "# x x x x x x x #",
+                "# x x x x x x x #",
+                "# # # < # > # # #",
+            ).addIngredient('#', Item.simple(ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).hideTooltip(true)))
+            .addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
+            .addIngredient('<', BACK_BUTTON)
+            .addIngredient('>', FORWARD_BUTTON)
+            .setContent(ANCHORS.anchors.map { anchorItem(it) })
             .build()
     private val WINDOW =
         Window
             .builder()
             .setTitle(MM.deserialize(UI_TITLE))
-            .setUpperGui(
-                PagedGui
-                    .itemsBuilder()
-                    .setStructure(
-                        "# # # # # # # # #",
-                        "# x x x x x x x #",
-                        "# x x x x x x x #",
-                        "# x x x x x x x #",
-                        "# x x x x x x x #",
-                        "# # # < # > # # #",
-                    ).addIngredient('#', Item.simple(ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).hideTooltip(true)))
-                    .addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
-                    .addIngredient('<', BACK_BUTTON)
-                    .addIngredient('>', FORWARD_BUTTON)
-                    .setContent(ANCHORS.anchors.map { anchorItem(it) })
-                    .build(),
-            )
+            .setUpperGui(GUI)
 
     @EventHandler
     fun on(event: PlayerInteractEvent) {
@@ -75,7 +91,7 @@ internal object TeleportMechanic : MechanicInterface {
             event.action != Action.RIGHT_CLICK_BLOCK -> return
             event.clickedBlock?.type != Material.LODESTONE -> return
             event.item?.type == Material.COMPASS -> return
-            event.item?.type == Material.NAME_TAG -> rename(event.clickedBlock ?: return, event.item ?: return)
+            event.item?.type == Material.NAME_TAG -> rename(event)
             else -> WINDOW.open(event.player)
         }
     }
@@ -99,6 +115,7 @@ internal object TeleportMechanic : MechanicInterface {
         }
 
         ANCHORS.anchors.add(TeleportAnchorData(block.world, location))
+        event.player.sendActionBar(MM.deserialize(ANCHOR_CREATION_MSG))
     }
 
     @EventHandler
@@ -113,6 +130,7 @@ internal object TeleportMechanic : MechanicInterface {
                 it.location.blockY == block.y &&
                 it.location.blockZ == block.z
         }
+        event.player.sendActionBar(MM.deserialize(ANCHOR_REMOVAL_MSG))
     }
 
     /**
@@ -149,14 +167,12 @@ internal object TeleportMechanic : MechanicInterface {
     /**
      * Renames a teleport anchor using the custom name from a name tag.
      *
-     * @param block The [Block] representing the teleport anchor to rename.
-     * @param item The [ItemStack] (expected to be a name tag) containing the new name.
+     * @param event The [PlayerInteractEvent] triggered when a player interacts with a lodestone while holding a name tag.
      */
     @Suppress("UnstableApiUsage")
-    private fun rename(
-        block: Block,
-        item: ItemStack,
-    ) {
+    private fun rename(event: PlayerInteractEvent) {
+        val block = event.clickedBlock ?: return
+        val item = event.item ?: return
         val anchor =
             ANCHORS.anchors.firstOrNull {
                 it.world == block.world &&
@@ -168,5 +184,6 @@ internal object TeleportMechanic : MechanicInterface {
 
         ANCHORS.anchors[index] =
             anchor.copy(name = item.getData(DataComponentTypes.CUSTOM_NAME)?.let { MM.serialize(it) } ?: return)
+        event.player.sendActionBar(MM.deserialize(ANCHOR_NAME_UPDATE_MSG))
     }
 }
