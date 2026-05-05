@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package org.xodium.illyriaplus.mechanics.world
 
 import io.papermc.paper.datacomponent.DataComponentTypes
@@ -5,8 +7,7 @@ import io.papermc.paper.datacomponent.item.ItemLore
 import kotlinx.serialization.Serializable
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.title.Title
-import org.bukkit.Location
-import org.bukkit.Material
+import org.bukkit.*
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.block.Action
@@ -28,6 +29,8 @@ import xyz.xenondevs.invui.item.BoundItem
 import xyz.xenondevs.invui.item.Item
 import xyz.xenondevs.invui.item.ItemBuilder
 import xyz.xenondevs.invui.window.Window
+import kotlin.math.cos
+import kotlin.math.sin
 
 /** Represents a mechanic handling teleportation within the system. */
 internal object TeleportMechanic : MechanicInterface {
@@ -115,6 +118,7 @@ internal object TeleportMechanic : MechanicInterface {
             }
 
             else -> {
+                playAnchorFlame(anchor)
                 window(block.location, anchor.name).open(event.player)
             }
         }
@@ -169,11 +173,8 @@ internal object TeleportMechanic : MechanicInterface {
             .addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
             .addIngredient('<', BACK_BUTTON)
             .addIngredient('>', FORWARD_BUTTON)
-            .setContent(
-                state.anchors
-                    .filterNot { it.matches(exclude) }
-                    .map { anchorItem(it) },
-            ).build()
+            .setContent(state.anchors.filterNot { it.matches(exclude) }.map { anchorItem(it) })
+            .build()
 
     /**
      * Creates a window for the teleport destination selector GUI.
@@ -218,9 +219,8 @@ internal object TeleportMechanic : MechanicInterface {
                             ),
                         )
                     },
-            ).addClickHandler { _, click ->
-                handleTeleport(click.player, anchor)
-            }.build()
+            ).addClickHandler { _, click -> handleTeleport(click.player, anchor) }
+            .build()
 
     /**
      * Handles teleporting a player to an anchor after a 3-second countdown.
@@ -243,6 +243,7 @@ internal object TeleportMechanic : MechanicInterface {
         task =
             schedule(period = 20L) {
                 if (remaining > 0) {
+                    playExpansionEffect(player, anchor, (3 - remaining) / 3.0f)
                     player.showTitle(
                         Title.title(
                             MM.deserialize(Messages.TELEPORT_TITLE),
@@ -253,11 +254,99 @@ internal object TeleportMechanic : MechanicInterface {
                     )
                     remaining--
                 } else {
+                    playLightningEffect(player.location)
                     player.teleport(anchor.location)
+                    playTeleportEffects(player, anchor.location)
+                    playLightningEffect(anchor.location)
                     TELEPORTING.remove(player)
                     task.cancel()
                 }
             }
+    }
+
+    /**
+     * Plays an enderman teleport sound and portal particles at the given location.
+     *
+     * @param player The [Player] context for the world.
+     * @param location The [Location] where the effects should play.
+     */
+    private fun playTeleportEffects(
+        player: Player,
+        location: Location,
+    ) {
+        player.world.playSound(location, Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.0f)
+        player.world.spawnParticle(
+            Particle.PORTAL,
+            location.clone().add(0.0, 1.0, 0.0),
+            50,
+            0.5,
+            1.0,
+            0.5,
+            0.1,
+        )
+    }
+
+    /**
+     * Spawns purple flame-like particles above the specified anchor.
+     *
+     * @param anchor The [TeleportAnchorData] to spawn particles above.
+     */
+    private fun playAnchorFlame(anchor: TeleportAnchorData) {
+        anchor.world.spawnParticle(
+            Particle.DUST,
+            anchor.location.clone().add(0.5, 1.2, 0.5),
+            15,
+            0.15,
+            0.3,
+            0.15,
+            0.0,
+            Particle.DustOptions(Color.fromRGB(147, 51, 255), 1.0f),
+        )
+    }
+
+    /**
+     * Spawns an expanding horizontal ring of purple particles from the anchor toward the player.
+     *
+     * @param player The [Player] the effect is expanding toward.
+     * @param anchor The [TeleportAnchorData] center of the expansion.
+     * @param progress A float from 0.0 to 1.0 representing how far the ring has expanded.
+     */
+    private fun playExpansionEffect(
+        player: Player,
+        anchor: TeleportAnchorData,
+        progress: Float,
+    ) {
+        val center = anchor.location.clone().add(0.5, 1.0, 0.5)
+        val distance = center.distance(player.location.clone().add(0.0, 1.0, 0.0))
+        val radius = (distance * progress).coerceAtLeast(0.1)
+        val points = (20 + 20 * progress).toInt()
+
+        for (i in 0 until points) {
+            val angle = 2 * Math.PI * i / points
+            val x = center.x + radius * cos(angle)
+            val z = center.z + radius * sin(angle)
+            val loc = Location(anchor.world, x, center.y, z)
+
+            anchor.world.spawnParticle(
+                Particle.DUST,
+                loc,
+                1,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                Particle.DustOptions(Color.fromRGB(147, 51, 255), 0.8f),
+            )
+        }
+    }
+
+    /**
+     * Strikes a visual-only lightning bolt at the given location.
+     *
+     * @param location The [Location] to strike lightning at.
+     */
+    private fun playLightningEffect(location: Location) {
+        location.world.strikeLightningEffect(location)
     }
 
     /**
