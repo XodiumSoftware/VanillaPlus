@@ -63,6 +63,8 @@ internal object TeleportMechanic : MechanicInterface {
             "<gradient:#CB2D3E:#EF473A><b><remaining></b></gradient>"
         const val INSUFFICIENT_XP =
             "<gradient:#CB2D3E:#EF473A><b>Not enough XP! You need <cost> XP.</b></gradient>"
+        const val TELEPORT_CANCELLED =
+            "<gradient:#CB2D3E:#EF473A><b>Teleportation cancelled — you moved!</b></gradient>"
     }
 
     private const val CONFIG_FILE = "anchors.json"
@@ -315,10 +317,18 @@ internal object TeleportMechanic : MechanicInterface {
         lateinit var task: BukkitTask
         var remaining = 3
         val distance = source.location.distance(anchor.location)
+        val initialLocation = player.location.clone()
 
         task =
             schedule(period = 20L) {
                 if (remaining > 0) {
+                    if (player.location.distance(initialLocation) > 0.5) {
+                        player.sendActionBar(MM.deserialize(Messages.TELEPORT_CANCELLED))
+                        TELEPORTING.remove(player)
+                        task.cancel()
+                        return@schedule
+                    }
+
                     val progress = (3 - remaining) / 3.0f
                     val scale = 1.0f + (3 - remaining) * 0.5f
 
