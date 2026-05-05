@@ -5,6 +5,8 @@ package org.xodium.illyriaplus.mechanics.world
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
 import kotlinx.serialization.Serializable
+import net.kyori.adventure.key.Key
+import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.title.Title
 import org.bukkit.*
@@ -253,8 +255,7 @@ internal object TeleportMechanic : MechanicInterface {
             ).addClickHandler { _, click ->
                 val cost = calculateCost(source, anchor, click.player)
                 handleTeleport(click.player, source, anchor, cost)
-            }
-            .build()
+            }.build()
 
     /**
      * Calculates the XP cost for teleporting from [source] to [anchor].
@@ -324,6 +325,14 @@ internal object TeleportMechanic : MechanicInterface {
                 if (remaining > 0) {
                     if (player.location.distance(initialLocation) > 0.5) {
                         player.sendActionBar(MM.deserialize(Messages.TELEPORT_CANCELLED))
+                        player.playSound(
+                            Sound.sound(
+                                Key.key("block.beacon.deactivate"),
+                                Sound.Source.PLAYER,
+                                1.0f,
+                                1.0f,
+                            ),
+                        )
                         TELEPORTING.remove(player)
                         task.cancel()
                         return@schedule
@@ -346,7 +355,14 @@ internal object TeleportMechanic : MechanicInterface {
                             ),
                         ),
                     )
-                    player.playSound(player.location, Sound.UI_BUTTON_CLICK, 1.0f, 1.0f)
+                    player.playSound(
+                        Sound.sound(
+                            Key.key("ui.button.click"),
+                            Sound.Source.PLAYER,
+                            1.0f,
+                            1.0f,
+                        ),
+                    )
                     remaining--
                 } else {
                     playLightningEffect(player.location)
@@ -392,7 +408,16 @@ internal object TeleportMechanic : MechanicInterface {
         player: Player,
         location: Location,
     ) {
-        player.world.playSound(location, Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.0f)
+        val teleportSound =
+            Sound.sound(
+                Key.key("entity.enderman.teleport"),
+                Sound.Source.PLAYER,
+                1.0f,
+                1.0f,
+            )
+        player.world.players
+            .filter { it.location.distance(location) <= 32 }
+            .forEach { it.playSound(teleportSound) }
         player.world.spawnParticle(
             Particle.PORTAL,
             location.clone().add(0.0, 1.0, 0.0),

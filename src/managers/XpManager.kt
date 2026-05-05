@@ -16,9 +16,9 @@ import org.xodium.illyriaplus.managers.XpManager.NO_XP_SOUND
  * Provides a unified way to handle spell casting costs across all wand-based spells.
  */
 internal object XpManager {
-    /** Sound played when a player has insufficient XP to cast a spell. */
-    val NO_XP_SOUND: Sound = Sound.sound(Key.key("block.beacon.deactivate"), Sound.Source.PLAYER, 1.0f, 1.0f)
+    private const val NO_XP_MSG = "<gradient:#CB2D3E:#EF473A><b>Not enough XP!</b></gradient>"
 
+    private val NO_XP_SOUND: Sound = Sound.sound(Key.key("block.beacon.deactivate"), Sound.Source.PLAYER, 1.0f, 1.0f)
     private val ACTIVE_GAME_MODES = setOf(GameMode.SURVIVAL, GameMode.ADVENTURE)
 
     /**
@@ -62,7 +62,7 @@ internal object XpManager {
 
         if (!player.hasEnoughXp(xpCost)) {
             player.playSound(NO_XP_SOUND)
-            player.sendActionBar(MM.deserialize("<red>Not enough XP!</red>"))
+            player.sendActionBar(MM.deserialize(NO_XP_MSG))
             return null
         }
 
