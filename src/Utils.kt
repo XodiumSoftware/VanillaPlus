@@ -69,6 +69,36 @@ internal object Utils {
             item: ItemStack?,
             spell: Enchantment,
         ): Boolean = item?.selectedSpell == spell.key.toString()
+
+        /**
+         * Validates that [event] represents a valid spell cast interaction.
+         *
+         * Checks:
+         * - Action is left-click (air or block)
+         * - Held item is a Blaze Rod
+         * - Held item contains the required [enchantment]
+         *
+         * @param event The [org.bukkit.event.player.PlayerInteractEvent] to validate.
+         * @param enchantment The [Enchantment] that must be present on the held item.
+         * @return The [Player] if all checks pass, `null` otherwise.
+         */
+        fun validateSpellCast(
+            event: org.bukkit.event.player.PlayerInteractEvent,
+            enchantment: Enchantment,
+        ): org.bukkit.entity.Player? {
+            if (event.action != org.bukkit.event.block.Action.LEFT_CLICK_AIR &&
+                event.action != org.bukkit.event.block.Action.LEFT_CLICK_BLOCK
+            ) {
+                return null
+            }
+
+            val item = event.item ?: return null
+
+            if (item.type != org.bukkit.Material.BLAZE_ROD) return null
+            if (!item.containsEnchantment(enchantment)) return null
+
+            return event.player
+        }
     }
 
     /** World-related utilities. */

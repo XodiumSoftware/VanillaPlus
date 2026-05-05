@@ -3,11 +3,10 @@ package org.xodium.illyriaplus.managers
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import org.bukkit.GameMode
-import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
-import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
+import org.xodium.illyriaplus.Utils.EnchantmentUtils.validateSpellCast
 import org.xodium.illyriaplus.Utils.MM
 import org.xodium.illyriaplus.managers.XpManager.NO_XP_SOUND
 
@@ -44,14 +43,7 @@ internal object XpManager {
         enchantment: Enchantment,
         xpCost: Int,
     ): Player? {
-        if (event.action != Action.LEFT_CLICK_AIR && event.action != Action.LEFT_CLICK_BLOCK) return null
-
-        val item = event.item ?: return null
-
-        if (item.type != Material.BLAZE_ROD) return null
-        if (!item.containsEnchantment(enchantment)) return null
-
-        val player = event.player
+        val player = validateSpellCast(event, enchantment) ?: return null
 
         if (player.gameMode == GameMode.CREATIVE) {
             event.isCancelled = true
