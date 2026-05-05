@@ -8,8 +8,10 @@ import org.bukkit.World
  *
  * @property world The world this teleport destination resides in.
  * @property location The specific location within the world to teleport to.
+ * @property name The display name of this teleport anchor.
  */
 internal data class TeleportAnchorData(
     val world: World,
     val location: Location,
+    val name: String = "",
 )
