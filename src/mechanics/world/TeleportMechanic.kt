@@ -99,8 +99,11 @@ internal object TeleportMechanic : MechanicInterface {
     @EventHandler
     fun on(event: PlayerInteractEvent) {
         if (event.hand != EquipmentSlot.HAND) return
+
         val block = event.clickedBlock ?: return
+
         if (block.world.environment != World.Environment.NORMAL) return
+
         val anchor = state.anchors.firstOrNull { it.matches(block.location) } ?: return
 
         when {
@@ -122,7 +125,7 @@ internal object TeleportMechanic : MechanicInterface {
             }
 
             else -> {
-                playAnchorFlame(anchor)
+                playAnchorFlame(anchor, scale = 1.0f)
                 window(block.location, anchor.name).open(event.player)
             }
         }
@@ -248,6 +251,7 @@ internal object TeleportMechanic : MechanicInterface {
         task =
             schedule(period = 20L) {
                 if (remaining > 0) {
+                    playAnchorFlame(anchor, scale = 1.0f + (3 - remaining) * 0.5f)
                     playExpansionEffect(player, anchor, (3 - remaining) / 3.0f)
                     player.showTitle(
                         Title.title(
@@ -261,7 +265,17 @@ internal object TeleportMechanic : MechanicInterface {
                     remaining--
                 } else {
                     playLightningEffect(player.location)
-                    player.teleport(anchor.location)
+
+                    val mount = player.vehicle
+
+                    if (mount != null) {
+                        mount.teleport(anchor.location)
+                        player.teleport(anchor.location)
+                        mount.addPassenger(player)
+                    } else {
+                        player.teleport(anchor.location)
+                    }
+
                     playTeleportEffects(player, anchor.location)
                     playLightningEffect(anchor.location)
                     TELEPORTING.remove(player)
@@ -296,17 +310,21 @@ internal object TeleportMechanic : MechanicInterface {
      * Spawns purple flame-like particles above the specified anchor.
      *
      * @param anchor The [TeleportAnchorData] to spawn particles above.
+     * @param scale The scale multiplier for particle spread and count.
      */
-    private fun playAnchorFlame(anchor: TeleportAnchorData) {
+    private fun playAnchorFlame(
+        anchor: TeleportAnchorData,
+        scale: Float = 1.0f,
+    ) {
         anchor.world.spawnParticle(
             Particle.DUST,
             anchor.location.clone().add(0.5, 1.2, 0.5),
-            15,
-            0.15,
-            0.3,
-            0.15,
+            (15 * scale).toInt(),
+            0.15 * scale,
+            0.3 * scale,
+            0.15 * scale,
             0.0,
-            Particle.DustOptions(Color.fromRGB(147, 51, 255), 1.0f),
+            Particle.DustOptions(Color.fromRGB(147, 51, 255), scale.coerceAtLeast(1.0f)),
         )
     }
 
