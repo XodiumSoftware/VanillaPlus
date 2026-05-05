@@ -3,12 +3,9 @@ package org.xodium.illyriaplus.managers
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import org.bukkit.GameMode
-import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
-import org.xodium.illyriaplus.Utils.EnchantmentUtils.validateSpellCast
 import org.xodium.illyriaplus.Utils.MM
-import org.xodium.illyriaplus.managers.XpManager.NO_XP_SOUND
 
 /**
  * Manages XP cost validation and deduction for spell enchantments.
@@ -17,60 +14,45 @@ import org.xodium.illyriaplus.managers.XpManager.NO_XP_SOUND
 internal object XpManager {
     private const val NO_XP_MSG = "<gradient:#CB2D3E:#EF473A><b>Not enough XP!</b></gradient>"
 
-    private val NO_XP_SOUND: Sound = Sound.sound(Key.key("block.beacon.deactivate"), Sound.Source.PLAYER, 1.0f, 1.0f)
-    private val ACTIVE_GAME_MODES = setOf(GameMode.SURVIVAL, GameMode.ADVENTURE)
+    private val NO_XP_SOUND: Sound =
+        Sound.sound(Key.key("block.beacon.deactivate"), Sound.Source.PLAYER, 1.0f, 1.0f)
 
     /**
-     * Validates a spell cast interaction and consumes XP if all checks pass.
+     * Consumes XP for a spell cast if the player has enough.
      *
-     * Checks:
-     * - Action is left-click (air or block)
-     * - Held item is a Blaze Rod with the required enchantment
-     * - Player is in an appropriate game mode
-     * - Player has sufficient XP (for survival/adventure)
-     *
-     * On success (creative mode): cancels event, returns player (no XP cost)
-     * On success (survival/adventure): cancels event, deducts XP, returns player
-     * On failure (insufficient XP): plays [NO_XP_SOUND], sends action bar message, returns null
-     *
-     * @param event The [PlayerInteractEvent] to validate
-     * @param enchantment The [Enchantment] that must be present on the held item
-     * @param xpCost The amount of XP points required and consumed on success
-     * @return The [Player] if all checks pass, `null` otherwise
+     * @param event The interaction event triggering the spell.
+     * @param xpCost The XP cost required.
+     * @return True if the cast is allowed, false otherwise.
      */
     fun consumeXp(
         event: PlayerInteractEvent,
-        enchantment: Enchantment,
         xpCost: Int,
-    ): Player? {
-        val player = validateSpellCast(event, enchantment) ?: return null
+    ): Boolean {
+        when {
+            event.player.gameMode == GameMode.CREATIVE -> {
+                event.isCancelled = true
+                return true
+            }
 
-        if (player.gameMode == GameMode.CREATIVE) {
-            event.isCancelled = true
-            return player
+            !event.player.hasEnoughXp(xpCost) -> {
+                event.player.playSound(NO_XP_SOUND)
+                event.player.sendActionBar(MM.deserialize(NO_XP_MSG))
+                return false
+            }
+
+            else -> {
+                event.isCancelled = true
+                event.player.giveExp(-xpCost)
+                return true
+            }
         }
-
-        if (player.gameMode !in ACTIVE_GAME_MODES) return null
-
-        if (!player.hasEnoughXp(xpCost)) {
-            player.playSound(NO_XP_SOUND)
-            player.sendActionBar(MM.deserialize(NO_XP_MSG))
-            return null
-        }
-
-        event.isCancelled = true
-        player.giveExp(-xpCost)
-
-        return player
     }
 
     /**
-     * Checks if the player has at least [xpCost] experience points.
-     * Uses total experience points (levels * level cost + progress)
-     * rather than raw levels for finer granularity.
+     * Checks if the player has enough total experience points.
      *
-     * @param xpCost The XP point threshold to check
-     * @return `true` if the player has enough XP, `false` otherwise
+     * @param xpCost The required XP amount.
+     * @return True if the player has enough XP, false otherwise.
      */
     private fun Player.hasEnoughXp(xpCost: Int): Boolean = calculateTotalExperiencePoints() >= xpCost
 }

@@ -22,6 +22,7 @@ import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.entity.Tameable
+import org.bukkit.event.block.Action
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitTask
 import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
@@ -37,18 +38,26 @@ internal object Utils {
     /** MiniMessage instance for parsing formatted strings. */
     val MM: MiniMessage = MiniMessage.miniMessage()
 
-    /** The standardized prefix for [IllyriaPlus] messages. */
+    /** The standardized prefix for IllyriaPlus messages. */
     val IllyriaPlus.prefix: String
         get() =
             "<gradient:#FFA751:#FFE259>[</gradient><gradient:#CB2D3E:#EF473A>" +
                 "${this.javaClass.simpleName}" +
                 "</gradient><gradient:#FFE259:#FFA751>]</gradient>"
 
-    /** Extension function to convert snake_case to Proper Case with spaces. */
+    /**
+     * Converts a snake_case string to Proper Case with spaces.
+     *
+     * @return The formatted string in Proper Case.
+     */
     fun String.snakeToProperCase(): String =
         split('_').joinToString(" ") { word -> word.replaceFirstChar { it.uppercase() } }
 
-    /** Extension function to convert CamelCase to snake_case, removing a specified suffix. */
+    /**
+     * Converts a class name to a snake_case registry key fragment, removing a suffix.
+     *
+     * @return The generated registry key fragment.
+     */
     inline fun <reified T> Class<*>.toRegistryKeyFragment(): String =
         simpleName
             .removeSuffix(T::class.simpleName ?: "")
@@ -58,12 +67,19 @@ internal object Utils {
 
     /** Enchantment-related utilities. */
     object EnchantmentUtils {
-        /** Extension function specifically for enchantment keys */
+        /**
+         * Gets the display name of an enchantment key.
+         *
+         * @return The formatted display name as a Component.
+         */
         fun TypedKey<Enchantment>.displayName(): Component = MM.deserialize(value().snakeToProperCase())
 
         /**
-         * Checks if the given [item] has the specified [spell] currently selected.
-         * Returns true if the item's selectedSpell matches the spell's key.
+         * Checks if the given item has the specified spell selected.
+         *
+         * @param item The item to check.
+         * @param spell The enchantment representing the spell.
+         * @return True if the spell is selected, false otherwise.
          */
         fun isSelectedSpell(
             item: ItemStack?,
@@ -71,44 +87,35 @@ internal object Utils {
         ): Boolean = item?.selectedSpell == spell.key.toString()
 
         /**
-         * Validates that [event] represents a valid spell cast interaction.
+         * Validates a spell cast interaction.
          *
-         * Checks:
-         * - Action is left-click (air or block)
-         * - Held item is a Blaze Rod
-         * - Held item contains the required [enchantment]
-         *
-         * @param event The [org.bukkit.event.player.PlayerInteractEvent] to validate.
-         * @param enchantment The [Enchantment] that must be present on the held item.
-         * @return The [Player] if all checks pass, `null` otherwise.
+         * @param action The interaction action.
+         * @param item The item used.
+         * @param enchantment The required enchantment.
+         * @return True if valid, false otherwise.
          */
         fun validateSpellCast(
-            event: org.bukkit.event.player.PlayerInteractEvent,
+            action: Action,
+            item: ItemStack,
             enchantment: Enchantment,
-        ): org.bukkit.entity.Player? {
-            if (event.action != org.bukkit.event.block.Action.LEFT_CLICK_AIR &&
-                event.action != org.bukkit.event.block.Action.LEFT_CLICK_BLOCK
-            ) {
-                return null
+        ): Boolean =
+            when {
+                action != Action.LEFT_CLICK_AIR && action != Action.LEFT_CLICK_BLOCK -> false
+                item.type != Material.BLAZE_ROD -> false
+                !item.containsEnchantment(enchantment) -> false
+                else -> true
             }
-
-            val item = event.item ?: return null
-
-            if (item.type != org.bukkit.Material.BLAZE_ROD) return null
-            if (!item.containsEnchantment(enchantment)) return null
-
-            return event.player
-        }
     }
 
     /** World-related utilities. */
     object WorldUtils {
         /**
-         * Returns the i18n string matching the current weather state of this world.
+         * Gets a string representation of the world's weather.
          *
-         * @param thundering The string to return when it is thundering.
-         * @param storm The string to return when there is a storm.
-         * @param clear The string to return when the weather is clear.
+         * @param thundering Value for thunder.
+         * @param storm Value for storm.
+         * @param clear Value for clear weather.
+         * @return The matching weather string.
          */
         fun World.weather(
             thundering: String,
@@ -127,11 +134,11 @@ internal object Utils {
         /**
          * Schedules a repeating task.
          *
-         * @param delay The initial delay before the first execution in ticks.
-         * @param period The interval between executions in ticks.
-         * @param duration The total duration for which the task should run in ticks. If `null`, the task runs indefinitely.
-         * @param content The content to execute in the scheduled task.
-         * @return The scheduled [org.bukkit.scheduler.BukkitTask].
+         * @param delay Initial delay in ticks.
+         * @param period Interval between executions.
+         * @param duration Optional total runtime.
+         * @param content Task logic.
+         * @return The scheduled BukkitTask.
          */
         fun schedule(
             delay: Long = 0L,
@@ -152,11 +159,11 @@ internal object Utils {
                 }
 
         /**
-         * Spawns a repeating particle trail on [entity] every tick until it is no longer valid.
+         * Spawns a particle trail following an entity.
          *
          * @param entity The entity to follow.
-         * @param particles Called each tick with the entity's current [org.bukkit.Location] to spawn particles.
-         * @return The [BukkitTask] running the trail.
+         * @param particles Particle logic per tick.
+         * @return The running BukkitTask.
          */
         fun spawnProjectileTrail(
             entity: Entity,
@@ -181,10 +188,10 @@ internal object Utils {
     /** Command-related utilities. */
     object CommandUtils {
         /**
-         * Registers a command execution handler on an [com.mojang.brigadier.builder.ArgumentBuilder] with automatic try/catch handling.
+         * Adds a safe execution handler with error logging.
          *
-         * @param action The action executed when the command runs.
-         * @return The same [com.mojang.brigadier.builder.ArgumentBuilder] for further configuration.
+         * @param action Command execution logic.
+         * @return The modified ArgumentBuilder.
          */
         fun <T : ArgumentBuilder<CommandSourceStack, T>> T.executesCatching(
             action: (CommandContext<CommandSourceStack>) -> Unit,
@@ -210,11 +217,10 @@ internal object Utils {
         }
 
         /**
-         * Registers a command execution handler on an [ArgumentBuilder] specifically for [Player] senders with automatic try/catch handling.
+         * Executes a command restricted to players.
          *
-         * @param action The action executed when the command runs, receiving the [Player] and [CommandContext].
-         * @return The same [ArgumentBuilder] for further configuration.
-         * @throws IllegalStateException if the command is executed by a non-[Player] sender.
+         * @param action Execution logic with player context.
+         * @return The modified ArgumentBuilder.
          */
         fun <T : ArgumentBuilder<CommandSourceStack, T>> T.playerExecuted(
             action: (Player, CommandContext<CommandSourceStack>) -> Unit,
@@ -235,18 +241,21 @@ internal object Utils {
     /** Block-related utilities. */
     object BlockUtils {
         /**
-         * Get the centre of a [org.bukkit.block.Block], handling [org.bukkit.block.DoubleChest]s properly.
+         * Gets the center location of a block, handling double chests.
          *
-         * @return The centre [Location] of the block.
+         * @return The center Location.
          */
         fun Block.center(): Location {
-            val baseAddition = Location(location.world, location.x + 0.5, location.y + 0.5, location.z + 0.5)
+            val baseAddition =
+                Location(location.world, location.x + 0.5, location.y + 0.5, location.z + 0.5)
             val chestState = state as? Chest ?: return baseAddition
             val holder = chestState.inventory.holder as? DoubleChest ?: return baseAddition
             val leftBlock = (holder.leftSide as? Chest)?.block
             val rightBlock = (holder.rightSide as? Chest)?.block
 
-            if (leftBlock == null || rightBlock == null || leftBlock.world !== rightBlock.world) return baseAddition
+            if (leftBlock == null || rightBlock == null || leftBlock.world !== rightBlock.world) {
+                return baseAddition
+            }
 
             val world = leftBlock.world
             val cx = (leftBlock.x + rightBlock.x) / 2.0 + 0.5
@@ -257,12 +266,12 @@ internal object Utils {
         }
     }
 
-    /** Player-related utilities. */
+    /** Item-related utilities. */
     object ItemUtils {
         /**
-         * Retrieves the custom name of this [ItemStack] as a serialized string.
+         * Gets the custom name of an item.
          *
-         * @return The custom name string, or `null` if the item has no custom name.
+         * @return The serialized custom name, or null.
          */
         @Suppress("UnstableApiUsage")
         fun ItemStack.getCustomName(): String? = getData(DataComponentTypes.CUSTOM_NAME)?.let { MM.serialize(it) }
@@ -283,18 +292,21 @@ internal object Utils {
         private const val GREEN_SHIFT = 8
 
         /**
-         * Retrieves a [Player]'s face as a [String].
+         * Generates a MiniMessage string representing the player's face.
          *
-         * @param size The size of the face in pixels (default is 8).
-         * @return A [String] representing the player's face.
+         * @param size Output size in pixels.
+         * @return The rendered face string.
          */
         fun Player.face(size: Int = 8): String {
-            // 1. fetch skin URL from the playerProfile
             val texturesProp =
-                playerProfile.properties
-                    .firstOrNull { it.name == "textures" }
+                playerProfile.properties.firstOrNull { it.name == "textures" }
                     ?: error("Player has no skin texture")
-            val json = JsonParser.parseString(Base64.decode(texturesProp.value).decodeToString()).asJsonObject
+
+            val json =
+                JsonParser
+                    .parseString(Base64.decode(texturesProp.value).decodeToString())
+                    .asJsonObject
+
             val skinUrl =
                 json
                     .getAsJsonObject("textures")
@@ -302,12 +314,11 @@ internal object Utils {
                     .get("url")
                     .asString
 
-            // 2. load and crop
             val fullImg =
-                ImageIO.read(URI.create(skinUrl).toURL()) ?: error("Failed to load skin image from URL: $skinUrl")
-            val face = fullImg.getSubimage(FACE_X, FACE_Y, FACE_WIDTH, FACE_HEIGHT)
+                ImageIO.read(URI.create(skinUrl).toURL())
+                    ?: error("Failed to load skin image from URL: $skinUrl")
 
-            // 3. scale & build MiniMessage
+            val face = fullImg.getSubimage(FACE_X, FACE_Y, FACE_WIDTH, FACE_HEIGHT)
             val scale = FACE_WIDTH.toDouble() / size
 
             return buildString {
@@ -316,6 +327,7 @@ internal object Utils {
                         val px = (x * scale).toInt().coerceAtMost(MAX_COORDINATE)
                         val py = (y * scale).toInt().coerceAtMost(MAX_COORDINATE)
                         val rgb = face.getRGB(px, py)
+
                         val a = (rgb ushr ALPHA_SHIFT) and COLOR_MASK
                         val r = (rgb shr RED_SHIFT) and COLOR_MASK
                         val g = (rgb shr GREEN_SHIFT) and COLOR_MASK
@@ -333,9 +345,9 @@ internal object Utils {
         }
 
         /**
-         * Get [org.bukkit.block.Container]s around a [Player] (3x3 [org.bukkit.Chunk] area).
+         * Gets nearby containers in a chunk radius.
          *
-         * @return [Set] of [org.bukkit.block.Container]s around the player.
+         * @return Set of containers.
          */
         fun Player.getContainersAround(): Set<Container> =
             buildSet {
@@ -347,10 +359,10 @@ internal object Utils {
             }
 
         /**
-         * Get [org.bukkit.Chunk]s around a [Player] (3x3 [org.bukkit.Chunk] area).
+         * Gets surrounding chunks.
          *
-         * @param range The [org.bukkit.Chunk] radius around the player (1 = 3x3 area).
-         * @return [Set] of [org.bukkit.Chunk]s around the player.
+         * @param range Radius in chunks.
+         * @return Set of chunks.
          */
         fun Player.getChunksAround(range: Int = 1): Set<Chunk> {
             val (baseX, baseZ) = location.chunk.run { x to z }
@@ -365,10 +377,10 @@ internal object Utils {
         }
 
         /**
-         * Gets the first leashed [org.bukkit.entity.Tameable] entity owned by a [Player] within the config radius.
+         * Gets the first leashed tameable entity owned by the player.
          *
-         * @param radius The radius within which to search for leashed entities.
-         * @return The found [org.bukkit.entity.Tameable] entity or `null` if none exists.
+         * @param radius Search radius.
+         * @return The entity or null.
          */
         fun Player.getLeashedEntity(radius: Double = 10.0): Tameable? =
             getNearbyEntities(radius, radius, radius)
@@ -376,7 +388,7 @@ internal object Utils {
                 .firstOrNull { it.isLeashed && it.leashHolder == this }
 
         /**
-         * Applies the correct scoreboard to a [Player] based on their visibility preference.
+         * Applies the correct scoreboard.
          */
         fun Player.applyScoreboard() {
             scoreboard =
@@ -388,23 +400,32 @@ internal object Utils {
         }
 
         /**
-         * Modifies the colour of a [Player]'s waypoint based on the specified parameters.
+         * Sets waypoint color.
          *
-         * @param color The optional [net.kyori.adventure.text.format.TextColor] to apply to the waypoint.
+         * @param color Optional color.
          */
         fun Player.locator(color: TextColor? = null) {
             waypointColor = color?.let { Color.fromRGB(it.value()) }
             sendActionBar(Component.text("Locator color changed!", color))
         }
 
-        /** Sets the display name of the player based on their nickname. */
+        /**
+         * Applies nickname to display name.
+         */
         fun Player.setNickname() = displayName(MM.deserialize(nickname))
 
-        /** Returns an [ItemStack] of this player's head with their skin profile applied. */
+        /**
+         * Creates a player head item.
+         *
+         * @return The head ItemStack.
+         */
         @Suppress("UnstableApiUsage")
         fun Player.head(): ItemStack =
             ItemStack.of(Material.PLAYER_HEAD).apply {
-                setData(DataComponentTypes.PROFILE, ResolvableProfile.resolvableProfile(playerProfile))
+                setData(
+                    DataComponentTypes.PROFILE,
+                    ResolvableProfile.resolvableProfile(playerProfile),
+                )
             }
     }
 }

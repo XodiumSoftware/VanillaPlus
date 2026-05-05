@@ -11,6 +11,7 @@ import org.bukkit.inventory.EquipmentSlotGroup
 import org.xodium.illyriaplus.Utils
 import org.xodium.illyriaplus.Utils.EnchantmentUtils.displayName
 import org.xodium.illyriaplus.Utils.EnchantmentUtils.isSelectedSpell
+import org.xodium.illyriaplus.Utils.EnchantmentUtils.validateSpellCast
 import org.xodium.illyriaplus.interfaces.EnchantmentInterface
 import org.xodium.illyriaplus.managers.XpManager
 
@@ -31,11 +32,20 @@ internal object WitherbrandEnchantment : EnchantmentInterface {
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(65, 5))
             .activeSlots(EquipmentSlotGroup.MAINHAND)
 
+    /**
+     * Handles player interaction for casting Witherbrand.
+     *
+     * @param event The interaction event.
+     */
     @EventHandler
     fun on(event: PlayerInteractEvent) {
-        if (!isSelectedSpell(event.item, get())) return
+        val player = event.player
+        val item = event.item ?: return
 
-        val player = XpManager.consumeXp(event, get(), XP_COST) ?: return
+        if (!isSelectedSpell(item, get())) return
+        if (!validateSpellCast(event.action, item, get())) return
+        if (!XpManager.consumeXp(event, XP_COST)) return
+
         val direction = player.location.direction.normalize()
         val spawnLocation = player.eyeLocation.add(direction.clone().multiply(1.5))
         val skull = player.world.spawn(spawnLocation, WitherSkull::class.java)
@@ -43,6 +53,7 @@ internal object WitherbrandEnchantment : EnchantmentInterface {
         skull.shooter = player
         skull.direction = direction.clone().multiply(1.5)
         skull.isCharged = false
+
         spawnSkullTrail(skull)
         player.playSound(CAST_SOUND)
     }

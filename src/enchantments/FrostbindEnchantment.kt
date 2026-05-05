@@ -15,6 +15,7 @@ import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
 import org.xodium.illyriaplus.Utils
 import org.xodium.illyriaplus.Utils.EnchantmentUtils.displayName
 import org.xodium.illyriaplus.Utils.EnchantmentUtils.isSelectedSpell
+import org.xodium.illyriaplus.Utils.EnchantmentUtils.validateSpellCast
 import org.xodium.illyriaplus.interfaces.EnchantmentInterface
 import org.xodium.illyriaplus.managers.XpManager
 
@@ -22,10 +23,13 @@ import org.xodium.illyriaplus.managers.XpManager
 @Suppress("UnstableApiUsage")
 internal object FrostbindEnchantment : EnchantmentInterface {
     private val PROJECTILE_KEY by lazy { NamespacedKey(instance, "frostbind_projectile") }
-    private val LAUNCH_SOUND: Sound = Sound.sound(Key.key("entity.snow_golem.shoot"), Sound.Source.NEUTRAL, 1.0f, 1.2f)
-    private val HIT_SOUND: Sound = Sound.sound(Key.key("block.powder_snow.place"), Sound.Source.BLOCK, 1.0f, 0.8f)
-    private const val XP_COST = 2
-    private const val FREEZE_TICKS = 500
+    private val LAUNCH_SOUND: Sound =
+        Sound.sound(Key.key("entity.snow_golem.shoot"), Sound.Source.NEUTRAL, 1.0f, 1.2f)
+    private val HIT_SOUND: Sound =
+        Sound.sound(Key.key("block.powder_snow.place"), Sound.Source.BLOCK, 1.0f, 0.8f)
+
+    private const val XP_COST: Int = 2
+    private const val FREEZE_TICKS: Int = 500
 
     override fun invoke(builder: EnchantmentRegistryEntry.Builder): EnchantmentRegistryEntry.Builder =
         builder
@@ -37,23 +41,38 @@ internal object FrostbindEnchantment : EnchantmentInterface {
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(65, 5))
             .activeSlots(EquipmentSlotGroup.MAINHAND)
 
+    /**
+     * Handles player interaction for casting Frostbind.
+     *
+     * @param event The interaction event.
+     */
     @EventHandler
     fun on(event: PlayerInteractEvent) {
-        if (!isSelectedSpell(event.item, get())) return
+        val player = event.player
+        val item = event.item ?: return
 
-        val player = XpManager.consumeXp(event, get(), XP_COST) ?: return
+        if (!isSelectedSpell(item, get())) return
+        if (!validateSpellCast(event.action, item, get())) return
+        if (!XpManager.consumeXp(event, XP_COST)) return
+
         val direction = player.location.direction.normalize()
         val spawnLocation = player.eyeLocation.add(direction.clone().multiply(1.5))
-        val snowball = player.world.spawn(spawnLocation, Snowball::class.java)
+        val snowball: Snowball = player.world.spawn(spawnLocation, Snowball::class.java)
 
         snowball.shooter = player
         snowball.setGravity(false)
         snowball.velocity = direction.multiply(2.0)
         snowball.persistentDataContainer.set(PROJECTILE_KEY, PersistentDataType.BOOLEAN, true)
+
         spawnSnowballTrail(snowball)
         player.playSound(LAUNCH_SOUND)
     }
 
+    /**
+     * Handles projectile hit effects for Frostbind.
+     *
+     * @param event The projectile hit event.
+     */
     @EventHandler
     fun on(event: ProjectileHitEvent) {
         val projectile = event.entity
@@ -61,7 +80,6 @@ internal object FrostbindEnchantment : EnchantmentInterface {
         if (!projectile.persistentDataContainer.has(PROJECTILE_KEY)) return
 
         val entity = event.hitEntity ?: return
-
         entity.freezeTicks = FREEZE_TICKS
 
         Particle.SNOWFLAKE
@@ -77,9 +95,9 @@ internal object FrostbindEnchantment : EnchantmentInterface {
     }
 
     /**
-     * Spawns a repeating particle trail behind [snowball] every tick until the entity is no longer valid.
+     * Spawns a repeating particle trail behind a snowball.
      *
-     * @param snowball The [Snowball] to trail.
+     * @param snowball The projectile to trail.
      */
     private fun spawnSnowballTrail(snowball: Snowball) =
         Utils.ScheduleUtils.spawnProjectileTrail(snowball) {
@@ -89,6 +107,7 @@ internal object FrostbindEnchantment : EnchantmentInterface {
                 .count(5)
                 .offset(0.05, 0.05, 0.05)
                 .spawn()
+
             Particle.ITEM_SNOWBALL
                 .builder()
                 .location(it)
