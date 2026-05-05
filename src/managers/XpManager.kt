@@ -49,6 +49,35 @@ internal object XpManager {
     }
 
     /**
+     * Consumes XP for non-interaction systems (teleports, abilities, etc.).
+     *
+     * @param player The player to check and deduct XP from.
+     * @param xpCost The XP cost required.
+     * @return true if the player had enough XP and cost was deducted, false otherwise.
+     */
+    fun consumeXp(
+        player: Player,
+        xpCost: Int,
+    ): Boolean {
+        when {
+            player.gameMode == GameMode.CREATIVE -> {
+                return true
+            }
+
+            !player.hasEnoughXp(xpCost) -> {
+                player.playSound(NO_XP_SOUND)
+                player.sendActionBar(MM.deserialize(NO_XP_MSG))
+                return false
+            }
+
+            else -> {
+                player.giveExp(-xpCost)
+                return true
+            }
+        }
+    }
+
+    /**
      * Checks if the player has enough total experience points.
      *
      * @param xpCost The required XP amount.

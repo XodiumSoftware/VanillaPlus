@@ -29,6 +29,7 @@ import org.xodium.illyriaplus.Utils.ScheduleUtils.schedule
 import org.xodium.illyriaplus.data.TeleportAnchorData
 import org.xodium.illyriaplus.interfaces.MechanicInterface
 import org.xodium.illyriaplus.managers.ConfigManager
+import org.xodium.illyriaplus.managers.XpManager
 import xyz.xenondevs.invui.gui.Animation
 import xyz.xenondevs.invui.gui.Markers
 import xyz.xenondevs.invui.gui.PagedGui
@@ -63,8 +64,6 @@ internal object TeleportMechanic : MechanicInterface {
             "<gradient:#FFE259:#FFA751><b>Teleporting...</b></gradient>"
         const val TELEPORT_SUBTITLE =
             "<gradient:#CB2D3E:#EF473A><b><remaining></b></gradient>"
-        const val INSUFFICIENT_XP =
-            "<gradient:#CB2D3E:#EF473A><b>Not enough XP! You need <cost> XP.</b></gradient>"
         const val TELEPORT_CANCELLED =
             "<gradient:#CB2D3E:#EF473A><b>Teleportation cancelled — you moved!</b></gradient>"
     }
@@ -315,11 +314,7 @@ internal object TeleportMechanic : MechanicInterface {
         anchor: TeleportAnchorData,
         cost: Int,
     ) {
-        if (player.gameMode != GameMode.CREATIVE && player.totalExperience < cost) {
-            player.sendActionBar(MM.deserialize(Messages.INSUFFICIENT_XP.replace("<cost>", cost.toString())))
-            return
-        }
-
+        if (!XpManager.consumeXp(player, cost)) return
         if (player in TELEPORTING) return
 
         TELEPORTING.add(player)
