@@ -2,17 +2,25 @@ package org.xodium.illyriaplus.mechanics.world
 
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
+import kotlinx.serialization.Serializable
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.title.Title
+import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
+import org.bukkit.scheduler.BukkitTask
+import org.xodium.illyriaplus.Utils.ItemUtils.getCustomName
 import org.xodium.illyriaplus.Utils.MM
+import org.xodium.illyriaplus.Utils.ScheduleUtils.schedule
 import org.xodium.illyriaplus.data.TeleportAnchorData
 import org.xodium.illyriaplus.interfaces.MechanicInterface
+import org.xodium.illyriaplus.managers.ConfigManager
 import xyz.xenondevs.invui.gui.Animation
 import xyz.xenondevs.invui.gui.Markers
 import xyz.xenondevs.invui.gui.PagedGui
@@ -28,16 +36,35 @@ internal object TeleportMechanic : MechanicInterface {
      *
      * @property anchors The list of [TeleportAnchorData] entries available for teleportation.
      */
+    @Serializable
     private data class Anchors(
         val anchors: MutableList<TeleportAnchorData> = mutableListOf(),
     )
 
-    private const val UI_TITLE = "<b><gradient:#FFE259:#FFA751>Select TP Destination</gradient></b>"
-    private const val ANCHOR_CREATION_MSG = "<green>You have created an Teleportation Anchor!</green>"
-    private const val ANCHOR_REMOVAL_MSG = "<red>You have removed an Teleportation Anchor!</red>"
-    private const val ANCHOR_NAME_UPDATE_MSG = "<gold>You have successfully changed the Anchor's name!</gold>"
+    /** Holds user-facing MiniMessage strings for teleport anchor interactions. */
+    object Messages {
+        const val ANCHOR_CREATION =
+            "<gradient:#43A047:#66BB6A><b>You have created a Teleportation Anchor!</b></gradient>"
+        const val ANCHOR_REMOVAL =
+            "<gradient:#CB2D3E:#EF473A><b>You have removed a Teleportation Anchor!</b></gradient>"
+        const val ANCHOR_NAME_UPDATE =
+            "<gradient:#FFE259:#FFA751><b>You have successfully changed the Anchor's name!</b></gradient>"
+        const val TELEPORT_TITLE =
+            "<gradient:#FFE259:#FFA751><b>Teleporting...</b></gradient>"
+        const val TELEPORT_SUBTITLE =
+            "<gradient:#CB2D3E:#EF473A><b><remaining></b></gradient>"
+    }
 
-    private val ANCHORS = Anchors()
+    private const val CONFIG_FILE = "anchors.json"
+
+    private lateinit var state: Anchors
+
+    override fun register(): Long {
+        state = ConfigManager.load(CONFIG_FILE, Anchors())
+        return super.register()
+    }
+
+    private val TELEPORTING = mutableSetOf<Player>()
     private val PAGE_CHANGE_ANIMATION =
         Animation
             .builder()
@@ -63,7 +90,72 @@ internal object TeleportMechanic : MechanicInterface {
                 gui.page++
                 gui.playAnimation(PAGE_CHANGE_ANIMATION)
             }.build()
-    private val GUI =
+
+    @EventHandler
+    fun on(event: PlayerInteractEvent) {
+        val block = event.clickedBlock ?: return
+        val anchor = state.anchors.firstOrNull { it.matches(block.location) } ?: return
+
+        when {
+            event.action != Action.RIGHT_CLICK_BLOCK -> {
+                return
+            }
+
+            event.clickedBlock?.type != Material.LODESTONE -> {
+                return
+            }
+
+            event.item?.type == Material.COMPASS -> {
+                return
+            }
+
+            event.item?.type == Material.NAME_TAG -> {
+                rename(event)
+                return
+            }
+
+            else -> {
+                window(block.location, anchor.name).open(event.player)
+            }
+        }
+    }
+
+    @EventHandler
+    fun on(event: BlockPlaceEvent) {
+        val block = event.blockPlaced
+
+        if (block.type != Material.LODESTONE) return
+
+        val location = block.location
+
+        if (state.anchors.any { it.matches(block.location) }) return
+
+        state.anchors.add(TeleportAnchorData(block.world, location, TeleportAnchorData.nextName(state.anchors)))
+        save()
+        event.player.sendActionBar(MM.deserialize(Messages.ANCHOR_CREATION))
+    }
+
+    @EventHandler
+    fun on(event: BlockBreakEvent) {
+        val block = event.block
+
+        if (block.type != Material.LODESTONE) return
+        if (!state.anchors.removeIf { it.matches(block.location) }) return
+
+        save()
+        event.player.sendActionBar(MM.deserialize(Messages.ANCHOR_REMOVAL))
+    }
+
+    /** Persists the current anchor state to the plugin data folder. */
+    private fun save() = ConfigManager.save(CONFIG_FILE, state)
+
+    /**
+     * Builds a paginated GUI showing all teleport anchors except the one at [exclude].
+     *
+     * @param exclude The [Location] of the anchor currently being interacted with; it is omitted from the list.
+     * @return The configured [PagedGui] for anchor selection.
+     */
+    private fun gui(exclude: Location) =
         PagedGui
             .itemsBuilder()
             .setStructure(
@@ -77,61 +169,26 @@ internal object TeleportMechanic : MechanicInterface {
             .addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
             .addIngredient('<', BACK_BUTTON)
             .addIngredient('>', FORWARD_BUTTON)
-            .setContent(ANCHORS.anchors.map { anchorItem(it) })
-            .build()
-    private val WINDOW =
-        Window
-            .builder()
-            .setTitle(MM.deserialize(UI_TITLE))
-            .setUpperGui(GUI)
+            .setContent(
+                state.anchors
+                    .filterNot { it.matches(exclude) }
+                    .map { anchorItem(it) },
+            ).build()
 
-    @EventHandler
-    fun on(event: PlayerInteractEvent) {
-        when {
-            event.action != Action.RIGHT_CLICK_BLOCK -> return
-            event.clickedBlock?.type != Material.LODESTONE -> return
-            event.item?.type == Material.COMPASS -> return
-            event.item?.type == Material.NAME_TAG -> rename(event)
-            else -> WINDOW.open(event.player)
-        }
-    }
-
-    @EventHandler
-    fun on(event: BlockPlaceEvent) {
-        val block = event.blockPlaced
-
-        if (block.type != Material.LODESTONE) return
-
-        val location = block.location
-
-        if (ANCHORS.anchors.any {
-                it.world == block.world &&
-                    it.location.blockX == block.x &&
-                    it.location.blockY == block.y &&
-                    it.location.blockZ == block.z
-            }
-        ) {
-            return
-        }
-
-        ANCHORS.anchors.add(TeleportAnchorData(block.world, location))
-        event.player.sendActionBar(MM.deserialize(ANCHOR_CREATION_MSG))
-    }
-
-    @EventHandler
-    fun on(event: BlockBreakEvent) {
-        val block = event.block
-
-        if (block.type != Material.LODESTONE) return
-
-        ANCHORS.anchors.removeIf {
-            it.world == block.world &&
-                it.location.blockX == block.x &&
-                it.location.blockY == block.y &&
-                it.location.blockZ == block.z
-        }
-        event.player.sendActionBar(MM.deserialize(ANCHOR_REMOVAL_MSG))
-    }
+    /**
+     * Creates a window for the teleport destination selector GUI.
+     *
+     * @param exclude The [Location] of the anchor being interacted with.
+     * @param title The title to display on the window (typically the clicked anchor's name).
+     * @return The configured [Window] builder.
+     */
+    private fun window(
+        exclude: Location,
+        title: String,
+    ) = Window
+        .builder()
+        .setTitle(MM.deserialize(title))
+        .setUpperGui(gui(exclude))
 
     /**
      * Creates a GUI item representing a teleport anchor.
@@ -161,29 +218,61 @@ internal object TeleportMechanic : MechanicInterface {
                             ),
                         )
                     },
-            ).addClickHandler { _, click -> click.player.teleport(anchor.location) }
-            .build()
+            ).addClickHandler { _, click ->
+                handleTeleport(click.player, anchor)
+            }.build()
+
+    /**
+     * Handles teleporting a player to an anchor after a 3-second countdown.
+     *
+     * @param player The [Player] to teleport.
+     * @param anchor The [TeleportAnchorData] destination.
+     */
+    private fun handleTeleport(
+        player: Player,
+        anchor: TeleportAnchorData,
+    ) {
+        if (player in TELEPORTING) return
+
+        TELEPORTING.add(player)
+        player.closeInventory()
+
+        lateinit var task: BukkitTask
+        var remaining = 3
+
+        task =
+            schedule(period = 20L) {
+                if (remaining > 0) {
+                    player.showTitle(
+                        Title.title(
+                            MM.deserialize(Messages.TELEPORT_TITLE),
+                            MM.deserialize(
+                                Messages.TELEPORT_SUBTITLE.replace("<remaining>", remaining.toString()),
+                            ),
+                        ),
+                    )
+                    remaining--
+                } else {
+                    player.teleport(anchor.location)
+                    TELEPORTING.remove(player)
+                    task.cancel()
+                }
+            }
+    }
 
     /**
      * Renames a teleport anchor using the custom name from a name tag.
      *
      * @param event The [PlayerInteractEvent] triggered when a player interacts with a lodestone while holding a name tag.
      */
-    @Suppress("UnstableApiUsage")
     private fun rename(event: PlayerInteractEvent) {
         val block = event.clickedBlock ?: return
         val item = event.item ?: return
-        val anchor =
-            ANCHORS.anchors.firstOrNull {
-                it.world == block.world &&
-                    it.location.blockX == block.x &&
-                    it.location.blockY == block.y &&
-                    it.location.blockZ == block.z
-            } ?: return
-        val index = ANCHORS.anchors.indexOf(anchor)
+        val anchor = state.anchors.firstOrNull { it.matches(block.location) } ?: return
+        val index = state.anchors.indexOf(anchor)
 
-        ANCHORS.anchors[index] =
-            anchor.copy(name = item.getData(DataComponentTypes.CUSTOM_NAME)?.let { MM.serialize(it) } ?: return)
-        event.player.sendActionBar(MM.deserialize(ANCHOR_NAME_UPDATE_MSG))
+        state.anchors[index] = anchor.name(item.getCustomName() ?: return)
+        save()
+        event.player.sendActionBar(MM.deserialize(Messages.ANCHOR_NAME_UPDATE))
     }
 }

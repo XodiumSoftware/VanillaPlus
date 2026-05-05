@@ -228,6 +228,17 @@ internal object Utils {
     }
 
     /** Player-related utilities. */
+    object ItemUtils {
+        /**
+         * Retrieves the custom name of this [ItemStack] as a serialized string.
+         *
+         * @return The custom name string, or `null` if the item has no custom name.
+         */
+        @Suppress("UnstableApiUsage")
+        fun ItemStack.getCustomName(): String? = getData(DataComponentTypes.CUSTOM_NAME)?.let { MM.serialize(it) }
+    }
+
+    /** Player-related utilities. */
     object PlayerUtils {
         private const val FACE_X = 8
         private const val FACE_Y = 8
