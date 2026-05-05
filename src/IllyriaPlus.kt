@@ -63,7 +63,7 @@ internal class IllyriaPlus : JavaPlugin() {
                 TabListMechanic,
                 TameableMechanic,
                 TeleportMechanic,
-                XPMechanic,
+                XpMechanic,
             )
 
         logger.info(

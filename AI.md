@@ -76,7 +76,7 @@ IllyriaPlus/
 │   ├── mechanics/              # Feature mechanics (entity, player, server, world subfolders)
 │   ├── enchantments/           # Enchantment implementations
 │   ├── interfaces/             # ModuleInterface, EnchantmentInterface, RecipeInterface
-│   ├── managers/               # XpManager, PlayerMessageManager, SpellManager
+│   ├── managers/               # XpManager
 │   ├── pdcs/                   # PlayerPDC, ItemPDC
 │   ├── recipes/                # Recipe implementations
 │   ├── data/                   # Data classes
@@ -219,7 +219,7 @@ GitHub Actions workflows in `.github/workflows/`:
     - Add it to the tags (tradeable, non-treasure, enchanting-table)
     - Add supported items to appropriate `ItemTag` if needed
 5. If it's a spell (Blaze Rod enchantment):
-    - Register in `SpellManager.SPELL_MAP` (alphabetical order)
+    - Register in `SpellMechanic.SPELL_MAP` (alphabetical order)
     - Store cost in `PlayerPDC` constants
     - Add to enchantment compatibility group
     - Implement `@EventHandler` for `PlayerInteractEvent` or projectile logic

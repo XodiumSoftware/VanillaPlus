@@ -3,14 +3,20 @@
 package org.xodium.illyriaplus.mechanics.player
 
 import com.destroystokyo.paper.event.player.PlayerSetSpawnEvent
+import io.papermc.paper.advancement.AdvancementDisplay
+import io.papermc.paper.block.bed.BedEnterProblem
 import io.papermc.paper.event.connection.PlayerConnectionValidateLoginEvent
 import io.papermc.paper.event.player.PlayerServerFullCheckEvent
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
+import org.bukkit.advancement.Advancement
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.*
+import org.xodium.illyriaplus.Utils.MM
 import org.xodium.illyriaplus.interfaces.MechanicInterface
-import org.xodium.illyriaplus.managers.PlayerMessageManager
 
 /** Handles player-related messages (join, quit, death, advancements, etc.). */
 internal object MessagesMechanic : MechanicInterface {
@@ -69,19 +75,19 @@ internal object MessagesMechanic : MechanicInterface {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerJoinEvent) {
-        event.joinMessage(PlayerMessageManager.handleJoin(event.player) ?: return)
+        event.joinMessage(handleJoin(event.player) ?: return)
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun on(event: PlayerQuitEvent) {
-        event.quitMessage(PlayerMessageManager.handleQuit(event.player) ?: return)
+        event.quitMessage(handleQuit(event.player) ?: return)
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     fun on(event: PlayerServerFullCheckEvent) {
         if (event.isAllowed) return
 
-        event.deny(PlayerMessageManager.handleServerFull() ?: return)
+        event.deny(handleServerFull() ?: return)
     }
 
     @Suppress("UnstableApiUsage")
@@ -89,12 +95,12 @@ internal object MessagesMechanic : MechanicInterface {
     fun on(event: PlayerConnectionValidateLoginEvent) {
         if (event.isAllowed) return
 
-        event.kickMessage(PlayerMessageManager.handleLoginDenied() ?: return)
+        event.kickMessage(handleLoginDenied() ?: return)
     }
 
     @EventHandler
     fun on(event: PlayerKickEvent) {
-        event.leaveMessage(PlayerMessageManager.handleKick(event.reason()) ?: return)
+        event.leaveMessage(handleKick(event.reason()) ?: return)
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -102,29 +108,192 @@ internal object MessagesMechanic : MechanicInterface {
         val killer = event.entity.killer
         val deathMessage =
             if (killer != null) {
-                PlayerMessageManager.handleDeath(event.player, killer)
+                handleDeath(event.player, killer)
             } else {
-                PlayerMessageManager.handleDeathNoPvp(event.player, event.deathMessage())
+                handleDeathNoPvp(event.player, event.deathMessage())
             }
 
         if (deathMessage != null) event.deathMessage(deathMessage)
 
-        event.deathScreenMessageOverride(PlayerMessageManager.handleDeathScreen())
+        event.deathScreenMessageOverride(handleDeathScreen())
     }
 
     @EventHandler
     fun on(event: PlayerAdvancementDoneEvent) {
-        event.message(PlayerMessageManager.handleAdvancement(event.player, event.advancement) ?: return)
+        event.message(handleAdvancement(event.player, event.advancement) ?: return)
     }
 
     @EventHandler
     fun on(event: PlayerSetSpawnEvent) {
-        event.notification = PlayerMessageManager.handleSetSpawn(event.notification ?: return) ?: return
+        event.notification = handleSetSpawn(event.notification ?: return) ?: return
     }
 
     @Suppress("UnstableApiUsage")
     @EventHandler
     fun on(event: PlayerBedEnterEvent) {
-        event.player.sendMessage(PlayerMessageManager.handleBedEnter(event.enterAction().problem() ?: return) ?: return)
+        event.player.sendMessage(handleBedEnter(event.enterAction().problem() ?: return) ?: return)
     }
+
+    /**
+     * Handles the player join message.
+     *
+     * @param player The player who joined.
+     * @return The formatted join message component, or null if no message is set.
+     */
+    fun handleJoin(player: Player): Component? =
+        MM.deserialize(
+            PlayerMessages.JOIN
+                .takeIf { it.isNotEmpty() } ?: return null,
+            Placeholder.component("player", player.displayName()),
+        )
+
+    /**
+     * Handles the player leave message.
+     *
+     * @param player The player who left.
+     * @return The formatted leave message component, or null if no message is set.
+     */
+    fun handleQuit(player: Player): Component? =
+        MM.deserialize(
+            PlayerMessages.QUIT
+                .takeIf { it.isNotEmpty() } ?: return null,
+            Placeholder.component("player", player.displayName()),
+        )
+
+    /**
+     * Handles the player death message.
+     *
+     * @param player The player who died.
+     * @param killer The player who killed them.
+     * @return The formatted death message component, or null if no message is set.
+     */
+    fun handleDeath(
+        player: Player,
+        killer: Player?,
+    ): Component? =
+        MM.deserialize(
+            PlayerMessages.DEATH_BY_PLAYER
+                .takeIf { it.isNotEmpty() } ?: return null,
+            Placeholder.component("player", player.displayName()),
+            Placeholder.component("killer", (killer ?: return null).displayName()),
+        )
+
+    /**
+     * Handles the non-PvP death message (fall, fire, drowning, etc.).
+     *
+     * @param player The player who died.
+     * @param cause The vanilla death message component.
+     * @return The formatted death message component, or null if no message is set.
+     */
+    fun handleDeathNoPvp(
+        player: Player,
+        cause: Component?,
+    ): Component? =
+        MM.deserialize(
+            PlayerMessages.DEATH
+                .takeIf { it.isNotEmpty() } ?: return null,
+            Placeholder.component("player", player.displayName()),
+            Placeholder.component("cause", cause ?: return null),
+        )
+
+    /**
+     * Handles the player death screen message.
+     *
+     * @return The formatted death screen message component, or null if no message is set.
+     */
+    fun handleDeathScreen(): Component? =
+        MM.deserialize(
+            PlayerMessages.DEATH_SCREEN
+                .takeIf { it.isNotEmpty() } ?: return null,
+        )
+
+    /**
+     * Handles the player advancement completion message, with different formats per advancement type.
+     *
+     * @param player The player who completed the advancement.
+     * @param advancement The advancement that was completed.
+     * @return The formatted advancement completion message component, or null if no message is set or the advancement has no display.
+     */
+    fun handleAdvancement(
+        player: Player,
+        advancement: Advancement,
+    ): Component? {
+        val display = advancement.display ?: return null
+
+        return MM.deserialize(
+            when (display.frame()) {
+                AdvancementDisplay.Frame.TASK -> AdvancementMessages.TASK
+                AdvancementDisplay.Frame.GOAL -> AdvancementMessages.GOAL
+                AdvancementDisplay.Frame.CHALLENGE -> AdvancementMessages.CHALLENGE
+            }.takeIf { it.isNotEmpty() } ?: return null,
+            Placeholder.component("player", player.displayName()),
+            Placeholder.component("advancement", display.title()),
+        )
+    }
+
+    /**
+     * Handles the kick message shown when the server is full.
+     *
+     * @return The formatted kick message component, or null if no message is set.
+     */
+    fun handleServerFull(): Component? =
+        MM.deserialize(
+            LoginMessages.FULL
+                .takeIf { it.isNotEmpty() } ?: return null,
+        )
+
+    /**
+     * Handles the kick message shown when a player is denied login (ban, IP ban, whitelist).
+     *
+     * @return The formatted kick message component, or null if no message is set.
+     */
+    fun handleLoginDenied(): Component? =
+        MM.deserialize(
+            LoginMessages.DENIED
+                .takeIf { it.isNotEmpty() } ?: return null,
+        )
+
+    /**
+     * Handles the player kick message.
+     *
+     * @param reason The reason for the kick.
+     * @return The formatted kick message component, or null if no message is set.
+     */
+    fun handleKick(reason: Component): Component? =
+        MM.deserialize(
+            PlayerMessages.KICK
+                .takeIf { it.isNotEmpty() } ?: return null,
+            Placeholder.component("reason", reason),
+        )
+
+    /**
+     * Handles the bed enter failure message.
+     *
+     * @param problem The problem preventing the player from sleeping.
+     * @return The formatted bed enter message component, or null if no message is set for this problem.
+     */
+    @Suppress("UnstableApiUsage")
+    fun handleBedEnter(problem: BedEnterProblem): Component? =
+        MM.deserialize(
+            when (problem) {
+                BedEnterProblem.TOO_FAR_AWAY -> BedEnterMessages.TOO_FAR_AWAY
+                BedEnterProblem.OBSTRUCTED -> BedEnterMessages.OBSTRUCTED
+                BedEnterProblem.NOT_SAFE -> BedEnterMessages.NOT_SAFE
+                BedEnterProblem.EXPLOSION -> BedEnterMessages.EXPLOSION
+                else -> BedEnterMessages.OTHER
+            }.takeIf { it.isNotEmpty() } ?: return null,
+        )
+
+    /**
+     * Handles the player set spawn notification.
+     *
+     * @param notification The original notification component.
+     * @return The formatted set spawn notification component.
+     */
+    fun handleSetSpawn(notification: Component): Component? =
+        MM.deserialize(
+            PlayerMessages.SET_SPAWN
+                .takeIf { it.isNotEmpty() } ?: return null,
+            Placeholder.component("notification", notification),
+        )
 }
