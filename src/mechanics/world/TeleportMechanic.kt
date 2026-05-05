@@ -52,7 +52,7 @@ internal object TeleportMechanic : MechanicInterface {
     )
 
     /** Holds user-facing MiniMessage strings for teleport anchor interactions. */
-    object Messages {
+    private object Messages {
         const val ANCHOR_CREATION =
             "<gradient:#43A047:#66BB6A><b>You have created a Teleportation Anchor!</b></gradient>"
         const val ANCHOR_REMOVAL =
@@ -67,6 +67,16 @@ internal object TeleportMechanic : MechanicInterface {
             "<gradient:#CB2D3E:#EF473A><b>Not enough XP! You need <cost> XP.</b></gradient>"
         const val TELEPORT_CANCELLED =
             "<gradient:#CB2D3E:#EF473A><b>Teleportation cancelled — you moved!</b></gradient>"
+    }
+
+    /** Holds [Sound] instances for teleport anchor interactions. */
+    private object Sounds {
+        val COUNTDOWN_TICK: Sound =
+            Sound.sound(Key.key("ui.button.click"), Sound.Source.PLAYER, 1.0f, 1.0f)
+        val TELEPORT_CANCEL: Sound =
+            Sound.sound(Key.key("block.beacon.deactivate"), Sound.Source.PLAYER, 1.0f, 1.0f)
+        val ENDERMAN_TELEPORT: Sound =
+            Sound.sound(Key.key("entity.enderman.teleport"), Sound.Source.PLAYER, 1.0f, 1.0f)
     }
 
     private const val CONFIG_FILE = "anchors.json"
@@ -325,14 +335,7 @@ internal object TeleportMechanic : MechanicInterface {
                 if (remaining > 0) {
                     if (player.location.distance(initialLocation) > 0.5) {
                         player.sendActionBar(MM.deserialize(Messages.TELEPORT_CANCELLED))
-                        player.playSound(
-                            Sound.sound(
-                                Key.key("block.beacon.deactivate"),
-                                Sound.Source.PLAYER,
-                                1.0f,
-                                1.0f,
-                            ),
-                        )
+                        player.playSound(Sounds.TELEPORT_CANCEL)
                         TELEPORTING.remove(player)
                         task.cancel()
                         return@schedule
@@ -355,14 +358,7 @@ internal object TeleportMechanic : MechanicInterface {
                             ),
                         ),
                     )
-                    player.playSound(
-                        Sound.sound(
-                            Key.key("ui.button.click"),
-                            Sound.Source.PLAYER,
-                            1.0f,
-                            1.0f,
-                        ),
-                    )
+                    player.playSound(Sounds.COUNTDOWN_TICK)
                     remaining--
                 } else {
                     playLightningEffect(player.location)
@@ -408,16 +404,9 @@ internal object TeleportMechanic : MechanicInterface {
         player: Player,
         location: Location,
     ) {
-        val teleportSound =
-            Sound.sound(
-                Key.key("entity.enderman.teleport"),
-                Sound.Source.PLAYER,
-                1.0f,
-                1.0f,
-            )
         player.world.players
             .filter { it.location.distance(location) <= 32 }
-            .forEach { it.playSound(teleportSound) }
+            .forEach { it.playSound(Sounds.ENDERMAN_TELEPORT) }
         player.world.spawnParticle(
             Particle.PORTAL,
             location.clone().add(0.0, 1.0, 0.0),
