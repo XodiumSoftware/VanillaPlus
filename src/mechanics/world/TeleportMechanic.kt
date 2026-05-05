@@ -23,21 +23,35 @@ import org.xodium.illyriaplus.data.CommandData
 import org.xodium.illyriaplus.data.RitualData
 import org.xodium.illyriaplus.interfaces.MechanicInterface
 import org.xodium.illyriaplus.managers.RitualStorageManager
-import org.xodium.illyriaplus.mechanics.world.TeleportMechanic.activeRituals
-import org.xodium.illyriaplus.mechanics.world.TeleportMechanic.closePortal
-import org.xodium.illyriaplus.mechanics.world.TeleportMechanic.deactivateRitual
-import org.xodium.illyriaplus.mechanics.world.TeleportMechanic.performTeleport
-import org.xodium.illyriaplus.mechanics.world.TeleportMechanic.triggerRitualFinish
 import java.util.*
 import kotlin.math.PI
+import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 
-/** Represents a mechanic handling teleportation within the system. */
+/** Handles teleportation rituals using candle patterns and skulls. */
 internal object TeleportMechanic : MechanicInterface {
     private val activeRituals = mutableMapOf<Location, RitualCircle>()
     private val teleportCooldown = mutableMapOf<UUID, Long>()
     private val pendingTeleports = mutableSetOf<UUID>()
+
+    /** Messages used by this mechanic. */
+    object Messages {
+        const val INVALID_FORMAT = "<red>Invalid format. Use world,x,y,z</red>"
+        const val WORLD_NOT_FOUND = "<red>World not found.</red>"
+        const val RITUAL_NOT_FOUND = "<red>Ritual not found.</red>"
+        const val RITUAL_LINK_REMOVED = "<green>Ritual link removed.</green>"
+        const val RITUAL_OVERWORLD_ONLY = "<red>Rituals can only be created in the overworld!</red>"
+        const val CANDLE_MODIFY_ACTIVE = "<red>Cannot modify candles while ritual is active!</red>"
+        const val TELEPORT_COUNTDOWN_3 = "<aqua>3..</aqua>"
+        const val TELEPORT_COUNTDOWN_2 = "<aqua>2..</aqua>"
+        const val TELEPORT_COUNTDOWN_1 = "<aqua>1..</aqua>"
+        const val PORTAL_CLOSED = "<red>The portal closed before you could teleport!</red>"
+        const val TELEPORT_CANCELLED_LEFT_CIRCLE = "<red>Teleport cancelled - you left the circle!</red>"
+        const val PORTAL_CLOSES = "<gray>The portal closes...</gray>"
+        const val TELEPORT_SUCCESS = "<green>You have been teleported!</green>"
+        const val NO_MATCHING_RITUAL = "<red>No matching ritual found!</red>"
+    }
 
     override val cmds =
         listOf(
@@ -62,9 +76,7 @@ internal object TeleportMechanic : MechanicInterface {
                                         val parts = arg.split(",")
 
                                         if (parts.size != 4) {
-                                            player.sendActionBar(
-                                                MM.deserialize("<red>Invalid format. Use world,x,y,z</red>"),
-                                            )
+                                            player.sendActionBar(MM.deserialize(Messages.INVALID_FORMAT))
                                             return@playerExecuted
                                         }
 
@@ -72,7 +84,7 @@ internal object TeleportMechanic : MechanicInterface {
                                         val world = instance.server.getWorld(worldName)
 
                                         if (world == null) {
-                                            player.sendActionBar(MM.deserialize("<red>World not found.</red>"))
+                                            player.sendActionBar(MM.deserialize(Messages.WORLD_NOT_FOUND))
                                             return@playerExecuted
                                         }
 
@@ -92,7 +104,7 @@ internal object TeleportMechanic : MechanicInterface {
                                             }
 
                                         if (ritual == null) {
-                                            player.sendActionBar(MM.deserialize("<red>Ritual not found.</red>"))
+                                            player.sendActionBar(MM.deserialize(Messages.RITUAL_NOT_FOUND))
                                             return@playerExecuted
                                         }
 
@@ -103,7 +115,7 @@ internal object TeleportMechanic : MechanicInterface {
                                             it.activeTaskIds.clear()
                                             activeRituals.remove(center)
                                         }
-                                        player.sendActionBar(MM.deserialize("<green>Ritual link removed.</green>"))
+                                        player.sendActionBar(MM.deserialize(Messages.RITUAL_LINK_REMOVED))
                                     },
                             ),
                     ),
@@ -124,15 +136,7 @@ internal object TeleportMechanic : MechanicInterface {
     /**
      * Registers the mechanic and starts the background check task.
      *
-     * On startup all rituals saved in [RitualStorageManager] are loaded into
-     * [activeRituals] as inactive circles so destinations work without a skull.
-     * Invalid or unlit rituals are removed from storage immediately.
-     *
-     * The repeating task (every 10 ticks) handles four things:
-     * 1. Detects inactive rituals with invalid patterns → removes them.
-     * 2. Detects inactive rituals whose candles are all lit → activates them.
-     * 3. Detects active rituals with any unlit candle → deactivates them.
-     * 4. Detects players inside active rituals that have a skull → triggers teleport.
+     * @return The time taken to register the mechanic in milliseconds.
      */
     override fun register(): Long =
         super.register().apply {
@@ -191,16 +195,10 @@ internal object TeleportMechanic : MechanicInterface {
     /**
      * Internal state of a ritual circle.
      *
-     * A circle begins inactive when a skull is placed. It becomes active once
-     * all 16 candles are lit, spawning particle trails and enabling teleport.
-     * After a teleport, the circle is closed but the candles remain lit.
-     *
      * @property center The skull location at the center of the candle pattern.
      * @property candles Map of each candle [Location] to its (count, [Material]) pair.
-     *   This configuration is used to match against other rituals in storage.
      * @property isActive Whether trails are running and teleport is enabled.
-     * @property activeTaskIds Bukkit scheduler task IDs for the repeating particle
-     *   trail tasks. Cancelled on deactivation or close.
+     * @property activeTaskIds Bukkit scheduler task IDs for particle trail tasks.
      */
     private data class RitualCircle(
         val center: Location,
@@ -218,14 +216,7 @@ internal object TeleportMechanic : MechanicInterface {
     /**
      * Handles skull placement and prevents candle modification on active rituals.
      *
-     * **Skull branch:**
-     * - Only allowed in the overworld ([World.Environment.NORMAL]).
-     * - Validates the surrounding 16-candle pattern.
-     * - Stores the ritual as inactive; player must light candles next.
-     *
-     * **Candle branch:**
-     * - Prevents placing candles on positions that belong to an active ritual.
-     *   This stops players from altering a lit pattern while the portal is open.
+     * @param event The BlockPlaceEvent to handle.
      */
     private fun blockPlace(event: BlockPlaceEvent) {
         val block = event.block
@@ -235,7 +226,7 @@ internal object TeleportMechanic : MechanicInterface {
 
             if (center.world?.environment != World.Environment.NORMAL) {
                 event.isCancelled = true
-                event.player.sendActionBar(MM.deserialize("<red>Rituals can only be created in the overworld!</red>"))
+                event.player.sendActionBar(MM.deserialize(Messages.RITUAL_OVERWORLD_ONLY))
                 return
             }
 
@@ -258,18 +249,18 @@ internal object TeleportMechanic : MechanicInterface {
             activeRituals.values.find { it.isActive }?.let { circle ->
                 if (isPartOfRitual(block.location, circle.center)) {
                     event.isCancelled = true
-                    event.player.sendActionBar(
-                        MM.deserialize("<red>Cannot modify candles while ritual is active!</red>"),
-                    )
+                    event.player.sendActionBar(MM.deserialize(Messages.CANDLE_MODIFY_ACTIVE))
                 }
             }
         }
     }
 
     /**
-     * Checks whether [loc] is one of the 16 candle positions surrounding [center].
+     * Checks whether a location is one of the 16 candle positions surrounding the center.
      *
-     * Only compares X and Z at the same Y level.
+     * @param loc The location to check.
+     * @param center The center of the ritual circle.
+     * @return True if the location is part of the ritual pattern.
      */
     private fun isPartOfRitual(
         loc: Location,
@@ -284,23 +275,11 @@ internal object TeleportMechanic : MechanicInterface {
     }
 
     /**
-     * Checks if relative offsets [dx], [dz] match the candle pattern.
+     * Checks if relative offsets match the candle pattern.
      *
-     * The 16 candles are arranged in a non-uniform diamond with a bounding box
-     * of 7x7 blocks.  The offsets are:
-     *
-     * ```
-     *      z=-3   z=-2   z=-1   z=0    z=1    z=2    z=3
-     * x=-3              C             C             C
-     * x=-2       C                                C
-     * x=-1  C      C      C      C      C      C      C
-     * x=0   C             X             X             C
-     * x=1   C      C      C      C      C      C      C
-     * x=2        C                                C
-     * x=3              C             C             C
-     * ```
-     *
-     * `X` = skull/center.  `C` = candle.
+     * @param dx The X offset from the center.
+     * @param dz The Z offset from the center.
+     * @return True if the position is a valid candle position.
      */
     private fun isValidCandlePosition(
         dx: Int,
@@ -314,19 +293,10 @@ internal object TeleportMechanic : MechanicInterface {
         }
 
     /**
-     * Validates that every expected candle position actually contains a candle block.
+     * Validates that every expected candle position contains a candle block.
      *
-     * The ASCII pattern below shows the 7×7 footprint from above.
-     *
-     * ```
-     * ..CCC..
-     * .C...C.
-     * C.....C
-     * C..X..C    (X = skull, C = candle)
-     * C.....C
-     * .C...C.
-     * ..CCC..
-     * ```
+     * @param center The center location of the ritual.
+     * @return True if all 16 positions contain candles.
      */
     private fun isValidRitualPattern(center: Location): Boolean {
         val world = center.world ?: return false
@@ -340,9 +310,11 @@ internal object TeleportMechanic : MechanicInterface {
     }
 
     /**
-     * Returns the 16 absolute candle positions surrounding [cx], [cz].
+     * Returns the 16 absolute candle positions surrounding the center coordinates.
      *
-     * The offsets are fixed; changing them breaks existing saved rituals.
+     * @param cx The center X coordinate.
+     * @param cz The center Z coordinate.
+     * @return A list of coordinate pairs representing candle positions.
      */
     private fun getRitualPositions(
         cx: Int,
@@ -375,10 +347,10 @@ internal object TeleportMechanic : MechanicInterface {
         )
 
     /**
-     * Reads the candle configuration from the 16 ritual positions around [center].
+     * Reads the candle configuration from the 16 ritual positions around the center.
      *
-     * Each entry maps the candle [Location] to a pair of (candle count, [Material]).
-     * This map is later used by [RitualData.fromLocation] for storage and matching.
+     * @param center The center location of the ritual.
+     * @return A map of candle locations to their (count, material) pairs.
      */
     private fun getCandleConfigs(center: Location): Map<Location, Pair<Int, Material>> {
         val world = center.world ?: return emptyMap()
@@ -394,6 +366,7 @@ internal object TeleportMechanic : MechanicInterface {
 
             if (Tag.CANDLES.isTagged(block.type)) {
                 val candleData = block.blockData as? Candle
+
                 if (candleData != null) configs[loc] = candleData.candles to block.type
             }
         }
@@ -404,24 +377,30 @@ internal object TeleportMechanic : MechanicInterface {
     /**
      * Activates a ritual once all candles are lit.
      *
-     * Steps:
-     * 1. Forces every candle to lit state (safety in case some were unlit briefly).
-     * 2. Starts one-by-one particle trails from each candle to the center.
-     * 3. Saves the candle configuration to storage so other circles can match it.
+     * @param circle The ritual circle to activate.
      */
     private fun activateRitual(circle: RitualCircle) {
         circle.isActive = true
-
         lightAllCandles(circle)
         spawnParticleTrails(circle)
         RitualStorageManager.addRitual(RitualData.fromLocation(circle.center, circle.candles))
     }
 
-    /** Returns `true` if the block at [center] is a skeleton skull. */
+    /**
+     * Checks if a skeleton skull is present at the center.
+     *
+     * @param center The center location to check.
+     * @return True if a skeleton skull is present.
+     */
     private fun isSkullPresent(center: Location): Boolean =
         center.block.type == Material.SKELETON_SKULL || center.block.type == Material.SKELETON_WALL_SKULL
 
-    /** Returns `true` if every candle in [circle] is currently lit. */
+    /**
+     * Checks if all candles in the circle are lit.
+     *
+     * @param circle The ritual circle to check.
+     * @return True if all candles are lit.
+     */
     private fun areAllCandlesLit(circle: RitualCircle): Boolean =
         circle.candles.keys.all {
             val lightable = it.block.blockData as? Lightable
@@ -429,7 +408,11 @@ internal object TeleportMechanic : MechanicInterface {
             lightable?.isLit == true
         }
 
-    /** Forces all candles in [circle] to lit state, updating block data. */
+    /**
+     * Forces all candles in the circle to lit state.
+     *
+     * @param circle The ritual circle to light.
+     */
     private fun lightAllCandles(circle: RitualCircle) {
         circle.candles.keys.forEach {
             if (!Tag.CANDLES.isTagged(it.block.type)) return@forEach
@@ -443,7 +426,11 @@ internal object TeleportMechanic : MechanicInterface {
         }
     }
 
-    /** Forces all candles in [circle] to unlit state, updating block data. */
+    /**
+     * Forces all candles in the circle to unlit state.
+     *
+     * @param circle The ritual circle to extinguish.
+     */
     private fun extinguishAllCandles(circle: RitualCircle) {
         circle.candles.keys.forEach {
             if (!Tag.CANDLES.isTagged(it.block.type)) return@forEach
@@ -458,14 +445,9 @@ internal object TeleportMechanic : MechanicInterface {
     }
 
     /**
-     * Spawns animated [Particle.CRIT] trails from each candle toward the center.
+     * Spawns animated particle trails from each candle toward the center.
      *
-     * Each candle starts its trail with a staggered delay (index × 10 ticks).
-     * While the ritual is active, every 5 ticks a trail particle moves from the
-     * candle to the center in 0.3-block steps, accompanied by an amethyst chime.
-     *
-     * The last candle to start its trail schedules the finish sequence via
-     * [triggerRitualFinish].
+     * @param circle The ritual circle to spawn trails for.
      */
     private fun spawnParticleTrails(circle: RitualCircle) {
         val center = circle.center.block.center()
@@ -528,12 +510,9 @@ internal object TeleportMechanic : MechanicInterface {
     }
 
     /**
-     * Finishes the activation sequence with a lightning strike followed by cloud rings.
+     * Finishes the activation sequence with lightning and cloud rings.
      *
-     * Scheduled 40 ticks after the last candle trail begins.
-     * 1. Lightning strikes the skull (no fire since it hits the block).
-     * 2. Particle trail tasks are cancelled.
-     * 3. 20 ticks later, expanding cloud rings appear to signal readiness.
+     * @param circle The ritual circle to finish activating.
      */
     private fun triggerRitualFinish(circle: RitualCircle) {
         val world = circle.center.world ?: return
@@ -549,8 +528,8 @@ internal object TeleportMechanic : MechanicInterface {
                 instance.server.scheduler.runTaskLater(
                     instance,
                     Runnable {
-                        repeat(2) { ring ->
-                            val radius = 2.0 + ring
+                        repeat(2) {
+                            val radius = 2.0 + it
                             val count = (radius * 12).toInt()
 
                             for (i in 0 until count) {
@@ -581,7 +560,12 @@ internal object TeleportMechanic : MechanicInterface {
         )
     }
 
-    /** Returns the first player standing inside [circle], or `null` if none. */
+    /**
+     * Finds the first player standing inside the circle.
+     *
+     * @param circle The ritual circle to check.
+     * @return The first player found inside, or null if none.
+     */
     private fun findPlayerInsideCircle(circle: RitualCircle): Player? =
         circle.center.world
             ?.getNearbyEntities(circle.center, 3.0, 3.0, 3.0)
@@ -589,10 +573,11 @@ internal object TeleportMechanic : MechanicInterface {
             ?.find { isPlayerInsideCircle(it, circle.center) }
 
     /**
-     * Checks whether [player] is within 3 blocks (horizontal) of [center].
+     * Checks whether the player is within 3 blocks (horizontal) of the center.
      *
-     * Measured in block coordinates; distance² < 9 means strictly inside
-     * the circle, not standing on the outer candle ring.
+     * @param player The player to check.
+     * @param center The center location of the ritual.
+     * @return True if the player is inside the circle.
      */
     private fun isPlayerInsideCircle(
         player: Player,
@@ -606,21 +591,17 @@ internal object TeleportMechanic : MechanicInterface {
     }
 
     /**
-     * Starts a 60-tick charge-up sequence before teleporting [player].
+     * Starts a 60-tick charge-up sequence before teleporting the player.
      *
-     * While charging, a rotating spiral of [Particle.END_ROD] and [Particle.PORTAL]
-     * particles spawn around the player. A 3..2..1.. countdown is shown in the action bar.
-     * At "1" a beacon beam spawns at the player's location. After the delay,
-     * [performTeleport] executes and a matching beam spawns at the destination.
-     *
-     * If the player leaves the circle, the portal closes, or the player disconnects,
-     * the teleport is cancelled.
+     * @param player The player to teleport.
+     * @param circle The ritual circle the player is in.
      */
     private fun startTeleportSequence(
         player: Player,
         circle: RitualCircle,
     ) {
         if (player.uniqueId in pendingTeleports) return
+
         pendingTeleports.add(player.uniqueId)
 
         val chargeTaskId =
@@ -634,7 +615,7 @@ internal object TeleportMechanic : MechanicInterface {
         instance.server.scheduler.runTaskLater(
             instance,
             Runnable {
-                player.sendActionBar(MM.deserialize("<aqua>3..</aqua>"))
+                player.sendActionBar(MM.deserialize(Messages.TELEPORT_COUNTDOWN_3))
                 player.playSound(player.location, Sound.BLOCK_NOTE_BLOCK_PLING, SoundCategory.PLAYERS, 1.0f, 0.8f)
             },
             0L,
@@ -643,7 +624,7 @@ internal object TeleportMechanic : MechanicInterface {
         instance.server.scheduler.runTaskLater(
             instance,
             Runnable {
-                player.sendActionBar(MM.deserialize("<aqua>2..</aqua>"))
+                player.sendActionBar(MM.deserialize(Messages.TELEPORT_COUNTDOWN_2))
                 player.playSound(player.location, Sound.BLOCK_NOTE_BLOCK_PLING, SoundCategory.PLAYERS, 1.0f, 1.0f)
             },
             20L,
@@ -652,7 +633,7 @@ internal object TeleportMechanic : MechanicInterface {
         instance.server.scheduler.runTaskLater(
             instance,
             Runnable {
-                player.sendActionBar(MM.deserialize("<aqua>1..</aqua>"))
+                player.sendActionBar(MM.deserialize(Messages.TELEPORT_COUNTDOWN_1))
                 player.playSound(player.location, Sound.BLOCK_NOTE_BLOCK_PLING, SoundCategory.PLAYERS, 1.0f, 1.2f)
                 spawnBeaconBeam(player.location)
             },
@@ -667,11 +648,11 @@ internal object TeleportMechanic : MechanicInterface {
 
                 if (!player.isOnline) return@Runnable
                 if (!circle.isActive) {
-                    player.sendActionBar(MM.deserialize("<red>The portal closed before you could teleport!</red>"))
+                    player.sendActionBar(MM.deserialize(Messages.PORTAL_CLOSED))
                     return@Runnable
                 }
                 if (!isPlayerInsideCircle(player, circle.center)) {
-                    player.sendActionBar(MM.deserialize("<red>Teleport cancelled - you left the circle!</red>"))
+                    player.sendActionBar(MM.deserialize(Messages.TELEPORT_CANCELLED_LEFT_CIRCLE))
                     return@Runnable
                 }
 
@@ -682,10 +663,9 @@ internal object TeleportMechanic : MechanicInterface {
     }
 
     /**
-     * Spawns rotating spiral particles around [player] during the charge-up.
+     * Spawns rotating spiral particles around the player during charge-up.
      *
-     * Every call places 6 [Particle.END_ROD] particles in a short vertical spiral
-     * and 3 [Particle.PORTAL] particles at the player's feet.
+     * @param player The player to spawn particles around.
      */
     private fun spawnChargeUpParticles(player: Player) {
         val center = player.location.clone().add(0.0, 0.5, 0.0)
@@ -698,13 +678,19 @@ internal object TeleportMechanic : MechanicInterface {
             val x = center.x + radius * cos(angle)
             val z = center.z + radius * sin(angle)
             val y = center.y + (i % 3) * 0.4
+
             world.spawnParticle(Particle.END_ROD, x, y, z, 1, 0.0, 0.0, 0.0, 0.0)
         }
 
         world.spawnParticle(Particle.PORTAL, center.x, center.y - 0.5, center.z, 3, 0.3, 0.1, 0.3, 0.3)
     }
 
-    /** Draws a purple [Particle.WITCH] line from [from] to [to] in 0.3-block steps. */
+    /**
+     * Draws a purple particle line between two locations.
+     *
+     * @param from The starting location.
+     * @param to The ending location.
+     */
     private fun drawPurpleLine(
         from: Location,
         to: Location,
@@ -713,6 +699,7 @@ internal object TeleportMechanic : MechanicInterface {
         val distance = direction.length()
         val step = direction.normalize().multiply(0.3)
         val current = from.clone()
+
         var traveled = 0.0
 
         while (traveled < distance) {
@@ -725,12 +712,11 @@ internal object TeleportMechanic : MechanicInterface {
     /**
      * Spawns a repeating purple particle trail connecting all candles in a loop.
      *
-     * The candles are sorted by angle around the center so the trail follows
-     * the diamond perimeter. Started after the cloud effect in [triggerRitualFinish]
-     * and cancelled when the ritual closes or deactivates.
+     * @param circle The ritual circle to spawn the trail for.
      */
     private fun spawnPurpleCandleTrail(circle: RitualCircle) {
         val candles = circle.candles.keys.toList()
+
         if (candles.size < 2) return
 
         val center = circle.center
@@ -738,7 +724,8 @@ internal object TeleportMechanic : MechanicInterface {
             candles.sortedBy {
                 val dx = it.blockX - center.blockX
                 val dz = it.blockZ - center.blockZ
-                kotlin.math.atan2(dz.toDouble(), dx.toDouble())
+
+                atan2(dz.toDouble(), dx.toDouble())
             }
 
         val taskId =
@@ -750,6 +737,7 @@ internal object TeleportMechanic : MechanicInterface {
                     for (i in sorted.indices) {
                         val from = sorted[i].block.center()
                         val to = sorted[(i + 1) % sorted.size].block.center()
+
                         drawPurpleLine(from, to)
                     }
                 },
@@ -761,9 +749,9 @@ internal object TeleportMechanic : MechanicInterface {
     }
 
     /**
-     * Spawns a tall vertical beacon beam at [location].
+     * Spawns a tall vertical beacon beam at the location.
      *
-     * Uses [Particle.END_ROD] in a column from 2 blocks below up to 30 blocks above.
+     * @param location The location to spawn the beam at.
      */
     private fun spawnBeaconBeam(location: Location) {
         val world = location.world ?: return
@@ -771,16 +759,17 @@ internal object TeleportMechanic : MechanicInterface {
 
         for (y in -2..30) {
             val loc = base.clone().add(0.0, y.toDouble(), 0.0)
+
             world.spawnParticle(Particle.END_ROD, loc, 1, 0.0, 0.0, 0.0, 0.0)
         }
+
         world.playSound(location, Sound.BLOCK_BEACON_POWER_SELECT, SoundCategory.PLAYERS, 1.0f, 1.0f)
     }
 
     /**
      * Handles breaking skulls or candles.
      *
-     * - Skull break → full [deactivateRitual] (extinguishes candles, cancels tasks).
-     * - Candle break → full [deactivateRitual] for the affected circle.
+     * @param event The BlockBreakEvent to handle.
      */
     private fun blockBreak(event: BlockBreakEvent) {
         val block = event.block
@@ -791,17 +780,15 @@ internal object TeleportMechanic : MechanicInterface {
                 circle.isActive = false
                 circle.activeTaskIds.forEach { instance.server.scheduler.cancelTask(it) }
                 circle.activeTaskIds.clear()
-                activeRituals.remove(loc)
-                RitualStorageManager.removeRitual(loc)
             }
             return
         }
 
         if (Tag.CANDLES.isTagged(block.type)) {
-            activeRituals.values.find { loc in it.candles }?.let { circle ->
-                deactivateRitual(circle)
-                activeRituals.remove(circle.center)
-                RitualStorageManager.removeRitual(circle.center)
+            activeRituals.values.find { loc in it.candles }?.let {
+                deactivateRitual(it)
+                activeRituals.remove(it.center)
+                RitualStorageManager.removeRitual(it.center)
             }
         }
     }
@@ -809,12 +796,7 @@ internal object TeleportMechanic : MechanicInterface {
     /**
      * Fully deactivates a ritual circle.
      *
-     * Cancels all particle tasks, extinguishes every candle, and notifies
-     * nearby players. Used when a skull or candle is broken, or when a candle
-     * is extinguished while the portal is active.
-     *
-     * This is **not** called after a normal teleport; [closePortal] is used
-     * instead so candles stay lit.
+     * @param circle The ritual circle to deactivate.
      */
     private fun deactivateRitual(circle: RitualCircle) {
         circle.isActive = false
@@ -824,18 +806,14 @@ internal object TeleportMechanic : MechanicInterface {
         circle.center.world
             ?.getNearbyEntities(circle.center, 10.0, 10.0, 10.0)
             ?.filterIsInstance<Player>()
-            ?.forEach { it.sendActionBar(MM.deserialize("<gray>The portal closes...</gray>")) }
+            ?.forEach { it.sendActionBar(MM.deserialize(Messages.PORTAL_CLOSES)) }
     }
 
     /**
-     * Teleports [player] to the matching ritual if one exists.
+     * Teleports the player to the matching ritual if one exists.
      *
-     * Matching criteria:
-     * - The target ritual must have the **exact same** candle configuration
-     *   (material and candle count for every position).
-     * - The target must be a **different** location (not the same circle).
-     *
-     * After teleport, the source portal is closed via [closePortal].
+     * @param player The player to teleport.
+     * @param circle The source ritual circle.
      */
     private fun performTeleport(
         player: Player,
@@ -857,29 +835,11 @@ internal object TeleportMechanic : MechanicInterface {
                 spawnBeaconBeam(it.clone().add(0.5, 0.0, 0.5))
                 player.teleport(it.clone().add(0.5, 0.0, 0.5))
                 player.playSound(player.location, Sound.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1.0f, 1.0f)
-                player.sendActionBar(MM.deserialize("<green>You have been teleported!</green>"))
+                player.sendActionBar(MM.deserialize(Messages.TELEPORT_SUCCESS))
+                circle.center.block.type = Material.AIR
             }
         } else {
-            player.sendActionBar(MM.deserialize("<red>No matching ritual found!</red>"))
+            player.sendActionBar(MM.deserialize(Messages.NO_MATCHING_RITUAL))
         }
-
-        closePortal(circle)
-    }
-
-    /**
-     * Removes the source portal from tracking and consumes the skull.
-     *
-     * Called after a successful (or failed) teleport. The skull block is replaced
-     * with [Material.AIR] and the candle circle remains intact so it can be
-     * re-activated later by placing another skull.
-     *
-     * Contrasts with [deactivateRitual], which fully shuts everything down.
-     */
-    private fun closePortal(circle: RitualCircle) {
-        circle.activeTaskIds.forEach { instance.server.scheduler.cancelTask(it) }
-        circle.activeTaskIds.clear()
-        circle.center.block.type = Material.AIR
-        activeRituals.remove(circle.center)
-        RitualStorageManager.removeRitual(circle.center)
     }
 }
