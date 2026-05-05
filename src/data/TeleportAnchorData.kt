@@ -8,44 +8,34 @@ import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
 /**
  * Represents the data structure for a teleport destination.
  *
- * @property worldName The name of the world this teleport destination resides in.
  * @property x The X coordinate of the teleport location.
  * @property y The Y coordinate of the teleport location.
  * @property z The Z coordinate of the teleport location.
- * @property pitch The pitch of the teleport location.
- * @property yaw The yaw of the teleport location.
  * @property name The display name of this teleport anchor.
  */
 @Serializable
 internal data class TeleportAnchorData(
-    private val worldName: String,
     private val x: Double,
     private val y: Double,
     private val z: Double,
-    private val pitch: Float,
-    private val yaw: Float,
     val name: String,
 ) {
     /** The [World] this anchor resides in. */
-    val world: World get() = instance.server.getWorld(worldName) ?: error("World '$worldName' not found")
+    val world: World get() = instance.server.getWorld("world") ?: error("Overworld not found")
 
     /** The specific [Location] within the world to teleport to. */
-    val location: Location get() = Location(world, x, y, z, yaw, pitch)
+    val location: Location get() = Location(world, x, y, z)
 
     /**
      * Convenience constructor from Bukkit types.
      *
-     * @param world The [World] this anchor resides in.
      * @param location The specific [Location] to teleport to.
      * @param name The display name of this teleport anchor.
      */
-    constructor(world: World, location: Location, name: String) : this(
-        worldName = world.name,
+    constructor(location: Location, name: String) : this(
         x = location.x,
         y = location.y,
         z = location.z,
-        pitch = location.pitch,
-        yaw = location.yaw,
         name = name,
     )
 
