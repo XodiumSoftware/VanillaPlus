@@ -8,6 +8,7 @@ import kotlinx.serialization.Serializable
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.title.Title
 import org.bukkit.*
+import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.block.Action
@@ -266,6 +267,14 @@ internal object TeleportMechanic : MechanicInterface {
                 } else {
                     playLightningEffect(player.location)
 
+                    val leashedEntities =
+                        player
+                            .getNearbyEntities(15.0, 15.0, 15.0)
+                            .filterIsInstance<LivingEntity>()
+                            .filter { it.isLeashed && it.leashHolder == player }
+
+                    leashedEntities.forEach { it.teleport(anchor.location) }
+
                     val mount = player.vehicle
 
                     if (mount != null) {
@@ -275,6 +284,8 @@ internal object TeleportMechanic : MechanicInterface {
                     } else {
                         player.teleport(anchor.location)
                     }
+
+                    leashedEntities.forEach { it.setLeashHolder(player) }
 
                     playTeleportEffects(player, anchor.location)
                     playLightningEffect(anchor.location)
