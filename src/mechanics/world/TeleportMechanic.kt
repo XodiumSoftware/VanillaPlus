@@ -206,7 +206,7 @@ internal object TeleportMechanic : MechanicInterface {
      */
     private data class RitualCircle(
         val center: Location,
-        val candles: MutableMap<Location, Pair<Int, Material>> = mutableMapOf(),
+        val candles: MutableMap<Pair<Int, Int>, Pair<Int, Material>> = mutableMapOf(),
         var isActive: Boolean = false,
         val activeTaskIds: MutableList<Int> = mutableListOf(),
     )
@@ -237,7 +237,7 @@ internal object TeleportMechanic : MechanicInterface {
             if (!isValidRitualPattern(center)) return
 
             val candleConfigs = getCandleConfigs(center)
-            val ritualLocation = RitualLocation.fromLocation(center, candleConfigs)
+            val ritualLocation = RitualLocation.fromLocation(center, toAbsoluteMap(center, candleConfigs))
 
             if (RitualStorageManager.isInPair(ritualLocation)) {
                 activeRituals[center]?.let { existing ->
@@ -371,27 +371,30 @@ internal object TeleportMechanic : MechanicInterface {
         )
 
     /**
-     * Reads the candle configuration from the 16 ritual positions around the center.
+     * Reads candle configuration using relative offsets from the center.
      *
      * @param center The center location of the ritual.
-     * @return A map of candle locations to their (count, material) pairs.
+     * @return A map of relative (dx, dz) offsets to their (count, material) pairs.
      */
-    private fun getCandleConfigs(center: Location): Map<Location, Pair<Int, Material>> {
+    private fun getCandleConfigs(center: Location): Map<Pair<Int, Int>, Pair<Int, Material>> {
         val world = center.world ?: return emptyMap()
         val cx = center.blockX
         val cy = center.blockY
         val cz = center.blockZ
-        val configs = mutableMapOf<Location, Pair<Int, Material>>()
-        val expectedPositions = getRitualPositions(cx, cz)
 
-        expectedPositions.forEach { (x, z) ->
+        val configs = mutableMapOf<Pair<Int, Int>, Pair<Int, Material>>()
+
+        getRitualPositions(cx, cz).forEach { (x, z) ->
             val loc = Location(world, x.toDouble(), cy.toDouble(), z.toDouble())
             val block = loc.block
 
             if (Tag.CANDLES.isTagged(block.type)) {
                 val candleData = block.blockData as? Candle
-
-                if (candleData != null) configs[loc] = candleData.candles to block.type
+                if (candleData != null) {
+                    val dx = x - cx
+                    val dz = z - cz
+                    configs[dx to dz] = candleData.candles to block.type
+                }
             }
         }
 
@@ -425,8 +428,9 @@ internal object TeleportMechanic : MechanicInterface {
      * @return True if all candles are lit.
      */
     private fun areAllCandlesLit(circle: RitualCircle): Boolean =
-        circle.candles.keys.all {
-            val lightable = it.block.blockData as? Lightable
+        circle.candles.keys.all { (dx, dz) ->
+            val loc = circle.center.clone().add(dx.toDouble(), 0.0, dz.toDouble())
+            val lightable = loc.block.blockData as? Lightable
 
             lightable?.isLit == true
         }
@@ -437,14 +441,16 @@ internal object TeleportMechanic : MechanicInterface {
      * @param circle The ritual circle to light.
      */
     private fun lightAllCandles(circle: RitualCircle) {
-        circle.candles.keys.forEach {
-            if (!Tag.CANDLES.isTagged(it.block.type)) return@forEach
+        circle.candles.keys.forEach { (dx, dz) ->
+            val block = resolveCandleLocation(circle.center, dx, dz).block
 
-            val lightable = it.block.blockData as? Lightable ?: return@forEach
+            if (!Tag.CANDLES.isTagged(block.type)) return@forEach
+
+            val lightable = block.blockData as? Lightable ?: return@forEach
 
             if (!lightable.isLit) {
                 lightable.isLit = true
-                it.block.blockData = lightable
+                block.blockData = lightable
             }
         }
     }
@@ -455,14 +461,16 @@ internal object TeleportMechanic : MechanicInterface {
      * @param circle The ritual circle to extinguish.
      */
     private fun extinguishAllCandles(circle: RitualCircle) {
-        circle.candles.keys.forEach {
-            if (!Tag.CANDLES.isTagged(it.block.type)) return@forEach
+        circle.candles.keys.forEach { (dx, dz) ->
+            val block = resolveCandleLocation(circle.center, dx, dz).block
 
-            val lightable = it.block.blockData as? Lightable ?: return@forEach
+            if (!Tag.CANDLES.isTagged(block.type)) return@forEach
 
-            if (lightable.isLit) {
+            val lightable = block.blockData as? Lightable ?: return@forEach
+
+            if (!lightable.isLit) {
                 lightable.isLit = false
-                it.block.blockData = lightable
+                block.blockData = lightable
             }
         }
     }
@@ -474,7 +482,8 @@ internal object TeleportMechanic : MechanicInterface {
      */
     private fun spawnParticleTrails(circle: RitualCircle) {
         val center = circle.center.block.center()
-        val candles = circle.candles.keys.toList()
+        val candles =
+            circle.candles.keys.map { (dx, dz) -> resolveCandleLocation(circle.center, dx, dz) }
 
         candles.forEachIndexed { index, loc ->
             val delay = index * 10L
@@ -738,17 +747,18 @@ internal object TeleportMechanic : MechanicInterface {
      * @param circle The ritual circle to spawn the trail for.
      */
     private fun spawnPurpleCandleTrail(circle: RitualCircle) {
-        val candles = circle.candles.keys.toList()
+        val candles =
+            circle.candles.keys.map { (dx, dz) -> resolveCandleLocation(circle.center, dx, dz) }
 
         if (candles.size < 2) return
 
         val center = circle.center
         val sorted =
             candles.sortedBy {
-                val dx = it.blockX - center.blockX
-                val dz = it.blockZ - center.blockZ
+                val dx = it.x - center.x
+                val dz = it.z - center.z
 
-                atan2(dz.toDouble(), dx.toDouble())
+                atan2(dz, dx)
             }
 
         val taskId =
@@ -799,10 +809,16 @@ internal object TeleportMechanic : MechanicInterface {
         val loc = block.location
 
         if (Tag.CANDLES.isTagged(block.type)) {
-            activeRituals.values.find { loc in it.candles }?.let {
-                deactivateRitual(it)
-                activeRituals.remove(it.center)
-            }
+            activeRituals.values
+                .find {
+                    val dx = loc.blockX - it.center.blockX
+                    val dz = loc.blockZ - it.center.blockZ
+
+                    (dx to dz) in it.candles
+                }?.let {
+                    deactivateRitual(it)
+                    activeRituals.remove(it.center)
+                }
         }
     }
 
@@ -832,7 +848,7 @@ internal object TeleportMechanic : MechanicInterface {
         player: Player,
         circle: RitualCircle,
     ) {
-        val currentRitual = RitualLocation.fromLocation(circle.center, circle.candles)
+        val currentRitual = RitualLocation.fromLocation(circle.center, toAbsoluteMap(circle.center, circle.candles))
         val targetRitual = RitualStorageManager.findPair(currentRitual)
 
         if (targetRitual != null) {
@@ -847,4 +863,47 @@ internal object TeleportMechanic : MechanicInterface {
             player.sendActionBar(MM.deserialize(Messages.NO_PAIRED_RITUAL))
         }
     }
+
+    /**
+     * Converts relative candle map to absolute locations.
+     *
+     * @param center The ritual center.
+     * @param candles Relative candle map.
+     * @return Absolute location map.
+     */
+    private fun toAbsoluteMap(
+        center: Location,
+        candles: Map<Pair<Int, Int>, Pair<Int, Material>>,
+    ): Map<Location, Pair<Int, Material>> {
+        val world = center.world ?: return emptyMap()
+        val cx = center.blockX
+        val cy = center.blockY
+        val cz = center.blockZ
+
+        return candles.mapKeys { (offset, _) ->
+            val (dx, dz) = offset
+
+            Location(world, (cx + dx).toDouble(), cy.toDouble(), (cz + dz).toDouble())
+        }
+    }
+
+    /**
+     * Resolves a candle location from relative offsets.
+     *
+     * @param center The ritual center location.
+     * @param dx The relative X offset.
+     * @param dz The relative Z offset.
+     * @return The absolute block location.
+     */
+    private fun resolveCandleLocation(
+        center: Location,
+        dx: Int,
+        dz: Int,
+    ): Location =
+        Location(
+            center.world,
+            (center.blockX + dx).toDouble(),
+            center.blockY.toDouble(),
+            (center.blockZ + dz).toDouble(),
+        )
 }
