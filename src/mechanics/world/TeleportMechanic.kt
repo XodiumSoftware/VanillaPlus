@@ -59,6 +59,8 @@ internal object TeleportMechanic : MechanicInterface {
             "<gradient:#FFE259:#FFA751><b>Teleporting...</b></gradient>"
         const val TELEPORT_SUBTITLE =
             "<gradient:#CB2D3E:#EF473A><b><remaining></b></gradient>"
+        const val INSUFFICIENT_XP =
+            "<gradient:#CB2D3E:#EF473A><b>Not enough XP! You need <cost> XP.</b></gradient>"
     }
 
     private const val CONFIG_FILE = "anchors.json"
@@ -127,7 +129,7 @@ internal object TeleportMechanic : MechanicInterface {
 
             else -> {
                 playAnchorFlame(anchor, scale = 1.0f)
-                window(block.location, anchor.name).open(event.player)
+                window(block.location, anchor.name, event.player).open(event.player)
             }
         }
     }
@@ -167,54 +169,69 @@ internal object TeleportMechanic : MechanicInterface {
      * Builds a paginated GUI showing all teleport anchors except the one at [exclude].
      *
      * @param exclude The [Location] of the anchor currently being interacted with; it is omitted from the list.
+     * @param player The [Player] opening the GUI, used to calculate per-player teleport costs.
      * @return The configured [PagedGui] for anchor selection.
      */
-    private fun gui(exclude: Location) =
-        PagedGui
-            .itemsBuilder()
-            .setStructure(
-                "# # # # # # # # #",
-                "# x x x x x x x #",
-                "# x x x x x x x #",
-                "# x x x x x x x #",
-                "# x x x x x x x #",
-                "# # # < # > # # #",
-            ).addIngredient('#', Item.simple(ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).hideTooltip(true)))
-            .addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
-            .addIngredient('<', BACK_BUTTON)
-            .addIngredient('>', FORWARD_BUTTON)
-            .setContent(state.anchors.filterNot { it.matches(exclude) }.map { anchorItem(it) })
-            .build()
+    private fun gui(
+        exclude: Location,
+        player: Player,
+    ) = PagedGui
+        .itemsBuilder()
+        .setStructure(
+            "# # # # # # # # #",
+            "# x x x x x x x #",
+            "# x x x x x x x #",
+            "# x x x x x x x #",
+            "# x x x x x x x #",
+            "# # # < # > # # #",
+        ).addIngredient('#', Item.simple(ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).hideTooltip(true)))
+        .addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
+        .addIngredient('<', BACK_BUTTON)
+        .addIngredient('>', FORWARD_BUTTON)
+        .setContent(
+            state.anchors
+                .filterNot { it.matches(exclude) }
+                .map { anchorItem(exclude, it, player) },
+        ).build()
 
     /**
      * Creates a window for the teleport destination selector GUI.
      *
      * @param exclude The [Location] of the anchor being interacted with.
      * @param title The title to display on the window (typically the clicked anchor's name).
+     * @param player The [Player] opening the GUI, used to calculate per-player teleport costs.
      * @return The configured [Window] builder.
      */
     private fun window(
         exclude: Location,
         title: String,
+        player: Player,
     ) = Window
         .builder()
         .setTitle(MM.deserialize(title))
-        .setUpperGui(gui(exclude))
+        .setUpperGui(gui(exclude, player))
 
     /**
      * Creates a GUI item representing a teleport anchor.
      *
+     * @param source The [Location] of the anchor the player is teleporting from.
      * @param anchor The [TeleportAnchorData] to represent.
+     * @param player The [Player] opening the GUI, used to calculate and display teleport cost.
      * @return The constructed [Item] for the GUI.
      */
     @Suppress("UnstableApiUsage")
-    private fun anchorItem(anchor: TeleportAnchorData): Item =
+    private fun anchorItem(
+        source: Location,
+        anchor: TeleportAnchorData,
+        player: Player,
+    ): Item =
         Item
             .builder()
             .setItemProvider(
                 ItemStack
                     .of(Material.LODESTONE)
                     .apply {
+                        val cost = calculateCost(source, anchor, player)
                         setData(DataComponentTypes.ITEM_NAME, MM.deserialize(anchor.name))
                         setData(
                             DataComponentTypes.LORE,
@@ -224,23 +241,70 @@ internal object TeleportMechanic : MechanicInterface {
                                     MM.deserialize(
                                         "Location: ${anchor.location.x}, ${anchor.location.y}, ${anchor.location.z}",
                                     ),
+                                    MM.deserialize(
+                                        "<gray>Cost: <cost> XP</gray>".replace("<cost>", cost.toString()),
+                                    ),
                                 ),
                             ),
                         )
                     },
-            ).addClickHandler { _, click -> handleTeleport(click.player, anchor) }
+            ).addClickHandler { _, click ->
+                val cost = calculateCost(source, anchor, click.player)
+                handleTeleport(click.player, anchor, cost)
+            }
             .build()
+
+    /**
+     * Calculates the XP cost for teleporting from [source] to [anchor].
+     *
+     * Base cost is 1 XP per block of distance.
+     * Modifiers:
+     * - Mount: +50%
+     * - Each leashed entity: +25%
+     *
+     * @param source The [Location] of the source anchor.
+     * @param anchor The [TeleportAnchorData] destination.
+     * @param player The [Player] to check for mount and leashed entities.
+     * @return The total XP cost.
+     */
+    private fun calculateCost(
+        source: Location,
+        anchor: TeleportAnchorData,
+        player: Player,
+    ): Int {
+        val distance = source.distance(anchor.location)
+        var cost = distance.toInt().coerceAtLeast(1)
+
+        if (player.vehicle != null) cost = (cost * 1.5).toInt()
+
+        val leashedCount =
+            player
+                .getNearbyEntities(15.0, 15.0, 15.0)
+                .filterIsInstance<LivingEntity>()
+                .count { it.isLeashed && it.leashHolder == player }
+
+        if (leashedCount > 0) cost = (cost * (1 + leashedCount * 0.25)).toInt()
+
+        return cost
+    }
 
     /**
      * Handles teleporting a player to an anchor after a 3-second countdown.
      *
      * @param player The [Player] to teleport.
      * @param anchor The [TeleportAnchorData] destination.
+     * @param cost The XP cost to deduct on teleport.
      */
     private fun handleTeleport(
         player: Player,
         anchor: TeleportAnchorData,
+        cost: Int,
     ) {
+        if (player.totalExperience < cost) {
+            player.sendActionBar(MM.deserialize(Messages.INSUFFICIENT_XP.replace("<cost>", cost.toString())))
+            return
+        }
+
         if (player in TELEPORTING) return
 
         TELEPORTING.add(player)
@@ -286,6 +350,8 @@ internal object TeleportMechanic : MechanicInterface {
                     }
 
                     leashedEntities.forEach { it.setLeashHolder(player) }
+
+                    player.giveExp(-cost)
 
                     playTeleportEffects(player, anchor.location)
                     playLightningEffect(anchor.location)
