@@ -5,16 +5,15 @@ package org.xodium.illyriaplus.enchantments
 import io.papermc.paper.registry.data.EnchantmentRegistryEntry
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
-import org.bukkit.NamespacedKey
+import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.entity.EnderPearl
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlotGroup
-import org.bukkit.persistence.PersistentDataType
 import org.bukkit.scheduler.BukkitTask
-import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
 import org.xodium.illyriaplus.Utils
 import org.xodium.illyriaplus.Utils.EnchantmentUtils.displayName
 import org.xodium.illyriaplus.Utils.EnchantmentUtils.isSelectedSpell
@@ -28,9 +27,11 @@ import java.util.*
 internal object VoidpullEnchantment : EnchantmentInterface {
     private const val XP_COST = 3
     private const val VELOCITY = 2.5
+    private const val MAX_DISTANCE = 30.0
 
-    private val PROJECTILE_KEY by lazy { NamespacedKey(instance, "voidpull_projectile") }
-    private val trailTasks = mutableMapOf<UUID, BukkitTask>()
+    private val TRAIL_TASKS: MutableMap<UUID, BukkitTask> = mutableMapOf()
+    private val ORIGINS: MutableMap<UUID, Location> = mutableMapOf()
+
     private val CAST_SOUND: Sound = Sound.sound(Key.key("entity.ender_pearl.throw"), Sound.Source.PLAYER, 1.0f, 1.0f)
     private val PULL_SOUND: Sound = Sound.sound(Key.key("entity.enderman.teleport"), Sound.Source.HOSTILE, 1.0f, 0.8f)
 
@@ -64,33 +65,39 @@ internal object VoidpullEnchantment : EnchantmentInterface {
 
         pearl.setGravity(false)
         pearl.velocity = direction.multiply(VELOCITY)
-        pearl.persistentDataContainer.set(
-            PROJECTILE_KEY,
-            PersistentDataType.STRING,
-            player.uniqueId.toString(),
-        )
+        pearl.shooter = player
 
-        trailTasks[pearl.uniqueId] = spawnPearlTrail(pearl)
+        ORIGINS[pearl.uniqueId] = spawnLocation.clone()
+        TRAIL_TASKS[pearl.uniqueId] = spawnPearlTrail(pearl)
+
         player.playSound(CAST_SOUND)
     }
 
     @EventHandler
     fun on(event: ProjectileHitEvent) {
         val projectile = event.entity
-        val playerUuidStr =
-            projectile.persistentDataContainer.get(PROJECTILE_KEY, PersistentDataType.STRING) ?: return
+        val player = projectile.shooter as? Player ?: return
 
-        trailTasks.remove(projectile.uniqueId)?.cancel()
+        if (!TRAIL_TASKS.containsKey(projectile.uniqueId)) return
 
-        val target = event.hitEntity ?: return
-        val player = instance.server.getPlayer(UUID.fromString(playerUuidStr)) ?: return
+        TRAIL_TASKS.remove(projectile.uniqueId)?.cancel()
+        ORIGINS.remove(projectile.uniqueId)
+
+        val target = event.hitEntity
+
+        if (target == null) {
+            projectile.remove()
+            return
+        }
+
         val destination =
-            player.location.clone().add(
-                player.location.direction
-                    .normalize()
-                    .multiply(2.0),
-            )
-        destination.y = player.location.y
+            player.location
+                .clone()
+                .add(
+                    player.location.direction
+                        .normalize()
+                        .multiply(2.0),
+                ).apply { y = player.location.y }
 
         Particle.PORTAL
             .builder()
@@ -101,7 +108,6 @@ internal object VoidpullEnchantment : EnchantmentInterface {
 
         target.teleport(destination)
         projectile.remove()
-        // TODO: fix projectile not being removed after entity hit.
 
         Particle.PORTAL
             .builder()
@@ -121,6 +127,15 @@ internal object VoidpullEnchantment : EnchantmentInterface {
      */
     private fun spawnPearlTrail(pearl: EnderPearl) =
         Utils.ScheduleUtils.spawnProjectileTrail(pearl) {
+            val origin = ORIGINS[pearl.uniqueId] ?: return@spawnProjectileTrail
+
+            if (it.distanceSquared(origin) > MAX_DISTANCE * MAX_DISTANCE) {
+                pearl.remove()
+                TRAIL_TASKS.remove(pearl.uniqueId)?.cancel()
+                ORIGINS.remove(pearl.uniqueId)
+                return@spawnProjectileTrail
+            }
+
             Particle.PORTAL
                 .builder()
                 .location(it)
