@@ -7,7 +7,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.xodium.illyriaplus.Utils.PlayerUtils.getLeashedEntity
 import org.xodium.illyriaplus.interfaces.MechanicInterface
 
-/** Represents a module handling tameable mechanics within the system. */
+/** Represents a mechanic handling tameable entities within the system. */
 internal object TameableMechanic : MechanicInterface {
     @EventHandler
     fun on(event: PlayerInteractEntityEvent) {

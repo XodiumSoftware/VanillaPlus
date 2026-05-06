@@ -24,7 +24,7 @@ import org.xodium.illyriaplus.Utils.prefix
 import org.xodium.illyriaplus.data.CommandData
 import org.xodium.illyriaplus.interfaces.MechanicInterface
 
-/** Represents a module handling chat mechanics within the system. */
+/** Represents a mechanic handling chat formatting within the system. */
 internal object ChatMechanic : MechanicInterface {
     private val JOIN_BANNER_TEXT: List<String> =
         listOf(

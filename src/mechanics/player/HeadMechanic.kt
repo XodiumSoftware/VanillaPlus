@@ -10,7 +10,7 @@ import org.xodium.illyriaplus.Utils.PlayerUtils.head
 import org.xodium.illyriaplus.interfaces.MechanicInterface
 import kotlin.random.Random
 
-/** Handles player head drops on death. */
+/** Represents a mechanic handling player head drops within the system. */
 internal object HeadMechanic : MechanicInterface {
     const val SKULL_DROP_CHANCE: Double = 0.01
 

@@ -8,7 +8,7 @@ import org.xodium.illyriaplus.data.BookData
 import org.xodium.illyriaplus.data.CommandData
 import org.xodium.illyriaplus.interfaces.MechanicInterface
 
-/** Represents a module handling book mechanics within the system. */
+/** Represents a mechanic handling book functionality within the system. */
 internal object BookMechanic : MechanicInterface {
     private val PERM_PREFIX: String = "${IllyriaPlus.instance.javaClass.simpleName}.book".lowercase()
     private val BOOKS: List<BookData> =

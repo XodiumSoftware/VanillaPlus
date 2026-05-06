@@ -11,6 +11,7 @@ import org.bukkit.inventory.EquipmentSlotGroup
 import org.xodium.illyriaplus.Utils
 import org.xodium.illyriaplus.Utils.EnchantmentUtils.displayName
 import org.xodium.illyriaplus.Utils.EnchantmentUtils.isSelectedSpell
+import org.xodium.illyriaplus.Utils.EnchantmentUtils.validateSpellCast
 import org.xodium.illyriaplus.interfaces.EnchantmentInterface
 import org.xodium.illyriaplus.managers.XpManager
 import kotlin.uuid.ExperimentalUuidApi
@@ -33,18 +34,28 @@ internal object InfernoEnchantment : EnchantmentInterface {
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(65, 5))
             .activeSlots(EquipmentSlotGroup.MAINHAND)
 
+    /**
+     * Handles player interaction for casting Inferno.
+     *
+     * @param event The interaction event.
+     */
     @EventHandler
     fun on(event: PlayerInteractEvent) {
-        if (!isSelectedSpell(event.item, get())) return
+        val player = event.player
+        val item = event.item ?: return
 
-        val player = XpManager.consumeXp(event, get(), XP_COST) ?: return
+        if (!isSelectedSpell(item, get())) return
+        if (!validateSpellCast(event.action, item, get())) return
+        if (!XpManager.consumeXp(event, XP_COST)) return
+
         val direction = player.location.direction.normalize()
         val spawnLocation = player.eyeLocation.add(direction.clone().multiply(1.5))
-        val fireball = player.world.spawn(spawnLocation, SmallFireball::class.java)
+        val fireball: SmallFireball = player.world.spawn(spawnLocation, SmallFireball::class.java)
 
         fireball.shooter = player
         fireball.direction = direction.clone().multiply(1.5)
         fireball.yield = 0.0f
+
         spawnFireballTrail(fireball)
         player.playSound(CAST_SOUND)
     }

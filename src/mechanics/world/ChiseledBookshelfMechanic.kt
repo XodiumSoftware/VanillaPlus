@@ -19,7 +19,7 @@ import org.xodium.illyriaplus.Utils.MM
 import org.xodium.illyriaplus.interfaces.MechanicInterface
 import org.bukkit.block.data.type.ChiseledBookshelf as ChiseledBookshelfData
 
-/** Represents a module handling bookshelf mechanics within the system. */
+/** Represents a mechanic handling chiseled bookshelf interactions within the system. */
 @Suppress("UnstableApiUsage")
 internal object ChiseledBookshelfMechanic : MechanicInterface {
     @EventHandler

@@ -6,7 +6,7 @@ import org.xodium.illyriaplus.interfaces.MechanicInterface
 import java.net.URI
 import kotlin.time.measureTime
 
-/** Represents a module handling server info mechanics within the system. */
+/** Represents a mechanic handling server info display within the system. */
 @Suppress("UnstableApiUsage")
 internal object ServerInfoMechanic : MechanicInterface {
     private val SERVER_LINKS: Map<ServerLinks.Type, String> =

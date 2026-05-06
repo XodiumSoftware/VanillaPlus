@@ -14,8 +14,8 @@
 
 ## Prerequisites
 
-- [Paper](https://papermc.io/) Minecraft server 1.21.11
-- Java 21 or newer
+- [Paper](https://papermc.io/) Minecraft server 26.1
+- Java 25
 
 ## Download Nightly Build
 
@@ -36,7 +36,7 @@ Build the plugins using Gradle.
 
 ### Prerequisites
 
-- [JDK 21](https://adoptium.net/) or newer
+- [JDK 25](https://adoptium.net/)
 - [Git](https://git-scm.com/)
 
 ### Setup
@@ -65,7 +65,7 @@ To quickly test the plugin:
 ./gradlew runServer
 ```
 
-This automatically downloads Paper 1.21.11 and starts a local test server with the plugin.
+This automatically downloads Paper 26.1 and starts a local test server with the plugin.
 
 ## Installation
 
@@ -119,14 +119,14 @@ Eleven custom enchantments are available:
 | Voidpull             | Main Hand | Teleportation spell             |
 | Quake                | Main Hand | Earth spell                     |
 
-#### Mana System
+#### Spell Cost System
 
-Blaze Rod spells share a single mana pool:
+Blaze Rod spells cost **XP** to cast:
 
-- **Maximum**: 100 mana
-- **Regeneration**: Automatic over time
-- **Display**: Boss bar shows current mana
-- **Refill**: Use "Potion of Arcane Restoration"
+- **Cost**: Each spell consumes XP on cast
+- **Creative Mode**: Spells are free (no XP cost)
+- **Insufficient XP**: Plays a sound and shows "Not enough XP!" message
+- **Display**: Selected spell name shown in action bar
 
 #### Wand Mechanics
 
@@ -135,12 +135,6 @@ Blaze rods with spell enchantments function as wands:
 - **Left-click**: Cast selected spell
 - **Right-click**: Cycle through available spells
 - **Compatible**: All seven spells can be on one wand
-
-#### Custom Items
-
-- **Potion of Arcane Restoration**: Refills mana to maximum
-    - Brew: Awkward Potion + Blaze Rod
-    - Color: Purple (`#832466`)
 
 #### Recipes
 

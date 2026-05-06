@@ -14,7 +14,7 @@ import org.xodium.illyriaplus.Utils.MM
 import org.xodium.illyriaplus.Utils.WorldUtils.weather
 import org.xodium.illyriaplus.interfaces.MechanicInterface
 
-/** Handles server-wide tab list header and footer updates. */
+/** Represents a mechanic handling tab list updates within the system. */
 internal object TabListMechanic : MechanicInterface {
     val HEADER: List<String> =
         listOf(

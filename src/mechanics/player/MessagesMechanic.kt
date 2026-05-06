@@ -18,7 +18,7 @@ import org.bukkit.event.player.*
 import org.xodium.illyriaplus.Utils.MM
 import org.xodium.illyriaplus.interfaces.MechanicInterface
 
-/** Handles player-related messages (join, quit, death, advancements, etc.). */
+/** Represents a mechanic handling player messages within the system. */
 internal object MessagesMechanic : MechanicInterface {
     /** Player join, quit, death, and kick message strings. */
     object PlayerMessages {

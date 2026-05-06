@@ -23,7 +23,7 @@ import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
 import org.xodium.illyriaplus.data.AdjacentBlockData
 import org.xodium.illyriaplus.interfaces.MechanicInterface
 
-/** Represents a module handling openable blocks mechanics within the system. */
+/** Represents a mechanic handling openable blocks within the system. */
 internal object OpenableMechanic : MechanicInterface {
     private const val KNOCK_SOUND_RADIUS: Double = 10.0
     private const val DOUBLE_DOOR_DELAY_TICKS: Long = 1

@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack
 import org.xodium.illyriaplus.interfaces.MechanicInterface
 import kotlin.random.Random
 
-/** Handles sand drops when husks die, with bonus for Camel-riding husks. */
+/** Represents a mechanic handling husk drops within the system. */
 internal object HuskMechanic : MechanicInterface {
     private const val HUSK_SAND_DROP_CHANCE: Double = 1.0
     private const val HUSK_SAND_BASE_MIN: Int = 0

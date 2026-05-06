@@ -7,6 +7,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.xodium.illyriaplus.Utils.EnchantmentUtils.displayName
 import org.xodium.illyriaplus.Utils.EnchantmentUtils.isSelectedSpell
+import org.xodium.illyriaplus.Utils.EnchantmentUtils.validateSpellCast
 import org.xodium.illyriaplus.interfaces.EnchantmentInterface
 import org.xodium.illyriaplus.managers.XpManager
 
@@ -26,16 +27,26 @@ internal object SkysunderEnchantment : EnchantmentInterface {
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(65, 5))
             .activeSlots(EquipmentSlotGroup.MAINHAND)
 
+    /**
+     * Handles player interaction for casting Skysunder.
+     *
+     * @param event The interaction event.
+     */
     @EventHandler
     fun on(event: PlayerInteractEvent) {
-        if (!isSelectedSpell(event.item, get())) return
+        val player = event.player
+        val item = event.item ?: return
 
-        val player = XpManager.consumeXp(event, get(), XP_COST) ?: return
+        if (!isSelectedSpell(item, get())) return
+        if (!validateSpellCast(event.action, item, get())) return
+        if (!XpManager.consumeXp(event, XP_COST)) return
+
         val blockResult = player.rayTraceBlocks(RANGE)
         val entityResult = player.rayTraceEntities(RANGE.toInt())
         val eyeLoc = player.eyeLocation
         val blockDist = blockResult?.hitPosition?.distance(eyeLoc.toVector())
         val entityDist = entityResult?.hitPosition?.distance(eyeLoc.toVector())
+
         val target =
             when {
                 blockDist != null && (entityDist == null || blockDist <= entityDist) -> {

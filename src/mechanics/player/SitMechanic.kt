@@ -24,7 +24,7 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 import kotlin.uuid.toKotlinUuid
 
-/** Represents a module handling sit mechanics within the system. */
+/** Represents a mechanic handling player sitting within the system. */
 @OptIn(ExperimentalUuidApi::class)
 internal object SitMechanic : MechanicInterface {
     private val sittingPlayers = mutableMapOf<Uuid, ArmorStand>()

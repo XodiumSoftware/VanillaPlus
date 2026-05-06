@@ -12,6 +12,7 @@ import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.util.Vector
 import org.xodium.illyriaplus.Utils.EnchantmentUtils.displayName
 import org.xodium.illyriaplus.Utils.EnchantmentUtils.isSelectedSpell
+import org.xodium.illyriaplus.Utils.EnchantmentUtils.validateSpellCast
 import org.xodium.illyriaplus.interfaces.EnchantmentInterface
 import org.xodium.illyriaplus.managers.XpManager
 import kotlin.math.PI
@@ -40,11 +41,20 @@ internal object QuakeEnchantment : EnchantmentInterface {
             .maximumCost(EnchantmentRegistryEntry.EnchantmentCost.of(65, 5))
             .activeSlots(EquipmentSlotGroup.MAINHAND)
 
+    /**
+     * Handles player interaction for casting Quake.
+     *
+     * @param event The interaction event.
+     */
     @EventHandler
     fun on(event: PlayerInteractEvent) {
-        if (!isSelectedSpell(event.item, get())) return
+        val player = event.player
+        val item = event.item ?: return
 
-        val player = XpManager.consumeXp(event, get(), XP_COST) ?: return
+        if (!isSelectedSpell(item, get())) return
+        if (!validateSpellCast(event.action, item, get())) return
+        if (!XpManager.consumeXp(event, XP_COST)) return
+
         val location = player.location
         val world = player.world
 

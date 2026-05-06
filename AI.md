@@ -4,7 +4,7 @@
 
 - **Name:** IllyriaPlus
 - **Type:** Single-module Minecraft Paper plugin project (server-side only)
-- **MC Version:** 1.21.11
+- **MC Version:** 26.1.2
 - **Language:** Kotlin (JVM 25)
 - **Build Tool:** Gradle with Kotlin DSL
 
@@ -12,7 +12,7 @@
 
 | Category            | Technology                               | Purpose                            |
 |---------------------|------------------------------------------|------------------------------------|
-| **Core API**        | [Paper API](https://papermc.io/) 1.21.11 | Minecraft server plugin API        |
+| **Core API**        | [Paper API](https://papermc.io/) 26.1.2 | Minecraft server plugin API        |
 | **Language**        | Kotlin 2.3.21                            | JVM language                       |
 | **Build Tool**      | Gradle (Kotlin DSL)                      | Build automation                   |
 | **Gradle Plugins**  | Shadow 9.4.1                             | Fat JAR creation                   |
@@ -26,7 +26,7 @@
 ### Paper API Resources
 
 - **Documentation**: https://docs.papermc.io/paper/dev/
-- **JavaDoc**: https://jd.papermc.io/paper/1.21.11/ (matches project version)
+- **JavaDoc**: https://jd.papermc.io/paper/26.1.2/ (matches project version)
 
 ### Paper API Notes
 

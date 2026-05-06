@@ -10,7 +10,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
 import org.xodium.illyriaplus.interfaces.MechanicInterface
 
-/** Allows players to open their ender chest by right-clicking with an ender chest in offhand. */
+/** Represents a mechanic handling ender chest access within the system. */
 internal object EnderchestMechanic : MechanicInterface {
     @EventHandler
     fun on(event: PlayerInteractEvent) {

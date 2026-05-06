@@ -20,7 +20,7 @@ import org.xodium.illyriaplus.interfaces.MechanicInterface
 import org.xodium.illyriaplus.mechanics.server.TabListMechanic.tablist
 import org.xodium.illyriaplus.pdcs.PlayerPDC.nickname
 
-/** Handles player nickname functionality. */
+/** Represents a mechanic handling player nicknames within the system. */
 internal object NicknameMechanic : MechanicInterface {
     const val UPDATE_NICKNAME_MSG: String =
         "<gradient:#CB2D3E:#EF473A>Nickname has been updated to: <nickname></gradient>"
