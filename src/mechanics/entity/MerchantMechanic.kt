@@ -6,6 +6,7 @@ import net.kyori.adventure.sound.Sound
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
+import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
 import org.bukkit.entity.WanderingTrader
 import org.bukkit.event.EventHandler
@@ -23,6 +24,7 @@ import org.xodium.illyriaplus.data.CommandData
 import org.xodium.illyriaplus.data.MerchantItemData
 import org.xodium.illyriaplus.gui.MerchantGui
 import org.xodium.illyriaplus.mechanics.MechanicInterface
+import java.io.File
 import kotlin.math.cos
 import kotlin.math.floor
 import kotlin.math.sin
@@ -34,6 +36,9 @@ internal object MerchantMechanic : MechanicInterface {
     private const val SPAWNED_MSG = "<mango>Travelling Merchant spawned!</gradient>"
     private const val PURCHASE_MSG = "<green>Purchase successful!"
     private const val NO_FUNDS_MSG = "<firewatch>You can't afford this item!</gradient>"
+    private const val OUT_OF_STOCK_MSG = "<firewatch>The merchant is out of stock!</gradient>"
+    private const val SOLD_MSG = "<green>The merchant accepted your items!"
+    private const val STOCK_FILE_NAME = "merchant_stock.yml"
 
     /** Vanilla wandering trader lifetime (40 minutes), applied to merchants so they despawn naturally. */
     private const val DESPAWN_DELAY = 48000
@@ -63,6 +68,7 @@ internal object MerchantMechanic : MechanicInterface {
 
     private val MERCHANT_KEY = NamespacedKey(instance, "merchant")
 
+    /** The merchant's catalogue: which items it trades and at what price per stack. Stock is runtime state. */
     private val MERCHANT_ITEMS =
         listOf(
             MerchantItemData(ItemStack.of(Material.AMETHYST_SHARD, 4), ItemStack.of(Material.EMERALD)),
@@ -82,6 +88,13 @@ internal object MerchantMechanic : MechanicInterface {
     private val NO_FUNDS_SOUND: Sound =
         Sound.sound(Key.key("entity.villager.no"), Sound.Source.PLAYER, 1.0f, 1.0f)
 
+    private val stockFile = File(instance.dataFolder, STOCK_FILE_NAME)
+
+    /** Shared merchant stock, mapped to individual item counts per result [Material]. */
+    private val stock = mutableMapOf<Material, Int>()
+
+    private var stockLoaded = false
+
     @EventHandler(ignoreCancelled = true)
     fun on(event: PlayerInteractEntityEvent) = handleInteract(event)
 
@@ -99,7 +112,7 @@ internal object MerchantMechanic : MechanicInterface {
         val trader = event.rightClicked as? WanderingTrader ?: return
         if (!trader.persistentDataContainer.has(MERCHANT_KEY)) return
         event.isCancelled = true
-        MerchantGui.open(event.player, MERCHANT_ITEMS, ::purchase)
+        MerchantGui.openShop(event.player, MERCHANT_ITEMS, ::stockOf, ::purchase, ::processDeposit)
     }
 
     /**
@@ -146,8 +159,8 @@ internal object MerchantMechanic : MechanicInterface {
     }
 
     /**
-     * Executes a purchase: verifies the player can pay the price, deducts it, and delivers the result.
-     * Overflow items are dropped at the player's feet.
+     * Executes a purchase: verifies stock and that the player can pay the price, deducts both,
+     * and delivers the result. Overflow items are dropped at the player's feet.
      *
      * @param player The purchasing player.
      * @param item The merchant entry being purchased.
@@ -156,6 +169,12 @@ internal object MerchantMechanic : MechanicInterface {
         player: Player,
         item: MerchantItemData,
     ) {
+        if (stockOf(item) < item.result.amount) {
+            player.sendActionBar(MM.deserialize(OUT_OF_STOCK_MSG))
+            player.playSound(NO_FUNDS_SOUND)
+            return
+        }
+
         val price = item.price
         val matching = player.inventory.all(price.type).filterValues { it.isSimilar(price) }
         if (matching.values.sumOf { it.amount } < price.amount) {
@@ -173,10 +192,92 @@ internal object MerchantMechanic : MechanicInterface {
             player.inventory.setItem(slot, stack.takeIf { it.amount > 0 })
         }
 
-        player.inventory.addItem(item.result.clone()).values.forEach {
-            player.world.dropItemNaturally(player.location, it)
-        }
+        stock[item.result.type] = stockOf(item) - item.result.amount
+        saveStock()
+        give(player, item.result.clone())
         player.sendActionBar(MM.deserialize(PURCHASE_MSG))
         player.playSound(PURCHASE_SOUND)
+    }
+
+    /**
+     * Processes the contents of the sell window: catalogue items are converted into stock and
+     * paid for per full catalogue stack; rejected and remainder items are returned to the player.
+     *
+     * @param player The selling player.
+     * @param contents The deposited items, possibly containing null slots.
+     */
+    private fun processDeposit(
+        player: Player,
+        contents: List<ItemStack?>,
+    ) {
+        loadStock()
+        var sold = false
+        contents.filterNotNull().forEach { stack ->
+            val entry = MERCHANT_ITEMS.firstOrNull { it.result.isSimilar(stack) }
+            val units = if (entry != null) stack.amount / entry.result.amount else 0
+            if (entry == null || units == 0) {
+                give(player, stack)
+                return@forEach
+            }
+
+            stock.merge(entry.result.type, units * entry.result.amount, Int::plus)
+            give(player, entry.price.clone().apply { amount = entry.price.amount * units })
+            sold = true
+
+            val leftover = stack.amount % entry.result.amount
+            if (leftover > 0) give(player, stack.asQuantity(leftover))
+        }
+        if (sold) {
+            saveStock()
+            player.sendActionBar(MM.deserialize(SOLD_MSG))
+            player.playSound(PURCHASE_SOUND)
+        }
+    }
+
+    /**
+     * Returns the current stock (individual items) of a merchant entry.
+     */
+    private fun stockOf(item: MerchantItemData): Int {
+        loadStock()
+        return stock[item.result.type] ?: 0
+    }
+
+    /**
+     * Gives an item to the player, dropping overflow at their feet.
+     */
+    private fun give(
+        player: Player,
+        stack: ItemStack,
+    ) {
+        player
+            .inventory
+            .addItem(stack)
+            .values
+            .forEach { player.world.dropItemNaturally(player.location, it) }
+    }
+
+    /**
+     * Lazily loads the merchant stock from disk.
+     */
+    private fun loadStock() {
+        if (stockLoaded) return
+        stockLoaded = true
+        if (!stockFile.exists()) return
+        val config = YamlConfiguration.loadConfiguration(stockFile)
+        config.getConfigurationSection("stock")?.getKeys(false)?.forEach { key ->
+            Material.getMaterial(key)?.let { stock[it] = config.getInt("stock.$key") }
+        }
+    }
+
+    /**
+     * Persists the merchant stock to disk. Entries with zero stock are omitted.
+     */
+    private fun saveStock() {
+        val config = YamlConfiguration()
+        stock.filterValues { it > 0 }.forEach { (type, amount) -> config.set("stock.${type.name}", amount) }
+        runCatching {
+            instance.dataFolder.mkdirs()
+            config.save(stockFile)
+        }.onFailure { instance.logger.warning("Failed to save merchant stock: ${it.message}") }
     }
 }

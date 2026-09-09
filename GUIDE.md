@@ -101,7 +101,7 @@ Enhances base gameplay with custom enchantments, items, and mechanics.
 
 ### Travelling Merchant
 
-Wandering traders spawn as Travelling Merchants instead: right-clicking one opens a shop GUI to buy rare items using emeralds. Merchants are not persistent and despawn like vanilla wandering traders. Operators can trigger an early spawn nearby with `/merchant`.
+Wandering traders spawn as Travelling Merchants instead: right-clicking one opens a shop GUI to buy rare items using emeralds. The merchant's stock is filled by players — sell catalogue items via the Sell items button to fill it — and is shared globally and persistent across restarts. Merchants are not persistent themselves and despawn like vanilla wandering traders. Operators can trigger an early spawn nearby with `/merchant`.
 
 ### Enchantments
 
