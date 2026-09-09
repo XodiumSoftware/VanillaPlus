@@ -81,18 +81,22 @@ internal object WanderingTraderMechanic : MechanicInterface {
     }
 
     /**
-     * Executes a purchase: verifies stock and that the player can pay the price, deducts both,
-     * and delivers the result. Overflow items are dropped at the player's feet.
+     * Executes a purchase: buys up to [units] stacks of [item], capped by the available stock and
+     * the player's emeralds, then deducts both and delivers the result. Overflow items are dropped
+     * at the player's feet.
      *
      * @param player The purchasing player.
      * @param item The entry being purchased.
+     * @param units The maximum number of stacks to buy (bulk purchase amount).
      */
     private fun purchase(
         player: Player,
         item: WanderingTraderItemData,
+        units: Int,
     ) {
         loadStock()
-        if ((stock[item.result.type] ?: 0) < item.result.amount) {
+        val inStock = (stock[item.result.type] ?: 0) / item.result.amount
+        if (inStock == 0) {
             player.sendActionBar(MM.deserialize(OUT_OF_STOCK_MSG))
             player.playSound(NO_FUNDS_SOUND)
             return
@@ -100,13 +104,15 @@ internal object WanderingTraderMechanic : MechanicInterface {
 
         val price = item.price
         val matching = player.inventory.all(price.type).filterValues { it.isSimilar(price) }
-        if (matching.values.sumOf { it.amount } < price.amount) {
+        val affordable = matching.values.sumOf { it.amount } / price.amount
+        if (affordable == 0) {
             player.sendActionBar(MM.deserialize(NO_FUNDS_MSG))
             player.playSound(NO_FUNDS_SOUND)
             return
         }
 
-        var remaining = price.amount
+        val bought = minOf(units, inStock, affordable)
+        var remaining = price.amount * bought
         matching.forEach { (slot, stack) ->
             if (remaining <= 0) return@forEach
             val deduct = minOf(remaining, stack.amount)
@@ -115,9 +121,9 @@ internal object WanderingTraderMechanic : MechanicInterface {
             player.inventory.setItem(slot, stack.takeIf { it.amount > 0 })
         }
 
-        stock[item.result.type] = (stock[item.result.type] ?: 0) - item.result.amount
+        stock[item.result.type] = (stock[item.result.type] ?: 0) - item.result.amount * bought
         saveStock()
-        give(player, item.result.clone())
+        give(player, item.result.clone().apply { amount = item.result.amount * bought })
         player.sendActionBar(MM.deserialize(PURCHASE_MSG))
         player.playSound(PURCHASE_SOUND)
     }

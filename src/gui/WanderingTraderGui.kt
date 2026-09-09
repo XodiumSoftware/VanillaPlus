@@ -3,6 +3,7 @@ package org.xodium.illyriaplus.gui
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Material
 import org.bukkit.entity.Player
+import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.inventory.ItemStack
 import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
@@ -29,6 +30,7 @@ internal object WanderingTraderGui {
     private const val PREVIOUS_PAGE_NAME = "<gray>Previous page"
     private const val NEXT_PAGE_NAME = "<gray>Next page"
     private const val SELL_BUTTON_NAME = "<green><b>Sell items"
+    private const val BULK_HINT = "<dark_gray>LMB: 1x | MMB: 10x | RMB: 100x"
     private const val DEPOSIT_SIZE = 27
 
     private val BORDER = Item.simple(ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).hideTooltip(true))
@@ -69,7 +71,7 @@ internal object WanderingTraderGui {
         player: Player,
         items: () -> List<WanderingTraderItemData>,
         stockOf: (WanderingTraderItemData) -> Int,
-        onPurchase: (Player, WanderingTraderItemData) -> Unit,
+        onPurchase: (Player, WanderingTraderItemData, Int) -> Unit,
         onDeposit: (Player, List<ItemStack?>) -> Unit,
     ) {
         buildShopWindow(player, items, stockOf, onPurchase, onDeposit).open()
@@ -82,7 +84,7 @@ internal object WanderingTraderGui {
         player: Player,
         items: () -> List<WanderingTraderItemData>,
         stockOf: (WanderingTraderItemData) -> Int,
-        onPurchase: (Player, WanderingTraderItemData) -> Unit,
+        onPurchase: (Player, WanderingTraderItemData, Int) -> Unit,
         onDeposit: (Player, List<ItemStack?>) -> Unit,
     ): Window {
         lateinit var rebuild: () -> Unit
@@ -143,17 +145,23 @@ internal object WanderingTraderGui {
 
     /**
      * Builds the button displaying this trade entry, describing price and current stock in its lore.
-     * [onContentChanged] runs on every click so drained entries disappear immediately.
+     * [onContentChanged] runs on every click, and middle/right clicks buy 10x/100x.
      */
     private fun WanderingTraderItemData.toGuiItem(
         stockOf: (WanderingTraderItemData) -> Int,
-        onPurchase: (Player, WanderingTraderItemData) -> Unit,
+        onPurchase: (Player, WanderingTraderItemData, Int) -> Unit,
         onContentChanged: () -> Unit,
     ): Item =
         item {
             itemProvider by provider { ItemBuilder(icon(stockOf)) }
             onClick {
-                onPurchase(player, this@toGuiItem)
+                val units =
+                    when (clickType) {
+                        ClickType.MIDDLE -> 10
+                        ClickType.RIGHT -> 100
+                        else -> 1
+                    }
+                onPurchase(player, this@toGuiItem, units)
                 onContentChanged()
             }
         }
@@ -178,6 +186,7 @@ internal object WanderingTraderGui {
                         .deserialize("${if (stock > 0) "<gray>" else "<red>"}In stock: $stock")
                         .decoration(TextDecoration.ITALIC, false),
                 )
+                lore.add(MM.deserialize(BULK_HINT).decoration(TextDecoration.ITALIC, false))
                 meta.lore(lore)
             }
         }
