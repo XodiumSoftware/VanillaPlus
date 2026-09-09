@@ -76,6 +76,12 @@ internal object WanderingTraderMechanic : MechanicInterface {
     /** Guards against interleaved synchronous and asynchronous stock file writes. */
     private val writeLock = Any()
 
+    /** Version of the newest built snapshot, incremented on the main thread per build. */
+    private var snapshotVersion = 0L
+
+    /** Version of the last snapshot written to disk, only updated under [writeLock]. */
+    private var writtenVersion = 0L
+
     private var stockLoaded = false
 
     /** The pending debounced save task, or null when no save is scheduled. */
@@ -344,12 +350,14 @@ internal object WanderingTraderMechanic : MechanicInterface {
     }
 
     /**
-     * Builds the YAML snapshot of the current state and writes it to the stock file asynchronously.
+     * Builds the YAML snapshot of the current state and writes it to the stock file asynchronously,
+     * stamping it with a new version so stale async writes cannot overwrite newer files.
      */
     private fun writeStock() {
         if (!stockLoaded) return
+        val version = ++snapshotVersion
         val yaml = buildStockYaml()
-        instance.server.scheduler.runTaskAsynchronously(instance, Runnable { writeStockFile(yaml) })
+        instance.server.scheduler.runTaskAsynchronously(instance, Runnable { writeStockFile(yaml, version) })
     }
 
     /**
@@ -359,7 +367,7 @@ internal object WanderingTraderMechanic : MechanicInterface {
         if (!stockLoaded) return
         saveTask?.cancel()
         saveTask = null
-        writeStockFile(buildStockYaml())
+        writeStockFile(buildStockYaml(), ++snapshotVersion)
     }
 
     /**
@@ -379,12 +387,19 @@ internal object WanderingTraderMechanic : MechanicInterface {
     }
 
     /**
-     * Writes [yaml] to the stock file, guarding against interleaved concurrent writes.
+     * Writes [yaml] to the stock file, guarding against interleaved and out-of-order writes:
+     * snapshots not newer than the last written one are skipped.
      *
      * @param yaml The serialized stock and demand configuration.
+     * @param version The snapshot version; writes proceed only when newer than the last written.
      */
-    private fun writeStockFile(yaml: String) {
+    private fun writeStockFile(
+        yaml: String,
+        version: Long,
+    ) {
         synchronized(writeLock) {
+            if (version <= writtenVersion) return
+            writtenVersion = version
             runCatching {
                 instance.dataFolder.mkdirs()
                 stockFile.writeText(yaml)
