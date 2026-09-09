@@ -87,7 +87,7 @@ internal object WanderingTraderMechanic : MechanicInterface {
      * material name, priced at their current demand-driven value.
      */
     private fun stockedTrades(): List<WanderingTraderItemData> {
-        loadStock()
+        if (!loadStock()) return emptyList()
         return stock
             .values
             .filter { it.count > 0 }
@@ -114,7 +114,7 @@ internal object WanderingTraderMechanic : MechanicInterface {
         item: WanderingTraderItemData,
         units: Int,
     ) {
-        loadStock()
+        if (!loadStock()) return
         val entry = stock[keyOf(item.result)]
         val inStock = (entry?.count ?: 0) / item.result.amount
         if (entry == null || inStock == 0) {
@@ -154,7 +154,8 @@ internal object WanderingTraderMechanic : MechanicInterface {
      * Processes the contents of the sell window: every deposited item is added to the shared stock
      * and paid [SELL_PRICE_RATIO] of its current price in emeralds, rounding down to at least 1.
      * Emeralds are returned unprocessed. Item meta is preserved in the stock, so variants of the
-     * same material are stocked and traded separately.
+     * same material are stocked and traded separately. If the stock fails to load, all deposited
+     * items are returned unprocessed.
      *
      * @param player The selling player.
      * @param contents The deposited items, possibly containing null slots.
@@ -163,7 +164,10 @@ internal object WanderingTraderMechanic : MechanicInterface {
         player: Player,
         contents: List<ItemStack?>,
     ) {
-        loadStock()
+        if (!loadStock()) {
+            contents.filterNotNull().forEach { give(player, it) }
+            return
+        }
         var sold = false
         var rejected = false
         contents.filterNotNull().forEach { stack ->
@@ -192,7 +196,7 @@ internal object WanderingTraderMechanic : MechanicInterface {
      * Returns the current stock (individual items) of a trade entry.
      */
     private fun stockOf(item: WanderingTraderItemData): Int {
-        loadStock()
+        if (!loadStock()) return 0
         return stock[keyOf(item.result)]?.count ?: 0
     }
 
@@ -230,27 +234,41 @@ internal object WanderingTraderMechanic : MechanicInterface {
     private fun keyOf(stack: ItemStack): String = Base64.getEncoder().encodeToString(stack.asOne().serializeAsBytes())
 
     /**
-     * Lazily loads the stock and demand from disk.
+     * Lazily loads the stock and demand from disk. A missing file counts as a successful empty
+     * load. On failure the stock is left unloaded, so the next access retries the load.
+     *
+     * @return true when the stock is ready to use, false when reading the file failed.
      */
-    private fun loadStock() {
-        if (stockLoaded) return
-        stockLoaded = true
-        if (!stockFile.exists()) return
-        val config = YamlConfiguration.loadConfiguration(stockFile)
-        config.getConfigurationSection("stock")?.getKeys(false)?.forEach { key ->
-            config.getItemStack("stock.$key.stack")?.let {
-                stock[keyOf(it)] = StockEntry(it.asOne(), config.getInt("stock.$key.count"))
+    private fun loadStock(): Boolean {
+        if (stockLoaded) return true
+        if (!stockFile.exists()) {
+            stockLoaded = true
+            return true
+        }
+        return runCatching {
+            val config = YamlConfiguration()
+            config.load(stockFile)
+            config.getConfigurationSection("stock")?.getKeys(false)?.forEach { key ->
+                config.getItemStack("stock.$key.stack")?.let {
+                    stock[keyOf(it)] = StockEntry(it.asOne(), config.getInt("stock.$key.count"))
+                }
             }
-        }
-        config.getConfigurationSection("demand")?.getKeys(false)?.forEach { key ->
-            Material.getMaterial(key)?.let { demand[it] = config.getInt("demand.$key") }
-        }
+            config.getConfigurationSection("demand")?.getKeys(false)?.forEach { key ->
+                Material.getMaterial(key)?.let { demand[it] = config.getInt("demand.$key") }
+            }
+        }.onSuccess {
+            stockLoaded = true
+        }.onFailure {
+            instance.logger.warning("Failed to load wandering trader stock: ${it.message}")
+        }.isSuccess
     }
 
     /**
      * Persists the stock and demand to disk. Entries with zero stock or zero demand are omitted.
+     * Does nothing while the stock is not loaded, so a failed load cannot overwrite existing data.
      */
     private fun saveStock() {
+        if (!stockLoaded) return
         val config = YamlConfiguration()
         var index = 0
         stock.values.filter { it.count > 0 }.forEach {
