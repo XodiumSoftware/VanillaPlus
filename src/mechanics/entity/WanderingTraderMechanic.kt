@@ -64,13 +64,15 @@ internal object WanderingTraderMechanic : MechanicInterface {
 
     /**
      * Opens the custom shop GUI when a player right-clicks any wandering trader,
-     * suppressing the vanilla trade window.
+     * suppressing the vanilla trade window. Lead and name tag interactions are left to vanilla.
      *
      * @param event The PlayerInteractEntityEvent triggered when a player interacts with an entity.
      */
     private fun handleInteract(event: PlayerInteractEntityEvent) {
         if (event.hand != EquipmentSlot.HAND) return
         if (event.rightClicked !is WanderingTrader) return
+        val inHand = event.player.inventory.itemInMainHand.type
+        if (inHand == Material.LEAD || inHand == Material.NAME_TAG) return
         event.isCancelled = true
         WanderingTraderGui.openShop(event.player, ::stockedTrades, ::stockOf, ::purchase, ::processDeposit)
     }
@@ -110,7 +112,7 @@ internal object WanderingTraderMechanic : MechanicInterface {
             return
         }
 
-        val price = item.price
+        val price = ItemStack.of(Material.EMERALD, priceOf(item.result.type))
         val matching = player.inventory.all(price.type).filterValues { it.isSimilar(price) }
         val affordable = matching.values.sumOf { it.amount } / price.amount
         if (affordable == 0) {
