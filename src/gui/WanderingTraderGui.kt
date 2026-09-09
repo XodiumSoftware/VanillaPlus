@@ -5,7 +5,7 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.xodium.illyriaplus.Utils.MM
-import org.xodium.illyriaplus.data.MerchantItemData
+import org.xodium.illyriaplus.data.WanderingTraderItemData
 import xyz.xenondevs.commons.provider.provider
 import xyz.xenondevs.invui.dsl.ExperimentalDslApi
 import xyz.xenondevs.invui.dsl.item
@@ -18,11 +18,11 @@ import xyz.xenondevs.invui.item.Item
 import xyz.xenondevs.invui.item.ItemBuilder
 import xyz.xenondevs.invui.window.Window
 
-/** Builds and opens the travelling merchant's shop GUI. */
+/** Builds and opens the wandering trader's custom shop GUI. */
 @OptIn(ExperimentalDslApi::class)
-internal object MerchantGui {
-    private const val TITLE = "<mango>Travelling Merchant"
-    private const val SELL_TITLE = "<mango>Sell to the Merchant"
+internal object WanderingTraderGui {
+    private const val TITLE = "<mango>Wandering Trader"
+    private const val SELL_TITLE = "<mango>Sell to the Trader"
     private const val PREVIOUS_PAGE_NAME = "<gray>Previous page"
     private const val NEXT_PAGE_NAME = "<gray>Next page"
     private const val SELL_BUTTON_NAME = "<green><b>Sell items"
@@ -53,10 +53,10 @@ internal object MerchantGui {
             }.addClickHandler { _, gui, _ -> gui.page++ }
 
     /**
-     * Builds and opens the travelling merchant shop window for the given player.
+     * Builds and opens the wandering trader shop window for the given player.
      *
      * @param player The player viewing the shop.
-     * @param items The merchant entries to display as paged content.
+     * @param items The stocked trade entries to display as paged content.
      * @param stockOf Returns the current stock (individual items) of an entry.
      * @param onPurchase Called when an entry is clicked, receiving the clicking player and the entry.
      * @param onDeposit Called with the contents of the sell window when it closes,
@@ -64,9 +64,9 @@ internal object MerchantGui {
      */
     fun openShop(
         player: Player,
-        items: List<MerchantItemData>,
-        stockOf: (MerchantItemData) -> Int,
-        onPurchase: (Player, MerchantItemData) -> Unit,
+        items: List<WanderingTraderItemData>,
+        stockOf: (WanderingTraderItemData) -> Int,
+        onPurchase: (Player, WanderingTraderItemData) -> Unit,
         onDeposit: (Player, List<ItemStack?>) -> Unit,
     ) {
         buildShopWindow(player, items, stockOf, onPurchase, onDeposit).open()
@@ -77,9 +77,9 @@ internal object MerchantGui {
      */
     private fun buildShopWindow(
         player: Player,
-        items: List<MerchantItemData>,
-        stockOf: (MerchantItemData) -> Int,
-        onPurchase: (Player, MerchantItemData) -> Unit,
+        items: List<WanderingTraderItemData>,
+        stockOf: (WanderingTraderItemData) -> Int,
+        onPurchase: (Player, WanderingTraderItemData) -> Unit,
         onDeposit: (Player, List<ItemStack?>) -> Unit,
     ): Window =
         window(player) {
@@ -126,12 +126,12 @@ internal object MerchantGui {
     }
 
     /**
-     * Builds the button displaying this merchant entry, describing price and current stock in its lore.
+     * Builds the button displaying this trade entry, describing price and current stock in its lore.
      * The stock line re-resolves whenever the item updates.
      */
-    private fun MerchantItemData.toGuiItem(
-        stockOf: (MerchantItemData) -> Int,
-        onPurchase: (Player, MerchantItemData) -> Unit,
+    private fun WanderingTraderItemData.toGuiItem(
+        stockOf: (WanderingTraderItemData) -> Int,
+        onPurchase: (Player, WanderingTraderItemData) -> Unit,
     ): Item {
         lateinit var self: Item
         self =
@@ -146,10 +146,10 @@ internal object MerchantGui {
     }
 
     /**
-     * Builds the display icon for this merchant entry, appending lore lines describing the price
+     * Builds the display icon for this trade entry, appending lore lines describing the price
      * and the currently available stock (red when sold out).
      */
-    private fun MerchantItemData.icon(stockOf: (MerchantItemData) -> Int): ItemStack =
+    private fun WanderingTraderItemData.icon(stockOf: (WanderingTraderItemData) -> Int): ItemStack =
         result.clone().apply {
             editMeta { meta ->
                 val stock = stockOf(this@icon)

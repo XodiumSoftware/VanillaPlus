@@ -99,9 +99,9 @@ internal object MessagesMechanic : MechanicInterface {
 
 Enhances base gameplay with custom enchantments, items, and mechanics.
 
-### Travelling Merchant
+### Wandering Trader Shop
 
-Wandering traders spawn as Travelling Merchants instead: right-clicking one opens a shop GUI to buy rare items using emeralds. The merchant's stock is filled by players — sell catalogue items via the Sell items button to fill it — and is shared globally and persistent across restarts. Merchants are not persistent themselves and despawn like vanilla wandering traders. Operators can trigger an early spawn nearby with `/merchant`.
+Wandering traders open a custom shop GUI instead of their vanilla trades. The stock is shared globally, persists across restarts, and starts empty — it is filled by players selling items via the Sell items button. Any item is accepted: curated items pay half their listed price, everything else pays 1 emerald per item (and resells for 2).
 
 ### Enchantments
 
