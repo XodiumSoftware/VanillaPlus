@@ -3,9 +3,12 @@ package org.xodium.illyriaplus.gui
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Material
 import org.bukkit.entity.Player
+import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.inventory.ItemStack
+import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
 import org.xodium.illyriaplus.Utils.MM
 import org.xodium.illyriaplus.data.WanderingTraderItemData
+import xyz.xenondevs.commons.provider.mutableProvider
 import xyz.xenondevs.commons.provider.provider
 import xyz.xenondevs.invui.dsl.ExperimentalDslApi
 import xyz.xenondevs.invui.dsl.item
@@ -56,7 +59,7 @@ internal object WanderingTraderGui {
      * Builds and opens the wandering trader shop window for the given player.
      *
      * @param player The player viewing the shop.
-     * @param items The stocked trade entries to display as paged content.
+     * @param items Supplies the currently stocked trade entries, re-evaluated each time the window is built.
      * @param stockOf Returns the current stock (individual items) of an entry.
      * @param onPurchase Called when an entry is clicked, receiving the clicking player and the entry.
      * @param onDeposit Called with the contents of the sell window when it closes,
@@ -64,7 +67,7 @@ internal object WanderingTraderGui {
      */
     fun openShop(
         player: Player,
-        items: List<WanderingTraderItemData>,
+        items: () -> List<WanderingTraderItemData>,
         stockOf: (WanderingTraderItemData) -> Int,
         onPurchase: (Player, WanderingTraderItemData) -> Unit,
         onDeposit: (Player, List<ItemStack?>) -> Unit,
@@ -77,12 +80,17 @@ internal object WanderingTraderGui {
      */
     private fun buildShopWindow(
         player: Player,
-        items: List<WanderingTraderItemData>,
+        items: () -> List<WanderingTraderItemData>,
         stockOf: (WanderingTraderItemData) -> Int,
         onPurchase: (Player, WanderingTraderItemData) -> Unit,
         onDeposit: (Player, List<ItemStack?>) -> Unit,
-    ): Window =
-        window(player) {
+    ): Window {
+        lateinit var rebuild: () -> Unit
+        val contentProvider = mutableProvider(emptyList<Item>())
+        rebuild = { contentProvider.set(items().map { it.toGuiItem(stockOf, onPurchase, rebuild) }) }
+        rebuild()
+
+        return window(player) {
             title by MM.deserialize(TITLE)
             upperGui by
                 pagedItemsGui(
@@ -98,52 +106,57 @@ internal object WanderingTraderGui {
                         item {
                             itemProvider by ItemBuilder(Material.EMERALD).setName(SELL_BUTTON_NAME)
                             onClick {
-                                val shopWindow = buildShopWindow(player, items, stockOf, onPurchase, onDeposit)
-                                openSell(player, onDeposit, shopWindow)
+                                openSell(player, onDeposit) {
+                                    buildShopWindow(player, items, stockOf, onPurchase, onDeposit)
+                                }
                             }
                         }
                     '>' by forward
-                    content by items.map { it.toGuiItem(stockOf, onPurchase) }
+                    content by contentProvider
                 }
         }
+    }
 
     /**
      * Builds and opens the sell window: a deposit inventory whose contents are processed on close.
-     * Closing the window returns the player to [shopWindow].
+     * When the player closes the window themselves, [shopWindow] is rebuilt and reopened (deferred
+     * one tick, as opening a window during close handling is not allowed, and rebuilt after the
+     * deposit is processed so new stock shows up immediately).
      */
     private fun openSell(
         player: Player,
         onDeposit: (Player, List<ItemStack?>) -> Unit,
-        shopWindow: Window,
+        shopWindow: () -> Window,
     ) {
         val deposit = VirtualInventory(DEPOSIT_SIZE)
         window(player) {
             title by MM.deserialize(SELL_TITLE)
             upperGui by deposit
-            fallbackWindow by shopWindow
-            onClose { onDeposit(player, deposit.items.toList()) }
+            onClose {
+                onDeposit(player, deposit.items.toList())
+                if (reason == InventoryCloseEvent.Reason.PLAYER) {
+                    player.scheduler.runDelayed(instance, { shopWindow().open() }, null, 1L)
+                }
+            }
         }.open()
     }
 
     /**
      * Builds the button displaying this trade entry, describing price and current stock in its lore.
-     * The stock line re-resolves whenever the item updates.
+     * [onContentChanged] runs on every click so drained entries disappear immediately.
      */
     private fun WanderingTraderItemData.toGuiItem(
         stockOf: (WanderingTraderItemData) -> Int,
         onPurchase: (Player, WanderingTraderItemData) -> Unit,
-    ): Item {
-        lateinit var self: Item
-        self =
-            item {
-                itemProvider by provider { ItemBuilder(icon(stockOf)) }
-                onClick {
-                    onPurchase(player, this@toGuiItem)
-                    self.notifyWindows()
-                }
+        onContentChanged: () -> Unit,
+    ): Item =
+        item {
+            itemProvider by provider { ItemBuilder(icon(stockOf)) }
+            onClick {
+                onPurchase(player, this@toGuiItem)
+                onContentChanged()
             }
-        return self
-    }
+        }
 
     /**
      * Builds the display icon for this trade entry, appending lore lines describing the price

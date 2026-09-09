@@ -27,6 +27,7 @@ internal object WanderingTraderMechanic : MechanicInterface {
     private const val NO_FUNDS_MSG = "<firewatch>You can't afford this item!</gradient>"
     private const val OUT_OF_STOCK_MSG = "<firewatch>The trader is out of stock!</gradient>"
     private const val SOLD_MSG = "<green>The trader accepted your items!"
+    private const val EMERALDS_REJECTED_MSG = "<firewatch>The trader doesn't accept emeralds!</gradient>"
     private const val STOCK_FILE_NAME = "wandering_trader_stock.yml"
 
     /** Emerald price per item when buying; selling pays 50% of it (1 emerald). */
@@ -63,7 +64,7 @@ internal object WanderingTraderMechanic : MechanicInterface {
         if (event.hand != EquipmentSlot.HAND) return
         if (event.rightClicked !is WanderingTrader) return
         event.isCancelled = true
-        WanderingTraderGui.openShop(event.player, stockedTrades(), ::stockOf, ::purchase, ::processDeposit)
+        WanderingTraderGui.openShop(event.player, ::stockedTrades, ::stockOf, ::purchase, ::processDeposit)
     }
 
     /**
@@ -123,7 +124,8 @@ internal object WanderingTraderMechanic : MechanicInterface {
 
     /**
      * Processes the contents of the sell window: every deposited item is added to the shared stock
-     * and paid [SELL_PAYOUT] emerald(s) apiece. Item meta is not preserved in the stock.
+     * and paid [SELL_PAYOUT] emerald(s) apiece. Emeralds are returned unprocessed.
+     * Item meta is not preserved in the stock.
      *
      * @param player The selling player.
      * @param contents The deposited items, possibly containing null slots.
@@ -133,15 +135,26 @@ internal object WanderingTraderMechanic : MechanicInterface {
         contents: List<ItemStack?>,
     ) {
         loadStock()
-        val stacks = contents.filterNotNull()
-        stacks.forEach { stack ->
+        var sold = false
+        var rejected = false
+        contents.filterNotNull().forEach { stack ->
+            if (stack.type == Material.EMERALD) {
+                give(player, stack)
+                rejected = true
+                return@forEach
+            }
             stock.merge(stack.type, stack.amount, Int::plus)
             give(player, ItemStack.of(Material.EMERALD, SELL_PAYOUT * stack.amount))
+            sold = true
         }
-        if (stacks.isNotEmpty()) {
+        if (sold) {
             saveStock()
             player.sendActionBar(MM.deserialize(SOLD_MSG))
             player.playSound(PURCHASE_SOUND)
+        }
+        if (rejected) {
+            player.sendActionBar(MM.deserialize(EMERALDS_REJECTED_MSG))
+            player.playSound(NO_FUNDS_SOUND)
         }
     }
 
