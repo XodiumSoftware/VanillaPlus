@@ -31,6 +31,7 @@ internal object WanderingTraderGui {
     private const val NEXT_PAGE_NAME = "<gray>Next page"
     private const val SELL_BUTTON_NAME = "<green><b>Sell items"
     private const val BULK_HINT = "<dark_gray>LMB: 1x | MMB: 10x | RMB: 100x"
+    private const val EMERALD_SPRITE = "<sprite:items:item/emerald>"
     private const val DEPOSIT_SIZE = 27
 
     private val BORDER = Item.simple(ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).hideTooltip(true))
@@ -177,9 +178,8 @@ internal object WanderingTraderGui {
                 val lore = meta.lore()?.toMutableList() ?: mutableListOf()
                 lore.add(
                     MM
-                        .deserialize("<gray>Price: ${price.amount}x ")
-                        .decoration(TextDecoration.ITALIC, false)
-                        .append(price.displayName()),
+                        .deserialize("<gray>Price: ${price.amount}x $EMERALD_SPRITE")
+                        .decoration(TextDecoration.ITALIC, false),
                 )
                 lore.add(
                     MM
