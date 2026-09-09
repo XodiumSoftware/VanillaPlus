@@ -101,7 +101,7 @@ Enhances base gameplay with custom enchantments, items, and mechanics.
 
 ### Travelling Merchant
 
-Operators can spawn a Travelling Merchant with `/merchant`. Right-clicking it opens a shop GUI to buy rare items using emeralds. Natural wandering traders are unaffected, and the merchant persists across restarts.
+Wandering traders spawn as Travelling Merchants instead: right-clicking one opens a shop GUI to buy rare items using emeralds. Merchants are not persistent and despawn like vanilla wandering traders. Operators can trigger an early spawn nearby with `/merchant`.
 
 ### Enchantments
 

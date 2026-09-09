@@ -3,11 +3,13 @@ package org.xodium.illyriaplus.mechanics.entity
 import io.papermc.paper.command.brigadier.Commands
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
 import org.bukkit.entity.WanderingTrader
 import org.bukkit.event.EventHandler
+import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
@@ -21,13 +23,23 @@ import org.xodium.illyriaplus.data.CommandData
 import org.xodium.illyriaplus.data.MerchantItemData
 import org.xodium.illyriaplus.gui.MerchantGui
 import org.xodium.illyriaplus.mechanics.MechanicInterface
+import kotlin.math.cos
+import kotlin.math.floor
+import kotlin.math.sin
+import kotlin.random.Random
 
-/** Represents a mechanic handling the travelling merchant shop GUI on tagged wandering traders. */
+/** Represents a mechanic handling travelling merchants: tagged wandering traders that open a custom shop GUI. */
 internal object MerchantMechanic : MechanicInterface {
     private const val TRADER_NAME = "<mango><b>Travelling Merchant</b></gradient>"
     private const val SPAWNED_MSG = "<mango>Travelling Merchant spawned!</gradient>"
     private const val PURCHASE_MSG = "<green>Purchase successful!"
     private const val NO_FUNDS_MSG = "<firewatch>You can't afford this item!</gradient>"
+
+    /** Vanilla wandering trader lifetime (40 minutes), applied to merchants so they despawn naturally. */
+    private const val DESPAWN_DELAY = 48000
+
+    private const val SPAWN_DISTANCE_MIN = 10
+    private const val SPAWN_DISTANCE_MAX = 25
 
     override val cmds =
         listOf(
@@ -36,7 +48,7 @@ internal object MerchantMechanic : MechanicInterface {
                     .literal("merchant")
                     .requires { it.sender.hasPermission(perms[0]) }
                     .playerExecuted { player, _ -> player.spawnMerchant() },
-                "Spawns a travelling merchant with a shop GUI",
+                "Spawns a travelling merchant nearby, as if a wandering trader spawned early",
             ),
         )
 
@@ -73,8 +85,11 @@ internal object MerchantMechanic : MechanicInterface {
     @EventHandler(ignoreCancelled = true)
     fun on(event: PlayerInteractEntityEvent) = handleInteract(event)
 
+    @EventHandler(ignoreCancelled = true)
+    fun on(event: CreatureSpawnEvent) = handleNaturalSpawn(event)
+
     /**
-     * Opens the shop GUI when a player right-clicks a wandering trader tagged as a travelling merchant,
+     * Opens the shop GUI when a player right-clicks a travelling merchant,
      * suppressing the vanilla trade window.
      *
      * @param event The PlayerInteractEntityEvent triggered when a player interacts with an entity.
@@ -88,16 +103,46 @@ internal object MerchantMechanic : MechanicInterface {
     }
 
     /**
-     * Spawns a wandering trader tagged as a travelling merchant at this player's location.
+     * Converts every naturally spawned wandering trader into a travelling merchant.
+     *
+     * @param event The CreatureSpawnEvent triggered when a creature spawns.
+     */
+    private fun handleNaturalSpawn(event: CreatureSpawnEvent) {
+        if (event.spawnReason != CreatureSpawnEvent.SpawnReason.NATURAL) return
+        val trader = event.entity as? WanderingTrader ?: return
+        makeMerchant(trader)
+    }
+
+    /**
+     * Spawns a travelling merchant on the surface near this player, mimicking a natural
+     * wandering trader spawn (natural despawn, non-persistent).
      */
     private fun Player.spawnMerchant() {
-        world.spawn(location, WanderingTrader::class.java) {
-            it.persistentDataContainer.set(MERCHANT_KEY, PersistentDataType.BOOLEAN, true)
-            it.customName(MM.deserialize(TRADER_NAME))
-            it.isCustomNameVisible = true
-            it.isPersistent = true
-        }
+        val angle = Random.nextDouble(Math.PI * 2)
+        val distance = Random.nextInt(SPAWN_DISTANCE_MIN, SPAWN_DISTANCE_MAX + 1)
+        val x = floor(location.x + cos(angle) * distance)
+        val z = floor(location.z + sin(angle) * distance)
+        val y = world.getHighestBlockYAt(x.toInt(), z.toInt()) + 1.0
+        world.spawn(
+            Location(world, x, y, z),
+            WanderingTrader::class.java,
+            CreatureSpawnEvent.SpawnReason.CUSTOM,
+            ::makeMerchant,
+        )
         sendActionBar(MM.deserialize(SPAWNED_MSG))
+    }
+
+    /**
+     * Tags a wandering trader as a travelling merchant and applies its name;
+     * without persistence, so it despawns like a vanilla wandering trader.
+     *
+     * @param trader The wandering trader to convert.
+     */
+    private fun makeMerchant(trader: WanderingTrader) {
+        trader.persistentDataContainer.set(MERCHANT_KEY, PersistentDataType.BOOLEAN, true)
+        trader.customName(MM.deserialize(TRADER_NAME))
+        trader.isCustomNameVisible = true
+        trader.despawnDelay = DESPAWN_DELAY
     }
 
     /**
