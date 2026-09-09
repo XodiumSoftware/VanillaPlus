@@ -17,6 +17,9 @@ import org.xodium.illyriaplus.data.WanderingTraderItemData
 import org.xodium.illyriaplus.gui.WanderingTraderGui
 import org.xodium.illyriaplus.mechanics.MechanicInterface
 import java.io.File
+import java.nio.file.AtomicMoveNotSupportedException
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 import java.util.Base64
 
 /**
@@ -63,6 +66,9 @@ internal object WanderingTraderMechanic : MechanicInterface {
     private val EMERALD: ItemStack = ItemStack.of(Material.EMERALD)
 
     private val stockFile = File(instance.dataFolder, STOCK_FILE_NAME)
+
+    /** Staging file for atomic stock writes; see [writeStockFile]. */
+    private val stockTempFile = File(instance.dataFolder, "$STOCK_FILE_NAME.tmp")
 
     /**
      * Shared stock of all wandering traders, keyed by serialized single-item stacks (see [keyOf])
@@ -388,7 +394,10 @@ internal object WanderingTraderMechanic : MechanicInterface {
 
     /**
      * Writes [yaml] to the stock file, guarding against interleaved and out-of-order writes:
-     * snapshots not newer than the last written one are skipped.
+     * snapshots not newer than the last written one are skipped. The content is written to
+     * [stockTempFile] first and then moved over [stockFile], so a crash mid-write can only
+     * corrupt the temporary staging file, never the previous intact stock file. Falls back to a
+     * plain move on filesystems without atomic-move support.
      *
      * @param yaml The serialized stock and demand configuration.
      * @param version The snapshot version; writes proceed only when newer than the last written.
@@ -402,8 +411,21 @@ internal object WanderingTraderMechanic : MechanicInterface {
             writtenVersion = version
             runCatching {
                 instance.dataFolder.mkdirs()
-                stockFile.writeText(yaml)
-            }.onFailure { instance.logger.warning("Failed to save wandering trader stock: ${it.message}") }
+                Files.writeString(stockTempFile.toPath(), yaml)
+                try {
+                    Files.move(
+                        stockTempFile.toPath(),
+                        stockFile.toPath(),
+                        StandardCopyOption.ATOMIC_MOVE,
+                        StandardCopyOption.REPLACE_EXISTING,
+                    )
+                } catch (_: AtomicMoveNotSupportedException) {
+                    Files.move(stockTempFile.toPath(), stockFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
+                }
+            }.onFailure {
+                stockTempFile.delete()
+                instance.logger.warning("Failed to save wandering trader stock: ${it.message}")
+            }
         }
     }
 
