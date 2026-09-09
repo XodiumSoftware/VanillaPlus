@@ -106,6 +106,7 @@ internal class IllyriaPlus : JavaPlugin() {
                 TreeMechanic,
                 RulesMechanic,
                 ResourcePackMechanic,
+                WanderingTraderMechanic,
             )
 
         logger.info(
@@ -133,6 +134,14 @@ internal class IllyriaPlus : JavaPlugin() {
     }
 
     override fun onDisable() {
+        if (::mechanics.isInitialized) {
+            mechanics.forEach { mechanic ->
+                runCatching { mechanic.onDisable() }
+                    .onFailure {
+                        logger.warning("Failed to disable ${mechanic::class.simpleName}: ${it.message}")
+                    }
+            }
+        }
         PacketEvents.getAPI().terminate()
     }
 }

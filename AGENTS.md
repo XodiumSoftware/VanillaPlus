@@ -4,7 +4,7 @@
 
 - **Name:** IllyriaPlus
 - **Type:** Single-module Minecraft Paper plugin project (server-side only)
-- **MC Version:** 26.1.2
+- **MC Version:** 26.2
 - **Language:** Kotlin (JVM 25)
 - **Build Tool:** Gradle with Kotlin DSL
 
@@ -12,7 +12,7 @@
 
 | Category            | Technology                              | Purpose                            |
 |---------------------|-----------------------------------------|------------------------------------|
-| **Core API**        | [Paper API](https://papermc.io/) 26.1.2 | Minecraft server plugin API        |
+| **Core API**        | [Paper API](https://papermc.io/) 26.2   | Minecraft server plugin API        |
 | **Language**        | Kotlin 2.4.0                            | JVM language                       |
 | **Build Tool**      | Gradle (Kotlin DSL)                     | Build automation                   |
 | **Gradle Plugins**  | Shadow 9.4.2                            | Fat JAR creation                   |
@@ -21,12 +21,13 @@
 |                     | foojay-resolver 1.0.0                   | Auto-download JVM toolchains       |
 |                     | ktlint 12.3.0                           | Kotlin linting                     |
 | **Text Formatting** | MiniMessage                             | Adventure API component-based text |
+| **GUI Framework**   | [InvUI](https://docs.xenondevs.xyz/invui/) 2.3.2 | Inventory window GUIs              |
 | **Code Style**      | ktlint                                  | Kotlin linting (IDE plugin)        |
 
 ### Paper API Resources
 
 - **Documentation**: https://docs.papermc.io/paper/dev/
-- **JavaDoc**: https://jd.papermc.io/paper/26.1.2/ (matches project version)
+- **JavaDoc**: https://jd.papermc.io/paper/26.2/ (matches project version)
 
 ### Paper API Notes
 
@@ -42,7 +43,7 @@
 # Build the plugin
 ./gradlew shadowJar
 
-# Run local test server (auto-downloads Paper 26.1.2)
+# Run local test server (auto-downloads Paper 26.2)
 ./gradlew runServer
 
 # Run linting
