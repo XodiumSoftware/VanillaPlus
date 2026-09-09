@@ -31,7 +31,6 @@ internal object WanderingTraderGui {
     private const val NEXT_PAGE_NAME = "<gray>Next page"
     private const val SELL_BUTTON_NAME = "<green><b>Sell items"
     private const val BULK_HINT = "<dark_gray>LMB: 1x | MMB: 10x | RMB: 100x"
-    private const val EMERALD_SPRITE = "<sprite:items:item/emerald>"
     private const val DEPOSIT_SIZE = 27
 
     private val BORDER = Item.simple(ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).hideTooltip(true))
@@ -168,22 +167,17 @@ internal object WanderingTraderGui {
         }
 
     /**
-     * Builds the display icon for this trade entry, appending lore lines describing the price
-     * and the currently available stock (red when sold out).
+     * Builds the display icon for this trade entry: the stock is shown as the vanilla stack count
+     * (capped at 127, the wire limit) and the lore describes the price.
      */
     private fun WanderingTraderItemData.icon(stockOf: (WanderingTraderItemData) -> Int): ItemStack =
         result.clone().apply {
+            amount = stockOf(this@icon).coerceIn(1, 127)
             editMeta { meta ->
-                val stock = stockOf(this@icon)
                 val lore = meta.lore()?.toMutableList() ?: mutableListOf()
                 lore.add(
                     MM
-                        .deserialize("<gray>Price: ${price.amount}x $EMERALD_SPRITE")
-                        .decoration(TextDecoration.ITALIC, false),
-                )
-                lore.add(
-                    MM
-                        .deserialize("${if (stock > 0) "<gray>" else "<red>"}In stock: $stock")
+                        .deserialize("<gray>Price: ${price.amount}x <sprite:items:item/${price.type.key.key}>")
                         .decoration(TextDecoration.ITALIC, false),
                 )
                 lore.add(MM.deserialize(BULK_HINT).decoration(TextDecoration.ITALIC, false))
