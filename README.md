@@ -18,7 +18,6 @@
 [![Contributors][contributors_shield_url]][contributors_url]
 [![Issues][issues_shield_url]][issues_url]
 [![Roadmap][roadmap_shield_url]][roadmap_url]
-[![Docs][docs_shield_url]][docs_url]
 </div>
 
 ## Table of Contents
@@ -49,10 +48,6 @@
 <p align="right"><a href="#readme-top">▲</a></p>
 
 [architecture_url]: https://github.com/XodiumSoftware/IllyriaPlus/blob/main/ARCHITECTURE.md
-
-[docs_shield_url]: https://img.shields.io/badge/Docs-Click%20Me!-blue.svg?style=for-the-badge
-
-[docs_url]: https://illyriaplus.xodium.org
 
 [built_with_shield_url]: https://skillicons.dev/icons?i=kotlin,gradle,github,githubactions
 
