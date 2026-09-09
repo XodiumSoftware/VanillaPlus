@@ -99,6 +99,10 @@ internal object MessagesMechanic : MechanicInterface {
 
 Enhances base gameplay with custom enchantments, items, and mechanics.
 
+### Travelling Merchant
+
+Operators can spawn a Travelling Merchant with `/merchant`. Right-clicking it opens a shop GUI to buy rare items using emeralds. Natural wandering traders are unaffected, and the merchant persists across restarts.
+
 ### Enchantments
 
 Custom enchantments are divided into two groups:

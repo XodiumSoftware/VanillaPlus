@@ -107,6 +107,7 @@ internal class IllyriaPlus : JavaPlugin() {
                 TreeMechanic,
                 RulesMechanic,
                 ResourcePackMechanic,
+                MerchantMechanic,
             )
 
         logger.info(
