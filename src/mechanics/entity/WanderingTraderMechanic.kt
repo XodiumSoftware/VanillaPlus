@@ -19,8 +19,10 @@ import java.io.File
 
 /**
  * Replaces the wandering trader's trade GUI with a custom shop GUI shared by all wandering traders.
- * The stock is shared runtime state filled by players: any item sells for 1 emerald
- * ([SELL_PRICE_RATIO] of [DEFAULT_PRICE]) and resells for [DEFAULT_PRICE].
+ * The stock is shared runtime state filled by players, with supply-and-demand pricing: items trade
+ * at [BASE_PRICE] emeralds by default, drifting by one emerald per [DEMAND_PER_PRICE_STEP] net
+ * items bought or sold (clamped to [[MIN_PRICE]; [MAX_PRICE]]), and selling pays out at
+ * [SELL_PRICE_RATIO] of the current price.
  */
 internal object WanderingTraderMechanic : MechanicInterface {
     private const val PURCHASE_MSG = "<green>Purchase successful!"
@@ -30,14 +32,17 @@ internal object WanderingTraderMechanic : MechanicInterface {
     private const val EMERALDS_REJECTED_MSG = "<firewatch>The trader doesn't accept emeralds!</gradient>"
     private const val STOCK_FILE_NAME = "wandering_trader_stock.yml"
 
-    /** Emerald price per item when buying; selling pays 50% of it (1 emerald). */
-    private const val DEFAULT_PRICE = 2
+    /** Base emerald price per item, shifted by supply and demand. */
+    private const val BASE_PRICE = 2
 
-    /** The fraction of [DEFAULT_PRICE] the trader pays when buying items from players. */
+    /** The fraction of the current price the trader pays when buying items from players. */
     private const val SELL_PRICE_RATIO = 0.5
 
-    /** Emeralds paid per sold item: [SELL_PRICE_RATIO] of [DEFAULT_PRICE], at least 1. */
-    private val SELL_PAYOUT = (DEFAULT_PRICE * SELL_PRICE_RATIO).toInt().coerceAtLeast(1)
+    /** Net bought-minus-sold items needed to shift the price by one emerald. */
+    private const val DEMAND_PER_PRICE_STEP = 32
+
+    private const val MIN_PRICE = 1
+    private const val MAX_PRICE = 64
 
     private val PURCHASE_SOUND: Sound =
         Sound.sound(Key.key("entity.experience_orb.pickup"), Sound.Source.PLAYER, 1.0f, 1.0f)
@@ -48,6 +53,9 @@ internal object WanderingTraderMechanic : MechanicInterface {
 
     /** Shared stock of all wandering traders, mapped to individual item counts per [Material]. */
     private val stock = mutableMapOf<Material, Int>()
+
+    /** Net bought-minus-sold items per [Material]; shifts prices via [priceOf]. */
+    private val demand = mutableMapOf<Material, Int>()
 
     private var stockLoaded = false
 
@@ -68,8 +76,8 @@ internal object WanderingTraderMechanic : MechanicInterface {
     }
 
     /**
-     * Returns the trade entries currently in stock, one per stocked material, alphabetically ordered.
-     * Every entry is a single item priced at [DEFAULT_PRICE] emeralds.
+     * Returns the trade entries currently in stock, one per stocked material, alphabetically ordered,
+     * priced at their current demand-driven value.
      */
     private fun stockedTrades(): List<WanderingTraderItemData> {
         loadStock()
@@ -77,7 +85,7 @@ internal object WanderingTraderMechanic : MechanicInterface {
             .filterValues { it > 0 }
             .keys
             .sortedBy { it.name }
-            .map { WanderingTraderItemData(ItemStack.of(it), ItemStack.of(Material.EMERALD, DEFAULT_PRICE)) }
+            .map { WanderingTraderItemData(ItemStack.of(it), ItemStack.of(Material.EMERALD, priceOf(it))) }
     }
 
     /**
@@ -122,6 +130,7 @@ internal object WanderingTraderMechanic : MechanicInterface {
         }
 
         stock[item.result.type] = (stock[item.result.type] ?: 0) - item.result.amount * bought
+        demand.merge(item.result.type, item.result.amount * bought, Int::plus)
         saveStock()
         give(player, item.result.clone().apply { amount = item.result.amount * bought })
         player.sendActionBar(MM.deserialize(PURCHASE_MSG))
@@ -130,8 +139,8 @@ internal object WanderingTraderMechanic : MechanicInterface {
 
     /**
      * Processes the contents of the sell window: every deposited item is added to the shared stock
-     * and paid [SELL_PAYOUT] emerald(s) apiece. Emeralds are returned unprocessed.
-     * Item meta is not preserved in the stock.
+     * and paid [SELL_PRICE_RATIO] of its current price in emeralds, rounding down to at least 1.
+     * Emeralds are returned unprocessed. Item meta is not preserved in the stock.
      *
      * @param player The selling player.
      * @param contents The deposited items, possibly containing null slots.
@@ -150,7 +159,8 @@ internal object WanderingTraderMechanic : MechanicInterface {
                 return@forEach
             }
             stock.merge(stack.type, stack.amount, Int::plus)
-            give(player, ItemStack.of(Material.EMERALD, SELL_PAYOUT * stack.amount))
+            give(player, ItemStack.of(Material.EMERALD, sellPriceOf(stack.type) * stack.amount))
+            demand.merge(stack.type, -stack.amount, Int::plus)
             sold = true
         }
         if (sold) {
@@ -173,6 +183,19 @@ internal object WanderingTraderMechanic : MechanicInterface {
     }
 
     /**
+     * Returns the current buy price (emeralds per item) for a material, starting at [BASE_PRICE]
+     * and shifting by one emerald per [DEMAND_PER_PRICE_STEP] net traded items.
+     */
+    private fun priceOf(type: Material): Int =
+        (BASE_PRICE + (demand[type] ?: 0) / DEMAND_PER_PRICE_STEP).coerceIn(MIN_PRICE, MAX_PRICE)
+
+    /**
+     * Returns the current payout (emeralds per item) when selling a material to the trader:
+     * [SELL_PRICE_RATIO] of [priceOf], at least 1 emerald.
+     */
+    private fun sellPriceOf(type: Material): Int = (priceOf(type) * SELL_PRICE_RATIO).toInt().coerceAtLeast(1)
+
+    /**
      * Gives an item to the player, dropping overflow at their feet.
      */
     private fun give(
@@ -187,7 +210,7 @@ internal object WanderingTraderMechanic : MechanicInterface {
     }
 
     /**
-     * Lazily loads the stock from disk.
+     * Lazily loads the stock and demand from disk.
      */
     private fun loadStock() {
         if (stockLoaded) return
@@ -197,14 +220,18 @@ internal object WanderingTraderMechanic : MechanicInterface {
         config.getConfigurationSection("stock")?.getKeys(false)?.forEach { key ->
             Material.getMaterial(key)?.let { stock[it] = config.getInt("stock.$key") }
         }
+        config.getConfigurationSection("demand")?.getKeys(false)?.forEach { key ->
+            Material.getMaterial(key)?.let { demand[it] = config.getInt("demand.$key") }
+        }
     }
 
     /**
-     * Persists the stock to disk. Entries with zero stock are omitted.
+     * Persists the stock and demand to disk. Entries with zero stock or zero demand are omitted.
      */
     private fun saveStock() {
         val config = YamlConfiguration()
         stock.filterValues { it > 0 }.forEach { (type, amount) -> config.set("stock.${type.name}", amount) }
+        demand.filterValues { it != 0 }.forEach { (type, amount) -> config.set("demand.${type.name}", amount) }
         runCatching {
             instance.dataFolder.mkdirs()
             config.save(stockFile)
