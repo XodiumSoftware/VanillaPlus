@@ -19,10 +19,8 @@
 |                     | run-paper 3.0.2                         | Local test server                  |
 |                     | resource-factory 1.3.1                  | `paper-plugin.yml` generation      |
 |                     | foojay-resolver 1.0.0                   | Auto-download JVM toolchains       |
-|                     | Dokka 2.2.0                             | Kotlin API documentation           |
 |                     | ktlint 12.3.0                           | Kotlin linting                     |
 | **Text Formatting** | MiniMessage                             | Adventure API component-based text |
-| **Docs**            | Dokka                                   | Kotlin API documentation           |
 | **Code Style**      | ktlint                                  | Kotlin linting (IDE plugin)        |
 
 ### Paper API Resources
@@ -38,16 +36,6 @@
 - Enchantment tags created via `LifecycleEvents.TAGS.postFlatten`
 - Plugin bootstrapper pattern for early registry access
 
-### Dokka
-
-Documentation is generated with Dokka from KDoc comments in the source code.
-
-- Run `./gradlew dokkaGenerateHtml` to generate documentation
-- Output goes to `docs/` directory (published to GitHub Pages automatically)
-- Auto-deployed via GitHub Actions on pushes to main
-- Key files to document: interfaces and public APIs
-- Use KDoc format: `/** ... */` with Markdown support
-
 ## Quick Commands
 
 ```bash
@@ -56,9 +44,6 @@ Documentation is generated with Dokka from KDoc comments in the source code.
 
 # Run local test server (auto-downloads Paper 26.1.2)
 ./gradlew runServer
-
-# Generate Dokka documentation
-./gradlew dokkaGenerateHtml
 
 # Run linting
 ./gradlew ktlintCheck
@@ -85,7 +70,6 @@ IllyriaPlus/
 │   │   └── vanilla/            # Vanilla-style custom recipes
 │   ├── data/                   # Data classes
 │   └── pdcs/                   # PlayerPDC
-└── docs/                       # Generated documentation
 ```
 
 ## Architecture
@@ -189,7 +173,6 @@ Within each group:
     - Add new public APIs (interfaces, managers, utils)
     - Change existing function signatures or behavior
     - Add complex logic that needs explanation
-    - **Run `./gradlew dokkaGenerateHtml`** to regenerate docs after changes
 
 **Rule of thumb:** If a code change would confuse someone reading the docs, update the docs.
 
@@ -214,7 +197,6 @@ GitHub Actions workflows in `.github/workflows/`:
 5. In `IllyriaPlus.kt`:
     - Add `YournameEnchantment` to the `enchantments` list
 6. Add KDoc comments to explain the enchantment's behavior
-7. Run `./gradlew dokkaGenerateHtml` to regenerate documentation
 
 ### Adding a Mechanic
 

@@ -62,5 +62,3 @@ After making changes, run:
 ./gradlew shadowJar
 ./gradlew ktlintCheck
 ```
-
-If the change includes KDoc or public API changes, also run `./gradlew dokkaGenerateHtml`.

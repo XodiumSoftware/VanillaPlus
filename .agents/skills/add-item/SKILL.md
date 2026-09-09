@@ -40,8 +40,6 @@ Use this skill when the user wants to add a new reusable item builder to the pro
 2. Update `ARCHITECTURE.md`:
    - Add the item to the relevant group list under the Items section.
    - If a new group folder is created, mention it in the project structure and items sections.
-3. If the change is significant, run `./gradlew dokkaGenerateHtml`.
-
 ## Template
 
 ```kotlin

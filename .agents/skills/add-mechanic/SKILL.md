@@ -38,8 +38,6 @@ Use this skill when the user wants to add a new gameplay mechanic to the project
    - Add the mechanic to the correct category list.
    - Increment the mechanic count if it is being enabled.
 2. Add a concise KDoc comment to the object explaining its purpose.
-3. If the change is significant, run `./gradlew dokkaGenerateHtml`.
-
 ## Template
 
 ```kotlin

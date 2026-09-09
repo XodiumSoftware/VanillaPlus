@@ -17,9 +17,6 @@ Thumbs.db
 # Server files
 run/
 
-# Dokka generated documentation (committed for GitHub Pages)
-docs/
-
 # IDE specific files
 .idea
 .vscode
