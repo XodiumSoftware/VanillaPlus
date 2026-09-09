@@ -57,11 +57,18 @@ internal object WanderingTraderGui {
                 }
             }.addClickHandler { _, gui, _ -> gui.page++ }
 
+    /** Open shop windows and their content rebuild callbacks; refreshed together on stock and price changes. */
+    private val openShops = mutableMapOf<Window, () -> Unit>()
+
+    /** Open sell windows, closed alongside shops so deposited items are still processed. */
+    private val openSells = mutableSetOf<Window>()
+
     /**
-     * Builds and opens the wandering trader shop window for the given player.
+     * Builds and opens the wandering trader shop window for the given player. The window is
+     * tracked until closed, and its content is refreshed on every stock or price change.
      *
      * @param player The player viewing the shop.
-     * @param items Supplies the currently stocked trade entries, re-evaluated each time the window is built.
+     * @param items Supplies the currently stocked trade entries, re-evaluated on every refresh.
      * @param stockOf Returns the current stock (individual items) of an entry.
      * @param onPurchase Called when an entry is clicked, receiving the clicking player and the entry.
      * @param onDeposit Called with the contents of the sell window when it closes,
@@ -78,7 +85,18 @@ internal object WanderingTraderGui {
     }
 
     /**
-     * Builds the shop window, including paged content and navigation.
+     * Closes every open shop and sell window, e.g. when the plugin is disabled. Closing a sell
+     * window processes its deposited contents via its close handler, so this must run before any
+     * state is persisted.
+     */
+    fun closeAll() {
+        openShops.keys.toList().forEach { it.close() }
+        openSells.toList().forEach { it.close() }
+    }
+
+    /**
+     * Builds the shop window, including paged content and navigation, and registers it for
+     * live refreshes until it is closed.
      */
     private fun buildShopWindow(
         player: Player,
@@ -89,41 +107,46 @@ internal object WanderingTraderGui {
     ): Window {
         lateinit var rebuild: () -> Unit
         val contentProvider = mutableProvider(emptyList<Item>())
-        rebuild = { contentProvider.set(items().map { it.toGuiItem(stockOf, onPurchase, rebuild) }) }
+        rebuild = { contentProvider.set(items().map { it.toGuiItem(stockOf, onPurchase) }) }
         rebuild()
 
-        return window(player) {
-            title by MM.deserialize(TITLE)
-            upperGui by
-                pagedItemsGui(
-                    "# # # # # # # # #",
-                    "# x x x x x x x #",
-                    "# x x x x x x x #",
-                    "# # # < s > # # #",
-                ) {
-                    '#' by BORDER
-                    'x' by Markers.CONTENT_LIST_SLOT_HORIZONTAL
-                    '<' by back
-                    's' by
-                        item {
-                            itemProvider by ItemBuilder(Material.EMERALD).setName(SELL_BUTTON_NAME)
-                            onClick {
-                                openSell(player, onDeposit) {
-                                    buildShopWindow(player, items, stockOf, onPurchase, onDeposit)
+        val shopWindow =
+            window(player) {
+                title by MM.deserialize(TITLE)
+                upperGui by
+                    pagedItemsGui(
+                        "# # # # # # # # #",
+                        "# x x x x x x x #",
+                        "# x x x x x x x #",
+                        "# # # < s > # # #",
+                    ) {
+                        '#' by BORDER
+                        'x' by Markers.CONTENT_LIST_SLOT_HORIZONTAL
+                        '<' by back
+                        's' by
+                            item {
+                                itemProvider by ItemBuilder(Material.EMERALD).setName(SELL_BUTTON_NAME)
+                                onClick {
+                                    openSell(player, onDeposit) {
+                                        buildShopWindow(player, items, stockOf, onPurchase, onDeposit)
+                                    }
                                 }
                             }
-                        }
-                    '>' by forward
-                    content by contentProvider
-                }
-        }
+                        '>' by forward
+                        content by contentProvider
+                    }
+            }
+        openShops[shopWindow] = rebuild
+        shopWindow.addCloseHandler { openShops.remove(shopWindow) }
+        return shopWindow
     }
 
     /**
      * Builds and opens the sell window: a deposit inventory whose contents are processed on close.
      * When the player closes the window themselves, [shopWindow] is rebuilt and reopened (deferred
      * one tick, as opening a window during close handling is not allowed, and rebuilt after the
-     * deposit is processed so new stock shows up immediately).
+     * deposit is processed so new stock shows up immediately). All open shop windows are refreshed
+     * afterwards so other viewers see the new stock and prices.
      */
     private fun openSell(
         player: Player,
@@ -131,38 +154,49 @@ internal object WanderingTraderGui {
         shopWindow: () -> Window,
     ) {
         val deposit = VirtualInventory(DEPOSIT_SIZE)
-        window(player) {
-            title by MM.deserialize(SELL_TITLE)
-            upperGui by deposit
-            onClose {
-                onDeposit(player, deposit.items.toList())
-                if (reason == InventoryCloseEvent.Reason.PLAYER) {
-                    player.scheduler.runDelayed(instance, { shopWindow().open() }, null, 1L)
+        val sellWindow =
+            window(player) {
+                title by MM.deserialize(SELL_TITLE)
+                upperGui by deposit
+                onClose {
+                    onDeposit(player, deposit.items.toList())
+                    refreshAll()
+                    if (reason == InventoryCloseEvent.Reason.PLAYER) {
+                        player.scheduler.runDelayed(instance, { shopWindow().open() }, null, 1L)
+                    }
                 }
             }
-        }.open()
+        openSells += sellWindow
+        sellWindow.addCloseHandler { openSells -= sellWindow }
+        sellWindow.open()
     }
 
     /**
-     * Builds the button displaying this trade entry, describing price and current stock in its lore.
-     * [onContentChanged] runs on every click, and middle/right clicks buy 10x/100x.
+     * Rebuilds the content of every open shop window so all viewers see current stock and prices.
+     */
+    private fun refreshAll() = openShops.values.toList().forEach { it() }
+
+    /**
+     * Builds the button displaying this trade entry, describing price and current stock in its
+     * lore. Left/middle/right clicks buy 1/10/100 units; every open shop window is refreshed
+     * afterwards.
      */
     private fun WanderingTraderItemData.toGuiItem(
         stockOf: (WanderingTraderItemData) -> Int,
         onPurchase: (Player, WanderingTraderItemData, Int) -> Unit,
-        onContentChanged: () -> Unit,
     ): Item =
         item {
             itemProvider by provider { ItemBuilder(icon(stockOf)) }
             onClick {
                 val units =
                     when (clickType) {
+                        ClickType.LEFT -> 1
                         ClickType.MIDDLE -> 10
                         ClickType.RIGHT -> 100
-                        else -> 1
+                        else -> return@onClick
                     }
                 onPurchase(player, this@toGuiItem, units)
-                onContentChanged()
+                refreshAll()
             }
         }
 

@@ -21,10 +21,12 @@ import java.util.Base64
 
 /**
  * Replaces the wandering trader's trade GUI with a custom shop GUI shared by all wandering traders.
- * The stock is shared runtime state filled by players, with supply-and-demand pricing: items trade
+ * stock is shared runtime state filled by players, with supply-and-demand pricing: items trade
  * at [BASE_PRICE] emeralds by default, drifting by one emerald per [DEMAND_PER_PRICE_STEP] net
  * items bought or sold (clamped to [[MIN_PRICE]; [MAX_PRICE]]), and selling pays out at
- * [SELL_PRICE_RATIO] of the current price.
+ * [SELL_PRICE_RATIO] of the current price. Individual items within bulk transactions are priced
+ * along the moving price curve rather than at a flat starting rate, and open shop windows
+ * refresh for all viewers on every stock or price change.
  */
 internal object WanderingTraderMechanic : MechanicInterface {
     private const val PURCHASE_MSG = "<green>Purchase successful!"
@@ -46,13 +48,19 @@ internal object WanderingTraderMechanic : MechanicInterface {
     /** Net bought-minus-sold items needed to shift the price by one emerald. */
     private const val DEMAND_PER_PRICE_STEP = 32
 
+    /** The lowest possible price in emeralds per item, regardless of demand. */
     private const val MIN_PRICE = 1
+
+    /** The highest possible price in emeralds per item, regardless of demand. */
     private const val MAX_PRICE = 64
 
     private val PURCHASE_SOUND: Sound =
         Sound.sound(Key.key("entity.experience_orb.pickup"), Sound.Source.PLAYER, 1.0f, 1.0f)
     private val NO_FUNDS_SOUND: Sound =
         Sound.sound(Key.key("entity.villager.no"), Sound.Source.PLAYER, 1.0f, 1.0f)
+
+    /** A plain emerald used to identify payment-eligible inventory slots via [ItemStack.isSimilar]. */
+    private val EMERALD: ItemStack = ItemStack.of(Material.EMERALD)
 
     private val stockFile = File(instance.dataFolder, STOCK_FILE_NAME)
 
@@ -76,7 +84,11 @@ internal object WanderingTraderMechanic : MechanicInterface {
     @EventHandler(ignoreCancelled = true)
     fun on(event: PlayerInteractEntityEvent) = handleInteract(event)
 
-    override fun onDisable() = flushStock()
+    override fun onDisable() {
+        // Close tracked windows first so pending deposits land in the stock before flushing.
+        WanderingTraderGui.closeAll()
+        flushStock()
+    }
 
     /**
      * Opens the custom shop GUI when a player right-clicks any wandering trader,
@@ -113,13 +125,14 @@ internal object WanderingTraderMechanic : MechanicInterface {
     }
 
     /**
-     * Executes a purchase: buys up to [units] stacks of [item], capped by the available stock and
-     * the player's emeralds, then deducts both and delivers the result. Overflow items are dropped
-     * at the player's feet.
+     * Executes a purchase: buys up to [units] items of [item], capped by the available stock and
+     * the player's emeralds. Each item is priced at the rising demand curve, so bulk purchases pay
+     * progressively more per item instead of a flat rate. Deducts the total cost, then delivers
+     * the result; overflow items are dropped at the player's feet.
      *
      * @param player The purchasing player.
      * @param item The entry being purchased.
-     * @param units The maximum number of stacks to buy (bulk purchase amount).
+     * @param units The maximum number of items to buy (bulk purchase amount).
      */
     private fun purchase(
         player: Player,
@@ -135,17 +148,25 @@ internal object WanderingTraderMechanic : MechanicInterface {
             return
         }
 
-        val price = ItemStack.of(Material.EMERALD, priceOf(item.result.type))
-        val matching = player.inventory.all(price.type).filterValues { it.isSimilar(price) }
-        val affordable = matching.values.sumOf { it.amount } / price.amount
-        if (affordable == 0) {
+        val matching = player.inventory.all(Material.EMERALD).filterValues { it.isSimilar(EMERALD) }
+        val emeralds = matching.values.sumOf { it.amount }
+        val maxUnits = minOf(units, inStock)
+        val demandBefore = demand[item.result.type] ?: 0
+        var bought = 0
+        var cost = 0
+        while (bought < maxUnits) {
+            val next = priceFor(demandBefore + bought * item.result.amount)
+            if (cost + next > emeralds) break
+            cost += next
+            bought++
+        }
+        if (bought == 0) {
             player.sendActionBar(MM.deserialize(NO_FUNDS_MSG))
             player.playSound(NO_FUNDS_SOUND)
             return
         }
 
-        val bought = minOf(units, inStock, affordable)
-        var remaining = price.amount * bought
+        var remaining = cost
         matching.forEach { (slot, stack) ->
             if (remaining <= 0) return@forEach
             val deduct = minOf(remaining, stack.amount)
@@ -164,10 +185,10 @@ internal object WanderingTraderMechanic : MechanicInterface {
 
     /**
      * Processes the contents of the sell window: every deposited item is added to the shared stock
-     * and paid [SELL_PRICE_RATIO] of its current price in emeralds, rounding down to at least 1.
-     * Emeralds are returned unprocessed. Item meta is preserved in the stock, so variants of the
-     * same material are stocked and traded separately. If the stock fails to load, all deposited
-     * items are returned unprocessed.
+     * and paid via [sellPayoutOf], so items are paid along the falling price curve rather than at
+     * a flat rate. Emeralds and emerald blocks are returned unprocessed. Item meta is preserved in
+     * the stock, so variants of the same material are stocked and traded separately. If the stock
+     * fails to load, all deposited items are returned unprocessed.
      *
      * @param player The selling player.
      * @param contents The deposited items, possibly containing null slots.
@@ -183,13 +204,13 @@ internal object WanderingTraderMechanic : MechanicInterface {
         var sold = false
         var rejected = false
         contents.filterNotNull().forEach { stack ->
-            if (stack.type == Material.EMERALD) {
+            if (stack.type == Material.EMERALD || stack.type == Material.EMERALD_BLOCK) {
                 give(player, stack)
                 rejected = true
                 return@forEach
             }
             stock.getOrPut(keyOf(stack)) { StockEntry(stack.asOne(), 0) }.count += stack.amount
-            give(player, ItemStack.of(Material.EMERALD, sellPriceOf(stack.type) * stack.amount))
+            give(player, ItemStack.of(Material.EMERALD, sellPayoutOf(stack.type, stack.amount)))
             demand.merge(stack.type, -stack.amount, Int::plus)
             sold = true
         }
@@ -213,17 +234,39 @@ internal object WanderingTraderMechanic : MechanicInterface {
     }
 
     /**
-     * Returns the current buy price (emeralds per item) for a material, starting at [BASE_PRICE]
-     * and shifting by one emerald per [DEMAND_PER_PRICE_STEP] net traded items.
+     * Returns the current buy price (emeralds per item) for a material: [priceFor] at its current
+     * net bought-minus-sold demand.
      */
-    private fun priceOf(type: Material): Int =
-        (BASE_PRICE + (demand[type] ?: 0) / DEMAND_PER_PRICE_STEP).coerceIn(MIN_PRICE, MAX_PRICE)
+    private fun priceOf(type: Material): Int = priceFor(demand[type] ?: 0)
 
     /**
-     * Returns the current payout (emeralds per item) when selling a material to the trader:
-     * [SELL_PRICE_RATIO] of [priceOf], at least 1 emerald.
+     * Returns the buy price (emeralds per item) at [netDemand] net bought-minus-sold items,
+     * starting at [BASE_PRICE] and shifting by one emerald per [DEMAND_PER_PRICE_STEP] net traded
+     * items, clamped between [MIN_PRICE] and [MAX_PRICE].
      */
-    private fun sellPriceOf(type: Material): Int = (priceOf(type) * SELL_PRICE_RATIO).toInt().coerceAtLeast(1)
+    private fun priceFor(netDemand: Int): Int =
+        (BASE_PRICE + netDemand / DEMAND_PER_PRICE_STEP).coerceIn(MIN_PRICE, MAX_PRICE)
+
+    /**
+     * Returns the payout (emeralds per item) when selling at [price]: [SELL_PRICE_RATIO] of it,
+     * at least 1 emerald.
+     */
+    private fun sellPriceOf(price: Int): Int = (price * SELL_PRICE_RATIO).toInt().coerceAtLeast(1)
+
+    /**
+     * Returns the total payout (emeralds) for selling [amount] items of [type] right now: each
+     * item is paid at [sellPriceOf] of the falling price curve, so bulk deposits don't clear at
+     * the starting price.
+     */
+    private fun sellPayoutOf(
+        type: Material,
+        amount: Int,
+    ): Int {
+        val demandBefore = demand[type] ?: 0
+        var payout = 0
+        repeat(amount) { payout += sellPriceOf(priceFor(demandBefore - it)) }
+        return payout
+    }
 
     /**
      * Gives an item to the player, dropping overflow at their feet.
