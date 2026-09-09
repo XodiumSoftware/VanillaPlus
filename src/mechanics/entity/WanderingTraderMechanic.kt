@@ -81,11 +81,15 @@ internal object WanderingTraderMechanic : MechanicInterface {
     /** The pending debounced save task, or null when no save is scheduled. */
     private var saveTask: BukkitTask? = null
 
+    /** Set when shutdown begins, suppressing further debounced save scheduling. */
+    private var shuttingDown = false
+
     @EventHandler(ignoreCancelled = true)
     fun on(event: PlayerInteractEntityEvent) = handleInteract(event)
 
     override fun onDisable() {
-        // Close tracked windows first so pending deposits land in the stock before flushing.
+        // Suppress save scheduling, then close tracked windows so pending deposits land in the stock before flushing.
+        shuttingDown = true
         WanderingTraderGui.closeAll()
         flushStock()
     }
@@ -322,10 +326,11 @@ internal object WanderingTraderMechanic : MechanicInterface {
      * Schedules pending stock changes to be persisted, debounced by [SAVE_DELAY_TICKS] ticks. The
      * YAML snapshot is built on the main thread when the task fires; only the disk write runs
      * asynchronously. Does nothing while the stock is not loaded, so a failed load cannot
-     * schedule overwriting existing data.
+     * schedule overwriting existing data, or once [shuttingDown] is set, so no task is scheduled
+     * after plugin disable begins.
      */
     private fun saveStock() {
-        if (!stockLoaded) return
+        if (!stockLoaded || shuttingDown) return
         if (saveTask != null) return
         saveTask =
             instance.server.scheduler.runTaskLater(

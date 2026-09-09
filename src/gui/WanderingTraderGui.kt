@@ -85,13 +85,22 @@ internal object WanderingTraderGui {
     }
 
     /**
-     * Closes every open shop and sell window, e.g. when the plugin is disabled. Closing a sell
-     * window processes its deposited contents via its close handler, so this must run before any
-     * state is persisted.
+     * Closes every open shop and sell window, e.g. when the plugin is disabled, isolating each
+     * close so a failing window cannot skip the rest. Closing a sell window processes its
+     * deposited contents via its close handler, so this must run before any state is persisted.
      */
     fun closeAll() {
-        openShops.keys.toList().forEach { it.close() }
-        openSells.toList().forEach { it.close() }
+        openShops.keys.toList().forEach { closeSafely(it) }
+        openSells.toList().forEach { closeSafely(it) }
+    }
+
+    /**
+     * Closes [window], logging failures without propagating them, so one failing close cannot
+     * prevent the remaining windows from closing.
+     */
+    private fun closeSafely(window: Window) {
+        runCatching { window.close() }
+            .onFailure { instance.logger.warning("Failed to close a wandering trader window: ${it.message}") }
     }
 
     /**
