@@ -19,8 +19,8 @@ import java.io.File
 
 /**
  * Replaces the wandering trader's trade GUI with a custom shop GUI shared by all wandering traders.
- * The stock is shared runtime state filled by players: any item can be sold; items without a
- * curated price are bought for [DEFAULT_PRICE] emeralds and sold at [SELL_PRICE_RATIO] of it.
+ * The stock is shared runtime state filled by players: any item sells for 1 emerald
+ * ([SELL_PRICE_RATIO] of [DEFAULT_PRICE]) and resells for [DEFAULT_PRICE].
  */
 internal object WanderingTraderMechanic : MechanicInterface {
     private const val PURCHASE_MSG = "<green>Purchase successful!"
@@ -29,26 +29,14 @@ internal object WanderingTraderMechanic : MechanicInterface {
     private const val SOLD_MSG = "<green>The trader accepted your items!"
     private const val STOCK_FILE_NAME = "wandering_trader_stock.yml"
 
-    /** Emerald price per item when buying something without a curated price. Selling pays 50% of it (1 emerald). */
+    /** Emerald price per item when buying; selling pays 50% of it (1 emerald). */
     private const val DEFAULT_PRICE = 2
 
-    /** The fraction of the listed price the trader pays when buying items from players. */
+    /** The fraction of [DEFAULT_PRICE] the trader pays when buying items from players. */
     private const val SELL_PRICE_RATIO = 0.5
 
-    /** Curated trades: buy price per stack for notable items. Uncurated items fall back to [DEFAULT_PRICE]. */
-    private val TRADES =
-        listOf(
-            WanderingTraderItemData(ItemStack.of(Material.AMETHYST_SHARD, 4), ItemStack.of(Material.EMERALD)),
-            WanderingTraderItemData(ItemStack.of(Material.BAMBOO, 16), ItemStack.of(Material.EMERALD)),
-            WanderingTraderItemData(ItemStack.of(Material.BLUE_ICE, 8), ItemStack.of(Material.EMERALD)),
-            WanderingTraderItemData(ItemStack.of(Material.CHORUS_FRUIT, 4), ItemStack.of(Material.EMERALD)),
-            WanderingTraderItemData(ItemStack.of(Material.ECHO_SHARD), ItemStack.of(Material.EMERALD, 16)),
-            WanderingTraderItemData(ItemStack.of(Material.HEART_OF_THE_SEA), ItemStack.of(Material.EMERALD, 32)),
-            WanderingTraderItemData(ItemStack.of(Material.MOSS_BLOCK, 16), ItemStack.of(Material.EMERALD)),
-            WanderingTraderItemData(ItemStack.of(Material.NAUTILUS_SHELL, 2), ItemStack.of(Material.EMERALD, 8)),
-            WanderingTraderItemData(ItemStack.of(Material.PACKED_ICE, 16), ItemStack.of(Material.EMERALD)),
-            WanderingTraderItemData(ItemStack.of(Material.SPORE_BLOSSOM), ItemStack.of(Material.EMERALD, 4)),
-        )
+    /** Emeralds paid per sold item: [SELL_PRICE_RATIO] of [DEFAULT_PRICE], at least 1. */
+    private val SELL_PAYOUT = (DEFAULT_PRICE * SELL_PRICE_RATIO).toInt().coerceAtLeast(1)
 
     private val PURCHASE_SOUND: Sound =
         Sound.sound(Key.key("entity.experience_orb.pickup"), Sound.Source.PLAYER, 1.0f, 1.0f)
@@ -80,7 +68,7 @@ internal object WanderingTraderMechanic : MechanicInterface {
 
     /**
      * Returns the trade entries currently in stock, one per stocked material, alphabetically ordered.
-     * Materials without a curated trade get single-item stacks priced at [DEFAULT_PRICE] emeralds.
+     * Every entry is a single item priced at [DEFAULT_PRICE] emeralds.
      */
     private fun stockedTrades(): List<WanderingTraderItemData> {
         loadStock()
@@ -88,10 +76,7 @@ internal object WanderingTraderMechanic : MechanicInterface {
             .filterValues { it > 0 }
             .keys
             .sortedBy { it.name }
-            .map { type ->
-                TRADES.firstOrNull { it.result.type == type }
-                    ?: WanderingTraderItemData(ItemStack.of(type), ItemStack.of(Material.EMERALD, DEFAULT_PRICE))
-            }
+            .map { WanderingTraderItemData(ItemStack.of(it), ItemStack.of(Material.EMERALD, DEFAULT_PRICE)) }
     }
 
     /**
@@ -137,9 +122,8 @@ internal object WanderingTraderMechanic : MechanicInterface {
     }
 
     /**
-     * Processes the contents of the sell window: items are added to the shared stock and paid for
-     * per full trade stack ([SELL_PRICE_RATIO] of the curated price, or 1 emerald per item without
-     * one). Leftover partial stacks are returned; meta of uncurated items is not preserved in stock.
+     * Processes the contents of the sell window: every deposited item is added to the shared stock
+     * and paid [SELL_PAYOUT] emerald(s) apiece. Item meta is not preserved in the stock.
      *
      * @param player The selling player.
      * @param contents The deposited items, possibly containing null slots.
@@ -149,31 +133,12 @@ internal object WanderingTraderMechanic : MechanicInterface {
         contents: List<ItemStack?>,
     ) {
         loadStock()
-        var sold = false
-        contents.filterNotNull().forEach { stack ->
-            val trade = TRADES.firstOrNull { it.result.isSimilar(stack) }
-            if (trade == null) {
-                stock.merge(stack.type, stack.amount, Int::plus)
-                give(player, ItemStack.of(Material.EMERALD, stack.amount))
-                sold = true
-                return@forEach
-            }
-
-            val units = stack.amount / trade.result.amount
-            if (units == 0) {
-                give(player, stack)
-                return@forEach
-            }
-
-            stock.merge(trade.result.type, units * trade.result.amount, Int::plus)
-            val payout = (trade.price.amount * SELL_PRICE_RATIO).toInt().coerceAtLeast(1)
-            give(player, ItemStack.of(trade.price.type, payout * units))
-            sold = true
-
-            val leftover = stack.amount % trade.result.amount
-            if (leftover > 0) give(player, stack.asQuantity(leftover))
+        val stacks = contents.filterNotNull()
+        stacks.forEach { stack ->
+            stock.merge(stack.type, stack.amount, Int::plus)
+            give(player, ItemStack.of(Material.EMERALD, SELL_PAYOUT * stack.amount))
         }
-        if (sold) {
+        if (stacks.isNotEmpty()) {
             saveStock()
             player.sendActionBar(MM.deserialize(SOLD_MSG))
             player.playSound(PURCHASE_SOUND)

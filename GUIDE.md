@@ -101,7 +101,7 @@ Enhances base gameplay with custom enchantments, items, and mechanics.
 
 ### Wandering Trader Shop
 
-Wandering traders open a custom shop GUI instead of their vanilla trades. The stock is shared globally, persists across restarts, and starts empty — it is filled by players selling items via the Sell items button. Any item is accepted: curated items pay half their listed price, everything else pays 1 emerald per item (and resells for 2).
+Wandering traders open a custom shop GUI instead of their vanilla trades. The stock is shared globally, persists across restarts, and starts empty — it is filled by players selling items via the Sell items button. Any item is accepted and pays 1 emerald; everything resells for 2.
 
 ### Enchantments
 
