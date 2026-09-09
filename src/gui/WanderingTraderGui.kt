@@ -167,18 +167,21 @@ internal object WanderingTraderGui {
         }
 
     /**
-     * Builds the display icon for this trade entry: the stock is shown as the vanilla stack count
-     * (capped at 127, the wire limit) and the lore describes the price.
+     * Builds the display icon for this trade entry, with lore lines describing the price
+     * and the current stock.
      */
     private fun WanderingTraderItemData.icon(stockOf: (WanderingTraderItemData) -> Int): ItemStack =
         result.clone().apply {
-            amount = stockOf(this@icon).coerceIn(1, 127)
             editMeta { meta ->
+                val stock = stockOf(this@icon)
                 val lore = meta.lore()?.toMutableList() ?: mutableListOf()
                 lore.add(
                     MM
                         .deserialize("<gray>Price: ${price.amount}x <sprite:items:item/${price.type.key.key}>")
                         .decoration(TextDecoration.ITALIC, false),
+                )
+                lore.add(
+                    MM.deserialize("<gray>In stock: $stock").decoration(TextDecoration.ITALIC, false),
                 )
                 lore.add(MM.deserialize(BULK_HINT).decoration(TextDecoration.ITALIC, false))
                 meta.lore(lore)
