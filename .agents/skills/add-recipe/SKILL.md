@@ -33,8 +33,6 @@ Use this skill when the user wants to add a new custom recipe to the project.
 
 1. Update `ARCHITECTURE.md` recipe list.
 2. Add a concise KDoc comment to the object describing what it adds.
-3. If the change is significant, run `./gradlew dokkaGenerateHtml`.
-
 ## Template
 
 ```kotlin

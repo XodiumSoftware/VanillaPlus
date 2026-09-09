@@ -36,8 +36,6 @@ Use this skill when the user needs a new helper function or group of helpers for
 
 1. Add KDoc for complex utilities explaining parameters, return values, and any side effects.
 2. Update the Utilities section of `ARCHITECTURE.md` if adding a new nested `object` or if the utility is used across multiple modules.
-3. If the utility changes public API shape, run `./gradlew dokkaGenerateHtml`.
-
 ## Example
 
 ```kotlin

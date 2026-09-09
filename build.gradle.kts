@@ -8,7 +8,6 @@ plugins {
     id("com.gradleup.shadow") version "9.6.1"
     id("xyz.jpenilla.run-paper") version "3.1.0"
     id("xyz.jpenilla.resource-factory-paper-convention") version "1.3.1"
-    id("org.jetbrains.dokka") version "2.2.0"
     id("org.jlleitschuh.gradle.ktlint") version "12.3.0"
 }
 
@@ -50,13 +49,6 @@ sourceSets {
     main {
         kotlin.srcDirs("src")
         resources.srcDirs("resources")
-    }
-}
-
-dokka {
-    moduleName.set("IllyriaPlus")
-    dokkaPublications.html {
-        outputDirectory.set(layout.projectDirectory.dir("docs"))
     }
 }
 

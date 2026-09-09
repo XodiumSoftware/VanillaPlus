@@ -55,8 +55,6 @@ Use this skill when the user wants to add a new enchantment to a Paper-based Min
    - If it is a utility enchantment, add it to the bootstrap-registered table.
    - If it is a vanilla override, add it to the event-handlers list.
 2. Add a concise KDoc comment to the object explaining its behavior.
-3. If the change is significant, run `./gradlew dokkaGenerateHtml` to regenerate docs.
-
 ## Template
 
 ```kotlin

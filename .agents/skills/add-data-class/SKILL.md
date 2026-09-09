@@ -35,8 +35,6 @@ Use this skill when the user needs a new structured data type shared across the 
 
 1. Add the new data class to the Data Classes section of `ARCHITECTURE.md`.
 2. If it is used across multiple mechanics, mention which ones.
-3. If public API shape changes, run `./gradlew dokkaGenerateHtml`.
-
 ## Template
 
 ```kotlin
