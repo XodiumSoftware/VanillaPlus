@@ -43,4 +43,10 @@ internal interface MechanicInterface : Listener {
                 }
             }
         }.inWholeMilliseconds
+
+    /**
+     * Called when the plugin is disabled. Override to flush pending state; the default
+     * implementation does nothing.
+     */
+    fun onDisable() {}
 }
