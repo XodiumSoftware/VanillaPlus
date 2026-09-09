@@ -135,6 +135,7 @@ internal class IllyriaPlus : JavaPlugin() {
     }
 
     override fun onDisable() {
+        if (::mechanics.isInitialized) mechanics.forEach { it.onDisable() }
         PacketEvents.getAPI().terminate()
     }
 }

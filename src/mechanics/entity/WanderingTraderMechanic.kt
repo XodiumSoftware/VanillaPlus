@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
+import org.bukkit.scheduler.BukkitTask
 import org.xodium.illyriaplus.IllyriaPlus.Companion.instance
 import org.xodium.illyriaplus.Utils.MM
 import org.xodium.illyriaplus.data.WanderingTraderItemData
@@ -32,6 +33,9 @@ internal object WanderingTraderMechanic : MechanicInterface {
     private const val SOLD_MSG = "<green>The trader accepted your items!"
     private const val EMERALDS_REJECTED_MSG = "<firewatch>The trader doesn't accept emeralds!</gradient>"
     private const val STOCK_FILE_NAME = "wandering_trader_stock.yml"
+
+    /** Debounce window before pending stock changes are persisted, in ticks. */
+    private const val SAVE_DELAY_TICKS = 100L
 
     /** Base emerald price per item, shifted by supply and demand. */
     private const val BASE_PRICE = 2
@@ -61,10 +65,18 @@ internal object WanderingTraderMechanic : MechanicInterface {
     /** Net bought-minus-sold items per [Material]; shifts prices via [priceOf]. */
     private val demand = mutableMapOf<Material, Int>()
 
+    /** Guards against interleaved synchronous and asynchronous stock file writes. */
+    private val writeLock = Any()
+
     private var stockLoaded = false
+
+    /** The pending debounced save task, or null when no save is scheduled. */
+    private var saveTask: BukkitTask? = null
 
     @EventHandler(ignoreCancelled = true)
     fun on(event: PlayerInteractEntityEvent) = handleInteract(event)
+
+    override fun onDisable() = flushStock()
 
     /**
      * Opens the custom shop GUI when a player right-clicks any wandering trader,
@@ -264,11 +276,49 @@ internal object WanderingTraderMechanic : MechanicInterface {
     }
 
     /**
-     * Persists the stock and demand to disk. Entries with zero stock or zero demand are omitted.
-     * Does nothing while the stock is not loaded, so a failed load cannot overwrite existing data.
+     * Schedules pending stock changes to be persisted, debounced by [SAVE_DELAY_TICKS] ticks. The
+     * YAML snapshot is built on the main thread when the task fires; only the disk write runs
+     * asynchronously. Does nothing while the stock is not loaded, so a failed load cannot
+     * schedule overwriting existing data.
      */
     private fun saveStock() {
         if (!stockLoaded) return
+        if (saveTask != null) return
+        saveTask =
+            instance.server.scheduler.runTaskLater(
+                instance,
+                Runnable {
+                    saveTask = null
+                    writeStock()
+                },
+                SAVE_DELAY_TICKS,
+            )
+    }
+
+    /**
+     * Builds the YAML snapshot of the current state and writes it to the stock file asynchronously.
+     */
+    private fun writeStock() {
+        if (!stockLoaded) return
+        val yaml = buildStockYaml()
+        instance.server.scheduler.runTaskAsynchronously(instance, Runnable { writeStockFile(yaml) })
+    }
+
+    /**
+     * Cancels any pending debounced save and persists the current state synchronously.
+     */
+    private fun flushStock() {
+        if (!stockLoaded) return
+        saveTask?.cancel()
+        saveTask = null
+        writeStockFile(buildStockYaml())
+    }
+
+    /**
+     * Serializes the current stock and demand into a YAML string, omitting entries with zero
+     * stock or zero demand. Must be called on the main thread.
+     */
+    private fun buildStockYaml(): String {
         val config = YamlConfiguration()
         var index = 0
         stock.values.filter { it.count > 0 }.forEach {
@@ -277,10 +327,21 @@ internal object WanderingTraderMechanic : MechanicInterface {
             index++
         }
         demand.filterValues { it != 0 }.forEach { (type, amount) -> config.set("demand.${type.name}", amount) }
-        runCatching {
-            instance.dataFolder.mkdirs()
-            config.save(stockFile)
-        }.onFailure { instance.logger.warning("Failed to save wandering trader stock: ${it.message}") }
+        return config.saveToString()
+    }
+
+    /**
+     * Writes [yaml] to the stock file, guarding against interleaved concurrent writes.
+     *
+     * @param yaml The serialized stock and demand configuration.
+     */
+    private fun writeStockFile(yaml: String) {
+        synchronized(writeLock) {
+            runCatching {
+                instance.dataFolder.mkdirs()
+                stockFile.writeText(yaml)
+            }.onFailure { instance.logger.warning("Failed to save wandering trader stock: ${it.message}") }
+        }
     }
 
     /**
