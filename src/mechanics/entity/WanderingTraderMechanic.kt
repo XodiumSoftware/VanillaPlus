@@ -16,6 +16,7 @@ import org.xodium.illyriaplus.data.WanderingTraderItemData
 import org.xodium.illyriaplus.gui.WanderingTraderGui
 import org.xodium.illyriaplus.mechanics.MechanicInterface
 import java.io.File
+import java.util.Base64
 
 /**
  * Replaces the wandering trader's trade GUI with a custom shop GUI shared by all wandering traders.
@@ -51,8 +52,11 @@ internal object WanderingTraderMechanic : MechanicInterface {
 
     private val stockFile = File(instance.dataFolder, STOCK_FILE_NAME)
 
-    /** Shared stock of all wandering traders, mapped to individual item counts per [Material]. */
-    private val stock = mutableMapOf<Material, Int>()
+    /**
+     * Shared stock of all wandering traders, keyed by serialized single-item stacks (see [keyOf])
+     * so item meta is preserved; counts are individual items.
+     */
+    private val stock = mutableMapOf<String, StockEntry>()
 
     /** Net bought-minus-sold items per [Material]; shifts prices via [priceOf]. */
     private val demand = mutableMapOf<Material, Int>()
@@ -71,23 +75,29 @@ internal object WanderingTraderMechanic : MechanicInterface {
     private fun handleInteract(event: PlayerInteractEntityEvent) {
         if (event.hand != EquipmentSlot.HAND) return
         if (event.rightClicked !is WanderingTrader) return
-        val inHand = event.player.inventory.itemInMainHand.type
+        val player = event.player
+        val inHand = player.inventory.itemInMainHand.type
         if (inHand == Material.LEAD || inHand == Material.NAME_TAG) return
         event.isCancelled = true
-        WanderingTraderGui.openShop(event.player, ::stockedTrades, ::stockOf, ::purchase, ::processDeposit)
+        WanderingTraderGui.openShop(player, ::stockedTrades, ::stockOf, ::purchase, ::processDeposit)
     }
 
     /**
-     * Returns the trade entries currently in stock, one per stocked material, alphabetically ordered,
-     * priced at their current demand-driven value.
+     * Returns the trade entries currently in stock, one per stocked item variant, ordered by
+     * material name, priced at their current demand-driven value.
      */
     private fun stockedTrades(): List<WanderingTraderItemData> {
         loadStock()
         return stock
-            .filterValues { it > 0 }
-            .keys
-            .sortedBy { it.name }
-            .map { WanderingTraderItemData(ItemStack.of(it), ItemStack.of(Material.EMERALD, priceOf(it))) }
+            .values
+            .filter { it.count > 0 }
+            .sortedWith(compareBy<StockEntry> { it.template.type.name }.thenBy { keyOf(it.template) })
+            .map {
+                WanderingTraderItemData(
+                    it.template.asOne(),
+                    ItemStack.of(Material.EMERALD, priceOf(it.template.type)),
+                )
+            }
     }
 
     /**
@@ -105,8 +115,9 @@ internal object WanderingTraderMechanic : MechanicInterface {
         units: Int,
     ) {
         loadStock()
-        val inStock = (stock[item.result.type] ?: 0) / item.result.amount
-        if (inStock == 0) {
+        val entry = stock[keyOf(item.result)]
+        val inStock = (entry?.count ?: 0) / item.result.amount
+        if (entry == null || inStock == 0) {
             player.sendActionBar(MM.deserialize(OUT_OF_STOCK_MSG))
             player.playSound(NO_FUNDS_SOUND)
             return
@@ -131,7 +142,7 @@ internal object WanderingTraderMechanic : MechanicInterface {
             player.inventory.setItem(slot, stack.takeIf { it.amount > 0 })
         }
 
-        stock[item.result.type] = (stock[item.result.type] ?: 0) - item.result.amount * bought
+        entry.count -= item.result.amount * bought
         demand.merge(item.result.type, item.result.amount * bought, Int::plus)
         saveStock()
         give(player, item.result.clone().apply { amount = item.result.amount * bought })
@@ -142,7 +153,8 @@ internal object WanderingTraderMechanic : MechanicInterface {
     /**
      * Processes the contents of the sell window: every deposited item is added to the shared stock
      * and paid [SELL_PRICE_RATIO] of its current price in emeralds, rounding down to at least 1.
-     * Emeralds are returned unprocessed. Item meta is not preserved in the stock.
+     * Emeralds are returned unprocessed. Item meta is preserved in the stock, so variants of the
+     * same material are stocked and traded separately.
      *
      * @param player The selling player.
      * @param contents The deposited items, possibly containing null slots.
@@ -160,7 +172,7 @@ internal object WanderingTraderMechanic : MechanicInterface {
                 rejected = true
                 return@forEach
             }
-            stock.merge(stack.type, stack.amount, Int::plus)
+            stock.getOrPut(keyOf(stack)) { StockEntry(stack.asOne(), 0) }.count += stack.amount
             give(player, ItemStack.of(Material.EMERALD, sellPriceOf(stack.type) * stack.amount))
             demand.merge(stack.type, -stack.amount, Int::plus)
             sold = true
@@ -181,7 +193,7 @@ internal object WanderingTraderMechanic : MechanicInterface {
      */
     private fun stockOf(item: WanderingTraderItemData): Int {
         loadStock()
-        return stock[item.result.type] ?: 0
+        return stock[keyOf(item.result)]?.count ?: 0
     }
 
     /**
@@ -212,6 +224,12 @@ internal object WanderingTraderMechanic : MechanicInterface {
     }
 
     /**
+     * Returns a stable stock map key for an [ItemStack], ignoring stack size: the Base64 encoding
+     * of a serialized single-item copy. Stacks of equal type and meta share a key.
+     */
+    private fun keyOf(stack: ItemStack): String = Base64.getEncoder().encodeToString(stack.asOne().serializeAsBytes())
+
+    /**
      * Lazily loads the stock and demand from disk.
      */
     private fun loadStock() {
@@ -220,7 +238,9 @@ internal object WanderingTraderMechanic : MechanicInterface {
         if (!stockFile.exists()) return
         val config = YamlConfiguration.loadConfiguration(stockFile)
         config.getConfigurationSection("stock")?.getKeys(false)?.forEach { key ->
-            Material.getMaterial(key)?.let { stock[it] = config.getInt("stock.$key") }
+            config.getItemStack("stock.$key.stack")?.let {
+                stock[keyOf(it)] = StockEntry(it.asOne(), config.getInt("stock.$key.count"))
+            }
         }
         config.getConfigurationSection("demand")?.getKeys(false)?.forEach { key ->
             Material.getMaterial(key)?.let { demand[it] = config.getInt("demand.$key") }
@@ -232,11 +252,25 @@ internal object WanderingTraderMechanic : MechanicInterface {
      */
     private fun saveStock() {
         val config = YamlConfiguration()
-        stock.filterValues { it > 0 }.forEach { (type, amount) -> config.set("stock.${type.name}", amount) }
+        var index = 0
+        stock.values.filter { it.count > 0 }.forEach {
+            config.set("stock.$index.stack", it.template)
+            config.set("stock.$index.count", it.count)
+            index++
+        }
         demand.filterValues { it != 0 }.forEach { (type, amount) -> config.set("demand.${type.name}", amount) }
         runCatching {
             instance.dataFolder.mkdirs()
             config.save(stockFile)
         }.onFailure { instance.logger.warning("Failed to save wandering trader stock: ${it.message}") }
     }
+
+    /**
+     * A stocked item variant: a normalized single-item [template] preserving full item meta, plus
+     * the number of individual items in [count].
+     */
+    private class StockEntry(
+        val template: ItemStack,
+        var count: Int,
+    )
 }
