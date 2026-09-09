@@ -177,11 +177,15 @@ internal object WanderingTraderGui {
                 val lore = meta.lore()?.toMutableList() ?: mutableListOf()
                 lore.add(
                     MM
-                        .deserialize("<gray>Price: ${price.amount}x <sprite:items:item/${price.type.key.key}>")
-                        .decoration(TextDecoration.ITALIC, false),
+                        .deserialize(
+                            "<gray>Price: </gray><mango>${price.amount}x</gradient> " +
+                                "<sprite:items:item/${price.type.key.key}>",
+                        ).decoration(TextDecoration.ITALIC, false),
                 )
                 lore.add(
-                    MM.deserialize("<gray>In stock: $stock").decoration(TextDecoration.ITALIC, false),
+                    MM
+                        .deserialize("<gray>In stock: </gray><skyline>$stock</gradient>")
+                        .decoration(TextDecoration.ITALIC, false),
                 )
                 lore.add(MM.deserialize(BULK_HINT).decoration(TextDecoration.ITALIC, false))
                 meta.lore(lore)
