@@ -95,8 +95,8 @@ internal object WanderingTraderGui {
     }
 
     /**
-     * Builds the shop window, including paged content and navigation, and registers it for
-     * live refreshes until it is closed.
+     * Builds the shop window, including paged content and navigation, and registers it on open
+     * for live refreshes until it is closed.
      */
     private fun buildShopWindow(
         player: Player,
@@ -136,7 +136,7 @@ internal object WanderingTraderGui {
                         content by contentProvider
                     }
             }
-        openShops[shopWindow] = rebuild
+        shopWindow.addOpenHandler { openShops[shopWindow] = rebuild }
         shopWindow.addCloseHandler { openShops.remove(shopWindow) }
         return shopWindow
     }
