@@ -127,6 +127,8 @@ internal object WanderingTraderGui {
                         "# # # # # # # # #",
                         "# x x x x x x x #",
                         "# x x x x x x x #",
+                        "# x x x x x x x #",
+                        "# x x x x x x x #",
                         "# # # < s > # # #",
                     ) {
                         '#' by BORDER
