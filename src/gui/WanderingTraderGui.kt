@@ -31,7 +31,7 @@ internal object WanderingTraderGui {
     private const val NEXT_PAGE_NAME = "<gray>Next page"
     private const val SELL_BUTTON_NAME = "<green><b>Sell items"
     private const val BULK_HINT = "<dark_gray>LMB: 1x | MMB: 10x | RMB: 100x"
-    private const val DEPOSIT_SIZE = 27
+    private const val DEPOSIT_SIZE = 54
 
     private val BORDER = Item.simple(ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).hideTooltip(true))
 
